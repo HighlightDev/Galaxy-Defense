@@ -28,6 +28,8 @@ namespace Resources
 			return m_instance;
 		}
 
+      std::shared_ptr<ITexture> GetTextureAt(size_t index) const;
+
 		static void ReloadInstance()
 		{
 			if (m_instance)

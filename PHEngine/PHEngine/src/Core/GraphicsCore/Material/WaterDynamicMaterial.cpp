@@ -5,9 +5,12 @@
 
 namespace Graphics
 {
-   WaterDynamicMaterial::WaterDynamicMaterial()
+   WaterDynamicMaterial::WaterDynamicMaterial(WaterDynamicMaterial::ITextureShared normalMap, WaterDynamicMaterial::ITextureShared distortion)
       : DynamicMaterial("WaterDynamicMaterial", Common::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\WaterMaterial.glsl")
    {
+      mProperties.emplace(std::make_pair("normalMap", std::make_shared<TextureMaterialProperty>(normalMap)));
+      mProperties.emplace(std::make_pair("distortion", std::make_shared<TextureMaterialProperty>(distortion)));
+
       moveFactorPropertyRef = std::make_shared<FloatMaterialProperty>(0.0f);
       strFactorPropertyRef = std::make_shared<FloatMaterialProperty>(0.0f);
 

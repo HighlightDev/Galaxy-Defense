@@ -510,7 +510,6 @@
     <None Include="res\shaders\uiVS.glsl" />
     <None Include="res\shaders\uiFS.glsl" />
     <None Include="res\shaders\material_shaders\WaterMaterial.glsl" />
-    <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
     <None Include="res\shaders\composite_shaders\forwardFS.glsl" />
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #include "TextureRenderer.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/CommonCore/FolderManager.h"
 
 #include <utility>
@@ -25,10 +26,10 @@ namespace Debug
 #if DEBUG
    void TextureRenderer::PushDebugRenderTarget()
    {
-      size_t totalCount = RenderTargetPool::GetInstance()->GetResourcesCount();
+      size_t totalCount = TexturePool::GetInstance()->GetResourcesCount();
       DebugRenderTargetIndex = DebugRenderTargetIndex > (totalCount - 1) ? 0 : DebugRenderTargetIndex;
 
-      PushFrame(RenderTargetPool::GetInstance()->GetRenderTargetAt(DebugRenderTargetIndex));
+      PushFrame(TexturePool::GetInstance()->GetTextureAt(DebugRenderTargetIndex));
 
       ++DebugRenderTargetIndex;
    }

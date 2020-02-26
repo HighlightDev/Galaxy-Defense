@@ -7,12 +7,14 @@ namespace Graphics
       public DynamicMaterial
    {
 
+      using ITextureShared = std::shared_ptr<ITexture>;
+
       std::shared_ptr<FloatMaterialProperty> moveFactorPropertyRef;
       std::shared_ptr<FloatMaterialProperty> strFactorPropertyRef;
 
    public:
 
-      WaterDynamicMaterial();
+      WaterDynamicMaterial(ITextureShared normalMap, ITextureShared distortion);
 
       void SetMoveFactor(const float moveFactor);
 

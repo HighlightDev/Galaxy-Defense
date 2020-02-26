@@ -59,15 +59,18 @@ namespace Labyrinth
 
       // Water
       {
-         WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>());
+         auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "water_normal.png");
+         auto distortionTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetDistortionTexturePath() + "water_dudv.png");
+         WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>(normalTex, distortionTex));
          std::shared_ptr<Actor> waterActor = std::make_shared<Actor>("Water", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
          mScene->CreateAndAddComponent_GameThread<WaterPlaneComponent>(mData, waterActor);
          mScene->AllActors.push_back(waterActor);
       }
 
+#if 0
       // Ground
 
-      /*{
+      {
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
@@ -76,10 +79,12 @@ namespace Labyrinth
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
          mScene->CreateAndAddComponent_GameThread<StaticMeshComponent>(mData, groundActor);
          mScene->AllActors.push_back(groundActor);
-      }*/
+      }
+
+#endif
 
       // Test for PBR
-      /*{
+      {
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
          auto specualrMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
@@ -96,7 +101,7 @@ namespace Labyrinth
             mScene->AllActors.push_back(houseActor);
          }
 
-      }*/
+      }
 
       // SKELETAL MESH
       {
