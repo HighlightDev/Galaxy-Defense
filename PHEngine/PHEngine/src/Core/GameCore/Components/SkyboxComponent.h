@@ -2,7 +2,6 @@
 #include "PrimitiveComponent.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
-#include "Core/GameCore/ShaderImplementation/SkyboxShader.h"
 #include "Core/GraphicsCore/RenderData/SkyboxRenderData.h"
 
 #include <memory>
@@ -10,7 +9,6 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace Game::ShaderImpl;
 using namespace Graphics::Data;
 
 namespace Game
@@ -31,7 +29,7 @@ namespace Game
 
 	public:
 
-		SkyboxComponent(glm::vec3 scale, float rotateSpeed, const SkyboxRenderData& renderData);
+		SkyboxComponent(const glm::vec3& scale, const SkyboxRenderData& renderData);
 
 		virtual ~SkyboxComponent();
 

@@ -6,10 +6,7 @@ namespace Graphics
    {
 
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr)
-         , m_skyboxShader(std::static_pointer_cast<SkyboxShader>(component->GetRenderData().m_shader))
-         , m_dayTexture(component->GetRenderData().m_dayTex)
-         , m_nightTexture(component->GetRenderData().m_nightTex)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader)
       {
       }
 
@@ -20,6 +17,16 @@ namespace Graphics
       void SkyboxSceneProxy::PostConstructorInitialize()
       {
 
+      }
+
+      std::shared_ptr<SkyboxSceneProxy::ShaderType> SkyboxSceneProxy::GetShader() const
+      {
+         return std::static_pointer_cast<SkyboxSceneProxy::ShaderType>(m_shader);
+      }
+
+      std::shared_ptr<SkyboxSceneProxy::MaterialType> SkyboxSceneProxy::GetMaterialInstance() const
+      {
+         return std::static_pointer_cast<SkyboxSceneProxy::MaterialType>(GetShader()->GetMaterialShader()->GetMaterialInstance());
       }
 
       uint64_t SkyboxSceneProxy::GetComponentType() const
@@ -36,26 +43,19 @@ namespace Graphics
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
 
-         m_skyboxShader->ExecuteShader();
+         auto shaderPtr = GetShader();
 
-         if (m_dayTexture)
-         {
-            m_dayTexture->BindTexture(0);
-         }
-
-         if (m_nightTexture)
-         {
-            m_nightTexture->BindTexture(1);
-         }
-         m_skyboxShader->SetTransformMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
-         m_skyboxShader->SetTextures(0, 1);
+         shaderPtr->ExecuteShader();
+         shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
+         shaderPtr->GetMaterialShader()->SetUniformValues();
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-         m_skyboxShader->StopShader();
+         shaderPtr->StopShader();
 
          glDisable(GL_CULL_FACE);
       }
 
       bool SkyboxSceneProxy::IsDeferred() const {
+
          return false;
       }
    }

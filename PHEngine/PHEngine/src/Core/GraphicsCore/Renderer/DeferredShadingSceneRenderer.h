@@ -4,7 +4,6 @@
 #include <glm/mat4x4.hpp>
 
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ShaderImplementation/DeferredShader.h"
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapDepthShader.h"
@@ -21,7 +20,7 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
-#include "Core/GameCore/ShaderImplementation/DeferredCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/Level.h"
 
 using namespace Game::ShaderImpl;
@@ -45,8 +44,6 @@ namespace Graphics
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          // Shaders
-         std::shared_ptr<DeferredShader<false>> m_deferredBaseShaderNonSkeletal;
-         std::shared_ptr<DeferredShader<true>> m_deferredBaseShaderSkeletal;
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
          std::shared_ptr<DepthShader<true>> m_depthShaderSkeletal;
          std::shared_ptr<DepthShader<false>> m_depthShaderNonSkeletal;

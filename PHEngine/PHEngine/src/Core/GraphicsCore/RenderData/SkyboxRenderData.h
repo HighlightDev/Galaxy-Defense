@@ -19,18 +19,15 @@ namespace Graphics
       {
 
          std::shared_ptr<Skin> m_skin;
-         std::shared_ptr<ShaderBase> m_shader;
-         std::shared_ptr<ITexture> m_dayTex;
-         std::shared_ptr<ITexture> m_nightTex;
+         std::shared_ptr<ICompositeShader> m_materialShader;
 
          SkyboxRenderData(std::shared_ptr<Skin> skyboxMesh,
-            std::shared_ptr<ShaderBase> skyboxShader, std::shared_ptr<ITexture> dayTexture, std::shared_ptr<ITexture> nightTexture)
+            std::shared_ptr<IShader> materialShader)
             : m_skin(skyboxMesh)
-            , m_shader(skyboxShader)
-            , m_dayTex(dayTexture)
-            , m_nightTex(nightTexture)
+            , m_materialShader(std::dynamic_pointer_cast<ICompositeShader>(materialShader))
          {
          }
+
          ~SkyboxRenderData()
          {
          }

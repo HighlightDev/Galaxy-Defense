@@ -9,7 +9,7 @@
 #include "Core/GraphicsCore/Animation/AnimationHolder.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
-#include "Core/GameCore/ShaderImplementation/DeferredCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 
 using namespace Game;
 using namespace Game::ShaderImpl;
@@ -23,7 +23,7 @@ namespace Graphics
       class SkeletalMeshSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<SkeletalMeshVertexFactory<3>, DeferredCollectShader>;
+         using ShaderType = CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>;
          using Base = PrimitiveSceneProxy;
 
          std::shared_ptr<std::vector<AnimationSequence>> m_animations;

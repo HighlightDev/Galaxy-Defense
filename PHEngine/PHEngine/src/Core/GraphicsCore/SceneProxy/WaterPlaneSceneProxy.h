@@ -5,7 +5,7 @@
 #include "Core/GameCore/ShaderImplementation/WaterPlaneShader.h"
 
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GameCore/ShaderImplementation/DeferredCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 
@@ -21,12 +21,10 @@ namespace Graphics
       class WaterPlaneSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>;
+         using ShaderType = CompositeShader<StaticMeshVertexFactory, SimpleShader>;
          using MaterialType = WaterDynamicMaterial;
 
          std::unique_ptr<WaterPlaneFramebuffer> m_waterPlaneFramebuffer;
-         std::shared_ptr<ITexture> m_waterDistortionMap;
-         std::shared_ptr<ITexture> m_waterNormalMap;
 
          float m_moveFactor;
          float m_waveStrength;

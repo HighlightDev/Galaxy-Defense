@@ -1,9 +1,8 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/StaticMeshComponent.h"
-#include "Core/GameCore/ShaderImplementation/StaticMeshShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GameCore/ShaderImplementation/DeferredCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 
 using namespace Game;
@@ -19,7 +18,7 @@ namespace Graphics
       {
 
          using Base = PrimitiveSceneProxy;
-         using ShaderType = CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>;
+         using ShaderType = CompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
       private:
 

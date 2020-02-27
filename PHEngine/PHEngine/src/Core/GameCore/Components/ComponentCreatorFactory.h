@@ -30,9 +30,10 @@
 #include "Core/GameCore/Components/SkeletalMeshComponent.h"
 #include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
-#include "Core/GameCore/ShaderImplementation/DeferredCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 
@@ -58,17 +59,14 @@ namespace Game
             int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
             auto skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
 
-            typename TexturePool::sharedValue_t dTex = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_commaSeparatedPathToSixTexturesDay);
-            typename TexturePool::sharedValue_t nTex;
-            if (mData.m_commaSeparatedPathToSixTexturesNight != "")
-               nTex = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_commaSeparatedPathToSixTexturesNight);
+            const ShaderParams shaderParams("Skybox ForwardShader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
 
-            ShaderParams shaderParams("Skybox Shader", mData.m_vsShaderPath, mData.m_fsShaderPath, "", "", "", "");
-            ShaderPool::sharedValue_t skyboxShader = ShaderPool::GetInstance()->template GetOrAllocateResource<SkyboxShader>(shaderParams);
+            TemplatedCompositeShaderParams<CompositeShader<SkyboxVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
+            CompositeShaderPool::sharedValue_t skyboxMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkyboxVertexFactory, SimpleShader>>(compositeParams);
 
-            SkyboxRenderData renderData(skin, skyboxShader, dTex, nTex);
-
-            resultComponent = std::make_shared<SkyboxComponent>(mData.m_scale, mData.m_rotateSpeed, renderData);
+            resultComponent = std::make_shared<SkyboxComponent>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader));
          }
 
          return resultComponent;
@@ -88,9 +86,12 @@ namespace Game
 
             typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
 
-            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl", "", "", "", "");
-            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, DeferredCollectShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
-            CompositeShaderPool::sharedValue_t staticMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>>(compositeParams);
+            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
+
+            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
+            CompositeShaderPool::sharedValue_t staticMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
             StaticMeshRenderData renderData(skin, staticMeshShader);
 
@@ -152,9 +153,12 @@ namespace Game
             const int32_t primitive = (int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES;
             auto skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
 
-            const ShaderParams shaderParams("ForwardWaterPlane Shader", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl", "", "", "", "");
-            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, DeferredCollectShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
-            CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, DeferredCollectShader>>(compositeParams);
+            const ShaderParams shaderParams("ForwardWaterPlane Shader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
+
+            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
+            CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
             resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_rotation, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader));
          }
@@ -207,11 +211,13 @@ namespace Game
 
             typename AnimationPool::sharedValue_t animations = AnimationPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
 
-            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl", "", "", "", "");
+            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
            
-            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<3>, DeferredCollectShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<3>, DeferredCollectShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
+            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<3>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
 
-            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<3>, DeferredCollectShader>>(compositeParams);
+            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>>(compositeParams);
 
             SkeletalMeshRenderData renderData(skin, animations, skeletalMeshShader);
              
@@ -237,7 +243,7 @@ namespace Game
             int32_t primitive = (int32_t)SimplePrimitiveType::POINT;
             SimplePrimitivePool::sharedValue_t skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
             typename TexturePool::sharedValue_t texture = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_pathToTexture);
-            ShaderParams shaderParams("Billboard Shader", mData.m_vsShaderPath, mData.m_fsShaderPath, mData.m_gsShaderPath, "", "", "");
+            ShaderParams shaderParams("Billboard Shader", mData.m_vsShaderPath, mData.m_fsShaderPath, mData.m_gsShaderPath);
             ShaderPool::sharedValue_t shader = ShaderPool::GetInstance()->template GetOrAllocateResource<BillboardShader>(shaderParams);
 
             BillboardRenderData renderData(skin, shader, texture);
@@ -262,7 +268,7 @@ namespace Game
 
             int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
             SimplePrimitivePool::sharedValue_t skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
-            ShaderParams shaderParams("Cubemap Shader", mData.m_vsShaderPath, mData.m_fsShaderPath, "", "", "", "");
+            ShaderParams shaderParams("Cubemap Shader", mData.m_vsShaderPath, mData.m_fsShaderPath);
             ShaderPool::sharedValue_t shader = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(shaderParams);
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);

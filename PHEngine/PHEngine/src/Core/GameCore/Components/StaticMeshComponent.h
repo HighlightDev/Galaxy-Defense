@@ -1,11 +1,9 @@
 #pragma once
 #include "PrimitiveComponent.h"
-#include "Core/GameCore/ShaderImplementation/StaticMeshShader.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 
 #include <glm/mat4x4.hpp>
 
-using namespace Game::ShaderImpl;
 using namespace Graphics::Data;
 
 namespace Game

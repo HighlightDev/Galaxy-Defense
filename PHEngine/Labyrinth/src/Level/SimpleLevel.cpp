@@ -23,6 +23,7 @@
 
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
+#include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 
 #include <glm/vec3.hpp>
@@ -110,9 +111,8 @@ namespace Labyrinth
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
          SkeletalMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0, 0, 0), glm::vec3(270, 0, 0), glm::vec3(0.5f),
-            folderManager->GetShadersPath() + "skeletalMeshVS.glsl",
-            folderManager->GetShadersPath() + "skeletalMeshFS.glsl",
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
+
          std::shared_ptr<Actor> skeletActor = std::make_shared<Actor>("Buddy", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
          mScene->CreateAndAddComponent_GameThread<SkeletalMeshComponent>(mData, skeletActor);
 
@@ -144,8 +144,9 @@ namespace Labyrinth
             folderManager->GetCubemapTexturePath(), "Day/", "front.png");
          auto dTexPath = StringStreamWrapper::FlushString();
 
-         SkyboxComponentData mData(glm::vec3(140.0f), 5.0f, std::move(folderManager->GetShadersPath() + "tSkyboxVS.glsl"),
-            std::move(folderManager->GetShadersPath() + "tSkyboxFS.glsl"), std::move(dTexPath));
+         std::shared_ptr<ITexture> dayTex = TexturePool::GetInstance()->GetOrAllocateResource(dTexPath);
+
+         SkyboxComponentData mData(glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
          std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
          mScene->CreateAndAddComponent_GameThread<SkyboxComponent>(mData, skyboxActor);
          mScene->AllActors.push_back(skyboxActor);

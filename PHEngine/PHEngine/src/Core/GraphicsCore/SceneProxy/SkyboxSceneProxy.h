@@ -1,8 +1,10 @@
 #pragma once
 
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/ShaderImplementation/SkyboxShader.h"
 #include "Core/GameCore/Components/SkyboxComponent.h"
+#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
+#include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 
 using namespace Game::ShaderImpl;
 using namespace Game;
@@ -15,15 +17,18 @@ namespace Graphics
       class SkyboxSceneProxy :
          public PrimitiveSceneProxy
       {
-         std::shared_ptr<SkyboxShader> m_skyboxShader;
-         std::shared_ptr<ITexture> m_dayTexture;
-         std::shared_ptr<ITexture> m_nightTexture;
+         using ShaderType = CompositeShader<SkyboxVertexFactory, SimpleShader>;
+         using MaterialType = SkyboxDynamicMaterial;
 
       protected:
 
          using Base = PrimitiveSceneProxy;
 
       public:
+
+         std::shared_ptr<ShaderType> GetShader() const;
+
+         std::shared_ptr<MaterialType> GetMaterialInstance() const;
 
          SkyboxSceneProxy(const SkyboxComponent* component);
 

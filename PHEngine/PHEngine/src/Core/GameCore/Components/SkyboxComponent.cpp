@@ -8,9 +8,9 @@ namespace Game
 {
 	using namespace EngineUtility;
 
-	SkyboxComponent::SkyboxComponent(glm::vec3 scale, float rotateSpeed, const SkyboxRenderData& renderData)
+	SkyboxComponent::SkyboxComponent(const glm::vec3& scale, const SkyboxRenderData& renderData)
 		: PrimitiveComponent(glm::vec3(), glm::vec3(), scale)
-		, m_rotateSpeed(rotateSpeed)
+		, m_rotateSpeed(2.0f)
       , m_renderData(renderData)
 	{
 
@@ -25,7 +25,7 @@ namespace Game
 	{
 		Base::Tick(deltaTime);
 		
-		// SetRotationAxisY(m_rotation.y + deltaTime * m_rotateSpeed);
+		SetRotationAxisY(m_rotation.y + deltaTime * m_rotateSpeed);
 	}
 
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

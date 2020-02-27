@@ -17,6 +17,8 @@ namespace Graphics
    {
    protected:
 
+      using genericMaterialPropertyPair_t = std::pair<std::string, std::shared_ptr<MaterialProperty>>;
+
       std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
 
    public :
@@ -29,6 +31,10 @@ namespace Graphics
       IMaterial(const std::string& materialName, const std::string& relativeMaterialShaderPath);
 
       virtual ~IMaterial();
+
+      void PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue) {
+         mProperties.emplace(std::make_pair(propertyName, std::forward<std::shared_ptr<MaterialProperty>>(propertyValue)));
+      }
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const
       {

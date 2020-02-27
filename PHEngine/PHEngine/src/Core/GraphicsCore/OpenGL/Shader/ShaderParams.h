@@ -16,8 +16,8 @@ namespace Graphics
          std::string TesselationEvaluationShaderFile;
          std::string ComputeShaderFile;
 
-         explicit ShaderParams(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile, const std::string& geometryShaderFile,
-            const std::string& tesselationControlShaderFile, const std::string& tesselationEvaluationShaderFile, const std::string& computeShaderFile);
+         explicit ShaderParams(const std::string& shaderName, const std::string& vertexShaderFile, const std::string& fragmentShaderFile, const std::string& geometryShaderFile = "",
+            const std::string& tesselationControlShaderFile = "", const std::string& tesselationEvaluationShaderFile = "", const std::string& computeShaderFile = "");
 
          explicit ShaderParams();
 

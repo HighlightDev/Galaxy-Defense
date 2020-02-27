@@ -9,18 +9,11 @@ namespace Game
 {
 	struct SkyboxComponentData : public ComponentData
 	{
-		SkyboxComponentData(glm::vec3 scale, float rotateSpeed, std::string&& vsPath,
-			std::string&& fsPath, std::string&& commaSeparatedPathToSixTexturesDay, std::string&& commaSeparatedPathToSixTexturesNight = "")
-
+		SkyboxComponentData(const glm::vec3& scale, std::shared_ptr<IMaterial> materialInstance)
 			: ComponentData()
-			, m_rotateSpeed(rotateSpeed)
-			, m_scale(scale)
-			, m_vsShaderPath(std::move(vsPath))
-			, m_fsShaderPath(std::move(fsPath))
-			, m_commaSeparatedPathToSixTexturesDay(std::move(commaSeparatedPathToSixTexturesDay))
-			, m_commaSeparatedPathToSixTexturesNight(std::move(commaSeparatedPathToSixTexturesNight))
+         , m_scale(scale)
+         , m_materialInstance(materialInstance)
 		{
-
 		}
 
 		virtual uint64_t GetType() const override {
@@ -28,12 +21,9 @@ namespace Game
 			return SKYBOX_COMPONENT;
 		}
 
-		float m_rotateSpeed;
       glm::vec3 m_scale;
-		std::string m_commaSeparatedPathToSixTexturesDay;
-		std::string m_commaSeparatedPathToSixTexturesNight;
-		std::string m_vsShaderPath;
-		std::string m_fsShaderPath;
+
+      std::shared_ptr<IMaterial> m_materialInstance;
 	};
 
 }

@@ -10,7 +10,7 @@ namespace Game
 {
    namespace ShaderImpl
    {
-      class DeferredCollectShader :
+      class SimpleShader :
          public ShaderBase
       {
 
@@ -18,7 +18,7 @@ namespace Game
 
       public:
 
-         DeferredCollectShader(const ShaderParams& params)
+         SimpleShader(const ShaderParams& params)
             : ShaderBase(params)
          {
          }

@@ -2,12 +2,12 @@
 
 #include "materialCommon.incl"
 
-uniform sampler2D dayTexture;
-uniform sampler2D nightTexture;
+uniform samplerCube dayTexture;
+uniform samplerCube nightTexture;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return texture(dayTexture, materialIn.TextureCoordinates.xyz);
+	return texture(dayTexture, materialIn.TextureCoordinates.xyz).rgb;
 }
 
 float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)
@@ -32,5 +32,5 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 
 vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec3(0);
+	return vec3(0.0);
 }
