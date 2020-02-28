@@ -11,6 +11,8 @@ namespace Game
    {
       std::unordered_map<Keys, bool> keyboardMaskMap;
 
+      size_t mPressedKeysCount = 0;
+
    public:
 
       KeyboardBindings();

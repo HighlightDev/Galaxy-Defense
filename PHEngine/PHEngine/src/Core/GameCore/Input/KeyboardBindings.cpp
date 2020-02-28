@@ -16,32 +16,46 @@ namespace Game
 
    bool KeyboardBindings::HasPressedKeys() const
    {
-      auto pressedItem = std::find_if(keyboardMaskMap.begin(), keyboardMaskMap.end(), [](const std::pair<Keys, bool>& pair) { return pair.second; });
-      return pressedItem != keyboardMaskMap.end();
+      return mPressedKeysCount > 0;
    }
 
    void KeyboardBindings::AllocateKey(Keys key)
    {
       keyboardMaskMap.emplace(std::make_pair(key, true));
+      mPressedKeysCount++;
    }
 
    void  KeyboardBindings::KeyPress(Keys key)
    {
       auto it = keyboardMaskMap.find(key);
       if (it == keyboardMaskMap.end())
+      {
          AllocateKey(key);
+      }
+      else
+      {
+         if (!it->second)
+         {
+            it->second = true;
+            mPressedKeysCount++;
+         }
+      }
    }
 
    void KeyboardBindings::KeyRelease(Keys key)
    {
       auto it = keyboardMaskMap.find(key);
       if (it != keyboardMaskMap.end())
-         keyboardMaskMap.erase(it);
+      {
+         it->second = false;
+         mPressedKeysCount--;
+      }
    }
 
    bool KeyboardBindings::GetKeyState(Keys key) const
    {
-      return keyboardMaskMap.find(key) != keyboardMaskMap.end();
+      const auto& it = keyboardMaskMap.find(key);
+      return  it != keyboardMaskMap.end() && it->second;
    }
 
 }
