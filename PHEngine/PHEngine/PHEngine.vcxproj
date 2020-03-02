@@ -376,6 +376,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.h" />
     <ClInclude Include="src\Core\GameCore\ITickable.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />

@@ -1,6 +1,7 @@
 *.suo
 *.db
 PHEngine/.vs/*
+.vs/*
 PHEngine/bin/*
 *.exe
 *.pdb

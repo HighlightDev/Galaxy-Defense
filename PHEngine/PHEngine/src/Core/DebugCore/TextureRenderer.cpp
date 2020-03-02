@@ -26,10 +26,10 @@ namespace Debug
 #if DEBUG
    void TextureRenderer::PushDebugRenderTarget()
    {
-      size_t totalCount = TexturePool::GetInstance()->GetResourcesCount();
+      size_t totalCount = RenderTargetPool::GetInstance()->GetResourcesCount();
       DebugRenderTargetIndex = DebugRenderTargetIndex > (totalCount - 1) ? 0 : DebugRenderTargetIndex;
 
-      PushFrame(TexturePool::GetInstance()->GetTextureAt(DebugRenderTargetIndex));
+      PushFrame(RenderTargetPool::GetInstance()->GetRenderTargetAt(DebugRenderTargetIndex));
 
       ++DebugRenderTargetIndex;
    }

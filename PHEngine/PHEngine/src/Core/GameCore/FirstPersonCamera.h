@@ -14,7 +14,7 @@ namespace Game
 
 	public:
 
-		FirstPersonCamera(glm::vec3 forwardVec, glm::vec3 camPos);
+		FirstPersonCamera(const std::string& cameraName, glm::vec3 forwardVec, glm::vec3 camPos);
 
 		~FirstPersonCamera();
 

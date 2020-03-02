@@ -1,20 +1,18 @@
 #include "ThirdPersonCamera.h"
-#include <Core/UtilityCore/EngineMath.h>
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 
 #include <algorithm>
 
 namespace Game
 {
 
-   ThirdPersonCamera::ThirdPersonCamera()
-      : ICamera()
+   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget)
+      : ICamera(cameraName)
+      , PlayerMovedEvent()
    {
-      m_cameraType = ICamera::CameraType::THIRD_PERSON;
-   }
+      PlayerMovedEvent::GetInstance()->AddListener(this);
 
-   ThirdPersonCamera::ThirdPersonCamera(glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget)
-      : ICamera()
-   {
       m_localSpaceForwardVector = m_eyeSpaceForwardVector = glm::normalize(localSpaceForwardVector);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
@@ -23,6 +21,19 @@ namespace Game
 
    ThirdPersonCamera::~ThirdPersonCamera()
    {
+      PlayerMovedEvent::GetInstance()->RemoveListener(this);
+   }
+
+   void ThirdPersonCamera::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
+   {
+      m_bThirdPersonTargetTransformationDirty = true;
+      m_lerpTimeElapsed = 0.0f;
+   }
+
+   void ThirdPersonCamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
+   {
+      ICamera::UpdateRotationMatrix(deltaX, deltaY);
+      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(this);
    }
 
    void ThirdPersonCamera::Tick(const float DeltaTime)
@@ -112,11 +123,4 @@ namespace Game
       m_thirdPersonTarget = thirdPersonTarget;
       m_actualTargetVector = thirdPersonTarget->GetRootComponent()->GetTranslation();
    }
-
-   void ThirdPersonCamera::SetThirdPersonTargetTransformationDirty()
-   {
-      m_lerpTimeElapsed = 0.0f;
-      m_bThirdPersonTargetTransformationDirty = true;
-   }
-
 }

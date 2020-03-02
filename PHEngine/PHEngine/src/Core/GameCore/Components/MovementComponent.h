@@ -1,16 +1,26 @@
 #pragma once
 #include "Component.h"
+#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 
 #include <glm/vec3.hpp>
+#include <glm/mat3x3.hpp>
+
+using namespace Event;
 
 namespace Game
 {
 
-   class MovementComponent :
-      public Component
+   class MovementComponent
+      : public Component
+      , public CameraTransformChangedEvent
    {
 
-      class ICamera* const m_mainCamera;
+      float mCameraYaw;
+      float mCameraPitch;
+
+      std::string mCameraName;
+
+      bool bIsCameraRotationDirty = false;
 
    public:
 
@@ -18,7 +28,7 @@ namespace Game
 
       float Speed;
 
-      MovementComponent(class  ICamera* const mainCamera, glm::vec3 launchVelocity);
+      MovementComponent(const std::string& cameraName, glm::vec3 launchVelocity);
 
       virtual ~MovementComponent();
 
@@ -26,9 +36,21 @@ namespace Game
 
       virtual void Tick(const float deltaTime) override;
 
-      class  ICamera* const GetCamera() const;
+      virtual void ProcessEvent(const CameraTransformChangedEvent::EventData_t& data) override;
 
       glm::vec3 GetMoveOffset() const;
+
+      glm::mat3 GetCameraYawRotationMatrix() const;
+
+      glm::vec3 GetCameraPitchYawRoll() const;
+
+      inline bool GetIsCameraRotationDirty() const {
+         return bIsCameraRotationDirty;
+      }
+
+      inline void SetIsCameraRotationDirty(const bool bCamRotDirty) {
+         bIsCameraRotationDirty = bCamRotDirty;
+      }
    };
 
 }

@@ -10,6 +10,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "STB", "STB\STB.vcxproj", "{9E1FA398-200E-4B01-B0F4-0761862487BB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Labyrinth", "Labyrinth\Labyrinth.vcxproj", "{4FB27ACC-95BF-4C09-8D83-EE7FF3CD3E8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5403161B-E11D-4919-A80F-1D76B616D76B} = {5403161B-E11D-4919-A80F-1D76B616D76B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,7 +33,6 @@ Global
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Debug|x64.ActiveCfg = Debug|x64
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Debug|x64.Build.0 = Debug|x64
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Debug|x86.ActiveCfg = Debug|Win32
-		{E24B7865-B515-4E9A-9E75-25629035834F}.Debug|x86.Build.0 = Debug|Win32
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Release|x64.ActiveCfg = Release|x64
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Release|x64.Build.0 = Release|x64
 		{E24B7865-B515-4E9A-9E75-25629035834F}.Release|x86.ActiveCfg = Release|Win32

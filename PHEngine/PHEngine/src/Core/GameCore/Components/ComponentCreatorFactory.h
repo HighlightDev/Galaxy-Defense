@@ -187,7 +187,7 @@ namespace Game
          if (MOVEMENT_COMPONENT == data.GetType())
          {
             MovementComponentData& mData = static_cast<MovementComponentData&>(data);
-            resultComponent = std::make_shared<MovementComponent>(mData.m_camera, mData.m_launchVelocity);
+            resultComponent = std::make_shared<MovementComponent>(mData.mCameraName, mData.m_launchVelocity);
          }
 
          return resultComponent;

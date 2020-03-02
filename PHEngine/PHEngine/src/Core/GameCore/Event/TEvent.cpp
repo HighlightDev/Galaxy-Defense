@@ -1,5 +1,7 @@
 #include "TEvent.h"
 
+#include "Core/GameCore/ICamera.h"
+
 #include <utility>
 
 namespace Event
@@ -7,6 +9,7 @@ namespace Event
 
    template class TEvent<glm::vec3>;
    template class TEvent<uint64_t>;
+   template class TEvent<Game::ICamera*>;
 
    template <typename... DataTypes>
    TEvent<DataTypes...>* TEvent<DataTypes...>::m_instance = nullptr;

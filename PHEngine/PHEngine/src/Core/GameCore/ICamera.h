@@ -5,6 +5,7 @@
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 #include "GlobalProperties.h"
 #include "Core/GameCore/GameObject.h"
@@ -30,6 +31,8 @@ namespace Game
 
 		float m_rotateSensetivity;
 
+      std::string mCameraName;
+
 	protected:
 
 		glm::vec3 m_localSpaceRightVector;
@@ -38,17 +41,20 @@ namespace Game
 		glm::vec3 m_eyeSpaceRightVector;
 		glm::vec3 m_eyeSpaceForwardVector;
 		glm::mat3 m_rotationMatrix;
+
+      float mYaw;
+      float mPitch;
 		
 		bool bTransformationDirty = false;
       CameraType m_cameraType;
 
-		void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
+		virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
 
 	public:
 
 		float CameraCollisionSphereRadius = 8.0f;
 
-		ICamera();
+		ICamera(const std::string& cameraName);
 
 		virtual ~ICamera();
 
@@ -59,6 +65,10 @@ namespace Game
 		virtual glm::vec3 GetTargetVector() const = 0;
 
 		virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
+
+      inline std::string GetCameraName() const {
+         return mCameraName;
+      }
 
       inline CameraType GetCameraType() const {
 
@@ -119,6 +129,14 @@ namespace Game
 		{
 			return m_rotationMatrix;
 		}
+
+      inline float GetRotationYaw() const {
+         return mYaw;
+      }
+
+      inline float GetRotationPitch() const {
+         return mPitch;
+      }
 
 		void Rotate();
 

@@ -1749,6 +1749,9 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SimpleShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

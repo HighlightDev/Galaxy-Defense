@@ -13,7 +13,7 @@ namespace Game
    public:
 
       using wrapped_bool = VariableWrapper<bool>;
-
+      
    protected:
 
 		using Base = Component;
@@ -28,8 +28,12 @@ namespace Game
 
       class Scene* m_scene;
 
-		// bound
-	public:
+      // ptr because this rotation is 
+      glm::vec3 m_additionalRotation;
+
+   public:
+
+      bool bIsRootComponent = false;
 
 		SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 
@@ -66,6 +70,12 @@ namespace Game
 			m_scale = scale;
 			bTransformationDirty = true;
 		}
+
+      void SetAdditionalRotation(const glm::vec3& rotation)
+      {
+         m_additionalRotation = rotation;
+         bTransformationDirty = true;
+      }
 
 		void SetRotationAxisX(float new_x)
 		{

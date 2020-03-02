@@ -12,6 +12,7 @@ namespace Game
       , m_movementComponent(nullptr)
 	{
       m_parent = nullptr;
+      m_rootComponent->bIsRootComponent = true;
 	}
 
 	Actor::~Actor()

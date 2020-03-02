@@ -22,31 +22,29 @@ namespace Game
    void PlayerController::Tick(float deltaTime)
    {
       if (!m_playerActor)
-         return; 
+         return;
+
+      std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
+      std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
+
+      if (movementComponent->GetIsCameraRotationDirty())
+      {
+         rootComponent->SetAdditionalRotation(movementComponent->GetCameraPitchYawRoll());
+         movementComponent->SetIsCameraRotationDirty(false);
+      }
 
       if (m_playerActor->GetInputComponent())
       {
          auto& bindings = m_playerActor->GetInputComponent()->GetKeyboardBindings();
-         std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-         std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
-
-         if (bindings.GetKeyState(Keys::W))
+         if (bindings.HasPressedKeys())
          {
-            auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
-            rootComponent->SetTranslation(newPosition);
-
-            auto camera = movementComponent->GetCamera();
-            if (ICamera::CameraType::THIRD_PERSON == camera->GetCameraType())
+            if (bindings.GetKeyState(Keys::W))
             {
-               // TEST FAST VERSION
-               auto myCamera = static_cast<ThirdPersonCamera*>(camera);
-               if (myCamera->GetThirdPersonTarget() == m_playerActor)
-               {
-                  myCamera->SetThirdPersonTargetTransformationDirty();
-               }
-            }
+               auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
+               rootComponent->SetTranslation(newPosition);
 
-            Event::PlayerMovedEvent::GetInstance()->SendEvent(newPosition);
+               Event::PlayerMovedEvent::GetInstance()->SendEvent(newPosition);
+            }
          }
          else if (bindings.GetKeyState(Keys::A))
          {

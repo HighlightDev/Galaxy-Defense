@@ -60,14 +60,23 @@ namespace Game
       glm::mat4 rotationMatrixX = glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
       glm::mat4 rotationMatrixY = glm::rotate(identityMatrix, yawRad, AXIS_UP);
       glm::mat4 rotationMatrixZ = glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
+
 	   glm::mat4 translationMatrix = glm::translate(identityMatrix, m_translation);
+
       worldMatrix *= parentRelativeMatrix;
+
       worldMatrix *= scaleMatrix;
+      worldMatrix *= translationMatrix;
+
+      if (bIsRootComponent)
+      {
+         glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotation.y), AXIS_UP);
+         worldMatrix *= cameraYawRotation;
+      }
+
       worldMatrix *= rotationMatrixX;
       worldMatrix *= rotationMatrixY;
       worldMatrix *= rotationMatrixZ;
-      worldMatrix *= translationMatrix;
-     
 
 		m_relativeMatrix = std::move(worldMatrix);
 

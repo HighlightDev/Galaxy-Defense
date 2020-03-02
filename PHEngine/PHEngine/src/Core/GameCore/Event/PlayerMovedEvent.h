@@ -9,7 +9,7 @@ namespace Event
       : public TEvent<glm::vec3>
    {
    public:
-      using Event = TEvent<glm::vec3>::Event_t;
+      using Event_t = TEvent<glm::vec3>::Event_t;
    };
 
 }

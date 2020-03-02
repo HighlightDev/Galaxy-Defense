@@ -6,14 +6,14 @@ using namespace EngineUtility;
 namespace Game
 {
 
-	ICamera::ICamera()
+	ICamera::ICamera(const std::string& cameraName)
 		: m_rotateSensetivity(0.08f)
+      , mCameraName(cameraName)
 		, m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
 		, m_localSpaceUpVector(std::move(glm::vec3(0, 1, 0)))
 		, m_localSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
 		, m_eyeSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
 		, m_eyeSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
-		, m_rotationMatrix(std::move(glm::mat3(1)))
       , m_cameraType(CameraType::UNINITIALIZED)
 	{
 		
@@ -37,25 +37,21 @@ namespace Game
 
 	void ICamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
 	{
-		m_eyeSpaceForwardVector = m_rotationMatrix * m_localSpaceForwardVector;
+      mYaw += (deltaX * m_rotateSensetivity);
+      mPitch -= (deltaY * m_rotateSensetivity);
 
-		m_eyeSpaceRightVector = glm::normalize(glm::cross(m_eyeSpaceForwardVector, m_localSpaceUpVector));
+      glm::mat4 rotatePitch = glm::mat4(1);
+      rotatePitch = glm::rotate(rotatePitch, DEG_TO_RAD(mPitch), m_localSpaceRightVector);
 
-		float anglePitch = deltaY * m_rotateSensetivity;
-		float angleYaw = deltaX * m_rotateSensetivity;
+      glm::mat4 rotateYaw = glm::mat4(1);
+      rotateYaw = glm::rotate(rotateYaw, DEG_TO_RAD(mYaw), m_localSpaceUpVector);
 
-		glm::mat4 rotatePitch = glm::mat4(1);
-		rotatePitch = glm::rotate(rotatePitch, DEG_TO_RAD(anglePitch), m_eyeSpaceRightVector);
+      glm::mat4 totalRotateMatrix = glm::mat4(1);
+      totalRotateMatrix *= rotateYaw;
+      totalRotateMatrix *= rotatePitch;
 
-		glm::mat4 rotateYaw = glm::mat4(1);
-		rotateYaw = glm::rotate(rotateYaw, DEG_TO_RAD(angleYaw), m_localSpaceUpVector);
-
-		glm::mat4 tempRotationMatrix = glm::mat4(1);
-		tempRotationMatrix *= rotateYaw;
-		tempRotationMatrix *= rotatePitch;
-
-		glm::mat3 mat3Rotation = tempRotationMatrix;
-		m_rotationMatrix = mat3Rotation * m_rotationMatrix;
+      m_eyeSpaceForwardVector = totalRotateMatrix * glm::vec4(m_localSpaceForwardVector, 0.0);
+      m_eyeSpaceRightVector = totalRotateMatrix * glm::vec4(m_localSpaceRightVector, 0.0);
 
 		bTransformationDirty = true;
 	}

@@ -118,7 +118,7 @@ namespace Labyrinth
 
          InputComponentData inputComponentData;
          mScene->CreateAndAddComponent_GameThread<InputComponent>(inputComponentData, skeletActor);
-         MovementComponentData movementComponentData(glm::vec3(0), GetCamera());
+         MovementComponentData movementComponentData(glm::vec3(0), GetCamera()->GetCameraName());
          mScene->CreateAndAddComponent_GameThread<MovementComponent>(movementComponentData, skeletActor);
 
          mScene->m_playerController.SetPlayerActor(skeletActor);

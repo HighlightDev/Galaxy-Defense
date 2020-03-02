@@ -1,11 +1,15 @@
 #pragma once
 #include "ICamera.h"
 #include "Actor.h"
+#include "Core/GameCore/Event/PlayerMovedEvent.h"
+
+using namespace Event;
 
 namespace Game
 {
-   class ThirdPersonCamera :
-      public ICamera
+   class ThirdPersonCamera
+      : public ICamera
+      , public PlayerMovedEvent
    {
 
       float m_distanceFromTargetToCamera;
@@ -24,13 +28,15 @@ namespace Game
 
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera();
-
-      ThirdPersonCamera(glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget);
+      ThirdPersonCamera(const std::string& cameraName, glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget);
 
       virtual ~ThirdPersonCamera();
 
       virtual void Tick(const float DeltaTime) override;
+
+      virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data);
+
+      virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 
       void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
 
@@ -53,8 +59,6 @@ namespace Game
       std::shared_ptr<Actor> GetThirdPersonTarget() const;
 
       void SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget);
-
-      void SetThirdPersonTargetTransformationDirty();
    };
 }
 

@@ -8,7 +8,7 @@ namespace Game
    Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
       : m_interThreadMgr(interThreadMgr)
       //, m_camera(new FirstPersonCamera(glm::vec3(0, 0, 1), glm::vec3(0, 0, -10)))
-      , m_camera(new ThirdPersonCamera(glm::vec3(0.5f, -0.8f, 0), 20))
+      , m_camera(new ThirdPersonCamera("MainCamera", glm::vec3(0.0f, -0.8f, 0.5f), 20))
    {
       
    }

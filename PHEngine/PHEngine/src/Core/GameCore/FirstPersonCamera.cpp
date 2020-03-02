@@ -3,8 +3,8 @@
 namespace Game
 {
 
-   FirstPersonCamera::FirstPersonCamera(glm::vec3 forwardVec, glm::vec3 camPos)
-      : ICamera()
+   FirstPersonCamera::FirstPersonCamera(const std::string& cameraName, glm::vec3 forwardVec, glm::vec3 camPos)
+      : ICamera(cameraName)
       , m_firstPersonCameraPosition(camPos)
       , m_cameraMoveSpeed(0.1f)
    {
