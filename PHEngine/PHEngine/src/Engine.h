@@ -47,6 +47,8 @@ public:
 
    void PostConstructorInitialize();
 
+   void ProcessEvents();
+
    void GameThreadPulse();
 
    void RenderThreadPulse();

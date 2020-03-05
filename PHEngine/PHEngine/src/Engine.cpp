@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/GameCore/Event/EventDispatcher.h"
 
 Engine::Engine()
    : m_interThreadMgr()
@@ -48,6 +49,10 @@ void Engine::GameThreadPulse()
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
 
+         // Events
+         ProcessEvents();
+
+         // Work Jobs
          SPIN_GAME_THREAD_JOBS(m_interThreadMgr);
          if (mGameThreadSumDeltaTimeSec >= InvLimitFPS) // 1 / 60 of a second
          {
@@ -58,6 +63,11 @@ void Engine::GameThreadPulse()
          }
       }
    }
+}
+
+void Engine::ProcessEvents()
+{
+   Event::EngineEventDispatcher::ProcessEvents();
 }
 
 void Engine::RenderThreadPulse()

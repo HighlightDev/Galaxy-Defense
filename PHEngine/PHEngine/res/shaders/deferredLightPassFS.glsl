@@ -45,10 +45,44 @@ in VS_OUT
 	vec2 tex_coords;
 } fs_in;
 
+
+vec2 GetShadowTexCoords(in vec2 texCoords, in vec4 atlasOffset)
+{
+	vec2 texCoordsInAtlas;
+	texCoordsInAtlas = (texCoords * atlasOffset.zw) + atlasOffset.xy;
+	return texCoordsInAtlas;
+}
+
+
+float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord)
+{
+	float resultLit = 0.0;
+    float actualDepth = shadowTexCoord.z - SHADOWMAP_BIAS_DIR_LIGHT;
+
+    float SumDepth = 0.0;
+    vec2 texelSize = 1.0 / shadowmapSize;
+
+    for (int x = -PCF_SAMPLES_DIR_LIGHT; x <= PCF_SAMPLES_DIR_LIGHT; x++)
+    {
+       for (int y = -PCF_SAMPLES_DIR_LIGHT; y <= PCF_SAMPLES_DIR_LIGHT; y++)
+       {
+			vec2 offset = vec2(float(x) * texelSize.x, float(y) * texelSize.y);
+
+            float pcfDepth = texture(shadowmap, shadowTexCoord.xy + offset).r;
+            resultLit += actualDepth > pcfDepth ? 1.0 : 0.0;
+       }
+    }
+
+    resultLit *= INV_COUNT_PCF_DIR_LIGHT_SAMPLES;
+    resultLit = 1 - resultLit;
+	return resultLit;
+}
+
+
 #ifdef SHADING_MODEL_PBR
 
 	const float Metallic = 0.5;
-	const float Roughness = 0.8;
+	const float Roughness = 0.2;
 	const float Epsilon = 0.00001;
 	uniform float ao;
 
@@ -175,22 +209,34 @@ in VS_OUT
 				// Cook-Torrance specular microfacet BRDF.
 				vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
 
-				// Total contribution for this light.
-				pointLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
-			}
-			}
+				// Calculating shadow
+				float litFactor = 1.0f;
+				if (DirLightShadowMapCount > directLightIndex)
+				{
+					// Common
+					vec4 atlasOffset = DirLightShadowAtlasOffset[directLightIndex];
+					mat4 shadowMatrix = DirLightShadowMatrices[directLightIndex];
+					//
 
-		return pointLighting;
+					vec4 shadowProjectedPosition = (shadowMatrix * vec4(worldPos, 1.0));
+					vec3 shadowFragCoords = shadowProjectedPosition.xyz / shadowProjectedPosition.w;
+					vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords.xy, atlasOffset);
+					vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
+
+				 	vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[directLightIndex], 0);
+				    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[directLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth);
+				}
+
+
+				// Total contribution for this light.
+				directLighting += (diffuseBRDF + specularBRDF) * litFactor * Lradiance * cosLi;
+			}
+		}
+
+		return pointLighting + directLighting;
 	}
 
 #endif
-
-vec2 GetShadowTexCoords(in vec2 texCoords, in vec4 atlasOffset)
-{
-	vec2 texCoordsInAtlas;
-	texCoordsInAtlas = (texCoords * atlasOffset.zw) + atlasOffset.xy;
-	return texCoordsInAtlas;
-}
 
 float CalcLitFactorCubemap(in samplerCube shadowmap, in vec3 worldPos, in vec3 pointLightWorldPos, in float shadowmapProjectionfarPlane)
 {
@@ -218,30 +264,6 @@ float CalcLitFactorCubemap(in samplerCube shadowmap, in vec3 worldPos, in vec3 p
 
 	shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
 	resultLit = 1 - shadow;
-	return resultLit;
-}
-
-float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord)
-{
-	float resultLit = 0.0;
-    float actualDepth = shadowTexCoord.z - SHADOWMAP_BIAS_DIR_LIGHT;
-
-    float SumDepth = 0.0;
-    vec2 texelSize = 1.0 / shadowmapSize;
-
-    for (int x = -PCF_SAMPLES_DIR_LIGHT; x <= PCF_SAMPLES_DIR_LIGHT; x++)
-    {
-       for (int y = -PCF_SAMPLES_DIR_LIGHT; y <= PCF_SAMPLES_DIR_LIGHT; y++)
-       {
-			vec2 offset = vec2(float(x) * texelSize.x, float(y) * texelSize.y);
-
-            float pcfDepth = texture(shadowmap, shadowTexCoord.xy + offset).r;
-            resultLit += actualDepth > pcfDepth ? 1.0 : 0.0;
-       }
-    }
-
-    resultLit *= INV_COUNT_PCF_DIR_LIGHT_SAMPLES;
-    resultLit = 1 - resultLit;
 	return resultLit;
 }
 

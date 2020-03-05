@@ -50,6 +50,8 @@ namespace Game
 
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
    {
+      //std::cout << "UPDATE DirectionalLightComponent: Set shadowInfo->Offset" << std::endl;
+
       constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 
       m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
@@ -67,6 +69,8 @@ namespace Game
    void DirectionalLightComponent::ProcessEvent(const SceneComponentTransformChangedEvent::EventData_t& data)
    {
       constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+     // std::cout << "UPDATE DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap" << std::endl;
 
       m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
       {

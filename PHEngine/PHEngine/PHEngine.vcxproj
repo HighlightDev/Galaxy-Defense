@@ -376,7 +376,11 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
+    <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
+    <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
     <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\Policy\Policies.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.h" />
     <ClInclude Include="src\Core\GameCore\ITickable.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />
@@ -791,6 +795,9 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Event\EventDispatcher.cpp" />
+    <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
+    <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />

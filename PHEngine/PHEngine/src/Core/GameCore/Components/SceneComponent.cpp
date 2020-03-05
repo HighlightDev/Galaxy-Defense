@@ -1,6 +1,5 @@
 #include "SceneComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/Event/SceneComponentTransformChangedEvent.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -11,7 +10,7 @@ namespace Game
 
    SceneComponent::SceneComponent()
       : Component()
-      , bTransformationDirty(true, std::function<void(void)>([=](){ Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType()); }))
+      , bTransformationDirty(true)
       , m_translation(0)
       , m_rotation(0)
       , m_scale(1)
@@ -23,7 +22,7 @@ namespace Game
 
 	SceneComponent::SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
 		: Component()
-      , bTransformationDirty(true, std::function<void(void)>([=]() { Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType()); }))
+      , bTransformationDirty(true)
 		, m_translation(translation)
 		, m_rotation(rotation)
 		, m_scale(scale)
@@ -51,36 +50,41 @@ namespace Game
 	{
 		// Update current relative matrix
 
-		const float pitchRad = DEG_TO_RAD(m_rotation.x);
-		const float yawRad = DEG_TO_RAD(m_rotation.y);
-		const float rollRad = DEG_TO_RAD(m_rotation.z);
-
-		glm::mat4 worldMatrix(1), identityMatrix(1);
-      glm::mat4 scaleMatrix = glm::scale(identityMatrix, m_scale);
-      glm::mat4 rotationMatrixX = glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
-      glm::mat4 rotationMatrixY = glm::rotate(identityMatrix, yawRad, AXIS_UP);
-      glm::mat4 rotationMatrixZ = glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
+      glm::mat4 identityMatrix(1);
+      m_relativeMatrix = identityMatrix;
 
 	   glm::mat4 translationMatrix = glm::translate(identityMatrix, m_translation);
 
-      worldMatrix *= parentRelativeMatrix;
-
-      worldMatrix *= scaleMatrix;
-      worldMatrix *= translationMatrix;
+      m_relativeMatrix *= parentRelativeMatrix;
+      m_relativeMatrix *= glm::scale(identityMatrix, m_scale);;
+      m_relativeMatrix *= translationMatrix;
 
       if (bIsRootComponent)
       {
          glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotation.y), AXIS_UP);
-         worldMatrix *= cameraYawRotation;
+         m_relativeMatrix *= cameraYawRotation;
       }
 
-      worldMatrix *= rotationMatrixX;
-      worldMatrix *= rotationMatrixY;
-      worldMatrix *= rotationMatrixZ;
+      if (!EngineUtility::CMP::Process(m_rotation.x, 0.0f))
+      {
+         const float pitchRad = DEG_TO_RAD(m_rotation.x);
+         m_relativeMatrix *= glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
+      }
 
-		m_relativeMatrix = std::move(worldMatrix);
+      if (!EngineUtility::CMP::Process(m_rotation.y, 0.0f))
+      {
+         const float yawRad = DEG_TO_RAD(m_rotation.y);
+         m_relativeMatrix *= glm::rotate(identityMatrix, yawRad, AXIS_UP);
+      }
+
+      if (!EngineUtility::CMP::Process(m_rotation.z, 0.0f))
+      {
+         const float rollRad = DEG_TO_RAD(m_rotation.z);
+         m_relativeMatrix *= glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
+      }
 
 		bTransformationDirty = false;
+      Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 	}
 
 }

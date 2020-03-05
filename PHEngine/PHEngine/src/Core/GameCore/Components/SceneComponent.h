@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Core/CommonApi/VariableWrapper.h"
+#include "Core/GameCore/Event/SceneComponentTransformChangedEvent.h"
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
@@ -18,7 +19,7 @@ namespace Game
 
 		using Base = Component;
 
-      wrapped_bool bTransformationDirty;
+      bool bTransformationDirty;
 
 		glm::vec3 m_translation;
 		glm::vec3 m_rotation;
@@ -57,24 +58,28 @@ namespace Game
 		{
 			m_translation = translation;
 			bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 		}
 
 		void SetRotation(glm::vec3 rotation)
 		{
 			m_rotation = rotation;
 			bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 		}
 
 		void SetScale(glm::vec3 scale)
 		{
 			m_scale = scale;
 			bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 		}
 
       void SetAdditionalRotation(const glm::vec3& rotation)
       {
          m_additionalRotation = rotation;
          bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
       }
 
 		void SetRotationAxisX(float new_x)
@@ -108,10 +113,12 @@ namespace Game
 			else
 				m_rotation.z = new_z;
 			bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 		}
 
 		inline bool GetIsTransformationDirty() const {
-			return bTransformationDirty.GetValue();
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+			return bTransformationDirty;
 		}
 
 		inline glm::vec3 GetTranslation() const

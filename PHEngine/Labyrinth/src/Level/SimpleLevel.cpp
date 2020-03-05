@@ -51,10 +51,19 @@ namespace Labyrinth
          auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
          ProjectedShadowInfo* dirLightInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest);
 
+         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
+         ProjectedShadowInfo* dirLightInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
+
          DirectionalLightComponentData mData(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(0.68f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), nullptr);
-         std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main light", std::make_shared<SceneComponent>());
+            glm::vec3(0.68f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), dirLightInfo);
+
+         DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
+            glm::vec3(0.68f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), dirLightInfo1);
+
+         std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
+
          mScene->CreateAndAddComponent_GameThread<DirectionalLightComponent>(mData, dirLightActor);
+         mScene->CreateAndAddComponent_GameThread<DirectionalLightComponent>(mData1, dirLightActor);
          mScene->AllActors.push_back(dirLightActor);
       }
 
@@ -94,7 +103,7 @@ namespace Labyrinth
 
          for (size_t i = 0; i < 1; ++i)
          {
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0), glm::vec3(), glm::vec3(0.5f),
+            StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, specualrMapTex, nullptr, nullptr));
 
             std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));

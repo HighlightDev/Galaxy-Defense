@@ -1,5 +1,6 @@
 #include "ICamera.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include <iostream>
 
 using namespace EngineUtility;
 
@@ -37,6 +38,8 @@ namespace Game
 
 	void ICamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
 	{
+      
+
       mYaw += (deltaX * m_rotateSensetivity);
       mPitch -= (deltaY * m_rotateSensetivity);
 

@@ -18,9 +18,9 @@ namespace Game
 
    public:
 
-      VariableWrapper(wrapped_type initValue, callback_type callback)
+      VariableWrapper(wrapped_type initValue, callback_type&& callback)
          : mValue(initValue)
-         , mCallback(callback)
+         , mCallback(std::move(callback))
       {
       }
 
