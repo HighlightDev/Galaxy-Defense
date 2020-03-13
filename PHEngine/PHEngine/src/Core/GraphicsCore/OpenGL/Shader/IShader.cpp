@@ -560,6 +560,7 @@ namespace Graphics
 
       void IShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
+         m_shaderProgramID = shaderProgramId;
 #if DEBUG
          std::cout << GetCompileLogInfo();
          std::cout << GetLinkLogInfo();

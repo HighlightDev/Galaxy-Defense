@@ -49,9 +49,6 @@ namespace Game
       // restrain angle of pitch
       mPitch = std::clamp(mPitch, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y);
 
-      std::cout.clear();
-      std::cout << "Pitch : " << mPitch << std::endl;
-
       glm::mat4 rotatePitch = glm::mat4(1);
       rotatePitch = glm::rotate(rotatePitch, DEG_TO_RAD(mPitch), m_localSpaceRightVector);
 
