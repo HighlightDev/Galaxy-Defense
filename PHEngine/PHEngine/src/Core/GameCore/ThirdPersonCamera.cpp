@@ -7,13 +7,11 @@
 namespace Game
 {
 
-   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget)
-      : ICamera(cameraName)
+   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
+      : ICamera(cameraName, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
-
-      m_localSpaceForwardVector = m_eyeSpaceForwardVector = glm::normalize(localSpaceForwardVector);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
       m_cameraType = ICamera::CameraType::THIRD_PERSON;
@@ -122,5 +120,7 @@ namespace Game
    {
       m_thirdPersonTarget = thirdPersonTarget;
       m_actualTargetVector = thirdPersonTarget->GetRootComponent()->GetTranslation();
+
+      ICamera::UpdateRotationMatrix(0, 0);
    }
 }

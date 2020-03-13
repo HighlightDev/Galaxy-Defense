@@ -28,7 +28,7 @@ namespace Game
 
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera(const std::string& cameraName, glm::vec3 localSpaceForwardVector, float camDistanceToThirdPersonTarget);
+      ThirdPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
 
       virtual ~ThirdPersonCamera();
 

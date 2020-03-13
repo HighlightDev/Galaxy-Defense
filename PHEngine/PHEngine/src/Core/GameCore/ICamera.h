@@ -42,6 +42,8 @@ namespace Game
 		glm::vec3 m_eyeSpaceForwardVector;
 		glm::mat3 m_rotationMatrix;
 
+      const glm::vec2 mPitchClampValue_min_max;
+
       float mYaw;
       float mPitch;
 		
@@ -54,7 +56,7 @@ namespace Game
 
 		float CameraCollisionSphereRadius = 8.0f;
 
-		ICamera(const std::string& cameraName);
+		ICamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg);
 
 		virtual ~ICamera();
 

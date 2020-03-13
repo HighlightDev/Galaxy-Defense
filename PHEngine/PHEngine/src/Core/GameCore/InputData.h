@@ -97,18 +97,18 @@ namespace Game
 
 	private:
 
-		int32_t m_mouseX;
-		int32_t m_mouseY;
+		int32_t m_mouseX = 0;
+		int32_t m_mouseY = 0;
 
-		int32_t m_windowWidth;
-		int32_t m_windowHeight;
-		int32_t m_screenWidth;
-		int32_t m_screenHeight;
-		int32_t m_windowPosX;
-		int32_t m_windowPosY;
+		int32_t m_windowWidth = 0;
+		int32_t m_windowHeight = 0;
+		int32_t m_screenWidth = 0;
+		int32_t m_screenHeight = 0;
+		int32_t m_windowPosX = 0;
+		int32_t m_windowPosY = 0;
 
-		int32_t m_prevMouseX;
-		int32_t m_prevMouseY;
+		int32_t m_prevMouseX = 0;
+		int32_t m_prevMouseY = 0;
 	};
 
 }

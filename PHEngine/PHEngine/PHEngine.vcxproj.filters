@@ -2123,8 +2123,5 @@
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Event\EventDispatcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
