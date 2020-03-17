@@ -5,8 +5,8 @@ namespace Graphics
 	namespace Mesh
 	{
 
-		AnimatedSkin::AnimatedSkin(std::unique_ptr<VertexArrayObject> vao, std::shared_ptr<Bone> rootBone)
-			: Skin(std::move(vao))
+		AnimatedSkin::AnimatedSkin(const VertexArrayObject& vao, std::shared_ptr<Bone> rootBone)
+			: Skin(vao)
 			, m_rootBone(rootBone)
 		{
 		}

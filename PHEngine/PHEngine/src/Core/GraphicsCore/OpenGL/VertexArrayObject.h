@@ -17,14 +17,15 @@ namespace Graphics
 		private:
 
 			uint32_t m_descriptor;
-			std::vector<std::unique_ptr<VertexBufferObjectBase>> m_vbos;
-			std::unique_ptr<IndexBufferObject> m_ibo;
+			std::vector<VertexBufferObjectBase*> m_vbos;
+			IndexBufferObject* m_ibo;
 
 		public:
 
 			VertexArrayObject();
 			~VertexArrayObject();
 
+         VertexBufferObjectBase* GetVboByIndex(const size_t index) const;
 
 			template <typename Arg, typename ...Args>
 			void AddVBO(Arg&& p_vbo, Args... p_vbos)
@@ -47,13 +48,13 @@ namespace Graphics
 
 			bool HasIBO() const;
 
-			std::vector<std::unique_ptr<VertexBufferObjectBase>>& GetVertexBufferObjects();
+			const std::vector<VertexBufferObjectBase*>& GetVertexBufferObjects() const;
 
 			void GenVAO();
 
 			void RenderVAO(int32_t primitiveMode = GL_TRIANGLES);
 
-			void AddIndexBuffer(std::unique_ptr<IndexBufferObject>&& ibo);
+			void AddIndexBuffer(IndexBufferObject* ibo);
 
 			void BindBuffersToVao();
 

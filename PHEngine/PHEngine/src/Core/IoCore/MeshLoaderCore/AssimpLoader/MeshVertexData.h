@@ -20,7 +20,7 @@ namespace Io
 			{
 			private:
 
-				const aiScene* m_scene;
+				const class aiScene* m_scene;
 				aiMesh** m_meshes;
 
 				void GetMeshVertexData();
@@ -45,7 +45,7 @@ namespace Io
 
 			public:
 
-				MeshVertexData(const aiScene* scene);
+				MeshVertexData(const class aiScene* scene);
 				~MeshVertexData();
 
             bool bHasIndices = false;
@@ -54,27 +54,27 @@ namespace Io
             bool bHasTangentVertices = false;
             bool bHasAnimation = false;
 
-				std::shared_ptr<std::vector<uint32_t>> Indices;
+				std::vector<uint32_t> Indices;
 
-				std::shared_ptr<std::vector<float>> Verts;
+				std::vector<float> Verts;
 
-				std::shared_ptr<std::vector<float>> T_Verts;
+				std::vector<float> T_Verts;
 
-				std::shared_ptr<std::vector<float>> N_Verts;
+				std::vector<float> N_Verts;
 
-				std::shared_ptr<std::vector<float>> Tangent_Verts;
+				std::vector<float> Tangent_Verts;
 
-				std::shared_ptr<std::vector<float>> Bitanget_Verts;
+				std::vector<float> Bitanget_Verts;
 
-				std::shared_ptr<std::vector<float>> BlendWeights;
+				std::vector<float> BlendWeights;
 
-				std::shared_ptr<std::vector<int32_t>> BlendIndices;
+				std::vector<int32_t> BlendIndices;
 
 				class SkeletonBoneBaseLOADER* SkeletonRoot;
 
 				inline size_t GetBlendablesCount() const {
 
-					return (BlendWeights->size() / count_bones_influence_vertex);
+					return (BlendWeights.size() / count_bones_influence_vertex);
 				}
 
 				void CollectBlendWeightsAndIndices(VertexLOADER& blendInfoVertex, size_t blendableIndex);

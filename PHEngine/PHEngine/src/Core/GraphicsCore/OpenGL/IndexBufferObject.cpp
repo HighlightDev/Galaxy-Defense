@@ -6,11 +6,11 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		IndexBufferObject::IndexBufferObject(std::shared_ptr<std::vector<uint32_t>> data, DataCarryFlag dataCarryFlag)
+		IndexBufferObject::IndexBufferObject(std::vector<uint32_t> data, DataCarryFlag dataCarryFlag)
 			: VertexBufferObjectBase(GL_ELEMENT_ARRAY_BUFFER)
 			, m_data(data)
 			, m_dataCarryFlag(dataCarryFlag)
-			, m_countOfIndices(m_data->size())
+			, m_countOfIndices(m_data.size())
 			, m_countOfTotalLengthOfData(m_countOfIndices)
 		{
 		}
@@ -35,13 +35,12 @@ namespace Graphics
 			BindIndexBuffer();
 			size_t bufferSize = sizeof(size_t) * GetTotalLengthOfData();
 
-			glBufferData(m_bufferTarget, bufferSize, m_data->data(), GL_STATIC_DRAW);
+			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
 			if (m_dataCarryFlag == DataCarryFlag::Invalidate)
 			{
-				m_data.~shared_ptr();
-				m_data = nullptr;
+				m_data.clear();
 			}
 		}
 

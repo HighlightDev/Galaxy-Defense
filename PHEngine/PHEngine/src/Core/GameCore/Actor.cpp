@@ -1,6 +1,7 @@
 #include "Actor.h"
 #include "Core/GameCore/Components/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 namespace Game
 {
@@ -24,6 +25,15 @@ namespace Game
 		if (m_rootComponent)
 		{
 			// Root component and all attached objects to this actor must update their transforms
+
+         if (pWorld && m_rootComponent->bIsPhysicsComponent)
+         {
+            auto& translate = pWorld->mBody->getWorldTransform().getOrigin();
+            glm::vec3 translation = glm::vec3(translate.getX(), translate.getY(), translate.getZ());
+            m_rootComponent->phys_translation = translation;
+            m_rootComponent->SetIsTransformationDirty(true);
+         }
+
 			if (m_rootComponent->GetIsTransformationDirty())
 			{
 				// Update root component with parent transform matrix

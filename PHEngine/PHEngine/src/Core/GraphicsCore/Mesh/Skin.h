@@ -9,28 +9,28 @@ using namespace Graphics::OpenGL;
 
 namespace Graphics
 {
-	namespace Mesh
-	{
+   namespace Mesh
+   {
 
-		class Skin
-		{
+      class Skin
+      {
 
-			std::unique_ptr<VertexArrayObject> m_buffer;
+         VertexArrayObject m_buffer;
 
-		public:
+      public:
 
-			Skin(std::unique_ptr<VertexArrayObject>&& vao);
+         Skin(const VertexArrayObject& vao);
 
-			virtual ~Skin();
+         virtual ~Skin();
 
-			inline std::unique_ptr<VertexArrayObject>& GetBuffer() {
+         inline VertexArrayObject* GetBuffer() {
 
-				return m_buffer;
-			}
+            return &m_buffer;
+         }
 
-			virtual void CleanUp();
-		};
+         virtual void CleanUp();
+      };
 
-	}
+   }
 }
 

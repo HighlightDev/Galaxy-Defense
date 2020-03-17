@@ -17,7 +17,7 @@ namespace Graphics
 
 		public:
 
-			AnimatedSkin(std::unique_ptr<VertexArrayObject> vao, std::shared_ptr<Bone> rootBone);
+			AnimatedSkin(const VertexArrayObject& vao, std::shared_ptr<Bone> rootBone);
 
 			~AnimatedSkin();
 

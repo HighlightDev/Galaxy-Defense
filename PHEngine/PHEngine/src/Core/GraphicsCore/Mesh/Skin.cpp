@@ -5,8 +5,8 @@ namespace Graphics
 	namespace Mesh
 	{
 
-		Skin::Skin(std::unique_ptr<VertexArrayObject>&& vao)
-			: m_buffer(std::move(vao))
+		Skin::Skin(const VertexArrayObject& vao)
+			: m_buffer(vao)
 		{
 		}
 
@@ -16,7 +16,7 @@ namespace Graphics
 
 		void Skin::CleanUp()
 		{
-			m_buffer->CleanUp();
+			m_buffer.CleanUp();
 		}
 	}
 }

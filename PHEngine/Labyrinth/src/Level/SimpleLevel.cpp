@@ -25,6 +25,7 @@
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 #include <glm/vec3.hpp>
 
@@ -45,7 +46,33 @@ namespace Labyrinth
 
    void SimpleLevel::LoadLevel()
    {
+
       const auto& folderManager = Common::FolderManager::GetInstance();
+
+      // test physics
+      {
+         auto object = mScene->mPhysicsWorld->LoadSimpleSkinWithPhysics(folderManager->GetModelPath() + "playerCube.obj");
+         mScene->mPhysicsWorld->CreateBodyWithMass(50.0f, std::get<1>(object));
+
+         // Test for PBR
+         {
+            auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+            auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+
+            StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
+               std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
+
+            std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+            auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+            mScene->AddComponentToActor_GameThread(houseActor, component);
+            component->bIsPhysicsComponent = true;
+            mScene->AllActors.push_back(houseActor);
+
+            // TODO: TEMP
+            houseActor->pWorld = mScene->mPhysicsWorld;
+         }
+      }
+
       // Dir light
       {
          auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
@@ -62,8 +89,10 @@ namespace Labyrinth
 
          std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
 
-         mScene->CreateAndAddComponent_GameThread<DirectionalLightComponent>(mData, dirLightActor);
-         mScene->CreateAndAddComponent_GameThread<DirectionalLightComponent>(mData1, dirLightActor);
+         auto dirLightComponent =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData);
+         mScene->AddComponentToActor_GameThread(dirLightActor, dirLightComponent);
+         dirLightComponent = mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
+         mScene->AddComponentToActor_GameThread(dirLightActor, dirLightComponent);
          mScene->AllActors.push_back(dirLightActor);
       }
 
@@ -73,7 +102,8 @@ namespace Labyrinth
          auto distortionTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetDistortionTexturePath() + "water_dudv.png");
          WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>(normalTex, distortionTex));
          std::shared_ptr<Actor> waterActor = std::make_shared<Actor>("Water", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         mScene->CreateAndAddComponent_GameThread<WaterPlaneComponent>(mData, waterActor);
+         auto waterComp = mScene->CreateComponent_GameThread<WaterPlaneComponent>(mData);
+         mScene->AddComponentToActor_GameThread(waterActor, waterComp);
          mScene->AllActors.push_back(waterActor);
       }
 
@@ -107,7 +137,8 @@ namespace Labyrinth
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, specualrMapTex, nullptr, nullptr));
 
             std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-            mScene->CreateAndAddComponent_GameThread<StaticMeshComponent>(mData, houseActor);
+            auto staticComp = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+            mScene->AddComponentToActor_GameThread(houseActor, staticComp);
             mScene->AllActors.push_back(houseActor);
          }
 
@@ -123,12 +154,15 @@ namespace Labyrinth
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
          std::shared_ptr<Actor> skeletActor = std::make_shared<Actor>("Buddy", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         mScene->CreateAndAddComponent_GameThread<SkeletalMeshComponent>(mData, skeletActor);
+         auto skeletalComp = mScene->CreateComponent_GameThread<SkeletalMeshComponent>(mData);
+         mScene->AddComponentToActor_GameThread(skeletActor, skeletalComp);
 
          InputComponentData inputComponentData;
-         mScene->CreateAndAddComponent_GameThread<InputComponent>(inputComponentData, skeletActor);
+         auto inputComp = mScene->CreateComponent_GameThread<InputComponent>(inputComponentData);
+         mScene->AddComponentToActor_GameThread(skeletActor, inputComp);
          MovementComponentData movementComponentData(glm::vec3(0), GetCamera()->GetCameraName());
-         mScene->CreateAndAddComponent_GameThread<MovementComponent>(movementComponentData, skeletActor);
+         auto movementComp = mScene->CreateComponent_GameThread<MovementComponent>(movementComponentData);
+         mScene->AddComponentToActor_GameThread(skeletActor, movementComp);
 
          mScene->m_playerController.SetPlayerActor(skeletActor);
 
@@ -157,7 +191,8 @@ namespace Labyrinth
 
          SkyboxComponentData mData(glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
          std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         mScene->CreateAndAddComponent_GameThread<SkyboxComponent>(mData, skyboxActor);
+         auto skyboxComp = mScene->CreateComponent_GameThread<SkyboxComponent>(mData);
+         mScene->AddComponentToActor_GameThread(skyboxActor, skyboxComp);
          mScene->AllActors.push_back(skyboxActor);
       }
 

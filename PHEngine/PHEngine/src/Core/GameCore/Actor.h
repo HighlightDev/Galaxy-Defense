@@ -35,6 +35,8 @@ namespace Game
 
 	public:
 
+      class PhysicsWorld* pWorld = nullptr;
+
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 
 		Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent = nullptr);

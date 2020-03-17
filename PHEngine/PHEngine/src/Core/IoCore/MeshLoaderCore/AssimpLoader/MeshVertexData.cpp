@@ -19,14 +19,6 @@ namespace Io
 				, m_meshes(m_scene->mMeshes)
 				, SkeletonRoot(nullptr)
 			{
-				Indices = std::make_shared<std::vector<uint32_t>>(std::vector<uint32_t>());
-				Verts = std::make_shared<std::vector<float>>(std::vector<float>());
-				T_Verts = std::make_shared<std::vector<float>>(std::vector<float>());
-				N_Verts = std::make_shared<std::vector<float>>(std::vector<float>());
-				Tangent_Verts = std::make_shared<std::vector<float>>(std::vector<float>());
-				Bitanget_Verts = std::make_shared<std::vector<float>>(std::vector<float>());
-				BlendWeights = std::make_shared<std::vector<float>>(std::vector<float>());
-				BlendIndices = std::make_shared<std::vector<int32_t>>(std::vector<int32_t>());
 				GetMeshVertexData();
 			}
 
@@ -80,7 +72,7 @@ namespace Io
 				for (size_t i = 0; i < m_scene->mNumMeshes; i++)
 				{
 					aiMesh* mesh = m_meshes[i];
-					size_t processedIndices = Indices->size();
+					size_t processedIndices = Indices.size();
 					countOfIndicesPerMesh.emplace_back(processedIndices);
 					CollectIndices(mesh, processedIndices);
 					TryToCollectSkinInfo(countOfIndicesPerMesh[i], mesh);
@@ -254,9 +246,9 @@ namespace Io
 					aiFace& face = meshBeingCollected->mFaces[faceIndex];
 					if (face.mNumIndices == 3) // triangulated face
 					{
-						Indices->emplace_back(face.mIndices[0] + lastIndexBeenInterrupted);
-						Indices->emplace_back(face.mIndices[1] + lastIndexBeenInterrupted);
-						Indices->emplace_back(face.mIndices[2] + lastIndexBeenInterrupted);
+						Indices.emplace_back(face.mIndices[0] + lastIndexBeenInterrupted);
+						Indices.emplace_back(face.mIndices[1] + lastIndexBeenInterrupted);
+						Indices.emplace_back(face.mIndices[2] + lastIndexBeenInterrupted);
 					}
 					else
 					{
@@ -274,30 +266,30 @@ namespace Io
 
 				for (size_t attribIndex = 0; attribIndex < meshBeingCollected->mNumVertices; ++attribIndex)
 				{
-					Verts->emplace_back(meshBeingCollected->mVertices[attribIndex].x);
-					Verts->emplace_back(meshBeingCollected->mVertices[attribIndex].y);
-					Verts->emplace_back(meshBeingCollected->mVertices[attribIndex].z);
+					Verts.emplace_back(meshBeingCollected->mVertices[attribIndex].x);
+					Verts.emplace_back(meshBeingCollected->mVertices[attribIndex].y);
+					Verts.emplace_back(meshBeingCollected->mVertices[attribIndex].z);
 
 					if (bCollectNormals)
 					{
-						N_Verts->emplace_back(meshBeingCollected->mNormals[attribIndex].x);
-						N_Verts->emplace_back(meshBeingCollected->mNormals[attribIndex].y);
-						N_Verts->emplace_back(meshBeingCollected->mNormals[attribIndex].z);
+						N_Verts.emplace_back(meshBeingCollected->mNormals[attribIndex].x);
+						N_Verts.emplace_back(meshBeingCollected->mNormals[attribIndex].y);
+						N_Verts.emplace_back(meshBeingCollected->mNormals[attribIndex].z);
 					}
 					if (bCollectTexCoords)
 					{
-						T_Verts->emplace_back(meshBeingCollected->mTextureCoords[0][attribIndex].x);
-						T_Verts->emplace_back(meshBeingCollected->mTextureCoords[0][attribIndex].y);
+						T_Verts.emplace_back(meshBeingCollected->mTextureCoords[0][attribIndex].x);
+						T_Verts.emplace_back(meshBeingCollected->mTextureCoords[0][attribIndex].y);
 					}
 					if (bCollectTangBitang)
 					{
-						Tangent_Verts->emplace_back(meshBeingCollected->mTangents[attribIndex].x);
-						Tangent_Verts->emplace_back(meshBeingCollected->mTangents[attribIndex].y);
-						Tangent_Verts->emplace_back(meshBeingCollected->mTangents[attribIndex].z);
+						Tangent_Verts.emplace_back(meshBeingCollected->mTangents[attribIndex].x);
+						Tangent_Verts.emplace_back(meshBeingCollected->mTangents[attribIndex].y);
+						Tangent_Verts.emplace_back(meshBeingCollected->mTangents[attribIndex].z);
 
-						Bitanget_Verts->emplace_back(meshBeingCollected->mBitangents[attribIndex].x);
-						Bitanget_Verts->emplace_back(meshBeingCollected->mBitangents[attribIndex].y);
-						Bitanget_Verts->emplace_back(meshBeingCollected->mBitangents[attribIndex].z);
+						Bitanget_Verts.emplace_back(meshBeingCollected->mBitangents[attribIndex].x);
+						Bitanget_Verts.emplace_back(meshBeingCollected->mBitangents[attribIndex].y);
+						Bitanget_Verts.emplace_back(meshBeingCollected->mBitangents[attribIndex].z);
 					}
 				}
 			}
@@ -350,36 +342,36 @@ namespace Io
 
 				if (currentVertexInfluenceCount == 1)
 				{
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[0].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[0].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
 
-					BlendWeights->emplace_back(0.0f);
-					BlendIndices->emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
+					BlendWeights.emplace_back(0.0f);
+					BlendIndices.emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
 
-					BlendWeights->emplace_back(0.0f);
-					BlendIndices->emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
+					BlendWeights.emplace_back(0.0f);
+					BlendIndices.emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
 				}
 				else if (currentVertexInfluenceCount == 2)
 				{
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[0].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[0].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
 
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[1].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[1].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[1].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[1].first));
 
-					BlendWeights->emplace_back(0.0f);
-					BlendIndices->emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
+					BlendWeights.emplace_back(0.0f);
+					BlendIndices.emplace_back(-1);  // this provides assurance that skin matrix will not do anything in shader.
 				}
 				else if (currentVertexInfluenceCount > 2)
 				{
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[0].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[0].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[0].first));
 
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[1].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[1].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[1].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[1].first));
 
-					BlendWeights->emplace_back(blendInfoVertex.BoneWeightMap[2].second);
-					BlendIndices->emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[2].first));
+					BlendWeights.emplace_back(blendInfoVertex.BoneWeightMap[2].second);
+					BlendIndices.emplace_back(std::get<int32_t>(blendInfoVertex.BoneWeightMap[2].first));
 				}
 			}
 

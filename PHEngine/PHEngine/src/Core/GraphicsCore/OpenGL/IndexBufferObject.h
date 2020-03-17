@@ -15,7 +15,7 @@ namespace Graphics
 		{
 		private:
 
-			std::shared_ptr<std::vector<uint32_t>> m_data;
+			std::vector<uint32_t> m_data;
 			DataCarryFlag m_dataCarryFlag;
 
 			size_t m_countOfIndices;
@@ -23,7 +23,7 @@ namespace Graphics
 
 		public:
 
-			IndexBufferObject(std::shared_ptr<std::vector<uint32_t>> indicesData, DataCarryFlag dataCarryFlag = DataCarryFlag::Invalidate);
+			IndexBufferObject(std::vector<uint32_t> indicesData, DataCarryFlag dataCarryFlag = DataCarryFlag::Invalidate);
 
 			virtual ~IndexBufferObject();
 

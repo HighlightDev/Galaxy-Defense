@@ -20,7 +20,12 @@ namespace Graphics
 			return m_ibo != nullptr;
 		}
 
-		std::vector<std::unique_ptr<VertexBufferObjectBase>>& VertexArrayObject::GetVertexBufferObjects()
+      VertexBufferObjectBase* VertexArrayObject::GetVboByIndex(const size_t index) const
+      {
+         return m_vbos[index];
+      }
+
+		const std::vector<VertexBufferObjectBase*>& VertexArrayObject::GetVertexBufferObjects() const
 		{
 			return m_vbos;
 		}
@@ -44,17 +49,17 @@ namespace Graphics
 			glBindVertexArray(0);
 		}
 
-		void VertexArrayObject::AddIndexBuffer(std::unique_ptr<IndexBufferObject>&& ibo)
-		{
-			if (ibo != nullptr)
-				m_ibo = std::move(ibo);
-		}
+      void VertexArrayObject::AddIndexBuffer(IndexBufferObject* ibo)
+      {
+         m_ibo = ibo;
+      }
 
 		void VertexArrayObject::BindBuffersToVao()
 		{
 			glBindVertexArray(m_descriptor);
-			if (m_ibo != nullptr)
-				m_ibo->SendDataToGPU();
+
+         if (m_ibo)
+			   m_ibo->SendDataToGPU();
 
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{
@@ -76,7 +81,7 @@ namespace Graphics
 
 		void VertexArrayObject::CleanUp()
 		{
-			if (m_ibo != nullptr) m_ibo->CleanUp();
+			m_ibo->CleanUp();
 
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{
@@ -84,6 +89,14 @@ namespace Graphics
 			}
 
 			glDeleteVertexArrays(1, &m_descriptor);
+
+         for (size_t i = 0; i < m_vbos.size(); ++i)
+         {
+            delete m_vbos[i];
+         }
+         m_vbos.clear();
+
+         delete m_ibo;
 		}
 	}
 }

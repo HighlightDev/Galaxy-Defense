@@ -51,7 +51,7 @@ namespace Graphics
 
 		protected:
 
-			std::shared_ptr<std::vector<DataType>> m_data;
+			std::vector<DataType> m_data;
 			size_t m_totalDataLength;
 			int32_t m_countOfIndices;
 			int32_t m_vertexAttribIndex;
@@ -59,10 +59,10 @@ namespace Graphics
 
 		public:
 
-			VertexBufferObject(std::shared_ptr<std::vector<DataType>> data, int32_t bufferTarget, int32_t vertexAttribIndex, DataCarryFlag flag)
+			VertexBufferObject(const std::vector<DataType>& data, int32_t bufferTarget, int32_t vertexAttribIndex, DataCarryFlag flag)
 				: VertexBufferObjectBase(bufferTarget)
 				, m_data(data)
-				, m_totalDataLength(data->size())
+				, m_totalDataLength(data.size())
 				, m_countOfIndices(m_totalDataLength / m_vectorSize)
 				, m_vertexAttribIndex(vertexAttribIndex)
 				, m_dataCarryFlag(flag)
@@ -75,10 +75,10 @@ namespace Graphics
 
 			virtual void* GetData()
 			{
-				return &m_data;
+				return m_data.data();
 			}
 
-			std::shared_ptr<std::vector<DataType>> GetData() const
+			std::vector<DataType>& GetCastedDataRef()
 			{
 				return m_data;
 			}
@@ -89,15 +89,14 @@ namespace Graphics
 				GenBuffer();
 				BindVBO();
 				
-				glBufferData(m_bufferTarget, data_size, m_data->data(), GL_STATIC_DRAW);
+				glBufferData(m_bufferTarget, data_size, m_data.data(), GL_STATIC_DRAW);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
 
 				// If data on CPU is unnecessary
 				if (m_dataCarryFlag == DataCarryFlag::Invalidate)
 				{
-					m_data = nullptr;
-					m_data.~shared_ptr();
+					m_data.clear();
 				}
 			}
 

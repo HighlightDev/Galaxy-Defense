@@ -49,11 +49,10 @@ namespace Graphics
 			 0, 0 ,
 			 0, 1 };
 
-		VertexBufferObjectBase* verticesVBO = new VertexBufferObject< float, 3, GL_FLOAT>(std::make_shared<std::vector<float>>(vertices), GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
-		VertexBufferObjectBase* texCoordsVBO = new VertexBufferObject< float, 2, GL_FLOAT>(std::make_shared<std::vector<float>>(texCoords), GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
+		VertexBufferObjectBase* verticesVBO = new VertexBufferObject< float, 3, GL_FLOAT>(std::vector<float>(vertices), GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
+		VertexBufferObjectBase* texCoordsVBO = new VertexBufferObject< float, 2, GL_FLOAT>(std::vector<float>(texCoords), GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
 
-		m_vao->AddVBO(std::unique_ptr<VertexBufferObjectBase>(std::move(verticesVBO)),
-			std::unique_ptr<VertexBufferObjectBase>(std::move(texCoordsVBO)));
+		m_vao->AddVBO(verticesVBO, texCoordsVBO);
 
 		m_vao->BindBuffersToVao();
 	}

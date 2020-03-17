@@ -1563,9 +1563,6 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\AnimationPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\PhysicsWorld.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1762,6 +1759,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Event\Policy\Policies.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1997,9 +1997,6 @@
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\AnimationPool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\PhysicsWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2121,6 +2118,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

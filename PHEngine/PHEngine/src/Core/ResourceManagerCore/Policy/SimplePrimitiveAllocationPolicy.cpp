@@ -21,19 +21,19 @@ namespace Resources
       std::shared_ptr<Skin> resultSkin;
 
       {
-         std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+         VertexArrayObject vao;
 
-         std::shared_ptr<std::vector<float>> vertices;
-         std::shared_ptr<std::vector<float>> normals;
-         std::shared_ptr<std::vector<float>> texCoords;
+         std::vector<float> vertices;
+         std::vector<float> normals;
+         std::vector<float> texCoords;
 
          switch (typeArg)
          {
             case SimplePrimitiveType::POINT:
-               vertices = std::make_shared<std::vector<float>>(std::vector<float>({ 0.0f, 0.0f, 0.0f }));
+               vertices = std::vector<float>({ 0.0f, 0.0f, 0.0f });
                break;
             case SimplePrimitiveType::CUBE:
-               vertices = std::make_shared<std::vector<float>>(std::vector<float>({
+               vertices = std::vector<float>({
                   // back face
                   -1.0f, -1.0f, -1.0f, // bottom-left
                    1.0f,  1.0f, -1.0f, // top-right
@@ -76,59 +76,56 @@ namespace Resources
                    1.0f,  1.0f,  1.0f, // bottom-right
                   -1.0f,  1.0f, -1.0f, // top-left
                   -1.0f,  1.0f,  1.0f // bottom-left        
-                  }));
+                  });
                break;
             case SimplePrimitiveType::PLANE:
             case SimplePrimitiveType::PLANE_WITH_ATTRIBUTES:
-               vertices = std::make_shared<std::vector<float>>(std::vector<float>({
+               vertices = std::vector<float>({
                   -1.0f, -1.0f, -1.0f, // top-right
                   1.0f, -1.0f, -1.0f, // top-left
                   1.0f, -1.0f, 1.0f, // bottom-left
                   1.0f, -1.0f, 1.0f, // bottom-left
                   -1.0f, -1.0f, 1.0f, // bottom-right
                   -1.0f, -1.0f, -1.0f, // top-right
-                  }));
-               break;
-            default:
-               vertices = std::make_shared<std::vector<float>>();
+                  });
                break;
          }
 
          if (SimplePrimitiveType::PLANE_WITH_ATTRIBUTES == typeArg)
          {
-            normals = std::make_shared<std::vector<float>>(std::vector<float>({
+            normals = std::vector<float>({
                   0.0f, 0.0f, 1.0f, // top-right
                   0.0f, 0.0f, 1.0f, // top-left
                   0.0f, 0.0f, 1.0f, // bottom-left
                   0.0f, 0.0f, 1.0f, // bottom-left
                   0.0f, 0.0f, 1.0f, // bottom-right
                   0.0f, 0.0f, 1.0f, // top-right
-               }));
-            texCoords = std::make_shared<std::vector<float>>(std::vector<float>({
+               });
+            texCoords = std::vector<float>({
                   1.0f, 0.0f, // top-right
                   0.0f, 0.0f, // top-left
                   0.0f, 1.0f, // bottom-left
                   0.0f, 1.0f, // bottom-left
                   1.0f, 1.0f, // bottom-right
                   1.0f, 0.0f, // top-right
-               }));
+               });
          }
 
          VertexBufferObjectBase* vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
 
          vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
 
-         if (normals && texCoords)
+         if (normals.size() > 0 && texCoords.size() > 0)
          {
             normalVBO = new VertexBufferObject<float, 3, GL_FLOAT>(normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
             texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT>(texCoords, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
          }
 
-         vao->AddVBO(std::move(vertexVBO), std::move(normalVBO), std::move(texCoordsVBO));
+         vao.AddVBO(vertexVBO, normalVBO, texCoordsVBO);
 
-         vao->BindBuffersToVao();
+         vao.BindBuffersToVao();
 
-         resultSkin = std::make_shared<Skin>(std::move(vao));
+         resultSkin = std::make_shared<Skin>(vao);
       }
 
       return resultSkin;

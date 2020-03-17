@@ -438,7 +438,7 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\AnimationPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\SkeletalMeshComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationHolder.h" />
-    <ClInclude Include="src\Core\GameCore\PhysicsWorld.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h" />
     <ClInclude Include="src\Core\GameCore\Components\CollisionComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
@@ -832,7 +832,7 @@
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\AnimationPool.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\SkeletalMeshComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Animation\AnimationHolder.cpp" />
-    <ClCompile Include="src\Core\GameCore\PhysicsWorld.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\CollisionComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\KeyboardInputManager.cpp" />

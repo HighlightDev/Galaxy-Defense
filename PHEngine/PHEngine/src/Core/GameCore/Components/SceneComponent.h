@@ -36,6 +36,8 @@ namespace Game
 
       bool bIsRootComponent = false;
 
+      glm::vec3 phys_translation;
+
 		SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 
       SceneComponent();
@@ -54,32 +56,34 @@ namespace Game
          m_scene = scene;
       }
 
+      void SetIsTransformationDirty(const bool isDirty)
+      {
+         bTransformationDirty = true;
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+      }
+
 		void SetTranslation(glm::vec3 translation)
 		{
 			m_translation = translation;
-			bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         SetIsTransformationDirty(true);
 		}
 
 		void SetRotation(glm::vec3 rotation)
 		{
 			m_rotation = rotation;
-			bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         SetIsTransformationDirty(true);
 		}
 
 		void SetScale(glm::vec3 scale)
 		{
 			m_scale = scale;
-			bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         SetIsTransformationDirty(true);
 		}
 
       void SetAdditionalRotation(const glm::vec3& rotation)
       {
          m_additionalRotation = rotation;
-         bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         SetIsTransformationDirty(true);
       }
 
 		void SetRotationAxisX(float new_x)
@@ -90,7 +94,7 @@ namespace Game
 			}
 			else
 				m_rotation.x = new_x;
-			bTransformationDirty = true;
+         SetIsTransformationDirty(true);
 		}
 
 		void SetRotationAxisY(float new_y)
@@ -101,7 +105,7 @@ namespace Game
 			}
 			else
 				m_rotation.y = new_y;
-			bTransformationDirty = true;
+         SetIsTransformationDirty(true);
 		}
 
 		void SetRotationAxisZ(float new_z)
@@ -112,12 +116,10 @@ namespace Game
 			}
 			else
 				m_rotation.z = new_z;
-			bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         SetIsTransformationDirty(true);
 		}
 
 		inline bool GetIsTransformationDirty() const {
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
 			return bTransformationDirty;
 		}
 

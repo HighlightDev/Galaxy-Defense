@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/FirstPersonCamera.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 namespace Game
 {
@@ -9,7 +10,9 @@ namespace Game
       : m_interThreadMgr(interThreadMgr)
       // m_camera(new FirstPersonCamera(" Test camera ", glm::vec3(0, 0, 1), glm::vec3(0, 0, -10)))
       , m_camera(new ThirdPersonCamera("MainCamera", 50, 20 , 20))
+      , mPhysicsWorld(new PhysicsWorld())
    {
+      mPhysicsWorld->InitPhysics();
    }
 
    void Scene::PostConstructorInitialize()
@@ -118,6 +121,8 @@ namespace Game
 
    void Scene::Tick_GameThread(float delta)
    {
+      mPhysicsWorld->Tick(delta);
+
       m_camera->Tick(delta);
       for (auto& actor : AllActors)
       {

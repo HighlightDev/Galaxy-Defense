@@ -32,18 +32,18 @@ namespace Resources
 			std::string absolutePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(arg));
 			AssimpMeshLoader<countOfBonesInfluencingOnVertex> loader(absolutePath);
 
-			std::unique_ptr<VertexArrayObject> vao = std::make_unique<VertexArrayObject>();
+         VertexArrayObject vao;
 
 			MeshVertexData<countOfBonesInfluencingOnVertex>& meshData = loader.GetMeshData();
 
-			std::shared_ptr<std::vector<float>> vertices = meshData.Verts;
-			std::shared_ptr<std::vector<float>> normals = meshData.N_Verts;
-			std::shared_ptr<std::vector<float>> texCoords = meshData.T_Verts;
-			std::shared_ptr<std::vector<float>> tangents = meshData.Tangent_Verts;
-			std::shared_ptr<std::vector<float>> bitangents = meshData.Bitanget_Verts;
-			std::shared_ptr<std::vector<float>> blendWeights = meshData.BlendWeights;
-			std::shared_ptr<std::vector<int32_t>> blendIndices = meshData.BlendIndices;
-			std::shared_ptr<std::vector<uint32_t>> indices = meshData.Indices;
+			const std::vector<float>& vertices = meshData.Verts;
+			const std::vector<float>& normals = meshData.N_Verts;
+			const std::vector<float>& texCoords = meshData.T_Verts;
+			const std::vector<float>& tangents = meshData.Tangent_Verts;
+			const std::vector<float>& bitangents = meshData.Bitanget_Verts;
+			const std::vector<float>& blendWeights = meshData.BlendWeights;
+			const std::vector<int32_t>& blendIndices = meshData.BlendIndices;
+			const std::vector<uint32_t>& indices = meshData.Indices;
 
 			IndexBufferObject* ibo = nullptr;
 
@@ -68,16 +68,10 @@ namespace Resources
 				blendIndicesVBO = new VertexBufferObject<int32_t, countOfBonesInfluencingOnVertex, GL_FLOAT>(blendIndices, GL_ARRAY_BUFFER, 7, DataCarryFlag::Invalidate);
 			}
 
-			vao->AddVBO(std::move(std::unique_ptr<VertexBufferObjectBase>(vertexVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(normalsVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(texCoordsVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(tangentsVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(bitangentsVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(blendWeightsVBO)),
-				std::move(std::unique_ptr<VertexBufferObjectBase>(blendIndicesVBO)));
+			vao.AddVBO(vertexVBO, normalsVBO, texCoordsVBO, tangentsVBO, bitangentsVBO, blendWeightsVBO, blendIndicesVBO);
 
-			vao->AddIndexBuffer(std::unique_ptr<IndexBufferObject>(ibo));
-			vao->BindBuffersToVao();
+			vao.AddIndexBuffer(ibo);
+			vao.BindBuffersToVao();
 
 			if (meshData.bHasAnimation)
 			{
@@ -85,11 +79,11 @@ namespace Resources
             meshData.SkeletonRoot->CleanUp();
             delete meshData.SkeletonRoot;
             meshData.SkeletonRoot = nullptr;
-				resultSkin = std::make_shared<AnimatedSkin>(std::move(vao), std::make_shared<Bone>(*rootBone));
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::make_shared<Bone>(*rootBone));
 			}
 			else
 			{
-				resultSkin = std::make_shared<Skin>(std::move(vao));
+				resultSkin = std::make_shared<Skin>(vao);
 			}
 
 		}
