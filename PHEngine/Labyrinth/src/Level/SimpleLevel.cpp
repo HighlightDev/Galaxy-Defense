@@ -52,7 +52,10 @@ namespace Labyrinth
       // test physics
       {
          auto object = mScene->mPhysicsWorld->LoadSimpleSkinWithPhysics(folderManager->GetModelPath() + "playerCube.obj");
-         mScene->mPhysicsWorld->CreateBodyWithMass(50.0f, std::get<1>(object));
+         mScene->mPhysicsWorld->CreateBodyWithMass(50.0f, std::get<1>(object), true);
+
+         auto collisionBody = mScene->mPhysicsWorld->LoadFloor();
+         mScene->mPhysicsWorld->CreateBodyWithMass(1000, collisionBody, false);
 
          // Test for PBR
          {
@@ -62,14 +65,14 @@ namespace Labyrinth
             StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
-            std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
-            mScene->AddComponentToActor_GameThread(houseActor, component);
-            component->bIsPhysicsComponent = true;
-            mScene->AllActors.push_back(houseActor);
+            mScene->AddComponentToActor_GameThread(cubeActor, component);
+            cubeActor->GetRootComponent()->bIsPhysicsComponent = true;
+            mScene->AllActors.push_back(cubeActor);
 
             // TODO: TEMP
-            houseActor->pWorld = mScene->mPhysicsWorld;
+            cubeActor->pWorld = mScene->mPhysicsWorld;
          }
       }
 
@@ -125,23 +128,19 @@ namespace Labyrinth
 
       // Test for PBR
       {
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
-         auto specualrMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
+         auto albedoTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
+         auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
+         auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
 
          float x_offset = 0, y_offset = 0.0f;
 
-         for (size_t i = 0; i < 1; ++i)
-         {
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
-               std::make_shared<PBRMaterial>(albedoTex, normalMapTex, specualrMapTex, nullptr, nullptr));
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
+            std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr));
 
-            std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-            auto staticComp = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
-            mScene->AddComponentToActor_GameThread(houseActor, staticComp);
-            mScene->AllActors.push_back(houseActor);
-         }
-
+         std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         auto staticComp = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         mScene->AddComponentToActor_GameThread(houseActor, staticComp);
+         mScene->AllActors.push_back(houseActor);
       }
 
       // SKELETAL MESH

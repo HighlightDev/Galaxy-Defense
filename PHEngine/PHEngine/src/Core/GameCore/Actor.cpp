@@ -28,9 +28,8 @@ namespace Game
 
          if (pWorld && m_rootComponent->bIsPhysicsComponent)
          {
-            auto& translate = pWorld->mBody->getWorldTransform().getOrigin();
-            glm::vec3 translation = glm::vec3(translate.getX(), translate.getY(), translate.getZ());
-            m_rootComponent->phys_translation = translation;
+            auto translate = pWorld->GetBodyWorldTransform();
+            m_rootComponent->phys_translation = translate;
             m_rootComponent->SetIsTransformationDirty(true);
          }
 

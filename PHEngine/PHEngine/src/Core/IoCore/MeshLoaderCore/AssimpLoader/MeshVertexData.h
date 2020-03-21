@@ -20,7 +20,7 @@ namespace Io
 			{
 			private:
 
-				const class aiScene* m_scene;
+				const aiScene* m_scene;
 				aiMesh** m_meshes;
 
 				void GetMeshVertexData();
@@ -45,7 +45,7 @@ namespace Io
 
 			public:
 
-				MeshVertexData(const class aiScene* scene);
+				MeshVertexData(const aiScene* scene);
 				~MeshVertexData();
 
             bool bHasIndices = false;

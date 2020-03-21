@@ -2,11 +2,18 @@
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 
+
 #include <iostream>
 
 namespace Game
 {
    std::unique_ptr<PhysicsPool> PhysicsPool::m_instance = nullptr;
+
+   glm::vec3 PhysicsWorld::GetBodyWorldTransform()
+   {
+      auto variable = mBody->getWorldTransform().getOrigin();
+      return glm::vec3(variable.getX(), variable.getY(), variable.getZ());
+   }
 
    template <typename Model>
    std::shared_ptr<Skin> PhysicsPoolAllocationPolicy<Model>::AllocateMemory(std::string arg)
@@ -105,12 +112,6 @@ namespace Game
       {
          btVector3 vert1(vert[i], vert[i + 1], vert[i + 2]);
          shape->addPoint(vert1);
-
-
-         /*btVector3 vert2(vert[i + 3], vert[i + 4], vert[i + 5]);
-         btVector3 vert3(vert[i + 6], vert[i + 7], vert[i + 8]);*/
-
-         // mesh->addTriangle(vert1, vert2, vert3);
       }
 
       std::get<1>(physicsSkin) = shape;
@@ -118,7 +119,30 @@ namespace Game
       return physicsSkin;
    }
 
-   btRigidBody* PhysicsWorld::CreateBodyWithMass(float mass, btCollisionShape* shape)
+   btCollisionShape* PhysicsWorld::LoadFloor()
+   {
+      auto vertices = std::vector<float>({
+                -1.0f, 0.0, -1.0f, // top-right
+                1.0f, 0.0 -1.0f, // top-left
+                1.0f, 0.0, 1.0f, // bottom-left
+                1.0f, 0.0, 1.0f, // bottom-left
+                -1.0f, 0.0, 1.0f, // bottom-right
+                -1.0f, 0.0, -1.0f, // top-right
+         });
+
+
+      btConvexHullShape* shape = new btConvexHullShape();
+
+      for (size_t i = 0; i < vertices.size() / 3; i += 3)
+      {
+         btVector3 vert1(vertices[i] * 20, vertices[i + 1] * 20, vertices[i + 2] * 20);
+         shape->addPoint(vert1);
+      }
+
+      return shape;
+   }
+
+   btRigidBody* PhysicsWorld::CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall)
    {
       //1
       btQuaternion rotation;
@@ -149,19 +173,26 @@ namespace Game
       rigidBody->setUserPointer(this);
 
       //9
-      rigidBody->setLinearFactor(btVector3(1, 1, 0));
+      if (bFall)
+      {
+         rigidBody->setLinearFactor(btVector3(1, 1, 0));
+
+         mBody = rigidBody;
+      }
+      else
+      {
+         rigidBody->setLinearFactor(btVector3(1, 0, 0));
+         mFloor = rigidBody;
+      }
 
       mWorld->addRigidBody(rigidBody);
-
-      mBody = rigidBody;
-
       return rigidBody;
    }
 
    void PhysicsWorld::Tick(const float deltaTime)
    {
       mWorld->stepSimulation(deltaTime);
-      //std::cout.clear();
-      //std::cout << "Position Y : " <<  mBody->getWorldTransform().getOrigin().getY() << std::endl;
+     /* std::cout.clear();
+      std::cout << "Delta Time:" << deltaTime << std::endl << "Position Y : " << mFloor->getWorldTransform().getOrigin().getY() << std::endl;*/
    }
 }

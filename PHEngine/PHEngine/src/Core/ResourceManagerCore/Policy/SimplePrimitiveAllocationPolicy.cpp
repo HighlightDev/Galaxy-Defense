@@ -81,12 +81,12 @@ namespace Resources
             case SimplePrimitiveType::PLANE:
             case SimplePrimitiveType::PLANE_WITH_ATTRIBUTES:
                vertices = std::vector<float>({
-                  -1.0f, -1.0f, -1.0f, // top-right
-                  1.0f, -1.0f, -1.0f, // top-left
-                  1.0f, -1.0f, 1.0f, // bottom-left
-                  1.0f, -1.0f, 1.0f, // bottom-left
-                  -1.0f, -1.0f, 1.0f, // bottom-right
-                  -1.0f, -1.0f, -1.0f, // top-right
+                  -1.0f, 0.0f, -1.0f, // top-right
+                  1.0f, 0.0f, -1.0f, // top-left
+                  1.0f, 0.0f, 1.0f, // bottom-left
+                  1.0f, 0.0f, 1.0f, // bottom-left
+                  -1.0f, 0.0f, 1.0f, // bottom-right
+                  -1.0f, 0.0f, -1.0f, // top-right
                   });
                break;
          }

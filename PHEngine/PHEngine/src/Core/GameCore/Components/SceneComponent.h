@@ -36,7 +36,7 @@ namespace Game
 
       bool bIsRootComponent = false;
 
-      glm::vec3 phys_translation;
+      glm::vec3 phys_translation = glm::vec3(0);
 
 		SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 

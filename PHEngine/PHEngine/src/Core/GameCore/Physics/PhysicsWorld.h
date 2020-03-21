@@ -1,18 +1,28 @@
 #pragma once
 
-#include "BulletPhys/btBulletDynamicsCommon.h"
+
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 
 #include <memory>
 #include <string>
+#include <glm/vec3.hpp>
+#include "BulletPhys/btBulletDynamicsCommon.h"
 
 using namespace Graphics::Mesh;
 using namespace Resources;
 
 namespace Game
 {
+  /*   class btBroadphaseInterface;
+     class btDefaultCollisionConfiguration;
+     class btCollisionDispatcher;
+     class btSequentialImpulseConstraintSolver;
+     class btDiscreteDynamicsWorld;
+     class btRigidBody;
+     class btCollisionShape;*/
+
    template <typename Model>
    struct PhysicsPoolAllocationPolicy
    {
@@ -56,6 +66,7 @@ namespace Game
    {
    public:
       PhysicsWorld();
+
       ~PhysicsWorld();
 
       btBroadphaseInterface* mBroadphase;
@@ -65,14 +76,18 @@ namespace Game
       btDiscreteDynamicsWorld*                mWorld;
 
       btRigidBody*                            mBody;
+      btRigidBody*                            mFloor;
 
       void Tick(const float deltaTime);
 
       void InitPhysics();
 
+      glm::vec3 GetBodyWorldTransform();
+
       std::tuple<std::shared_ptr<Skin>, btCollisionShape*>  LoadSimpleSkinWithPhysics(const std::string& pathToObject);
 
-      btRigidBody* CreateBodyWithMass(float mass, btCollisionShape* shape);
+      btCollisionShape* LoadFloor();
+
+      btRigidBody* CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall);
    };
 }
-
