@@ -29,6 +29,8 @@
 
 #include <glm/vec3.hpp>
 
+#include <LoggerMain.h>
+
 using namespace Graphics;
 
 namespace Labyrinth
@@ -98,6 +100,8 @@ namespace Labyrinth
          mScene->AddComponentToActor_GameThread(dirLightActor, dirLightComponent);
          mScene->AllActors.push_back(dirLightActor);
       }
+
+      Log::LogMessages(LOG_INFO);
 
       // Water
       {

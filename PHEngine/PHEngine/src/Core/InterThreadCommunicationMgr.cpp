@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include <LoggerMain.h>
 
 namespace Thread
 {

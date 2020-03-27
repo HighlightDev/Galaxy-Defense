@@ -1,35 +1,44 @@
-#pragma once
+#pragma once 
 
-#include <iostream>
+#include <thread>
+#include <istream>
 #include <utility>
 #include <stdio.h>
+#include <thread>
+#include <ctime>
+#include <chrono> 
+#include <string>
 
-namespace Logger
+#include "Logger.h"
+
+namespace Log
 {
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-#define AT __FILE__ ":" TOSTRING(__LINE__)
-
-   void LogMessages()
-   {
-   }
+#define AT "File: " __FILE__ "; Line: " TOSTRING(__LINE__) ";"
 
    template <typename LogArg, typename... LogArgs>
    void LogMessages(LogArg&& arg, LogArgs&&... args)
    {
-      std::cout << arg;
-      LogMessages(std::forward<LogArgs>(args)...);
+      static std::hash<std::thread::id> hasher;
+
+      std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
+      typename std::chrono::system_clock::time_point time = std::chrono::system_clock::now();
+      std::time_t currentTime = std::chrono::system_clock::to_time_t(time);
+
+      std::string timeFileWasChanged = std::asctime(std::localtime(&currentTime));
+
+      //std::string currentTimeStr = std::to_string() + " ";
+
+      std::initializer_list<std::string> initList({ timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id())), arg, args... });
+
+      LogMessage message = LogMessage(initList);
+
+      Logger::GetInstance_()->EnqueuLogMessage(std::move(message));
    }
 
-#define FILE_NAME_LINE_NUMBER_TO_STR (AT)
-
-#ifdef DEBUG
-#define DEBUG_LOG(message) 
-#else
-#define DEBUG_LOG()
-#endif
-
+#define LOG_INFO (AT)
 
    /* initialization should be called before any action with log*/
    void InitLog(const char* pathToFile);

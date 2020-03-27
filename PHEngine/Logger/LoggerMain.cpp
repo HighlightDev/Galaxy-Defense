@@ -1,9 +1,9 @@
 #include "LoggerMain.h"
+#include "Logger.h"
 
-#include <thread>
-#include <istream>
 
-namespace Logger
+
+namespace Log
 {
    std::thread logThread;
    
@@ -11,4 +11,5 @@ namespace Logger
    {
       
    }
+   
 }
