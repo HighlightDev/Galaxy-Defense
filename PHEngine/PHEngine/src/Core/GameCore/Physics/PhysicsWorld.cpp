@@ -142,14 +142,14 @@ namespace Game
       return shape;
    }
 
-   btRigidBody* PhysicsWorld::CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall)
+   btRigidBody* PhysicsWorld::CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall, float yPos)
    {
       //1
       btQuaternion rotation;
       rotation.setEulerZYX(0, 0, 0);
 
       //2
-      btVector3 position = btVector3(0, 0, 0);
+      btVector3 position = btVector3(0, yPos, 0);
 
       //3
       btDefaultMotionState* motionState = new btDefaultMotionState(btTransform(rotation, position));
@@ -192,6 +192,30 @@ namespace Game
    void PhysicsWorld::Tick(const float deltaTime)
    {
       mWorld->stepSimulation(deltaTime);
+
+      const int32_t numManifolds = mWorld->getDispatcher()->getNumManifolds();
+
+      for (int32_t i = 0; i < numManifolds; ++i)
+      {
+         //2
+         btPersistentManifold* contactManifold = mWorld->getDispatcher()->getManifoldByIndexInternal(i);
+
+         //3
+         int numContacts = contactManifold->getNumContacts();
+         if (numContacts > 0)
+         {
+            //5
+            const btCollisionObject* obA = contactManifold->getBody0();
+            const btCollisionObject* obB = contactManifold->getBody1();
+
+
+            if (obA && obB)
+            {
+                std::cout << "Collision!" << std::endl;
+            }
+         }
+      }
+
      /* std::cout.clear();
       std::cout << "Delta Time:" << deltaTime << std::endl << "Position Y : " << mFloor->getWorldTransform().getOrigin().getY() << std::endl;*/
    }

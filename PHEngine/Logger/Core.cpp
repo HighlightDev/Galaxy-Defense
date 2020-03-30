@@ -1,4 +1,4 @@
-#include "Logger.h"
+#include "Core.h"
 
 #include <thread>
 #include <chrono>   

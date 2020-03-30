@@ -9,14 +9,14 @@
 #include <chrono> 
 #include <string>
 
-#include "Logger.h"
+#include "Core.h"
 
 namespace Log
 {
 
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
-#define AT "File: " __FILE__ "; Line: " TOSTRING(__LINE__) ";"
+#define AT "File: " __FILE__ "; Line: " TOSTRING(__LINE__) "; Function: " TOSTRING(__FUNCTION__) ";"
 
    template <typename LogArg, typename... LogArgs>
    void LogMessages(LogArg&& arg, LogArgs&&... args)

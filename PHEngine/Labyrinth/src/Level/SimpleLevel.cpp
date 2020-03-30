@@ -29,7 +29,7 @@
 
 #include <glm/vec3.hpp>
 
-#include <LoggerMain.h>
+#include <LogInterface.h>
 
 using namespace Graphics;
 
@@ -54,17 +54,17 @@ namespace Labyrinth
       // test physics
       {
          auto object = mScene->mPhysicsWorld->LoadSimpleSkinWithPhysics(folderManager->GetModelPath() + "playerCube.obj");
-         mScene->mPhysicsWorld->CreateBodyWithMass(50.0f, std::get<1>(object), true);
+         mScene->mPhysicsWorld->CreateBodyWithMass(50.0f, std::get<1>(object), true, 50);
 
          auto collisionBody = mScene->mPhysicsWorld->LoadFloor();
-         mScene->mPhysicsWorld->CreateBodyWithMass(1000, collisionBody, false);
+         mScene->mPhysicsWorld->CreateBodyWithMass(1000, collisionBody, false, 0);
 
          // Test for PBR
          {
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
             auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
+            StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));

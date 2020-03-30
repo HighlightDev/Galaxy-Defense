@@ -88,6 +88,6 @@ namespace Game
 
       btCollisionShape* LoadFloor();
 
-      btRigidBody* CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall);
+      btRigidBody* CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall, float yPos);
    };
 }

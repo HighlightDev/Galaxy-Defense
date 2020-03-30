@@ -1,2 +1,4 @@
-﻿  LoggerMain.cpp
+﻿  Core.cpp
+  LogInterface.cpp
+  Generating Code...
   Logger.vcxproj -> D:\GameEngine\PHEngine\Debug\Logger.lib
