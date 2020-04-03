@@ -65,12 +65,6 @@ namespace Game
          m_relativeMatrix *= cameraYawRotation;
       }
 
-      if (bIsPhysicsComponent)
-      {
-         glm::mat4 physTranslation = glm::translate(identityMatrix, phys_translation);
-         m_relativeMatrix *= physTranslation;
-      }
-
       if (!EngineUtility::CMP::Process(m_rotation.x, 0.0f))
       {
          const float pitchRad = DEG_TO_RAD(m_rotation.x);

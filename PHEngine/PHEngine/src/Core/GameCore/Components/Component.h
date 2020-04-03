@@ -21,9 +21,8 @@ namespace Game
 		Actor* m_owner;
 
 	public:
-      bool bIsPhysicsComponent = false;
 
-		Component();
+      Component();
 
 		virtual ~Component();
 

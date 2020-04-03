@@ -1,7 +1,6 @@
 #include "Actor.h"
 #include "Core/GameCore/Components/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
-#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 namespace Game
 {
@@ -11,8 +10,8 @@ namespace Game
       , m_rootComponent(rootComponent)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
+      , m_parent(nullptr)
 	{
-      m_parent = nullptr;
       m_rootComponent->bIsRootComponent = true;
 	}
 
@@ -25,13 +24,6 @@ namespace Game
 		if (m_rootComponent)
 		{
 			// Root component and all attached objects to this actor must update their transforms
-
-         if (pWorld && m_rootComponent->bIsPhysicsComponent)
-         {
-            auto translate = pWorld->GetBodyWorldTransform();
-            m_rootComponent->phys_translation = translate;
-            m_rootComponent->SetIsTransformationDirty(true);
-         }
 
 			if (m_rootComponent->GetIsTransformationDirty())
 			{
@@ -142,22 +134,22 @@ namespace Game
          m_movementComponent->Tick(deltaTime);
 	}
 
-   void Actor::AddInputComponent(std::shared_ptr<Game::Component> inputComponent)
-   {
-      inputComponent->SetOwner(this);
-      m_inputComponent = std::static_pointer_cast<InputComponent>(inputComponent);
-   }
-
-   void Actor::AddMovementComponent(std::shared_ptr<Game::Component> movementComponent)
-   {
-      movementComponent->SetOwner(this);
-      m_movementComponent = std::static_pointer_cast<MovementComponent>(movementComponent);
-   }
-
 	void Actor::AddComponent(std::shared_ptr<Game::Component> component)
 	{
       component->SetOwner(this);
-		m_allComponents.push_back(component);
+
+      if ((component->GetComponentType() & MOVEMENT_COMPONENT) == MOVEMENT_COMPONENT)
+      {
+         m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
+      }
+      else if ((component->GetComponentType() & INPUT_COMPONENT) == INPUT_COMPONENT)
+      {
+         m_inputComponent = std::static_pointer_cast<InputComponent>(component);
+      }
+      else
+      {
+         m_allComponents.push_back(component);
+      }
 	}
 
 	void Actor::RemoveComponent(std::shared_ptr<Game::Component> component)

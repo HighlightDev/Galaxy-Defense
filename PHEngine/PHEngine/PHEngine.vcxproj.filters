@@ -1764,6 +1764,9 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2121,6 +2124,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

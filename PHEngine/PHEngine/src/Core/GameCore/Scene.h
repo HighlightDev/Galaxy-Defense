@@ -65,22 +65,6 @@ namespace Game
 
       ~Scene();
 
-      void AddComponentToActor_GameThread(std::shared_ptr<Actor> owner, std::shared_ptr<Component> component)
-      {
-         if ((component->GetComponentType() & MOVEMENT_COMPONENT) == MOVEMENT_COMPONENT)
-         {
-            owner->AddMovementComponent(component);
-         }
-         else if ((component->GetComponentType() & INPUT_COMPONENT) == INPUT_COMPONENT)
-         {
-            owner->AddInputComponent(component);
-         }
-         else
-         {
-            owner->AddComponent(component);
-         }
-      }
-
       template <typename PrimitiveType>
       std::shared_ptr<Component> CreateComponent_GameThread(ComponentData& componentData)
       {

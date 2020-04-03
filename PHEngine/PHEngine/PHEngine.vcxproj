@@ -376,6 +376,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
@@ -795,6 +796,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />

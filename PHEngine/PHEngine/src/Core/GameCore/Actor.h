@@ -9,6 +9,7 @@
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 
 namespace Game
@@ -21,7 +22,8 @@ namespace Game
 	private:
 
       std::string mName;
-		std::shared_ptr<Game::SceneComponent> m_rootComponent;
+		std::shared_ptr<SceneComponent> m_rootComponent;
+      std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
 	protected:
 
@@ -35,8 +37,6 @@ namespace Game
 
 	public:
 
-      class PhysicsWorld* pWorld = nullptr;
-
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 
 		Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent = nullptr);
@@ -46,11 +46,7 @@ namespace Game
 		// Tick is executed on game thread
 		virtual void Tick(const float deltaTime) override;
 
-      void AddInputComponent(std::shared_ptr<Game::Component> inputComponent);
-
-      void AddMovementComponent(std::shared_ptr<Game::Component> movementComponent);
-
-		void AddComponent(std::shared_ptr<Game::Component> component);
+      void AddComponent(std::shared_ptr<Component> component);
 
 		void RemoveComponent(std::shared_ptr<Game::Component> component);
 
