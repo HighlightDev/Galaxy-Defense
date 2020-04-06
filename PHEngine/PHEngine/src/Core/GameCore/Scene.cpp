@@ -12,7 +12,7 @@ namespace Game
       , m_camera(new ThirdPersonCamera("MainCamera", 50, 20 , 20))
       , mPhysicsWorld(new PhysicsWorld())
    {
-      mPhysicsWorld->InitPhysics();
+      mPhysicsWorld->InitPhysicsWorld();
    }
 
    void Scene::PostConstructorInitialize()
@@ -20,6 +20,14 @@ namespace Game
       for (auto& lightProxy : LightProxies)
       {
          lightProxy->PostConstructorInitialize();
+      }
+   }
+
+   void Scene::PostPhysicsInitialize()
+   {
+      for (auto& actor : AllActors)
+      {
+         actor->PostPhysicsInitialize();
       }
    }
 
@@ -114,14 +122,16 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
             Job(creatorObjectId, functionId, [=]()
          {
-            LightProxies[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
+             LightProxies[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
          }));
       }
    }
 
    void Scene::Tick_GameThread(float delta)
    {
-      mPhysicsWorld->Tick(delta);
+      const float physTickStep = 1.0f / 60.0f;
+
+      mPhysicsWorld->Tick(physTickStep);
 
       m_camera->Tick(delta);
       for (auto& actor : AllActors)

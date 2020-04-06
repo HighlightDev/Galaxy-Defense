@@ -377,10 +377,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhySphereShape.h" />
     <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
     <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsDescriptorRemovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\Policy\Policies.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.h" />
     <ClInclude Include="src\Core\GameCore\ITickable.h" />
@@ -799,6 +804,7 @@
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />

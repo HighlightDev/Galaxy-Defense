@@ -1,93 +1,46 @@
 #pragma once
 
-
-#include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/ResourceManagerCore/Pool/PoolBase.h"
-#include "Core/UtilityCore/PlatformDependentFunctions.h"
-
-#include <memory>
-#include <string>
-#include <glm/vec3.hpp>
-#include "BulletPhys/btBulletDynamicsCommon.h"
-
-using namespace Graphics::Mesh;
-using namespace Resources;
+#include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
 
 namespace Game
 {
-  /*   class btBroadphaseInterface;
-     class btDefaultCollisionConfiguration;
-     class btCollisionDispatcher;
-     class btSequentialImpulseConstraintSolver;
-     class btDiscreteDynamicsWorld;
-     class btRigidBody;
-     class btCollisionShape;*/
-
-   template <typename Model>
-   struct PhysicsPoolAllocationPolicy
+   class PhysicsWorld 
+      : public ITickable
+      , public Event::PhysicsDescriptorRemovedEvent
    {
-      PhysicsPoolAllocationPolicy()
-      {
+      btBroadphaseInterface* mBroadphase;
 
-      }
+      btDefaultCollisionConfiguration*        mCollisionConfiguration;
 
-      ~PhysicsPoolAllocationPolicy()
-      {
+      btCollisionDispatcher*                  mDispatcher;
 
-      }
-      static std::shared_ptr<Skin> AllocateMemory(std::string arg);
-      static void DeallocateMemory(std::shared_ptr<Skin> arg);
-   };
+      btSequentialImpulseConstraintSolver*    mSolver;
 
-   struct PhysicsPool : public PoolBase<Skin, std::string, PhysicsPoolAllocationPolicy>
-   {
-      static std::unique_ptr<PhysicsPool> m_instance;
+      btDiscreteDynamicsWorld*                mWorld;
+
+      std::vector<PhysicsDescriptor*> mPhysicsDescriptors;
 
    public:
 
-      using poolType_t = PoolBase<Skin, std::string, PhysicsPoolAllocationPolicy>;
-
-      static std::unique_ptr<PhysicsPool>& GetInstance()
-      {
-         if (!m_instance)
-            m_instance = std::make_unique<PhysicsPool>();
-
-         return m_instance;
-      }
-
-      static void ReloadInstance()
-      {
-         if (m_instance)
-            m_instance.reset();
-      }
-   };
-
-   class PhysicsWorld
-   {
-   public:
       PhysicsWorld();
 
       ~PhysicsWorld();
 
-      btBroadphaseInterface* mBroadphase;
-      btDefaultCollisionConfiguration*        mCollisionConfiguration;
-      btCollisionDispatcher*                  mDispatcher;
-      btSequentialImpulseConstraintSolver*    mSolver;
-      btDiscreteDynamicsWorld*                mWorld;
-
-      btRigidBody*                            mBody;
-      btRigidBody*                            mFloor;
-
       void Tick(const float deltaTime);
 
-      void InitPhysics();
+      void InitPhysicsWorld();
 
-      glm::vec3 GetBodyWorldTransform();
+      void AddPhysDescriptor(PhysicsDescriptor* inDescriptor);
 
-      std::tuple<std::shared_ptr<Skin>, btCollisionShape*>  LoadSimpleSkinWithPhysics(const std::string& pathToObject);
+      void RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor);
 
-      btCollisionShape* LoadFloor();
+      void JoinPhysDescriptorsForSimulation();
 
-      btRigidBody* CreateBodyWithMass(float mass, btCollisionShape* shape, bool bFall, float yPos);
+   protected:
+
+      virtual void ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t& data) override;
+
    };
 }

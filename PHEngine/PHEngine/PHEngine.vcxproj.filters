@@ -1767,6 +1767,21 @@
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhySphereShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyShapeBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyBoxShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsDescriptorRemovedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2127,6 +2142,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

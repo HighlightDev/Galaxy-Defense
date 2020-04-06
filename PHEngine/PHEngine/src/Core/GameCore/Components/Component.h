@@ -16,7 +16,8 @@ namespace Game
 	// of all components which could be 
 	// picked by actor
 	class Component
-      : public GameObject, public ITickable
+      : public GameObject
+      , public ITickable
 	{
 		Actor* m_owner;
 
@@ -27,9 +28,6 @@ namespace Game
 		virtual ~Component();
 
       virtual uint64_t GetComponentType() const;
-
-		// Game thread tick
-		virtual void Tick(const float deltaTime) override;
 
 		void SetOwner(Actor* ownerActor);
 

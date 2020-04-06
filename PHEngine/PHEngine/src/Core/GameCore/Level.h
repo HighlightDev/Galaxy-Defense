@@ -23,6 +23,8 @@ namespace Game
 
       void PostConstructorInitialize();
 
+      void PostPhysicsInitialize();
+
       void InitLevel();
 
       virtual void TickLevel(const float deltaTime);

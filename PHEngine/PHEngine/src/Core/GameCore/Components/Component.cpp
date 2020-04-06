@@ -15,11 +15,6 @@ namespace Game
 	{
 	}
 
-	void Component::Tick(const float deltaTime)
-	{
-
-	}
-
 	void Component::SetOwner(Actor* ownerActor)
 	{
 		m_owner = ownerActor;

@@ -44,6 +44,11 @@ namespace Game
       mScene->PostConstructorInitialize();
    }
 
+   void Level::PostPhysicsInitialize()
+   {
+      mScene->PostPhysicsInitialize();
+   }
+
    void Level::InitLevel()
    {
       LoadLevel();

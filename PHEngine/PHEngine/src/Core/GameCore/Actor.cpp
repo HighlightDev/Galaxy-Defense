@@ -19,6 +19,17 @@ namespace Game
 	{
 	}
 
+   void Actor::PostPhysicsInitialize()
+   {
+      if (m_physicsComponent)
+         m_physicsComponent->PostPhysicsInit();
+
+      for (const auto& child : m_children)
+      {
+         child->PostPhysicsInitialize();
+      }
+   }
+
 	void Actor::UpdateRootComponentTransform()
 	{
 		if (m_rootComponent)
@@ -112,6 +123,11 @@ namespace Game
 	void Actor::Tick(const float deltaTime)
 	{
 		UpdateRootComponentTransform();
+
+      if (m_physicsComponent)
+      {
+         m_physicsComponent->Tick(deltaTime);
+      }
 
 		m_rootComponent->Tick(deltaTime);
 

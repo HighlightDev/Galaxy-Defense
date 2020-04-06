@@ -11,6 +11,8 @@ namespace Event
    template class TEvent<AtomicEventPolicy<uint64_t>>;
    template class TEvent<AtomicEventPolicy<Game::ICamera*>>;
 
+   template class TEvent<MultipleEventPolicy<size_t>>;
+
    template <typename PolicyT>
    typename TEvent<PolicyT>::Event_t* TEvent<PolicyT>::m_instance = nullptr;
 }

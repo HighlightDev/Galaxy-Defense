@@ -43,6 +43,8 @@ namespace Game
 
 		virtual ~Actor();
 
+      void PostPhysicsInitialize();
+
 		// Tick is executed on game thread
 		virtual void Tick(const float deltaTime) override;
 

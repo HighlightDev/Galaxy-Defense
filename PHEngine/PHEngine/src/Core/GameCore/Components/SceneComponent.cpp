@@ -37,8 +37,6 @@ namespace Game
 
 	void SceneComponent::Tick(const float deltaTime)
 	{
-		Base::Tick(deltaTime);
-	
 	}
 
    uint64_t SceneComponent::GetComponentType() const

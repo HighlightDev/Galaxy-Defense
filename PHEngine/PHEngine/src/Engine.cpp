@@ -25,6 +25,8 @@ void Engine::PlayLevel(std::shared_ptr<Level> level)
 
    PostConstructorInitialize();
 
+   PostPhysicsInitialize();
+
    m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
    m_gameThread.detach();
 }
@@ -38,6 +40,11 @@ void Engine::PostConstructorInitialize()
 {
    m_level->PostConstructorInitialize();
    m_sceneRenderer->PostConstructorInitialize();
+}
+
+void Engine::PostPhysicsInitialize()
+{
+   m_level->PostPhysicsInitialize();
 }
 
 void Engine::GameThreadPulse()

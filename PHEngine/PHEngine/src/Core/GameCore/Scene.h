@@ -46,6 +46,8 @@ namespace Game
 
       void PostConstructorInitialize();
 
+      void PostPhysicsInitialize();
+
       inline class ICamera* GetCamera() const
       {
          return m_camera;
