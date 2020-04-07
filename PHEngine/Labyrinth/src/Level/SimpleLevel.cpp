@@ -27,6 +27,10 @@
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/Shapes/PhyBoxShape.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+
 #include <glm/vec3.hpp>
 
 #include <LogInterface.h>
@@ -63,6 +67,12 @@ namespace Labyrinth
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
+
+            PhysicsDescriptor* cubePhysDesc = new PhysicsDescriptor(new PhyBoxShape(glm::vec3(2)), 25.0f);
+            mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
+            std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
+            cubeActor->AddComponent(cubePhysComponent);
+
             mScene->AllActors.push_back(cubeActor);
          }
       }
@@ -95,9 +105,17 @@ namespace Labyrinth
          auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "water_normal.png");
          auto distortionTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetDistortionTexturePath() + "water_dudv.png");
          WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>(normalTex, distortionTex));
+
          std::shared_ptr<Actor> waterActor = std::make_shared<Actor>("Water", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+
          auto waterComp = mScene->CreateComponent_GameThread<WaterPlaneComponent>(mData);
          waterActor->AddComponent(waterComp);
+
+         PhysicsDescriptor* waterPhysDesc = new PhysicsDescriptor(new PhyPlaneShape(glm::vec3(0, 1, 0), 0), 0.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(waterPhysDesc);
+         std::shared_ptr<PhysicsComponent> waterPhysComponent = std::make_shared<PhysicsComponent>(waterPhysDesc);
+         waterActor->AddComponent(waterPhysComponent);
+
          mScene->AllActors.push_back(waterActor);
       }
 

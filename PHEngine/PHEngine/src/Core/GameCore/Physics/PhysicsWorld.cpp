@@ -76,6 +76,8 @@ namespace Game
             mWorld->addRigidBody(body);
          }
       }
+
+      //mPhysicsDescriptors[0]->GetRigidBody()->setLinearVelocity(btVector3(0, -1, 0));
    }
 
    void PhysicsWorld::Tick(const float deltaTime)

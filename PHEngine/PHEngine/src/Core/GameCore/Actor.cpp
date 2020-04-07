@@ -1,4 +1,4 @@
-#include "Actor.h"
+#include "Actor.h" 
 #include "Core/GameCore/Components/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
 
@@ -8,6 +8,7 @@ namespace Game
 	Actor::Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
       : mName(name)
       , m_rootComponent(rootComponent)
+      , m_physicsComponent(nullptr)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
       , m_parent(nullptr)
@@ -22,11 +23,22 @@ namespace Game
    void Actor::PostPhysicsInitialize()
    {
       if (m_physicsComponent)
+      {
          m_physicsComponent->PostPhysicsInit();
+      }
 
       for (const auto& child : m_children)
       {
          child->PostPhysicsInitialize();
+      }
+   }
+
+   // todo: make somthing better!!!
+   void Actor::UpdateParentMatrixWithPhysicsTransformMatrix(glm::mat4& parentMatrix)
+   {
+      if (m_physicsComponent && m_physicsComponent->IsTransformDirty())
+      {
+         parentMatrix = m_physicsComponent->GetTransformMatrix() * parentMatrix;
       }
    }
 
@@ -41,9 +53,13 @@ namespace Game
 				// Update root component with parent transform matrix
 				{
 					glm::mat4 parentRelativeMatrix(1);	// identity matrix
-
+       
 					if (m_parent)
 						parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
+
+               // todo: make somthing better!!!
+               // Update with physics matrix
+               UpdateParentMatrixWithPhysicsTransformMatrix(parentRelativeMatrix);
 
 					m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
 				}
@@ -80,13 +96,15 @@ namespace Game
 				parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
 
 			// Update all components that have transformation
-         glm::mat4 rootRelativeMatrix(1);
-         rootRelativeMatrix *= parentRelativeMatrix;
 
          if (m_rootComponent)
          {
-            rootRelativeMatrix = std::move(m_rootComponent->GetRelativeMatrix());
+            parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
          }
+
+         // todo: make somthing better!!!
+         // Update with physics matrix
+         UpdateParentMatrixWithPhysicsTransformMatrix(parentRelativeMatrix);
          
 			for (auto& component : m_allComponents)
 			{
@@ -95,7 +113,7 @@ namespace Game
 					SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
 					if (sceneComp->GetIsTransformationDirty())
 					{
-						sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
+						sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
 					}
 				}
 			}
@@ -122,12 +140,13 @@ namespace Game
 
 	void Actor::Tick(const float deltaTime)
 	{
-		UpdateRootComponentTransform();
-
+      // Update physics
       if (m_physicsComponent)
       {
          m_physicsComponent->Tick(deltaTime);
       }
+
+      UpdateRootComponentTransform();
 
 		m_rootComponent->Tick(deltaTime);
 
@@ -154,13 +173,17 @@ namespace Game
 	{
       component->SetOwner(this);
 
-      if ((component->GetComponentType() & MOVEMENT_COMPONENT) == MOVEMENT_COMPONENT)
+      if (component->GetComponentType() == MOVEMENT_COMPONENT)
       {
          m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
       }
-      else if ((component->GetComponentType() & INPUT_COMPONENT) == INPUT_COMPONENT)
+      else if (component->GetComponentType() == INPUT_COMPONENT)
       {
          m_inputComponent = std::static_pointer_cast<InputComponent>(component);
+      }
+      else if (component->GetComponentType() == PHYSICS_COMPONENT)
+      {
+         m_physicsComponent = std::static_pointer_cast<PhysicsComponent>(component);
       }
       else
       {

@@ -9,6 +9,10 @@ namespace Game {
       : public Component
    {
       PhysicsDescriptor* mDescriptor;
+      
+      glm::mat4 mTransformMatrix;
+
+      bool bIsDirty;
 
    public:
 
@@ -19,6 +23,16 @@ namespace Game {
       virtual void Tick(const float deltaTime) override;
 
       void PostPhysicsInit();
+
+      bool IsTransformDirty() const;
+
+      glm::mat4 GetTransformMatrix() const;
+      
+      virtual uint64_t GetComponentType() const override;
+
+   private:
+
+      glm::mat4 GetWorldTransformMatrixFromArray(float* mat) const;
    };
 }
 

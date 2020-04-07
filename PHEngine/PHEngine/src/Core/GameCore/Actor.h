@@ -85,6 +85,8 @@ namespace Game
          return m_movementComponent;
       }
 
+      void UpdateParentMatrixWithPhysicsTransformMatrix(glm::mat4& parentMatrix);
+
 		// If root component has dirty transformation -> update it and all attached actors + children components
 		void UpdateRootComponentTransform();
 

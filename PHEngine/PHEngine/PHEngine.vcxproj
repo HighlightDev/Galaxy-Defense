@@ -378,6 +378,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyPlaneShape.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhySphereShape.h" />
@@ -809,7 +810,6 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />
     <ClCompile Include="src\Core\GameCore\Level.cpp" />
-    <ClCompile Include="src\Core\GameCore\LevelFactory.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.cpp" />

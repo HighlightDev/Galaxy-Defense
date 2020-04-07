@@ -51,9 +51,27 @@ namespace Game
       return mRigidBody;
    }
 
+   btMotionState* PhysicsDescriptor::GetMotionState() const
+   {
+      return mMotionState;
+   }
+
    void PhysicsDescriptor::CompleteRigidBodyConstruction()
    {
       btRigidBody::btRigidBodyConstructionInfo info(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
       mRigidBody = new btRigidBody(info);
+   }
+
+   float* PhysicsDescriptor::GetMotionWorldTransformMat4(bool& bIsWorldTransformDiry)
+   {
+      btTransform transform;
+      mMotionState->getWorldTransform(transform);
+      btScalar btMatrix[16];
+      transform.getOpenGLMatrix(btMatrix);
+
+      bIsWorldTransformDiry = memcmp(btMatrix, prevTransformMatrix, 16 * sizeof(float)) != 0;
+      memcpy(prevTransformMatrix, btMatrix, 16 * sizeof(float));
+
+      return prevTransformMatrix;
    }
 }

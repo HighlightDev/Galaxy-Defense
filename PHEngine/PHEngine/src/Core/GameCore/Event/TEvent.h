@@ -43,20 +43,6 @@ namespace Event
          return m_instance;
       }
 
-      virtual void ProcessEvent(const EventData_t& data) { }
-
-      void AddListener(Event_t* eventListener)
-      {
-         m_listeners.push_back(eventListener);
-      }
-
-      void RemoveListener(Event_t* eventListener)
-      {
-         auto it = std::find(m_listeners.begin(), m_listeners.end(), eventListener);
-         if (it != m_listeners.end())
-            m_listeners.erase(it);
-      }
-
       template <typename... DataTypesT>
       void SendEvent(DataTypesT&&... data)
       {
@@ -74,6 +60,22 @@ namespace Event
             }
          }
       }
+
+      void AddListener(Event_t* eventListener)
+      {
+         m_listeners.push_back(eventListener);
+      }
+
+      void RemoveListener(Event_t* eventListener)
+      {
+         auto it = std::find(m_listeners.begin(), m_listeners.end(), eventListener);
+         if (it != m_listeners.end())
+            m_listeners.erase(it);
+      }
+
+   protected:
+
+      virtual void ProcessEvent(const EventData_t& data) { }
    };
 }
 

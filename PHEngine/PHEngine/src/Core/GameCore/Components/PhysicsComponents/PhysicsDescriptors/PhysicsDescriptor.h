@@ -3,6 +3,7 @@
 #include "Shapes/PhyShapeBase.h"
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace Game
 {
@@ -26,6 +27,8 @@ namespace Game
 
       btRigidBody* mRigidBody;
 
+      float prevTransformMatrix[16];
+
    public:
 
       PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f);
@@ -38,11 +41,17 @@ namespace Game
 
       void SetMotionStateWorldTransform(const float yaw, const float pitch, const float roll, const glm::vec3& translation);
 
-      btTransform GetMotionWorldTransform() const;
-
       btRigidBody* GetRigidBody() const;
 
+      btMotionState* GetMotionState() const;
+
       void CompleteRigidBodyConstruction();
+
+      float* GetMotionWorldTransformMat4(bool& bIsWorldTransformDiry);
+
+   private:
+
+      btTransform GetMotionWorldTransform() const;
    };
 
 }
