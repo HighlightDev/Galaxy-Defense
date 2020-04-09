@@ -28,8 +28,8 @@ namespace Game
 
 	void ICamera::Rotate()
 	{
-		int32_t x = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaX();
-		int32_t y = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaY();
+      const int32_t x = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaX();
+      const int32_t y = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaY();
 
 		UpdateRotationMatrix(-x, -y);
 	}

@@ -9,7 +9,7 @@
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/PlayerController.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/GameCore/Components/PrimitiveComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 
 
 using namespace Graphics::Proxy;
@@ -68,7 +68,7 @@ namespace Game
       ~Scene();
 
       template <typename PrimitiveType>
-      std::shared_ptr<Component> CreateComponent_GameThread(ComponentData& componentData)
+      std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
          auto component = ComponentCreatorFactory<PrimitiveType>::CreateComponent(componentData);
          uint64_t type = component->GetComponentType();

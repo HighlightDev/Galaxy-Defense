@@ -179,7 +179,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 				vec3 Li = -normalize(DirLightDirection[directLightIndex]);
 
 				// temporary
-				vec3 lightRadiance = vec3(1); // for now
+				vec3 lightRadiance = DirLightDiffuseColor[directLightIndex]; // for now
 				// temprorary
 
 				vec3 Lradiance = lightRadiance;

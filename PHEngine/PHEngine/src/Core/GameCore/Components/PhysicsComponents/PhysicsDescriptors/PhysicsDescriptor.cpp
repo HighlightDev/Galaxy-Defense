@@ -62,16 +62,39 @@ namespace Game
       mRigidBody = new btRigidBody(info);
    }
 
-   float* PhysicsDescriptor::GetMotionWorldTransformMat4(bool& bIsWorldTransformDiry)
+   void PhysicsDescriptor::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)
    {
       btTransform transform;
       mMotionState->getWorldTransform(transform);
       btScalar btMatrix[16];
       transform.getOpenGLMatrix(btMatrix);
 
-      bIsWorldTransformDiry = memcmp(btMatrix, prevTransformMatrix, 16 * sizeof(float)) != 0;
-      memcpy(prevTransformMatrix, btMatrix, 16 * sizeof(float));
+      bIsWorldTransformDiry = memcmp(btMatrix, mPrevTransformMatrix, 16 * sizeof(float)) != 0;
+      memcpy(mPrevTransformMatrix, btMatrix, 16 * sizeof(float));
 
-      return prevTransformMatrix;
+      if (bIsWorldTransformDiry)
+      {
+         float yaw, pitch, roll;
+
+         transform.getBasis().getEulerZYX(yaw, pitch, roll);
+         mRotation = std::move(glm::vec3(yaw, pitch, roll));
+         mTranslation = std::move(glm::vec3(transform.getOrigin().x(), transform.getOrigin().y(), transform.getOrigin().z()));
+      }
+   }
+
+
+   float* PhysicsDescriptor::GetTrasformMatrix4x4()
+   {
+      return mPrevTransformMatrix;
+   }
+
+   glm::vec3 PhysicsDescriptor::GetRotation() const
+   {
+      return mRotation;
+   }
+
+   glm::vec3 PhysicsDescriptor::GetTranslation() const
+   {
+      return mTranslation;
    }
 }

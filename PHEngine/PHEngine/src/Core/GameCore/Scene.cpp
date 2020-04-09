@@ -129,11 +129,21 @@ namespace Game
       }
    }
 
+   static int counter = 0;
+
    void Scene::Tick_GameThread(float delta)
    {
       const float physTickStep = 1.0f / 60.0f;
 
-      mPhysicsWorld->Tick(physTickStep);
+      if  (counter == 30)
+      {
+         mPhysicsWorld->Tick(physTickStep);
+         counter = 0;
+      }
+      else
+      {
+         counter++;
+      }
 
       m_camera->Tick(delta);
       for (auto& actor : AllActors)

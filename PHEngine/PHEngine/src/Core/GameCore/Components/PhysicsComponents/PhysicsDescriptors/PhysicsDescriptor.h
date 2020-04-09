@@ -27,7 +27,11 @@ namespace Game
 
       btRigidBody* mRigidBody;
 
-      float prevTransformMatrix[16];
+      float mPrevTransformMatrix[16];
+
+      glm::vec3 mRotation;
+
+      glm::vec3 mTranslation;
 
    public:
 
@@ -47,7 +51,13 @@ namespace Game
 
       void CompleteRigidBodyConstruction();
 
-      float* GetMotionWorldTransformMat4(bool& bIsWorldTransformDiry);
+      void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry);
+
+      float* GetTrasformMatrix4x4();
+      
+      glm::vec3 GetRotation() const;
+      
+      glm::vec3 GetTranslation() const;
 
    private:
 

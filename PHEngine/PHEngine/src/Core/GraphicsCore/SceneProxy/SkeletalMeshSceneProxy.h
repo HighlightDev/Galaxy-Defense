@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/SkeletalMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
 #include "Core/GraphicsCore/Animation/AnimationSequence.h"
 #include "Core/GraphicsCore/Animation/AnimationHolder.h"

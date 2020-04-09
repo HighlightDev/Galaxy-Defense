@@ -1,5 +1,5 @@
 #include "Actor.h" 
-#include "Core/GameCore/Components/PrimitiveComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
 
 namespace Game
@@ -32,16 +32,7 @@ namespace Game
          child->PostPhysicsInitialize();
       }
    }
-
-   // todo: make somthing better!!!
-   void Actor::UpdateParentMatrixWithPhysicsTransformMatrix(glm::mat4& parentMatrix)
-   {
-      if (m_physicsComponent && m_physicsComponent->IsTransformDirty())
-      {
-         parentMatrix = m_physicsComponent->GetTransformMatrix() * parentMatrix;
-      }
-   }
-
+  
 	void Actor::UpdateRootComponentTransform()
 	{
 		if (m_rootComponent)
@@ -56,11 +47,7 @@ namespace Game
        
 					if (m_parent)
 						parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
-
-               // todo: make somthing better!!!
-               // Update with physics matrix
-               UpdateParentMatrixWithPhysicsTransformMatrix(parentRelativeMatrix);
-
+               
 					m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
 				}
 
@@ -101,11 +88,7 @@ namespace Game
          {
             parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
          }
-
-         // todo: make somthing better!!!
-         // Update with physics matrix
-         UpdateParentMatrixWithPhysicsTransformMatrix(parentRelativeMatrix);
-         
+       
 			for (auto& component : m_allComponents)
 			{
 				if ((component->GetComponentType() & SCENE_COMPONENT) == SCENE_COMPONENT)

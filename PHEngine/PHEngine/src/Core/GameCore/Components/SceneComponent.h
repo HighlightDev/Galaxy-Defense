@@ -54,37 +54,39 @@ namespace Game
          m_scene = scene;
       }
 
-      void SetIsTransformationDirty(const bool isDirty)
+      void SetIsTransformationDirty(const bool isDirty, const bool bTriggerTransformUpdateEvent = true)
       {
          bTransformationDirty = true;
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+
+         if (bTriggerTransformUpdateEvent)
+            Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
       }
 
-		void SetTranslation(glm::vec3 translation)
+		void SetTranslation(glm::vec3 translation, const bool bTriggerTransformUpdateEvent = true)
 		{
 			m_translation = translation;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetRotation(glm::vec3 rotation)
+		void SetRotation(glm::vec3 rotation, const bool bTriggerTransformUpdateEvent = true)
 		{
 			m_rotation = rotation;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetScale(glm::vec3 scale)
+		void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true)
 		{
 			m_scale = scale;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-      void SetAdditionalRotation(const glm::vec3& rotation)
+      void SetAdditionalRotation(const glm::vec3& rotation, const bool bTriggerTransformUpdateEvent = true)
       {
          m_additionalRotation = rotation;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
       }
 
-		void SetRotationAxisX(float new_x)
+		void SetRotationAxisX(float new_x, const bool bTriggerTransformUpdateEvent = true)
 		{
 			if (new_x > 360.0f)
 			{
@@ -92,10 +94,10 @@ namespace Game
 			}
 			else
 				m_rotation.x = new_x;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetRotationAxisY(float new_y)
+		void SetRotationAxisY(float new_y, const bool bTriggerTransformUpdateEvent = true)
 		{
 			if (new_y > 360.0f)
 			{
@@ -103,10 +105,10 @@ namespace Game
 			}
 			else
 				m_rotation.y = new_y;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetRotationAxisZ(float new_z)
+		void SetRotationAxisZ(float new_z, const bool bTriggerTransformUpdateEvent = true)
 		{
 			if (new_z > 360.0f)
 			{
@@ -114,7 +116,7 @@ namespace Game
 			}
 			else
 				m_rotation.z = new_z;
-         SetIsTransformationDirty(true);
+         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
 		inline bool GetIsTransformationDirty() const {

@@ -1,5 +1,5 @@
 #pragma once
-#include "SceneComponent.h"
+#include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"

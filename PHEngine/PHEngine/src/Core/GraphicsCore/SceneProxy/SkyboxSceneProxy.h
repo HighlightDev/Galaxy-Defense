@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/SkyboxComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"

@@ -318,10 +318,13 @@ namespace Graphics
          glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
          glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+         glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          for (auto& proxy : forwardedPrimitives)
          {
             proxy->Render(const_cast<glm::mat4&>(viewMatrix), ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
          }
+         glDisable(GL_BLEND);
       }
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()

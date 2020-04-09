@@ -1,6 +1,6 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/BillboardComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/ShaderImplementation/BillboardShader.h"
 
 using namespace Game;

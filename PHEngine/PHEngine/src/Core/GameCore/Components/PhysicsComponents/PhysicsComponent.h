@@ -10,9 +10,7 @@ namespace Game {
    {
       PhysicsDescriptor* mDescriptor;
       
-      glm::mat4 mTransformMatrix;
-
-      bool bIsDirty;
+      bool bIsTransformationDirty;
 
    public:
 
@@ -26,13 +24,8 @@ namespace Game {
 
       bool IsTransformDirty() const;
 
-      glm::mat4 GetTransformMatrix() const;
-      
       virtual uint64_t GetComponentType() const override;
 
-   private:
-
-      glm::mat4 GetWorldTransformMatrixFromArray(float* mat) const;
    };
 }
 

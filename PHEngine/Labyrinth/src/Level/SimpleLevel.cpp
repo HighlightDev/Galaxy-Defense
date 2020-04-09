@@ -3,12 +3,15 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 
-#include "Core/GameCore/Components/BillboardComponent.h"
-#include "Core/GameCore/Components/StaticMeshComponent.h"
-#include "Core/GameCore/Components/SkeletalMeshComponent.h"
-#include "Core/GameCore/Components/SkyboxComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PhysicsShapeDebugRenderComponent.h"
+
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
+
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 
@@ -16,9 +19,11 @@
 #include "Core/GameCore/Components/ComponentData/StaticMeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkeletalMeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PhyShapeDebugComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
+#include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
@@ -68,10 +73,15 @@ namespace Labyrinth
             auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
-            PhysicsDescriptor* cubePhysDesc = new PhysicsDescriptor(new PhyBoxShape(glm::vec3(2)), 25.0f);
+            PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0f));
+
+            PhysicsDescriptor* cubePhysDesc = new PhysicsDescriptor(shape, 25.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
             cubeActor->AddComponent(cubePhysComponent);
+
+            auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+            cubeActor->AddComponent(debugRenderPhysComp);
 
             mScene->AllActors.push_back(cubeActor);
          }
@@ -79,24 +89,25 @@ namespace Labyrinth
 
       // Dir light
       {
-         auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* dirLightInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest);
+         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(1024, 1024));
+         ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
 
-         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* dirLightInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
+         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(1024, 1024));
+         ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2);
 
-         DirectionalLightComponentData mData(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(0.68f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), dirLightInfo);
+         DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
+            glm::vec3(1.68f, 0.5f, 2.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);
 
-         DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(0.68f, 0.5f, 0.5f), glm::vec3(0.7f, 0.7f, 0.7f), dirLightInfo1);
+         DirectionalLightComponentData mData2(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
+            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
+
+         auto dirLightComponent1 =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
+         auto dirLightComponent2 = mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData2);
 
          std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
 
-         auto dirLightComponent =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData);
-         dirLightActor->AddComponent(dirLightComponent);
-         dirLightComponent = mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
-         dirLightActor->AddComponent(dirLightComponent);
+         dirLightActor->AddComponent(dirLightComponent1);
+         dirLightActor->AddComponent(dirLightComponent2);
          mScene->AllActors.push_back(dirLightActor);
       }
 
@@ -141,13 +152,23 @@ namespace Labyrinth
          auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
          auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0), glm::vec3(), glm::vec3(2.5f),
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0 ,-2.5f, 0), glm::vec3(), glm::vec3(2.5f),
             std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr));
          auto staticComp = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
 
-         std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
        
          houseActor->AddComponent(staticComp);
+
+         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(6, 6.5f, 6));
+
+         PhysicsDescriptor* housePhysDesc = new PhysicsDescriptor(shape, 125.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(housePhysDesc);
+         std::shared_ptr<PhysicsComponent> housePhysComponent = std::make_shared<PhysicsComponent>(housePhysDesc);
+         houseActor->AddComponent(housePhysComponent);
+
+         auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         houseActor->AddComponent(debugRenderPhysComp);
 
          mScene->AllActors.push_back(houseActor);
       }

@@ -1,6 +1,6 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/WaterPlaneComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
 #include "Core/GameCore/FramebufferImplementation/WaterPlaneFramebuffer.h"
 #include "Core/GameCore/ShaderImplementation/WaterPlaneShader.h"
 

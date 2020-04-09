@@ -1,6 +1,6 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/CubemapComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/CubemapComponent.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 
 using namespace Game;

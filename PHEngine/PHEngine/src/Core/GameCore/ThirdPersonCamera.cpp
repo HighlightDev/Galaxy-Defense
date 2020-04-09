@@ -98,7 +98,7 @@ namespace Game
       if (!m_thirdPersonTarget)
          return glm::vec3(1);
 
-      return m_actualTargetVector;
+      return m_actualTargetVector + glm::vec3(0, 5, 0); // attach to "head"
    }
 
    void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetToCamera)

@@ -31,7 +31,7 @@ namespace Graphics
    {
       if (!m_atlasTexture)
       {
-         TexParams shadowMapParams(shadow_map_size, shadow_map_size, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT);
+         TexParams shadowMapParams(shadow_map_size, shadow_map_size, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, true);
          m_atlasTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(shadowMapParams);
       }
    }

@@ -296,6 +296,8 @@
     <None Include="res\shaders\common\materialCommon.incl" />
     <None Include="res\shaders\composite_shaders\forwardFS.glsl" />
     <None Include="res\shaders\composite_shaders\simpleVS.glsl" />
+    <None Include="res\shaders\defaultRenderFS.glsl" />
+    <None Include="res\shaders\defaultRenderVS.glsl" />
     <None Include="res\shaders\material_shaders\PBRMaterial.glsl" />
     <None Include="res\shaders\common\VSCommon.glsl" />
     <None Include="res\shaders\composite_shaders\deferredCollectFS.glsl" />
@@ -376,12 +378,16 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyPlaneShape.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\Shapes\PhySphereShape.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
@@ -392,6 +398,8 @@
     <ClInclude Include="src\Core\GameCore\ITickable.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterial.h" />
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\CubemapRenderData.h" />
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\PhyShapeDebugRenderData.h" />
     <ClInclude Include="src\Core\IoCore\FileFacade.h" />
     <ClInclude Include="src\Core\GameCore\Level.h" />
     <ClInclude Include="src\Core\CommonCore\CommonMeta.h" />
@@ -413,7 +421,7 @@
     <ClInclude Include="src\Core\CommonApi\StringHash.h" />
     <ClInclude Include="src\Core\CommonApi\VariableWrapper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\CubemapComponentData.h" />
-    <ClInclude Include="src\Core\GameCore\Components\CubemapComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\SceneComponentTransformChangedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PlayerMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\GameObject.h" />
@@ -425,7 +433,7 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\SimplePrimitivePool.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\BillboardComponentData.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\BillboardShader.h" />
-    <ClInclude Include="src\Core\GameCore\Components\BillboardComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\BillboardComponent.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CubemapDepthShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderParams.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\BillboardRenderData.h" />
@@ -443,10 +451,9 @@
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasHandler.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\AnimationPool.h" />
-    <ClInclude Include="src\Core\GameCore\Components\SkeletalMeshComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationHolder.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h" />
-    <ClInclude Include="src\Core\GameCore\Components\CollisionComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h" />
@@ -500,9 +507,9 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\SkyboxComponentData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\MeshPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreatorFactory.h" />
-    <ClInclude Include="src\Core\GameCore\Components\SkyboxComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.h" />
-    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PrimitiveComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\Component.h" />
     <ClInclude Include="src\Core\GameCore\Actor.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentType.h" />
@@ -788,10 +795,10 @@
     <ClInclude Include="src\Core\GraphicsCore\Texture\TextureMipMapState.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\TextureAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\TexturePool.h" />
-    <ClInclude Include="src\Core\GameCore\Components\StaticMeshComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\StaticMeshComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\StaticMeshSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\StaticMeshRenderData.h" />
-    <ClInclude Include="src\Core\GameCore\Components\WaterPlaneComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\WaterPlaneFramebuffer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.h" />
@@ -802,10 +809,12 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsDescriptors\PhysicsDescriptor.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />
@@ -815,7 +824,7 @@
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\PBRMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\IMaterial.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\CubemapComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\GameObject.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CubemapShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\BillboardSceneProxy.cpp" />
@@ -824,7 +833,7 @@
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\SimplePrimitiveAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\SimplePrimitivePool.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\BillboardShader.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\BillboardComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\BillboardComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CubemapDepthShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderParams.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedPointShadowInfo.cpp" />
@@ -838,10 +847,9 @@
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\AnimationPool.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\SkeletalMeshComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Animation\AnimationHolder.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\CollisionComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\KeyboardInputManager.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\KeyboardBindings.cpp" />
@@ -872,8 +880,8 @@
     <ClCompile Include="src\Core\GameCore\GlobalProperties.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\ShaderPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\MeshPool.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\SkyboxComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\PrimitiveComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\Component.cpp" />
     <ClCompile Include="src\Core\GameCore\Actor.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.cpp" />
@@ -911,9 +919,9 @@
     <ClCompile Include="src\Core\GraphicsCore\Texture\Texture2d.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\TextureAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\TexturePool.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\StaticMeshComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\StaticMeshComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\StaticMeshSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\WaterPlaneComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\WaterPlaneFramebuffer.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.cpp" />
