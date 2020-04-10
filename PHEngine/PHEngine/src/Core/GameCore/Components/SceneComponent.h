@@ -21,8 +21,10 @@ namespace Game
 
       bool bTransformationDirty;
 
+      bool mIsVisible;
+
 		glm::vec3 m_translation;
-		glm::vec3 m_rotation;
+		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
 
 		glm::mat4 m_relativeMatrix;
@@ -49,6 +51,14 @@ namespace Game
 		/* This method works every time when this component has dirty transform */
 		virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix);
 
+      void SetIsVisible(bool isVisible);
+
+      inline bool IsVisible() const {
+         return mIsVisible;
+      }
+
+      virtual void OnVisibilityChanged() {}
+
       inline void SetScene(Scene* scene)
       {
          m_scene = scene;
@@ -68,9 +78,9 @@ namespace Game
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetRotation(glm::vec3 rotation, const bool bTriggerTransformUpdateEvent = true)
+		void SetEulerRotationDegrees(glm::vec3 rotation, const bool bTriggerTransformUpdateEvent = true)
 		{
-			m_rotation = rotation;
+			m_eulerRotationDegrees = rotation;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
@@ -90,10 +100,10 @@ namespace Game
 		{
 			if (new_x > 360.0f)
 			{
-				m_rotation.x = new_x - 360.0f;
+				m_eulerRotationDegrees.x = new_x - 360.0f;
 			}
 			else
-				m_rotation.x = new_x;
+				m_eulerRotationDegrees.x = new_x;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
@@ -101,10 +111,10 @@ namespace Game
 		{
 			if (new_y > 360.0f)
 			{
-				m_rotation.y = new_y - 360.0f;
+				m_eulerRotationDegrees.y = new_y - 360.0f;
 			}
 			else
-				m_rotation.y = new_y;
+				m_eulerRotationDegrees.y = new_y;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
@@ -112,12 +122,14 @@ namespace Game
 		{
 			if (new_z > 360.0f)
 			{
-				m_rotation.z = new_z - 360.0f;
+				m_eulerRotationDegrees.z = new_z - 360.0f;
 			}
 			else
-				m_rotation.z = new_z;
+				m_eulerRotationDegrees.z = new_z;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
+
+      glm::mat3 GetEuelerRotationMatrix() const;
 
 		inline bool GetIsTransformationDirty() const {
 			return bTransformationDirty;
@@ -128,9 +140,9 @@ namespace Game
 			return m_translation;
 		}
 
-		inline glm::vec3 GetRotation() const
+		inline glm::vec3 GetEulerRotationDegrees() const
 		{
-			return m_rotation;
+			return m_eulerRotationDegrees;
 		}
 
 		inline glm::vec3 GetScale() const

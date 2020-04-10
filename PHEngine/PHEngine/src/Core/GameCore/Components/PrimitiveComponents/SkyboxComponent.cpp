@@ -25,7 +25,7 @@ namespace Game
 	{
 		Base::Tick(deltaTime);
 		
-		SetRotationAxisY(m_rotation.y + deltaTime * m_rotateSpeed);
+		SetRotationAxisY(m_eulerRotationDegrees.y + deltaTime * m_rotateSpeed);
 	}
 
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

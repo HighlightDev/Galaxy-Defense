@@ -15,7 +15,7 @@ namespace Game
 
          : ComponentData()
          , m_translation(std::move(translation))
-         , m_rotation(std::move(rotation))
+         , m_eulerRotationDegrees(std::move(rotation))
          , m_scale(std::move(scale))
          , m_pathToTexture(std::move(pathToTexture))
          , m_vsShaderPath(std::move(vsPath))
@@ -30,7 +30,7 @@ namespace Game
       }
 
       glm::vec3 m_translation;
-      glm::vec3 m_rotation;
+      glm::vec3 m_eulerRotationDegrees;
       glm::vec3 m_scale;
       std::string m_pathToTexture;
       std::string m_vsShaderPath;

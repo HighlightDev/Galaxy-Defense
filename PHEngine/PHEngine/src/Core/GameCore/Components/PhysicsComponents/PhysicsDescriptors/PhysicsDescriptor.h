@@ -55,7 +55,7 @@ namespace Game
 
       float* GetTrasformMatrix4x4();
       
-      glm::vec3 GetRotation() const;
+      glm::vec3 GetEulerRotationDegrees() const;
       
       glm::vec3 GetTranslation() const;
 

@@ -51,7 +51,7 @@ namespace Game
          m_actualTargetVector = LerpPosition(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
 
          // If camera is at final position  
-         if (EngineUtility::CMP::Process(m_lerpTimeElapsed, m_timeForInterpolation))
+         if (EngineMath::CompareFloats(m_lerpTimeElapsed, m_timeForInterpolation))
          {
             m_lerpTimeElapsed = 0.0f;
             m_bThirdPersonTargetTransformationDirty = false;

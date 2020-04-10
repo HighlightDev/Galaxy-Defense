@@ -3,7 +3,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace EngineUtility;
+using namespace EngineMath;
 
 namespace Graphics
 {

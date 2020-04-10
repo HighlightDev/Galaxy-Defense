@@ -2,7 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include <iostream>
 
-using namespace EngineUtility;
+using namespace EngineMath;
 
 namespace Game
 {

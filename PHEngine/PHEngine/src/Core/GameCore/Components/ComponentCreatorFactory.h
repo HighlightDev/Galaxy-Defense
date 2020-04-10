@@ -105,7 +105,7 @@ namespace Game
 
             StaticMeshRenderData renderData(skin, staticMeshShader);
 
-            resultComponent = std::make_shared<StaticMeshComponent>(std::move(mData.m_translation), std::move(mData.m_rotation), std::move(mData.m_scale), renderData);
+            resultComponent = std::make_shared<StaticMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
 
          return resultComponent;
@@ -170,7 +170,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
-            resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_rotation, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader));
+            resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader));
          }
 
          return resultComponent;
@@ -231,7 +231,7 @@ namespace Game
 
             SkeletalMeshRenderData renderData(skin, animations, skeletalMeshShader);
              
-            resultComponent = std::make_shared<SkeletalMeshComponent>(std::move(mData.m_translation), std::move(mData.m_rotation), std::move(mData.m_scale), renderData);
+            resultComponent = std::make_shared<SkeletalMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
 
          return resultComponent;
@@ -258,7 +258,7 @@ namespace Game
 
             BillboardRenderData renderData(skin, shader, texture);
 
-            resultComponent = std::make_shared<BillboardComponent>(std::move(mData.m_translation), std::move(mData.m_rotation), std::move(mData.m_scale), renderData);
+            resultComponent = std::make_shared<BillboardComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
 
          return resultComponent;
@@ -283,7 +283,7 @@ namespace Game
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
 
-            resultComponent = std::make_shared<CubemapComponent>(std::move(mData.m_translation), std::move(mData.m_rotation), std::move(mData.m_scale), renderData);
+            resultComponent = std::make_shared<CubemapComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
 
          return resultComponent;

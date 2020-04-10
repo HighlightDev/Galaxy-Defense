@@ -27,6 +27,9 @@ namespace Game
 
 	protected:
 
+      // Makes all primitive components visible or not
+      bool mIsVisible;
+
       std::vector<std::shared_ptr<Actor>> m_children;
 
 		Actor* m_parent;
@@ -55,6 +58,12 @@ namespace Game
       void RemoveMovementComponent();
 
       void RemoveInputComponent();
+
+      void SetIsVisible(bool isVisible);
+
+      inline bool IsVisible() const {
+         return mIsVisible;
+      }
 
 		void SetParent(Actor* actor);
 

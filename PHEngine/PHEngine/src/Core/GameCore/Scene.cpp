@@ -105,6 +105,18 @@ namespace Game
       ENQUEUE_GAME_THREAD_JOB(m_interThreadMgr, policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
+   void Scene::OnUpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
+   {
+      if (primitiveSceneProxyIndex < SceneProxies.size())
+      {
+         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            Job(creatorObjectId, functionId, [=]()
+         {
+            SceneProxies[primitiveSceneProxyIndex]->SetVisibility(visibility);
+         }));
+      }
+   }
+
    void Scene::OnUpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
    {
       if (primitiveSceneProxyIndex < SceneProxies.size())
@@ -135,7 +147,7 @@ namespace Game
    {
       const float physTickStep = 1.0f / 60.0f;
 
-      if  (counter == 30)
+      if  (counter == 60)
       {
          mPhysicsWorld->Tick(physTickStep);
          counter = 0;

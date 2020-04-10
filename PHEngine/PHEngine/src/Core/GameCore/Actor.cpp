@@ -5,16 +5,17 @@
 namespace Game
 {
 
-	Actor::Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
+   Actor::Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
       : mName(name)
       , m_rootComponent(rootComponent)
       , m_physicsComponent(nullptr)
+      , mIsVisible(true)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
       , m_parent(nullptr)
-	{
+   {
       m_rootComponent->bIsRootComponent = true;
-	}
+   }
 
 	Actor::~Actor()
 	{
@@ -72,6 +73,26 @@ namespace Game
          UpdateComponentsTransform();
       }
 	}
+
+   void Actor::SetIsVisible(bool isVisible)
+   {
+      if (isVisible != mIsVisible)
+      {
+         mIsVisible = isVisible;
+         for (std::shared_ptr<Component> component : m_allComponents)
+         {
+            if ((component->GetComponentType() & PRIMITIVE_COMPONENT) == PRIMITIVE_COMPONENT)
+            {
+               static_cast<PrimitiveComponent*>(component.get())->SetIsVisible(isVisible);
+            }
+         }
+
+         for (const auto& childActor : m_children)
+         {
+            childActor->SetIsVisible(isVisible);
+         }
+      }
+   }
 
 	void Actor::UpdateComponentsTransform() 
 	{

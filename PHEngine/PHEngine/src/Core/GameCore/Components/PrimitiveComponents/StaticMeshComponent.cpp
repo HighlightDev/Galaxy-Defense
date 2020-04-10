@@ -22,16 +22,16 @@ namespace Game
 	{
 		Base::Tick(deltaTime);
 
-		/*m_rotation += 0.02f;
+		/*m_eulerRotationDegrees += 0.02f;
 
-		if (m_rotation.x > 360.0f)
-			m_rotation.x -= 360.0f;
+		if (m_eulerRotationDegrees.x > 360.0f)
+			m_eulerRotationDegrees.x -= 360.0f;
 
-		if (m_rotation.y > 360.0f)
-			m_rotation.y -= 360.0f;
+		if (m_eulerRotationDegrees.y > 360.0f)
+			m_eulerRotationDegrees.y -= 360.0f;
 
-		if (m_rotation.z > 360.0f)
-			m_rotation.z -= 360.0f;*/
+		if (m_eulerRotationDegrees.z > 360.0f)
+			m_eulerRotationDegrees.z -= 360.0f;*/
 	}
 
    std::shared_ptr<PrimitiveSceneProxy> StaticMeshComponent::CreateSceneProxy() const

@@ -15,7 +15,7 @@ namespace Game
 			: ComponentData()
 			, m_pathToMesh(pathToMesh)
 			, m_translation(translation)
-			, m_rotation(rotation)
+			, m_eulerRotationDegrees(rotation)
 			, m_scale(scale)
          , m_material(material)
 		{
@@ -28,7 +28,7 @@ namespace Game
 
 		std::string m_pathToMesh;
 		glm::vec3 m_translation;
-		glm::vec3 m_rotation;
+		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
 
       std::shared_ptr<IMaterial> m_material;

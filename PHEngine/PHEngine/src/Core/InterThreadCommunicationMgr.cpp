@@ -106,6 +106,8 @@ namespace Thread
       typename Clock_t::time_point start_time = Clock_t::now();
 
       std::lock_guard<std::mutex> lock(m_renderThreadMutex);
+
+      std::cout << "Active Jobs = " << m_renderThreadJobs.size() << std::endl;
       while (AreRenderJobsAwaiting())
       {
          auto jobIt = m_renderThreadJobs.begin();

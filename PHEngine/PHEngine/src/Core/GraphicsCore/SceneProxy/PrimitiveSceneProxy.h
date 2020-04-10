@@ -24,6 +24,8 @@ namespace Graphics
       {
       protected:
 
+         bool mIsVisible;
+
          glm::mat4 m_relativeMatrix;
 
          std::shared_ptr<Skin> m_skin;
@@ -36,20 +38,25 @@ namespace Graphics
 
          virtual ~PrimitiveSceneProxy();
 
-         virtual void PostConstructorInitialize();
+         void SetTransformationMatrix(const glm::mat4& relativeMatrix);
 
-         virtual void Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix) = 0;
+         void SetVisibility(const bool visibility);
 
          virtual glm::mat4 GetMatrix() const;
 
-         void SetTransformationMatrix(const glm::mat4& relativeMatrix);
+         virtual void PostConstructorInitialize();
 
          virtual std::shared_ptr<Skin> GetSkin() const;
 
          virtual uint64_t GetComponentType() const;
 
+         virtual void Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix) = 0;
+
          virtual bool IsDeferred() const = 0;
-         
+
+         inline bool IsVisible() const {
+            return mIsVisible;
+         }
       };
 
    }

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <algorithm>
+#include <glm/trigonometric.hpp>
 
-namespace EngineUtility
+namespace EngineMath
 {
 #define AXIS_RIGHT     glm::vec3(1, 0, 0)
 #define AXIS_UP	       glm::vec3(0, 1, 0)
@@ -20,14 +21,6 @@ namespace EngineUtility
    /************************************************************************/
 #define RAD_TO_DEG(X) (glm::degrees<float>(X))
 
-   struct CMP
-   {
-      static bool Process(const float X, const float Y)
-      {
-         const float absX = std::abs(X);
-         const float absY = std::abs(Y);
-         const bool bResult = std::abs(absX - absY) <= FLT_EPSILON;
-         return bResult;
-      }
-   };
+
+   bool CompareFloats(const float X, const float Y);
 }

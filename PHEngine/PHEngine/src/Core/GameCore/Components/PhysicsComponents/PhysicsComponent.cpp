@@ -1,8 +1,9 @@
 #include "PhysicsComponent.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
+#include "Core/UtilityCore/EngineMath.h"
 
-#include <iostream>
+using namespace EngineMath;
 
 namespace Game
 {
@@ -32,7 +33,7 @@ namespace Game
             const Actor* owner = GetOwner();
 
             owner->GetRootComponent()->SetTranslation(mDescriptor->GetTranslation(), false);
-            owner->GetRootComponent()->SetRotation(mDescriptor->GetRotation(), true);
+            owner->GetRootComponent()->SetEulerRotationDegrees(mDescriptor->GetEulerRotationDegrees(), true);
          }
       }
    }
@@ -46,9 +47,11 @@ namespace Game
    {
       const Actor* owner = GetOwner();
       const glm::vec3& translation = owner->GetRootComponent()->GetTranslation();
-      const glm::vec3& rotation = owner->GetRootComponent()->GetRotation();
+      const glm::vec3& rotation = owner->GetRootComponent()->GetEulerRotationDegrees();
 
-      mDescriptor->SetMotionStateWorldTransform(rotation.x, rotation.y, rotation.z, translation);
+      const float yaw = DEG_TO_RAD(rotation.z), pitch = DEG_TO_RAD(rotation.y), roll = DEG_TO_RAD(rotation.x);
+
+      mDescriptor->SetMotionStateWorldTransform(yaw, pitch, roll, translation);
 
       mDescriptor->CompleteRigidBodyConstruction();
    }

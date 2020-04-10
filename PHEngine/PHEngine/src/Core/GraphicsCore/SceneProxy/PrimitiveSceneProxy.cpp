@@ -7,7 +7,8 @@ namespace Graphics
    {
 
       PrimitiveSceneProxy::PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader)
-         : m_relativeMatrix(relativeMatrix)
+         : mIsVisible(true)
+         , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)
          , m_shader(shader)
       {
@@ -19,6 +20,11 @@ namespace Graphics
 
       void PrimitiveSceneProxy::PostConstructorInitialize()
       {
+      }
+
+      void PrimitiveSceneProxy::SetVisibility(const bool visibility)
+      {
+         mIsVisible = visibility;
       }
 
       glm::mat4 PrimitiveSceneProxy::GetMatrix() const

@@ -1,6 +1,8 @@
 #include "PhysicsDescriptor.h"
 #include "Core/UtilityCore/EngineMath.h"
 
+using namespace EngineMath;
+
 namespace Game
 {
    size_t PhysicsDescriptor::mTotalIds = 0;
@@ -13,7 +15,7 @@ namespace Game
       , mRigidBody(nullptr)
       , mCurrentId(PhysicsDescriptor::mTotalIds++)
    {
-      if (!EngineUtility::CMP::Process(mass, 0.0f))
+      if (!CompareFloats(mass, 0.0f))
       {
          mShape->GetCollisionShape()->calculateLocalInertia(mass, mInertia);
       }
@@ -77,7 +79,8 @@ namespace Game
          float yaw, pitch, roll;
 
          transform.getBasis().getEulerZYX(yaw, pitch, roll);
-         mRotation = std::move(glm::vec3(yaw, pitch, roll));
+         
+         mRotation = std::move(glm::vec3(RAD_TO_DEG(roll), RAD_TO_DEG(pitch), RAD_TO_DEG(yaw)));
          mTranslation = std::move(glm::vec3(transform.getOrigin().x(), transform.getOrigin().y(), transform.getOrigin().z()));
       }
    }
@@ -88,7 +91,7 @@ namespace Game
       return mPrevTransformMatrix;
    }
 
-   glm::vec3 PhysicsDescriptor::GetRotation() const
+   glm::vec3 PhysicsDescriptor::GetEulerRotationDegrees() const
    {
       return mRotation;
    }

@@ -38,9 +38,9 @@ namespace Game
    {
       Base::Tick(deltaTime);
 
-     /* SetRotationAxisX(m_rotation.x + 0.001f);
-      SetRotationAxisY(m_rotation.y + 0.001f);
-      SetRotationAxisZ(m_rotation.z + 0.001f);*/
+     /* SetRotationAxisX(m_eulerRotationDegrees.x + 0.001f);
+      SetRotationAxisY(m_eulerRotationDegrees.y + 0.001f);
+      SetRotationAxisZ(m_eulerRotationDegrees.z + 0.001f);*/
    }
 
    uint64_t DirectionalLightComponent::GetComponentType() const

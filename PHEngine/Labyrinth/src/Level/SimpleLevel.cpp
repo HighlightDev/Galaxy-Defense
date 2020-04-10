@@ -69,11 +69,11 @@ namespace Labyrinth
             StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
-            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
-            PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0f));
+            PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.5f));
 
             PhysicsDescriptor* cubePhysDesc = new PhysicsDescriptor(shape, 25.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
