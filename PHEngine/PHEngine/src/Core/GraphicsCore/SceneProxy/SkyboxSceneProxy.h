@@ -28,8 +28,6 @@ namespace Graphics
 
          std::shared_ptr<ShaderType> GetShader() const;
 
-         std::shared_ptr<MaterialType> GetMaterialInstance() const;
-
          SkyboxSceneProxy(const SkyboxComponent* component);
 
          ~SkyboxSceneProxy();

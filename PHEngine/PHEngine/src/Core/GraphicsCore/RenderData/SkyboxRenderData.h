@@ -20,11 +20,14 @@ namespace Graphics
 
          std::shared_ptr<Skin> m_skin;
          std::shared_ptr<ICompositeShader> m_materialShader;
+         std::shared_ptr<IMaterial> mMaterialInstance;
 
          SkyboxRenderData(std::shared_ptr<Skin> skyboxMesh,
-            std::shared_ptr<IShader> materialShader)
+            std::shared_ptr<IShader> materialShader,
+            std::shared_ptr<IMaterial> materialInstance)
             : m_skin(skyboxMesh)
             , m_materialShader(std::dynamic_pointer_cast<ICompositeShader>(materialShader))
+            , mMaterialInstance(materialInstance)
          {
          }
 

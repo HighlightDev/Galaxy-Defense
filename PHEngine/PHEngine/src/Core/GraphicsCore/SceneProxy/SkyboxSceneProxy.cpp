@@ -6,7 +6,8 @@ namespace Graphics
    {
 
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin,
+            component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
       {
       }
 
@@ -22,11 +23,6 @@ namespace Graphics
       std::shared_ptr<SkyboxSceneProxy::ShaderType> SkyboxSceneProxy::GetShader() const
       {
          return std::static_pointer_cast<SkyboxSceneProxy::ShaderType>(m_shader);
-      }
-
-      std::shared_ptr<SkyboxSceneProxy::MaterialType> SkyboxSceneProxy::GetMaterialInstance() const
-      {
-         return std::static_pointer_cast<SkyboxSceneProxy::MaterialType>(GetShader()->GetMaterialShader()->GetMaterialInstance());
       }
 
       uint64_t SkyboxSceneProxy::GetComponentType() const
@@ -47,7 +43,7 @@ namespace Graphics
 
          shaderPtr->ExecuteShader();
          shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
-         shaderPtr->GetMaterialShader()->SetUniformValues();
+         shaderPtr->GetMaterialShader()->SetUniformValues(mMaterialInstance);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shaderPtr->StopShader();
 

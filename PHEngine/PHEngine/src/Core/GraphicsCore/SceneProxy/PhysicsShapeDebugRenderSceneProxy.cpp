@@ -5,7 +5,7 @@ namespace Graphics
    namespace Proxy
    {
       PhysicsShapeDebugRenderSceneProxy::PhysicsShapeDebugRenderSceneProxy(const PhysicsShapeDebugRenderComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr, nullptr)
          , mShader(std::static_pointer_cast<DefaultRenderShader>(component->GetRenderData().m_shader))
       {
       }

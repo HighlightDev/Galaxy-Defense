@@ -107,7 +107,6 @@ namespace Thread
 
       std::lock_guard<std::mutex> lock(m_renderThreadMutex);
 
-      std::cout << "Active Jobs = " << m_renderThreadJobs.size() << std::endl;
       while (AreRenderJobsAwaiting())
       {
          auto jobIt = m_renderThreadJobs.begin();

@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
       {
       }
 
@@ -24,7 +24,7 @@ namespace Graphics
          const auto& shader = GetShader();
 
          shader->ExecuteShader();
-         shader->GetMaterialShader()->SetUniformValues();
+         shader->GetMaterialShader()->SetUniformValues(mMaterialInstance);
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();

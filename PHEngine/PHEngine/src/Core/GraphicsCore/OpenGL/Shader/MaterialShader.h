@@ -28,8 +28,6 @@ namespace Graphics
 
          std::string GetShaderSource() const;
 
-         std::shared_ptr<IMaterial> GetMaterialInstance();
-
          template <typename ValueType>
          void DefineConstant(const std::string& name, ValueType&& value)
          {
@@ -41,7 +39,7 @@ namespace Graphics
 
          void Undefine(const std::string& name);
 
-         virtual void SetUniformValues() = 0;
+         virtual void SetUniformValues(std::shared_ptr<IMaterial> materialInstance) = 0;
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
@@ -60,7 +58,7 @@ namespace Graphics
       public :
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void SetUniformValues() override;
+         virtual void SetUniformValues(std::shared_ptr<IMaterial> materialInstance) override;
 
          MaterialShaderImp(std::shared_ptr<IMaterial> materialInstance);
       };

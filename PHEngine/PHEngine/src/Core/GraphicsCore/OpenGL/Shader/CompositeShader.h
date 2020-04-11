@@ -39,11 +39,6 @@ namespace Graphics
 
       public:
 
-         void SetMaterialShaderUniformValues() 
-         {
-            mMaterialShader->SetUniformValues();
-         };
-
          std::shared_ptr<IShader> GetShader() const
          {
             return std::static_pointer_cast<IShader>(mShader);

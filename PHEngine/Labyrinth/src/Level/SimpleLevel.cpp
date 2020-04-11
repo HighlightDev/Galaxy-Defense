@@ -89,10 +89,10 @@ namespace Labyrinth
 
       // Dir light
       {
-         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(1024, 1024));
+         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(256, 256));
          ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
 
-         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(1024, 1024));
+         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(256, 256));
          ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2);
 
          DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),

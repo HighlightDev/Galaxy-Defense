@@ -9,7 +9,7 @@ namespace Graphics
    {
 
       SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
          , m_animations(component->GetRenderData().m_animations)
          , m_animationHolder(m_animations)
          , m_animationDeltaTime(component->GetAnimationDeltaTime())
@@ -36,7 +36,7 @@ namespace Graphics
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(skinningMatrices);
-         GetShader()->GetMaterialShader()->SetUniformValues();
+         GetShader()->GetMaterialShader()->SetUniformValues(mMaterialInstance);
          animatedSkin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          GetShader()->StopShader();
       }

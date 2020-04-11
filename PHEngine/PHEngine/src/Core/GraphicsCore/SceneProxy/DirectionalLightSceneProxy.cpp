@@ -28,7 +28,7 @@ namespace Graphics
          auto shadowInfo = static_cast<ProjectedDirShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
-            shadowInfo->SetShadowProjectionMatrix(glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 0.1f, 100.0f));
+            shadowInfo->SetShadowProjectionMatrix(glm::ortho(-25.0f, 25.0f, -25.0f, 25.0f, 0.1f, 100.0f));
          }
       }
 

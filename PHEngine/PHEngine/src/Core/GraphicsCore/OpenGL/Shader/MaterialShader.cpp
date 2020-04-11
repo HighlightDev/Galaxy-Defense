@@ -35,11 +35,6 @@ namespace Graphics
          mShaderSource = LoadShaderSource(absoluteShaderPath);
       }
 
-      std::shared_ptr<IMaterial> IMaterialShader::GetMaterialInstance()
-      {
-         return mMaterialInstance;
-      }
-
       std::string IMaterialShader::GetShaderSource() const
       {
          return mShaderSource;
@@ -72,10 +67,10 @@ namespace Graphics
          }
       }
 
-      void MaterialShaderImp::SetUniformValues()
+      void MaterialShaderImp::SetUniformValues(std::shared_ptr<IMaterial> materialInstance)
       {
          int32_t index = 0;
-         for (auto namePlusPropPair : mMaterialInstance->GetProperties())
+         for (auto namePlusPropPair : materialInstance->GetProperties())
          {
             namePlusPropPair.second->SetValueToUniform(UniformsMap[namePlusPropPair.first], index);
             ++index;

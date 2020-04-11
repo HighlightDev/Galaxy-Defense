@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       CubemapSceneProxy::CubemapSceneProxy(const CubemapComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr, nullptr)
          , m_shaderCubemap(std::static_pointer_cast<CubemapShader>(component->GetRenderData().m_shader))
          , m_textureObtainer(component->GetRenderData().m_texture)
       {

@@ -36,8 +36,6 @@ namespace Graphics
       
          std::shared_ptr<ShaderType> GetShader() const;
 
-         std::shared_ptr<MaterialType> GetMaterialInstance() const;
-
          WaterPlaneSceneProxy(const WaterPlaneComponent* component);
 
          virtual ~WaterPlaneSceneProxy();

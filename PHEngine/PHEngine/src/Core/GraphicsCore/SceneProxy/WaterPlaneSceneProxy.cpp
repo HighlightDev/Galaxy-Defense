@@ -8,7 +8,7 @@ namespace Graphics
    {
 
       WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
          , m_moveFactor(component->GetMoveFactor())
          , m_waveStrength(component->GetWaveStrength())
          , m_transparencyDepth(component->GetTransparencyDepth())
@@ -23,11 +23,6 @@ namespace Graphics
          return std::static_pointer_cast<WaterPlaneSceneProxy::ShaderType>(m_shader);
       }
 
-      std::shared_ptr<WaterPlaneSceneProxy::MaterialType> WaterPlaneSceneProxy::GetMaterialInstance() const
-      {
-         return std::static_pointer_cast<WaterPlaneSceneProxy::MaterialType>(GetShader()->GetMaterialShader()->GetMaterialInstance());
-      }
-
       WaterPlaneSceneProxy::~WaterPlaneSceneProxy()
       {
       }
@@ -40,13 +35,13 @@ namespace Graphics
       void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor) 
       {
          m_moveFactor = moveFactor;
-         GetMaterialInstance()->SetMoveFactor(moveFactor);
+         std::static_pointer_cast<WaterPlaneSceneProxy::MaterialType>(mMaterialInstance)->SetMoveFactor(moveFactor);
       }
 
       void WaterPlaneSceneProxy::SetWaveStrength(float waveStr)
       {
          m_waveStrength = waveStr;
-         GetMaterialInstance()->SetMoveStrengthFactor(waveStr);
+         std::static_pointer_cast<WaterPlaneSceneProxy::MaterialType>(mMaterialInstance)->SetMoveStrengthFactor(waveStr);
       }
 
       void WaterPlaneSceneProxy::SetTransparencyDepth(float transparencyDepth)
@@ -76,12 +71,12 @@ namespace Graphics
 
       void WaterPlaneSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
       {
-         glm::vec3 cameraPosition(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]);
+         //glm::vec3 cameraPosition(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]);
 
          const auto& shader = GetShader();
 
          shader->ExecuteShader();
-         shader->GetMaterialShader()->SetUniformValues();
+         shader->GetMaterialShader()->SetUniformValues(mMaterialInstance);
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();

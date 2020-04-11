@@ -76,7 +76,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<SkyboxVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t skyboxMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkyboxVertexFactory, SimpleShader>>(compositeParams);
 
-            resultComponent = std::make_shared<SkyboxComponent>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader));
+            resultComponent = std::make_shared<SkyboxComponent>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, mData.m_materialInstance));
          }
 
          return resultComponent;
@@ -103,7 +103,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
             CompositeShaderPool::sharedValue_t staticMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
-            StaticMeshRenderData renderData(skin, staticMeshShader);
+            StaticMeshRenderData renderData(skin, staticMeshShader, mData.m_material);
 
             resultComponent = std::make_shared<StaticMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
@@ -170,7 +170,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
-            resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader));
+            resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, mData.m_materialInstance));
          }
 
          return resultComponent;
@@ -229,7 +229,7 @@ namespace Game
 
             CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>>(compositeParams);
 
-            SkeletalMeshRenderData renderData(skin, animations, skeletalMeshShader);
+            SkeletalMeshRenderData renderData(skin, animations, skeletalMeshShader, mData.m_material);
              
             resultComponent = std::make_shared<SkeletalMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }

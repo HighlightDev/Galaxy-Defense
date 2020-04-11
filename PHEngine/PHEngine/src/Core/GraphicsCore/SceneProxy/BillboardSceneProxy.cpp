@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr, nullptr)
          , m_billboardShader(std::static_pointer_cast<BillboardShader>(component->GetRenderData().m_shader))
          , m_billboardTexture(component->GetRenderData().m_texture)
       {

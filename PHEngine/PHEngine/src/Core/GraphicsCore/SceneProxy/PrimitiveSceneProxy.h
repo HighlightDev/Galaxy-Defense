@@ -32,9 +32,11 @@ namespace Graphics
 
          std::shared_ptr<ICompositeShader> m_shader;
 
+         std::shared_ptr<IMaterial> mMaterialInstance;
+
       public:
 
-         PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader);
+         PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<IMaterial> materialInstance);
 
          virtual ~PrimitiveSceneProxy();
 
