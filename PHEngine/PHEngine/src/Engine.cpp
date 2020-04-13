@@ -140,6 +140,7 @@ void Engine::PushFrame()
 void Engine::RecompileAllShaders()
 {
    Resources::ShaderPool::GetInstance()->RecompileShaders();
+   Resources::CompositeShaderPool::GetInstance()->RecompileShaders();
 }
 
 #endif

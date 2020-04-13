@@ -32,14 +32,14 @@ namespace Resources
 			if (m_instance)
 				m_instance.reset();
 		}
-
+#if DEBUG
       void RecompileShaders()
       {
          for (const auto& shader_pair : resourceMap)
          {
             shader_pair.second->RecompileShader();
          }
-         
       }
+#endif
 	};
 }

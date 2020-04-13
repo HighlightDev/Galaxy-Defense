@@ -54,8 +54,13 @@ vec2 GetShadowTexCoords(in vec2 texCoords, in vec4 atlasOffset)
 }
 
 
-float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord)
+float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord, in float distanceToPixel)
 {
+	if (distanceToPixel > 0.9)
+	{
+		return 1.0;
+	}
+
 	float resultLit = 0.0;
     float actualDepth = shadowTexCoord.z - SHADOWMAP_BIAS_DIR_LIGHT;
 
@@ -75,6 +80,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 
     resultLit *= INV_COUNT_PCF_DIR_LIGHT_SAMPLES;
     resultLit = 1 - resultLit;
+
 	return resultLit;
 }
 
@@ -82,7 +88,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 #ifdef SHADING_MODEL_PBR
 
 	const float Metallic = 0.5;
-	const float Roughness = 0.2;
+	const float Roughness = 0.6;
 	const float Epsilon = 0.00001;
 	uniform float ao;
 
@@ -117,7 +123,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 		return F0 + (vec3(1.0) - F0) * pow(1.0 - cosTheta, 5.0);
 	}
 
-	vec3 GetPBRColor(in vec3 worldPos, in vec3 nWorldNormal, vec3 albedoColor)
+	vec3 GetPBRColor(in vec3 worldPos, in vec3 nWorldNormal, in vec3 albedoColor, in float distanceToPixel)
 	{
 		// General data
 		vec3 F0 = mix(vec3(0.04), albedoColor, Metallic);
@@ -224,7 +230,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 					vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
 
 				 	vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[directLightIndex], 0);
-				    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[directLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth);
+				    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[directLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth, distanceToPixel);
 				}
 
 
@@ -312,7 +318,7 @@ vec3 GetDiffuseColor(in vec3 worldPos, in vec3 nWorldNormal)
 			vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
 
 		 	vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[dirLightIndex], 0);
-		    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[dirLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth);
+		    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[dirLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth, 1.0);
 		}
 
 		resultDiffuseColor += DirLightDiffuseColor[dirLightIndex] * diffuseFactor * litFactor;
@@ -336,12 +342,12 @@ void main()
 
 	// Lighting
 	#ifdef SHADING_MODEL_PBR
-		vec4 totalColor = vec4(GetPBRColor(worldPos, worldNormal, albedoAndSpecular.xyz), 1.0);
+		vec4 totalColor = vec4(GetPBRColor(worldPos, worldNormal, albedoAndSpecular.xyz, 1.0 /* temp*/), 1.0);
 	#else
 		vec3 diffuseColor = GetDiffuseColor(worldPos, worldNormal);
 		vec3 ambientColor = GetAmbientColor();
 		vec4 totalColor = vec4(albedoAndSpecular.rgb * (diffuseColor + ambientColor), 1);
 	#endif
 
-	FragColor = vec4(totalColor);
+	FragColor = totalColor;
 }

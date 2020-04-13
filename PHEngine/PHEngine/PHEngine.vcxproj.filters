@@ -490,7 +490,6 @@
     <None Include="res\shaders\buildingVShader.glsl" />
     <None Include="res\shaders\deferredNonSkeletalBasePassVS.glsl" />
     <None Include="res\shaders\deferredSkeletalBasePassVS.glsl" />
-    <None Include="res\shaders\deferredBasePassFS.glsl" />
     <None Include="res\shaders\basicShadowNonSkeletalVS.glsl" />
     <None Include="res\shaders\basicShadowSkeletalVS.glsl" />
     <None Include="res\shaders\cubemapShadowFS.glsl" />

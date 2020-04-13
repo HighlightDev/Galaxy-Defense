@@ -56,7 +56,7 @@ namespace Graphics
          ShaderParams GetShaderParams() const;
 
 #if DEBUG
-			bool RecompileShader();
+         virtual void RecompileShader() override;
 #endif
 
 		};

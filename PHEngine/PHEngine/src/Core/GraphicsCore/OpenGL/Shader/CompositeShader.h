@@ -136,6 +136,16 @@ namespace Graphics
             return SendToGpuShadersSources(vsSource, gsSource, fsSource);
          }
 
+#if DEBUG
+
+         virtual void RecompileShader() override
+         {
+            CleanUp(false);
+            Init();
+         }
+
+#endif
+
          void Init()
          {
             ProcessAllPredefines();

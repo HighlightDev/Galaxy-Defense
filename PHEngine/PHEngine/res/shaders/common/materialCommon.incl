@@ -5,6 +5,8 @@ struct MATERIAL_VS_OUTPUT
 
 	vec3 WorldCoordinates;
 
+   vec3 ViewCoordinates;
+
 	vec4 ClippedCoordinates;
 
 	vec3 NormalizedDeviceCoordinates;

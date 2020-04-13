@@ -53,6 +53,10 @@ namespace Graphics
          virtual void SetShaderPredefine() {};
          virtual void ProcessAllPredefines() {};
 
+#if DEBUG
+         virtual void RecompileShader() {};
+#endif
+
          void ProcessPredefineToFile(const std::string& pathToShader, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const;
          void ProcessPredefineToSource(std::string& shaderSource, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const;
          void WriteShaderSrc(const std::string& pathToShader, const std::string& src) const;

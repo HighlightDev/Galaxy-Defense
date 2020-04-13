@@ -89,14 +89,14 @@ namespace Labyrinth
 
       // Dir light
       {
-         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(256, 256));
+         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
          ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
 
-         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(256, 256));
+         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
          ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2);
 
          DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(1.68f, 0.5f, 2.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);
+            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);
 
          DirectionalLightComponentData mData2(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
             glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
@@ -111,6 +111,7 @@ namespace Labyrinth
          mScene->AllActors.push_back(dirLightActor);
       }
 
+#if 0
       // Water
       {
          auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "water_normal.png");
@@ -122,25 +123,29 @@ namespace Labyrinth
          auto waterComp = mScene->CreateComponent_GameThread<WaterPlaneComponent>(mData);
          waterActor->AddComponent(waterComp);
 
-         PhysicsDescriptor* waterPhysDesc = new PhysicsDescriptor(new PhyPlaneShape(glm::vec3(0, 1, 0), 0), 0.0f);
-         mScene->mPhysicsWorld->AddPhysDescriptor(waterPhysDesc);
-         std::shared_ptr<PhysicsComponent> waterPhysComponent = std::make_shared<PhysicsComponent>(waterPhysDesc);
-         waterActor->AddComponent(waterPhysComponent);
-
          mScene->AllActors.push_back(waterActor);
       }
+#endif
 
-#if 0
+#if 1
       // Ground
 
       {
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "plane.obj", glm::vec3(0), glm::vec3(0), glm::vec3(50),
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(0), glm::vec3(50, 1, 50),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         mScene->CreateAndAddComponent_GameThread<StaticMeshComponent>(mData, groundActor);
+
+         auto floorComponent = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         groundActor->AddComponent(floorComponent);
+
+         PhysicsDescriptor* floorPhysDesc = new PhysicsDescriptor(new PhyPlaneShape(glm::vec3(0, 1, 0), 0), 0.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
+         std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
+         groundActor->AddComponent(floorPhysComponent);
+
          mScene->AllActors.push_back(groundActor);
       }
 

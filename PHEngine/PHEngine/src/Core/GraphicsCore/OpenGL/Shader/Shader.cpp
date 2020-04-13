@@ -142,7 +142,7 @@ namespace Graphics
 
 #if DEBUG
 
-		bool Shader::RecompileShader()
+		void Shader::RecompileShader()
 		{
 			CleanUp(false);
          const bool bLoaded = LoadShadersSourceToGpu();
@@ -156,8 +156,6 @@ namespace Graphics
 
          const bool bCompiledSuccesfully = IsShaderCompiled();
          std::cout << "Shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled") << std::endl;
-
-         return bCompiledSuccesfully;
 		}
 
 #endif

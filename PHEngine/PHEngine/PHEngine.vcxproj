@@ -309,7 +309,6 @@
     <None Include="res\shaders\deferredLightPassFS.glsl" />
     <None Include="res\shaders\deferredLightPassVS.glsl" />
     <None Include="res\shaders\deferredNonSkeletalBasePassVS.glsl" />
-    <None Include="res\shaders\deferredBasePassFS.glsl" />
     <None Include="res\shaders\deferredSkeletalBasePassVS.glsl" />
     <None Include="res\shaders\depthOfFieldFS.glsl" />
     <None Include="res\shaders\depthOfFieldVS.glsl" />
