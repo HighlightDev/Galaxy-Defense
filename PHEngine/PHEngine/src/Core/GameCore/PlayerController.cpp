@@ -2,6 +2,7 @@
 #include "Core/GameCore/ICamera.h"
 #include "COre/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
 
 namespace Game
 {
@@ -36,6 +37,8 @@ namespace Game
       if (movementComponent->GetIsCameraRotationDirty())
       {
          rootComponent->SetAdditionalRotation(movementComponent->GetCameraPitchYawRoll());
+         auto rotation = rootComponent->GetEulerRotationDegrees();
+         rootComponent->SetEulerRotationDegrees(glm::vec3(0, rotation.y, 0));
          movementComponent->SetIsCameraRotationDirty(false);
       }
 
@@ -46,21 +49,34 @@ namespace Game
          {
             if (bindings.GetKeyState(Keys::W))
             {
-               auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
-               rootComponent->SetTranslation(newPosition);
+               if (auto physComponent = m_playerActor->GetPhysicsComponent())
+               {
+                  physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
+                  if (!physComponent->GetDescriptor()->GetRigidBody()->isActive())
+                  {
+                     physComponent->GetDescriptor()->GetRigidBody()->activate();
+                  }
 
-               Event::PlayerMovedEvent::GetInstance()->SendEvent(newPosition);
+                  glm::vec3 offset = movementComponent->GetMoveOffset();
+                  physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x, 0, offset.z));
+               }
+
+               //auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
+               //rootComponent->SetTranslation(newPosition);
+
+               Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
+            }
+            else if (bindings.GetKeyState(Keys::A))
+            {
+            }
+            else if (bindings.GetKeyState(Keys::D))
+            {
+            }
+            else if (bindings.GetKeyState(Keys::S))
+            {
             }
          }
-         else if (bindings.GetKeyState(Keys::A))
-         {
-         }
-         else if (bindings.GetKeyState(Keys::D))
-         {
-         }
-         else if (bindings.GetKeyState(Keys::S))
-         {
-         }
+   
       }
 
    }

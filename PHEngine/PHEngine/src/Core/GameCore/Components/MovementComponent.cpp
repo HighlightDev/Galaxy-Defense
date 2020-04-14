@@ -10,7 +10,7 @@ namespace Game
       , CameraTransformChangedEvent()
       , mCameraName(cameraName)
       , Velocity(launchVelocity)
-      , Speed(0.005f)
+      , Speed(10)
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
    }

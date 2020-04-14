@@ -22,6 +22,8 @@ namespace Game {
 
       void PostPhysicsInit();
 
+      PhysicsDescriptor* GetDescriptor();
+
       bool IsTransformDirty() const;
 
       virtual uint64_t GetComponentType() const override;

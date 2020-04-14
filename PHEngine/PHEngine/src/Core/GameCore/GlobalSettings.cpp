@@ -7,7 +7,7 @@ namespace Game
 
    GlobalSettings::GlobalSettings()
       : mShadowOrthoProjectionHalfExtent(25)
-      , mShadowTransitionAreaLength(5)
+      , mShadowTransitionAreaLength(10)
       , mMaxDirLightCount(5)
       , mMaxDirLightShadowMapCount(4)
       , mMaxPointLightCount(50)

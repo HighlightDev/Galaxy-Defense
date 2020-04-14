@@ -18,6 +18,10 @@ namespace Game
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(mDescriptor->GetId());
    }
 
+   PhysicsDescriptor* PhysicsComponent::GetDescriptor() {
+      return mDescriptor;
+   }
+
    void PhysicsComponent::Tick(const float deltaTime)
    {
       if (mDescriptor->GetMotionState())

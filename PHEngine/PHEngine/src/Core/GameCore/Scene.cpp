@@ -158,11 +158,13 @@ namespace Game
       }
 
       m_camera->Tick(delta);
+
+      m_playerController.Tick(delta);
+
       for (auto& actor : AllActors)
       {
          actor->Tick(delta);
       }
-      m_playerController.Tick(delta);
    }
 
    Scene::~Scene()

@@ -9,8 +9,8 @@
 #define PCF_SAMPLES_POINT_LIGHT 4
 #define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
-#define SHADOW_ORTHO_EXTENT_SIZE 50
-#define SHADOW_TRANSITION_AREA 5
+#define SHADOW_ORTHO_EXTENT_SIZE 45
+#define SHADOW_TRANSITION_AREA 10
 
 const float INV_COUNT_PCF_DIR_LIGHT_SAMPLES = 1.0 / (((PCF_SAMPLES_DIR_LIGHT * 2) + 1) * ((PCF_SAMPLES_DIR_LIGHT * 2) + 1));
 const float INV_COUNT_PCF_POINT_LIGHT_SAMPLES = 1.0 / (PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT);
@@ -76,7 +76,7 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
     }
 
 
-	if (shadowTransitionValue > 0.1 && resultLit > 0.01)
+	if (shadowTransitionValue > 0.001 && resultLit > 0.001)
 	{
 		resultLit = shadowTransitionValue;
 	}

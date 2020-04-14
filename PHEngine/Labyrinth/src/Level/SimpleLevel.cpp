@@ -141,7 +141,7 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(0), glm::vec3(50, 1, 50),
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0, -1, 0), glm::vec3(0), glm::vec3(50, 1, 50),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
@@ -191,7 +191,7 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "diffuse.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
-         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0, 0, 0), glm::vec3(270, 0, 0), glm::vec3(0.5f),
+         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0, -5, 0), glm::vec3(270, 0, 0), glm::vec3(0.5f),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
          std::shared_ptr<Actor> skeletActor = std::make_shared<Actor>("Buddy", std::make_shared<SceneComponent>(std::move(glm::vec3(10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
@@ -206,6 +206,15 @@ namespace Labyrinth
          skeletActor->AddComponent(movementComp);
 
          mScene->m_playerController.SetPlayerActor(skeletActor);
+
+         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0, 2.5, 1));
+         PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
+         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc);
+         skeletActor->AddComponent(playerPhysComponent);
+
+         auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         skeletActor->AddComponent(debugRenderPhysComp);
 
          mScene->AllActors.push_back(skeletActor);
 

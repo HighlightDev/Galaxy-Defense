@@ -68,7 +68,7 @@ namespace Game
          DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
-         DefineConstant<float>(FragmentShader, "SHADOW_ORTHO_EXTENT_SIZE", GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent() * 2);
+         DefineConstant<float>(FragmentShader, "SHADOW_ORTHO_EXTENT_SIZE", (GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent() * 2 - 5.0f));
          DefineConstant<int32_t>(FragmentShader, "SHADOW_TRANSITION_AREA", GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
 #ifdef SHADING_MODEL_PBR
          Define(FragmentShader, "SHADING_MODEL_PBR");
@@ -137,7 +137,7 @@ namespace Game
       {
          // Directional lights
          int32_t dirLightProxyIndex = 0;
-         for (int32_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
+         for (size_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
          {
             if (lightsProxies[lightProxyIndex]->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < MAX_DIR_LIGHT_COUNT)
             {
@@ -156,7 +156,7 @@ namespace Game
 
          // Point lights
          int32_t pointLightProxyIndex = 0;
-         for (int32_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
+         for (size_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
          {
             if (lightsProxies[lightProxyIndex]->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && dirLightProxyIndex < MAX_POINT_LIGHT_COUNT)
             {

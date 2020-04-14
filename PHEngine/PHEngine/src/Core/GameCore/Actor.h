@@ -94,6 +94,11 @@ namespace Game
          return m_movementComponent;
       }
 
+      inline std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const {
+
+         return m_physicsComponent;
+      }
+
 		// If root component has dirty transformation -> update it and all attached actors + children components
 		void UpdateRootComponentTransform();
 
