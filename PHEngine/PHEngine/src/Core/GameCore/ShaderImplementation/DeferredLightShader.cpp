@@ -68,7 +68,7 @@ namespace Game
          DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
-         DefineConstant<float>(FragmentShader, "SHADOW_ORTHO_EXTENT_SIZE", (GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent() * 2 - 5.0f));
+         DefineConstant<float>(FragmentShader, "SHADOW_ORTHO_EXTENT_SIZE", (GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent() * 2));
          DefineConstant<int32_t>(FragmentShader, "SHADOW_TRANSITION_AREA", GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
 #ifdef SHADING_MODEL_PBR
          Define(FragmentShader, "SHADING_MODEL_PBR");

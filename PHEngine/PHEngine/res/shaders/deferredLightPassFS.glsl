@@ -9,8 +9,8 @@
 #define PCF_SAMPLES_POINT_LIGHT 4
 #define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
-#define SHADOW_ORTHO_EXTENT_SIZE 45
-#define SHADOW_TRANSITION_AREA 10
+#define SHADOW_ORTHO_EXTENT_SIZE 50
+#define SHADOW_TRANSITION_AREA 15
 
 const float INV_COUNT_PCF_DIR_LIGHT_SAMPLES = 1.0 / (((PCF_SAMPLES_DIR_LIGHT * 2) + 1) * ((PCF_SAMPLES_DIR_LIGHT * 2) + 1));
 const float INV_COUNT_PCF_POINT_LIGHT_SAMPLES = 1.0 / (PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT);
@@ -321,11 +321,16 @@ vec3 GetDiffuseColor(in vec3 worldPos, in vec3 nWorldNormal, in float shadowTran
 
 			vec4 shadowProjectedPosition = (shadowMatrix * vec4(worldPos, 1.0));
 			vec3 shadowFragCoords = shadowProjectedPosition.xyz / shadowProjectedPosition.w;
-			vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords.xy, atlasOffset);
-			vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
 
-		 	vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[dirLightIndex], 0);
-		    litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[dirLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth, shadowTransitionValue);
+			if (shadowFragCoords.x <= 1.0 || shadowFragCoords.y<= 1.0 ||
+			shadowFragCoords.x >= 0.0 || shadowFragCoords.y ?= 0.0)
+			{
+				vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords.xy, atlasOffset);
+				vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
+
+		 		vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[dirLightIndex], 0);
+				litFactor = CalcLitFactorTexture2D(DirLightShadowMaps[dirLightIndex], shadowmapAtlasSize, shadowCoordinatesAndDepth, shadowTransitionValue);
+			}
 		}
 
 		resultDiffuseColor += DirLightDiffuseColor[dirLightIndex] * diffuseFactor * litFactor;
