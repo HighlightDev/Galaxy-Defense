@@ -16,4 +16,9 @@ namespace Graphics
       return TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(MyRequestId);
    }
 
+   void LazyTextureAtlasObtainer::DeallocateTextureAtlasByRequestId()
+   {
+      TextureAtlasFactory::GetInstance()->DeallocateTextureAtlasByRequestId(MyRequestId);
+   }
+
 }

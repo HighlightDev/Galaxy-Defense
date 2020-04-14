@@ -169,6 +169,46 @@ namespace Graphics
       return result;
    }
 
+   void TextureAtlasFactory::DeallocateTextureAtlasByRequestId(size_t requestId)
+   {
+      for (auto& atlas : m_textureAtlases)
+      {
+         if (atlas->GetType() == TextureType::TEXTURE_2D)
+         {
+            TextureAtlas2D* ptr = static_cast<TextureAtlas2D*>(atlas.get());
+            std::map<size_t, TextureAtlasCell>::const_iterator it = ptr->Cells.find(requestId);
+
+            size_t cellsCount = ptr->Cells.size();
+            
+            if (it != ptr->Cells.end())
+            {
+               // if someone is using this texture atlas, just remove cell
+               // if nobody is using, delete texture
+               if (cellsCount > 1) 
+               {
+                  ptr->Cells.erase(it);
+               }
+               else 
+               {
+                  atlas->DeallocateMemory();
+                  m_textureAtlases.erase(std::remove(m_textureAtlases.begin(), m_textureAtlases.end(), atlas), m_textureAtlases.end());
+               }
+               break;
+            }
+         }
+         else if (atlas->GetType() == TextureType::TEXTURE_CUBE)
+         {
+            TextureAtlasCube* ptr = static_cast<TextureAtlasCube*>(atlas.get());
+            if (ptr->m_sizes.first == requestId)
+            {
+               atlas->DeallocateMemory();
+               m_textureAtlases.erase(std::remove(m_textureAtlases.begin(), m_textureAtlases.end(), atlas), m_textureAtlases.end());
+               break;
+            }
+         }
+      }
+   }
+
    void TextureAtlasFactory::SplitChunk(std::vector<TextureAtlasCell>& emptyChunks, std::vector<TextureAtlasCell>::const_iterator splittingEmptyChunkIt, TextureAtlasCell& splitCenterCell)
    {
       TextureAtlasCell leftTopCell = TextureAtlasCell(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE, splittingEmptyChunkIt->X, splittingEmptyChunkIt->Y + splitCenterCell.Height, splitCenterCell.Width, splittingEmptyChunkIt->Height - splitCenterCell.Height);

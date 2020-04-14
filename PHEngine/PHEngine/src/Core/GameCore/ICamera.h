@@ -7,7 +7,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
-#include "GlobalProperties.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/GameCore/ITickable.h"
 

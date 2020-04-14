@@ -1,5 +1,6 @@
 #include "ICamera.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/GlobalInputController.h"
 #include <iostream>
 
 using namespace EngineMath;
@@ -28,8 +29,8 @@ namespace Game
 
 	void ICamera::Rotate()
 	{
-      const int32_t x = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaX();
-      const int32_t y = GlobalProperties::GetInstance()->GetInputData().GetMouseDeltaY();
+      const int32_t x = GlobalInputController::GetInstance()->GetMouseDeltaX();
+      const int32_t y = GlobalInputController::GetInstance()->GetMouseDeltaY();
 
 		UpdateRotationMatrix(-x, -y);
 	}

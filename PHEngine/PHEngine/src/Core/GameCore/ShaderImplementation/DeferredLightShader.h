@@ -8,15 +8,6 @@
 using namespace Graphics::OpenGL;
 using namespace Graphics::Proxy;
 
-#define MAX_DIR_LIGHT_COUNT 5
-#define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
-#define MAX_POINT_LIGHT_COUNT 50
-#define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
-#define SHADOWMAP_BIAS_DIR_LIGHT 0.005f
-#define SHADOWMAP_BIAS_POINT_LIGHT 0.05f
-#define PCF_SAMPLES_DIR_LIGHT 2
-#define PCF_SAMPLES_POINT_LIGHT 4
-
 namespace Game
 {
    namespace ShaderImpl
@@ -59,6 +50,9 @@ namespace Game
          Uniform u_MaterialMetallic;
          Uniform u_MaterialRoughness;
 #endif
+
+         const int32_t MAX_POINT_LIGHT_COUNT;
+         const int32_t MAX_DIR_LIGHT_COUNT;
 
       public:
 

@@ -1,6 +1,7 @@
 #include "DeferredLightShader.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "Core/GameCore/GlobalSettings.h"
 
 namespace Game
 {
@@ -9,7 +10,9 @@ namespace Game
 
       DeferredLightShader::DeferredLightShader(const ShaderParams& params)
          : ShaderBase(params)
-      {
+         , MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount())
+         , MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount())
+      {   
          ShaderInit();
       }
 
@@ -57,20 +60,21 @@ namespace Game
 
       void DeferredLightShader::SetShaderPredefine()
       {
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", MAX_DIR_LIGHT_COUNT);
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", MAX_POINT_LIGHT_COUNT);
-         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", SHADOWMAP_BIAS_DIR_LIGHT);
-         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", SHADOWMAP_BIAS_POINT_LIGHT);
-         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", PCF_SAMPLES_DIR_LIGHT);
-         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", PCF_SAMPLES_POINT_LIGHT);
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", MAX_POINT_LIGHT_SHADOW_MAP_COUNT);
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", MAX_DIR_LIGHT_SHADOW_MAP_COUNT);
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT",  (int32_t)MAX_DIR_LIGHT_COUNT);
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", (int32_t) MAX_POINT_LIGHT_COUNT);
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasDirLight());
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasPointLight());
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", GlobalSettings::GetInstance()->GetDirLightPCFSamplesCount());
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
+         DefineConstant<float>(FragmentShader, "SHADOW_ORTHO_EXTENT_SIZE", GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent() * 2);
+         DefineConstant<int32_t>(FragmentShader, "SHADOW_TRANSITION_AREA", GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
 #ifdef SHADING_MODEL_PBR
          Define(FragmentShader, "SHADING_MODEL_PBR");
 #else
          Undefine(FragmentShader, "SHADING_MODEL_PBR");
 #endif
-
       }
 
       void DeferredLightShader::SetCameraWorldPosition(const glm::vec3& cameraWorldPosition)
@@ -132,8 +136,8 @@ namespace Game
       void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>>& lightsProxies)
       {
          // Directional lights
-         size_t dirLightProxyIndex = 0;
-         for (size_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
+         int32_t dirLightProxyIndex = 0;
+         for (int32_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
          {
             if (lightsProxies[lightProxyIndex]->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < MAX_DIR_LIGHT_COUNT)
             {
@@ -151,8 +155,8 @@ namespace Game
          u_DirectionalLightCount.LoadUniform(dirLightProxyIndex);
 
          // Point lights
-         size_t pointLightProxyIndex = 0;
-         for (size_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
+         int32_t pointLightProxyIndex = 0;
+         for (int32_t lightProxyIndex = 0; lightProxyIndex < lightsProxies.size(); ++lightProxyIndex)
          {
             if (lightsProxies[lightProxyIndex]->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && dirLightProxyIndex < MAX_POINT_LIGHT_COUNT)
             {

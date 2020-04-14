@@ -3,10 +3,9 @@
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/CommonCore/FolderManager.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-#include "Core/GameCore/GlobalProperties.h"
 #include "Core/GameCore/ICamera.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
-#include "Core/GameCore/GlobalProperties.h"
+#include "Core/GameCore/GlobalInputController.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -32,7 +31,7 @@ namespace Graphics
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr, std::weak_ptr<Level> level)
          : m_interThreadMgr(interThreadMgr)
          , mLevel(level)
-         , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(GlobalProperties::GetInstance()->GetInputData().GetWindowWidth(), GlobalProperties::GetInstance()->GetInputData().GetWindowHeight()))
+         , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(GlobalInputController::GetInstance()->GetWindowWidth(), GlobalInputController::GetInstance()->GetWindowHeight()))
       {
          const auto& folderManager = FolderManager::GetInstance();
 
@@ -324,8 +323,8 @@ namespace Graphics
       { 
          // Resolve depth buffer from gBuffer to default frame buffer
 
-         int32_t windowWidth = GlobalProperties::GetInstance()->GetInputData().GetWindowWidth();
-         int32_t windowHeight = GlobalProperties::GetInstance()->GetInputData().GetWindowHeight();
+         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
+         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
          glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gbuffer->GetFramebufferDesc());
          glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

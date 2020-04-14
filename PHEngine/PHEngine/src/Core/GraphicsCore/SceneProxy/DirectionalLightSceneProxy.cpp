@@ -20,7 +20,7 @@ namespace Graphics
 
       DirectionalLightSceneProxy::~DirectionalLightSceneProxy()
       {
-
+         delete m_shadowInfo;
       }
 
       void DirectionalLightSceneProxy::PostConstructorInitialize()
@@ -28,7 +28,8 @@ namespace Graphics
          auto shadowInfo = static_cast<ProjectedDirShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
-            shadowInfo->SetShadowProjectionMatrix(glm::ortho(-50.0f, 50.0f, -50.0f, 50.0f, 0.1f, 100.0f));
+            const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
+            shadowInfo->SetShadowProjectionMatrix(glm::ortho(-halfExtent, halfExtent, -halfExtent, halfExtent, 0.1f, halfExtent * 4));
          }
       }
 

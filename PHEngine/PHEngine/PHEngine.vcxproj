@@ -378,6 +378,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
+    <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
@@ -498,8 +499,7 @@
     <ClInclude Include="src\Core\GameCore\Components\SceneComponent.h" />
     <ClInclude Include="src\Core\GameCore\FirstPersonCamera.h" />
     <ClInclude Include="src\Core\GameCore\ICamera.h" />
-    <ClInclude Include="src\Core\GameCore\GlobalProperties.h" />
-    <ClInclude Include="src\Core\GameCore\InputData.h" />
+    <ClInclude Include="src\Core\GameCore\GlobalInputController.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\ShaderAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\ShaderPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\ComponentData.h" />
@@ -808,6 +808,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp" />
+    <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
@@ -876,7 +878,6 @@
     <ClCompile Include="src\Core\GameCore\Components\SceneComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\FirstPersonCamera.cpp" />
     <ClCompile Include="src\Core\GameCore\ICamera.cpp" />
-    <ClCompile Include="src\Core\GameCore\GlobalProperties.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\ShaderPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\MeshPool.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.cpp" />

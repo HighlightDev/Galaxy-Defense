@@ -19,6 +19,7 @@ namespace Graphics
    ProjectedShadowInfo::~ProjectedShadowInfo()
    {
       DeallocateFramebuffer();
+      m_shadowAtlasCellResource.DeallocateTextureAtlasByRequestId();
    }
 
    void ProjectedShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const 

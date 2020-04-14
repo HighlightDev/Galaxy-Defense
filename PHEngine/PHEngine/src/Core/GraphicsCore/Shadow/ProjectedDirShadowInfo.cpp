@@ -4,9 +4,12 @@
 namespace Graphics
 {
 
-   ProjectedDirShadowInfo::ProjectedDirShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource)
+   ProjectedDirShadowInfo::ProjectedDirShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource,
+      const float shadowOrthoHalfExtent, const float shadowTransitionLength)
       : ProjectedShadowInfo(shadowAtlasCellResource)
-   {
+      , mShadowOrthoHalfExtent(shadowOrthoHalfExtent)
+      , mShadowTransitionLength(shadowTransitionLength)
+   {    
       m_lightType = LightType::DIRECTIONAL_LIGHT;
    }
 

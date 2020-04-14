@@ -101,7 +101,7 @@ private:
   
       // Position texture
       {
-         TexParams positionParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB16F, GL_RGB, GL_FLOAT, GL_REPEAT, true);
+         TexParams positionParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGBA16F, GL_RGB, GL_FLOAT, GL_REPEAT, true);
          m_positionBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(positionParams);
       }
       

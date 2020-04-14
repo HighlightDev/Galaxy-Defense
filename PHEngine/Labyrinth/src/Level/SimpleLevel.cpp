@@ -30,13 +30,15 @@
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
-#include "Core/GameCore/Physics/PhysicsWorld.h"
 
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 
 #include <glm/vec3.hpp>
+
+#include "Core/GameCore/GlobalSettings.h"
 
 #include <LogInterface.h>
 
@@ -69,7 +71,8 @@ namespace Labyrinth
             StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr));
 
-            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
+            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor",
+               std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
@@ -90,10 +93,14 @@ namespace Labyrinth
       // Dir light
       {
          auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1);
+         ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1,
+         GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
+            GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
 
          auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2);
+         ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2,
+            GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
+            GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
 
          DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
             glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);

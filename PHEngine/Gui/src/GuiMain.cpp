@@ -6,7 +6,7 @@
 #include "Engine.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
-#include "Core/GameCore/GlobalProperties.h"
+#include "Core/GameCore/GlobalInputController.h"
 #include "GuiMain.h"
 #include "Core/GameCore/KeyboardInputManager.h"
 
@@ -24,7 +24,7 @@ void get_window_pos(GLFWwindow* window)
 	int32_t x, y;
 	glfwGetWindowPos(window, &x, &y);
 
-	GlobalProperties::GetInstance()->GetInputData().SetWindowPos(x, y);
+   GlobalInputController::GetInstance()->SetWindowPos(x, y);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
@@ -32,8 +32,8 @@ void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 	int32_t xPos = static_cast<int32_t>(xpos);
 	int32_t yPos = static_cast<int32_t>(ypos);
 
-	GlobalProperties::GetInstance()->GetInputData().SetMouseX(xPos);
-	GlobalProperties::GetInstance()->GetInputData().SetMouseY(yPos);
+   GlobalInputController::GetInstance()->SetMouseX(xPos);
+   GlobalInputController::GetInstance()->SetMouseY(yPos);
 
 	bMouseMove = true;
 }
@@ -90,8 +90,8 @@ void get_screen_rezolution()
 {
 	const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-	GlobalProperties::GetInstance()->GetInputData().SetScreenWidth(mode->width);
-	GlobalProperties::GetInstance()->GetInputData().SetScreenHeight(mode->height);
+   GlobalInputController::GetInstance()->SetScreenWidth(mode->width);
+   GlobalInputController::GetInstance()->SetScreenHeight(mode->height);
 }
 
 void get_window_size(GLFWwindow* window)
@@ -99,8 +99,8 @@ void get_window_size(GLFWwindow* window)
 	int32_t width, height;
 	glfwGetWindowSize(window, &width, &height);
 
-	GlobalProperties::GetInstance()->GetInputData().SetWindowWidth(width);
-	GlobalProperties::GetInstance()->GetInputData().SetWindowHeight(height);
+   GlobalInputController::GetInstance()->SetWindowWidth(width);
+	GlobalInputController::GetInstance()->SetWindowHeight(height);
 }
 
 int32_t main(int32_t argc, char** argv)
@@ -115,8 +115,8 @@ int32_t main(int32_t argc, char** argv)
 
    get_screen_rezolution();
 
-   auto width = GlobalProperties::GetInstance()->GetInputData().GetScreenWidth();
-   auto height = GlobalProperties::GetInstance()->GetInputData().GetScreenHeight();
+   auto width = GlobalInputController::GetInstance()->GetScreenWidth();
+   auto height = GlobalInputController::GetInstance()->GetScreenHeight();
 
 	// window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
    window = glfwCreateWindow(1200, 900, "PHEngine", NULL, NULL);

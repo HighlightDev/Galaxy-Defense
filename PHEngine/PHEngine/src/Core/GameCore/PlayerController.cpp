@@ -17,6 +17,12 @@ namespace Game
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
    {
       m_playerActor = playerActor;
+      std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
+
+      if (rootComponent)
+      {
+         Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
+      }
    }
 
    void PlayerController::Tick(float deltaTime)
