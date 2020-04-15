@@ -36,8 +36,9 @@ namespace Game
          {
             const Actor* owner = GetOwner();
 
-            owner->GetRootComponent()->SetTranslation(mDescriptor->GetTranslation(), false);
-            owner->GetRootComponent()->SetEulerRotationDegrees(mDescriptor->GetEulerRotationDegrees(), true);
+            owner->GetRootComponent()->SetTranslation(mDescriptor->GetTranslation(), true);
+            //owner->GetRootComponent()->SetEulerRotationDegrees(mDescriptor->GetEulerRotationDegrees(), true);
+            owner->GetBaseRootComponent()->MATRIX = mDescriptor->MATRIX;
          }
       }
    }

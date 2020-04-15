@@ -98,24 +98,29 @@ namespace Game
       {
          glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotation.y), AXIS_UP);
          m_relativeMatrix *= cameraYawRotation;
-      }
 
-      if (!CompareFloats(m_eulerRotationDegrees.x, 0.0f))
-      {
-         const float pitchRad = DEG_TO_RAD(m_eulerRotationDegrees.x);
-         m_relativeMatrix *= glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
-      }
 
-      if (!CompareFloats(m_eulerRotationDegrees.y, 0.0f))
-      {
-         const float yawRad = DEG_TO_RAD(m_eulerRotationDegrees.y);
-         m_relativeMatrix *= glm::rotate(identityMatrix, yawRad, AXIS_UP);
+         m_relativeMatrix *= MATRIX;
       }
-
-      if (!CompareFloats(m_eulerRotationDegrees.z, 0.0f))
+      else
       {
-         const float rollRad = DEG_TO_RAD(m_eulerRotationDegrees.z);
-         m_relativeMatrix *= glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
+         if (!CompareFloats(m_eulerRotationDegrees.x, 0.0f))
+         {
+            const float pitchRad = DEG_TO_RAD(m_eulerRotationDegrees.x);
+            m_relativeMatrix *= glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
+         }
+
+         if (!CompareFloats(m_eulerRotationDegrees.y, 0.0f))
+         {
+            const float yawRad = DEG_TO_RAD(m_eulerRotationDegrees.y);
+            m_relativeMatrix *= glm::rotate(identityMatrix, yawRad, AXIS_UP);
+         }
+
+         if (!CompareFloats(m_eulerRotationDegrees.z, 0.0f))
+         {
+            const float rollRad = DEG_TO_RAD(m_eulerRotationDegrees.z);
+            m_relativeMatrix *= glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
+         }
       }
 
 		SetIsTransformationDirty(false, true);

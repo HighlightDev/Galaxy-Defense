@@ -32,13 +32,20 @@ namespace Game
          return;
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
+
+      if (auto physComponent = m_playerActor->GetPhysicsComponent())
+      {
+         physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
+      }
+
+      Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
       std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
 
       if (movementComponent->GetIsCameraRotationDirty())
       {
          rootComponent->SetAdditionalRotation(movementComponent->GetCameraPitchYawRoll());
          auto rotation = rootComponent->GetEulerRotationDegrees();
-         rootComponent->SetEulerRotationDegrees(glm::vec3(0, rotation.y, 0));
+         
          movementComponent->SetIsCameraRotationDirty(false);
       }
 
@@ -51,7 +58,6 @@ namespace Game
             {
                if (auto physComponent = m_playerActor->GetPhysicsComponent())
                {
-                  physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
                   if (!physComponent->GetDescriptor()->GetRigidBody()->isActive())
                   {
                      physComponent->GetDescriptor()->GetRigidBody()->activate();
@@ -64,7 +70,7 @@ namespace Game
                //auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
                //rootComponent->SetTranslation(newPosition);
 
-               Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
+           
             }
             else if (bindings.GetKeyState(Keys::A))
             {
@@ -74,6 +80,18 @@ namespace Game
             }
             else if (bindings.GetKeyState(Keys::S))
             {
+               if (auto physComponent = m_playerActor->GetPhysicsComponent())
+               {
+                  physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
+                  if (!physComponent->GetDescriptor()->GetRigidBody()->isActive())
+                  {
+                     physComponent->GetDescriptor()->GetRigidBody()->activate();
+                  }
+
+                  glm::vec3 offset = movementComponent->GetMoveOffset();
+                  physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x / 100, 0, offset.z / 100));
+               }
+
             }
          }
    

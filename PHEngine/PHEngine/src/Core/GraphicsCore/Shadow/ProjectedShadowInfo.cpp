@@ -9,10 +9,10 @@ namespace Graphics
       , m_shadowBiasMatrix(
          0.5f, 0, 0, 0,
          0, 0.5f, 0, 0,
-         0, 0, 0.5f, 0, 
+         0, 0, 0.5f, 0,
          0.5f, 0.5f, 0.5f, 1)
-      , Offset(0)
-      , bMustUpdateShadowmap(true)
+      , mPlayerPositionOffset(0)
+      , bShadowmapDirty(true)
    {
    }
 
@@ -22,7 +22,7 @@ namespace Graphics
       m_shadowAtlasCellResource.DeallocateTextureAtlasByRequestId();
    }
 
-   void ProjectedShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const 
+   void ProjectedShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const
    {
       AllocateFramebuffer();
    }
@@ -37,7 +37,7 @@ namespace Graphics
    }
 
    void ProjectedShadowInfo::DeallocateFramebuffer() const
-   { 
+   {
       m_shadowFramebuffer->CleanUp();
    }
 
@@ -51,10 +51,27 @@ namespace Graphics
       }
       return result;
    }
-   
+
    LightType ProjectedShadowInfo::GetLightType() const
    {
       return m_lightType;
    }
 
+   void ProjectedShadowInfo::SetIsShadowMapDirty(const bool bDirty) {
+      bShadowmapDirty = bDirty;
+   }
+
+   void ProjectedShadowInfo::SetPlayerPositionOffset(const glm::vec3& offset)
+   {
+      mPlayerPositionOffset = offset;
+   }
+
+   glm::vec3 ProjectedShadowInfo::GetPlayerPositionOffset() const {
+      return mPlayerPositionOffset;
+   }
+
+   bool ProjectedShadowInfo::IsShadowMapDirty() const
+   {
+      return bShadowmapDirty;
+   }
 }

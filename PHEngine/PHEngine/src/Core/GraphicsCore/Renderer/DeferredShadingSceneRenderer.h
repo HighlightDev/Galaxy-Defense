@@ -53,6 +53,8 @@ namespace Graphics
          // Texture renderer
          TextureRenderer m_textureRenderer;
 
+         std::function<bool(const std::shared_ptr<DirectionalLightSceneProxy>&, const std::shared_ptr<DirectionalLightSceneProxy>&)> mCompareShadowMapDescriptors;
+
       public:
 
          glm::mat4 ProjectionMatrix;

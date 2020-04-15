@@ -35,6 +35,8 @@ namespace Game
 
    public:
 
+      glm::mat4 MATRIX;
+
       PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f);
 
       ~PhysicsDescriptor();

@@ -1,5 +1,6 @@
 #include "PhysicsDescriptor.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include <glm/gtx/matrix_decompose.hpp>
 
 using namespace EngineMath;
 
@@ -14,6 +15,7 @@ namespace Game
       , mInertia()
       , mRigidBody(nullptr)
       , mCurrentId(PhysicsDescriptor::mTotalIds++)
+      , MATRIX(glm::mat4(1))
    {
       if (!CompareFloats(mass, 0.0f))
       {
@@ -70,6 +72,18 @@ namespace Game
       mMotionState->getWorldTransform(transform);
       btScalar btMatrix[16];
       transform.getOpenGLMatrix(btMatrix);
+      btMatrix3x3 rot = transform.getBasis();
+      btVector3 row1 = rot[0];
+      btVector3 row2 = rot[1];
+      btVector3 row3 = rot[2];
+
+      glm::mat4 matrix = glm::mat4(
+         row1[0], row1[1], row1[2], 0,
+         row2[0], row2[1], row2[2], 0,
+         row3[0], row3[1], row3[2], 0,
+         0, 0, 0, 1);
+      
+      MATRIX = matrix;
 
       bIsWorldTransformDiry = memcmp(btMatrix, mPrevTransformMatrix, 16 * sizeof(float)) != 0;
       memcpy(mPrevTransformMatrix, btMatrix, 16 * sizeof(float));

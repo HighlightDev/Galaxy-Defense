@@ -34,11 +34,9 @@ namespace Graphics
 
       glm::mat4 m_shadowBiasMatrix;
 
-   public:
+      bool bShadowmapDirty;
 
-      bool bMustUpdateShadowmap;
-
-      glm::vec3 Offset;
+      glm::vec3 mPlayerPositionOffset;
 
    public:
 
@@ -48,9 +46,17 @@ namespace Graphics
 
       virtual void BindShadowFramebuffer(bool clearDepthBuffer) const;
 
+      void SetIsShadowMapDirty(const bool bDirty);
+
+      void SetPlayerPositionOffset(const glm::vec3& offset);
+
       std::shared_ptr<ITexture> GetAtlasResource() const;
 
       LightType GetLightType() const;
+
+      glm::vec3 GetPlayerPositionOffset() const;
+
+      bool IsShadowMapDirty() const;
 
    protected:
 

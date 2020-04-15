@@ -34,7 +34,10 @@ namespace Game
       // ptr because this rotation is 
       glm::vec3 m_additionalRotation;
 
+    
+
    public:
+      glm::mat4 MATRIX = glm::mat4(1);
 
       bool bIsRootComponent = false;
 

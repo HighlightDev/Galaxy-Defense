@@ -18,6 +18,8 @@ namespace Game
 
       float m_animationDeltaTime;
 
+      int32_t m_tickCounter = 0;
+
    public:
 
       SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const SkeletalMeshRenderData& renderData);

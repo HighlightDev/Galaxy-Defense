@@ -30,15 +30,22 @@ namespace Game
    {
       m_animationDeltaTime = std::max(deltaTime, 0.02f);
 
-      constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+      if (m_tickCounter == 15) // TODO: hot fix for optimization, later should be done much better way
+      {
+         constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
 
-      m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-         SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(m_scene->SceneProxies[PrimitiveProxyComponentId].get());
-         proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
-      });
+            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(m_scene->SceneProxies[PrimitiveProxyComponentId].get());
+            proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
+         });
 
-      Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+
+         m_tickCounter = -1;
+      }
+      
+      m_tickCounter++;
    }
 
    std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() const

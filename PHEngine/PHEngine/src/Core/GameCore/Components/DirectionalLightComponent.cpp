@@ -50,8 +50,6 @@ namespace Game
 
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
    {
-      //std::cout << "UPDATE DirectionalLightComponent: Set shadowInfo->Offset" << std::endl;
-
       constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 
       m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
@@ -60,8 +58,9 @@ namespace Game
          ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
          if (shadowInfo)
          {
-            shadowInfo->Offset = std::get<0>(data);
+            shadowInfo->SetPlayerPositionOffset(std::get<0>(data));
             proxy->SetIsTransformationDirty(true);
+            shadowInfo->SetIsShadowMapDirty(true);
          }
       });
    }
@@ -70,15 +69,13 @@ namespace Game
    {
       constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
-     // std::cout << "UPDATE DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap" << std::endl;
-
       m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
       {
          auto proxy = m_scene->LightProxies[LightSceneProxyId];
          ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
          if (shadowInfo)
          {
-            shadowInfo->bMustUpdateShadowmap = true;
+            shadowInfo->SetIsShadowMapDirty(true);
          }
       });
    }

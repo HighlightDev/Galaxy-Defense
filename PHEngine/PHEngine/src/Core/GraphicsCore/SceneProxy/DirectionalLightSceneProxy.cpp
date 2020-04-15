@@ -55,8 +55,11 @@ namespace Graphics
                glm::vec3 normLightDir = glm::normalize(GetDirection());
 
                // Target is the player, keep collecting shadow info when player is moving all around the level
-               glm::vec3 targetPositon = shadowInfo->Offset;
-               glm::vec3 lightTranslatedPosition = -(normLightDir * 50.0f);
+               glm::vec3 targetPositon = shadowInfo->GetPlayerPositionOffset();
+
+               const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
+
+               glm::vec3 lightTranslatedPosition = -(normLightDir * (halfExtent * 2));
                glm::vec3 shadowCastPosition(targetPositon + lightTranslatedPosition);
 
                shadowInfo->SetShadowViewMatrix(glm::lookAt(shadowCastPosition, targetPositon, glm::vec3(0, 1, 0)));

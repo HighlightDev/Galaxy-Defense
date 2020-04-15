@@ -49,6 +49,25 @@ namespace Graphics
          m_depthShaderNonSkeletal = std::static_pointer_cast<DepthShader<false>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<false>>(shaderParams5));
          m_depthCubemapShaderSkeletal = std::static_pointer_cast<CubemapDepthShader<true>>(ShaderPool::GetInstance()->template GetOrAllocateResource< CubemapDepthShader<true>>(shaderParams6));
          m_depthCubemapShaderNonSkeletal = std::static_pointer_cast<CubemapDepthShader<false>>(ShaderPool::GetInstance()->template GetOrAllocateResource< CubemapDepthShader<true>>(shaderParams7));
+
+         mCompareShadowMapDescriptors = std::bind([](const std::shared_ptr<DirectionalLightSceneProxy>& firstProxy,
+            const std::shared_ptr<DirectionalLightSceneProxy>& secondProxy) -> bool {
+            bool result = false;
+            const auto& shadowInfo1 = firstProxy->GetProjectedDirShadowInfo();
+            const auto& shadowInfo2 = secondProxy->GetProjectedDirShadowInfo();
+            if (shadowInfo1 && shadowInfo2)
+            {
+               const uint32_t desc1 = shadowInfo1->GetAtlasResource()->GetTextureDescriptor();
+               const uint32_t desc2 = shadowInfo2->GetAtlasResource()->GetTextureDescriptor();
+               result = desc1 > desc2;
+            }
+            else if (shadowInfo1 && !shadowInfo2)
+            {
+               result = true;
+            }
+
+            return result;
+         }, std::placeholders::_1, std::placeholders::_2);
       }
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
@@ -89,25 +108,7 @@ namespace Graphics
          auto dirLightProxies = RetrieveDirectionalLightProxies(lightSourcesProxy);
          auto pointLightProxies = RetrievePointLightProxies(lightSourcesProxy);
 
-         std::sort(dirLightProxies.begin(), dirLightProxies.end(),
-            [](const std::shared_ptr<DirectionalLightSceneProxy>& firstProxy, const std::shared_ptr<DirectionalLightSceneProxy>& secondProxy)
-         {
-            bool result = false;
-            const auto& shadowInfo1 = firstProxy->GetProjectedDirShadowInfo();
-            const auto& shadowInfo2 = secondProxy->GetProjectedDirShadowInfo();
-            if (shadowInfo1 && shadowInfo2)
-            {
-               const uint32_t desc1 = shadowInfo1->GetAtlasResource()->GetTextureDescriptor();
-               const uint32_t desc2 = shadowInfo2->GetAtlasResource()->GetTextureDescriptor();
-               result = desc1 > desc2;
-            }
-            else if (shadowInfo1 && !shadowInfo2)
-            {
-               result = true;
-            }
-
-            return result;
-         });
+         std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
 
          const auto firstDirLightProxyWithShadowInfo = std::find_if(dirLightProxies.begin(), dirLightProxies.end(), [](const std::shared_ptr<DirectionalLightSceneProxy>& proxy) { return proxy->GetProjectedDirShadowInfo() != nullptr; });
          uint32_t lastDirLightFramebufferDesc = std::numeric_limits<uint32_t>::max();
@@ -117,7 +118,7 @@ namespace Graphics
             DirectionalLightSceneProxy* lightPtr = dirLightProxy.get();
 
             ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
-            if (shadowInfo && shadowInfo->bMustUpdateShadowmap)
+            if (shadowInfo && shadowInfo->IsShadowMapDirty())
             {
                shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastDirLightFramebufferDesc);
                lastDirLightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
@@ -167,7 +168,7 @@ namespace Graphics
                glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
                // Next frame shadow map will not be updated unless position of objects in the level are changed
-               shadowInfo->bMustUpdateShadowmap = false;
+               shadowInfo->SetIsShadowMapDirty(false);
             }
          }
 
