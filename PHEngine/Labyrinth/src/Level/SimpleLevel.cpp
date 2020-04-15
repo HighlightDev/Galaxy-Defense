@@ -92,28 +92,27 @@ namespace Labyrinth
 
       // Dir light
       {
-         auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1,
-         GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
-            GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
+         /*  auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
+           ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1,
+           GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
+              GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());*/
 
          auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
          ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2,
-            GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
-            GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());
+            GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent());
 
-         DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);
+       /*  DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
+            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);*/
 
          DirectionalLightComponentData mData2(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
             glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
 
-         auto dirLightComponent1 =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
+         //auto dirLightComponent1 =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
          auto dirLightComponent2 = mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData2);
 
          std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
 
-         dirLightActor->AddComponent(dirLightComponent1);
+         //dirLightActor->AddComponent(dirLightComponent1);
          dirLightActor->AddComponent(dirLightComponent2);
          mScene->AllActors.push_back(dirLightActor);
       }

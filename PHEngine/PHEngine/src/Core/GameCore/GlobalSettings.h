@@ -12,7 +12,6 @@ namespace Game
       static std::unique_ptr<GlobalSettings> m_globalSettings;
 
       const float   mShadowOrthoProjectionHalfExtent;
-      const int32_t   mShadowTransitionAreaLength;
       const int32_t mMaxDirLightCount;
       const int32_t mMaxDirLightShadowMapCount;
       const int32_t mMaxPointLightCount;
@@ -38,10 +37,6 @@ namespace Game
 
       inline float GetShadowOrthoProjectionHalfExtent() const {
          return mShadowOrthoProjectionHalfExtent;
-      }
-
-      inline int32_t GetShadowTransitionAreaLength() const {
-         return mShadowTransitionAreaLength;
       }
 
       inline int32_t GetMaxDirLightCount() const {

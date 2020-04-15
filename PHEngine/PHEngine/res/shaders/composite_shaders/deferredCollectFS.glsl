@@ -1,6 +1,6 @@
 #version 400
 
-layout (location = 0) out vec4 gBuffer_Position; // xyz: position + w: distance to pixel in view space
+layout (location = 0) out vec3 gBuffer_Position;
 layout (location = 1) out vec3 gBuffer_Normal;
 layout (location = 2) out vec4 gBuffer_AlbedoNSpecular;
 
@@ -21,7 +21,7 @@ void main()
 
 	normalFromNM = tangentToWorld * normalFromNM;
 
-	gBuffer_Position = vec4(VsOutput.WorldCoordinates, length(VsOutput.ViewCoordinates));
+	gBuffer_Position = VsOutput.WorldCoordinates;
 
 	gBuffer_Normal = normalFromNM;
 	gBuffer_AlbedoNSpecular = vec4(albedoColor, 1.0);

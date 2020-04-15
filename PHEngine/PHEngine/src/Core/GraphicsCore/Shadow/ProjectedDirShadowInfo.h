@@ -14,11 +14,10 @@ namespace Graphics
       std::shared_ptr<Texture2dAtlasHandler>  GetTexture2dHandler() const;
 
       const float mShadowOrthoHalfExtent;
-      const float mShadowTransitionLength;
 
    public:      
 
-      ProjectedDirShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource, const float shadowOrthoHalfExtent, const float shadowTransitionLength);
+      ProjectedDirShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
 
       virtual ~ProjectedDirShadowInfo();
 
@@ -39,11 +38,6 @@ namespace Graphics
       inline float GetShadowOrthoHalfExtent() const {
          return mShadowOrthoHalfExtent;
       }
-
-      inline float GetShadowTransitionLength() const {
-         return mShadowTransitionLength;
-      }
-
    };
 
 }
