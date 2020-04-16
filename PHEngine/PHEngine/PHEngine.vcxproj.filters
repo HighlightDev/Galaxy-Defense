@@ -1390,9 +1390,6 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\ShaderAllocationPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\GlobalProperties.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\FirstPersonCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1804,6 +1801,9 @@
     <ClInclude Include="src\Core\GameCore\GlobalInputController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\UtilityCore\GlmToBulletConverter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -1921,9 +1921,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\ShaderPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\GlobalProperties.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\FirstPersonCamera.cpp">
@@ -2173,6 +2170,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\UtilityCore\GlmToBulletConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

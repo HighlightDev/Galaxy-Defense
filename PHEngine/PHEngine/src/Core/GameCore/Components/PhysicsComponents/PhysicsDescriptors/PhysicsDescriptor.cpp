@@ -9,12 +9,15 @@ namespace Game
    size_t PhysicsDescriptor::mTotalIds = 0;
 
    PhysicsDescriptor::PhysicsDescriptor(PhyShapeBase* shape, const float mass)
-      : mShape(shape)
+      : mCurrentId(PhysicsDescriptor::mTotalIds++)
+      , mShape(shape)
       , mMotionState(new btDefaultMotionState())
       , mMass(mass)
       , mInertia()
       , mRigidBody(nullptr)
-      , mCurrentId(PhysicsDescriptor::mTotalIds++)
+      , mRotator()
+      , mTranslation()
+      , mPrevTransform()
    {
       if (!CompareFloats(mass, 0.0f))
       {
@@ -37,15 +40,9 @@ namespace Game
       return mCurrentId;
    }
 
-   void PhysicsDescriptor::SetMotionStateWorldTransform(const float yaw, const float pitch, const float roll, const glm::vec3& translation)
+   void PhysicsDescriptor::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
    {
-      btTransform worldTransform(btQuaternion(btScalar(yaw), btScalar(pitch), btScalar(roll)), btVector3(translation.x, translation.y, translation.z));
-      mMotionState->setWorldTransform(worldTransform);
-   }
-
-   void PhysicsDescriptor::SetMotionStateWorldTransform(const btQuaternion& quat, const glm::vec3& translation)
-   {
-      btTransform worldTransform(quat, btVector3(translation.x, translation.y, translation.z));
+      btTransform worldTransform(quat, translation);
       mMotionState->setWorldTransform(worldTransform);
    }
 
@@ -76,26 +73,15 @@ namespace Game
       btTransform transform;
       mMotionState->getWorldTransform(transform);
 
-      auto translation = transform.getOrigin();
-      auto rotator = transform.getRotation();
+      bIsWorldTransformDiry = false;
 
-      if (
-         CompareFloats(rotator.getX(), mRotator.getX()) &&
-         CompareFloats(rotator.getY(), mRotator.getY()) &&
-         CompareFloats(rotator.getZ(), mRotator.getZ()) && 
-         CompareFloats(rotator.getW(), mRotator.getW()) &&
-         CompareFloats(translation.getX(), mTranslation.x()) &&
-         CompareFloats(translation.getY(), mTranslation.y()) &&
-         CompareFloats(translation.getZ(), mTranslation.z()))
+      if (!(mPrevTransform == transform))
       {
-         bIsWorldTransformDiry = false;
-      }
-      else
-      {
+         mPrevTransform = transform;
          bIsWorldTransformDiry = true;
 
-         mRotator = rotator;
-         mTranslation = translation;
+         mRotator = transform.getRotation();
+         mTranslation = transform.getOrigin();
       }
    }
 
@@ -104,8 +90,8 @@ namespace Game
       return mRotator;
    }
 
-   glm::vec3 PhysicsDescriptor::GetTranslation() const
+   btVector3 PhysicsDescriptor::GetTranslation() const
    {
-      return glm::vec3(mTranslation.getX(), mTranslation.getY(), mTranslation.getZ());
+      return mTranslation;
    }
 }

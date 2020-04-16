@@ -2,7 +2,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include <glm/gtx/quaternion.hpp>
+#include "Core/UtilityCore/GlmToBulletConverter.h"
 
 using namespace EngineMath;
 
@@ -23,15 +23,6 @@ namespace Game
       return mDescriptor;
    }
 
-   glm::quat bulletToGlm(const btQuaternion& q)
-   {
-      return glm::quat(q.getW(), q.getX(), q.getY(), q.getZ());
-   }
-
-   btQuaternion glmToBullet(const glm::quat& q) {
-      return btQuaternion(q.x, q.y, q.z, q.w);
-   }
-
    void PhysicsComponent::Tick(const float deltaTime)
    {
       if (mDescriptor->GetMotionState())
@@ -46,9 +37,8 @@ namespace Game
          {
             const Actor* owner = GetOwner();
 
-            owner->GetRootComponent()->SetTranslation(mDescriptor->GetTranslation(), true);
-            //owner->GetRootComponent()->SetEulerRotationDegrees(mDescriptor->GetEulerRotationDegrees(), true);
-            *owner->GetBaseRootComponent()->mRotator = bulletToGlm(mDescriptor->GetRotator());
+            owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()), false);
+            owner->GetBaseRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()), true);
          }
       }
    }
@@ -62,14 +52,9 @@ namespace Game
    {
       const Actor* owner = GetOwner();
       const glm::vec3& translation = owner->GetRootComponent()->GetTranslation();
-      //const glm::vec3& rotation = owner->GetRootComponent()->GetEulerRotationDegrees();
+      const glm::quat& rotator = owner->GetRootComponent()->GetRotator();
 
-      const glm::quat rotator = *owner->GetRootComponent()->mRotator;
-
-      //const float yaw = DEG_TO_RAD(rotation.z), pitch = DEG_TO_RAD(rotation.y), roll = DEG_TO_RAD(rotation.x);
-
-      //mDescriptor->SetMotionStateWorldTransform(yaw, pitch, roll, translation);
-      mDescriptor->SetMotionStateWorldTransform(glmToBullet(rotator), translation);
+      mDescriptor->SetMotionStateWorldTransform(Converter::glmToBullet(rotator), Converter::glmToBullet(translation));
 
       mDescriptor->CompleteRigidBodyConstruction();
    }

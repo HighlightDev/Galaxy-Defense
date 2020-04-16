@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include <glm/detail/qualifier.hpp>
+#include <glm/ext/quaternion_float.hpp>
 
 namespace Game
 {
@@ -25,21 +25,16 @@ namespace Game
       bool mIsVisible;
 
 		glm::vec3 m_translation;
-		glm::vec3 m_eulerRotationDegrees;
+      glm::quat mRotator;
 		glm::vec3 m_scale;
-
-    
 
 		glm::mat4 m_relativeMatrix;
 
       class Scene* m_scene;
 
-      // ptr because this rotation is 
-      glm::vec3 m_additionalRotation;
+      glm::vec3 m_additionalRotationEuler; // TODO: move to quat
 
    public:
-
-      struct glm::qua<float, glm::qualifier::packed_highp>* mRotator;
 
       bool bIsRootComponent = false;
 
@@ -77,15 +72,15 @@ namespace Game
             Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
       }
 
-		void SetTranslation(glm::vec3 translation, const bool bTriggerTransformUpdateEvent = true)
+		void SetTranslation(const glm::vec3& translation, const bool bTriggerTransformUpdateEvent = true)
 		{
 			m_translation = translation;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-		void SetEulerRotationDegrees(glm::vec3 rotation, const bool bTriggerTransformUpdateEvent = true)
+		void SetRotator(const glm::quat& rotator, const bool bTriggerTransformUpdateEvent = true)
 		{
-			m_eulerRotationDegrees = rotation;
+			mRotator = rotator;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
@@ -95,46 +90,11 @@ namespace Game
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
-      void SetAdditionalRotation(const glm::vec3& rotation, const bool bTriggerTransformUpdateEvent = true)
+      void SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent = true)
       {
-         m_additionalRotation = rotation;
+         m_additionalRotationEuler = rotationEuler;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
       }
-
-		void SetRotationAxisX(float new_x, const bool bTriggerTransformUpdateEvent = true)
-		{
-			if (new_x > 360.0f)
-			{
-				m_eulerRotationDegrees.x = new_x - 360.0f;
-			}
-			else
-				m_eulerRotationDegrees.x = new_x;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
-		}
-
-		void SetRotationAxisY(float new_y, const bool bTriggerTransformUpdateEvent = true)
-		{
-			if (new_y > 360.0f)
-			{
-				m_eulerRotationDegrees.y = new_y - 360.0f;
-			}
-			else
-				m_eulerRotationDegrees.y = new_y;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
-		}
-
-		void SetRotationAxisZ(float new_z, const bool bTriggerTransformUpdateEvent = true)
-		{
-			if (new_z > 360.0f)
-			{
-				m_eulerRotationDegrees.z = new_z - 360.0f;
-			}
-			else
-				m_eulerRotationDegrees.z = new_z;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
-		}
-
-      glm::mat3 GetEuelerRotationMatrix() const;
 
 		inline bool GetIsTransformationDirty() const {
 			return bTransformationDirty;
@@ -145,9 +105,9 @@ namespace Game
 			return m_translation;
 		}
 
-		inline glm::vec3 GetEulerRotationDegrees() const
+		inline glm::quat GetRotator() const
 		{
-			return m_eulerRotationDegrees;
+			return mRotator;
 		}
 
 		inline glm::vec3 GetScale() const

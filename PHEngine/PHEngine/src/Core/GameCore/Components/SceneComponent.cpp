@@ -14,8 +14,7 @@ namespace Game
       , bTransformationDirty(true)
       , mIsVisible(true)
       , m_translation(0)
-      , m_eulerRotationDegrees(0)
-      , mRotator(new glm::quat(glm::vec3(0)))
+      , mRotator(glm::vec3(0))
       , m_scale(1)
       , m_relativeMatrix(1)
       , m_scene(nullptr)
@@ -28,17 +27,15 @@ namespace Game
       , bTransformationDirty(true)
       , mIsVisible(true)
 		, m_translation(translation)
-		, m_eulerRotationDegrees(rotation)
 		, m_scale(scale)
+      , mRotator(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)))
 		, m_relativeMatrix(std::move(glm::mat4(1)))
       , m_scene(nullptr)
 	{
-      mRotator = new glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)));
 	}
 
 	SceneComponent::~SceneComponent()
 	{
-      delete mRotator;
 	}
 
 	void SceneComponent::Tick(const float deltaTime)
@@ -58,33 +55,7 @@ namespace Game
          mIsVisible = isVisible;
       }
    }
-
-   glm::mat3 SceneComponent::GetEuelerRotationMatrix() const
-   {
-      glm::mat4 identityMatrix(1);
-      glm::mat4 resultMatrix = identityMatrix;
-
-      if (!CompareFloats(m_eulerRotationDegrees.x, 0.0f))
-      {
-         const float pitchRad = DEG_TO_RAD(m_eulerRotationDegrees.x);
-         resultMatrix *= glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
-      }
-
-      if (!CompareFloats(m_eulerRotationDegrees.y, 0.0f))
-      {
-         const float yawRad = DEG_TO_RAD(m_eulerRotationDegrees.y);
-         resultMatrix *= glm::rotate(identityMatrix, yawRad, AXIS_UP);
-      }
-
-      if (!CompareFloats(m_eulerRotationDegrees.z, 0.0f))
-      {
-         const float rollRad = DEG_TO_RAD(m_eulerRotationDegrees.z);
-         resultMatrix *= glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
-      }
-
-      return resultMatrix;
-   }
-
+ 
 	void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
 	{
 		// Update current relative matrix
@@ -100,11 +71,11 @@ namespace Game
 
       if (bIsRootComponent)
       {
-         glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotation.y), AXIS_UP);
+         glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.y), AXIS_UP);
          m_relativeMatrix *= cameraYawRotation;     
       }
 
-      glm::mat4 rotationMatrix = glm::toMat4(*mRotator);
+      glm::mat4 rotationMatrix = glm::toMat4(mRotator);
       m_relativeMatrix *= rotationMatrix;
 
 		SetIsTransformationDirty(false, true);
