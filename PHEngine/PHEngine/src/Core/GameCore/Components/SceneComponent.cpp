@@ -2,6 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 using namespace EngineMath;
 
@@ -14,6 +15,7 @@ namespace Game
       , mIsVisible(true)
       , m_translation(0)
       , m_eulerRotationDegrees(0)
+      , mRotator(new glm::quat(glm::vec3(0)))
       , m_scale(1)
       , m_relativeMatrix(1)
       , m_scene(nullptr)
@@ -31,10 +33,12 @@ namespace Game
 		, m_relativeMatrix(std::move(glm::mat4(1)))
       , m_scene(nullptr)
 	{
+      mRotator = new glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)));
 	}
 
 	SceneComponent::~SceneComponent()
 	{
+      delete mRotator;
 	}
 
 	void SceneComponent::Tick(const float deltaTime)
@@ -91,37 +95,17 @@ namespace Game
 	   glm::mat4 translationMatrix = glm::translate(identityMatrix, m_translation);
 
       m_relativeMatrix *= parentRelativeMatrix;
-      m_relativeMatrix *= glm::scale(identityMatrix, m_scale);;
+      m_relativeMatrix *= glm::scale(identityMatrix, m_scale);
       m_relativeMatrix *= translationMatrix;
 
       if (bIsRootComponent)
       {
          glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotation.y), AXIS_UP);
-         m_relativeMatrix *= cameraYawRotation;
-
-
-         m_relativeMatrix *= MATRIX;
+         m_relativeMatrix *= cameraYawRotation;     
       }
-      else
-      {
-         if (!CompareFloats(m_eulerRotationDegrees.x, 0.0f))
-         {
-            const float pitchRad = DEG_TO_RAD(m_eulerRotationDegrees.x);
-            m_relativeMatrix *= glm::rotate(identityMatrix, pitchRad, AXIS_RIGHT);
-         }
 
-         if (!CompareFloats(m_eulerRotationDegrees.y, 0.0f))
-         {
-            const float yawRad = DEG_TO_RAD(m_eulerRotationDegrees.y);
-            m_relativeMatrix *= glm::rotate(identityMatrix, yawRad, AXIS_UP);
-         }
-
-         if (!CompareFloats(m_eulerRotationDegrees.z, 0.0f))
-         {
-            const float rollRad = DEG_TO_RAD(m_eulerRotationDegrees.z);
-            m_relativeMatrix *= glm::rotate(identityMatrix, rollRad, AXIS_FORWARD);
-         }
-      }
+      glm::mat4 rotationMatrix = glm::toMat4(*mRotator);
+      m_relativeMatrix *= rotationMatrix;
 
 		SetIsTransformationDirty(false, true);
 	}

@@ -44,8 +44,6 @@ namespace Game
       if (movementComponent->GetIsCameraRotationDirty())
       {
          rootComponent->SetAdditionalRotation(movementComponent->GetCameraPitchYawRoll());
-         auto rotation = rootComponent->GetEulerRotationDegrees();
-         
          movementComponent->SetIsCameraRotationDirty(false);
       }
 

@@ -5,6 +5,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/detail/qualifier.hpp>
 
 namespace Game
 {
@@ -27,6 +28,8 @@ namespace Game
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
 
+    
+
 		glm::mat4 m_relativeMatrix;
 
       class Scene* m_scene;
@@ -34,10 +37,9 @@ namespace Game
       // ptr because this rotation is 
       glm::vec3 m_additionalRotation;
 
-    
-
    public:
-      glm::mat4 MATRIX = glm::mat4(1);
+
+      struct glm::qua<float, glm::qualifier::packed_highp>* mRotator;
 
       bool bIsRootComponent = false;
 

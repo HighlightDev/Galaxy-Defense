@@ -15,7 +15,6 @@ namespace Game
       , mInertia()
       , mRigidBody(nullptr)
       , mCurrentId(PhysicsDescriptor::mTotalIds++)
-      , MATRIX(glm::mat4(1))
    {
       if (!CompareFloats(mass, 0.0f))
       {
@@ -41,6 +40,12 @@ namespace Game
    void PhysicsDescriptor::SetMotionStateWorldTransform(const float yaw, const float pitch, const float roll, const glm::vec3& translation)
    {
       btTransform worldTransform(btQuaternion(btScalar(yaw), btScalar(pitch), btScalar(roll)), btVector3(translation.x, translation.y, translation.z));
+      mMotionState->setWorldTransform(worldTransform);
+   }
+
+   void PhysicsDescriptor::SetMotionStateWorldTransform(const btQuaternion& quat, const glm::vec3& translation)
+   {
+      btTransform worldTransform(quat, btVector3(translation.x, translation.y, translation.z));
       mMotionState->setWorldTransform(worldTransform);
    }
 
@@ -70,48 +75,37 @@ namespace Game
    {
       btTransform transform;
       mMotionState->getWorldTransform(transform);
-      btScalar btMatrix[16];
-      transform.getOpenGLMatrix(btMatrix);
-      btMatrix3x3 rot = transform.getBasis();
-      btVector3 row1 = rot[0];
-      btVector3 row2 = rot[1];
-      btVector3 row3 = rot[2];
 
-      glm::mat4 matrix = glm::mat4(
-         row1[0], row1[1], row1[2], 0,
-         row2[0], row2[1], row2[2], 0,
-         row3[0], row3[1], row3[2], 0,
-         0, 0, 0, 1);
-      
-      MATRIX = matrix;
+      auto translation = transform.getOrigin();
+      auto rotator = transform.getRotation();
 
-      bIsWorldTransformDiry = memcmp(btMatrix, mPrevTransformMatrix, 16 * sizeof(float)) != 0;
-      memcpy(mPrevTransformMatrix, btMatrix, 16 * sizeof(float));
-
-      if (bIsWorldTransformDiry)
+      if (
+         CompareFloats(rotator.getX(), mRotator.getX()) &&
+         CompareFloats(rotator.getY(), mRotator.getY()) &&
+         CompareFloats(rotator.getZ(), mRotator.getZ()) && 
+         CompareFloats(rotator.getW(), mRotator.getW()) &&
+         CompareFloats(translation.getX(), mTranslation.x()) &&
+         CompareFloats(translation.getY(), mTranslation.y()) &&
+         CompareFloats(translation.getZ(), mTranslation.z()))
       {
-         float yaw, pitch, roll;
+         bIsWorldTransformDiry = false;
+      }
+      else
+      {
+         bIsWorldTransformDiry = true;
 
-         transform.getBasis().getEulerZYX(yaw, pitch, roll);
-         
-         mRotation = std::move(glm::vec3(RAD_TO_DEG(roll), RAD_TO_DEG(pitch), RAD_TO_DEG(yaw)));
-         mTranslation = std::move(glm::vec3(transform.getOrigin().x(), transform.getOrigin().y(), transform.getOrigin().z()));
+         mRotator = rotator;
+         mTranslation = translation;
       }
    }
 
-
-   float* PhysicsDescriptor::GetTrasformMatrix4x4()
+   btQuaternion PhysicsDescriptor::GetRotator()  const
    {
-      return mPrevTransformMatrix;
-   }
-
-   glm::vec3 PhysicsDescriptor::GetEulerRotationDegrees() const
-   {
-      return mRotation;
+      return mRotator;
    }
 
    glm::vec3 PhysicsDescriptor::GetTranslation() const
    {
-      return mTranslation;
+      return glm::vec3(mTranslation.getX(), mTranslation.getY(), mTranslation.getZ());
    }
 }

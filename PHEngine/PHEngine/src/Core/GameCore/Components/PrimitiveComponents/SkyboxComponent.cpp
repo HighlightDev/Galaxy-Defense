@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 
 #include <glm/vec3.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 namespace Game
 {
@@ -25,7 +26,9 @@ namespace Game
 	{
 		Base::Tick(deltaTime);
 		
-		SetRotationAxisY(m_eulerRotationDegrees.y + deltaTime * m_rotateSpeed);
+      *mRotator = *mRotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP);
+
+		//SetRotationAxisY(m_eulerRotationDegrees.y + deltaTime * m_rotateSpeed);
 	}
 
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

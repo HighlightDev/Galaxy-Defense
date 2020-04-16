@@ -4,6 +4,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <BulletPhys/btBulletDynamicsCommon.h>
 
 namespace Game
 {
@@ -27,15 +28,11 @@ namespace Game
 
       btRigidBody* mRigidBody;
 
-      float mPrevTransformMatrix[16];
+      btQuaternion mRotator;
 
-      glm::vec3 mRotation;
-
-      glm::vec3 mTranslation;
+      btVector3 mTranslation;
 
    public:
-
-      glm::mat4 MATRIX;
 
       PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f);
 
@@ -46,6 +43,7 @@ namespace Game
       size_t GetId() const;
 
       void SetMotionStateWorldTransform(const float yaw, const float pitch, const float roll, const glm::vec3& translation);
+      void SetMotionStateWorldTransform(const btQuaternion& quat, const glm::vec3& translation);
 
       btRigidBody* GetRigidBody() const;
 
@@ -55,11 +53,9 @@ namespace Game
 
       void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry);
 
-      float* GetTrasformMatrix4x4();
-      
-      glm::vec3 GetEulerRotationDegrees() const;
-      
       glm::vec3 GetTranslation() const;
+
+      btQuaternion GetRotator() const;
 
    private:
 
