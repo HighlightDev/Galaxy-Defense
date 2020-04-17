@@ -49,7 +49,7 @@ public:
 
    void PostPhysicsInitialize();
 
-   void ProcessEvents();
+   void ProcessEvents(Event::ExecutionOrder order);
 
    void GameThreadPulse();
 

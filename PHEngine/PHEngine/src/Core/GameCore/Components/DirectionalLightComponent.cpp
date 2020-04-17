@@ -37,10 +37,6 @@ namespace Game
    void DirectionalLightComponent::Tick(float deltaTime)
    {
       Base::Tick(deltaTime);
-
-     /* SetRotationAxisX(m_eulerRotationDegrees.x + 0.001f);
-      SetRotationAxisY(m_eulerRotationDegrees.y + 0.001f);
-      SetRotationAxisZ(m_eulerRotationDegrees.z + 0.001f);*/
    }
 
    uint64_t DirectionalLightComponent::GetComponentType() const
@@ -58,7 +54,11 @@ namespace Game
          ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
          if (shadowInfo)
          {
-            shadowInfo->SetPlayerPositionOffset(std::get<0>(data));
+            std::weak_ptr<Transform> playerTransformWP = std::get<0>(data);
+            if (auto transform = playerTransformWP.lock())
+            {
+               shadowInfo->SetPlayerPositionOffset(transform->Translation);
+            }
             proxy->SetIsTransformationDirty(true);
             shadowInfo->SetIsShadowMapDirty(true);
          }

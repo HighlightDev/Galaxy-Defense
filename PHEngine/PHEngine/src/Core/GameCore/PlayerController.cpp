@@ -22,7 +22,7 @@ namespace Game
 
       if (rootComponent)
       {
-         Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
+         Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
       }
    }
 
@@ -38,7 +38,6 @@ namespace Game
          physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
       }
 
-      Event::PlayerMovedEvent::GetInstance()->SendEvent(rootComponent->GetTranslation());
       std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
 
       if (movementComponent->GetIsCameraRotationDirty())
@@ -63,11 +62,8 @@ namespace Game
 
                   glm::vec3 offset = movementComponent->GetMoveOffset();
                   physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x, 0, offset.z));
+                  Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
                }
-
-               //auto newPosition = movementComponent->GetMoveOffset() + rootComponent->GetTranslation();
-               //rootComponent->SetTranslation(newPosition);
-
            
             }
             else if (bindings.GetKeyState(Keys::A))
@@ -88,6 +84,8 @@ namespace Game
 
                   glm::vec3 offset = movementComponent->GetMoveOffset();
                   physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x / 100, 0, offset.z / 100));
+
+                  Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
                }
 
             }

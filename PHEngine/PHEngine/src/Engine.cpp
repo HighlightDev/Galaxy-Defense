@@ -56,11 +56,13 @@ void Engine::GameThreadPulse()
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
 
-         // Events
-         ProcessEvents();
+         /* Events: pre execution */
+         ProcessEvents(Event::ExecutionOrder::PRE_EXECUTION);
 
-         // Work Jobs
+         /* Work Jobs */
          SPIN_GAME_THREAD_JOBS(m_interThreadMgr);
+
+
          if (mGameThreadSumDeltaTimeSec >= InvLimitFPS) // 1 / 60 of a second
          {
             // This should be executed on game thread
@@ -68,13 +70,16 @@ void Engine::GameThreadPulse()
             mLastGameThreadPulseTime = Clock_t::now();
             mGameThreadSumDeltaTimeSec = 0.0;
          }
+
+         /* Events: post execution */
+         ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
       }
    }
 }
 
-void Engine::ProcessEvents()
+void Engine::ProcessEvents(Event::ExecutionOrder order)
 {
-   Event::EngineEventDispatcher::ProcessEvents();
+   Event::EngineEventDispatcher::ProcessEvents(order);
 }
 
 void Engine::RenderThreadPulse()

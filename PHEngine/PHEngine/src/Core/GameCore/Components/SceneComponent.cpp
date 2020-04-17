@@ -13,9 +13,8 @@ namespace Game
       : Component()
       , bTransformationDirty(true)
       , mIsVisible(true)
-      , m_translation(0)
-      , mRotator(glm::vec3(0))
-      , m_scale(1)
+      , mTransform(std::make_shared<Transform>())
+      , m_additionalRotationEuler()
       , m_relativeMatrix(1)
       , m_scene(nullptr)
    {
@@ -26,9 +25,8 @@ namespace Game
 		: Component()
       , bTransformationDirty(true)
       , mIsVisible(true)
-		, m_translation(translation)
-		, m_scale(scale)
-      , mRotator(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)))
+      , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
+      , m_additionalRotationEuler()
 		, m_relativeMatrix(std::move(glm::mat4(1)))
       , m_scene(nullptr)
 	{
@@ -51,8 +49,8 @@ namespace Game
    {
       if (isVisible != mIsVisible)
       {
-         OnVisibilityChanged();
          mIsVisible = isVisible;
+         OnVisibilityChanged();
       }
    }
  
@@ -63,10 +61,10 @@ namespace Game
       glm::mat4 identityMatrix(1);
       m_relativeMatrix = identityMatrix;
 
-	   glm::mat4 translationMatrix = glm::translate(identityMatrix, m_translation);
+	   glm::mat4 translationMatrix = glm::translate(identityMatrix, mTransform->Translation);
 
       m_relativeMatrix *= parentRelativeMatrix;
-      m_relativeMatrix *= glm::scale(identityMatrix, m_scale);
+      m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
       m_relativeMatrix *= translationMatrix;
 
       if (bIsRootComponent)
@@ -75,7 +73,7 @@ namespace Game
          m_relativeMatrix *= cameraYawRotation;     
       }
 
-      glm::mat4 rotationMatrix = glm::toMat4(mRotator);
+      glm::mat4 rotationMatrix = glm::toMat4(mTransform->Rotator);
       m_relativeMatrix *= rotationMatrix;
 
 		SetIsTransformationDirty(false, true);

@@ -16,7 +16,7 @@ namespace Game
 
    PhysicsComponent::~PhysicsComponent()
    {
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(mDescriptor->GetId());
+      Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, mDescriptor->GetId());
    }
 
    PhysicsDescriptor* PhysicsComponent::GetDescriptor() {

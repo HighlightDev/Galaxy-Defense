@@ -8,6 +8,12 @@
 
 namespace Event
 {
+   enum ExecutionOrder
+   {
+      PRE_EXECUTION = 0,
+      POST_EXECUTION = 1
+   };
+
    template <typename EventHandlePolicy>
    class TEvent
    {
@@ -21,7 +27,7 @@ namespace Event
 
       static Event_t* m_instance;
 
-      typename EventHandlePolicy mPolicy;
+      typename EventHandlePolicy mPolicy[2];
 
       std::vector<TEvent<EventHandlePolicy_t>*> m_listeners;
 
@@ -44,16 +50,16 @@ namespace Event
       }
 
       template <typename... DataTypesT>
-      void SendEvent(DataTypesT&&... data)
+      void SendEvent(ExecutionOrder order, DataTypesT&&... data)
       {
-         mPolicy.EmplaceData(std::forward<DataTypesT>(data)...);
+         mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
       }
 
-      void ProcessCachedEvents()
+      void ProcessCachedEvents(ExecutionOrder currentOrder)
       {
-         while (mPolicy.HasData())
+         while (mPolicy[currentOrder].HasData())
          {
-            EventData_t packedData = mPolicy.PopData();
+            EventData_t packedData = mPolicy[currentOrder].PopData();
             for (auto& listener : m_listeners)
             {
                listener->ProcessEvent(packedData);

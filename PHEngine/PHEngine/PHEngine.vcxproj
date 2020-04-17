@@ -378,6 +378,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
+    <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
     <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h" />
@@ -809,6 +810,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Components\Transform.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.cpp" />

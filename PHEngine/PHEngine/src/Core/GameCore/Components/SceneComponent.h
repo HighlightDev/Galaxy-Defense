@@ -2,10 +2,9 @@
 #include "Component.h"
 #include "Core/CommonApi/VariableWrapper.h"
 #include "Core/GameCore/Event/SceneComponentTransformChangedEvent.h"
+#include "Core/GameCore/Components/Transform.h"
 
-#include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
-#include <glm/ext/quaternion_float.hpp>
 
 namespace Game
 {
@@ -24,15 +23,13 @@ namespace Game
 
       bool mIsVisible;
 
-		glm::vec3 m_translation;
-      glm::quat mRotator;
-		glm::vec3 m_scale;
+      std::shared_ptr<Transform> mTransform;
+
+      glm::vec3 m_additionalRotationEuler; // TODO: move to quat
 
 		glm::mat4 m_relativeMatrix;
 
       class Scene* m_scene;
-
-      glm::vec3 m_additionalRotationEuler; // TODO: move to quat
 
    public:
 
@@ -59,7 +56,7 @@ namespace Game
 
       virtual void OnVisibilityChanged() {}
 
-      inline void SetScene(Scene* scene)
+      inline void SetScene(class Scene* scene)
       {
          m_scene = scene;
       }
@@ -69,24 +66,24 @@ namespace Game
          bTransformationDirty = true;
 
          if (bTriggerTransformUpdateEvent)
-            Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+            Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, GetComponentType());
       }
 
 		void SetTranslation(const glm::vec3& translation, const bool bTriggerTransformUpdateEvent = true)
 		{
-			m_translation = translation;
+         mTransform->Translation = translation;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
 		void SetRotator(const glm::quat& rotator, const bool bTriggerTransformUpdateEvent = true)
 		{
-			mRotator = rotator;
+         mTransform->Rotator = rotator;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
 		void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true)
 		{
-			m_scale = scale;
+         mTransform->Scale = scale;
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
 		}
 
@@ -96,23 +93,27 @@ namespace Game
          SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
       }
 
+      std::weak_ptr<Transform> GetTransformWeakPtr() const {
+         return mTransform;
+      }
+
 		inline bool GetIsTransformationDirty() const {
 			return bTransformationDirty;
 		}
 
 		inline glm::vec3 GetTranslation() const
 		{
-			return m_translation;
+			return mTransform->Translation;
 		}
 
 		inline glm::quat GetRotator() const
 		{
-			return mRotator;
+			return mTransform->Rotator;
 		}
 
 		inline glm::vec3 GetScale() const
 		{
-			return m_scale;
+			return mTransform->Scale;
 		}
 
 		inline glm::mat4 GetRelativeMatrix() const

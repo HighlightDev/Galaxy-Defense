@@ -40,7 +40,7 @@ namespace Game
             proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
          });
 
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(GetComponentType());
+         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, GetComponentType());
 
          m_tickCounter = -1;
       }

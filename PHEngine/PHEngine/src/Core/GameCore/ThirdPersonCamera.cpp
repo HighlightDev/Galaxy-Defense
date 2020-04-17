@@ -31,7 +31,7 @@ namespace Game
    void ThirdPersonCamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
    {
       ICamera::UpdateRotationMatrix(deltaX, deltaY);
-      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(this);
+      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, this);
    }
 
    void ThirdPersonCamera::Tick(const float DeltaTime)

@@ -1,13 +1,14 @@
 #include "TEvent.h"
 
 #include "Core/GameCore/ICamera.h"
+#include "Core/GameCore/Components/Transform.h"
 
 #include <utility>
 
 namespace Event
 {
 
-   template class TEvent<AtomicEventPolicy<glm::vec3>>;
+   template class TEvent<AtomicEventPolicy<std::weak_ptr<Game::Transform>>>;
    template class TEvent<AtomicEventPolicy<uint64_t>>;
    template class TEvent<AtomicEventPolicy<Game::ICamera*>>;
 

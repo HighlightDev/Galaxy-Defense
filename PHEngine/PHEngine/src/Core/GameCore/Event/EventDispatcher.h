@@ -11,19 +11,19 @@ namespace Event {
    template <typename ParentEventDispatcher, size_t eventIndex>
    struct EventsIterator
    {
-      static void IterateParentEventDispatcher()
+      static void IterateParentEventDispatcher(ExecutionOrder order)
       {
          using event_t = typename std::tuple_element<eventIndex, typename ParentEventDispatcher::EventTypes_t>::type;
-         event_t::GetInstance()->ProcessCachedEvents();
+         event_t::GetInstance()->ProcessCachedEvents(order);
         
-         EventsIterator<ParentEventDispatcher, eventIndex - 1>::IterateParentEventDispatcher();
+         EventsIterator<ParentEventDispatcher, eventIndex - 1>::IterateParentEventDispatcher(order);
       }
    };
 
    template <typename ParentEventDispatcher>
    struct EventsIterator<ParentEventDispatcher, -1>
    {
-      static void IterateParentEventDispatcher() { }
+      static void IterateParentEventDispatcher(ExecutionOrder order) { }
    };
 
    template <typename... EventTypes>
@@ -33,9 +33,9 @@ namespace Event {
 
       static constexpr size_t registeredEventsCount = std::tuple_size<std::tuple<EventTypes...>>::value;
 
-      static void ProcessEvents() {
+      static void ProcessEvents(ExecutionOrder order) {
 
-         EventsIterator<EventDispatcher<EventTypes...>, registeredEventsCount - 1>::IterateParentEventDispatcher();
+         EventsIterator<EventDispatcher<EventTypes...>, registeredEventsCount - 1>::IterateParentEventDispatcher(order);
       }
    };
    
