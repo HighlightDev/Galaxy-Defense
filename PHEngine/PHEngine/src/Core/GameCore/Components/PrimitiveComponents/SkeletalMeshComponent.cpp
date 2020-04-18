@@ -2,7 +2,6 @@
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonApi/StringHash.h"
-#include "Core/GameCore/Event/SceneComponentTransformChangedEvent.h"
 
 using namespace Graphics::Proxy;
 
@@ -39,8 +38,6 @@ namespace Game
             SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(m_scene->SceneProxies[PrimitiveProxyComponentId].get());
             proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
          });
-
-         Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, GetComponentType());
 
          m_tickCounter = -1;
       }

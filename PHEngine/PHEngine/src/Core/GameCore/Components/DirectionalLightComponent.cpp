@@ -15,13 +15,13 @@ namespace Game
       , m_renderData(renderData)
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
-      SceneComponentTransformChangedEvent::GetInstance()->AddListener(this);
+      PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
    }
 
    DirectionalLightComponent::~DirectionalLightComponent()
    {
       PlayerMovedEvent::GetInstance()->RemoveListener(this);
-      SceneComponentTransformChangedEvent::GetInstance()->RemoveListener(this);
+      PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
    std::shared_ptr<LightSceneProxy> DirectionalLightComponent::CreateSceneProxy() const
@@ -65,7 +65,7 @@ namespace Game
       });
    }
 
-   void DirectionalLightComponent::ProcessEvent(const SceneComponentTransformChangedEvent::EventData_t& data)
+   void DirectionalLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
    {
       constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 

@@ -4,15 +4,19 @@
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
 
+#include <tuple>
+
 namespace Game
 {
 
    PlayerController::PlayerController()
    {
+      PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
    }
 
    PlayerController::~PlayerController()
    {
+      PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
@@ -22,7 +26,22 @@ namespace Game
 
       if (rootComponent)
       {
-         Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
+         PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+      }
+   }
+
+   void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
+   {
+      std::string actorName = std::move(std::get<0>(data));
+
+      if (m_playerActor->GetName() == actorName)
+      {
+         std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
+
+         if (rootComponent)
+         {
+            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+         }
       }
    }
 
@@ -62,7 +81,6 @@ namespace Game
 
                   glm::vec3 offset = movementComponent->GetMoveOffset();
                   physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x, 0, offset.z));
-                  Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
                }
            
             }
@@ -84,8 +102,6 @@ namespace Game
 
                   glm::vec3 offset = movementComponent->GetMoveOffset();
                   physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x / 100, 0, offset.z / 100));
-
-                  Event::PlayerMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
                }
 
             }

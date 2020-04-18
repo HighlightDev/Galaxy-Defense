@@ -1,7 +1,6 @@
 #pragma once
 #include "Component.h"
 #include "Core/CommonApi/VariableWrapper.h"
-#include "Core/GameCore/Event/SceneComponentTransformChangedEvent.h"
 #include "Core/GameCore/Components/Transform.h"
 
 #include <glm/mat4x4.hpp>
@@ -61,36 +60,33 @@ namespace Game
          m_scene = scene;
       }
 
-      void SetIsTransformationDirty(const bool isDirty, const bool bTriggerTransformUpdateEvent = true)
+      void SetIsTransformationDirty(const bool isDirty)
       {
          bTransformationDirty = true;
-
-         if (bTriggerTransformUpdateEvent)
-            Event::SceneComponentTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, GetComponentType());
       }
 
-		void SetTranslation(const glm::vec3& translation, const bool bTriggerTransformUpdateEvent = true)
+		void SetTranslation(const glm::vec3& translation)
 		{
          mTransform->Translation = translation;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
+         SetIsTransformationDirty(true);
 		}
 
-		void SetRotator(const glm::quat& rotator, const bool bTriggerTransformUpdateEvent = true)
+		void SetRotator(const glm::quat& rotator)
 		{
          mTransform->Rotator = rotator;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
+         SetIsTransformationDirty(true);
 		}
 
 		void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true)
 		{
          mTransform->Scale = scale;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
+         SetIsTransformationDirty(true);
 		}
 
       void SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent = true)
       {
          m_additionalRotationEuler = rotationEuler;
-         SetIsTransformationDirty(true, bTriggerTransformUpdateEvent);
+         SetIsTransformationDirty(true);
       }
 
       std::weak_ptr<Transform> GetTransformWeakPtr() const {

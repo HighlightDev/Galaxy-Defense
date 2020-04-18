@@ -20,7 +20,7 @@ namespace Game
 
       float m_lerpTimeElapsed = 0.0f;
 
-      float m_timeForInterpolation = 0.15f;
+      float m_timeForInterpolation = 0.55f;
 
       bool m_bThirdPersonTargetTransformationDirty = false;
 

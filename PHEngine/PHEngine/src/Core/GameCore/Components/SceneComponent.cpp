@@ -76,7 +76,7 @@ namespace Game
       glm::mat4 rotationMatrix = glm::toMat4(mTransform->Rotator);
       m_relativeMatrix *= rotationMatrix;
 
-		SetIsTransformationDirty(false, true);
+		SetIsTransformationDirty(false);
 	}
 
 }

@@ -3,6 +3,7 @@
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
+#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 
 using namespace EngineMath;
 
@@ -37,8 +38,10 @@ namespace Game
          {
             const Actor* owner = GetOwner();
 
-            owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()), false);
-            owner->GetBaseRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()), true);
+            owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
+            owner->GetBaseRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
+
+            Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, owner->GetName());
          }
       }
    }
