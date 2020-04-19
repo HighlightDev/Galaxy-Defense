@@ -6,9 +6,21 @@ using namespace EngineMath;
 
 namespace Game
 {
+   MotionModifiers::MotionModifiers()
+      : LinearFactor(btVector3(1.0f, 1.0f, 1.0f))
+      , AngularFactor(btVector3(1.0f, 1.0f, 1.0f))
+   {
+   }
+
+   MotionModifiers::MotionModifiers(const btVector3& linearFactor, const btVector3& angularFactor)
+      : LinearFactor(linearFactor)
+      , AngularFactor(angularFactor)
+   {
+   }
+
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhyShapeBase* shape, const float mass)
+   PhysicsDescriptor::PhysicsDescriptor(PhyShapeBase* shape, const float mass, const MotionModifiers& motionModifier)
       : mCurrentId(PhysicsDescriptor::mTotalIds++)
       , mShape(shape)
       , mMotionState(new btDefaultMotionState())
@@ -18,6 +30,7 @@ namespace Game
       , mRotator()
       , mTranslation()
       , mPrevTransform()
+      , mMotionModifier(motionModifier)
    {
       if (!CompareFloats(mass, 0.0f))
       {
@@ -66,6 +79,23 @@ namespace Game
    {
       btRigidBody::btRigidBodyConstructionInfo info(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
       mRigidBody = new btRigidBody(info);
+
+      // apply motion modifiers
+      mRigidBody->setLinearFactor(mMotionModifier.LinearFactor);
+      mRigidBody->setAngularFactor(mMotionModifier.AngularFactor);
+   }
+
+   void PhysicsDescriptor::SetLinearVelocity(const btVector3& velocity)
+   {
+      if (mRigidBody)
+      {
+         if (!mRigidBody->isActive())
+         {
+            mRigidBody->activate();
+         }
+
+         mRigidBody->setLinearVelocity(velocity);
+      }
    }
 
    void PhysicsDescriptor::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)

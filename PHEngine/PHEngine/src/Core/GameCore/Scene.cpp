@@ -147,7 +147,7 @@ namespace Game
    {
       const float physTickStep = 1.0f / 60.0f;
 
-      if  (counter == 30)
+      if  (counter == 5)
       {
          mPhysicsWorld->Tick(physTickStep);
          counter = 0;

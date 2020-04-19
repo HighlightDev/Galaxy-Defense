@@ -22,9 +22,8 @@ namespace Game
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
    {
       m_playerActor = playerActor;
-      std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
 
-      if (rootComponent)
+      if (auto rootComponent = m_playerActor->GetBaseRootComponent())
       {
          PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
       }
@@ -34,11 +33,9 @@ namespace Game
    {
       std::string actorName = std::move(std::get<0>(data));
 
-      if (m_playerActor->GetName() == actorName)
+      if (m_playerActor && m_playerActor->GetName() == actorName)
       {
-         std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-
-         if (rootComponent)
+         if (auto rootComponent = m_playerActor->GetBaseRootComponent())
          {
             PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
@@ -51,12 +48,6 @@ namespace Game
          return;
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-
-      if (auto physComponent = m_playerActor->GetPhysicsComponent())
-      {
-         physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
-      }
-
       std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
 
       if (movementComponent->GetIsCameraRotationDirty())
@@ -68,19 +59,15 @@ namespace Game
       if (m_playerActor->GetInputComponent())
       {
          auto& bindings = m_playerActor->GetInputComponent()->GetKeyboardBindings();
+
          if (bindings.HasPressedKeys())
          {
             if (bindings.GetKeyState(Keys::W))
             {
                if (auto physComponent = m_playerActor->GetPhysicsComponent())
                {
-                  if (!physComponent->GetDescriptor()->GetRigidBody()->isActive())
-                  {
-                     physComponent->GetDescriptor()->GetRigidBody()->activate();
-                  }
-
                   glm::vec3 offset = movementComponent->GetMoveOffset();
-                  physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x, 0, offset.z));
+                  physComponent->GetDescriptor()->SetLinearVelocity(btVector3(offset.x, 0, offset.z));
                }
            
             }
@@ -94,14 +81,8 @@ namespace Game
             {
                if (auto physComponent = m_playerActor->GetPhysicsComponent())
                {
-                  physComponent->GetDescriptor()->GetRigidBody()->setAngularFactor(btVector3(0, 0, 0));
-                  if (!physComponent->GetDescriptor()->GetRigidBody()->isActive())
-                  {
-                     physComponent->GetDescriptor()->GetRigidBody()->activate();
-                  }
-
                   glm::vec3 offset = movementComponent->GetMoveOffset();
-                  physComponent->GetDescriptor()->GetRigidBody()->setLinearVelocity(btVector3(offset.x / 100, 0, offset.z / 100));
+                  physComponent->GetDescriptor()->SetLinearVelocity(btVector3(offset.x / 50.0f, 0, offset.z / 50.0f));
                }
 
             }

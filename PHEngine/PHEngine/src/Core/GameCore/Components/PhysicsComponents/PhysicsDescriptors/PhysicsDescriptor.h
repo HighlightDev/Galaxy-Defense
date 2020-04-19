@@ -7,6 +7,16 @@
 namespace Game
 {
 
+   struct MotionModifiers
+   {
+      btVector3 LinearFactor;
+      btVector3 AngularFactor;
+
+      MotionModifiers();
+
+      MotionModifiers(const btVector3& linearFactor, const btVector3& angularFactor);
+   };
+
    struct PhysicsDescriptor
    {
    private:
@@ -31,10 +41,12 @@ namespace Game
       btVector3 mTranslation;
 
       btTransform mPrevTransform;
+      
+      MotionModifiers mMotionModifier;
 
    public:
 
-      PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f);
+      PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
       ~PhysicsDescriptor();
 
@@ -43,6 +55,8 @@ namespace Game
       size_t GetId() const;
 
       void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation);
+
+      void SetLinearVelocity(const btVector3& velocity);
 
       btRigidBody* GetRigidBody() const;
 

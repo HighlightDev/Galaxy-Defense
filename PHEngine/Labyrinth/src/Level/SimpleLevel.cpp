@@ -207,9 +207,9 @@ namespace Labyrinth
          mScene->m_playerController.SetPlayerActor(skeletActor);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0, 2.5, 1));
-         PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f);
+         PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f, MotionModifiers(btVector3(1, 1, 1), btVector3(0, 0, 0)));
          mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc);
+         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
          skeletActor->AddComponent(playerPhysComponent);
 
          auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
