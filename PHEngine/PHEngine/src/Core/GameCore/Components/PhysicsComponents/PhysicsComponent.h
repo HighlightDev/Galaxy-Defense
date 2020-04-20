@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Components/Component.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
 namespace Game {
 

@@ -21,7 +21,8 @@ namespace Graphics
          ITextureShared normalMap,
          ITextureShared metallicMap,
          ITextureShared roughnessMap,
-         ITextureShared ambientOcclusionMap);
+         ITextureShared ambientOcclusionMap,
+         const float uvScale);
 
       PBRMaterial(const PBRMaterial&) = default;
       PBRMaterial& operator=(const PBRMaterial&) = default;

@@ -10,7 +10,8 @@ namespace Graphics
       ITextureShared normalMap,
       ITextureShared metallicMap,
       ITextureShared roughnessMap,
-      ITextureShared ambientOcclusionMap)
+      ITextureShared ambientOcclusionMap,
+      const float uvScale)
       : IMaterial("PBR Material", Common::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\PBRMaterial.glsl")
    {
       PushMaterialProperty("albedo", std::make_shared<TextureMaterialProperty>(albedo));
@@ -18,6 +19,7 @@ namespace Graphics
       PushMaterialProperty("metallicMap", std::make_shared<TextureMaterialProperty>(metallicMap));
       PushMaterialProperty("roughnessMap", std::make_shared<TextureMaterialProperty>(roughnessMap));
       PushMaterialProperty("ambientOcclusionMap", std::make_shared<TextureMaterialProperty>(ambientOcclusionMap));
+      PushMaterialProperty("uvScale", std::make_shared<FloatMaterialProperty>(uvScale));
    }
 
    PBRMaterial::~PBRMaterial()

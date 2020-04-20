@@ -2,7 +2,7 @@
 #include "Core/GameCore/ICamera.h"
 #include "COre/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
 #include <tuple>
 

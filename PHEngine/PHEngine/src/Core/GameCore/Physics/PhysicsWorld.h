@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
 namespace Game
 {
