@@ -1,5 +1,5 @@
 #pragma once
-#include "PhysicsDescriptors/PhysicsDescriptor.h"
+#include "PhysicsDescriptor.h"
 
 #include <BulletPhys/LinearMath/btVector3.h>
 #include <BulletPhys/BulletDynamics/Character/btCharacterControllerInterface.h>
@@ -39,26 +39,44 @@ namespace Game
       btScalar m_turnVelocity;
    public:
 
+      virtual void setWalkDirection(const btVector3& walkDirection) { }
+      virtual void setVelocityForTimeInterval(const btVector3& velocity, btScalar timeInterval) {}
+
+
+      virtual void setUpInterpolate(bool value) { }
+
       void setup(btScalar height = 2.0, btScalar width = 0.25, btScalar stepHeight = 0.25);
       void destroy();
 
-      virtual void reset();
+
+      virtual void reset(btCollisionWorld* collisionWorld);
       virtual void warp(const btVector3& origin);
       virtual void registerPairCacheAndDispatcher(btOverlappingPairCache* pairCache, btCollisionDispatcher* dispatcher);
 
       btCollisionObject* getCollisionObject();
 
-      void preStep(const btCollisionWorld* collisionWorld);
-      void playerStep(const btCollisionWorld* collisionWorld, btScalar dt,
+      virtual void preStep(btCollisionWorld* collisionWorld);
+      virtual void playerStep1(const btCollisionWorld* collisionWorld, btScalar dt,
          int forward,
          int backward,
          int left,
          int right,
          int jump);
-      bool canJump() const;
-      void jump();
 
-      bool onGround() const;
+      virtual void playerStep(btCollisionWorld* collisionWorld, btScalar dt) {}
+      virtual bool canJump() const;
+      virtual void jump(const btVector3& dir = btVector3(0, 0, 0));
+
+      virtual bool onGround() const;
+
+      // this method is invoking every time
+      virtual void updateAction(btCollisionWorld* collisionWorld, btScalar deltaTimeStep) {
+
+      }
+
+      virtual void debugDraw(btIDebugDraw* debugDrawer) {
+
+      }
    };
 
 }

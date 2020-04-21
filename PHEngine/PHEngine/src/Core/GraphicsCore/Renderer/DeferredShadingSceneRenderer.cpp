@@ -347,14 +347,13 @@ namespace Graphics
       {
          if (std::shared_ptr<Level> level = mLevel.lock())
          {
-            /* Prepare proxies block */
-            
             static std::vector<PrimitiveSceneProxy*> drawForwardShadedProxies;
             static std::vector<PrimitiveSceneProxy*> skeletalProxies;
             static std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
 
             const bool bProxiesUpdated = level->ReadAreProxiesUpdated(false);
 
+            /* Prepare proxies block */
             if (bProxiesUpdated)
             {
                drawForwardShadedProxies.clear();

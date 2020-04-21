@@ -72,7 +72,7 @@ namespace Game
       return m_rigidBody;
    }
 
-   void CharacterPhysicsDescriptor::preStep(const btCollisionWorld* collisionWorld)
+   void CharacterPhysicsDescriptor::preStep(btCollisionWorld* collisionWorld)
    {
       btTransform xform;
       m_rigidBody->getMotionState()->getWorldTransform(xform);
@@ -124,7 +124,7 @@ namespace Game
       }
    }
 
-   void CharacterPhysicsDescriptor::playerStep(const btCollisionWorld* dynaWorld, btScalar dt,
+   void CharacterPhysicsDescriptor::playerStep1(const btCollisionWorld* dynaWorld, btScalar dt,
       int forward,
       int backward,
       int left,
@@ -180,7 +180,7 @@ namespace Game
       return onGround();
    }
 
-   void CharacterPhysicsDescriptor::jump()
+   void CharacterPhysicsDescriptor::jump(const btVector3& dir)
    {
       if (!canJump())
          return;
@@ -198,7 +198,7 @@ namespace Game
       return m_rayLambda[0] < btScalar(1.0);
    }
 
-   void CharacterPhysicsDescriptor::reset()
+   void CharacterPhysicsDescriptor::reset(btCollisionWorld* collisionWorld)
    {
    }
    void CharacterPhysicsDescriptor::warp(const btVector3& origin)
