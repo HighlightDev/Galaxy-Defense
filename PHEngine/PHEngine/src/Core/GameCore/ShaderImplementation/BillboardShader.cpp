@@ -17,7 +17,7 @@ namespace Game
       {
       }
 
-      void BillboardShader::SetTransformMatrices(glm::mat4& worldMatrix, glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void BillboardShader::SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          u_worldMatrix.LoadUniform(worldMatrix);
          u_viewMatrix.LoadUniform(viewMatrix);

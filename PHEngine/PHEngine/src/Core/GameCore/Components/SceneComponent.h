@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "Core/CommonApi/VariableWrapper.h"
+#include "Core/CommonCore/VariableWrapper.h"
 #include "Core/GameCore/Components/Transform.h"
 
 #include <glm/mat4x4.hpp>

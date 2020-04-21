@@ -41,6 +41,7 @@ namespace Graphics
 
          /* Scene to render */
          std::weak_ptr<Level> mLevel;
+
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          // Shaders
@@ -65,7 +66,7 @@ namespace Graphics
 
          void DeferredLightPass_RenderThread(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourcesProxy);
 
-         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, glm::mat4& viewMatrix);
+         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix);
 
          void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, const glm::mat4& viewMatrix);
 

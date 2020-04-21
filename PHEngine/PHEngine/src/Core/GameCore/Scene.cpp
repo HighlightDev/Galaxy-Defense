@@ -11,6 +11,7 @@ namespace Game
       // m_camera(new FirstPersonCamera(" Test camera ", glm::vec3(0, 0, 1), glm::vec3(0, 0, -10)))
       , m_camera(new ThirdPersonCamera("MainCamera", 50, 20 , 20))
       , mPhysicsWorld(new PhysicsWorld())
+      , bProxiesUpdated(false)
    {
       mPhysicsWorld->InitPhysicsWorld();
    }
@@ -55,6 +56,8 @@ namespace Game
          {
             SceneProxies.erase(proxyIt);
             PrimitiveComponent::TotalPrimitiveSceneProxyIndex--;
+
+            bProxiesUpdated = true;
          }
       }
       if ((type & LIGHT_COMPONENT) == LIGHT_COMPONENT)
@@ -74,6 +77,8 @@ namespace Game
          {
             LightProxies.erase(proxyIt);
             LightComponent::TotalLightSceneProxyId--;
+
+            bProxiesUpdated = true;
          }
       }
 
@@ -93,6 +98,13 @@ namespace Game
             ownerActor->RemoveComponent(component);
          }
       }
+   }
+
+   bool Scene::ReadAreProxiesUpdated(bool newValue)
+   {
+      bool proxiesUpd = bProxiesUpdated;
+      bProxiesUpdated = newValue;
+      return proxiesUpd;
    }
 
    void Scene::ExecuteOnRenderThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& gameThreadJobCallback) const
@@ -147,7 +159,7 @@ namespace Game
    {
       const float physTickStep = 1.0f / 60.0f;
 
-      if  (counter == 5)
+      if  (counter == 15)
       {
          mPhysicsWorld->Tick(physTickStep);
          counter = 0;

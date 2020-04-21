@@ -14,7 +14,7 @@ namespace Graphics
       {
       }
 
-      void PhysicsShapeDebugRenderSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void PhysicsShapeDebugRenderSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          glm::mat4 modelViewProjectionMatrix(1);
 

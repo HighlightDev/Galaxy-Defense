@@ -1,6 +1,6 @@
 #pragma once
 #include "Shader.h"
-#include "Core/CommonApi/StringHash.h"
+#include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"

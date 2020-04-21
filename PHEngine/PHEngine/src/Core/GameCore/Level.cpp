@@ -63,6 +63,11 @@ namespace Game
       mScene->Tick_GameThread(deltaTime);
    }
 
+   bool Level::ReadAreProxiesUpdated(bool newValue)
+   {
+      return mScene->ReadAreProxiesUpdated(newValue);
+   }
+
    const std::vector<std::shared_ptr<Actor>>& Level::GetActors() const
    {
       return mScene->AllActors;

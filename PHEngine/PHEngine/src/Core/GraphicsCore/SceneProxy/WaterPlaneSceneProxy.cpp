@@ -69,7 +69,7 @@ namespace Graphics
          return false;
       }
 
-      void WaterPlaneSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void WaterPlaneSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          //glm::vec3 cameraPosition(viewMatrix[3][0], viewMatrix[3][1], viewMatrix[3][2]);
 

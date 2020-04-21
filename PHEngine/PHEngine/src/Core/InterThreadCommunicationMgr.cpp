@@ -8,8 +8,8 @@ namespace Thread
 
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
    {
-      m_gameThreadJobs.reserve(ThreadPoolCapacity);
-      m_renderThreadJobs.reserve(ThreadPoolCapacity);
+      m_gameThreadJobs.reserve(JobPoolCapacity);
+      m_renderThreadJobs.reserve(JobPoolCapacity);
    }
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()

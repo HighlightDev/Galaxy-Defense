@@ -52,7 +52,7 @@ namespace Graphics
 
          virtual uint64_t GetComponentType() const;
 
-         virtual void Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix) = 0;
+         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 
          virtual bool IsDeferred() const = 0;
 

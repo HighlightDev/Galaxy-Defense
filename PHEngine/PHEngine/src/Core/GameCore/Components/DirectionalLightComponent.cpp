@@ -3,7 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
-#include "core/CommonApi/StringHash.h"
+#include "Core/CommonCore/StringHash.h"
 
 using namespace Graphics;
 

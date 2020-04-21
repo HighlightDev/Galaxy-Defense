@@ -1,7 +1,7 @@
 #include "SkeletalMeshComponent.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/CommonApi/StringHash.h"
+#include "Core/CommonCore/StringHash.h"
 
 using namespace Graphics::Proxy;
 

@@ -43,7 +43,7 @@ namespace Graphics
 
          virtual ~SkeletalMeshSceneProxy();
 
-         virtual void Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix) override;
+         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          void SetAnimationDeltaTime(float animationDeltaTime);
 

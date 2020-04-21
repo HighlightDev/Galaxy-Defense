@@ -20,7 +20,7 @@ namespace Game
 
          virtual ~CubemapShader();
 
-         void SetTransformMatrices(glm::mat4& worldMatrix, glm::mat4& viewMatrix, glm::mat4& projectionMatrix);
+         void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
          void SetTexture(int32_t texSlot);
 

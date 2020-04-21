@@ -30,7 +30,7 @@ namespace Graphics
          return SKYBOX_COMPONENT;
       }
 
-      void SkyboxSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void SkyboxSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          glDisable(GL_CLIP_DISTANCE0);
          glEnable(GL_CULL_FACE);

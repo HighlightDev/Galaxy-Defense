@@ -11,7 +11,6 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 
-
 using namespace Graphics::Proxy;
 using namespace Thread;
 
@@ -35,6 +34,8 @@ namespace Game
       class PhysicsWorld* mPhysicsWorld;
 
    private:
+
+      bool bProxiesUpdated;
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -67,6 +68,8 @@ namespace Game
 
       void ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& renderThreadJobCallback) const;
 
+      bool ReadAreProxiesUpdated(bool newValue);
+
       ~Scene();
 
       template <typename PrimitiveType>
@@ -84,6 +87,7 @@ namespace Game
                componentPtr->PrimitiveProxyComponentId = PrimitiveComponent::TotalPrimitiveSceneProxyIndex++;
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
                SceneProxies.push_back(sceneProxyShared);
+               bProxiesUpdated = true;
             }
             else if ((type & LIGHT_COMPONENT) == LIGHT_COMPONENT)
             {
@@ -91,6 +95,7 @@ namespace Game
                componentPtr->LightSceneProxyId = LightComponent::TotalLightSceneProxyId++;
                auto lightProxyShared = componentPtr->CreateSceneProxy();
                LightProxies.push_back(lightProxyShared);
+               bProxiesUpdated = true;
             }
          }
 

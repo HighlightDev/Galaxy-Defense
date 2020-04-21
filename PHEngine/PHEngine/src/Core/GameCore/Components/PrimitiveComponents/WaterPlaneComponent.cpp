@@ -1,7 +1,7 @@
 #include "WaterPlaneComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
-#include "Core/CommonApi/StringHash.h"
+#include "Core/CommonCore/StringHash.h"
 
 #include <glm/vec3.hpp>
 

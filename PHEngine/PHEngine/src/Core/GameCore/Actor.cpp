@@ -1,6 +1,7 @@
 #include "Actor.h" 
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Game
 {
@@ -76,6 +77,8 @@ namespace Game
 
    void Actor::SetIsVisible(bool isVisible)
    {
+      assert(("Actor must have components.", m_allComponents.size() > 0));
+
       if (isVisible != mIsVisible)
       {
          mIsVisible = isVisible;

@@ -19,7 +19,7 @@ namespace Graphics
          return std::static_pointer_cast<StaticMeshSceneProxy::ShaderType>(m_shader);
       }
 
-      void StaticMeshSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void StaticMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          const auto& shader = GetShader();
 

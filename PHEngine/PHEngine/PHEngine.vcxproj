@@ -377,6 +377,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\CommonCore\Assertion.h" />
     <ClInclude Include="src\Core\GameCore\Physics\CharacterPhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
@@ -420,8 +421,8 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\PBRMaterial.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\IMaterial.h" />
-    <ClInclude Include="src\Core\CommonApi\StringHash.h" />
-    <ClInclude Include="src\Core\CommonApi\VariableWrapper.h" />
+    <ClInclude Include="src\Core\CommonCore\StringHash.h" />
+    <ClInclude Include="src\Core\CommonCore\VariableWrapper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\CubemapComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PhysicsSimulationUpdatedEvent.h" />

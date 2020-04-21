@@ -21,7 +21,7 @@ namespace Graphics
       {
       }
 
-      void SkeletalMeshSceneProxy::Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix)
+      void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          std::shared_ptr<AnimatedSkin> animatedSkin = std::static_pointer_cast<AnimatedSkin>(m_skin);
 

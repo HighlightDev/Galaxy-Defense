@@ -229,14 +229,15 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, glm::mat4& viewMatrix)
+      void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies,
+         std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix)
       {
          if (std::shared_ptr<Level> level = mLevel.lock())
          {
             // Deferred shading collect info
             m_gbuffer->BindDeferredGBuffer();
 
-            glm::mat4 projectionMatrix = ProjectionMatrix;
+            const glm::mat4& projectionMatrix = ProjectionMatrix;
 
             if (skeletalMeshProxies.size() > 0)
             {
@@ -337,57 +338,63 @@ namespace Graphics
          for (auto& proxy : forwardedProxies)
          {
             if (proxy->IsVisible())
-               proxy->Render(const_cast<glm::mat4&>(viewMatrix), ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
+               proxy->Render(viewMatrix, ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
          }
          glDisable(GL_BLEND);
       }
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()
       {
-
-         // TODO: fill deferred & nondeferred arrays and so on only once!
-
          if (std::shared_ptr<Level> level = mLevel.lock())
          {
+            /* Prepare proxies block */
+            
+            static std::vector<PrimitiveSceneProxy*> drawForwardShadedProxies;
+            static std::vector<PrimitiveSceneProxy*> skeletalProxies;
+            static std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
+
+            const bool bProxiesUpdated = level->ReadAreProxiesUpdated(false);
+
+            if (bProxiesUpdated)
+            {
+               drawForwardShadedProxies.clear();
+               skeletalProxies.clear();
+               nonSkeletalProxies.clear();
+
+               for (auto& proxy : level->GetSceneProxies())
+               {
+                  PrimitiveSceneProxy* proxyPtr = proxy.get();
+
+                  if (proxyPtr->IsDeferred())
+                  {
+                     if (proxy->GetComponentType() == SKELETAL_MESH_COMPONENT)
+                     {
+                        skeletalProxies.push_back(proxyPtr);
+                     }
+                     else
+                     {
+                        nonSkeletalProxies.push_back(proxyPtr);
+                     }
+                  }
+                  else
+                  {
+                     drawForwardShadedProxies.push_back(proxyPtr);
+                  }
+               }
+            }
+            /* Prepare proxies block */
 
             glEnable(GL_DEPTH_TEST);
 
-            /***** Access view matrix from GAME THREAD  *****/
-            glm::mat4 viewMatrix = level->GetCamera()->GetViewMatrix();
-
-            std::vector<PrimitiveSceneProxy*> drawDeferredShadedProxies;
-            std::vector<PrimitiveSceneProxy*> drawForwardShadedProxies;
-
-            for (auto& proxy : level->GetSceneProxies())
-            {
-               if (proxy->IsDeferred())
-                  drawDeferredShadedProxies.push_back(proxy.get());
-               else
-                  drawForwardShadedProxies.push_back(proxy.get());
-            }
-
-            const bool bIsForwardShadedProxies = drawForwardShadedProxies.size() > 0;
-
-            std::vector<PrimitiveSceneProxy*> skeletalProxies, nonSkeletalProxies;
-            for (auto& proxy : drawDeferredShadedProxies)
-            {
-               if (proxy->GetComponentType() == SKELETAL_MESH_COMPONENT)
-               {
-                  skeletalProxies.push_back(proxy);
-               }
-               else
-               {
-                  nonSkeletalProxies.push_back(proxy);
-               }
-            }
-
             DepthPass(nonSkeletalProxies, skeletalProxies, level->GetLightProxies());
+
+            const glm::mat4& viewMatrix = level->GetCamera()->GetViewMatrix();
 
             DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, viewMatrix);
 
             DeferredLightPass_RenderThread(level->GetLightProxies());
 
-            if (bIsForwardShadedProxies)
+            if (drawForwardShadedProxies.size())
             {
                ForwardBasePass_RenderThread(drawForwardShadedProxies, viewMatrix);
             }

@@ -41,6 +41,8 @@ namespace Game
 
       ICamera* GetCamera() const;
 
+      bool ReadAreProxiesUpdated(bool newValue);
+
       // TODO: this is a temporary solution
       void CameraMove();
 

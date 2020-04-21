@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
-#include "Core/CommonApi/StringHash.h"
+#include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 
 #include <memory>

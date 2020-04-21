@@ -34,7 +34,7 @@ namespace Graphics
 
          virtual void PostConstructorInitialize() override;
 
-         virtual void Render(glm::mat4& viewMatrix, glm::mat4& projectionMatrix) override;
+         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          virtual uint64_t GetComponentType() const override;
 
