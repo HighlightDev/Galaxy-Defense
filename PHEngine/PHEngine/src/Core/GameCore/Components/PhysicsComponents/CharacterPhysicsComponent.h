@@ -26,6 +26,16 @@ namespace Game {
 
       virtual uint64_t GetComponentType() const override;
 
+      void SetWalkVelocity(const glm::vec3& velocity);
+
+      void SetRunVelocity(const glm::vec3& velocity);
+
+      void SetJumpVelocity();
+
+   private :
+
+      void TickCharacterControllerPhysics();
+
    };
 }
 

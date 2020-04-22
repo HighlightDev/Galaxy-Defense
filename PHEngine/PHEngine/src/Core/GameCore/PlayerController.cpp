@@ -37,7 +37,7 @@ namespace Game
       {
          if (auto rootComponent = m_playerActor->GetBaseRootComponent())
          {
-            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
    }

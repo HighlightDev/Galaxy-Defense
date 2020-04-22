@@ -25,18 +25,17 @@ namespace Game
    {
       bool bIsDirty = false;
 
-      //mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty);
-
       bIsTransformationDirty = bIsDirty;
+
+      TickCharacterControllerPhysics();
 
       if (bIsDirty)
       {
          const Actor* owner = GetOwner();
 
-         //owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
-         //owner->GetBaseRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
+         owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetPosition()));
 
-         Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, owner->GetName());
+         Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, owner->GetName());
       }
    }
 
@@ -52,5 +51,31 @@ namespace Game
    uint64_t CharacterPhysicsComponent::GetComponentType() const
    {
       return PHYSICS_COMPONENT;
+   }
+
+   void CharacterPhysicsComponent::SetWalkVelocity(const  glm::vec3& velocity)
+   {
+      const float m_acceleration_walk = 1;
+      const float timeMult = 1;
+
+      characterController->Walk(velocity * m_acceleration_walk * timeMult);
+   }
+
+   void CharacterPhysicsComponent::SetRunVelocity(const glm::vec3& velocity)
+   {
+      const float m_acceleration_run = 3;
+      const float timeMult = 1;
+
+      characterController->Walk(velocity * m_acceleration_run * timeMult);
+   }
+
+   void CharacterPhysicsComponent::SetJumpVelocity()
+   {
+      characterController->Jump();
+   }
+
+   void CharacterPhysicsComponent::TickCharacterControllerPhysics()
+   {
+      characterController->Update();
    }
 }
