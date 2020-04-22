@@ -2,9 +2,6 @@
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 
-#include "Core/GameCore/Physics/PhysicsDescriptors/CharacterPhysicsDescriptor.h"
-
-
 #include <iostream>
 
 namespace Game
@@ -50,10 +47,6 @@ namespace Game
       mWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
 
       mWorld->setGravity(btVector3(btScalar(0.0f), btScalar(-9.8f), btScalar(0.0f)));
-      
-      CharacterPhysicsDescriptor* character = new CharacterPhysicsDescriptor();
-      mWorld->addAction(character);
-
    }
 
    void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor* inDescriptor)
