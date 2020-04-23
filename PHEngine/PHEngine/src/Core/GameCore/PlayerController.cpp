@@ -64,12 +64,10 @@ namespace Game
          {
             if (bindings.GetKeyState(Keys::W))
             {
-               if (auto physComponent = m_playerActor->GetPhysicsComponent())
+               if (auto physComponent = m_playerActor->CharPhysicsComponent)
                {
-                  glm::vec3 offset = movementComponent->GetMoveOffset();
-                  physComponent->GetDescriptor()->SetLinearVelocity(btVector3(offset.x, 0, offset.z));
+                  physComponent->SetWalkVelocity(movementComponent->Velocity);
                }
-           
             }
             else if (bindings.GetKeyState(Keys::A))
             {
@@ -79,12 +77,20 @@ namespace Game
             }
             else if (bindings.GetKeyState(Keys::S))
             {
-               if (auto physComponent = m_playerActor->GetPhysicsComponent())
+              /* if (auto physComponent = m_playerActor->GetPhysicsComponent())
                {
                   glm::vec3 offset = movementComponent->GetMoveOffset();
                   physComponent->GetDescriptor()->SetLinearVelocity(btVector3(offset.x / 50.0f, 0, offset.z / 50.0f));
                }
+*/
+            }
 
+            if (bindings.GetKeyState(Keys::Space))
+            {
+               if (auto physComponent = m_playerActor->CharPhysicsComponent)
+               {
+                  physComponent->SetJumpVelocity();
+               }
             }
          }
    

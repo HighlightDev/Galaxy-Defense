@@ -22,14 +22,15 @@
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
+#include "Engine.h"
 
 #include <glm/vec3.hpp>
 
 namespace Game
 {
 
-   Level::Level(InterThreadCommunicationMgr& interThreadMgr)
-      : mScene(new Scene(interThreadMgr))
+   Level::Level(InterThreadCommunicationMgr& interThreadMgr, Engine* engine)
+      : mScene(new Scene(interThreadMgr, engine))
    {
 
    }

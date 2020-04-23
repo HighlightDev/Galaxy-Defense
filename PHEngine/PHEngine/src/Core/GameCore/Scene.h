@@ -14,6 +14,8 @@
 using namespace Graphics::Proxy;
 using namespace Thread;
 
+class Engine;
+
 namespace Game
 {
 
@@ -33,6 +35,8 @@ namespace Game
 
       class PhysicsWorld* mPhysicsWorld;
 
+      Engine* mEngine;
+
    private:
 
       bool bProxiesUpdated;
@@ -43,7 +47,7 @@ namespace Game
 
    public:
 
-      Scene(InterThreadCommunicationMgr& interThreadMgr);
+      Scene(InterThreadCommunicationMgr& interThreadMgr, Engine* engine);
 
       void PostConstructorInitialize();
 

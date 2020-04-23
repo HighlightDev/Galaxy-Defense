@@ -12,7 +12,7 @@ using namespace EngineMath;
 namespace Game
 {
    CharacterPhysicsComponent::CharacterPhysicsComponent(btDiscreteDynamicsWorld* dynamicWorld, const glm::vec3& spawnPos)
-      : characterController(new DynamicCharacterController(dynamicWorld, Converter::glmToBullet(spawnPos), 1, 2, 10, 0.5f))
+      : characterController(new DynamicCharacterController(dynamicWorld, Converter::glmToBullet(spawnPos), 1, 2.5, 10, 1.0f))
       , bIsTransformationDirty(true)
    {
    }
@@ -23,7 +23,7 @@ namespace Game
 
    void CharacterPhysicsComponent::Tick(const float deltaTime)
    {
-      bool bIsDirty = false;
+      bool bIsDirty = true;
 
       bIsTransformationDirty = bIsDirty;
 
@@ -55,7 +55,7 @@ namespace Game
 
    void CharacterPhysicsComponent::SetWalkVelocity(const  glm::vec3& velocity)
    {
-      const float m_acceleration_walk = 1;
+      const float m_acceleration_walk = 5;
       const float timeMult = 1;
 
       characterController->Walk(velocity * m_acceleration_walk * timeMult);
@@ -63,7 +63,7 @@ namespace Game
 
    void CharacterPhysicsComponent::SetRunVelocity(const glm::vec3& velocity)
    {
-      const float m_acceleration_run = 3;
+      const float m_acceleration_run = 15;
       const float timeMult = 1;
 
       characterController->Walk(velocity * m_acceleration_run * timeMult);

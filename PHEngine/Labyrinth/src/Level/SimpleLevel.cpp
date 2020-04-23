@@ -35,6 +35,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 
 #include <glm/vec3.hpp>
 
@@ -47,8 +48,8 @@ using namespace Graphics;
 namespace Labyrinth
 {
 
-   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
-      : Level(threadMgr)
+   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr, Engine* engine)
+      : Level(threadMgr, engine)
    {
    }
 
@@ -83,8 +84,8 @@ namespace Labyrinth
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
             cubeActor->AddComponent(cubePhysComponent);
 
-            auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-            cubeActor->AddComponent(debugRenderPhysComp);
+           /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+            cubeActor->AddComponent(debugRenderPhysComp);*/
 
             mScene->AllActors.push_back(cubeActor);
          }
@@ -154,8 +155,35 @@ namespace Labyrinth
 
          groundActor->AddComponent(floorPhysComponent);
 
-         auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         groundActor->AddComponent(debugRenderPhysComp);
+     /*    auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         groundActor->AddComponent(debugRenderPhysComp);*/
+
+         mScene->AllActors.push_back(groundActor);
+      }
+
+      // Ground
+
+      {
+         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8),
+            std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
+         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
+            std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+
+         auto floorComponent = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         groundActor->AddComponent(floorComponent);
+
+         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(8, 1, 8));
+         PhysicsDescriptor* floorPhysDesc = new PhysicsDescriptor(shape, 0.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
+         std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
+
+         groundActor->AddComponent(floorPhysComponent);
+
+        /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         groundActor->AddComponent(debugRenderPhysComp);*/
 
          mScene->AllActors.push_back(groundActor);
       }
@@ -183,8 +211,8 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> housePhysComponent = std::make_shared<PhysicsComponent>(housePhysDesc);
          houseActor->AddComponent(housePhysComponent);
 
-         auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         houseActor->AddComponent(debugRenderPhysComp);
+       /*  auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         houseActor->AddComponent(debugRenderPhysComp);*/
 
          mScene->AllActors.push_back(houseActor);
       }
@@ -212,14 +240,19 @@ namespace Labyrinth
 
          mScene->m_playerController.SetPlayerActor(skeletActor);
 
-         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0, 2.5, 1));
-         PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f, MotionModifiers(btVector3(1, 1, 1), btVector3(0, 0, 0)));
-         mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
-         skeletActor->AddComponent(playerPhysComponent);
+         //PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0, 2.5, 1));
+         //PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f, MotionModifiers(btVector3(1, 1, 1), btVector3(0, 0, 0)));
+         //mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
+         //std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
 
-         auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         skeletActor->AddComponent(debugRenderPhysComp);
+         std::shared_ptr<CharacterPhysicsComponent> charPhysComp = std::make_shared<CharacterPhysicsComponent>(mScene->mPhysicsWorld->mWorld, glm::vec3(10, 50, 10));
+         skeletActor->CharPhysicsComponent = charPhysComp;
+         charPhysComp->SetOwner(skeletActor.get());
+
+         //skeletActor->AddComponent(playerPhysComponent);
+
+        /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
+         skeletActor->AddComponent(debugRenderPhysComp);*/
 
          mScene->AllActors.push_back(skeletActor);
 

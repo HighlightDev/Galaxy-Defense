@@ -93,7 +93,6 @@ void Engine::RenderThreadPulse()
       m_sceneRenderer->RenderScene_RenderThread();
       mLastRenderThreadPulseTime = Clock_t::now();
    }
-
 }
 
 void Engine::TickWindow()
@@ -104,11 +103,6 @@ void Engine::TickWindow()
 void Engine::MouseMove()
 {
    m_level->CameraRotate();
-}
-
-void Engine::KeyDown()
-{
-   m_level->CameraMove();
 }
 
 double Engine::GetRenderThreadDeltaSeconds() const

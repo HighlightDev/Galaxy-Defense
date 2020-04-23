@@ -25,9 +25,11 @@ private:
    InterThreadCommunicationMgr m_interThreadMgr;
 
    std::shared_ptr<Level> m_level;
+public:
 
    std::unique_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
+private:
    std::thread m_gameThread;
 
    typename Clock_t::time_point mLastRenderThreadPulseTime;
@@ -58,8 +60,6 @@ public:
 	void TickWindow();
 
 	void MouseMove();
-
-   void KeyDown();
 
    double GetRenderThreadDeltaTime() const;
 

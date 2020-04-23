@@ -2,17 +2,19 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Engine.h"
 
 namespace Game
 {
 
-   Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
+   Scene::Scene(InterThreadCommunicationMgr& interThreadMgr, Engine* engine)
       : m_interThreadMgr(interThreadMgr)
       // m_camera(new FirstPersonCamera(" Test camera ", glm::vec3(0, 0, 1), glm::vec3(0, 0, -10)))
       , m_camera(new ThirdPersonCamera("MainCamera", 50, 20 , 20))
       , mPhysicsWorld(new PhysicsWorld())
       , bProxiesUpdated(false)
    {
+      mEngine = engine;
       mPhysicsWorld->InitPhysicsWorld();
    }
 
@@ -153,21 +155,11 @@ namespace Game
       }
    }
 
-   static int counter = 0;
-
    void Scene::Tick_GameThread(float delta)
    {
-      const float physTickStep = 1.0f / 60.0f;
+      const float physTickStep = 1.0f / 400.0f;
 
-      if  (counter == 15)
-      {
-         mPhysicsWorld->Tick(physTickStep);
-         counter = 0;
-      }
-      else
-      {
-         counter++;
-      }
+      mPhysicsWorld->Tick(physTickStep);
 
       m_camera->Tick(delta);
 
@@ -177,6 +169,8 @@ namespace Game
       {
          actor->Tick(delta);
       }
+
+      mEngine->m_sceneRenderer->loadDebugRender(mPhysicsWorld->DebugRenderer->DebugLines);
    }
 
    Scene::~Scene()

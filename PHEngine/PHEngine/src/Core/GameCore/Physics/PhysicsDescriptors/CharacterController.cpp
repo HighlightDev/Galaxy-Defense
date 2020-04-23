@@ -3,6 +3,8 @@
 
 #include <glm/gtx/projection.hpp>
 
+#include <iostream>
+
 namespace Game
 {
 
@@ -31,11 +33,11 @@ namespace Game
 
    DynamicCharacterController::DynamicCharacterController(btDiscreteDynamicsWorld* pPhysicsWorld, const btVector3 spawnPos, float radius, float height, float mass, float stepHeight)
       : m_pPhysicsWorld(pPhysicsWorld)
-      , m_bottomYOffset(height / 2.0f + radius)
-      , m_bottomRoundedRegionYOffset((height + radius) / 2.0f)
+      , m_bottomYOffset(height / 3.0f + radius)
+      , m_bottomRoundedRegionYOffset((height + radius) / 3.0f)
       , m_deceleration(0.1f)
-      , m_maxSpeed(5.0f)
-      , m_jumpImpulse(600.0f)
+      , m_maxSpeed(15.0f)
+      , m_jumpImpulse(150)
       , m_manualVelocity(0.0f, 0.0f, 0.0f)
       , m_onGround(false)
       , m_hittingWall(false)
@@ -132,6 +134,7 @@ namespace Game
       // Update jump timer
       if (m_jumpRechargeTimer < m_jumpRechargeTime)
          m_jumpRechargeTimer += timerMultiplier;
+
    }
 
    void DynamicCharacterController::ParseGhostContacts()

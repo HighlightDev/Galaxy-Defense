@@ -10,6 +10,7 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 
 namespace Game
@@ -39,6 +40,9 @@ namespace Game
       std::shared_ptr<MovementComponent> m_movementComponent;
 
 	public:
+
+      // temp 
+      std::shared_ptr<CharacterPhysicsComponent> CharPhysicsComponent;
 
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 

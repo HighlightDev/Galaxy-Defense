@@ -60,6 +60,17 @@ namespace Graphics
 
          glm::mat4 ProjectionMatrix;
 
+         std::vector<std::pair<glm::vec3, glm::vec3>> DebugLines;
+
+         void loadDebugRender(const std::vector<std::pair<glm::vec3, glm::vec3>>& debugLines)
+         {
+            std::lock_guard<std::mutex> lock(lockDebug);
+            DebugLines.clear();
+            DebugLines = debugLines;
+         }
+
+         std::mutex lockDebug;
+
       private:
 
          void DebugFramePanelsPass();
@@ -86,6 +97,10 @@ namespace Graphics
          void RenderScene_RenderThread();
 
          void PushRenderTargetToTextureRenderer();
+
+         private:
+
+         void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 		};
 
 	}

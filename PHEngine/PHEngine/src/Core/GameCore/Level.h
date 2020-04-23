@@ -17,7 +17,7 @@ namespace Game
 
    public:
 
-      Level(InterThreadCommunicationMgr& interThreadMgr);
+      Level(InterThreadCommunicationMgr& interThreadMgr, class Engine* engine);
 
       virtual ~Level();
 

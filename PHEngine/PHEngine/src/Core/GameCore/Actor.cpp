@@ -153,6 +153,11 @@ namespace Game
          m_physicsComponent->Tick(deltaTime);
       }
 
+      if (CharPhysicsComponent)
+      {
+         CharPhysicsComponent->Tick(deltaTime);
+      }
+
       UpdateRootComponentTransform();
 
 		m_rootComponent->Tick(deltaTime);

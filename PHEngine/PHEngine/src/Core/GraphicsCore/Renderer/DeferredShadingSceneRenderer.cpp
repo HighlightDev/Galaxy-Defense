@@ -14,6 +14,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <gl/glew.h>
+#include <glm/gtc/type_ptr.hpp>
 
 using namespace Resources;
 using namespace Common; 
@@ -340,7 +341,49 @@ namespace Graphics
             if (proxy->IsVisible())
                proxy->Render(viewMatrix, ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
          }
+
+
+         DebugRenderPhysics(viewMatrix, ProjectionMatrix);
+
          glDisable(GL_BLEND);
+      }
+
+      void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      {
+         std::lock_guard<std::mutex> lock(lockDebug);
+         if (DebugLines.size())
+         {
+            float viewMatVec[16]{ 0.0f };
+            const float *pSource = (const float*) glm::value_ptr(viewMatrix);
+            for (int i = 0; i < 16; ++i)
+               viewMatVec[i] = pSource[i];
+
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadMatrixf(pSource);
+
+            float projMatrix[16]{ 0.0f };
+            pSource = (const float*)glm::value_ptr(projectionMatrix);
+            for (int i = 0; i < 16; ++i)
+               projMatrix[i] = pSource[i];
+
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadMatrixf(projMatrix);
+            
+
+            glBegin(GL_LINES);
+            for (int32_t i = 0; i < DebugLines.size(); ++i)
+            {
+               glm::vec3 vert1 = DebugLines[i].first;
+               glm::vec3 vert2 = DebugLines[i].second;
+
+               glColor3f(1, 0, 0);
+               glVertex3f(vert1.x, vert1.y, vert1.z);
+               glVertex3f(vert2.x, vert2.y, vert2.z);
+            }
+            glEnd();
+         }
       }
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()

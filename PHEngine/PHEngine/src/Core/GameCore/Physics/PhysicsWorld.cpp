@@ -14,6 +14,7 @@ namespace Game
       , mDispatcher(nullptr)
       , mSolver(nullptr)
       , mWorld(nullptr)
+      , DebugRenderer(new BulletDebugRenderer())
    {
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(this);
    }
@@ -47,6 +48,8 @@ namespace Game
       mWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
 
       mWorld->setGravity(btVector3(btScalar(0.0f), btScalar(-9.8f), btScalar(0.0f)));
+
+      mWorld->setDebugDrawer(this->DebugRenderer);
    }
 
    void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor* inDescriptor)
@@ -82,6 +85,8 @@ namespace Game
    void PhysicsWorld::Tick(const float deltaTime)
    {
       mWorld->stepSimulation(deltaTime);
+      DebugRenderer->FlushLinesBuffer();
+      mWorld->debugDrawWorld();
    }
 
    void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t& data)

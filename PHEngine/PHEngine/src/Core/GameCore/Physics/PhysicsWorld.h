@@ -3,6 +3,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/DebugRender/BulletDebugRenderer.h"
 
 namespace Game
 {
@@ -18,11 +19,14 @@ namespace Game
 
       btSequentialImpulseConstraintSolver*    mSolver;
 
+   public:
       btDiscreteDynamicsWorld*                mWorld;
-
+   private:
       std::vector<PhysicsDescriptor*> mPhysicsDescriptors;
 
    public:
+
+      BulletDebugRenderer* DebugRenderer;
 
       PhysicsWorld();
 

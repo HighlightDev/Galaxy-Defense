@@ -1819,6 +1819,9 @@
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Physics\DebugRender\BulletDebugRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

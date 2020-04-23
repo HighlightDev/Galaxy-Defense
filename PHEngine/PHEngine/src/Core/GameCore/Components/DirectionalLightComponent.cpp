@@ -5,6 +5,9 @@
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/CommonCore/StringHash.h"
 
+#include "Core/UtilityCore/EngineMath.h"
+#include <glm/gtx/quaternion.hpp>
+
 using namespace Graphics;
 
 namespace Game
@@ -37,6 +40,9 @@ namespace Game
    void DirectionalLightComponent::Tick(float deltaTime)
    {
       Base::Tick(deltaTime);
+
+      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * 8), AXIS_UP));
+      ProcessEvent(PhysicsSimulationUpdatedEvent::EventData_t());
    }
 
    uint64_t DirectionalLightComponent::GetComponentType() const

@@ -30,7 +30,7 @@ namespace Game
 
       float m_stepHeight;
 
-      const float timerMultiplier = 0.015f;
+      const float timerMultiplier = 0.15f;
 
       btTransform m_motionTransform;
 
