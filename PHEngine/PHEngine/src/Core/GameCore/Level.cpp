@@ -22,22 +22,19 @@
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
-#include "Engine.h"
 
 #include <glm/vec3.hpp>
 
 namespace Game
 {
 
-   Level::Level(InterThreadCommunicationMgr& interThreadMgr, Engine* engine)
-      : mScene(new Scene(interThreadMgr, engine))
+   Level::Level(InterThreadCommunicationMgr& interThreadMgr)
+      : mScene(std::make_shared<Scene>(interThreadMgr))
    {
-
    }
 
    Level::~Level()
    {
-      delete mScene;
    }
 
    void Level::PostConstructorInitialize() 
@@ -55,6 +52,11 @@ namespace Game
       LoadLevel();
    }
 
+   std::weak_ptr<Scene> Level::GetSceneWP() const
+   {
+      return mScene;
+   }
+
    void Level::LoadLevel()
    {
    }
@@ -64,31 +66,6 @@ namespace Game
       mScene->Tick_GameThread(deltaTime);
    }
 
-   bool Level::ReadAreProxiesUpdated(bool newValue)
-   {
-      return mScene->ReadAreProxiesUpdated(newValue);
-   }
-
-   const std::vector<std::shared_ptr<Actor>>& Level::GetActors() const
-   {
-      return mScene->AllActors;
-   }
-
-   const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& Level::GetSceneProxies() const
-   {
-      return mScene->SceneProxies;
-   }
-
-   const std::vector<std::shared_ptr<LightSceneProxy>>& Level::GetLightProxies() const
-   {
-      return mScene->LightProxies;
-   }
-
-   const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& Level::GetShadowGroupPrimitives() const
-   {
-      return mScene->ShadowGroupPrimitives;
-   }
-   
    ICamera* Level::GetCamera() const
    {
       return mScene->GetCamera();

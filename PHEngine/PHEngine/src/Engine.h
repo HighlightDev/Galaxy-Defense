@@ -22,12 +22,11 @@ private:
 
    static constexpr double InvLimitFPS = 1.0 / 60.0;
 
-   InterThreadCommunicationMgr m_interThreadMgr;
+   InterThreadCommunicationMgr& m_interThreadMgr;
 
    std::shared_ptr<Level> m_level;
-public:
 
-   std::unique_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
+   std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
 private:
    std::thread m_gameThread;
@@ -41,7 +40,7 @@ private:
 
 public:
 
-	Engine();
+	Engine(InterThreadCommunicationMgr& interThreadMgr);
 
 	~Engine();
 

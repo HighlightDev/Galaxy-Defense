@@ -12,7 +12,7 @@
 #include "Core/DebugCore/TextureRenderer.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
-
+#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
@@ -21,7 +21,6 @@
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/Level.h"
 
 using namespace Game::ShaderImpl;
 using namespace Game;
@@ -35,13 +34,18 @@ namespace Graphics
 
 		class DeferredShadingSceneRenderer
 		{
+
+      public:
+
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
+
+         std::vector<std::shared_ptr<LightSceneProxy>> LightProxies;
+
       private:
 
          InterThreadCommunicationMgr& m_interThreadMgr;
 
          /* Scene to render */
-         std::weak_ptr<Level> mLevel;
-
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          // Shaders
@@ -55,6 +59,10 @@ namespace Graphics
          TextureRenderer m_textureRenderer;
 
          std::function<bool(const std::shared_ptr<DirectionalLightSceneProxy>&, const std::shared_ptr<DirectionalLightSceneProxy>&)> mCompareShadowMapDescriptors;
+
+         bool bProxiesDirty;
+
+         bool bLightProxiesDirty;
 
       public:
 
@@ -88,7 +96,7 @@ namespace Graphics
 
       public:
 
-         DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr, std::weak_ptr<Level> currentLevel);
+         DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr);
 
 			~DeferredShadingSceneRenderer();
 
@@ -97,6 +105,10 @@ namespace Graphics
          void RenderScene_RenderThread();
 
          void PushRenderTargetToTextureRenderer();
+
+         void SetProxiesAreDirty(const bool bDirty);
+
+         void SetLightProxiesAreDirty(const bool bDirty);
 
          private:
 

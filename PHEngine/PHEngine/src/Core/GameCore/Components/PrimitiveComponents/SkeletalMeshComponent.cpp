@@ -1,9 +1,11 @@
 #include "SkeletalMeshComponent.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
 
 using namespace Graphics::Proxy;
+using namespace Graphics::Renderer;
 
 namespace Game
 {
@@ -33,11 +35,14 @@ namespace Game
       {
          constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
 
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+         if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(m_scene->SceneProxies[PrimitiveProxyComponentId].get());
-            proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
-         });
+               SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
+               proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
+            });
+         }
 
          m_tickCounter = -1;
       }

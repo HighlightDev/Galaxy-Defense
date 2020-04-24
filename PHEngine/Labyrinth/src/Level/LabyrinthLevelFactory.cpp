@@ -8,9 +8,9 @@ namespace Labyrinth
 
    LabyrinthLevelFactory* LabyrinthLevelFactory::mLevelFactoryInstance = nullptr;
 
-   std::shared_ptr<Level> LabyrinthLevelFactory::CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr, Engine* engine) const
+   std::shared_ptr<Level> LabyrinthLevelFactory::CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const
    {
-      return std::make_shared<SimpleLevel>(threadMgr, engine);
+      return std::make_shared<SimpleLevel>(threadMgr);
    }
 
    LabyrinthLevelFactory* LabyrinthLevelFactory::GetInstance() 

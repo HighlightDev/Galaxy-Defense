@@ -5,6 +5,18 @@
 
 #include "Job.h"
 
+namespace Graphics
+{
+   namespace Renderer {
+      class DeferredShadingSceneRenderer;
+   }
+}
+
+namespace Game
+{
+   class Scene;
+}
+
 namespace Thread
 {
 
@@ -29,6 +41,9 @@ InterThreadMgrInstance.SpinGameThreadJobs();
 
    class InterThreadCommunicationMgr
    {
+      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
+      std::weak_ptr<Game::Scene> mScene;
+
       const size_t JobPoolCapacity = 80;
 
       std::mutex m_gameThreadMutex;
@@ -54,6 +69,14 @@ InterThreadMgrInstance.SpinGameThreadJobs();
 
       /* @ Should be executed only on render thread! */
       void SpinRenderThreadJobs();
+
+      void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> sceneRenderer);
+      
+      void SetSceneWP(std::weak_ptr<Game::Scene> scene);
+
+      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> TryGetSceneRendererWP() const;
+
+      std::weak_ptr<Game::Scene> TryGetSceneWP() const;
 
    private:
 

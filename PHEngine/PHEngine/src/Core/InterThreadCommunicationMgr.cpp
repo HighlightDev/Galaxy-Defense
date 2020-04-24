@@ -1,7 +1,12 @@
 #include "InterThreadCommunicationMgr.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <iostream>
 #include <algorithm>
+
+using namespace Game;
+using namespace Graphics::Renderer;
 
 namespace Thread
 {
@@ -14,6 +19,25 @@ namespace Thread
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()
    {
+   }
+
+   void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<DeferredShadingSceneRenderer> sceneRenderer)
+   {
+      mSceneRenderer = sceneRenderer;
+   }
+
+   void InterThreadCommunicationMgr::SetSceneWP(std::weak_ptr<Scene> scene)
+   {
+      mScene = scene;
+   }
+
+   std::weak_ptr<DeferredShadingSceneRenderer> InterThreadCommunicationMgr::TryGetSceneRendererWP() const
+   {
+      return mSceneRenderer;
+   }
+
+   std::weak_ptr<Scene> InterThreadCommunicationMgr::TryGetSceneWP() const {
+      return mScene;
    }
 
    void InterThreadCommunicationMgr::PushGameThreadJob(const EnqueueJobPolicy policy, const Job& job)

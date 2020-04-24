@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Engine.h"
 
 namespace Game
 {
@@ -17,7 +16,7 @@ namespace Game
 
       LevelFactory() = default;
 
-      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr, Engine* engine) const = 0;
+      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const = 0;
    };
 
 }

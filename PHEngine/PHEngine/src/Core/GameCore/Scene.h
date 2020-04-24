@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentCreatorFactory.h"
@@ -11,10 +9,10 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 
-using namespace Graphics::Proxy;
 using namespace Thread;
 
-class Engine;
+class Graphics::Proxy::LightSceneProxy;
+class Graphics::Proxy::PrimitiveSceneProxy;
 
 namespace Game
 {
@@ -25,21 +23,11 @@ namespace Game
 
       std::vector<std::shared_ptr<Actor>> AllActors;
 
-      std::vector<std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
-
-      std::vector<std::shared_ptr<LightSceneProxy>> LightProxies;
-
-      std::vector<std::shared_ptr<PrimitiveSceneProxy>> ShadowGroupPrimitives;
-
       PlayerController m_playerController;
 
       class PhysicsWorld* mPhysicsWorld;
 
-      Engine* mEngine;
-
    private:
-
-      bool bProxiesUpdated;
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -47,7 +35,7 @@ namespace Game
 
    public:
 
-      Scene(InterThreadCommunicationMgr& interThreadMgr, Engine* engine);
+      Scene(InterThreadCommunicationMgr& interThreadMgr);
 
       void PostConstructorInitialize();
 
@@ -56,6 +44,11 @@ namespace Game
       inline class ICamera* GetCamera() const
       {
          return m_camera;
+      }
+
+      inline InterThreadCommunicationMgr& GetThreadManager()
+      {
+         return m_interThreadMgr;
       }
 
       void Tick_GameThread(float delta);
@@ -72,7 +65,17 @@ namespace Game
 
       void ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& renderThreadJobCallback) const;
 
-      bool ReadAreProxiesUpdated(bool newValue);
+      void PrimitiveSceneProxyDeleted(size_t primitiveSceneProxyIndex);
+
+      void PrimitiveSceneProxyAdded(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy);
+
+      void PrimitiveSceneProxiesUpdated();
+
+      void LightSceneProxyDeleted(size_t lightSceneProxyIndex);
+
+      void LightSceneProxyAdded(size_t primitiveSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy);
+
+      void LightSceneProxiesUpdated();
 
       ~Scene();
 
@@ -90,16 +93,14 @@ namespace Game
                PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
                componentPtr->PrimitiveProxyComponentId = PrimitiveComponent::TotalPrimitiveSceneProxyIndex++;
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
-               SceneProxies.push_back(sceneProxyShared);
-               bProxiesUpdated = true;
+               PrimitiveSceneProxyAdded(componentPtr->PrimitiveProxyComponentId, sceneProxyShared);
             }
             else if ((type & LIGHT_COMPONENT) == LIGHT_COMPONENT)
             {
                LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
                componentPtr->LightSceneProxyId = LightComponent::TotalLightSceneProxyId++;
                auto lightProxyShared = componentPtr->CreateSceneProxy();
-               LightProxies.push_back(lightProxyShared);
-               bProxiesUpdated = true;
+               LightSceneProxyAdded(componentPtr->LightSceneProxyId, lightProxyShared);
             }
          }
 

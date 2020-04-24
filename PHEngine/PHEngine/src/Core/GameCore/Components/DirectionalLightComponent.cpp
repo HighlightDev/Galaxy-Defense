@@ -1,11 +1,12 @@
 #include "DirectionalLightComponent.h"
 
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
-#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
-
 #include "Core/UtilityCore/EngineMath.h"
+
 #include <glm/gtx/quaternion.hpp>
 
 using namespace Graphics;
@@ -52,38 +53,44 @@ namespace Game
 
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
    {
-      constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
-
-      m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         auto proxy = m_scene->LightProxies[LightSceneProxyId];
-         ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
-         if (shadowInfo)
+         constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
+
+         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
          {
-            std::weak_ptr<Transform> playerTransformWP = std::get<0>(data);
-            if (auto transform = playerTransformWP.lock())
+            auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+            ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+            if (shadowInfo)
             {
-               shadowInfo->SetPlayerPositionOffset(transform->Translation);
+               std::weak_ptr<Transform> playerTransformWP = std::get<0>(data);
+               if (auto transform = playerTransformWP.lock())
+               {
+                  shadowInfo->SetPlayerPositionOffset(transform->Translation);
+               }
+               proxy->SetIsTransformationDirty(true);
+               shadowInfo->SetIsShadowMapDirty(true);
             }
-            proxy->SetIsTransformationDirty(true);
-            shadowInfo->SetIsShadowMapDirty(true);
-         }
-      });
+         });
+      }
    }
 
    void DirectionalLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
    {
-      constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
-
-      m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         auto proxy = m_scene->LightProxies[LightSceneProxyId];
-         ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
-         if (shadowInfo)
+         constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
          {
-            shadowInfo->SetIsShadowMapDirty(true);
-         }
-      });
+            auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+            ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+            if (shadowInfo)
+            {
+               shadowInfo->SetIsShadowMapDirty(true);
+            }
+         });
+      }
    }
 
 }

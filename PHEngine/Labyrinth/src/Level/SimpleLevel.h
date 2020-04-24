@@ -12,7 +12,7 @@ namespace Labyrinth
    {
    public:
 
-      SimpleLevel(InterThreadCommunicationMgr& threadMgr, class Engine* engine);
+      SimpleLevel(InterThreadCommunicationMgr& threadMgr);
 
       virtual ~SimpleLevel();
 

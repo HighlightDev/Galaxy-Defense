@@ -1,16 +1,17 @@
 #include "DeferredShadingSceneRenderer.h"
-#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
-#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/CommonCore/FolderManager.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GameCore/ICamera.h"
-#include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalInputController.h"
+#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
+#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
+#include "Core/CommonCore/FolderManager.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <gl/glew.h>
@@ -23,15 +24,17 @@ using namespace Graphics::Renderer;
 using namespace Graphics::Proxy;
 using namespace Graphics::OpenGL;
 using namespace EngineUtility;
+using namespace Game;
 
 namespace Graphics
 {
    namespace Renderer
    {
 
-      DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr, std::weak_ptr<Level> level)
-         : m_interThreadMgr(interThreadMgr)
-         , mLevel(level)
+      DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
+         : SceneProxies()
+         , LightProxies()
+         , m_interThreadMgr(interThreadMgr)
          , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(GlobalInputController::GetInstance()->GetWindowWidth(), GlobalInputController::GetInstance()->GetWindowHeight()))
       {
          const auto& folderManager = FolderManager::GetInstance();
@@ -77,7 +80,14 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PostConstructorInitialize()
       {
-         
+         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+            Job(0, 0, [=]()
+         {
+            for (auto& lightProxy : LightProxies)
+            {
+               lightProxy->PostConstructorInitialize();
+            }
+         }));
       }
 
       std::vector<std::shared_ptr<DirectionalLightSceneProxy>> DeferredShadingSceneRenderer::RetrieveDirectionalLightProxies(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourcesProxy) const
@@ -233,38 +243,35 @@ namespace Graphics
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies,
          std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix)
       {
-         if (std::shared_ptr<Level> level = mLevel.lock())
+         // Deferred shading collect info
+         m_gbuffer->BindDeferredGBuffer();
+
+         const glm::mat4& projectionMatrix = ProjectionMatrix;
+
+         if (skeletalMeshProxies.size() > 0)
          {
-            // Deferred shading collect info
-            m_gbuffer->BindDeferredGBuffer();
-
-            const glm::mat4& projectionMatrix = ProjectionMatrix;
-
-            if (skeletalMeshProxies.size() > 0)
+            for (auto& proxy : skeletalMeshProxies)
             {
-               for (auto& proxy : skeletalMeshProxies)
-               {
-                  if (proxy->IsVisible())
-                     proxy->Render(viewMatrix, projectionMatrix);
-               }
+               if (proxy->IsVisible())
+                  proxy->Render(viewMatrix, projectionMatrix);
             }
-
-            if (nonSkeletalMeshProxies.size() > 0)
-            {
-               for (auto& proxy : nonSkeletalMeshProxies)
-               {
-                  if (proxy->IsVisible())
-                     proxy->Render(viewMatrix, projectionMatrix);
-               }
-            }
-
-            m_gbuffer->UnbindDeferredGBuffer();
          }
+
+         if (nonSkeletalMeshProxies.size() > 0)
+         {
+            for (auto& proxy : nonSkeletalMeshProxies)
+            {
+               if (proxy->IsVisible())
+                  proxy->Render(viewMatrix, projectionMatrix);
+            }
+         }
+
+         m_gbuffer->UnbindDeferredGBuffer();
       }
 
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourcesProxy)
       {
-         if (std::shared_ptr<Level> level = mLevel.lock())
+         if (std::shared_ptr<Scene> scene = m_interThreadMgr.TryGetSceneWP().lock())
          {
             // TODO: Make some check if light source (point or spot light) is too far from current view position
             m_deferredLightShader->ExecuteShader();
@@ -303,7 +310,7 @@ namespace Graphics
                   }
                }
             }
-            m_deferredLightShader->SetCameraWorldPosition(level->GetCamera()->GetEyeVector());
+            m_deferredLightShader->SetCameraWorldPosition(scene->GetCamera()->GetEyeVector());
             m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
             m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
             // ************************** SHADOWS ************************** //
@@ -316,7 +323,7 @@ namespace Graphics
             m_deferredLightShader->SetGBufferAlbedoNSpecular(1);
             m_deferredLightShader->SetGBufferNormal(2);
 
-            m_deferredLightShader->SetLightsInfo(level->GetLightProxies());
+            m_deferredLightShader->SetLightsInfo(LightProxies);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             m_deferredLightShader->StopShader();
          }
@@ -341,11 +348,10 @@ namespace Graphics
             if (proxy->IsVisible())
                proxy->Render(viewMatrix, ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
          }
+         glDisable(GL_BLEND);
 
 
          DebugRenderPhysics(viewMatrix, ProjectionMatrix);
-
-         glDisable(GL_BLEND);
       }
 
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -388,22 +394,20 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()
       {
-         if (std::shared_ptr<Level> level = mLevel.lock())
+         if (std::shared_ptr<Scene> scene = m_interThreadMgr.TryGetSceneWP().lock())
          {
             static std::vector<PrimitiveSceneProxy*> drawForwardShadedProxies;
             static std::vector<PrimitiveSceneProxy*> skeletalProxies;
             static std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
 
-            const bool bProxiesUpdated = level->ReadAreProxiesUpdated(false);
-
             /* Prepare proxies block */
-            if (bProxiesUpdated)
+            if (bProxiesDirty)
             {
                drawForwardShadedProxies.clear();
                skeletalProxies.clear();
                nonSkeletalProxies.clear();
 
-               for (auto& proxy : level->GetSceneProxies())
+               for (auto& proxy : SceneProxies)
                {
                   PrimitiveSceneProxy* proxyPtr = proxy.get();
 
@@ -423,18 +427,19 @@ namespace Graphics
                      drawForwardShadedProxies.push_back(proxyPtr);
                   }
                }
+               SetProxiesAreDirty(false);
             }
             /* Prepare proxies block */
 
             glEnable(GL_DEPTH_TEST);
 
-            DepthPass(nonSkeletalProxies, skeletalProxies, level->GetLightProxies());
+            DepthPass(nonSkeletalProxies, skeletalProxies, LightProxies);
 
-            const glm::mat4& viewMatrix = level->GetCamera()->GetViewMatrix();
+            const glm::mat4& viewMatrix = scene->GetCamera()->GetViewMatrix();
 
             DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, viewMatrix);
 
-            DeferredLightPass_RenderThread(level->GetLightProxies());
+            DeferredLightPass_RenderThread(LightProxies);
 
             if (drawForwardShadedProxies.size())
             {
@@ -443,6 +448,16 @@ namespace Graphics
 
             DebugFramePanelsPass();
          }
+      }
+
+      void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
+      {
+         bProxiesDirty = bDirty;
+      }
+
+      void DeferredShadingSceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
+      {
+         bLightProxiesDirty = bDirty;
       }
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()

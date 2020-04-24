@@ -48,8 +48,8 @@ using namespace Graphics;
 namespace Labyrinth
 {
 
-   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr, Engine* engine)
-      : Level(threadMgr, engine)
+   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
+      : Level(threadMgr)
    {
    }
 

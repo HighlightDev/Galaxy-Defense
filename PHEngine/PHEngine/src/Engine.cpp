@@ -2,8 +2,8 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
 
-Engine::Engine()
-   : m_interThreadMgr()
+Engine::Engine(InterThreadCommunicationMgr& interThreadMgr)
+   : m_interThreadMgr(interThreadMgr)
    , mLastRenderThreadPulseTime(Clock_t::now())
    , mRenderThreadDeltaTimeSeconds()
    , mLastGameThreadPulseTime(Clock_t::now())
@@ -19,9 +19,11 @@ Engine::~Engine()
 void Engine::PlayLevel(std::shared_ptr<Level> level)
 {
    m_level = level;
-   m_sceneRenderer = std::make_unique<DeferredShadingSceneRenderer>(m_interThreadMgr, m_level);
+   m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
+   m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
 
    m_level->InitLevel();
+   m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
    PostConstructorInitialize();
 
@@ -61,7 +63,6 @@ void Engine::GameThreadPulse()
 
          /* Work Jobs */
          SPIN_GAME_THREAD_JOBS(m_interThreadMgr);
-
 
          if (mGameThreadSumDeltaTimeSec >= InvLimitFPS) // 1 / 60 of a second
          {
