@@ -236,7 +236,8 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 					vec2 shadowmapAtlasSize = textureSize(DirLightShadowMaps[directLightIndex], 0);
 					vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords.xy, atlasOffset);
-					vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, shadowFragCoords.z);
+					float depth = clamp(shadowFragCoords.z, 0.0, 1.0);
+					vec3 shadowCoordinatesAndDepth = vec3(shadowCoordinates, depth);
 
 					float shadowTransitionValue = GetShadowTransitionValue(shadowFragCoords.xy, shadowmapAtlasSize);
 

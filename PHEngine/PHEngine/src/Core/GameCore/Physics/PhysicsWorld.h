@@ -24,9 +24,11 @@ namespace Game
    private:
       std::vector<PhysicsDescriptor*> mPhysicsDescriptors;
 
-   public:
+#if DEBUG
+      BulletDebugRenderer* mDebugRenderer;
+#endif
 
-      BulletDebugRenderer* DebugRenderer;
+   public:
 
       PhysicsWorld();
 
@@ -41,6 +43,10 @@ namespace Game
       void RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor);
 
       void JoinPhysDescriptorsForSimulation();
+
+#if DEBUG
+      const DebugPhysicsRenderData& GetDebugPhysicsRenderData() const;
+#endif
 
    protected:
 

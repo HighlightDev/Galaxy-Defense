@@ -77,6 +77,10 @@ namespace Game
 
       void LightSceneProxiesUpdated();
 
+#if DEBUG
+      void UpdatePhysicsRenderData(const class DebugPhysicsRenderData& physRenderData);
+#endif
+
       ~Scene();
 
       template <typename PrimitiveType>

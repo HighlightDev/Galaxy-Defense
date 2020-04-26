@@ -354,10 +354,11 @@ namespace Graphics
          DebugRenderPhysics(viewMatrix, ProjectionMatrix);
       }
 
+#if DEBUG
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         std::lock_guard<std::mutex> lock(lockDebug);
-         if (DebugLines.size())
+         const auto& physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();
+         if (physicsRenderData.size())
          {
             float viewMatVec[16]{ 0.0f };
             const float *pSource = (const float*) glm::value_ptr(viewMatrix);
@@ -379,10 +380,10 @@ namespace Graphics
             
 
             glBegin(GL_LINES);
-            for (int32_t i = 0; i < DebugLines.size(); ++i)
+            for (int32_t i = 0; i < physicsRenderData.size(); ++i)
             {
-               glm::vec3 vert1 = DebugLines[i].first;
-               glm::vec3 vert2 = DebugLines[i].second;
+               glm::vec3 vert1 = physicsRenderData[i].first;
+               glm::vec3 vert2 = physicsRenderData[i].second;
 
                glColor3f(1, 0, 0);
                glVertex3f(vert1.x, vert1.y, vert1.z);
@@ -391,6 +392,7 @@ namespace Graphics
             glEnd();
          }
       }
+#endif
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()
       {
@@ -449,6 +451,13 @@ namespace Graphics
             DebugFramePanelsPass();
          }
       }
+
+#if DEBUG
+      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData)
+      {
+         mDebugPhysicsRenderData = debugPhysicsRenderData;
+      }
+#endif
 
       void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
       {

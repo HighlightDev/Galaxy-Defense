@@ -379,6 +379,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\DebugRender\BulletDebugRenderer.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\DebugRender\DebugPhysicsRenderData.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterController.h" />
     <ClInclude Include="src\Core\CommonCore\Assertion.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterPhysicsDescriptor.h" />

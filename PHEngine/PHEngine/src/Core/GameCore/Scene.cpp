@@ -243,6 +243,23 @@ namespace Game
       }
    }
 
+#if DEBUG
+   void Scene::UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData)
+   {
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
+
+      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            Job(creatorObjectId, functionId, [=]()
+         {
+            sceneRenderer->SetDebugPhysicsRenderData(physRenderData);
+         }));
+      }
+   }
+#endif
+
    void Scene::Tick_GameThread(float delta)
    {
       const float physTickStep = 1.0f / 400.0f;
@@ -258,10 +275,9 @@ namespace Game
          actor->Tick(delta);
       }
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
-      {
-         sceneRenderer->loadDebugRender(mPhysicsWorld->DebugRenderer->DebugLines);
-      }
+#if DEBUG
+      UpdatePhysicsRenderData(mPhysicsWorld->GetDebugPhysicsRenderData());
+#endif
    }
 
    Scene::~Scene()

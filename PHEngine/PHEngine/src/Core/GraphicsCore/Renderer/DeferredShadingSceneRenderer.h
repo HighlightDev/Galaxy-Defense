@@ -3,24 +3,26 @@
 #include <stdint.h>
 #include <glm/mat4x4.hpp>
 
+#include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
+#include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/Material/PBRMaterial.h"
+#include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
+
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapDepthShader.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
-#include "Core/InterThreadCommunicationMgr.h"
-#include "Core/DebugCore/TextureRenderer.h"
-#include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
-#include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GraphicsCore/Material/PBRMaterial.h"
-#include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
-#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
+
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/InterThreadCommunicationMgr.h"
+#include "Core/DebugCore/TextureRenderer.h"
 
 using namespace Game::ShaderImpl;
 using namespace Game;
@@ -64,20 +66,13 @@ namespace Graphics
 
          bool bLightProxiesDirty;
 
+#if DEBUG
+         DebugPhysicsRenderData mDebugPhysicsRenderData;
+#endif
+
       public:
 
          glm::mat4 ProjectionMatrix;
-
-         std::vector<std::pair<glm::vec3, glm::vec3>> DebugLines;
-
-         void loadDebugRender(const std::vector<std::pair<glm::vec3, glm::vec3>>& debugLines)
-         {
-            std::lock_guard<std::mutex> lock(lockDebug);
-            DebugLines.clear();
-            DebugLines = debugLines;
-         }
-
-         std::mutex lockDebug;
 
       private:
 
@@ -110,9 +105,14 @@ namespace Graphics
 
          void SetLightProxiesAreDirty(const bool bDirty);
 
-         private:
+#if DEBUG
+         void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
+#endif
 
+         private:
+#if DEBUG
          void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+#endif
 		};
 
 	}
