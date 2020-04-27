@@ -4,7 +4,7 @@
 
 #include "PhyShapeBase.h"
 
-namespace Game
+namespace EnginePhysics
 {
 
    struct PhyBoxShape

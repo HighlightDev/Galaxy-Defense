@@ -64,10 +64,10 @@ namespace Game
          {
             if (bindings.GetKeyState(Keys::W))
             {
-               if (auto physComponent = m_playerActor->CharPhysicsComponent)
+               /*if (auto physComponent = m_playerActor->CharPhysicsComponent)
                {
                   physComponent->SetWalkVelocity(movementComponent->Velocity);
-               }
+               }*/
             }
             else if (bindings.GetKeyState(Keys::A))
             {
@@ -87,10 +87,10 @@ namespace Game
 
             if (bindings.GetKeyState(Keys::Space))
             {
-               if (auto physComponent = m_playerActor->CharPhysicsComponent)
+             /*  if (auto physComponent = m_playerActor->CharPhysicsComponent)
                {
                   physComponent->SetJumpVelocity();
-               }
+               }*/
             }
          }
    

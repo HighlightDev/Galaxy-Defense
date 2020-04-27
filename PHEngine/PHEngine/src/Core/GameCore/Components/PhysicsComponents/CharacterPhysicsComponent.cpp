@@ -9,10 +9,10 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EnginePhysics
 {
    CharacterPhysicsComponent::CharacterPhysicsComponent(btDiscreteDynamicsWorld* dynamicWorld, const glm::vec3& spawnPos)
-      : characterController(new DynamicCharacterController(dynamicWorld, Converter::glmToBullet(spawnPos), 1, 2.5, 10, 1.0f))
+      : characterController(new DynamicCharacterController(nullptr, 1, 2.5, 10, 1.0f))
       , bIsTransformationDirty(true)
    {
    }
@@ -76,6 +76,7 @@ namespace Game
 
    void CharacterPhysicsComponent::TickCharacterControllerPhysics()
    {
-      characterController->Update();
+      bool update;
+      characterController->UpdateMotionWorldTransformLocalState(update);
    }
 }

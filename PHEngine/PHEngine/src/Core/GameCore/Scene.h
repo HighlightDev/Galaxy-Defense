@@ -5,18 +5,19 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentCreatorFactory.h"
 #include "Core/GameCore/Components/LightComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/PlayerController.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 
 using namespace Thread;
 
 class Graphics::Proxy::LightSceneProxy;
 class Graphics::Proxy::PrimitiveSceneProxy;
+class EnginePhysics::PhysicsWorld;
 
 namespace Game
 {
-
    class Scene
    {
    public:
@@ -25,7 +26,7 @@ namespace Game
 
       PlayerController m_playerController;
 
-      class PhysicsWorld* mPhysicsWorld;
+      class EnginePhysics::PhysicsWorld* mPhysicsWorld;
 
    private:
 
@@ -78,7 +79,7 @@ namespace Game
       void LightSceneProxiesUpdated();
 
 #if DEBUG
-      void UpdatePhysicsRenderData(const class DebugPhysicsRenderData& physRenderData);
+      void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);
 #endif
 
       ~Scene();

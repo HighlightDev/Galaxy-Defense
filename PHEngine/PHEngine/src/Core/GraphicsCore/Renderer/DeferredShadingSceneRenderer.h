@@ -11,13 +11,13 @@
 #include "Core/GraphicsCore/Material/PBRMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 
-#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapDepthShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -28,6 +28,7 @@ using namespace Game::ShaderImpl;
 using namespace Game;
 using namespace Thread;
 using namespace Debug;
+using namespace EnginePhysics;
 
 namespace Graphics
 {
@@ -87,6 +88,7 @@ namespace Graphics
          void DepthPass(std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies, const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies);
 
          std::vector<std::shared_ptr<DirectionalLightSceneProxy>> RetrieveDirectionalLightProxies(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies) const;
+
          std::vector<std::shared_ptr<PointLightSceneProxy>> RetrievePointLightProxies(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies) const;
 
       public:

@@ -377,15 +377,16 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\DebugRender\BulletDebugRenderer.h" />
     <ClInclude Include="src\Core\GameCore\Physics\DebugRender\DebugPhysicsRenderData.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterController.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.h" />
     <ClInclude Include="src\Core\CommonCore\Assertion.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterPhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
     <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
@@ -816,9 +817,9 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterController.cpp" />
-    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\CharacterPhysicsDescriptor.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\Transform.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />

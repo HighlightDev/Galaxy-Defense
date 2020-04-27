@@ -2,7 +2,7 @@
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
-namespace Game
+namespace EnginePhysics
 {
 
    struct PhyShapeBase

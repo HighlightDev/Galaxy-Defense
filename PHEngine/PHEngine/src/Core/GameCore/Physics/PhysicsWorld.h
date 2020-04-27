@@ -5,7 +5,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Physics/DebugRender/BulletDebugRenderer.h"
 
-namespace Game
+namespace EnginePhysics
 {
    class PhysicsWorld 
       : public ITickable
@@ -19,8 +19,8 @@ namespace Game
 
       btSequentialImpulseConstraintSolver*    mSolver;
 
-   public:
       btDiscreteDynamicsWorld*                mWorld;
+
    private:
       std::vector<PhysicsDescriptor*> mPhysicsDescriptors;
 
@@ -34,6 +34,8 @@ namespace Game
 
       ~PhysicsWorld();
 
+      btDiscreteDynamicsWorld* GetWorld() const;
+
       void Tick(const float deltaTime);
 
       void InitPhysicsWorld();
@@ -41,8 +43,6 @@ namespace Game
       void AddPhysDescriptor(PhysicsDescriptor* inDescriptor);
 
       void RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor);
-
-      void JoinPhysDescriptorsForSimulation();
 
 #if DEBUG
       const DebugPhysicsRenderData& GetDebugPhysicsRenderData() const;

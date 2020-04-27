@@ -7,18 +7,16 @@
 #include <glm/vec3.hpp>
 #include <vector>
 
-namespace Game
+#include "PhysicsDescriptor.h"
+
+namespace EnginePhysics
 {
 
    class DynamicCharacterController
+      : public PhysicsDescriptor
    {
    private:
       // Physics
-      btDiscreteDynamicsWorld* m_pPhysicsWorld;
-
-      btCollisionShape* m_pCollisionShape;
-      btDefaultMotionState* m_pMotionState;
-      btRigidBody* m_pRigidBody;
       btPairCachingGhostObject* m_pGhostObject;
 
       bool m_onGround;
@@ -53,8 +51,15 @@ namespace Game
 
       float m_jumpRechargeTime;
 
-      DynamicCharacterController(btDiscreteDynamicsWorld* pPhysicsWorld, const btVector3 spawnPos, float radius, float height, float mass, float stepHeight);
-      ~DynamicCharacterController();
+      DynamicCharacterController(class PhysicsWorld* pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
+
+      virtual ~DynamicCharacterController();
+
+      virtual void CompleteRigidBodyConstruction() override;
+
+      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry) override;
+
+      virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
       // Acceleration vector in XZ plane
       void Walk(const glm::vec2& dir);
@@ -62,11 +67,10 @@ namespace Game
       // Ignores y
       void Walk(const glm::vec3& dir);
 
-      void Update();
-
       void Jump();
 
       btVector3 GetPosition() const;
+
       btVector3 GetVelocity() const;
 
       bool IsOnGround() const;

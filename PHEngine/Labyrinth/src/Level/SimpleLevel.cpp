@@ -33,9 +33,10 @@
 
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
-#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 
 #include <glm/vec3.hpp>
 
@@ -44,6 +45,7 @@
 #include <LogInterface.h>
 
 using namespace Graphics;
+using namespace EnginePhysics;
 
 namespace Labyrinth
 {
@@ -78,8 +80,7 @@ namespace Labyrinth
             cubeActor->AddComponent(component);
 
             PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.5f));
-
-            PhysicsDescriptor* cubePhysDesc = new PhysicsDescriptor(shape, 25.0f);
+            PhysicsDescriptor* cubePhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 25.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
             cubeActor->AddComponent(cubePhysComponent);
@@ -149,7 +150,7 @@ namespace Labyrinth
          groundActor->AddComponent(floorComponent);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(50, 1 , 50));
-         PhysicsDescriptor* floorPhysDesc = new PhysicsDescriptor(shape, 0.0f);
+         PhysicsDescriptor* floorPhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 0.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
@@ -176,7 +177,7 @@ namespace Labyrinth
          groundActor->AddComponent(floorComponent);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(8, 1, 8));
-         PhysicsDescriptor* floorPhysDesc = new PhysicsDescriptor(shape, 0.0f);
+         PhysicsDescriptor* floorPhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 0.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
@@ -206,7 +207,7 @@ namespace Labyrinth
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(6, 6.5f, 6));
 
-         PhysicsDescriptor* housePhysDesc = new PhysicsDescriptor(shape, 125.0f);
+         PhysicsDescriptor* housePhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 125.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(housePhysDesc);
          std::shared_ptr<PhysicsComponent> housePhysComponent = std::make_shared<PhysicsComponent>(housePhysDesc);
          houseActor->AddComponent(housePhysComponent);
@@ -240,16 +241,11 @@ namespace Labyrinth
 
          mScene->m_playerController.SetPlayerActor(skeletActor);
 
-         //PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.0, 2.5, 1));
-         //PhysicsDescriptor* playerPhysDesc = new PhysicsDescriptor(shape, 15.0f, MotionModifiers(btVector3(1, 1, 1), btVector3(0, 0, 0)));
-         //mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         //std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
+         PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
+         mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
+         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
 
-         std::shared_ptr<CharacterPhysicsComponent> charPhysComp = std::make_shared<CharacterPhysicsComponent>(mScene->mPhysicsWorld->mWorld, glm::vec3(10, 50, 10));
-         skeletActor->CharPhysicsComponent = charPhysComp;
-         charPhysComp->SetOwner(skeletActor.get());
-
-         //skeletActor->AddComponent(playerPhysComponent);
+         skeletActor->AddComponent(playerPhysComponent);
 
         /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
          skeletActor->AddComponent(debugRenderPhysComp);*/

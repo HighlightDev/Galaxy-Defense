@@ -9,7 +9,7 @@
 
 using namespace Converter;
 
-namespace Game {
+namespace EnginePhysics {
 
    class BulletDebugRenderer
       : public btIDebugDraw

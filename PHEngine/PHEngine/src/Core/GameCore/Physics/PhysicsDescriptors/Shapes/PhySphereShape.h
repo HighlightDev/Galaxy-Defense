@@ -2,7 +2,7 @@
 
 #include "PhyShapeBase.h"
 
-namespace Game
+namespace EnginePhysics
 {
 
    struct PhySphereShape

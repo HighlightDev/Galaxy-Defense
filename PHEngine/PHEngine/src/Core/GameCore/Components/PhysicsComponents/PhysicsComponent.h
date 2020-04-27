@@ -3,6 +3,8 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
+using namespace EnginePhysics;
+
 namespace Game {
 
    class PhysicsComponent 

@@ -28,8 +28,6 @@ namespace Game
       {
          actor->PostPhysicsInitialize();
       }
-
-      mPhysicsWorld->JoinPhysDescriptorsForSimulation();
    }
 
    void Scene::RemoveComponent_GameThread(std::shared_ptr<Component> component)

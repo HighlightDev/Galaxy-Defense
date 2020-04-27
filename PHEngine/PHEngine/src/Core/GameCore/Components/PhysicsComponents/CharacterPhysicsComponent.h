@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Core/GameCore/Components/Component.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/CharacterController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 
-namespace Game {
+namespace EnginePhysics {
 
    class CharacterPhysicsComponent
       : public Component

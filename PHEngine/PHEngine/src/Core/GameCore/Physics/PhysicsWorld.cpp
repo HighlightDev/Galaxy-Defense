@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace Game
+namespace EnginePhysics
 {
 
    PhysicsWorld::PhysicsWorld()
@@ -59,6 +59,11 @@ namespace Game
 #endif
    }
 
+   btDiscreteDynamicsWorld* PhysicsWorld::GetWorld() const
+   {
+      return mWorld;
+   }
+
    void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor* inDescriptor)
    {
       mPhysicsDescriptors.push_back(inDescriptor);
@@ -66,27 +71,10 @@ namespace Game
 
    void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor)
    {
-      mWorld->removeCollisionObject(descriptor->GetRigidBody());
-
       // !!! ATTENTION !!!
       // this is the only place,
       // where descriptor could be deleted.
       delete descriptor;
-   }
-
-   void PhysicsWorld::JoinPhysDescriptorsForSimulation()
-   {
-      for (int32_t i = 0; i < mPhysicsDescriptors.size(); ++i)
-      {
-         btRigidBody* body = mPhysicsDescriptors[i]->GetRigidBody();
-
-         if (body)
-         {
-            mWorld->addRigidBody(body);
-         }
-      }
-
-      mPhysicsDescriptors[0]->GetRigidBody()->setLinearVelocity(btVector3(-2.5f, 0, 0));
    }
 
    void PhysicsWorld::Tick(const float deltaTime)

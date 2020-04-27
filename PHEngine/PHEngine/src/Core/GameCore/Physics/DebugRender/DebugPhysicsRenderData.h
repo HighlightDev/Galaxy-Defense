@@ -3,11 +3,13 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
-namespace Game
+namespace EnginePhysics
 {
-   struct DebugPhysicsRenderData
+   class DebugPhysicsRenderData
    {
       std::vector<std::pair<glm::vec3, glm::vec3>> mDebugLines;
+
+   public:
 
       void AddLine(const glm::vec3& from, const glm::vec3& to) {
 

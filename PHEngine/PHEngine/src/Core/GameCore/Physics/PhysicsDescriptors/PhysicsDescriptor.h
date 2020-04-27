@@ -4,7 +4,7 @@
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
-namespace Game
+namespace EnginePhysics
 {
 
    struct MotionModifiers
@@ -17,13 +17,15 @@ namespace Game
       MotionModifiers(const btVector3& linearFactor, const btVector3& angularFactor);
    };
 
-   struct PhysicsDescriptor
+   class PhysicsDescriptor
    {
-   private:
+   protected:
 
       static size_t mTotalIds;
 
       size_t mCurrentId;
+
+      class PhysicsWorld* mPhysicsWorld;
 
       PhyShapeBase* mShape;
 
@@ -46,15 +48,19 @@ namespace Game
 
    public:
 
-      PhysicsDescriptor(PhyShapeBase* shape, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
+      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
-      ~PhysicsDescriptor();
+      virtual ~PhysicsDescriptor();
+
+      virtual void CompleteRigidBodyConstruction() = 0;
+
+      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry) = 0;
+
+      virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
 
       PhyShapeBase* GetShape() const;
 
       size_t GetId() const;
-
-      void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation);
 
       void SetLinearVelocity(const btVector3& velocity);
 
@@ -62,17 +68,10 @@ namespace Game
 
       btMotionState* GetMotionState() const;
 
-      void CompleteRigidBodyConstruction();
-
-      void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry);
-
       btVector3 GetTranslation() const;
 
       btQuaternion GetRotator() const;
 
-   private:
-
-      btTransform GetMotionWorldTransform() const;
    };
 
 }

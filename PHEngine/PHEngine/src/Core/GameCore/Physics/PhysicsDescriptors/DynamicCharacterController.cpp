@@ -1,11 +1,13 @@
-#include "CharacterController.h"
+#include "DynamicCharacterController.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
+#include "Shapes/PhyCapsuleShape.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 #include <glm/gtx/projection.hpp>
 
 #include <iostream>
 
-namespace Game
+namespace EnginePhysics
 {
 
    class IgnoreBodyAndGhostCast :
@@ -31,8 +33,13 @@ namespace Game
       }
    };
 
-   DynamicCharacterController::DynamicCharacterController(btDiscreteDynamicsWorld* pPhysicsWorld, const btVector3 spawnPos, float radius, float height, float mass, float stepHeight)
-      : m_pPhysicsWorld(pPhysicsWorld)
+   DynamicCharacterController::DynamicCharacterController(
+      PhysicsWorld* pPhysicsWorld
+      , float radius
+      , float height
+      , float mass
+      , float stepHeight)
+      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), mass)
       , m_bottomYOffset(height / 3.0f + radius)
       , m_bottomRoundedRegionYOffset((height + radius) / 3.0f)
       , m_deceleration(0.1f)
@@ -45,14 +52,25 @@ namespace Game
       , m_jumpRechargeTime(10.0f)
       , m_stepHeight(stepHeight)
    {
-      m_pCollisionShape = new btCapsuleShape(radius, height);
+   }
 
-      m_pMotionState = new btDefaultMotionState(btTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f).normalized(), spawnPos));
+   DynamicCharacterController::~DynamicCharacterController()
+   {
+      mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
+      mPhysicsWorld->GetWorld()->removeCollisionObject(m_pGhostObject);
 
-      btVector3 intertia;
-      m_pCollisionShape->calculateLocalInertia(mass, intertia);
+      delete m_pGhostObject;
+   }
 
-      btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mass, m_pMotionState, m_pCollisionShape, intertia);
+   void DynamicCharacterController::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
+   {
+      btTransform worldTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f), translation);
+      mMotionState->setWorldTransform(worldTransform);
+   }
+
+   void DynamicCharacterController::CompleteRigidBodyConstruction() 
+   {
+      btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
 
       // No friction, this is done manually
       rigidBodyCI.m_friction = 0.0f;
@@ -63,37 +81,51 @@ namespace Game
 
       rigidBodyCI.m_linearDamping = 0.0f;
 
-      m_pRigidBody = new btRigidBody(rigidBodyCI);
+      mRigidBody = new btRigidBody(rigidBodyCI);
 
       // Keep upright
-      m_pRigidBody->setAngularFactor(0.0f);
+      mRigidBody->setAngularFactor(0.0f);
 
       // No sleeping (or else setLinearVelocity won't work)
-      m_pRigidBody->setActivationState(DISABLE_DEACTIVATION);
+      mRigidBody->setActivationState(DISABLE_DEACTIVATION);
 
-      m_pPhysicsWorld->addRigidBody(m_pRigidBody);
+      mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
 
       // Ghost object that is synchronized with rigid body
       m_pGhostObject = new btPairCachingGhostObject();
 
-      m_pGhostObject->setCollisionShape(m_pCollisionShape);
+      m_pGhostObject->setCollisionShape(mShape->GetCollisionShape());
       m_pGhostObject->setUserPointer(this);
       m_pGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
-      m_pPhysicsWorld->addCollisionObject(m_pGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+      mPhysicsWorld->GetWorld()->addCollisionObject(m_pGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
    }
 
-   DynamicCharacterController::~DynamicCharacterController()
+   void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)
    {
-      m_pPhysicsWorld->removeRigidBody(m_pRigidBody);
-      m_pPhysicsWorld->removeCollisionObject(m_pGhostObject);
+      // Sync ghost with actually object
+      m_pGhostObject->setWorldTransform(mRigidBody->getWorldTransform());
+      //m_pGhostObject->getWorldTransform().getOrigin().setY(m_pGhostObject->getWorldTransform().getOrigin().getY() - 0.01f);
 
-      delete m_pCollisionShape;
-      delete m_pMotionState;
-      delete m_pRigidBody;
+      // Update transform
+      mMotionState->getWorldTransform(m_motionTransform);
 
-      delete m_pGhostObject;
+      m_onGround = false;
+
+      ParseGhostContacts();
+
+      UpdatePosition();
+      UpdateVelocity();
+
+      // Update jump timer
+      if (m_jumpRechargeTimer < m_jumpRechargeTime)
+         m_jumpRechargeTimer += timerMultiplier;
+
+
+      // todo: do this correct
+      bIsWorldTransformDiry = true;
+      mTranslation = GetPosition();
    }
 
    void DynamicCharacterController::Walk(const glm::vec2& dir)
@@ -115,28 +147,6 @@ namespace Game
       Walk(glm::vec2(dir.x, dir.z));
    }
 
-   void DynamicCharacterController::Update()
-   {
-      // Sync ghost with actually object
-      m_pGhostObject->setWorldTransform(m_pRigidBody->getWorldTransform());
-      //m_pGhostObject->getWorldTransform().getOrigin().setY(m_pGhostObject->getWorldTransform().getOrigin().getY() - 0.01f);
-
-      // Update transform
-      m_pMotionState->getWorldTransform(m_motionTransform);
-
-      m_onGround = false;
-
-      ParseGhostContacts();
-
-      UpdatePosition();
-      UpdateVelocity();
-
-      // Update jump timer
-      if (m_jumpRechargeTimer < m_jumpRechargeTime)
-         m_jumpRechargeTimer += timerMultiplier;
-
-   }
-
    void DynamicCharacterController::ParseGhostContacts()
    {
       btManifoldArray manifoldArray;
@@ -154,7 +164,7 @@ namespace Game
 
          const btBroadphasePair &pair = pairArray[i];
 
-         btBroadphasePair* collisionPair = m_pPhysicsWorld->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
+         btBroadphasePair* collisionPair = mPhysicsWorld->GetWorld()->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
 
          if (collisionPair == NULL)
             continue;
@@ -167,7 +177,7 @@ namespace Game
             btPersistentManifold* pManifold = manifoldArray[j];
 
             // Skip the rigid body the ghost monitors
-            if (pManifold->getBody0() == m_pRigidBody)
+            if (pManifold->getBody0() == mRigidBody)
                continue;
 
             for (int p = 0; p < pManifold->getNumContacts(); p++)
@@ -199,9 +209,9 @@ namespace Game
    void DynamicCharacterController::UpdateVelocity()
    {
       // Adjust only xz velocity
-      m_manualVelocity.setY(m_pRigidBody->getLinearVelocity().getY());
+      m_manualVelocity.setY(mRigidBody->getLinearVelocity().getY());
 
-      m_pRigidBody->setLinearVelocity(m_manualVelocity);
+      mRigidBody->setLinearVelocity(m_manualVelocity);
 
       // Decelerate
       m_manualVelocity -= m_manualVelocity * m_deceleration * timerMultiplier;
@@ -229,23 +239,23 @@ namespace Game
    void DynamicCharacterController::UpdatePosition()
    {
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_bottom(m_pRigidBody, m_pGhostObject);
+      IgnoreBodyAndGhostCast rayCallBack_bottom(mRigidBody, m_pGhostObject);
 
-      m_pPhysicsWorld->rayTest(m_pRigidBody->getWorldTransform().getOrigin(),
-         m_pRigidBody->getWorldTransform().getOrigin() - btVector3(0.0f, m_bottomYOffset + m_stepHeight, 0.0f), rayCallBack_bottom);
+      mPhysicsWorld->GetWorld()->rayTest(mRigidBody->getWorldTransform().getOrigin(),
+         mRigidBody->getWorldTransform().getOrigin() - btVector3(0.0f, m_bottomYOffset + m_stepHeight, 0.0f), rayCallBack_bottom);
 
       // Bump up if hit
       if (rayCallBack_bottom.hasHit())
       {
-         float previousY = m_pRigidBody->getWorldTransform().getOrigin().getY();
+         float previousY = mRigidBody->getWorldTransform().getOrigin().getY();
 
-         m_pRigidBody->getWorldTransform().getOrigin().setY(previousY + (m_bottomYOffset + m_stepHeight) * (1.0f - rayCallBack_bottom.m_closestHitFraction));
+         mRigidBody->getWorldTransform().getOrigin().setY(previousY + (m_bottomYOffset + m_stepHeight) * (1.0f - rayCallBack_bottom.m_closestHitFraction));
 
-         btVector3 vel(m_pRigidBody->getLinearVelocity());
+         btVector3 vel(mRigidBody->getLinearVelocity());
 
          vel.setY(0.0f);
 
-         m_pRigidBody->setLinearVelocity(vel);
+         mRigidBody->setLinearVelocity(vel);
 
          m_onGround = true;
       }
@@ -253,24 +263,24 @@ namespace Game
       float testOffset = 0.07f;
 
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_top(m_pRigidBody, m_pGhostObject);
+      IgnoreBodyAndGhostCast rayCallBack_top(mRigidBody, m_pGhostObject);
 
-      m_pPhysicsWorld->rayTest(m_pRigidBody->getWorldTransform().getOrigin(),
-         m_pRigidBody->getWorldTransform().getOrigin() + btVector3(0.0f, m_bottomYOffset + testOffset, 0.0f), rayCallBack_top);
+      mPhysicsWorld->GetWorld()->rayTest(mRigidBody->getWorldTransform().getOrigin(),
+         mRigidBody->getWorldTransform().getOrigin() + btVector3(0.0f, m_bottomYOffset + testOffset, 0.0f), rayCallBack_top);
 
       // Bump up if hit
       if (rayCallBack_top.hasHit())
       {
-         m_pRigidBody->getWorldTransform().setOrigin(m_previousPosition);
+         mRigidBody->getWorldTransform().setOrigin(m_previousPosition);
 
-         btVector3 vel(m_pRigidBody->getLinearVelocity());
+         btVector3 vel(mRigidBody->getLinearVelocity());
 
          vel.setY(0.0f);
 
-         m_pRigidBody->setLinearVelocity(vel);
+         mRigidBody->setLinearVelocity(vel);
       }
 
-      m_previousPosition = m_pRigidBody->getWorldTransform().getOrigin();
+      m_previousPosition = mRigidBody->getWorldTransform().getOrigin();
    }
 
    void DynamicCharacterController::Jump()
@@ -278,14 +288,14 @@ namespace Game
       if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
       {
          m_jumpRechargeTimer = 0.0f;
-         m_pRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
+         mRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
 
          // Move upwards slightly so velocity isn't immediately canceled when it detects it as on ground next frame
          const float jumpYOffset = 0.01f;
 
-         float previousY = m_pRigidBody->getWorldTransform().getOrigin().getY();
+         float previousY = mRigidBody->getWorldTransform().getOrigin().getY();
 
-         m_pRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
+         mRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
       }
    }
 
@@ -296,7 +306,7 @@ namespace Game
 
    btVector3 DynamicCharacterController::GetVelocity() const
    {
-      return m_pRigidBody->getLinearVelocity();
+      return mRigidBody->getLinearVelocity();
    }
 
    bool DynamicCharacterController::IsOnGround() const

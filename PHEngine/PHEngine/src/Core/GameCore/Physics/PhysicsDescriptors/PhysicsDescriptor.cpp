@@ -1,10 +1,10 @@
 #include "PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include <glm/gtx/matrix_decompose.hpp>
 
 using namespace EngineMath;
 
-namespace Game
+namespace EnginePhysics
 {
    MotionModifiers::MotionModifiers()
       : LinearFactor(btVector3(1.0f, 1.0f, 1.0f))
@@ -20,8 +20,9 @@ namespace Game
 
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhyShapeBase* shape, const float mass, const MotionModifiers& motionModifier)
-      : mCurrentId(PhysicsDescriptor::mTotalIds++)
+   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass, const MotionModifiers& motionModifier)
+      : mPhysicsWorld(pPhysicsWorld)
+      , mCurrentId(PhysicsDescriptor::mTotalIds++)
       , mShape(shape)
       , mMotionState(new btDefaultMotionState())
       , mMass(mass)
@@ -40,6 +41,8 @@ namespace Game
 
    PhysicsDescriptor::~PhysicsDescriptor()
    {
+      mPhysicsWorld->GetWorld()->removeCollisionObject(GetRigidBody());
+
       delete mShape;
       delete mMotionState;
       delete mRigidBody;
@@ -53,18 +56,6 @@ namespace Game
       return mCurrentId;
    }
 
-   void PhysicsDescriptor::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
-   {
-      btTransform worldTransform(quat, translation);
-      mMotionState->setWorldTransform(worldTransform);
-   }
-
-   btTransform PhysicsDescriptor::GetMotionWorldTransform() const {
-      btTransform resultTransform;
-      mMotionState->getWorldTransform(resultTransform);
-      return resultTransform;
-   }
-
    btRigidBody* PhysicsDescriptor::GetRigidBody() const
    {
       return mRigidBody;
@@ -75,25 +66,10 @@ namespace Game
       return mMotionState;
    }
 
-   void PhysicsDescriptor::CompleteRigidBodyConstruction()
-   {
-      btRigidBody::btRigidBodyConstructionInfo info(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
-      mRigidBody = new btRigidBody(info);
-
-      // apply motion modifiers
-      mRigidBody->setLinearFactor(mMotionModifier.LinearFactor);
-      mRigidBody->setAngularFactor(mMotionModifier.AngularFactor);
-   }
-
    void PhysicsDescriptor::SetLinearVelocity(const btVector3& velocity)
    {
       if (mRigidBody)
       {
-         if (!mRigidBody->isActive())
-         {
-            mRigidBody->activate();
-         }
-
          mRigidBody->setLinearVelocity(velocity);
       }
    }

@@ -13,6 +13,7 @@
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/CommonCore/FolderManager.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Scene.h"
 
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
