@@ -22,5 +22,7 @@ namespace EngineMath
 #define RAD_TO_DEG(X) (glm::degrees<float>(X))
 
 
+#define ENGINE_FLOAT_EPSILON 0.01f
+
    bool CompareFloats(const float X, const float Y);
 }

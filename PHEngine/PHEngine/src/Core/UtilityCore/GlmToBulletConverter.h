@@ -13,4 +13,6 @@ namespace Converter
    glm::vec3 bulletToGlm(const btVector3& vec);
 
    btVector3 glmToBullet(const glm::vec3& vec);
+
+   bool isEqual(const btTransform& left, const btTransform& right);
 }

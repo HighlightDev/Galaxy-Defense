@@ -12,6 +12,8 @@
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 
+using namespace EnginePhysics;
+
 namespace Game
 {
 

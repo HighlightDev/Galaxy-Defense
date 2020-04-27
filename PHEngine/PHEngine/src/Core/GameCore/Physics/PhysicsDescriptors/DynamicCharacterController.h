@@ -45,6 +45,7 @@ namespace EnginePhysics
       void UpdateVelocity();
 
    public:
+
       float m_deceleration;
       float m_maxSpeed;
       float m_jumpImpulse;
@@ -68,10 +69,6 @@ namespace EnginePhysics
       void Walk(const glm::vec3& dir);
 
       void Jump();
-
-      btVector3 GetPosition() const;
-
-      btVector3 GetVelocity() const;
 
       bool IsOnGround() const;
    };

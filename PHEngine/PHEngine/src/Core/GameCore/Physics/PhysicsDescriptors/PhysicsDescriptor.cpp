@@ -30,6 +30,7 @@ namespace EnginePhysics
       , mRigidBody(nullptr)
       , mRotator()
       , mTranslation()
+      , mVelocity()
       , mPrevTransform()
       , mMotionModifier(motionModifier)
    {
@@ -74,23 +75,6 @@ namespace EnginePhysics
       }
    }
 
-   void PhysicsDescriptor::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)
-   {
-      btTransform transform;
-      mMotionState->getWorldTransform(transform);
-
-      bIsWorldTransformDiry = false;
-
-      if (!(mPrevTransform == transform))
-      {
-         mPrevTransform = transform;
-         bIsWorldTransformDiry = true;
-
-         mRotator = transform.getRotation();
-         mTranslation = transform.getOrigin();
-      }
-   }
-
    btQuaternion PhysicsDescriptor::GetRotator()  const
    {
       return mRotator;
@@ -99,5 +83,10 @@ namespace EnginePhysics
    btVector3 PhysicsDescriptor::GetTranslation() const
    {
       return mTranslation;
+   }
+
+   btVector3 PhysicsDescriptor::GetVelocity() const {
+
+      return mVelocity;
    }
 }

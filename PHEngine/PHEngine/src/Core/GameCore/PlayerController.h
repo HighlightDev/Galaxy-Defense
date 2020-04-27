@@ -2,8 +2,10 @@
 
 #include "Actor.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 
 using namespace Event;
+using namespace EnginePhysics;
 
 namespace Game
 {
@@ -15,6 +17,8 @@ namespace Game
       using Base = Actor;
 
       std::shared_ptr<Actor> m_playerActor;
+
+      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
 

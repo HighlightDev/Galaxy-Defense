@@ -387,15 +387,12 @@
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
     <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h" />
-    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyPlaneShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhySphereShape.h" />
-    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
@@ -407,7 +404,6 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterial.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\CubemapRenderData.h" />
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\PhyShapeDebugRenderData.h" />
     <ClInclude Include="src\Core\IoCore\FileFacade.h" />
     <ClInclude Include="src\Core\GameCore\Level.h" />
     <ClInclude Include="src\Core\CommonCore\CommonMeta.h" />
@@ -823,12 +819,10 @@
     <ClCompile Include="src\Core\GameCore\Components\Transform.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />

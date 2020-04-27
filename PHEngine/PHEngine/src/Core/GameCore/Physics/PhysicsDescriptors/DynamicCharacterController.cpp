@@ -2,10 +2,13 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/UtilityCore/GlmToBulletConverter.h"
 
 #include <glm/gtx/projection.hpp>
 
 #include <iostream>
+
+using namespace Converter;
 
 namespace EnginePhysics
 {
@@ -106,8 +109,6 @@ namespace EnginePhysics
    {
       // Sync ghost with actually object
       m_pGhostObject->setWorldTransform(mRigidBody->getWorldTransform());
-      //m_pGhostObject->getWorldTransform().getOrigin().setY(m_pGhostObject->getWorldTransform().getOrigin().getY() - 0.01f);
-
       // Update transform
       mMotionState->getWorldTransform(m_motionTransform);
 
@@ -122,10 +123,13 @@ namespace EnginePhysics
       if (m_jumpRechargeTimer < m_jumpRechargeTime)
          m_jumpRechargeTimer += timerMultiplier;
 
-
-      // todo: do this correct
-      bIsWorldTransformDiry = true;
-      mTranslation = GetPosition();
+      if (bIsWorldTransformDiry = !(isEqual(m_motionTransform, mPrevTransform)))
+      {
+         // Update data
+         mPrevTransform = m_motionTransform;
+         mTranslation = m_motionTransform.getOrigin();
+         mVelocity = mRigidBody->getLinearVelocity();
+      }
    }
 
    void DynamicCharacterController::Walk(const glm::vec2& dir)
@@ -297,16 +301,6 @@ namespace EnginePhysics
 
          mRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
       }
-   }
-
-   btVector3 DynamicCharacterController::GetPosition() const
-   {
-      return m_motionTransform.getOrigin();
-   }
-
-   btVector3 DynamicCharacterController::GetVelocity() const
-   {
-      return mRigidBody->getLinearVelocity();
    }
 
    bool DynamicCharacterController::IsOnGround() const

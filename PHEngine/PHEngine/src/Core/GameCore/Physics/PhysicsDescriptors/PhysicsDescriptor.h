@@ -42,6 +42,8 @@ namespace EnginePhysics
 
       btVector3 mTranslation;
 
+      btVector3 mVelocity;
+
       btTransform mPrevTransform;
       
       MotionModifiers mMotionModifier;
@@ -71,6 +73,8 @@ namespace EnginePhysics
       btVector3 GetTranslation() const;
 
       btQuaternion GetRotator() const;
+
+      btVector3 GetVelocity() const;
 
    };
 

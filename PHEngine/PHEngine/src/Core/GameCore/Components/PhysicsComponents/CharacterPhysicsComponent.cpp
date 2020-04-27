@@ -1,9 +1,10 @@
-#include "PhysicsComponent.h"
-#include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
-#include "Core/UtilityCore/EngineMath.h"
-#include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
+#include "Core/GameCore/Actor.h"
+
+#include "Core/UtilityCore/GlmToBulletConverter.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include "CharacterPhysicsComponent.h"
 
@@ -11,10 +12,11 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   CharacterPhysicsComponent::CharacterPhysicsComponent(btDiscreteDynamicsWorld* dynamicWorld, const glm::vec3& spawnPos)
-      : characterController(new DynamicCharacterController(nullptr, 1, 2.5, 10, 1.0f))
-      , bIsTransformationDirty(true)
+   CharacterPhysicsComponent::CharacterPhysicsComponent(PhysicsDescriptor* descriptor)
+      : PhysicsComponent(descriptor)
+      , characterController(static_cast<DynamicCharacterController*>(descriptor))
    {
+      assert(characterController);
    }
 
    CharacterPhysicsComponent::~CharacterPhysicsComponent()
@@ -23,34 +25,16 @@ namespace EnginePhysics
 
    void CharacterPhysicsComponent::Tick(const float deltaTime)
    {
-      bool bIsDirty = true;
+      characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty);
 
-      bIsTransformationDirty = bIsDirty;
-
-      TickCharacterControllerPhysics();
-
-      if (bIsDirty)
+      if (bIsTransformationDirty)
       {
          const Actor* owner = GetOwner();
 
-         owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetPosition()));
+         owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
 
          Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, owner->GetName());
       }
-   }
-
-   bool CharacterPhysicsComponent::IsTransformDirty() const
-   {
-      return bIsTransformationDirty;
-   }
-
-   void CharacterPhysicsComponent::PostPhysicsInit()
-   {
-   }
-
-   uint64_t CharacterPhysicsComponent::GetComponentType() const
-   {
-      return PHYSICS_COMPONENT;
    }
 
    void CharacterPhysicsComponent::SetWalkVelocity(const  glm::vec3& velocity)
@@ -72,11 +56,5 @@ namespace EnginePhysics
    void CharacterPhysicsComponent::SetJumpVelocity()
    {
       characterController->Jump();
-   }
-
-   void CharacterPhysicsComponent::TickCharacterControllerPhysics()
-   {
-      bool update;
-      characterController->UpdateMotionWorldTransformLocalState(update);
    }
 }

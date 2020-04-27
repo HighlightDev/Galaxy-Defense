@@ -7,7 +7,6 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/PhysicsShapeDebugRenderComponent.h"
 
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
@@ -85,9 +84,6 @@ namespace Labyrinth
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
             cubeActor->AddComponent(cubePhysComponent);
 
-           /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-            cubeActor->AddComponent(debugRenderPhysComp);*/
-
             mScene->AllActors.push_back(cubeActor);
          }
       }
@@ -155,10 +151,7 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
          groundActor->AddComponent(floorPhysComponent);
-
-     /*    auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         groundActor->AddComponent(debugRenderPhysComp);*/
-
+   
          mScene->AllActors.push_back(groundActor);
       }
 
@@ -182,10 +175,7 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
          groundActor->AddComponent(floorPhysComponent);
-
-        /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         groundActor->AddComponent(debugRenderPhysComp);*/
-
+     
          mScene->AllActors.push_back(groundActor);
       }
 
@@ -212,9 +202,6 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> housePhysComponent = std::make_shared<PhysicsComponent>(housePhysDesc);
          houseActor->AddComponent(housePhysComponent);
 
-       /*  auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         houseActor->AddComponent(debugRenderPhysComp);*/
-
          mScene->AllActors.push_back(houseActor);
       }
 
@@ -239,16 +226,13 @@ namespace Labyrinth
          auto movementComp = mScene->CreateComponent_GameThread<MovementComponent>(movementComponentData);
          skeletActor->AddComponent(movementComp);
 
-         mScene->m_playerController.SetPlayerActor(skeletActor);
-
          PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<PhysicsComponent>(playerPhysDesc); 
+         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<CharacterPhysicsComponent>(playerPhysDesc);
 
          skeletActor->AddComponent(playerPhysComponent);
 
-        /* auto debugRenderPhysComp = mScene->CreateComponent_GameThread<PhysicsShapeDebugRenderComponent>(PhyShapeDebugComponentData(shape));
-         skeletActor->AddComponent(debugRenderPhysComp);*/
+         mScene->m_playerController.SetPlayerActor(skeletActor);
 
          mScene->AllActors.push_back(skeletActor);
 

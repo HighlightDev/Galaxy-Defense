@@ -7,7 +7,7 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EnginePhysics
 {
    PhysicsComponent::PhysicsComponent(PhysicsDescriptor* descriptor)
       : mDescriptor(descriptor)

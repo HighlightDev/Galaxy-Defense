@@ -358,6 +358,8 @@ namespace Graphics
 #if DEBUG
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
+         // todo: delete this crap and use buffers =\
+
          const auto& physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();
          if (physicsRenderData.size())
          {
@@ -375,13 +377,11 @@ namespace Graphics
             for (int i = 0; i < 16; ++i)
                projMatrix[i] = pSource[i];
 
-
             glMatrixMode(GL_PROJECTION);
             glLoadMatrixf(projMatrix);
-            
 
             glBegin(GL_LINES);
-            for (int32_t i = 0; i < physicsRenderData.size(); ++i)
+            for (size_t i = 0; i < physicsRenderData.size(); ++i)
             {
                glm::vec3 vert1 = physicsRenderData[i].first;
                glm::vec3 vert2 = physicsRenderData[i].second;

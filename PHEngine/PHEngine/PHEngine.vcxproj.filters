@@ -1753,19 +1753,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\RenderData\CubemapRenderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\PhyShapeDebugRenderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DefaultRenderShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h">
@@ -2179,12 +2167,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\PhysicsShapeDebugRenderComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PhysicsShapeDebugRenderSceneProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp">

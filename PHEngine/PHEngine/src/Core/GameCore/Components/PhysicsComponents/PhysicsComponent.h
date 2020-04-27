@@ -3,13 +3,15 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
-using namespace EnginePhysics;
+using namespace Game;
 
-namespace Game {
+namespace EnginePhysics {
 
    class PhysicsComponent 
       : public Component
    {
+   protected:
+
       PhysicsDescriptor* mDescriptor;
       
       bool bIsTransformationDirty;

@@ -14,7 +14,6 @@
 #include "PrimitiveComponents/WaterPlaneComponent.h"
 #include "PrimitiveComponents/BillboardComponent.h"
 #include "PrimitiveComponents/CubemapComponent.h"
-#include "PrimitiveComponents/PhysicsShapeDebugRenderComponent.h"
 
 #include "ComponentData/ComponentData.h"
 #include "ComponentData/SkyboxComponentData.h"
@@ -41,7 +40,6 @@
 #include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/DefaultRenderShader.h"
 
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
@@ -289,116 +287,4 @@ namespace Game
          return resultComponent;
       }
    };
-
-#if DEBUG
-
-   template<>
-   struct ComponentCreatorFactory<PhysicsShapeDebugRenderComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
-      {
-         std::shared_ptr<Component> resultComponent;
-
-         {
-            const PhyShapeDebugComponentData& mData = static_cast<const PhyShapeDebugComponentData&>(data);
-
-            btCollisionShape* shape = mData.mShape->GetCollisionShape();
-
-            int32_t shapeType = shape->getShapeType();
-
-            std::vector<float> vertices;
-
-            if (BOX_SHAPE_PROXYTYPE == shapeType)
-            {
-               btBoxShape* boxShape = static_cast<btBoxShape*>(shape);
-               auto halfExtent = boxShape->getHalfExtentsWithoutMargin();
-
-               vertices = std::vector<float>({
-                  // back face
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-left
-                   halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-right
-                   halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-right         
-                   halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-right
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-left
-                  -halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-left
-                  // front face
-                  -halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-left
-                   halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-right
-                   halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-right
-                   halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-right
-                  -halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-left
-                  -halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-left
-                  // left face
-                  -halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-right
-                  -halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-left
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-left
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-left
-                  -halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-right
-                  -halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-right
-                  // right face                 
-                   halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-left
-                   halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-right
-                   halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-right         
-                   halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // bottom-right
-                   halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // top-left
-                   halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-left     
-                  // bottom face                
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // top-right
-                   halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // top-left
-                   halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-left
-                   halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-left
-                  -halfExtent.getX(), -halfExtent.getY(),  halfExtent.getZ(), // bottom-right
-                  -halfExtent.getX(), -halfExtent.getY(), -halfExtent.getZ(), // top-right
-                  // top face                   
-                  -halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-left
-                   halfExtent.getX(),  halfExtent.getY() , halfExtent.getZ(), // bottom-right
-                   halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-right     
-                   halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ(), // bottom-right
-                  -halfExtent.getX(),  halfExtent.getY(), -halfExtent.getZ(), // top-left
-                  -halfExtent.getX(),  halfExtent.getY(),  halfExtent.getZ() // bottom-left        
-                  });
-
-            }
-            else if (STATIC_PLANE_PROXYTYPE == shapeType)
-            {
-               btStaticPlaneShape* planeShape = static_cast<btStaticPlaneShape*>(shape);
-               auto normal = planeShape->getPlaneNormal();
-               auto d = planeShape->getPlaneConstant();
-
-               vertices = std::vector<float>({
-                -1000.0f, 0.0f, -1000.0f, // top-right
-                1000.0f, 0.0f, -1000.0f, // top-left
-                1000.0f, 0.0f, 1000.0f, // bottom-left
-                1000.0f, 0.0f, 1000.0f, // bottom-left
-                -1000.0f, 0.0f, 1000.0f, // bottom-right
-                -1000.0f, 0.0f, -1000.0f, // top-right
-                  });
-            }
-
-            VertexBufferObjectBase* vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
-
-            vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
-
-            VertexArrayObject vao;
-            vao.AddVBO(vertexVBO, normalVBO, texCoordsVBO);
-
-            vao.BindBuffersToVao();
-
-            std::shared_ptr<Skin> skin = std::make_shared<Skin>(vao);
-
-            ShaderParams shaderParams("ShaderParams default render shader", FolderManager::GetInstance()->GetShadersPath() + "defaultRenderVS.glsl",
-               FolderManager::GetInstance()->GetShadersPath() + "defaultRenderFS.glsl");
-
-            ShaderPool::sharedValue_t shader = ShaderPool::GetInstance()->template GetOrAllocateResource<DefaultRenderShader>(shaderParams);
-
-            PhyShapeDebugRenderData renderData(skin, shader);
-
-            resultComponent = std::make_shared<PhysicsShapeDebugRenderComponent>(renderData);
-         }
-
-         return resultComponent;
-      }
-   };
-
-#endif
 }

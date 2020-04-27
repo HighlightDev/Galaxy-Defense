@@ -1,4 +1,7 @@
 #include "GlmToBulletConverter.h"
+#include "Core/UtilityCore/EngineMath.h"
+
+using namespace EngineMath;
 
 namespace Converter
 {
@@ -18,5 +21,22 @@ namespace Converter
 
    btVector3 glmToBullet(const glm::vec3& vec) {
       return btVector3(vec.x, vec.y, vec.z);
+   }
+
+   bool isEqual(const btTransform& left, const btTransform& right)
+   {
+      const btVector3& originL = left.getOrigin();
+      const btQuaternion& basisL = left.getRotation();
+      const btVector3& originR = right.getOrigin();
+      const btQuaternion& basisR = right.getRotation();
+
+      return (
+         CompareFloats(originL.getX(), originR.getX()) &&
+         CompareFloats(originL.getY(), originR.getY()) &&
+         CompareFloats(originL.getZ(), originR.getZ()) &&
+         CompareFloats(basisL.getX(), basisR.getX()) &&
+         CompareFloats(basisL.getY(), basisR.getY()) &&
+         CompareFloats(basisL.getZ(), basisR.getZ()) &&
+         CompareFloats(basisL.getW(), basisR.getW()));
    }
 }

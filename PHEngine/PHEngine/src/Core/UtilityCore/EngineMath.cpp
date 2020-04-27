@@ -6,7 +6,7 @@ namespace EngineMath
    {
       const float absX = std::abs(X);
       const float absY = std::abs(Y);
-      const bool bResult = std::abs(absX - absY) <= FLT_EPSILON;
+      const bool bResult = std::abs(absX - absY) <= ENGINE_FLOAT_EPSILON;
       return bResult;
    }
 }

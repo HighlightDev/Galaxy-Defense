@@ -35,15 +35,13 @@ namespace EnginePhysics
       btTransform transform;
       mMotionState->getWorldTransform(transform);
 
-      bIsWorldTransformDiry = false;
-
-      if (!(mPrevTransform == transform))
+      if (bIsWorldTransformDiry = !(isEqual(transform, mPrevTransform)))
       {
          mPrevTransform = transform;
-         bIsWorldTransformDiry = true;
 
          mRotator = transform.getRotation();
          mTranslation = transform.getOrigin();
+         mVelocity = mRigidBody->getLinearVelocity();
       }
    }
 }

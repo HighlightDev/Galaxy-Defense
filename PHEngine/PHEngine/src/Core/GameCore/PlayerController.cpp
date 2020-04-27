@@ -3,6 +3,7 @@
 #include "COre/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <tuple>
 
@@ -10,6 +11,7 @@ namespace Game
 {
 
    PlayerController::PlayerController()
+      : m_playerPhysicsComponent()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
    }
@@ -22,11 +24,14 @@ namespace Game
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
    {
       m_playerActor = playerActor;
+      m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(m_playerActor->GetPhysicsComponent());
 
-      if (auto rootComponent = m_playerActor->GetBaseRootComponent())
-      {
-         PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
-      }
+      const auto& rootComponent = m_playerActor->GetBaseRootComponent();
+
+      assert(rootComponent);
+      assert(m_playerPhysicsComponent);
+
+      PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
    void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
@@ -64,10 +69,7 @@ namespace Game
          {
             if (bindings.GetKeyState(Keys::W))
             {
-               /*if (auto physComponent = m_playerActor->CharPhysicsComponent)
-               {
-                  physComponent->SetWalkVelocity(movementComponent->Velocity);
-               }*/
+               m_playerPhysicsComponent->SetWalkVelocity(movementComponent->Velocity);
             }
             else if (bindings.GetKeyState(Keys::A))
             {
@@ -77,20 +79,11 @@ namespace Game
             }
             else if (bindings.GetKeyState(Keys::S))
             {
-              /* if (auto physComponent = m_playerActor->GetPhysicsComponent())
-               {
-                  glm::vec3 offset = movementComponent->GetMoveOffset();
-                  physComponent->GetDescriptor()->SetLinearVelocity(btVector3(offset.x / 50.0f, 0, offset.z / 50.0f));
-               }
-*/
             }
 
             if (bindings.GetKeyState(Keys::Space))
             {
-             /*  if (auto physComponent = m_playerActor->CharPhysicsComponent)
-               {
-                  physComponent->SetJumpVelocity();
-               }*/
+               m_playerPhysicsComponent->SetJumpVelocity();
             }
          }
    
