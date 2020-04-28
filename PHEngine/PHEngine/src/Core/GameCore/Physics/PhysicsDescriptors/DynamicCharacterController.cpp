@@ -18,18 +18,18 @@ namespace EnginePhysics
    {
    private:
       btRigidBody* m_pBody;
-      btPairCachingGhostObject* m_pGhostObject;
+      btPairCachingGhostObject* mGhostObject;
 
    public:
       IgnoreBodyAndGhostCast(btRigidBody* pBody, btPairCachingGhostObject* pGhostObject)
          : btCollisionWorld::ClosestRayResultCallback(btVector3(0.0, 0.0, 0.0), btVector3(0.0, 0.0, 0.0)),
-         m_pBody(pBody), m_pGhostObject(pGhostObject)
+         m_pBody(pBody), mGhostObject(pGhostObject)
       {
       }
 
       btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace)
       {
-         if (rayResult.m_collisionObject == m_pBody || rayResult.m_collisionObject == m_pGhostObject)
+         if (rayResult.m_collisionObject == m_pBody || rayResult.m_collisionObject == mGhostObject)
             return 1.0f;
 
          return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
@@ -37,32 +37,33 @@ namespace EnginePhysics
    };
 
    DynamicCharacterController::DynamicCharacterController(
-      PhysicsWorld* pPhysicsWorld
-      , float radius
-      , float height
-      , float mass
-      , float stepHeight)
+      PhysicsWorld* pPhysicsWorld, float radius, float height, float mass, float stepHeight)
       : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), mass)
-      , m_bottomYOffset(height / 3.0f + radius)
-      , m_bottomRoundedRegionYOffset((height + radius) / 3.0f)
-      , m_deceleration(0.1f)
-      , m_maxSpeed(15.0f)
-      , m_jumpImpulse(150)
-      , m_manualVelocity(0.0f, 0.0f, 0.0f)
-      , m_onGround(false)
-      , m_hittingWall(false)
-      , m_jumpRechargeTimer(0.0f)
-      , m_jumpRechargeTime(10.0f)
-      , m_stepHeight(stepHeight)
+      , mGhostObject(nullptr)
+      , mOnGround(false)
+      , mHittingWall(false)
+      , mDeceleration(0.1f)
+      , mMaxSpeed(15.0f)
+      , mJumpImpulse(150)
+      , mJumpRechargeTime(10.0f)
+      , mJumpRechargeTimer(0.0f)
+      , mBottomYOffset(height / 3.0f + radius)
+      , mBottomRoundedRegionYOffset((height + radius) / 3.0f)
+      , mStepHeight(stepHeight)
+      , mTimerMultiplier(0.0f)
+      , mMotionTransform()
+      , mPreviousPosition()
+      , mManualVelocity(0.0f, 0.0f, 0.0f)
+      , mSurfaceHitNormals()
    {
    }
 
    DynamicCharacterController::~DynamicCharacterController()
    {
       mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
-      mPhysicsWorld->GetWorld()->removeCollisionObject(m_pGhostObject);
+      mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
 
-      delete m_pGhostObject;
+      delete mGhostObject;
    }
 
    void DynamicCharacterController::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
@@ -95,24 +96,26 @@ namespace EnginePhysics
       mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
 
       // Ghost object that is synchronized with rigid body
-      m_pGhostObject = new btPairCachingGhostObject();
+      mGhostObject = new btPairCachingGhostObject();
 
-      m_pGhostObject->setCollisionShape(mShape->GetCollisionShape());
-      m_pGhostObject->setUserPointer(this);
-      m_pGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+      mGhostObject->setCollisionShape(mShape->GetCollisionShape());
+      mGhostObject->setUserPointer(this);
+      mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
-      mPhysicsWorld->GetWorld()->addCollisionObject(m_pGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
+      mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
    }
 
-   void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)
+   void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
    {
-      // Sync ghost with actually object
-      m_pGhostObject->setWorldTransform(mRigidBody->getWorldTransform());
-      // Update transform
-      mMotionState->getWorldTransform(m_motionTransform);
+      mTimerMultiplier = deltaTime * 1000; // from ms to sec
 
-      m_onGround = false;
+      // Sync ghost with actually object
+      mGhostObject->setWorldTransform(mRigidBody->getWorldTransform());
+      // Update transform
+      mMotionState->getWorldTransform(mMotionTransform);
+
+      mOnGround = false;
 
       ParseGhostContacts();
 
@@ -120,30 +123,30 @@ namespace EnginePhysics
       UpdateVelocity();
 
       // Update jump timer
-      if (m_jumpRechargeTimer < m_jumpRechargeTime)
-         m_jumpRechargeTimer += timerMultiplier;
+      if (mJumpRechargeTimer < mJumpRechargeTime)
+         mJumpRechargeTimer += mTimerMultiplier;
 
-      if (bIsWorldTransformDiry = !(isEqual(m_motionTransform, mPrevTransform)))
+      if (bIsWorldTransformDiry = !(isEqual(mMotionTransform, mPrevTransform)))
       {
          // Update data
-         mPrevTransform = m_motionTransform;
-         mTranslation = m_motionTransform.getOrigin();
+         mPrevTransform = mMotionTransform;
+         mTranslation = mMotionTransform.getOrigin();
          mVelocity = mRigidBody->getLinearVelocity();
       }
    }
 
    void DynamicCharacterController::Walk(const glm::vec2& dir)
    {
-      glm::vec2 velocityXZ(dir + glm::vec2(m_manualVelocity.getX(), m_manualVelocity.getZ()));
+      glm::vec2 velocityXZ(dir + glm::vec2(mManualVelocity.getX(), mManualVelocity.getZ()));
 
       // Prevent from going over maximum speed
       float speedXZ = glm::length(velocityXZ);
 
-      if (speedXZ > m_maxSpeed)
-         velocityXZ = velocityXZ / speedXZ * m_maxSpeed;
+      if (speedXZ > mMaxSpeed)
+         velocityXZ = velocityXZ / speedXZ * mMaxSpeed;
 
-      m_manualVelocity.setX(velocityXZ.x);
-      m_manualVelocity.setZ(velocityXZ.y);
+      mManualVelocity.setX(velocityXZ.x);
+      mManualVelocity.setZ(velocityXZ.y);
    }
 
    void DynamicCharacterController::Walk(const glm::vec3& dir)
@@ -154,13 +157,13 @@ namespace EnginePhysics
    void DynamicCharacterController::ParseGhostContacts()
    {
       btManifoldArray manifoldArray;
-      btBroadphasePairArray &pairArray = m_pGhostObject->getOverlappingPairCache()->getOverlappingPairArray();
+      btBroadphasePairArray &pairArray = mGhostObject->getOverlappingPairCache()->getOverlappingPairArray();
       int numPairs = pairArray.size();
 
       // Set false now, may be set true in test
-      m_hittingWall = false;
+      mHittingWall = false;
 
-      m_surfaceHitNormals.clear();
+      mSurfaceHitNormals.clear();
 
       for (int i = 0; i < numPairs; i++)
       {
@@ -196,13 +199,13 @@ namespace EnginePhysics
                   //const btVector3 &normalOnB = point.m_normalWorldOnB;
 
                   // If point is in rounded bottom region of capsule shape, it is on the ground
-                  if (ptB.getY() < m_motionTransform.getOrigin().getY() - m_bottomRoundedRegionYOffset)
-                     m_onGround = true;
+                  if (ptB.getY() < mMotionTransform.getOrigin().getY() - mBottomRoundedRegionYOffset)
+                     mOnGround = true;
                   else
                   {
-                     m_hittingWall = true;
+                     mHittingWall = true;
 
-                     m_surfaceHitNormals.push_back(point.m_normalWorldOnB);
+                     mSurfaceHitNormals.push_back(point.m_normalWorldOnB);
                   }
                }
             }
@@ -213,26 +216,26 @@ namespace EnginePhysics
    void DynamicCharacterController::UpdateVelocity()
    {
       // Adjust only xz velocity
-      m_manualVelocity.setY(mRigidBody->getLinearVelocity().getY());
+      mManualVelocity.setY(mRigidBody->getLinearVelocity().getY());
 
-      mRigidBody->setLinearVelocity(m_manualVelocity);
+      mRigidBody->setLinearVelocity(mManualVelocity);
 
       // Decelerate
-      m_manualVelocity -= m_manualVelocity * m_deceleration * timerMultiplier;
+      mManualVelocity -= mManualVelocity * mDeceleration * mTimerMultiplier;
 
-      if (m_hittingWall)
+      if (mHittingWall)
       {
-         for (unsigned int i = 0, size = m_surfaceHitNormals.size(); i < size; i++)
+         for (unsigned int i = 0, size = mSurfaceHitNormals.size(); i < size; i++)
          {
             // Cancel velocity across normal
-            glm::vec3 surfaceNormal = Converter::bulletToGlm(m_surfaceHitNormals[i]);
-            glm::vec3 velocity = Converter::bulletToGlm(m_manualVelocity);
+            glm::vec3 surfaceNormal = Converter::bulletToGlm(mSurfaceHitNormals[i]);
+            glm::vec3 velocity = Converter::bulletToGlm(mManualVelocity);
             glm::vec3 projection = glm::proj(velocity, surfaceNormal);
 
             btVector3 velInNormalDir(Converter::glmToBullet(projection));
 
             // Apply correction
-            m_manualVelocity -= velInNormalDir * 1.05f;
+            mManualVelocity -= velInNormalDir * 1.05f;
          }
 
          // Do not adjust rigid body velocity manually (so bodies can still be pushed by character)
@@ -243,17 +246,19 @@ namespace EnginePhysics
    void DynamicCharacterController::UpdatePosition()
    {
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_bottom(mRigidBody, m_pGhostObject);
+      IgnoreBodyAndGhostCast rayCallBack_bottom(mRigidBody, mGhostObject);
 
-      mPhysicsWorld->GetWorld()->rayTest(mRigidBody->getWorldTransform().getOrigin(),
-         mRigidBody->getWorldTransform().getOrigin() - btVector3(0.0f, m_bottomYOffset + m_stepHeight, 0.0f), rayCallBack_bottom);
+      auto& worldTransform = mRigidBody->getWorldTransform();
+
+      mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(),
+         worldTransform.getOrigin() - btVector3(0.0f, mBottomYOffset + mStepHeight, 0.0f), rayCallBack_bottom);
 
       // Bump up if hit
       if (rayCallBack_bottom.hasHit())
       {
-         float previousY = mRigidBody->getWorldTransform().getOrigin().getY();
+         float previousY = worldTransform.getOrigin().getY();
 
-         mRigidBody->getWorldTransform().getOrigin().setY(previousY + (m_bottomYOffset + m_stepHeight) * (1.0f - rayCallBack_bottom.m_closestHitFraction));
+         worldTransform.getOrigin().setY(previousY + (mBottomYOffset + mStepHeight) * (1.0f - rayCallBack_bottom.m_closestHitFraction));
 
          btVector3 vel(mRigidBody->getLinearVelocity());
 
@@ -261,21 +266,20 @@ namespace EnginePhysics
 
          mRigidBody->setLinearVelocity(vel);
 
-         m_onGround = true;
+         mOnGround = true;
       }
 
       float testOffset = 0.07f;
 
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_top(mRigidBody, m_pGhostObject);
+      IgnoreBodyAndGhostCast rayCallBack_top(mRigidBody, mGhostObject);
 
-      mPhysicsWorld->GetWorld()->rayTest(mRigidBody->getWorldTransform().getOrigin(),
-         mRigidBody->getWorldTransform().getOrigin() + btVector3(0.0f, m_bottomYOffset + testOffset, 0.0f), rayCallBack_top);
+      mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(), worldTransform.getOrigin() + btVector3(0.0f, mBottomYOffset + testOffset, 0.0f), rayCallBack_top);
 
       // Bump up if hit
       if (rayCallBack_top.hasHit())
       {
-         mRigidBody->getWorldTransform().setOrigin(m_previousPosition);
+         worldTransform.setOrigin(mPreviousPosition);
 
          btVector3 vel(mRigidBody->getLinearVelocity());
 
@@ -284,28 +288,30 @@ namespace EnginePhysics
          mRigidBody->setLinearVelocity(vel);
       }
 
-      m_previousPosition = mRigidBody->getWorldTransform().getOrigin();
+      mPreviousPosition = worldTransform.getOrigin();
    }
 
    void DynamicCharacterController::Jump()
    {
-      if (m_onGround && m_jumpRechargeTimer >= m_jumpRechargeTime)
+      if (mOnGround && mJumpRechargeTimer >= mJumpRechargeTime)
       {
-         m_jumpRechargeTimer = 0.0f;
-         mRigidBody->applyCentralImpulse(btVector3(0.0f, m_jumpImpulse, 0.0f));
+         mJumpRechargeTimer = 0.0f;
+         mRigidBody->applyCentralImpulse(btVector3(0.0f, mJumpImpulse, 0.0f));
 
          // Move upwards slightly so velocity isn't immediately canceled when it detects it as on ground next frame
          const float jumpYOffset = 0.01f;
 
-         float previousY = mRigidBody->getWorldTransform().getOrigin().getY();
+         auto& worldTransform = mRigidBody->getWorldTransform();
 
-         mRigidBody->getWorldTransform().getOrigin().setY(previousY + jumpYOffset);
+         float previousY = worldTransform.getOrigin().getY();
+
+         worldTransform.getOrigin().setY(previousY + jumpYOffset);
       }
    }
 
    bool DynamicCharacterController::IsOnGround() const
    {
-      return m_onGround;
+      return mOnGround;
    }
 
 }

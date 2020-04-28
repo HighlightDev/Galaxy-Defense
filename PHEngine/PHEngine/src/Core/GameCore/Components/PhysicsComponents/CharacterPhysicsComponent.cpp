@@ -25,7 +25,7 @@ namespace EnginePhysics
 
    void CharacterPhysicsComponent::Tick(const float deltaTime)
    {
-      characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty);
+      characterController->UpdateMotionWorldTransformLocalState(bIsTransformationDirty, deltaTime);
 
       if (bIsTransformationDirty)
       {

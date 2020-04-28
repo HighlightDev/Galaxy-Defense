@@ -30,7 +30,7 @@ namespace EnginePhysics
       {
          bool bIsDirty;
 
-         mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty);
+         mDescriptor->UpdateMotionWorldTransformLocalState(bIsDirty, deltaTime);
 
          bIsTransformationDirty = bIsDirty;
 

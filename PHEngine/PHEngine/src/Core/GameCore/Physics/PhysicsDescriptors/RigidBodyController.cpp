@@ -30,7 +30,7 @@ namespace EnginePhysics
       mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
    }
 
-   void RigidBodyController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry)
+   void RigidBodyController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
    {
       btTransform transform;
       mMotionState->getWorldTransform(transform);

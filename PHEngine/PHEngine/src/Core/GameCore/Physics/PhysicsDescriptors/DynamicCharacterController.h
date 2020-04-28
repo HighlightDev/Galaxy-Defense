@@ -17,40 +17,28 @@ namespace EnginePhysics
    {
    private:
       // Physics
-      btPairCachingGhostObject* m_pGhostObject;
+      btPairCachingGhostObject* mGhostObject;
 
-      bool m_onGround;
-      //bool m_onJumpableGround; // A bit lower contact than just onGround
-      bool m_hittingWall;
+      bool mOnGround;
+      bool mHittingWall;
 
-      float m_bottomYOffset;
-      float m_bottomRoundedRegionYOffset;
+      float mDeceleration;
+      float mMaxSpeed;
+      float mJumpImpulse;
+      float mJumpRechargeTime;
+      float mJumpRechargeTimer;
+      float mBottomYOffset;
+      float mBottomRoundedRegionYOffset;
+      float mStepHeight;
+      float mTimerMultiplier;
 
-      float m_stepHeight;
+      btTransform mMotionTransform;
+      btVector3 mPreviousPosition;
 
-      const float timerMultiplier = 0.15f;
-
-      btTransform m_motionTransform;
-
-      btVector3 m_manualVelocity;
-      std::vector<btVector3> m_surfaceHitNormals;
-
-      btVector3 m_previousPosition;
-
-      float m_jumpRechargeTimer;
-
-      void ParseGhostContacts();
-
-      void UpdatePosition();
-      void UpdateVelocity();
+      btVector3 mManualVelocity;
+      std::vector<btVector3> mSurfaceHitNormals;
 
    public:
-
-      float m_deceleration;
-      float m_maxSpeed;
-      float m_jumpImpulse;
-
-      float m_jumpRechargeTime;
 
       DynamicCharacterController(class PhysicsWorld* pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
 
@@ -58,7 +46,7 @@ namespace EnginePhysics
 
       virtual void CompleteRigidBodyConstruction() override;
 
-      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry) override;
+      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
@@ -71,5 +59,13 @@ namespace EnginePhysics
       void Jump();
 
       bool IsOnGround() const;
+
+   private:
+
+      void ParseGhostContacts();
+
+      void UpdatePosition();
+
+      void UpdateVelocity();
    };
 }

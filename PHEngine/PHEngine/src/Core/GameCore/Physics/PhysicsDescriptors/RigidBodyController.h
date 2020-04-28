@@ -14,7 +14,7 @@ namespace EnginePhysics
 
       virtual void CompleteRigidBodyConstruction() override;
 
-      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry) override;
+      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
    };
