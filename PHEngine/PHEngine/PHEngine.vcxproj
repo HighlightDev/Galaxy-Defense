@@ -377,7 +377,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\Proxy.h" />
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncDataProxy.h" />
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.h" />
@@ -817,7 +817,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\Proxy.cpp" />
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.cpp" />

@@ -16,6 +16,7 @@ namespace IO
 			{
 				typename ::Assimp::Importer importer;
 				const struct aiScene* m_scene;
+
 				MeshVertexData<count_bones_influence_vertex>* m_meshData;
 				MeshAnimationData* m_meshAninationData;
 

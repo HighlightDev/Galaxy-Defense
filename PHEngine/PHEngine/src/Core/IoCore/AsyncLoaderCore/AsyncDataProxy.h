@@ -5,11 +5,10 @@
 
 namespace IO {
 
-   class Proxy
+   class AsyncDataProxy
    {
    public:
       std::map<std::string, std::future<Resource>> DATA;
-
    };
 
 }

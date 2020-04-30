@@ -23,8 +23,7 @@ namespace IO {
 
    struct ResourceMap {
 
-      class Proxy* PROXY;
-      //std::map<std::string, std::future<Resource>> DATA;
+      class AsyncDataProxy* mAsyncDataProxy;
 
       ResourceMap();
 
