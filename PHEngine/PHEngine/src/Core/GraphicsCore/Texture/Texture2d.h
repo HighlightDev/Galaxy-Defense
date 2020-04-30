@@ -61,7 +61,7 @@ namespace Graphics
 
          void InitEmptyTexture();
 
-			uint32_t LoadTextureFromFile(std::string& pathToTex, int32_t texWrapMode = GL_REPEAT);
+			uint32_t LoadTextureFromFile(const std::string& pathToTex, int32_t texWrapMode = GL_REPEAT);
 
 			uint32_t CreateTexture(const void* pixelsData);
 		};

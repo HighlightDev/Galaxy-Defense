@@ -22,7 +22,7 @@ namespace IO
 
             ~StbLoader();
 
-				uint8_t* AllocateTextureMemoryFromFile(std::string& pathToFile, Graphics::Texture::TexParams& out_params);
+				uint8_t* AllocateTextureMemoryFromFile(const std::string& pathToFile, Graphics::Texture::TexParams& out_params);
 
 				void ReleaseTextureMemory();
    

@@ -37,13 +37,5 @@ namespace IO
       virtual Resource DoAsyncJob(const std::string& key);
    };
 
-   class MeshAnimationAsyncLoader
-      : public AsyncLoader 
-   {
-      MeshAnimationAsyncLoader();
-
-      virtual Resource DoAsyncJob(const std::string& key);
-   };
-
 }
 

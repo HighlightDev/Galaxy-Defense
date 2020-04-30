@@ -18,7 +18,7 @@ namespace IO
 				ReleaseTextureMemory();
 			}
 
-			uint8_t* StbLoader::AllocateTextureMemoryFromFile(std::string& pathToFile, Graphics::Texture::TexParams& out_params)
+			uint8_t* StbLoader::AllocateTextureMemoryFromFile(const std::string& pathToFile, Graphics::Texture::TexParams& out_params)
 			{
 				int32_t width, height, components;
 

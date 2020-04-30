@@ -75,7 +75,7 @@ namespace Graphics
          glBindTexture(m_textureParams.TexTarget, 0);
       }
 
-		uint32_t Texture2d::LoadTextureFromFile(std::string& pathToTex, int32_t texWrapMode)
+		uint32_t Texture2d::LoadTextureFromFile(const std::string& pathToTex, int32_t texWrapMode)
 		{
          StbLoader textureLoader;
 			uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(pathToTex, m_textureParams);
