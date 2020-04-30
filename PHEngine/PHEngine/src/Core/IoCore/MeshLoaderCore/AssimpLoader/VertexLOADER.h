@@ -6,7 +6,7 @@
 #include <tuple>
 #include <utility>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

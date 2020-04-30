@@ -4,7 +4,7 @@
 #include "Core/UtilityCore/AssimpSkeletonConverter.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 
-using namespace Io::MeshLoader::Assimp;
+using namespace IO::MeshLoader::Assimp;
 using namespace EngineUtility;
 
 namespace Resources
@@ -22,8 +22,8 @@ namespace Resources
       AssimpMeshLoader<countOfBonesInfluencingOnVertex> loader(absolutePath);
       if (loader.GetHasAnimationData())
       {
-         MeshAnimationData& animationData = loader.GetAnimationData();
-         resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpAnimationToEngineAnimation(animationData.GetAnimations());
+         MeshAnimationData* animationData = loader.LoadAndGetAnimationData();
+         resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpAnimationToEngineAnimation(animationData->GetAnimations());
       }
 
       return std::make_shared<std::vector<AnimationSequence>>(std::move(resultAnimationCollection));

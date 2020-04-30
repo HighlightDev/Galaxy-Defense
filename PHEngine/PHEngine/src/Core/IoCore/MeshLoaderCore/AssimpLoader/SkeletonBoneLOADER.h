@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <assimp/mesh.h>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS 
 
 #include "IShader.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 #include "Core/IoCore/FileFacade.h"
 
 #include <fstream>
@@ -72,7 +72,7 @@ namespace Graphics
          bool bResult = false;
 
          std::string pathToPersistency = EngineUtility::ConvertFromRelativeToAbsolutePath(
-            Common::FolderManager::GetInstance()->GetPersistencyPath() + "shader_persistency");
+            IO::FolderManager::GetInstance()->GetPersistencyPath() + "shader_persistency");
 
          std::string pathToShader = EngineUtility::ConvertFromRelativeToAbsolutePath(shaderPath);
 
@@ -177,7 +177,7 @@ namespace Graphics
                         includes.insert(name);
                         name.erase(std::remove(name.begin(), name.end(), '\"'), name.end()); // remove quotes
 
-                        const std::string absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(Common::FolderManager::GetInstance()->GetShaderCommonPath() + name);
+                        const std::string absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetShaderCommonPath() + name);
                         includingSources += LoadShaderSource(absolutePath) + "\n";
                      }
                      it = sourceVector.erase(it);

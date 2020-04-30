@@ -4,7 +4,7 @@
 #include <assimp/postprocess.h>
 #include <string>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{
@@ -38,23 +38,23 @@ namespace Io
 
 
 			template <int32_t count_bones_influence_vertex>
-			MeshVertexData<count_bones_influence_vertex>& AssimpMeshLoader<count_bones_influence_vertex>::GetMeshData()
+			MeshVertexData<count_bones_influence_vertex>* AssimpMeshLoader<count_bones_influence_vertex>::LoadAndGetMeshData()
 			{
 				if (!m_meshData)
 				{
 					m_meshData = new MeshVertexData<count_bones_influence_vertex>(m_scene);
 				}
 
-				return *m_meshData;
+				return m_meshData;
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			MeshAnimationData& AssimpMeshLoader<count_bones_influence_vertex>::GetAnimationData()
+			MeshAnimationData* AssimpMeshLoader<count_bones_influence_vertex>::LoadAndGetAnimationData()
 			{
 				if (!m_meshAninationData)
 					m_meshAninationData = new MeshAnimationData(m_scene->mAnimations, m_scene->mNumAnimations);
 
-				return *m_meshAninationData;
+				return m_meshAninationData;
 			}
 		}
 	}

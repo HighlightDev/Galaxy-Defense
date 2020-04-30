@@ -1,6 +1,6 @@
 #include "SkeletonBoneLOADER.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

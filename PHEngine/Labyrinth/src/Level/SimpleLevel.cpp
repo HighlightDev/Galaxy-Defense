@@ -40,6 +40,7 @@
 #include <glm/vec3.hpp>
 
 #include "Core/GameCore/GlobalSettings.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
 #include <LogInterface.h>
 
@@ -62,7 +63,13 @@ namespace Labyrinth
    void SimpleLevel::LoadLevel()
    {
 
-      const auto& folderManager = Common::FolderManager::GetInstance();
+      const auto& folderManager = IO::FolderManager::GetInstance();
+
+
+      IO::ResourceMap resourceLoader;
+      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+
+
 
       {
          // Test for PBR

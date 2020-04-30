@@ -13,7 +13,7 @@
 #include <gl/glew.h>
 
 using namespace Graphics::OpenGL;
-using namespace Io::MeshLoader::Assimp;
+using namespace IO::MeshLoader::Assimp;
 using namespace Graphics::Animation;
 using namespace Graphics::Mesh;
 
@@ -34,35 +34,35 @@ namespace Resources
 
          VertexArrayObject vao;
 
-			MeshVertexData<countOfBonesInfluencingOnVertex>& meshData = loader.GetMeshData();
+			MeshVertexData<countOfBonesInfluencingOnVertex>* meshData = loader.LoadAndGetMeshData();
 
-			const std::vector<float>& vertices = meshData.Verts;
-			const std::vector<float>& normals = meshData.N_Verts;
-			const std::vector<float>& texCoords = meshData.T_Verts;
-			const std::vector<float>& tangents = meshData.Tangent_Verts;
-			const std::vector<float>& bitangents = meshData.Bitanget_Verts;
-			const std::vector<float>& blendWeights = meshData.BlendWeights;
-			const std::vector<int32_t>& blendIndices = meshData.BlendIndices;
-			const std::vector<uint32_t>& indices = meshData.Indices;
+			const std::vector<float>& vertices = meshData->Verts;
+			const std::vector<float>& normals = meshData->N_Verts;
+			const std::vector<float>& texCoords = meshData->T_Verts;
+			const std::vector<float>& tangents = meshData->Tangent_Verts;
+			const std::vector<float>& bitangents = meshData->Bitanget_Verts;
+			const std::vector<float>& blendWeights = meshData->BlendWeights;
+			const std::vector<int32_t>& blendIndices = meshData->BlendIndices;
+			const std::vector<uint32_t>& indices = meshData->Indices;
 
 			IndexBufferObject* ibo = nullptr;
 
 			VertexBufferObjectBase* vertexVBO, *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
 
-			if (meshData.bHasIndices)
+			if (meshData->bHasIndices)
 				ibo = new IndexBufferObject(indices);
 
 			vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
 
-			if (meshData.bHasNormals)
+			if (meshData->bHasNormals)
 				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
-			if (meshData.bHasTextureCoordinates)
+			if (meshData->bHasTextureCoordinates)
 				texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT>(texCoords, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
-			if (meshData.bHasTangentVertices)
+			if (meshData->bHasTangentVertices)
 				tangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(tangents, GL_ARRAY_BUFFER, 4, DataCarryFlag::Invalidate);
-			if (meshData.bHasTangentVertices)
+			if (meshData->bHasTangentVertices)
 				bitangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(bitangents, GL_ARRAY_BUFFER, 5, DataCarryFlag::Invalidate);
-			if (meshData.bHasAnimation)
+			if (meshData->bHasAnimation)
 			{
 				blendWeightsVBO = new VertexBufferObject<float, countOfBonesInfluencingOnVertex, GL_FLOAT>(blendWeights, GL_ARRAY_BUFFER, 6, DataCarryFlag::Invalidate);
 				blendIndicesVBO = new VertexBufferObject<int32_t, countOfBonesInfluencingOnVertex, GL_FLOAT>(blendIndices, GL_ARRAY_BUFFER, 7, DataCarryFlag::Invalidate);
@@ -73,12 +73,12 @@ namespace Resources
 			vao.AddIndexBuffer(ibo);
 			vao.BindBuffersToVao();
 
-			if (meshData.bHasAnimation)
+			if (meshData->bHasAnimation)
 			{
-				Bone* rootBone = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpBoneToEngineBone(meshData.SkeletonRoot);
-            meshData.SkeletonRoot->CleanUp();
-            delete meshData.SkeletonRoot;
-            meshData.SkeletonRoot = nullptr;
+				Bone* rootBone = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
+            meshData->SkeletonRoot->CleanUp();
+            delete meshData->SkeletonRoot;
+            meshData->SkeletonRoot = nullptr;
 				resultSkin = std::make_shared<AnimatedSkin>(vao, std::make_shared<Bone>(*rootBone));
 			}
 			else

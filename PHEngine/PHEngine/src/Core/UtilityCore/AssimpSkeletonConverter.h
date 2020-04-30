@@ -10,7 +10,7 @@
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/AnimationLOADER.h"
 
 using namespace Graphics::Animation;
-using namespace Io::MeshLoader::Assimp;
+using namespace IO::MeshLoader::Assimp;
 
 namespace EngineUtility
 {

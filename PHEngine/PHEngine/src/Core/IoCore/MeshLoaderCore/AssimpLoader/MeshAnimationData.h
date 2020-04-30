@@ -5,7 +5,7 @@
 
 #include "AnimationLOADER.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

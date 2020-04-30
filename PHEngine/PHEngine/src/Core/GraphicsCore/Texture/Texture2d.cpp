@@ -3,7 +3,7 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 
-using namespace Io::Images::Stb;
+using namespace IO::Images::Stb;
 
 namespace Graphics
 {
@@ -77,9 +77,10 @@ namespace Graphics
 
 		uint32_t Texture2d::LoadTextureFromFile(std::string& pathToTex, int32_t texWrapMode)
 		{
-			uint8_t* data = StbLoader::GetInstance().AllocateTextureMemoryFromFile(pathToTex, m_textureParams);
+         StbLoader textureLoader;
+			uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(pathToTex, m_textureParams);
 			uint32_t readyToWorkDescriptor = CreateTexture(data);
-			StbLoader::GetInstance().ReleaseTextureMemory(); // Release memory allocated for texture
+         textureLoader.ReleaseTextureMemory(); // Release memory allocated for texture
 			return readyToWorkDescriptor;
 		}
 

@@ -1,6 +1,6 @@
 #include "PBRMaterial.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 
 namespace Graphics
 {
@@ -12,7 +12,7 @@ namespace Graphics
       ITextureShared roughnessMap,
       ITextureShared ambientOcclusionMap,
       const float uvScale)
-      : IMaterial("PBR Material", Common::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\PBRMaterial.glsl")
+      : IMaterial("PBR Material", IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\PBRMaterial.glsl")
    {
       PushMaterialProperty("albedo", std::make_shared<TextureMaterialProperty>(albedo));
       PushMaterialProperty("normalMap", std::make_shared<TextureMaterialProperty>(normalMap));

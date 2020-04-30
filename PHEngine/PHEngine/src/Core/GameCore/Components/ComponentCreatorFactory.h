@@ -46,7 +46,7 @@
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 
 using namespace Resources;
-using namespace Common;
+using namespace IO;
 
 namespace Game
 {

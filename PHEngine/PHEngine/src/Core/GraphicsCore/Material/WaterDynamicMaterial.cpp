@@ -1,12 +1,12 @@
 #include "WaterDynamicMaterial.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 
 #define STUB "STUB"
 
 namespace Graphics
 {
    WaterDynamicMaterial::WaterDynamicMaterial(WaterDynamicMaterial::ITextureShared normalMap, WaterDynamicMaterial::ITextureShared distortion)
-      : DynamicMaterial("WaterDynamicMaterial", Common::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\WaterMaterial.glsl")
+      : DynamicMaterial("WaterDynamicMaterial", IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\WaterMaterial.glsl")
    {
       mProperties.emplace(std::make_pair("normalMap", std::make_shared<TextureMaterialProperty>(normalMap)));
       mProperties.emplace(std::make_pair("distortion", std::make_shared<TextureMaterialProperty>(distortion)));

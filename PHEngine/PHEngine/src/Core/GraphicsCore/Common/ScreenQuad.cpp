@@ -2,7 +2,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObjectBase.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 
 #include <memory>
 #include <vector>
@@ -30,7 +30,7 @@ namespace Graphics
 
 	void ScreenQuad::Init()
 	{
-      const auto folderManager = Common::FolderManager::GetInstance();
+      const auto folderManager = IO::FolderManager::GetInstance();
       ShaderParams shaderParams("ScreenQuad Shader", folderManager->GetShadersPath() + "resolveTextureVS.glsl", folderManager->GetShadersPath() + "resolveTextureFS.glsl", "", "", "", "");
       m_resolveTexShader = std::static_pointer_cast<ResolveTextureShader>(ShaderPool::GetInstance()->GetOrAllocateResource<ResolveTextureShader>(shaderParams));
 

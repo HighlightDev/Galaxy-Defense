@@ -1,6 +1,6 @@
 #include "AnimationFrameLOADER.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

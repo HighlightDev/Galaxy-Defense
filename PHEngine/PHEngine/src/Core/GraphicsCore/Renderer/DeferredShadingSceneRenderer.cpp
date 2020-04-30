@@ -11,7 +11,7 @@
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Scene.h"
 

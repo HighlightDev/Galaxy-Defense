@@ -6,7 +6,7 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
-namespace Common
+namespace IO
 {
 
 	class FolderManager

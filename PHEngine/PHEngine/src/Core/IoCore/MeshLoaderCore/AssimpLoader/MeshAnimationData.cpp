@@ -1,6 +1,6 @@
 #include "MeshAnimationData.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

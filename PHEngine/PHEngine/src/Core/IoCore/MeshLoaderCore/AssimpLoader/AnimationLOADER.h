@@ -6,7 +6,7 @@
 
 #include "BoneFrameCollectionLOADER.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

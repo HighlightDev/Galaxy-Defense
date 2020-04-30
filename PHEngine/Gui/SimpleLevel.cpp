@@ -8,7 +8,7 @@ SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& interThreadCommunicationMg
 
 void SimpleLevel::LoadLevel()
 {
-//   const auto& folderManager = Common::FolderManager::GetInstance();
+//   const auto& folderManager = IO::FolderManager::GetInstance();
 //
 //#if 1
 //   // PointLight

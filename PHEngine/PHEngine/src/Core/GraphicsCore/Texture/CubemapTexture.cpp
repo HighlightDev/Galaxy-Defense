@@ -1,7 +1,7 @@
 #include "CubemapTexture.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 
-using namespace Io::Images::Stb;
+using namespace IO::Images::Stb;
 
 namespace Graphics
 {
@@ -59,7 +59,9 @@ namespace Graphics
 			for (size_t texIndex = 0; texIndex < texturesCount; texIndex++)
 			{
 				TexParams texParam;
-				uint8_t* texData = StbLoader::GetInstance().AllocateTextureMemoryFromFile(pathToTextures[texIndex], texParam);
+            StbLoader texLoader;
+
+				uint8_t* texData = texLoader.AllocateTextureMemoryFromFile(pathToTextures[texIndex], texParam);
 				if (mutualPixelFormat == -1)
 				{
 					mutualPixelFormat = texParam.TexPixelFormat;
@@ -79,7 +81,7 @@ namespace Graphics
 
 				m_texParams.emplace_back(std::move(texParam));
 
-				StbLoader::GetInstance().ReleaseTextureMemory();
+            texLoader.ReleaseTextureMemory();
 			}
 
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

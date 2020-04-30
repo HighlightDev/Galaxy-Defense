@@ -4,7 +4,7 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

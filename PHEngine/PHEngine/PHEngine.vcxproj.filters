@@ -1294,9 +1294,6 @@
     <ClInclude Include="src\Core\UtilityCore\StringStreamWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\CommonCore\FolderManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\UtilityCore\AssimpSkeletonConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1816,6 +1813,21 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\Proxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\FolderManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\ResourceExtensionsInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -1846,9 +1858,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\UtilityCore\StringStreamWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\CommonCore\FolderManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\UtilityCore\PlatformDependentFunctions.cpp">
@@ -2191,6 +2200,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\Proxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\FolderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\ResourceExtensionsInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #include "FolderManager.h"
 
-namespace Common
+namespace IO
 {
 
 	std::shared_ptr<FolderManager> FolderManager::m_instance;

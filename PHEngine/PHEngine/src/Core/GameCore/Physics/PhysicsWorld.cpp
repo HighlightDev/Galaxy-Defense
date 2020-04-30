@@ -1,6 +1,5 @@
 #include "PhysicsWorld.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 
 #include <iostream>
 

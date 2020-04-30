@@ -5,7 +5,7 @@
 
 #include <assimp/Importer.hpp>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{
@@ -27,9 +27,9 @@ namespace Io
 
 				bool GetHasAnimationData() const;
 
-				MeshVertexData<count_bones_influence_vertex>& GetMeshData();
+				MeshVertexData<count_bones_influence_vertex>* LoadAndGetMeshData();
 
-				MeshAnimationData& GetAnimationData();
+				MeshAnimationData* LoadAndGetAnimationData();
 			};
 		}
 	}

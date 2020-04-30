@@ -4,7 +4,7 @@
 #include <tuple>
 #include <thread>
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

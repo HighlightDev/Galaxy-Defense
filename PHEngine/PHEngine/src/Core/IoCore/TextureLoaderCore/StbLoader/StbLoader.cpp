@@ -1,14 +1,12 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "StbLoader.h"
 
-namespace Io
+namespace IO
 {
 	namespace Images
 	{
 		namespace Stb
 		{
-
-			StbLoader* StbLoader::m_instance = nullptr;
 
 			StbLoader::StbLoader()
 				: m_lastAllocatedMemory(nullptr)

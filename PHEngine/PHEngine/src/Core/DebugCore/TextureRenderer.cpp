@@ -2,7 +2,7 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 
 #include <utility>
 
@@ -13,7 +13,7 @@ namespace Debug
 
    TextureRenderer::TextureRenderer()
    {
-      const auto& folderManager = Common::FolderManager::GetInstance();
+      const auto& folderManager = IO::FolderManager::GetInstance();
       ShaderParams shaderParams("Texture Renderer Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiFS.glsl", "", "", "", "");
       m_shader = std::static_pointer_cast<TextureRendererShader>(ShaderPool::GetInstance()->template GetOrAllocateResource<TextureRendererShader>(shaderParams));
    }

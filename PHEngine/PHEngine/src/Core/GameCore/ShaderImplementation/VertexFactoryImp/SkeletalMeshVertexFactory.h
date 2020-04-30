@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
-#include "Core/CommonCore/FolderManager.h"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace Graphics::OpenGL;
-using namespace Common;
+using namespace IO;
 
 namespace Game
 {

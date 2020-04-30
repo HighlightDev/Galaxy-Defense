@@ -1,6 +1,6 @@
 #include "VertexLOADER.h"
 
-namespace Io
+namespace IO
 {
 	namespace MeshLoader
 	{

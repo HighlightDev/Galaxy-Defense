@@ -377,6 +377,8 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\Proxy.h" />
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\DebugRender\BulletDebugRenderer.h" />
@@ -404,6 +406,7 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterial.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\CubemapRenderData.h" />
+    <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.h" />
     <ClInclude Include="src\Core\IoCore\FileFacade.h" />
     <ClInclude Include="src\Core\GameCore\Level.h" />
     <ClInclude Include="src\Core\CommonCore\CommonMeta.h" />
@@ -418,6 +421,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\CompositeShader.h" />
+    <ClInclude Include="src\Core\IoCore\ResourceExtensionsInfo.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\CompositeShaderAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\PBRMaterial.h" />
@@ -773,7 +777,7 @@
     <ClInclude Include="Dependencies\GLM\include\glm\vec3.hpp" />
     <ClInclude Include="Dependencies\GLM\include\glm\vec4.hpp" />
     <ClInclude Include="Dependencies\GLM\include\glm\vector_relational.hpp" />
-    <ClInclude Include="src\Core\CommonCore\FolderManager.h" />
+    <ClInclude Include="src\Core\IoCore\FolderManager.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefine.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\Shader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\IndexBufferObject.h" />
@@ -813,6 +817,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\Proxy.cpp" />
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\AsyncLoader.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.cpp" />
@@ -825,10 +831,12 @@
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
+    <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />
     <ClCompile Include="src\Core\GameCore\Level.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.cpp" />
+    <ClCompile Include="src\Core\IoCore\ResourceExtensionsInfo.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\PBRMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\IMaterial.cpp" />
@@ -906,7 +914,7 @@
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshVertexData.cpp" />
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpMeshLoader.cpp" />
     <ClCompile Include="Dependencies\GLM\include\glm\detail\glm.cpp" />
-    <ClCompile Include="src\Core\CommonCore\FolderManager.cpp" />
+    <ClCompile Include="src\Core\IoCore\FolderManager.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefine.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\Shader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\IndexBufferObject.cpp" />
