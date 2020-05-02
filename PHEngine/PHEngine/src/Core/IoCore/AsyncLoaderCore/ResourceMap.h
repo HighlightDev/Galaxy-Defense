@@ -14,8 +14,8 @@ namespace IO {
 
       bool bAllocated;
 
-      ~Resource() {
-
+      void Clear()
+      {
          delete DATA;
       }
 

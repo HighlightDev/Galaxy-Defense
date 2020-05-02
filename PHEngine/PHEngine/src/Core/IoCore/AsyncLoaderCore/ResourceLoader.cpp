@@ -1,7 +1,8 @@
-#include "AsyncLoader.h"
+#include "ResourceLoader.h"
 #include "ResourceMap.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 #include "Core/GraphicsCore/Texture/TexParams.h"
+#include "Core/UtilityCore/PlatformDependentFunctions.h"
 
 using namespace IO::Images;
 using namespace IO::Images::Stb;
@@ -10,28 +11,31 @@ using namespace Graphics::Texture;
 namespace IO
 {
    /************************************************************************/
-   /* AsyncLoader                                                          */
+   /* ResourceLoader                                                          */
    /************************************************************************/
-   AsyncLoader::AsyncLoader()
+   ResourceLoader::ResourceLoader()
    {
    }
 
    /************************************************************************/
-   /* TextureAsyncLoader                                                   */
+   /* TextureResourceLoader                                                   */
    /************************************************************************/
-   TextureAsyncLoader::TextureAsyncLoader()
-      : AsyncLoader()
+   TextureResourceLoader::TextureResourceLoader()
+      : ResourceLoader()
    {
 
    }
 
-   Resource TextureAsyncLoader::DoAsyncJob(const std::string& key)
+   Resource TextureResourceLoader::LoadResource(const std::string& key)
    {
-      StbLoader textureLoader;
+      StbLoader textureResourceLoader;
 
       TexParams texParams;
 
-      uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(key, texParams);
+
+      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
+
+      uint8_t* data = textureResourceLoader.AllocateTextureMemoryFromFile(absolutePath, texParams);
 
       size_t pixelFormatSize = 0;
 
@@ -46,10 +50,9 @@ namespace IO
 
       size_t size = texParams.TexBufferHeight * texParams.TexBufferWidth * pixelFormatSize;
 
-      uint8_t* localData = nullptr;
+      void* localData = malloc(size);
       memcpy(localData, data, size);
-
-      textureLoader.ReleaseTextureMemory(); // Release memory allocated for texture
+      textureResourceLoader.ReleaseTextureMemory(); // Release memory allocated for texture
 
       Resource res;
       res.DATA = localData;
@@ -58,15 +61,15 @@ namespace IO
    }
 
    /************************************************************************/
-   /* MeshAsyncLoader                                                      */
+   /* MeshResourceLoader                                                      */
    /************************************************************************/
 
-   MeshAsyncLoader::MeshAsyncLoader()
-      : AsyncLoader()
+   MeshResourceLoader::MeshResourceLoader()
+      : ResourceLoader()
    {
    }
 
-   Resource MeshAsyncLoader::DoAsyncJob(const std::string& key)
+   Resource MeshResourceLoader::LoadResource(const std::string& key)
    {
       return Resource();
    }
