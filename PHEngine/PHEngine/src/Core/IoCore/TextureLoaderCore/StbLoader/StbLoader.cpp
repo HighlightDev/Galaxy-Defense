@@ -18,7 +18,7 @@ namespace IO
 				ReleaseTextureMemory();
 			}
 
-			uint8_t* StbLoader::AllocateTextureMemoryFromFile(const std::string& pathToFile, Graphics::Texture::TexParams& out_params)
+			uint8_t* StbLoader::AllocateTextureMemoryFromFile(const std::string& pathToFile, TextureResourceInfo& out_params)
 			{
 				int32_t width, height, components;
 
@@ -30,19 +30,9 @@ namespace IO
 				if (texData != nullptr)
 					m_lastAllocatedMemory = texData;
 
-				out_params.TexBufferWidth = width;
-				out_params.TexBufferHeight = height;
-
-				if (components == 3)
-				{
-					out_params.TexPixelFormat = GL_RGB;
-					out_params.TexPixelInternalFormat = GL_RGB;
-				}
-				else if (components == 4)
-				{
-					out_params.TexPixelFormat = GL_RGBA;
-					out_params.TexPixelInternalFormat = GL_RGBA;
-				}
+				out_params.Width = width;
+				out_params.Height = height;
+				out_params.PixelComponents = components;
 
 				return texData;
 			}

@@ -3,6 +3,7 @@
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
+#include "Core/IoCore/RawResource.h"
 
 using namespace IO::Images;
 using namespace IO::Images::Stb;
@@ -26,38 +27,24 @@ namespace IO
 
    }
 
-   Resource TextureResourceLoader::LoadResource(const std::string& key)
+   Resource* TextureResourceLoader::LoadResource(const std::string& key)
    {
       StbLoader textureResourceLoader;
-
-      TexParams texParams;
-
-
       const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
 
-      uint8_t* data = textureResourceLoader.AllocateTextureMemoryFromFile(absolutePath, texParams);
+      TextureResourceInfo texResourceInfo;
+      uint8_t* data = textureResourceLoader.AllocateTextureMemoryFromFile(absolutePath, texResourceInfo);
 
-      size_t pixelFormatSize = 0;
-
-      if (texParams.TexPixelFormat == GL_RGB)
-      {
-         pixelFormatSize = 3;
-      }
-      else if (texParams.TexPixelFormat == GL_RGBA)
-      {
-         pixelFormatSize = 4;
-      }
-
-      size_t size = texParams.TexBufferHeight * texParams.TexBufferWidth * pixelFormatSize;
-
+      size_t size = texResourceInfo.Height * texResourceInfo.Width * texResourceInfo.PixelComponents;
       void* localData = malloc(size);
       memcpy(localData, data, size);
       textureResourceLoader.ReleaseTextureMemory(); // Release memory allocated for texture
 
-      Resource res;
-      res.DATA = localData;
+      TextureResource* resource = new TextureResource();
+      resource->DATA = localData;
+      resource->TexInfo = texResourceInfo;
 
-      return res;
+      return resource;
    }
 
    /************************************************************************/
@@ -69,8 +56,8 @@ namespace IO
    {
    }
 
-   Resource MeshResourceLoader::LoadResource(const std::string& key)
+   Resource* MeshResourceLoader::LoadResource(const std::string& key)
    {
-      return Resource();
+      return new Resource();
    }
 }

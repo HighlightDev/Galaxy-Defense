@@ -1,7 +1,9 @@
 #include "CubemapTexture.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
+#include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
 
 using namespace IO::Images::Stb;
+using namespace IO;
 
 namespace Graphics
 {
@@ -58,10 +60,26 @@ namespace Graphics
 			const size_t texturesCount = pathToTextures.size();
 			for (size_t texIndex = 0; texIndex < texturesCount; texIndex++)
 			{
-				TexParams texParam;
+            TextureResourceInfo texResourceInfo;
+            TexParams texParam;
             StbLoader texLoader;
 
-				uint8_t* texData = texLoader.AllocateTextureMemoryFromFile(pathToTextures[texIndex], texParam);
+            uint8_t* texData = texLoader.AllocateTextureMemoryFromFile(pathToTextures[texIndex], texResourceInfo);
+
+            texParam.TexBufferWidth = texResourceInfo.Width;
+            texParam.TexBufferHeight = texResourceInfo.Height;
+
+            if (texResourceInfo.PixelComponents == 3)
+            {
+               texParam.TexPixelFormat = GL_RGB;
+               texParam.TexPixelInternalFormat = GL_RGB;
+            }
+            else if (texResourceInfo.PixelComponents == 4)
+            {
+               texParam.TexPixelFormat = GL_RGBA;
+               texParam.TexPixelInternalFormat = GL_RGBA;
+            }
+
 				if (mutualPixelFormat == -1)
 				{
 					mutualPixelFormat = texParam.TexPixelFormat;

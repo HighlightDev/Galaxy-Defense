@@ -2,8 +2,10 @@
 
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
+#include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
 
 using namespace IO::Images::Stb;
+using namespace IO;
 
 namespace Graphics
 {
@@ -78,7 +80,25 @@ namespace Graphics
 		uint32_t Texture2d::LoadTextureFromFile(const std::string& pathToTex, int32_t texWrapMode)
 		{
          StbLoader textureLoader;
-			uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(pathToTex, m_textureParams);
+         
+         TextureResourceInfo texResourceInfo;
+
+			uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(pathToTex, texResourceInfo);
+
+         m_textureParams.TexBufferWidth = texResourceInfo.Width;
+         m_textureParams.TexBufferHeight = texResourceInfo.Height;
+
+         if (texResourceInfo.PixelComponents == 3)
+         {
+            m_textureParams.TexPixelFormat = GL_RGB;
+            m_textureParams.TexPixelInternalFormat = GL_RGB;
+         }
+         else if (texResourceInfo.PixelComponents == 4)
+         {
+            m_textureParams.TexPixelFormat = GL_RGBA;
+            m_textureParams.TexPixelInternalFormat = GL_RGBA;
+         }
+
 			uint32_t readyToWorkDescriptor = CreateTexture(data);
          textureLoader.ReleaseTextureMemory(); // Release memory allocated for texture
 			return readyToWorkDescriptor;

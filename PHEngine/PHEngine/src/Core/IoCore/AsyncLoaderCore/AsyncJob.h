@@ -19,7 +19,7 @@ public:
 
    std::future<ReturnType> StartAsync(const std::launch launchType, InputArgs&&... args)
    {
-      std::future<ReturnType> result = std::async(std::launch::async, mJobImplementation, std::forward<InputArgs>(args)...);
+      auto result = std::async(std::launch::async, mJobImplementation, std::forward<InputArgs>(args)...);
       return result;
    }
 };

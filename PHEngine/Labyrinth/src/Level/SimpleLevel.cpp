@@ -67,10 +67,23 @@ namespace Labyrinth
 
 
       IO::ResourceMap resourceLoader;
+
       resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
+      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
+      resourceLoader.AllocateAsync(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
+      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "diffuse.png");
+      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "dummy_nm.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/right.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/left.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/top.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/back.png");
+      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/front.png");
 
-
-
+      resourceLoader.WaitUntilResourcesLoad();
+   
       {
          // Test for PBR
          {

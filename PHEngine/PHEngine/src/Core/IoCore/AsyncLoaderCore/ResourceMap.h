@@ -1,35 +1,27 @@
 #pragma once
 
 #include <map>
+#include "ResourceLoader.h"
 
 namespace IO {
-
-   // when texture is loading I get uint8*
-   // when animation is loading I get AninationData*
-   // when mesh is loading I get MeshData*
-
-   struct Resource {
-
-      void* DATA;
-
-      bool bAllocated;
-
-      void Clear()
-      {
-         delete DATA;
-      }
-
-   };
 
    struct ResourceMap {
 
       class AsyncDataProxy* mAsyncDataProxy;
+
+      TextureResourceLoader textureLoader;
+
+      MeshResourceLoader meshLoader;
 
       ResourceMap();
 
       void AllocateAsync(const std::string& key);
 
       void AllocateSync(const std::string& key);
+
+      void WaitUntilResourcesLoad();
+
+      ~ResourceMap();
 
    private:
 

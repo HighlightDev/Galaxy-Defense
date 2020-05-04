@@ -1831,6 +1831,12 @@
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IoCore\RawResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\TextureLoaderCore\TextureResourceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

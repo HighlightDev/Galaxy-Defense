@@ -14,7 +14,7 @@ namespace IO
 
       ResourceLoader();
 
-      virtual Resource LoadResource(const std::string& key) = 0;
+      virtual Resource* LoadResource(const std::string& key) = 0;
    };
 
    class TextureResourceLoader
@@ -24,7 +24,7 @@ namespace IO
 
       TextureResourceLoader();
 
-      virtual Resource LoadResource(const std::string& key);
+      virtual Resource* LoadResource(const std::string& key);
    };
 
    class MeshResourceLoader
@@ -34,7 +34,7 @@ namespace IO
 
       MeshResourceLoader();
 
-      virtual Resource LoadResource(const std::string& key);
+      virtual Resource* LoadResource(const std::string& key);
    };
 
 }

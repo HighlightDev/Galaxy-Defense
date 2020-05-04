@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include "Core/GraphicsCore/Texture/TexParams.h"
+#include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
 
 namespace IO
 {
@@ -22,7 +23,7 @@ namespace IO
 
             ~StbLoader();
 
-				uint8_t* AllocateTextureMemoryFromFile(const std::string& pathToFile, Graphics::Texture::TexParams& out_params);
+				uint8_t* AllocateTextureMemoryFromFile(const std::string& pathToFile, TextureResourceInfo& out_params);
 
 				void ReleaseTextureMemory();
    
