@@ -18,31 +18,19 @@ namespace EngineUtility
 	class AssimpSkeletonConverter
 	{
 
-		static std::unique_ptr<AssimpSkeletonConverter> m_instance;
-
 	public:
 
-		AssimpSkeletonConverter() = default;
+		static Bone* ConvertAssimpBoneToEngineBone(SkeletonBoneBaseLOADER* rootBone);
 
-		~AssimpSkeletonConverter() = default;
+      static std::vector<AnimationSequence> ConvertAssimpAnimationToEngineAnimation(const std::vector<AnimationLOADER>& srcAnimations);
 
-		static std::unique_ptr<AssimpSkeletonConverter>& GetInstance()
-		{
-			if (!m_instance)
-				m_instance = std::make_unique<AssimpSkeletonConverter>();
-
-			return m_instance;
-		}
-
-		Bone* ConvertAssimpBoneToEngineBone(SkeletonBoneBaseLOADER* rootBone);
-
-      std::vector<AnimationSequence> ConvertAssimpAnimationToEngineAnimation(const std::vector<AnimationLOADER>& srcAnimations) const;
+      static BoneInfo ConvertAssimpBoneInfoToEngineBoneInfo(aiBone* assimpBone);
 
 	private:
 
-		glm::mat4 ConvertAssimpMatrix4x4ToOpenTKMatrix4(aiMatrix4x4& srcMatrix);
+		static glm::mat4 ConvertAssimpMatrix4x4ToOpenTKMatrix4(const aiMatrix4x4& srcMatrix);
 
-		void IterateBoneTree(Bone* dstParentBone, SkeletonBoneLOADER* srcParentNode);
+		static void IterateBoneTree(Bone* dstParentBone, SkeletonBoneLOADER* srcParentNode);
 	};
 
 }

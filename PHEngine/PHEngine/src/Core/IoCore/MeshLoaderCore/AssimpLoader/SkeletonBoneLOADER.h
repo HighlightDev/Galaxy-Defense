@@ -10,6 +10,15 @@ namespace IO
 	{
 		namespace Assimp
 		{
+         struct BoneInfo
+         {
+            aiString mName;
+
+            uint32_t mNumWeights;
+
+            aiMatrix4x4 mOffsetMatrix;
+         };
+
 			class SkeletonBoneLOADER;
 
 			class SkeletonBoneBaseLOADER
@@ -36,18 +45,18 @@ namespace IO
 			private:
 
 				SkeletonBoneBaseLOADER* m_parent;
-				aiBone* m_boneInfo;
+            BoneInfo m_boneInfo;
 				int32_t m_boneId;
 
 			public:
 				SkeletonBoneLOADER(SkeletonBoneBaseLOADER* parent);
 				~SkeletonBoneLOADER();
 
-				void SetBoneInfo(aiBone* bone);
+				void SetBoneInfo(BoneInfo bone);
 
 				void SetBoneId(int32_t id);
 
-				inline aiBone* GetBoneInfo() const;
+				inline BoneInfo GetBoneInfo() const;
 
 				inline int32_t GetBoneId() const;
 

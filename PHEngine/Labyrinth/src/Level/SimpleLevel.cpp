@@ -46,6 +46,7 @@
 
 using namespace Graphics;
 using namespace EnginePhysics;
+using namespace IO;
 
 namespace Labyrinth
 {
@@ -65,25 +66,26 @@ namespace Labyrinth
 
       const auto& folderManager = IO::FolderManager::GetInstance();
 
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "diffuse.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "dummy_nm.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/right.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/left.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/top.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/back.png");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/front.png");
 
-      IO::ResourceMap resourceLoader;
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "playerCube.obj");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "City_House_2_BI.obj");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
 
-      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
-      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
-      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
-      resourceLoader.AllocateAsync(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
-      resourceLoader.AllocateAsync(folderManager->GetAlbedoTexturePath() + "diffuse.png");
-      resourceLoader.AllocateAsync(folderManager->GetNormalMapPath() + "dummy_nm.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/right.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/left.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/top.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/back.png");
-      resourceLoader.AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/front.png");
+      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-      resourceLoader.WaitUntilResourcesLoad();
-   
       {
          // Test for PBR
          {
@@ -285,5 +287,7 @@ namespace Labyrinth
       }
 
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
+
+      ResourceMap::DeleteInstance();
    }
 }

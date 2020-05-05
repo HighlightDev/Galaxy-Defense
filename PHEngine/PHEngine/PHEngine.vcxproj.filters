@@ -1837,6 +1837,9 @@
     <ClInclude Include="src\Core\IoCore\TextureLoaderCore\TextureResourceInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshResourceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

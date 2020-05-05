@@ -45,7 +45,7 @@ namespace IO
 			{
 				int32_t id = -1;
 
-				if (currentSkeletonBone->GetBoneInfo()->mName == seekBone->mName)
+				if (currentSkeletonBone->GetBoneInfo().mName == seekBone->mName)
 				{
 					id = currentSkeletonBone->GetBoneId();
 				}
@@ -86,7 +86,7 @@ namespace IO
 			{
 			}
 
-			void SkeletonBoneLOADER::SetBoneInfo(aiBone* bone)
+			void SkeletonBoneLOADER::SetBoneInfo(BoneInfo bone)
 			{
 				m_boneInfo = bone;
 			}
@@ -96,7 +96,7 @@ namespace IO
 				m_boneId = id;
 			}
 
-			aiBone* SkeletonBoneLOADER::GetBoneInfo() const
+			BoneInfo SkeletonBoneLOADER::GetBoneInfo() const
 			{
 				return m_boneInfo;
 			}

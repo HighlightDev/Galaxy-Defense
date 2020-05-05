@@ -422,6 +422,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\CompositeShader.h" />
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshResourceInfo.h" />
     <ClInclude Include="src\Core\IoCore\RawResource.h" />
     <ClInclude Include="src\Core\IoCore\ResourceExtensionsInfo.h" />
     <ClInclude Include="src\Core\IoCore\TextureLoaderCore\TextureResourceInfo.h" />

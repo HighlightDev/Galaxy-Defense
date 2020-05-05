@@ -3,21 +3,16 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
+#include "Core/IoCore/RawResource.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/CommonCore/Assertion.h"
 
-using namespace IO::Images::Stb;
 using namespace IO;
 
 namespace Graphics
 {
 	namespace Texture
 	{
-
-		Texture2d::Texture2d(std::string& pathToTex, ITextureMipMapState* mipmapState) 
-			: ITexture()
-			, m_mipmapState(mipmapState)
-		{
-			m_texDescriptor = LoadTextureFromFile(pathToTex);
-		}
 
 		Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH)
 			: ITexture()
@@ -27,6 +22,13 @@ namespace Graphics
 			m_textureParams.TexBufferWidth = texBufferWH.x;
 			m_textureParams.TexBufferHeight = texBufferWH.y;
 		}
+
+      Texture2d::Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState)
+         : ITexture()
+         , m_mipmapState(mipmapState)
+      {
+         m_texDescriptor = GetTextureResource(pathToTex);
+      }
 
       void Texture2d::InitEmptyTexture()
       {
@@ -77,31 +79,30 @@ namespace Graphics
          glBindTexture(m_textureParams.TexTarget, 0);
       }
 
-		uint32_t Texture2d::LoadTextureFromFile(const std::string& pathToTex, int32_t texWrapMode)
+		uint32_t Texture2d::GetTextureResource(const std::string& pathToTex, int32_t texWrapMode)
 		{
-         StbLoader textureLoader;
-         
-         TextureResourceInfo texResourceInfo;
+         Resource* outResource;
+         bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTex);
 
-			uint8_t* data = textureLoader.AllocateTextureMemoryFromFile(pathToTex, texResourceInfo);
+         assert(bResourceValid);
 
-         m_textureParams.TexBufferWidth = texResourceInfo.Width;
-         m_textureParams.TexBufferHeight = texResourceInfo.Height;
+         TextureResource* texResource = static_cast<TextureResource*>(outResource);
+       
+         m_textureParams.TexBufferWidth = texResource->TexInfo.Width;
+         m_textureParams.TexBufferHeight = texResource->TexInfo.Height;
 
-         if (texResourceInfo.PixelComponents == 3)
+         if (texResource->TexInfo.PixelComponents == 3)
          {
             m_textureParams.TexPixelFormat = GL_RGB;
             m_textureParams.TexPixelInternalFormat = GL_RGB;
          }
-         else if (texResourceInfo.PixelComponents == 4)
+         else if (texResource->TexInfo.PixelComponents == 4)
          {
             m_textureParams.TexPixelFormat = GL_RGBA;
             m_textureParams.TexPixelInternalFormat = GL_RGBA;
          }
 
-			uint32_t readyToWorkDescriptor = CreateTexture(data);
-         textureLoader.ReleaseTextureMemory(); // Release memory allocated for texture
-			return readyToWorkDescriptor;
+			return CreateTexture(texResource->DATA);
 		}
 
 		uint32_t Texture2d::CreateTexture(const void* pixelsData)

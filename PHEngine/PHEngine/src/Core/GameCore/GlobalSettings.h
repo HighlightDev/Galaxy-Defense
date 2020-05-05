@@ -20,6 +20,7 @@ namespace Game
       const float   mShadowMapBiasPointLight;
       const int32_t mDirLightPCFSamplesCount;
       const int32_t mPointLightPCFSamplesCount;
+      static constexpr int32_t CountBonesPerVertexForAnimation = 3;
 
       GlobalSettings();
 
@@ -71,6 +72,10 @@ namespace Game
 
       inline int32_t GetPointLightPCFSamplesCount() const {
          return mPointLightPCFSamplesCount;
+      }
+
+      static constexpr int32_t GetCountBonesPerVertexForAnimation() {
+         return GlobalSettings::CountBonesPerVertexForAnimation;
       }
 
    };

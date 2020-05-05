@@ -22,7 +22,7 @@ namespace IO
 
 			public:
 
-				AssimpMeshLoader(std::string& modelFilePath);
+				AssimpMeshLoader(const std::string& modelFilePath);
 
 				~AssimpMeshLoader();
 

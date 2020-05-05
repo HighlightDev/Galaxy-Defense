@@ -22,7 +22,7 @@ namespace Graphics
 
 		public:
 
-			Texture2d(std::string& pathToTex, ITextureMipMapState* mipmapState);
+         Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState);
 
 			Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH);
 
@@ -61,7 +61,7 @@ namespace Graphics
 
          void InitEmptyTexture();
 
-			uint32_t LoadTextureFromFile(const std::string& pathToTex, int32_t texWrapMode = GL_REPEAT);
+			uint32_t GetTextureResource(const std::string& pathToTex, int32_t texWrapMode = GL_REPEAT);
 
 			uint32_t CreateTexture(const void* pixelsData);
 		};

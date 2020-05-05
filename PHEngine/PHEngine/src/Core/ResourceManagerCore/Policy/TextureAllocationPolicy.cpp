@@ -18,8 +18,7 @@ namespace Resources
 		{
 		case 1:
 		{
-			std::string absolutePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(arg));
-			resultTexture = std::shared_ptr<ITexture>(LoadTexture2dFromFile(absolutePath));
+			resultTexture = std::shared_ptr<ITexture>(LoadTexture2dFromFile(arg));
 			break;
 		}
 		case 6:
@@ -51,8 +50,7 @@ namespace Resources
 
 		for (auto it = pathToFiles.begin(); it != pathToFiles.end(); ++it)
 		{
-			std::string absolutePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(*it));
-			absolutePaths.emplace_back(std::move(absolutePath));
+			absolutePaths.emplace_back(std::move(*it));
 		}
 
 		return new CubemapTexture(absolutePaths);

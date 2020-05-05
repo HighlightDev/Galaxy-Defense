@@ -7,13 +7,19 @@ namespace IO {
 
    struct ResourceMap {
 
-      class AsyncDataProxy* mAsyncDataProxy;
+   private:
 
       TextureResourceLoader textureLoader;
 
       MeshResourceLoader meshLoader;
 
-      ResourceMap();
+      static ResourceMap* mInstance;
+
+   public:
+
+      class AsyncDataProxy* mAsyncDataProxy;
+
+      ~ResourceMap();
 
       void AllocateAsync(const std::string& key);
 
@@ -21,12 +27,25 @@ namespace IO {
 
       void WaitUntilResourcesLoad();
 
-      ~ResourceMap();
+      bool TryGetResource(Resource*& outResource, const std::string& key);
+
+      static ResourceMap* GetInstance()
+      {
+         if (!mInstance)
+            mInstance = new ResourceMap();
+
+         return mInstance;
+      }
+
+      static void DeleteInstance()
+      {
+         delete mInstance;
+         mInstance = nullptr;
+      }
 
    private:
 
-      // make sure that ResourceMap is created only on stack
-      void* operator new(size_t size);
+      ResourceMap();
 
    };
 

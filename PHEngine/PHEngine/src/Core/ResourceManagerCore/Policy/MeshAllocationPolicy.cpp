@@ -1,6 +1,5 @@
 #include "MeshAllocationPolicy.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshVertexData.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshAnimationData.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
@@ -9,13 +8,18 @@
 #include "Core/GraphicsCore/Animation/Bone.h"
 #include "Core/UtilityCore/AssimpSkeletonConverter.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+#include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/IoCore/RawResource.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <gl/glew.h>
 
 using namespace Graphics::OpenGL;
-using namespace IO::MeshLoader::Assimp;
 using namespace Graphics::Animation;
 using namespace Graphics::Mesh;
+using namespace IO::MeshLoader::Assimp;
+using namespace IO;
 
 namespace Resources
 {
@@ -29,12 +33,17 @@ namespace Resources
 		std::shared_ptr<Skin> resultSkin;
 
 		{
-			std::string absolutePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(arg));
-			AssimpMeshLoader<countOfBonesInfluencingOnVertex> loader(absolutePath);
-
          VertexArrayObject vao;
 
-			MeshVertexData<countOfBonesInfluencingOnVertex>* meshData = loader.LoadAndGetMeshData();
+         Resource* outResource;
+         bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
+
+         assert(bResourceValid);
+
+         MeshResource* meshResource = static_cast<MeshResource*>(outResource);
+         MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
+
+         MeshVertexData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
 
 			const std::vector<float>& vertices = meshData->Verts;
 			const std::vector<float>& normals = meshData->N_Verts;
@@ -75,7 +84,7 @@ namespace Resources
 
 			if (meshData->bHasAnimation)
 			{
-				Bone* rootBone = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
+				Bone* rootBone = EngineUtility::AssimpSkeletonConverter::ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
             meshData->SkeletonRoot->CleanUp();
             delete meshData->SkeletonRoot;
             meshData->SkeletonRoot = nullptr;

@@ -7,15 +7,30 @@
 
 namespace IO {
 
+   ResourceMap* ResourceMap::mInstance = nullptr;
+
    ResourceMap::ResourceMap() 
    : mAsyncDataProxy(new AsyncDataProxy())
    {
-
    }
 
    ResourceMap::~ResourceMap()
    {
       delete mAsyncDataProxy;
+      mAsyncDataProxy = nullptr;
+   }
+
+   bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
+   {
+      std::future<Resource*>& asyncResource = mAsyncDataProxy->ResourcesMap[key];
+      const bool bValid = asyncResource.valid();
+      
+      if (bValid)
+      {
+         outResource = asyncResource.get();
+      }
+
+      return bValid;
    }
 
    void ResourceMap::AllocateAsync(const std::string& key) {
@@ -43,6 +58,10 @@ namespace IO {
       }
    }
 
+   void ResourceMap::AllocateSync(const std::string& key) {
+
+   }
+
    void ResourceMap::WaitUntilResourcesLoad()
    {
       while (true)
@@ -59,29 +78,10 @@ namespace IO {
 
          if (bResourcesLoaded)
          {
-            auto resource = mAsyncDataProxy->ResourcesMap.begin()->second.get();
-            if (resource->ResourceType == RESOURCE_TYPE::TEXTURE)
-            {
-               auto texResource = static_cast<TextureResource*>(resource);
-               int w = texResource->TexInfo.Width;
-            }
             return;
          }
-   
 
          std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
    }
-
-   void ResourceMap::AllocateSync(const std::string& key) {
-
-   }
-
-   void* ResourceMap::operator new(size_t size)
-   {
-      assert(false); // operator new definitely should not be called!
-
-      return nullptr;
-   }
-
 }

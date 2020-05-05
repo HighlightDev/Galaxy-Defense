@@ -13,7 +13,7 @@ namespace IO
 			template class AssimpMeshLoader<3>;
 
 			template <int32_t count_bones_influence_vertex>
-			AssimpMeshLoader<count_bones_influence_vertex>::AssimpMeshLoader(std::string& modelFilePath)
+			AssimpMeshLoader<count_bones_influence_vertex>::AssimpMeshLoader(const std::string& modelFilePath)
 			{
 				m_scene = importer.ReadFile(modelFilePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 				if (!m_scene)
@@ -23,10 +23,7 @@ namespace IO
 			template <int32_t count_bones_influence_vertex>
 			AssimpMeshLoader<count_bones_influence_vertex>::~AssimpMeshLoader()
 			{
-				delete m_meshData;
 				m_meshData = nullptr;
-
-				delete m_meshAninationData;
 				m_meshAninationData = nullptr;
 			}
 

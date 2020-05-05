@@ -5,9 +5,7 @@
 namespace EngineUtility
 {
 
-	std::unique_ptr<AssimpSkeletonConverter> AssimpSkeletonConverter::m_instance;
-
-	glm::mat4 AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToOpenTKMatrix4(aiMatrix4x4& srcMatrix)
+	glm::mat4 AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToOpenTKMatrix4(const aiMatrix4x4& srcMatrix)
 	{
 		glm::mat4 dstMatrix(srcMatrix.a1, srcMatrix.b1, srcMatrix.c1, srcMatrix.d1,
          srcMatrix.a2, srcMatrix.b2, srcMatrix.c2, srcMatrix.d2,
@@ -22,8 +20,8 @@ namespace EngineUtility
 		for (auto& srcNode : srcParentNode->GetChildren())
 		{
          // SHOULD BE POINTER!!!
-			Bone* dstChildBone = new Bone(srcNode->GetBoneId(), srcNode->GetBoneInfo()->mName.C_Str(), dstParentBone);
-			dstChildBone->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(srcNode->GetBoneInfo()->mOffsetMatrix));
+			Bone* dstChildBone = new Bone(srcNode->GetBoneId(), srcNode->GetBoneInfo().mName.C_Str(), dstParentBone);
+			dstChildBone->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(srcNode->GetBoneInfo().mOffsetMatrix));
 			dstParentBone->AddChild(dstChildBone);
 			IterateBoneTree(dstChildBone, srcNode);
 		}
@@ -36,8 +34,8 @@ namespace EngineUtility
 		for (auto& bone : rootBone->GetChildren())
 		{
 			int32_t id = bone->GetBoneId();
-			Bone* root = new Bone(id, bone->GetBoneInfo()->mName.C_Str());
-			root->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(bone->GetBoneInfo()->mOffsetMatrix));
+			Bone* root = new Bone(id, bone->GetBoneInfo().mName.C_Str());
+			root->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(bone->GetBoneInfo().mOffsetMatrix));
 			IterateBoneTree(root, bone);
 			resultBone->AddChild(root);
 		}
@@ -45,7 +43,16 @@ namespace EngineUtility
 		return resultBone;
 	}
 
-   std::vector<AnimationSequence> AssimpSkeletonConverter::ConvertAssimpAnimationToEngineAnimation(const std::vector<AnimationLOADER>& srcAnimations) const
+   BoneInfo AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(aiBone* assimpBone)
+   {
+      BoneInfo result;
+      result.mName = assimpBone->mName;
+      result.mNumWeights = assimpBone->mNumWeights;
+      result.mOffsetMatrix = assimpBone->mOffsetMatrix;
+      return result;
+   }
+
+   std::vector<AnimationSequence> AssimpSkeletonConverter::ConvertAssimpAnimationToEngineAnimation(const std::vector<AnimationLOADER>& srcAnimations)
    {
       std::vector<AnimationSequence> dstAnimations;
 

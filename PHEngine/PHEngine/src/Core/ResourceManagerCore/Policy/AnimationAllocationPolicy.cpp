@@ -1,9 +1,13 @@
 #include "AnimationAllocationPolicy.h"
 
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 #include "Core/UtilityCore/AssimpSkeletonConverter.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
+#include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/IoCore/RawResource.h"
+#include "Core/CommonCore/Assertion.h"
 
+using namespace IO;
 using namespace IO::MeshLoader::Assimp;
 using namespace EngineUtility;
 
@@ -17,13 +21,19 @@ namespace Resources
       const int32_t countOfBonesInfluencingOnVertex = 3;
 
       std::vector<AnimationSequence> resultAnimationCollection;
+    
+      Resource* outResource;
+      bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
 
-      std::string absolutePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(arg));
-      AssimpMeshLoader<countOfBonesInfluencingOnVertex> loader(absolutePath);
-      if (loader.GetHasAnimationData())
+      assert(bResourceValid);
+
+      MeshResource* meshResource = static_cast<MeshResource*>(outResource);
+      MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
+
+      if (meshInfo->MeshData->bHasAnimation)
       {
-         MeshAnimationData* animationData = loader.LoadAndGetAnimationData();
-         resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::GetInstance()->ConvertAssimpAnimationToEngineAnimation(animationData->GetAnimations());
+         MeshAnimationData* animationData = meshInfo->AninationData;
+         resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::ConvertAssimpAnimationToEngineAnimation(animationData->GetAnimations());
       }
 
       return std::make_shared<std::vector<AnimationSequence>>(std::move(resultAnimationCollection));

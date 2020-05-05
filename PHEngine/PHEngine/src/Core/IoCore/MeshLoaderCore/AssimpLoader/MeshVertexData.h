@@ -35,7 +35,7 @@ namespace IO
 
 				void IterateHierarchy(aiNode& parentNode, int32_t& countChildren);
 
-				aiBone* GetBoneByName(const std::string& name) const;
+				aiBone* GetBoneByName(const aiString& name) const;
 
 				void CollectIndices(aiMesh* meshBeingCollected, uint32_t lastIndexBeenInterrupted);
 

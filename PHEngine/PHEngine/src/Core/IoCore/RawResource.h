@@ -2,12 +2,10 @@
 
 #include "ResourceExtensionsInfo.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
+#include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
 
 namespace IO
 {
-   // when texture is loading I get uint8*
-   // when animation is loading I get AninationData*
-   // when mesh is loading I get MeshData*
 
    struct Resource {
 
@@ -15,11 +13,10 @@ namespace IO
 
       void* DATA;
 
-      void Clear()
+      virtual void Clear()
       {
          delete DATA;
       }
-
    };
 
    struct TextureResource 
@@ -32,6 +29,10 @@ namespace IO
       {
          ResourceType = RESOURCE_TYPE::TEXTURE;
       }
+
+      virtual void Clear() override {
+         free(DATA);
+      }
    };
 
    struct MeshResource
@@ -41,6 +42,17 @@ namespace IO
          : Resource()
       {
          ResourceType = RESOURCE_TYPE::MESH;
+      }
+
+      virtual void Clear() override
+      {
+         MeshResourceInfo* data = GetMeshResourceInfo();
+         delete data;
+      }
+
+      MeshResourceInfo* GetMeshResourceInfo() {
+         MeshResourceInfo* data = (MeshResourceInfo*)DATA;
+         return data;
       }
    };
 

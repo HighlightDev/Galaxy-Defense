@@ -1,6 +1,7 @@
 #include "ResourceLoader.h"
 #include "ResourceMap.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/RawResource.h"
@@ -8,6 +9,7 @@
 using namespace IO::Images;
 using namespace IO::Images::Stb;
 using namespace Graphics::Texture;
+using namespace IO::MeshLoader::Assimp;
 
 namespace IO
 {
@@ -24,7 +26,6 @@ namespace IO
    TextureResourceLoader::TextureResourceLoader()
       : ResourceLoader()
    {
-
    }
 
    Resource* TextureResourceLoader::LoadResource(const std::string& key)
@@ -58,6 +59,24 @@ namespace IO
 
    Resource* MeshResourceLoader::LoadResource(const std::string& key)
    {
-      return new Resource();
+      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
+      AssimpMeshLoader<GlobalSettings::GetCountBonesPerVertexForAnimation()> loader(absolutePath);
+
+      auto meshData = loader.LoadAndGetMeshData();
+      MeshAnimationData* animationData = nullptr;
+
+      if (loader.GetHasAnimationData())
+      {
+         animationData = loader.LoadAndGetAnimationData();
+      }
+
+      MeshResourceInfo* data = new MeshResourceInfo();
+      data->MeshData = meshData;
+      data->AninationData = animationData;
+
+      MeshResource* resource = new MeshResource();
+      resource->DATA = data;
+
+      return resource;
    }
 }

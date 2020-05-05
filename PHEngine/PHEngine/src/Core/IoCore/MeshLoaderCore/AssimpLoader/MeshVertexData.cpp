@@ -1,8 +1,11 @@
 #include "MeshVertexData.h"
 #include "SkeletonBoneLOADER.h"
+#include "Core/UtilityCore/AssimpSkeletonConverter.h"
 
 #include <tuple>
 #include <thread>
+
+using namespace EngineUtility;
 
 namespace IO
 {
@@ -149,12 +152,12 @@ namespace IO
 						for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
 						{
 							aiNode* childNode = rootNode->mChildren[nodeIndex];
-							aiBone* bone = GetBoneByName(std::string(childNode->mName.C_Str()));
+							aiBone* bone = GetBoneByName(childNode->mName);
 							if (bone)
 							{
 								SkeletonBoneLOADER* skeletonBone = new SkeletonBoneLOADER(SkeletonRoot);
 								skeletonBone->SetBoneId(boneIdCounter++);
-								skeletonBone->SetBoneInfo(bone);
+								skeletonBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(bone));
 								FillHierarchyRecursive(childNode, skeletonBone, boneIdCounter);
 								SkeletonRoot->AddChildBone(skeletonBone);
 							}
@@ -172,8 +175,8 @@ namespace IO
 					aiNode* childNode = parentNode->mChildren[nodeIndex];
 					SkeletonBoneLOADER* childBone = new SkeletonBoneLOADER(parentBone);
 					parentBone->AddChildBone(childBone);
-					aiBone* boneInfo = GetBoneByName(std::string(childNode->mName.C_Str()));
-					childBone->SetBoneInfo(boneInfo);
+					aiBone* boneInfo = GetBoneByName(childNode->mName);
+					childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(boneInfo));
 					childBone->SetBoneId(boneIdCounter++);
 					FillHierarchyRecursive(childNode, childBone, boneIdCounter);
 				}
@@ -214,7 +217,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			aiBone* MeshVertexData<count_bones_influence_vertex>::GetBoneByName(const std::string& name) const {
+			aiBone* MeshVertexData<count_bones_influence_vertex>::GetBoneByName(const aiString& name) const {
 
 				aiBone* result = nullptr;
 
@@ -227,7 +230,7 @@ namespace IO
 					for (size_t boneIndex = size_t(0); boneIndex < bonesCount; boneIndex++)
 					{
 						aiBone* bone = mesh->mBones[boneIndex];
-						if (std::string(bone->mName.C_Str()) == name)
+						if (bone->mName == name)
 						{
 							result = bone;
 							break;
