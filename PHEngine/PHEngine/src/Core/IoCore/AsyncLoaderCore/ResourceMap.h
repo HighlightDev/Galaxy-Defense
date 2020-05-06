@@ -13,6 +13,8 @@ namespace IO {
 
       MeshResourceLoader meshLoader;
 
+      std::map<std::string, Resource*> ReadyToReadResources;
+
       static ResourceMap* mInstance;
 
    public:

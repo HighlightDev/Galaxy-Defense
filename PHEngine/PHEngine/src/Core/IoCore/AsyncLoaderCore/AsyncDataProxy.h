@@ -10,16 +10,6 @@ namespace IO {
    {
    public:
       std::map<std::string, std::future<Resource*>> ResourcesMap;
-
-      ~AsyncDataProxy()
-      {
-         for (auto& pair : ResourcesMap)
-         {
-            Resource* res = pair.second.get();
-            res->Clear();
-            delete res;
-         }
-      }
    };
 
 }

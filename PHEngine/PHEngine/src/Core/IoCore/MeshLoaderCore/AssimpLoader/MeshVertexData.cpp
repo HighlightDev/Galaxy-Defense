@@ -28,7 +28,7 @@ namespace IO
 			template <int32_t count_bones_influence_vertex>
 			MeshVertexData<count_bones_influence_vertex>::~MeshVertexData()
 			{
-
+            delete SkeletonRoot;
 			}
 
 			template <int32_t count_bones_influence_vertex>

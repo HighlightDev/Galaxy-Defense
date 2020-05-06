@@ -9,25 +9,32 @@ namespace IO {
 
    ResourceMap* ResourceMap::mInstance = nullptr;
 
-   ResourceMap::ResourceMap() 
-   : mAsyncDataProxy(new AsyncDataProxy())
+   ResourceMap::ResourceMap()
+      : ReadyToReadResources()
+      , mAsyncDataProxy(new AsyncDataProxy())
    {
    }
 
    ResourceMap::~ResourceMap()
    {
+      for (auto& pair : ReadyToReadResources)
+      {
+         Resource* res = pair.second;
+         res->Clear();
+         delete res;
+      }
+
       delete mAsyncDataProxy;
       mAsyncDataProxy = nullptr;
    }
 
    bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
    {
-      std::future<Resource*>& asyncResource = mAsyncDataProxy->ResourcesMap[key];
-      const bool bValid = asyncResource.valid();
-      
+      const bool bValid = ReadyToReadResources.count(key) > 0;;
+
       if (bValid)
       {
-         outResource = asyncResource.get();
+         outResource = ReadyToReadResources[key];
       }
 
       return bValid;
@@ -67,21 +74,16 @@ namespace IO {
       while (true)
       {
          bool bResourcesLoaded = true;
-         for (const auto& resource : mAsyncDataProxy->ResourcesMap)
+         for (auto& resource : mAsyncDataProxy->ResourcesMap)
          {
-            if (!resource.second.valid())
-            {
-               bResourcesLoaded = false;
-               break;
-            }
+            resource.second.wait();
+            ReadyToReadResources[resource.first] = resource.second.get();
          }
 
          if (bResourcesLoaded)
          {
             return;
          }
-
-         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
    }
 }
