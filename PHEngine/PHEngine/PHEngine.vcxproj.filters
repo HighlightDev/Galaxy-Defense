@@ -512,6 +512,7 @@
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
+    <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -2226,5 +2227,10 @@
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\dzinovev\Desktop\91-anime_character\textures.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

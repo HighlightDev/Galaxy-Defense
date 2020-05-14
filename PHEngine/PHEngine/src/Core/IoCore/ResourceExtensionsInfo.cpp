@@ -13,6 +13,7 @@ namespace IO
       std::pair("jpg", RESOURCE_TYPE::TEXTURE),
       std::pair("obj", RESOURCE_TYPE::MESH),
       std::pair("dae", RESOURCE_TYPE::MESH),
+      std::pair("fbx", RESOURCE_TYPE::MESH),
    });
 
    RESOURCE_TYPE ResourceExtensionsInfo::GetResourceTypeByFileExtension(const std::string& filePath) 

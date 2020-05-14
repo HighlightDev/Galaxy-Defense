@@ -1,6 +1,7 @@
 #include "MeshVertexData.h"
 #include "SkeletonBoneLOADER.h"
 #include "Core/UtilityCore/AssimpSkeletonConverter.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <tuple>
 #include <thread>
@@ -173,11 +174,19 @@ namespace IO
 				for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
 				{
 					aiNode* childNode = parentNode->mChildren[nodeIndex];
-					SkeletonBoneLOADER* childBone = new SkeletonBoneLOADER(parentBone);
-					parentBone->AddChildBone(childBone);
-					aiBone* boneInfo = GetBoneByName(childNode->mName);
-					childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(boneInfo));
-					childBone->SetBoneId(boneIdCounter++);
+               aiBone* boneInfo = GetBoneByName(childNode->mName);
+
+               SkeletonBoneLOADER* childBone = parentBone;
+               if (boneInfo)
+               {
+                  childBone = new SkeletonBoneLOADER(parentBone);
+                  parentBone->AddChildBone(childBone);
+                  childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(boneInfo));
+                  childBone->SetBoneId(boneIdCounter++);
+               }
+
+               assert(boneInfo); // todo: decide what to do when bone is not found
+
 					FillHierarchyRecursive(childNode, childBone, boneIdCounter);
 				}
 			}

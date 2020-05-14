@@ -83,6 +83,7 @@ namespace Labyrinth
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "playerCube.obj");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "City_House_2_BI.obj");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "player_walk.fbx");
 
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
@@ -104,6 +105,27 @@ namespace Labyrinth
             PhysicsDescriptor* cubePhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 25.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
+            cubeActor->AddComponent(cubePhysComponent);
+
+            mScene->AllActors.push_back(cubeActor);
+         }
+      }
+
+      {
+         {
+            auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "diffuse.png");
+
+            SkeletalMeshComponentData mData(folderManager->GetModelPath() + "player_walk.fbx", glm::vec3(0), glm::vec3(270, 0, 0), glm::vec3(1),
+               std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
+
+            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",
+               std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
+            auto component = mScene->CreateComponent_GameThread<SkeletalMeshComponent>(mData);
+            cubeActor->AddComponent(component);
+
+            PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
+            mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
+            std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<CharacterPhysicsComponent>(physDesc);
             cubeActor->AddComponent(cubePhysComponent);
 
             mScene->AllActors.push_back(cubeActor);
