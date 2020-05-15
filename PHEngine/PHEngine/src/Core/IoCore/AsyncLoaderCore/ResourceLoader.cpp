@@ -62,13 +62,8 @@ namespace IO
       const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
       AssimpMeshLoader<GlobalSettings::GetCountBonesPerVertexForAnimation()> loader(absolutePath);
 
-      auto meshData = loader.LoadAndGetMeshData();
-      MeshAnimationData* animationData = nullptr;
-
-      if (loader.GetHasAnimationData())
-      {
-         animationData = loader.LoadAndGetAnimationData();
-      }
+      auto meshData = loader.GetMeshData();
+      MeshAnimationData* animationData = loader.GetAnimationData();
 
       MeshResourceInfo* data = new MeshResourceInfo();
       data->MeshData = meshData;

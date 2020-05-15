@@ -5,6 +5,7 @@
 
 #include <tuple>
 #include <thread>
+#include <memory>
 
 using namespace EngineUtility;
 
@@ -146,7 +147,7 @@ namespace IO
 					SkeletonRoot = new SkeletonBoneBaseLOADER();
 					int32_t boneIdCounter = 0;
 
-					aiNode* rootNode = m_scene->mRootNode->FindNode(GetSkeletonArmatureNodeName(*m_scene->mRootNode).c_str());
+					aiNode* rootNode = m_scene->mRootNode->FindNode(GetSkeletonArmatureNodeName(*m_scene->mRootNode));
 					if (rootNode)
 					{
 						size_t nodesCount = rootNode->mNumChildren;
@@ -161,6 +162,8 @@ namespace IO
 								skeletonBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(bone));
 								FillHierarchyRecursive(childNode, skeletonBone, boneIdCounter);
 								SkeletonRoot->AddChildBone(skeletonBone);
+
+                        mValidBoneNames.insert(bone->mName.C_Str());
 							}
 						}
 					}
@@ -183,21 +186,22 @@ namespace IO
                   parentBone->AddChildBone(childBone);
                   childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(boneInfo));
                   childBone->SetBoneId(boneIdCounter++);
-               }
 
-               assert(boneInfo); // todo: decide what to do when bone is not found
+                  mValidBoneNames.insert(boneInfo->mName.C_Str());
+               }
 
 					FillHierarchyRecursive(childNode, childBone, boneIdCounter);
 				}
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			std::string MeshVertexData<count_bones_influence_vertex>::GetSkeletonArmatureNodeName(aiNode& rootNode) {
+			aiString MeshVertexData<count_bones_influence_vertex>::GetSkeletonArmatureNodeName(aiNode& rootNode) {
 
-				std::string name;
+            aiString boneName;
 
 				int32_t maxHierarchySize = 0;
 				size_t nodesCount = rootNode.mNumChildren;
+
 				for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
 				{
 					aiNode* childNode = rootNode.mChildren[nodeIndex];
@@ -206,11 +210,11 @@ namespace IO
 					if (currentChildHierarchySize > maxHierarchySize)
 					{
 						maxHierarchySize = currentChildHierarchySize;
-						name = std::move(std::string(childNode->mName.C_Str()));
+                  boneName = childNode->mName;
 					}
 				}
 
-				return name;
+				return boneName;
 			}
 
 			template <int32_t count_bones_influence_vertex>
@@ -392,6 +396,11 @@ namespace IO
 			{
 
 			}
+
+         template <int32_t count_bones_influence_vertex>
+         std::set<std::string> MeshVertexData<count_bones_influence_vertex>::GetValidBoneSet() const {
+            return mValidBoneNames;
+         }
 		}
 	}
 }

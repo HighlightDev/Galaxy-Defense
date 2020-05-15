@@ -3,8 +3,8 @@
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <vector>
+#include <set>
 #include <string>
-#include <memory>
 
 #include "VertexLOADER.h"
 
@@ -23,6 +23,8 @@ namespace IO
 				const aiScene* m_scene;
 				aiMesh** m_meshes;
 
+            std::set<std::string> mValidBoneNames;
+
 				void GetMeshVertexData();
 
 				void LoadSkin();
@@ -31,7 +33,7 @@ namespace IO
 
 				void FillHierarchyRecursive(aiNode* parentNode, class SkeletonBoneLOADER*& parentBone, int32_t& boneIdCounter);
 
-				std::string GetSkeletonArmatureNodeName(aiNode& rootNode);
+				aiString GetSkeletonArmatureNodeName(aiNode& rootNode);
 
 				void IterateHierarchy(aiNode& parentNode, int32_t& countChildren);
 
@@ -80,6 +82,8 @@ namespace IO
 				void CollectBlendWeightsAndIndices(VertexLOADER& blendInfoVertex, size_t blendableIndex);
 
 				void CleanUp();
+
+            std::set<std::string> GetValidBoneSet() const;
 
 			};
 		}

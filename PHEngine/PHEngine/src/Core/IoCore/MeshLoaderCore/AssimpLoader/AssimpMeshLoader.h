@@ -26,11 +26,13 @@ namespace IO
 
 				~AssimpMeshLoader();
 
-				bool GetHasAnimationData() const;
+				MeshVertexData<count_bones_influence_vertex>* GetMeshData() const;
 
-				MeshVertexData<count_bones_influence_vertex>* LoadAndGetMeshData();
+				MeshAnimationData* GetAnimationData() const;
 
-				MeshAnimationData* LoadAndGetAnimationData();
+         private:
+
+            void LoadMeshAndAnimations();
 			};
 		}
 	}

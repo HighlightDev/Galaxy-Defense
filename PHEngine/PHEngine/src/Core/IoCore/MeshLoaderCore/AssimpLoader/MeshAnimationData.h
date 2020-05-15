@@ -2,6 +2,8 @@
 
 #include <assimp/anim.h>
 #include <vector>
+#include <set>
+#include <string>
 
 #include "AnimationLOADER.h"
 
@@ -18,7 +20,7 @@ namespace IO
 
 			public:
 
-				MeshAnimationData(aiAnimation** animations, size_t animationCount);
+				MeshAnimationData(aiAnimation** animations, size_t animationCount, const std::set<std::string>& validBones);
 
 				~MeshAnimationData();
 
