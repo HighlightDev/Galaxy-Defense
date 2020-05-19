@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <assimp/anim.h>
-#include <set>
+#include <map>
 
 #include "BoneFrameCollectionLOADER.h"
 
@@ -23,7 +23,7 @@ namespace IO
 
 			public:
 
-            AnimationLOADER(aiAnimation* animation, const std::set<std::string>& validBones);
+            AnimationLOADER(aiAnimation* animation, const std::map<std::string, size_t>& validBoneMapping);
 
 				~AnimationLOADER();
 			};

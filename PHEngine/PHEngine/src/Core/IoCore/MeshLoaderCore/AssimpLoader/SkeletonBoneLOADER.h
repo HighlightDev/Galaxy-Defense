@@ -26,7 +26,11 @@ namespace IO
 			protected:
 				std::vector<SkeletonBoneLOADER*> m_children;
 			public:
+
+            aiMatrix4x4 InvGlobaTransform;
+
 				SkeletonBoneBaseLOADER();
+
 				virtual ~SkeletonBoneBaseLOADER();
 
 				void AddChildBone(SkeletonBoneLOADER* child);
@@ -46,7 +50,7 @@ namespace IO
 
 				SkeletonBoneBaseLOADER* m_parent;
             BoneInfo m_boneInfo;
-				int32_t m_boneId;
+				int32_t m_boneId = -1;
 
 			public:
 				SkeletonBoneLOADER(SkeletonBoneBaseLOADER* parent);

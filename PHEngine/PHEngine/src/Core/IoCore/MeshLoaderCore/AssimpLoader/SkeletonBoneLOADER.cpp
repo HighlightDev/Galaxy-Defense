@@ -8,9 +8,9 @@ namespace IO
 		{
 
 			/********* SkeletonBoneBaseLOADER ***************/
-			SkeletonBoneBaseLOADER::SkeletonBoneBaseLOADER()
+         SkeletonBoneBaseLOADER::SkeletonBoneBaseLOADER()
+            : InvGlobaTransform()
 			{
-
 			}
 
 			SkeletonBoneBaseLOADER::~SkeletonBoneBaseLOADER()

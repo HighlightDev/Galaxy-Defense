@@ -95,7 +95,7 @@ namespace Labyrinth
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
             auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0), glm::vec3(), glm::vec3(1),
+            StaticMeshComponentData mData(folderManager->GetModelPath() + "dark_templar_knight.dae", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor",

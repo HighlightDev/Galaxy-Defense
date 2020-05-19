@@ -1,7 +1,7 @@
 #include "MeshAllocationPolicy.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshVertexData.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshAnimationData.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AnimationData.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
@@ -43,7 +43,7 @@ namespace Resources
          MeshResource* meshResource = static_cast<MeshResource*>(outResource);
          MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
 
-         MeshVertexData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
+         MeshData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
 
 			const std::vector<float>& vertices = meshData->Verts;
 			const std::vector<float>& normals = meshData->N_Verts;

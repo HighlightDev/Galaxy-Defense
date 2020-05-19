@@ -1,4 +1,4 @@
-#include "MeshVertexData.h"
+#include "MeshData.h"
 #include "SkeletonBoneLOADER.h"
 #include "Core/UtilityCore/AssimpSkeletonConverter.h"
 #include "Core/CommonCore/Assertion.h"
@@ -16,25 +16,132 @@ namespace IO
 		namespace Assimp
 		{
 
-			template struct MeshVertexData<3>;
+         struct VertexBoneData
+         {
+            size_t BoneIds[4];
+            float Weights[4];
+
+            bool IsFilled = false;
+
+            void AddBoneData(size_t boneId, float weight)
+            {
+               if (!IsFilled)
+               {
+                  for (size_t i = 0; i < 4; ++i)
+                  {
+                     if (Weights[i] <= 0.0005f)
+                     {
+                        BoneIds[i] = boneId;
+                        Weights[i] = weight;
+                        IsFilled = i == 3;
+                        return;
+                     }
+                  }
+               }
+            }
+         };
+
+         struct NewBoneInfo
+         {
+            aiMatrix4x4 mBoneOffset;
+         };
+
+         struct Mesh {
+
+            std::map<std::string, size_t> mBoneMap;
+            std::vector<NewBoneInfo> mBoneInfo;
+
+            size_t mNumBones = 0;
+
+            void CollectBones(aiMesh* mesh, size_t meshVertexBaseIndex, std::vector<VertexBoneData>& bones)
+            {
+               for (size_t i = 0; i < mesh->mNumBones; i++) {
+                  size_t BoneIndex = 0;
+                  std::string BoneName(mesh->mBones[i]->mName.data);
+
+                  if (mBoneMap.find(BoneName) == mBoneMap.end()) {
+                     BoneIndex = mNumBones;
+                     mNumBones++;
+                     NewBoneInfo bi;
+                     mBoneInfo.push_back(bi);
+                  }
+                  else {
+                     BoneIndex = mBoneMap[BoneName];
+                  }
+
+                  mBoneMap[BoneName] = BoneIndex;
+                  mBoneInfo[BoneIndex].mBoneOffset = mesh->mBones[i]->mOffsetMatrix;
+
+                  for (size_t j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
+                     size_t VertexID = meshVertexBaseIndex + mesh->mBones[i]->mWeights[j].mVertexId;
+                     float Weight = mesh->mBones[i]->mWeights[j].mWeight;
+                     bones[VertexID].AddBoneData(BoneIndex, Weight);
+                  }
+               }
+            }
+         };
+
+         void ReadNodeHeirarchy(const aiNode* pNode, std::set<std::string>& nodeNames)
+         {
+            nodeNames.insert(pNode->mName.data);
+
+            for (size_t i = 0; i < pNode->mNumChildren; i++) {
+               ReadNodeHeirarchy(pNode->mChildren[i], nodeNames);
+            }
+         }
+
+         template <int32_t count_bones_influence_vertex>
+         void MeshData<count_bones_influence_vertex>::NEW_CollectBoneInfo()
+         {
+            std::vector<Mesh> meshes;
+            meshes.resize(m_scene->mNumMeshes);
+
+            size_t countVertices = 0;
+
+            std::vector<VertexBoneData> bones;
+            for (size_t i = 0; i < m_scene->mNumMeshes; ++i)
+            {
+               countVertices += m_scene->mMeshes[i]->mNumVertices;
+            }
+
+            bones.resize(countVertices);
+
+            size_t processedMeshBonesCount = 0;
+
+            for (size_t i = 0; i < m_scene->mNumMeshes; ++i)
+            {
+               aiMesh* m = m_scene->mMeshes[i];
+               
+               Mesh meshData;
+               meshData.CollectBones(m, processedMeshBonesCount, bones);
+               meshes.push_back(meshData);
+               processedMeshBonesCount += m->mNumVertices;
+            }
+
+            std::set<std::string> nodeNames;
+
+            ReadNodeHeirarchy(m_scene->mRootNode, nodeNames);
+         }
+
+			template struct MeshData<3>;
 
 			template <int32_t count_bones_influence_vertex>
-			MeshVertexData<count_bones_influence_vertex>::MeshVertexData(const aiScene* scene)
+			MeshData<count_bones_influence_vertex>::MeshData(const aiScene* scene)
 				: m_scene(scene)
 				, m_meshes(m_scene->mMeshes)
 				, SkeletonRoot(nullptr)
 			{
-				GetMeshVertexData();
+				GetMeshData();
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			MeshVertexData<count_bones_influence_vertex>::~MeshVertexData()
+			MeshData<count_bones_influence_vertex>::~MeshData()
 			{
             delete SkeletonRoot;
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::GetMeshVertexData()
+			void MeshData<count_bones_influence_vertex>::GetMeshData()
 			{
 				size_t meshCount = m_scene->mNumMeshes;
 
@@ -56,12 +163,14 @@ namespace IO
 
 				bHasAnimation = m_scene->HasAnimations();
 
+            NEW_CollectBoneInfo();
+
 				LoadSkeleton();
 				LoadSkin();
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::LoadSkin() {
+			void MeshData<count_bones_influence_vertex>::LoadSkin() {
 
 				size_t countOfVertices = 0;
 				size_t meshCount = m_scene->mNumMeshes;
@@ -140,7 +249,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::LoadSkeleton() {
+			void MeshData<count_bones_influence_vertex>::LoadSkeleton() {
 
 				if (bHasAnimation)
 				{
@@ -150,20 +259,31 @@ namespace IO
 					aiNode* rootNode = m_scene->mRootNode->FindNode(GetSkeletonArmatureNodeName(*m_scene->mRootNode));
 					if (rootNode)
 					{
-						size_t nodesCount = rootNode->mNumChildren;
-						for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
+                  const aiMatrix4x4 invertedGlobalTransform = rootNode->mTransformation.Inverse();
+
+                  if (invertedGlobalTransform.a1 != std::numeric_limits<float>::quiet_NaN())
+                  {
+                     SkeletonRoot->InvGlobaTransform = invertedGlobalTransform;
+                  }
+
+						size_t childrenCount = rootNode->mNumChildren;
+						for (size_t childIndex = 0; childIndex < childrenCount; ++childIndex)
 						{
-							aiNode* childNode = rootNode->mChildren[nodeIndex];
+							aiNode* childNode = rootNode->mChildren[childIndex];
+
+                     NodeNames.insert(childNode->mName.data);
+
 							aiBone* bone = GetBoneByName(childNode->mName);
 							if (bone)
 							{
 								SkeletonBoneLOADER* skeletonBone = new SkeletonBoneLOADER(SkeletonRoot);
-								skeletonBone->SetBoneId(boneIdCounter++);
-								skeletonBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(bone));
+								skeletonBone->SetBoneId(boneIdCounter);
+                        skeletonBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(bone));
+                        BoneMaping[bone->mName.data] = boneIdCounter;
+                        boneIdCounter++;
+								
 								FillHierarchyRecursive(childNode, skeletonBone, boneIdCounter);
 								SkeletonRoot->AddChildBone(skeletonBone);
-
-                        mValidBoneNames.insert(bone->mName.C_Str());
 							}
 						}
 					}
@@ -171,23 +291,26 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::FillHierarchyRecursive(aiNode* parentNode, SkeletonBoneLOADER*& parentBone, int32_t& boneIdCounter) {
+			void MeshData<count_bones_influence_vertex>::FillHierarchyRecursive(aiNode* parentNode, SkeletonBoneLOADER*& parentBone, int32_t& boneIdCounter) {
 
 				size_t nodesCount = parentNode->mNumChildren;
 				for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
 				{
 					aiNode* childNode = parentNode->mChildren[nodeIndex];
-               aiBone* boneInfo = GetBoneByName(childNode->mName);
+
+               NodeNames.insert(childNode->mName.data);
+
+               aiBone* bone = GetBoneByName(childNode->mName);
 
                SkeletonBoneLOADER* childBone = parentBone;
-               if (boneInfo)
+               if (bone)
                {
                   childBone = new SkeletonBoneLOADER(parentBone);
                   parentBone->AddChildBone(childBone);
-                  childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(boneInfo));
-                  childBone->SetBoneId(boneIdCounter++);
-
-                  mValidBoneNames.insert(boneInfo->mName.C_Str());
+                  childBone->SetBoneInfo(AssimpSkeletonConverter::ConvertAssimpBoneInfoToEngineBoneInfo(bone));
+                  childBone->SetBoneId(boneIdCounter);
+                  BoneMaping[bone->mName.data] = boneIdCounter;
+                  boneIdCounter++;
                }
 
 					FillHierarchyRecursive(childNode, childBone, boneIdCounter);
@@ -195,7 +318,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			aiString MeshVertexData<count_bones_influence_vertex>::GetSkeletonArmatureNodeName(aiNode& rootNode) {
+			aiString MeshData<count_bones_influence_vertex>::GetSkeletonArmatureNodeName(aiNode& rootNode) {
 
             aiString boneName;
 
@@ -218,7 +341,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::IterateHierarchy(aiNode& parentNode, int32_t& countChildren) {
+			void MeshData<count_bones_influence_vertex>::IterateHierarchy(aiNode& parentNode, int32_t& countChildren) {
 
 				size_t nodesCount = parentNode.mNumChildren;
 				for (size_t nodeIndex = 0; nodeIndex < nodesCount; nodeIndex++)
@@ -230,7 +353,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			aiBone* MeshVertexData<count_bones_influence_vertex>::GetBoneByName(const aiString& name) const {
+			aiBone* MeshData<count_bones_influence_vertex>::GetBoneByName(const aiString& name) const {
 
 				aiBone* result = nullptr;
 
@@ -254,7 +377,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::CollectIndices(aiMesh* meshBeingCollected, uint32_t lastIndexBeenInterrupted) {
+			void MeshData<count_bones_influence_vertex>::CollectIndices(aiMesh* meshBeingCollected, uint32_t lastIndexBeenInterrupted) {
 
 				size_t countOfFaces = meshBeingCollected->mNumFaces;
 				for (size_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++)
@@ -274,7 +397,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::TryToCollectSkinInfo(size_t startIndex, aiMesh* meshBeingCollected) {
+			void MeshData<count_bones_influence_vertex>::TryToCollectSkinInfo(size_t startIndex, aiMesh* meshBeingCollected) {
 
             const bool bCollectNormals = meshBeingCollected->HasNormals() & bHasNormals;
             const bool bCollectTexCoords = meshBeingCollected->HasTextureCoords(0) & bHasTextureCoordinates;
@@ -311,7 +434,7 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::CollectBlendables(size_t vertexId, std::vector<VertexLOADER>& blendData, aiMesh* meshBeingCollected) {
+			void MeshData<count_bones_influence_vertex>::CollectBlendables(size_t vertexId, std::vector<VertexLOADER>& blendData, aiMesh* meshBeingCollected) {
 
 				VertexLOADER vertex(vertexId);
 
@@ -341,7 +464,7 @@ namespace IO
 							}
 							else
 							{
-								throw std::invalid_argument("Such bone doesn't exist in skeleton!");
+								//throw std::invalid_argument("Such bone doesn't exist in skeleton!");
 							}
 						}
 					}
@@ -352,7 +475,7 @@ namespace IO
 			}
 
 			template <>
-			void MeshVertexData<3>::CollectBlendWeightsAndIndices(VertexLOADER& blendInfoVertex, size_t blendableIndex)
+			void MeshData<3>::CollectBlendWeightsAndIndices(VertexLOADER& blendInfoVertex, size_t blendableIndex)
 			{
 				const size_t currentVertexInfluenceCount = blendInfoVertex.BoneWeightMap.size();
 
@@ -392,14 +515,14 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			void MeshVertexData<count_bones_influence_vertex>::CleanUp()
+			void MeshData<count_bones_influence_vertex>::CleanUp()
 			{
 
 			}
 
          template <int32_t count_bones_influence_vertex>
-         std::set<std::string> MeshVertexData<count_bones_influence_vertex>::GetValidBoneSet() const {
-            return mValidBoneNames;
+         std::map<std::string, size_t> MeshData<count_bones_influence_vertex>::GetValidBoneMapping() const {
+            return BoneMaping;
          }
 		}
 	}

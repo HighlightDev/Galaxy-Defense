@@ -4,6 +4,7 @@
 #include <assimp/scene.h>
 #include <vector>
 #include <set>
+#include <map>
 #include <string>
 
 #include "VertexLOADER.h"
@@ -16,16 +17,17 @@ namespace IO
 		{
 
 			template <int32_t count_bones_influence_vertex>
-			struct MeshVertexData
+			struct MeshData
 			{
 			private:
 
 				const aiScene* m_scene;
 				aiMesh** m_meshes;
 
-            std::set<std::string> mValidBoneNames;
+            std::set<std::string> NodeNames;
+            std::map<std::string, size_t> BoneMaping;
 
-				void GetMeshVertexData();
+				void GetMeshData();
 
 				void LoadSkin();
 
@@ -45,10 +47,13 @@ namespace IO
 
 				void CollectBlendables(size_t vertexId, std::vector<VertexLOADER>& blendData, aiMesh* meshBeingCollected);
 
+
+            void NEW_CollectBoneInfo();
+
 			public:
 
-				MeshVertexData(const aiScene* scene);
-				~MeshVertexData();
+				MeshData(const aiScene* scene);
+				~MeshData();
 
             bool bHasIndices = false;
             bool bHasNormals = false;
@@ -83,7 +88,7 @@ namespace IO
 
 				void CleanUp();
 
-            std::set<std::string> GetValidBoneSet() const;
+            std::map<std::string, size_t> GetValidBoneMapping() const;
 
 			};
 		}

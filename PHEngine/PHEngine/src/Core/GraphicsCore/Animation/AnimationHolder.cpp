@@ -95,7 +95,7 @@ namespace Graphics
             std::vector<glm::mat4> offsetMatrices(rootBone->GetChildrenOffsetMatrices());
             std::vector<glm::mat4> animateToBoneSpaceMatrices;
 
-            glm::mat4 matrixOfRootBone(1);
+            glm::mat4 matrixOfRootBone = rootBone->GetOffsetMatrix();
             TransformFromLocalSpaceToBoneSpace(rootBone, matrixOfRootBone, animatePoseMatrices, animateToBoneSpaceMatrices);
 
             size_t countOfAnimatedBones = animatePoseMatrices.size();
@@ -118,7 +118,12 @@ namespace Graphics
       {
          for (auto& child : parentBone->GetChildren())
          {
-            glm::mat4 currentBoneMatrix = parentMatrix * srcTransformation[child->GetId()];
+            glm::mat4 currentBoneMatrix(1);
+            if (child->GetId() != -1)
+            {
+               currentBoneMatrix = parentMatrix * srcTransformation[child->GetId()];
+              
+            }
             dstMatrices.push_back(currentBoneMatrix);
             TransformFromLocalSpaceToBoneSpace(child, currentBoneMatrix, srcTransformation, dstMatrices);
          }

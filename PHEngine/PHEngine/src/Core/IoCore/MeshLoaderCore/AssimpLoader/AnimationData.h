@@ -2,7 +2,7 @@
 
 #include <assimp/anim.h>
 #include <vector>
-#include <set>
+#include <map>
 #include <string>
 
 #include "AnimationLOADER.h"
@@ -13,16 +13,16 @@ namespace IO
 	{
 		namespace Assimp
 		{
-			class MeshAnimationData
+			class AnimationData
 			{
 
 				std::vector<AnimationLOADER> Animations;
 
 			public:
 
-				MeshAnimationData(aiAnimation** animations, size_t animationCount, const std::set<std::string>& validBones);
+				AnimationData(aiAnimation** animations, size_t animationCount, const std::map<std::string, size_t>& validBoneMapping);
 
-				~MeshAnimationData();
+				~AnimationData();
 
             inline const std::vector<AnimationLOADER>& GetAnimations() const {
 

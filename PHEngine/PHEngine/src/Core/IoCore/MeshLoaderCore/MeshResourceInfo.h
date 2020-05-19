@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/GameCore/GlobalSettings.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshVertexData.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshAnimationData.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AnimationData.h"
 
 using namespace Game;
 
@@ -12,8 +12,8 @@ namespace IO
 {
    struct MeshResourceInfo
    {
-      MeshVertexData<GlobalSettings::GetCountBonesPerVertexForAnimation()>* MeshData = nullptr;
-      MeshAnimationData* AninationData = nullptr;
+      MeshData<GlobalSettings::GetCountBonesPerVertexForAnimation()>* MeshData = nullptr;
+      AnimationData* AninationData = nullptr;
 
       ~MeshResourceInfo() {
          delete MeshData;

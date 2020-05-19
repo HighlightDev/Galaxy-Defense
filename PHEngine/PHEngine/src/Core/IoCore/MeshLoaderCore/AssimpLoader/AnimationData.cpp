@@ -1,4 +1,4 @@
-#include "MeshAnimationData.h"
+#include "AnimationData.h"
 
 namespace IO
 {
@@ -7,19 +7,19 @@ namespace IO
 		namespace Assimp
 		{
 
-			MeshAnimationData::MeshAnimationData(aiAnimation** animations, size_t animationCount, const std::set<std::string>& validBones)
+			AnimationData::AnimationData(aiAnimation** animations, size_t animationCount, const std::map<std::string, size_t>& validBoneMapping)
 			{
 				if (animationCount > 0)
 				{
 					for (size_t animationIndex = 0; animationIndex < animationCount; animationIndex++)
 					{
 						aiAnimation* animation = animations[animationIndex];
-						Animations.emplace_back(AnimationLOADER(animation, validBones));
+						Animations.emplace_back(AnimationLOADER(animation, validBoneMapping));
 					}
 				}
 			}
 
-			MeshAnimationData::~MeshAnimationData()
+			AnimationData::~AnimationData()
 			{
 
 			}

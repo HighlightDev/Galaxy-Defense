@@ -5,7 +5,7 @@
 namespace EngineUtility
 {
 
-	glm::mat4 AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToOpenTKMatrix4(const aiMatrix4x4& srcMatrix)
+	glm::mat4 AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(const aiMatrix4x4& srcMatrix)
 	{
 		glm::mat4 dstMatrix(srcMatrix.a1, srcMatrix.b1, srcMatrix.c1, srcMatrix.d1,
          srcMatrix.a2, srcMatrix.b2, srcMatrix.c2, srcMatrix.d2,
@@ -21,7 +21,7 @@ namespace EngineUtility
 		{
          // SHOULD BE POINTER!!!
 			Bone* dstChildBone = new Bone(srcNode->GetBoneId(), srcNode->GetBoneInfo().mName.C_Str(), dstParentBone);
-			dstChildBone->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(srcNode->GetBoneInfo().mOffsetMatrix));
+			dstChildBone->SetOffsetMatrix(ConvertAssimpMatrix4x4ToGlmMat4(srcNode->GetBoneInfo().mOffsetMatrix));
 			dstParentBone->AddChild(dstChildBone);
 			IterateBoneTree(dstChildBone, srcNode);
 		}
@@ -30,12 +30,13 @@ namespace EngineUtility
 	Bone* AssimpSkeletonConverter::ConvertAssimpBoneToEngineBone(SkeletonBoneBaseLOADER* rootBone)
 	{
 		Bone* resultBone = new Bone(-1, "ROOT_BONE");
+      resultBone->SetOffsetMatrix(ConvertAssimpMatrix4x4ToGlmMat4(rootBone->InvGlobaTransform));
 
 		for (auto& bone : rootBone->GetChildren())
 		{
 			int32_t id = bone->GetBoneId();
 			Bone* root = new Bone(id, bone->GetBoneInfo().mName.C_Str());
-			root->SetOffsetMatrix(ConvertAssimpMatrix4x4ToOpenTKMatrix4(bone->GetBoneInfo().mOffsetMatrix));
+			root->SetOffsetMatrix(ConvertAssimpMatrix4x4ToGlmMat4(bone->GetBoneInfo().mOffsetMatrix));
 			IterateBoneTree(root, bone);
 			resultBone->AddChild(root);
 		}

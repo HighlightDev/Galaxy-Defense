@@ -1,7 +1,7 @@
 #include "ResourceLoader.h"
 #include "ResourceMap.h"
 #include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpMeshLoader.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AssimpLoader.h"
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/RawResource.h"
@@ -60,10 +60,10 @@ namespace IO
    Resource* MeshResourceLoader::LoadResource(const std::string& key)
    {
       const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
-      AssimpMeshLoader<GlobalSettings::GetCountBonesPerVertexForAnimation()> loader(absolutePath);
+      AssimpLoader<GlobalSettings::GetCountBonesPerVertexForAnimation()> loader(absolutePath);
 
       auto meshData = loader.GetMeshData();
-      MeshAnimationData* animationData = loader.GetAnimationData();
+      AnimationData* animationData = loader.GetAnimationData();
 
       MeshResourceInfo* data = new MeshResourceInfo();
       data->MeshData = meshData;

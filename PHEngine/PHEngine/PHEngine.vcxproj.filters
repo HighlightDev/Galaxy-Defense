@@ -1313,16 +1313,7 @@
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpMeshLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshAnimationData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshVertexData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.h">
@@ -1841,6 +1832,15 @@
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshResourceInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -1897,16 +1897,7 @@
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpMeshLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshAnimationData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshVertexData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.cpp">
@@ -2225,6 +2216,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

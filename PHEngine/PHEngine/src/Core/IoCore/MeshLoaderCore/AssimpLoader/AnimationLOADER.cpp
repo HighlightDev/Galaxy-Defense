@@ -11,7 +11,7 @@ namespace IO
 		namespace Assimp
 		{
 
-			AnimationLOADER::AnimationLOADER(aiAnimation* animation, const std::set<std::string>& validBones)
+			AnimationLOADER::AnimationLOADER(aiAnimation* animation, const std::map<std::string, size_t>& validBoneMapping)
 			{
 				Name = animation->mName.C_Str();
 				AnimationDuration = animation->mDuration;
@@ -21,7 +21,7 @@ namespace IO
             {
                aiNodeAnim* channel = animation->mChannels[channelIndex];
 
-               if (validBones.count(channel->mNodeName.C_Str()) > 0)
+               if (validBoneMapping.count(channel->mNodeName.C_Str()) > 0)
                {
                   BoneFrameCollectionLOADER boneFrame(channel->mNodeName.C_Str());
 
@@ -63,6 +63,10 @@ namespace IO
                   }
 
                   FramesBoneCollection.emplace_back(std::move(boneFrame));
+               }
+               else
+               {
+                  //throw new std::exception("Wrong bone");
                }
             }
 			}

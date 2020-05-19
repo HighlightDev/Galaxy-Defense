@@ -28,7 +28,7 @@ namespace EngineUtility
 
 	private:
 
-		static glm::mat4 ConvertAssimpMatrix4x4ToOpenTKMatrix4(const aiMatrix4x4& srcMatrix);
+		static glm::mat4 ConvertAssimpMatrix4x4ToGlmMat4(const aiMatrix4x4& srcMatrix);
 
 		static void IterateBoneTree(Bone* dstParentBone, SkeletonBoneLOADER* srcParentNode);
 	};

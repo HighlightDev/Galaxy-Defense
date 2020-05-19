@@ -32,7 +32,7 @@ namespace Resources
 
       if (meshInfo->MeshData->bHasAnimation)
       {
-         MeshAnimationData* animationData = meshInfo->AninationData;
+         AnimationData* animationData = meshInfo->AninationData;
          resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::ConvertAssimpAnimationToEngineAnimation(animationData->GetAnimations());
       }
 

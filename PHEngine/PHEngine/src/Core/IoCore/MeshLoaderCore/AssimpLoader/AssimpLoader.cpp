@@ -1,4 +1,4 @@
-#include "AssimpMeshLoader.h"
+#include "AssimpLoader.h"
 #include "Core/CommonCore/Assertion.h"
 
 #include <assimp/scene.h>
@@ -11,10 +11,10 @@ namespace IO
 	{
 		namespace Assimp
 		{
-			template class AssimpMeshLoader<3>;
+			template class AssimpLoader<3>;
 
 			template <int32_t count_bones_influence_vertex>
-			AssimpMeshLoader<count_bones_influence_vertex>::AssimpMeshLoader(const std::string& modelFilePath)
+			AssimpLoader<count_bones_influence_vertex>::AssimpLoader(const std::string& modelFilePath)
 			{
 				m_scene = importer.ReadFile(modelFilePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_Debone | aiProcess_LimitBoneWeights);
             assert((m_scene));
@@ -23,31 +23,31 @@ namespace IO
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			AssimpMeshLoader<count_bones_influence_vertex>::~AssimpMeshLoader()
+			AssimpLoader<count_bones_influence_vertex>::~AssimpLoader()
 			{
 				m_meshData = nullptr;
 				m_meshAninationData = nullptr;
 			}
 
          template <int32_t count_bones_influence_vertex>
-         void AssimpMeshLoader<count_bones_influence_vertex>::LoadMeshAndAnimations()
+         void AssimpLoader<count_bones_influence_vertex>::LoadMeshAndAnimations()
          {
-            m_meshData = new MeshVertexData<count_bones_influence_vertex>(m_scene);
+            m_meshData = new MeshData<count_bones_influence_vertex>(m_scene);
 
             if (m_scene->HasAnimations())
             {
-               m_meshAninationData = new MeshAnimationData(m_scene->mAnimations, m_scene->mNumAnimations, m_meshData->GetValidBoneSet());
+               m_meshAninationData = new AnimationData(m_scene->mAnimations, m_scene->mNumAnimations, m_meshData->GetValidBoneMapping());
             }
          }
 
 			template <int32_t count_bones_influence_vertex>
-			MeshVertexData<count_bones_influence_vertex>* AssimpMeshLoader<count_bones_influence_vertex>::GetMeshData() const
+			MeshData<count_bones_influence_vertex>* AssimpLoader<count_bones_influence_vertex>::GetMeshData() const
 			{
 				return m_meshData;
 			}
 
 			template <int32_t count_bones_influence_vertex>
-			MeshAnimationData* AssimpMeshLoader<count_bones_influence_vertex>::GetAnimationData() const
+			AnimationData* AssimpLoader<count_bones_influence_vertex>::GetAnimationData() const
 			{
 				return m_meshAninationData;
 			}
