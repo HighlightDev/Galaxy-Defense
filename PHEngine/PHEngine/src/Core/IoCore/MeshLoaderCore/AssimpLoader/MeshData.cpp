@@ -16,6 +16,96 @@ namespace IO
 		namespace Assimp
 		{
 
+         Collector::Collector(const aiScene* scene)
+            : mScene(scene)
+         {
+            Collect();
+         }
+
+         void Collector::Collect()
+         {
+            if (!mScene)
+               return;
+
+            // Node structure
+            {
+               aiNode* rootNode = mScene->mRootNode;
+
+               meshRootNode = new MeshNode();
+               meshRootNode->Name = rootNode->mName.data;
+               meshRootNode->NodeTransformation = AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(rootNode->mTransformation);
+               MeshNodeMapping[meshRootNode->Name] = meshRootNode;
+
+               CollectNodeHierarchy(rootNode, meshRootNode);
+            }
+
+            // Bones
+            {
+               CollectBones();
+            }
+
+            // Animations
+            {
+             
+
+               CollectAnimation();
+            }
+         }
+
+         void Collector::CollectAnimation()
+         {
+            aiNode* rootNode = mScene->mRootNode;
+
+            for (size_t i = 0; i < mScene->mNumAnimations; ++i)
+            {
+               const aiAnimation* pAnimation = mScene->mAnimations[i];
+
+               AnimationIterateNodes(pAnimation, rootNode);
+            }
+         }
+
+         void Collector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode)
+         {
+            std::string NodeName(pNode->mName.data);
+
+
+         }
+
+         void Collector::CollectBones()
+         {
+            size_t meshCount = mScene->mNumMeshes;
+
+            for (size_t i = 0; i < meshCount; ++i)
+            {
+               aiMesh* mesh = mScene->mMeshes[i];
+
+               for (size_t j = 0; j < mesh->mNumBones; ++j)
+               {
+                  aiBone* boneInfo = mesh->mBones[j];
+                  BoneMapping[boneInfo->mName.data] = MeshBoneInfo(AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix));
+               }
+            }
+         }
+
+         void Collector::CollectNodeHierarchy(const aiNode* pNode, const MeshNode* meshNode)
+         {
+            if (!pNode)
+               return;
+
+            for (int32_t i = 0; i < pNode->mNumChildren; ++i)
+            {
+               aiNode* pChildNode = pNode->mChildren[i];
+               MeshNode* meshChildNode = new MeshNode();
+               meshChildNode->Name = pChildNode->mName.data;
+               meshChildNode->NodeTransformation = AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(pChildNode->mTransformation);
+               MeshNodeMapping[meshChildNode->Name] = meshChildNode;
+               
+               CollectNodeHierarchy(pChildNode, meshChildNode);
+            }
+         }
+
+         /************************************************************************/
+
          struct VertexBoneData
          {
             size_t BoneIds[4];

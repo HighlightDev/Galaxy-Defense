@@ -6,6 +6,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <glm/mat4x4.hpp>
 
 #include "VertexLOADER.h"
 
@@ -15,6 +16,51 @@ namespace IO
 	{
 		namespace Assimp
 		{
+         struct MeshNode
+         {
+            std::string Name;
+            std::vector<MeshNode*> Children;
+            glm::mat4 NodeTransformation;
+         };
+
+         struct MeshBoneInfo
+         {
+            glm::mat4 BoneOffset;
+
+            MeshBoneInfo(const glm::mat4& boneOffset)
+               : BoneOffset(BoneOffset) 
+            {
+            }
+         };
+
+         struct Collector
+         {
+            const aiScene* mScene;
+
+            std::map<std::string, MeshNode*> MeshNodeMapping;
+            MeshNode* meshRootNode = nullptr;
+
+            std::map<std::string, MeshBoneInfo> BoneMapping;
+
+            using NodeAnimationSequence_t = std::map<std::string, /*stub*/int>;
+
+            std::map<std::string, NodeAnimationSequence_t> AnimationMapping;
+
+            Collector(const aiScene* scene);
+
+            void Collect();
+
+
+         private:
+            void CollectNodeHierarchy(const aiNode* pNode, const MeshNode* meshNode);
+
+            void CollectBones();
+
+            void CollectAnimation();
+
+            void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode);
+         };
+
 
 			template <int32_t count_bones_influence_vertex>
 			struct MeshData

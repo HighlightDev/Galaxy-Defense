@@ -26,9 +26,9 @@ namespace EngineUtility
 
       static BoneInfo ConvertAssimpBoneInfoToEngineBoneInfo(aiBone* assimpBone);
 
-	private:
-
 		static glm::mat4 ConvertAssimpMatrix4x4ToGlmMat4(const aiMatrix4x4& srcMatrix);
+
+   private:
 
 		static void IterateBoneTree(Bone* dstParentBone, SkeletonBoneLOADER* srcParentNode);
 	};
