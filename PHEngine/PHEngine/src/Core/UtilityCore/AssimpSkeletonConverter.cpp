@@ -15,6 +15,16 @@ namespace EngineUtility
 		return dstMatrix;
 	}
 
+   glm::quat AssimpSkeletonConverter::ConvertAssimpQuatToGlmQuat(const aiQuaternion& rotation)
+   {
+      return glm::quat(rotation.x, rotation.y, rotation.z, rotation.w);
+   }
+
+   glm::vec3 AssimpSkeletonConverter::ConvertAssimpVec3ToGlmVec3(const aiVector3D& vector)
+   {
+      return glm::vec3(vector.x, vector.y, vector.z);
+   }
+
 	void AssimpSkeletonConverter::IterateBoneTree(Bone* dstParentBone, IO::MeshLoader::Assimp::SkeletonBoneLOADER* srcParentNode)
 	{
 		for (auto& srcNode : srcParentNode->GetChildren())

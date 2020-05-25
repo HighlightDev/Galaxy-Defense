@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 #include <glm/mat4x4.hpp>
+#include <glm/ext/quaternion_float.hpp>
+#include <glm/vec3.hpp>
 
 #include "VertexLOADER.h"
 
@@ -26,25 +28,66 @@ namespace IO
          struct MeshBoneInfo
          {
             glm::mat4 BoneOffset;
-
-            MeshBoneInfo(const glm::mat4& boneOffset)
-               : BoneOffset(BoneOffset) 
-            {
-            }
          };
+
+         /****************************/
+
+         struct FrameRotation
+         {
+            glm::quat Rotation;
+            float Time;
+         };
+
+         struct FrameTranslation
+         {
+            glm::vec3 Translation;
+            float Time;
+         };
+
+         struct FrameScale
+         {
+            glm::vec3 Scale;
+            float Time;
+         };
+
+         struct FrameTransform
+         {
+            glm::quat Rotation;
+            glm::vec3 Translation;
+            glm::vec3 Scale;
+            float Time;
+         };
+
+         struct AnimationSequenceData
+         {
+            std::vector<FrameRotation> RotationFrames;
+            std::vector<FrameTranslation> TranslationFrames;
+            std::vector<FrameScale> ScaleFrames;
+         };
+
+         struct AnimationMappingData
+         {
+            using NodeAnimationBinding_t = std::map<std::string /* Node name */, AnimationSequenceData>;
+
+            NodeAnimationBinding_t NodeAnimationBindings;
+
+            float AnimationDuration;
+         };
+
+         /****************************/
 
          struct Collector
          {
             const aiScene* mScene;
 
-            std::map<std::string, MeshNode*> MeshNodeMapping;
+            std::map<std::string /* Node Name */, MeshNode*> MeshNodeMapping;
             MeshNode* meshRootNode = nullptr;
 
-            std::map<std::string, MeshBoneInfo> BoneMapping;
+            std::map<std::string /* Bone Name */ , MeshBoneInfo> BoneMapping;
 
-            using NodeAnimationSequence_t = std::map<std::string, /*stub*/int>;
+  
 
-            std::map<std::string, NodeAnimationSequence_t> AnimationMapping;
+            std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
 
             Collector(const aiScene* scene);
 
@@ -52,13 +95,13 @@ namespace IO
 
 
          private:
-            void CollectNodeHierarchy(const aiNode* pNode, const MeshNode* meshNode);
+            void CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode);
 
             void CollectBones();
 
             void CollectAnimation();
 
-            void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode);
+            void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings);
          };
 
 

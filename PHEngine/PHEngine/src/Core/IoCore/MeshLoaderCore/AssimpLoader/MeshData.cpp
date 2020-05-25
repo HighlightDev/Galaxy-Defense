@@ -19,7 +19,6 @@ namespace IO
          Collector::Collector(const aiScene* scene)
             : mScene(scene)
          {
-            Collect();
          }
 
          void Collector::Collect()
@@ -46,29 +45,91 @@ namespace IO
 
             // Animations
             {
-             
-
                CollectAnimation();
             }
+
+            volatile int a = 5;
+            a;
          }
 
          void Collector::CollectAnimation()
          {
             aiNode* rootNode = mScene->mRootNode;
 
+
             for (size_t i = 0; i < mScene->mNumAnimations; ++i)
             {
                const aiAnimation* pAnimation = mScene->mAnimations[i];
 
-               AnimationIterateNodes(pAnimation, rootNode);
+               std::string animationName(pAnimation->mName.data);
+               AnimationMapping[animationName].AnimationDuration = (float)pAnimation->mDuration;
+
+               AnimationIterateNodes(pAnimation, rootNode, AnimationMapping[animationName].NodeAnimationBindings);
             }
          }
 
-         void Collector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode)
+         aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::string& nodeName);
+
+         void Collector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings)
          {
-            std::string NodeName(pNode->mName.data);
+            std::string nodeName(pNode->mName.data);
 
+            aiNodeAnim* pNodeAnim = FindAnimationNodeByName(pAnimation, nodeName);
 
+            if (pNodeAnim)
+            {
+               for (size_t i = 0; i < pNodeAnim->mNumRotationKeys; ++i)
+               {
+                  FrameRotation rotation;
+                  rotation.Rotation = AssimpSkeletonConverter::ConvertAssimpQuatToGlmQuat(pNodeAnim->mRotationKeys[i].mValue);
+                  rotation.Time = (float)pNodeAnim->mRotationKeys[i].mTime;
+                  nodeAnimationBindings[nodeName].RotationFrames.emplace_back(std::move(rotation));
+               }
+
+               for (size_t i = 0; i < pNodeAnim->mNumPositionKeys; ++i)
+               {
+                  FrameTranslation translation;
+                  translation.Translation = AssimpSkeletonConverter::ConvertAssimpVec3ToGlmVec3(pNodeAnim->mPositionKeys[i].mValue);
+                  translation.Time = (float)pNodeAnim->mPositionKeys[i].mTime;
+                  nodeAnimationBindings[nodeName].TranslationFrames.emplace_back(std::move(translation));
+               }
+
+               for (size_t i = 0; i < pNodeAnim->mNumScalingKeys; ++i)
+               {
+                  FrameScale scale;
+                  scale.Scale = AssimpSkeletonConverter::ConvertAssimpVec3ToGlmVec3(pNodeAnim->mScalingKeys[i].mValue);
+                  scale.Time = (float)pNodeAnim->mScalingKeys[i].mTime;
+                  nodeAnimationBindings[nodeName].ScaleFrames.emplace_back(std::move(scale));
+               }
+            }
+
+            for (size_t i = 0; i < pNode->mNumChildren; ++i) 
+            {
+               aiNode* child = pNode->mChildren[i];
+
+               if (child)
+               {
+                  AnimationIterateNodes(pAnimation, child, nodeAnimationBindings);
+               }
+            }
+         }
+
+         aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::string& nodeName)
+         {
+            aiNodeAnim* result = nullptr;
+
+            for (size_t i = 0; i < pAnimation->mNumChannels; ++i)
+            {
+               aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
+
+               if (std::string(pNodeAnim->mNodeName.data) == nodeName)
+               {
+                  result = pNodeAnim;
+                  break;
+               }
+            }
+
+            return result;
          }
 
          void Collector::CollectBones()
@@ -82,22 +143,25 @@ namespace IO
                for (size_t j = 0; j < mesh->mNumBones; ++j)
                {
                   aiBone* boneInfo = mesh->mBones[j];
-                  BoneMapping[boneInfo->mName.data] = MeshBoneInfo(AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix));
+                  MeshBoneInfo meshBoneInfo;
+                  meshBoneInfo.BoneOffset = AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix);
+                  BoneMapping[std::string(boneInfo->mName.data)] = meshBoneInfo;
                }
             }
          }
 
-         void Collector::CollectNodeHierarchy(const aiNode* pNode, const MeshNode* meshNode)
+         void Collector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode)
          {
             if (!pNode)
                return;
 
-            for (int32_t i = 0; i < pNode->mNumChildren; ++i)
+            for (size_t i = 0; i < pNode->mNumChildren; ++i)
             {
                aiNode* pChildNode = pNode->mChildren[i];
                MeshNode* meshChildNode = new MeshNode();
                meshChildNode->Name = pChildNode->mName.data;
                meshChildNode->NodeTransformation = AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(pChildNode->mTransformation);
+               meshNode->Children.push_back(meshChildNode);
                MeshNodeMapping[meshChildNode->Name] = meshChildNode;
                
                CollectNodeHierarchy(pChildNode, meshChildNode);
@@ -255,8 +319,12 @@ namespace IO
 
             NEW_CollectBoneInfo();
 
+            Collector collector(m_scene);
+            collector.Collect();
+
 				LoadSkeleton();
 				LoadSkin();
+
 			}
 
 			template <int32_t count_bones_influence_vertex>
