@@ -1,0 +1,3 @@
+[submodule "PHEngine/External/Assimp"]
+	path = PHEngine/External/Assimp
+	url = https://github.com/assimp/assimp.git

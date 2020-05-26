@@ -47,9 +47,6 @@ namespace IO
             {
                CollectAnimation();
             }
-
-            volatile int a = 5;
-            a;
          }
 
          void Collector::CollectAnimation()

@@ -29,9 +29,9 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(float deltaTime)
    {
-      m_animationDeltaTime = std::max(deltaTime, 0.02f);
+      m_animationDeltaTime = deltaTime * 1000.0f;
 
-      if (m_tickCounter == 15) // TODO: hot fix for optimization, later should be done much better way
+      if (m_tickCounter == 1) // TODO: hot fix for optimization, later should be done much better way
       {
          constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
 

@@ -16,7 +16,9 @@ namespace IO
 			template <int32_t count_bones_influence_vertex>
 			AssimpLoader<count_bones_influence_vertex>::AssimpLoader(const std::string& modelFilePath)
 			{
-				m_scene = importer.ReadFile(modelFilePath, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_Debone | aiProcess_LimitBoneWeights);
+            m_scene = importer.ReadFile(modelFilePath, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+               //aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_Debone | aiProcess_LimitBoneWeights);
+
             assert((m_scene));
 
             LoadMeshAndAnimations();
