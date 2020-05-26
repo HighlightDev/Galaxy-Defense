@@ -85,14 +85,13 @@ namespace IO
 
             std::map<std::string /* Bone Name */ , MeshBoneInfo> BoneMapping;
 
-  
+            glm::mat4 GlobalInverseTransform;
 
             std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
 
             Collector(const aiScene* scene);
 
             void Collect();
-
 
          private:
             void CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode);
@@ -102,6 +101,39 @@ namespace IO
             void CollectAnimation();
 
             void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings);
+         };
+
+         struct AnimatedMeshData
+         {
+            // Node hierarchy root
+            MeshNode* RootNode = nullptr;
+
+            // Bone info
+            std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
+
+            std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
+
+            AnimatedMeshData(const Collector& collector)
+               : RootNode(collector.meshRootNode)
+               , BoneMapping(std::move(collector.BoneMapping))
+               , AnimationMapping(std::move(collector.AnimationMapping))
+            {
+            }
+
+            std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime);
+
+         private:
+
+            void ReadNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput);
+
+            glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName);
+            glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName);
+            glm::quat InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName);
+
+
+            size_t FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames);
+            size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames);
+            size_t FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames);
          };
 
 
