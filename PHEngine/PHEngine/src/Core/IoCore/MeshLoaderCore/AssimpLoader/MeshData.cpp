@@ -61,6 +61,70 @@ namespace IO
             {
                CollectAnimation();
             }
+
+            // Vertex data
+            {
+               CollectVertexData();
+            }
+         }
+
+         void Collector::CollectVertexData()
+         {
+            size_t verticesCount = 0;
+          
+            for (size_t i = 0; i < mScene->mNumMeshes; ++i)
+            {
+               verticesCount += mScene->mMeshes[i]->mNumVertices;
+            }
+
+            std::vector<VertexBoneData> vertexBoneData;
+            vertexBoneData.resize(verticesCount);
+
+            size_t currentMeshBaseVertexIndex = 0;
+
+            for (size_t i = 0; i < mScene->mNumMeshes; ++i)
+            {
+               VertexDataIterate(currentMeshBaseVertexIndex, mScene->mMeshes[i], vertexBoneData);
+               currentMeshBaseVertexIndex += mScene->mMeshes[i]->mNumVertices;
+            }
+
+            const size_t boneAttribCountPerVertex = vertexBoneData.size() * MAX_BONES_PER_VERT;
+            BoneWeights.resize(boneAttribCountPerVertex);
+            BoneIndices.resize(boneAttribCountPerVertex);
+
+            // Store data into array
+            StoreVertexBoneData(vertexBoneData);
+         }
+
+         void Collector::StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData)
+         {
+            for (size_t i = 0; i < vertexBoneData.size(); ++i)
+            {
+               const VertexBoneData& vertexBoneDataItem = vertexBoneData[i];
+
+               for (size_t j = 0; j < MAX_BONES_PER_VERT; ++j)
+               {
+                  BoneWeights[i + j] = vertexBoneDataItem.Weights[j];
+                  BoneIndices[i + j] = vertexBoneDataItem.BoneIndices[j];
+               }
+            }
+         }
+
+         void Collector::VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
+         {
+            for (size_t i = 0; i < pMesh->mNumBones; ++i) {
+
+               std::string boneName(pMesh->mBones[i]->mName.data);
+               size_t BoneIndex = BoneIndexMapping[boneName];
+          
+               for (size_t j = 0; j < pMesh->mBones[i]->mNumWeights; ++j) {
+                  size_t VertexID = meshBaseVertexIndex + pMesh->mBones[i]->mWeights[j].mVertexId;
+                  float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
+                  vertexBoneData[VertexID].AddBoneData(BoneIndex, Weight);
+               }
+            }
+
+            // TODO: collect positions, normals ... etc.
          }
 
          void Collector::CollectAnimation()
@@ -147,6 +211,8 @@ namespace IO
          {
             size_t meshCount = mScene->mNumMeshes;
 
+            size_t totalCountBones = 0;
+
             for (size_t i = 0; i < meshCount; ++i)
             {
                aiMesh* mesh = mScene->mMeshes[i];
@@ -156,7 +222,10 @@ namespace IO
                   aiBone* boneInfo = mesh->mBones[j];
                   MeshBoneInfo meshBoneInfo;
                   meshBoneInfo.BoneOffset = AssimpSkeletonConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix);
-                  BoneMapping[std::string(boneInfo->mName.data)] = meshBoneInfo;
+                  const std::string& boneName = std::string(boneInfo->mName.data);
+                  BoneMapping[boneName] = meshBoneInfo;
+                  BoneIndexMapping[boneName] = totalCountBones;
+                  ++totalCountBones;
                }
             }
          }
@@ -188,8 +257,7 @@ namespace IO
 
             float time = fmod(animationTime, mappingData.AnimationDuration);
             
-            ReadNodeHierarchy(time, animationName,  RootNode, glm::mat4(1), FinalTransformationMatrices);
-
+            ReadNodeHierarchy(time, animationName,  RootNode, glm::mat4(1) /* identity */, FinalTransformationMatrices);
 
             return FinalTransformationMatrices;
          }
@@ -201,6 +269,7 @@ namespace IO
 
             glm::mat4 nodeTransformation(node->NodeTransformation);
 
+            // 1. Apply animation transform influence
             if (AnimationMapping[animationName].NodeAnimationBindings.count(nodeName) > 0)
             {
                const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
@@ -215,9 +284,20 @@ namespace IO
                nodeTransformation = translationMatrix * rotationMatrix * scaleMatrix;
             }
 
+            // 2. Apply parent transform influence
             glm::mat4 globalTransformation = parentTransform * nodeTransformation;
 
-            // TODO: Bones
+            // 3. Apply bone transform influence
+            if (const auto& cit = BoneMapping.find(nodeName); cit != BoneMapping.end())
+            {
+               const glm::mat4& boneOffset = cit->second.BoneOffset;
+               finalOutput.emplace_back(GlobalInverseTransform * globalTransformation *  boneOffset);
+            }
+
+            for (size_t i = 0; i < node->Children.size(); ++i)
+            {
+               ReadNodeHierarchy(animationTime, animationName, node->Children[i], globalTransformation, finalOutput);
+            }
          }
 
          glm::vec3 AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName)
@@ -330,113 +410,6 @@ namespace IO
  
          /************************************************************************/
 
-         struct VertexBoneData
-         {
-            size_t BoneIds[4];
-            float Weights[4];
-
-            bool IsFilled = false;
-
-            void AddBoneData(size_t boneId, float weight)
-            {
-               if (!IsFilled)
-               {
-                  for (size_t i = 0; i < 4; ++i)
-                  {
-                     if (Weights[i] <= 0.0005f)
-                     {
-                        BoneIds[i] = boneId;
-                        Weights[i] = weight;
-                        IsFilled = i == 3;
-                        return;
-                     }
-                  }
-               }
-            }
-         };
-
-         struct NewBoneInfo
-         {
-            aiMatrix4x4 mBoneOffset;
-         };
-
-         struct Mesh {
-
-            std::map<std::string, size_t> mBoneMap;
-            std::vector<NewBoneInfo> mBoneInfo;
-
-            size_t mNumBones = 0;
-
-            void CollectBones(aiMesh* mesh, size_t meshVertexBaseIndex, std::vector<VertexBoneData>& bones)
-            {
-               for (size_t i = 0; i < mesh->mNumBones; i++) {
-                  size_t BoneIndex = 0;
-                  std::string BoneName(mesh->mBones[i]->mName.data);
-
-                  if (mBoneMap.find(BoneName) == mBoneMap.end()) {
-                     BoneIndex = mNumBones;
-                     mNumBones++;
-                     NewBoneInfo bi;
-                     mBoneInfo.push_back(bi);
-                  }
-                  else {
-                     BoneIndex = mBoneMap[BoneName];
-                  }
-
-                  mBoneMap[BoneName] = BoneIndex;
-                  mBoneInfo[BoneIndex].mBoneOffset = mesh->mBones[i]->mOffsetMatrix;
-
-                  for (size_t j = 0; j < mesh->mBones[i]->mNumWeights; j++) {
-                     size_t VertexID = meshVertexBaseIndex + mesh->mBones[i]->mWeights[j].mVertexId;
-                     float Weight = mesh->mBones[i]->mWeights[j].mWeight;
-                     bones[VertexID].AddBoneData(BoneIndex, Weight);
-                  }
-               }
-            }
-         };
-
-         void ReadNodeHeirarchy(const aiNode* pNode, std::set<std::string>& nodeNames)
-         {
-            nodeNames.insert(pNode->mName.data);
-
-            for (size_t i = 0; i < pNode->mNumChildren; i++) {
-               ReadNodeHeirarchy(pNode->mChildren[i], nodeNames);
-            }
-         }
-
-         template <int32_t count_bones_influence_vertex>
-         void MeshData<count_bones_influence_vertex>::NEW_CollectBoneInfo()
-         {
-            std::vector<Mesh> meshes;
-            meshes.resize(m_scene->mNumMeshes);
-
-            size_t countVertices = 0;
-
-            std::vector<VertexBoneData> bones;
-            for (size_t i = 0; i < m_scene->mNumMeshes; ++i)
-            {
-               countVertices += m_scene->mMeshes[i]->mNumVertices;
-            }
-
-            bones.resize(countVertices);
-
-            size_t processedMeshBonesCount = 0;
-
-            for (size_t i = 0; i < m_scene->mNumMeshes; ++i)
-            {
-               aiMesh* m = m_scene->mMeshes[i];
-               
-               Mesh meshData;
-               meshData.CollectBones(m, processedMeshBonesCount, bones);
-               meshes.push_back(meshData);
-               processedMeshBonesCount += m->mNumVertices;
-            }
-
-            std::set<std::string> nodeNames;
-
-            ReadNodeHeirarchy(m_scene->mRootNode, nodeNames);
-         }
-
 			template struct MeshData<3>;
 
 			template <int32_t count_bones_influence_vertex>
@@ -476,8 +449,6 @@ namespace IO
 				}
 
 				bHasAnimation = m_scene->HasAnimations();
-
-            NEW_CollectBoneInfo();
 
             Collector collector(m_scene);
             collector.Collect();
@@ -782,7 +753,7 @@ namespace IO
 							}
 							else
 							{
-								//throw std::invalid_argument("Such bone doesn't exist in skeleton!");
+								throw std::invalid_argument("Such bone doesn't exist in skeleton!");
 							}
 						}
 					}

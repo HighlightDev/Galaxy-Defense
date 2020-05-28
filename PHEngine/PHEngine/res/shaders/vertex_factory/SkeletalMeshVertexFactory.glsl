@@ -51,7 +51,7 @@ VERTEX_FACTORY_INPUT GetVertexFactoryInput()
 vec4 ApplySkinningToVec(vec4 vector)
 {
 	vec4 skinnedVec = vec4(0);
-	 for (int i = 0; i < MaxWeights; i++)
+	 for (int i = 0; i < MaxWeights; ++i)
 	{
 		int blendIndex = VertexBlendIndices[i];
 		if (blendIndex < 0)

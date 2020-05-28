@@ -6,9 +6,9 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		IndexBufferObject::IndexBufferObject(std::vector<uint32_t> data, DataCarryFlag dataCarryFlag)
+		IndexBufferObject::IndexBufferObject(const std::vector<uint32_t>& data, DataCarryFlag dataCarryFlag)
 			: VertexBufferObjectBase(GL_ELEMENT_ARRAY_BUFFER)
-			, m_data(data)
+			, m_data(std::move(data))
 			, m_dataCarryFlag(dataCarryFlag)
 			, m_countOfIndices(m_data.size())
 			, m_countOfTotalLengthOfData(m_countOfIndices)

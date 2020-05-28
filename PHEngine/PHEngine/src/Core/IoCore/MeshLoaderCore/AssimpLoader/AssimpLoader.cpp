@@ -38,8 +38,18 @@ namespace IO
 
             if (m_scene->HasAnimations())
             {
+               Collector collector(m_scene);
+               collector.Collect();
+
+               m_animatedMeshData = new AnimatedMeshData(collector);
                m_meshAninationData = new AnimationData(m_scene->mAnimations, m_scene->mNumAnimations, m_meshData->GetValidBoneMapping());
             }
+         }
+
+         template <int32_t count_bones_influence_vertex>
+         AnimatedMeshData* AssimpLoader<count_bones_influence_vertex>::GetAnimatedMeshData() const
+         {
+            return m_animatedMeshData;
          }
 
 			template <int32_t count_bones_influence_vertex>

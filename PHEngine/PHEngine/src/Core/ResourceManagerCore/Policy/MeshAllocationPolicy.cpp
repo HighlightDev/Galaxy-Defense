@@ -45,12 +45,12 @@ namespace Resources
 
          MeshData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
 
-			const std::vector<float>& vertices = meshData->Verts;
-			const std::vector<float>& normals = meshData->N_Verts;
-			const std::vector<float>& texCoords = meshData->T_Verts;
-			const std::vector<float>& tangents = meshData->Tangent_Verts;
-			const std::vector<float>& bitangents = meshData->Bitanget_Verts;
-			const std::vector<float>& blendWeights = meshData->BlendWeights;
+         const std::vector<float>& vertices = meshData->Verts;
+         const std::vector<float>& normals = meshData->N_Verts;
+         const std::vector<float>& texCoords = meshData->T_Verts;
+         const std::vector<float>& tangents = meshData->Tangent_Verts;
+         const std::vector<float>& bitangents = meshData->Bitanget_Verts;
+         const std::vector<float>& blendWeights = meshData->BlendWeights;
 			const std::vector<int32_t>& blendIndices = meshData->BlendIndices;
 			const std::vector<uint32_t>& indices = meshData->Indices;
 
@@ -88,7 +88,7 @@ namespace Resources
             meshData->SkeletonRoot->CleanUp();
             delete meshData->SkeletonRoot;
             meshData->SkeletonRoot = nullptr;
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::make_shared<Bone>(*rootBone));
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::make_shared<Bone>(*rootBone), std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
 			}
 			else
 			{

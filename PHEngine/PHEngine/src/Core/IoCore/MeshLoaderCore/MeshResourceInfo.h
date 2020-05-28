@@ -14,6 +14,7 @@ namespace IO
    {
       MeshData<GlobalSettings::GetCountBonesPerVertexForAnimation()>* MeshData = nullptr;
       AnimationData* AninationData = nullptr;
+      AnimatedMeshData* MeshAnimatedData = nullptr;
 
       ~MeshResourceInfo() {
          delete MeshData;

@@ -68,6 +68,7 @@ namespace IO
       MeshResourceInfo* data = new MeshResourceInfo();
       data->MeshData = meshData;
       data->AninationData = animationData;
+      data->MeshAnimatedData = loader.GetAnimatedMeshData();
 
       MeshResource* resource = new MeshResource();
       resource->DATA = data;

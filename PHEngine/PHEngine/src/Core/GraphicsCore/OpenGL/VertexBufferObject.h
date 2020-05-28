@@ -61,8 +61,8 @@ namespace Graphics
 
 			VertexBufferObject(const std::vector<DataType>& data, int32_t bufferTarget, int32_t vertexAttribIndex, DataCarryFlag flag)
 				: VertexBufferObjectBase(bufferTarget)
-				, m_data(data)
-				, m_totalDataLength(data.size())
+				, m_data(std::move(data))
+				, m_totalDataLength(m_data.size())
 				, m_countOfIndices(m_totalDataLength / m_vectorSize)
 				, m_vertexAttribIndex(vertexAttribIndex)
 				, m_dataCarryFlag(flag)

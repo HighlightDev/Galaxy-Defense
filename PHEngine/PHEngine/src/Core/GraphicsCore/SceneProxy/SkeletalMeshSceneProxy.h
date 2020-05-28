@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
 using namespace Game;
 using namespace Game::ShaderImpl;
@@ -33,6 +34,8 @@ namespace Graphics
          float m_animationDeltaTime;
 
          bool bAnimationTransformationDirty = true;
+
+         std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 
       private:
 

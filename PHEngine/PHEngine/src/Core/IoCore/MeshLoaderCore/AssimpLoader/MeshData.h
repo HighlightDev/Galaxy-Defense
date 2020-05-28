@@ -9,8 +9,11 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/quaternion_float.hpp>
 #include <glm/vec3.hpp>
+#include <iostream>
 
 #include "VertexLOADER.h"
+
+#define MAX_BONES_PER_VERT 3
 
 namespace IO
 {
@@ -32,30 +35,27 @@ namespace IO
 
          /****************************/
 
-         struct FrameRotation
+         struct FrameBase
+         {
+            float Time;
+         };
+
+         struct FrameRotation 
+            : public FrameBase
          {
             glm::quat Rotation;
-            float Time;
          };
 
          struct FrameTranslation
+            : public FrameBase
          {
             glm::vec3 Translation;
-            float Time;
          };
 
          struct FrameScale
+            : public FrameBase
          {
             glm::vec3 Scale;
-            float Time;
-         };
-
-         struct FrameTransform
-         {
-            glm::quat Rotation;
-            glm::vec3 Translation;
-            glm::vec3 Scale;
-            float Time;
          };
 
          struct AnimationSequenceData
@@ -74,7 +74,30 @@ namespace IO
             float AnimationDuration;
          };
 
-         /****************************/
+         struct VertexBoneData
+         {
+            size_t BoneIndices[MAX_BONES_PER_VERT]{ 0 };
+            float Weights[MAX_BONES_PER_VERT] { 0.0f };
+
+            bool IsFilled = false;
+
+            void AddBoneData(size_t boneIndex, float weight)
+            {
+               if (!IsFilled)
+               {
+                  for (size_t i = 0; i < MAX_BONES_PER_VERT; ++i)
+                  {
+                     if (Weights[i] <= 0.0005f)
+                     {
+                        BoneIndices[i] = boneIndex;
+                        Weights[i] = weight;
+                        IsFilled = (i == (MAX_BONES_PER_VERT - 1));
+                        return;
+                     }
+                  }
+               }
+            }
+         };
 
          struct Collector
          {
@@ -89,11 +112,22 @@ namespace IO
 
             std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
 
+            std::vector<float> BoneWeights;
+
+            std::vector<int32_t> BoneIndices;
+
+         private:
+
+            std::map<std::string /* Bone Name */, size_t /* Bone index */> BoneIndexMapping;
+
+         public:
+
             Collector(const aiScene* scene);
 
             void Collect();
 
          private:
+
             void CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode);
 
             void CollectBones();
@@ -101,6 +135,12 @@ namespace IO
             void CollectAnimation();
 
             void AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings);
+
+            void CollectVertexData();
+
+            void VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
+
+            void StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData);
          };
 
          struct AnimatedMeshData
@@ -113,11 +153,19 @@ namespace IO
 
             std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
 
+            glm::mat4 GlobalInverseTransform;
+
             AnimatedMeshData(const Collector& collector)
                : RootNode(collector.meshRootNode)
                , BoneMapping(std::move(collector.BoneMapping))
                , AnimationMapping(std::move(collector.AnimationMapping))
+               , GlobalInverseTransform(std::move(collector.GlobalInverseTransform))
             {
+            }
+
+            ~AnimatedMeshData()
+            {
+               std::cout << "Destroy me";
             }
 
             std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime);
@@ -129,7 +177,6 @@ namespace IO
             glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName);
             glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName);
             glm::quat InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName);
-
 
             size_t FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames);
             size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames);
@@ -167,9 +214,6 @@ namespace IO
 				void TryToCollectSkinInfo(size_t startIndex, aiMesh* meshBeingCollected);
 
 				void CollectBlendables(size_t vertexId, std::vector<VertexLOADER>& blendData, aiMesh* meshBeingCollected);
-
-
-            void NEW_CollectBoneInfo();
 
 			public:
 

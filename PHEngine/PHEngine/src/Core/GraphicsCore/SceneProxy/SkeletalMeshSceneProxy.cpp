@@ -15,11 +15,17 @@ namespace Graphics
          , m_animationDeltaTime(component->GetAnimationDeltaTime())
       {
          m_animationHolder.SetAnimationByNameNoBlend(m_animations->at(0).GetName());
+
+         m_animatedMeshData = std::static_pointer_cast<AnimatedSkin>(m_skin)->GetAnimatedMeshData();
       }
 
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()
       {
       }
+
+
+      float timeFlow = 0.0f;
+
 
       void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
@@ -31,7 +37,8 @@ namespace Graphics
             bAnimationTransformationDirty = false;
          }
 
-         std::vector<glm::mat4> skinningMatrices = m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
+         std::vector<glm::mat4> skinningMatrices = m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
+            //m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
 
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
@@ -67,7 +74,12 @@ namespace Graphics
             bAnimationTransformationDirty = false;
          }
 
-         return m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
+         timeFlow += m_animationDeltaTime * 1000.0f;
+
+        return m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
+
+
+         //return m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
       }
 
       bool SkeletalMeshSceneProxy::IsDeferred() const

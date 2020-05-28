@@ -23,7 +23,7 @@ namespace Graphics
 
 		public:
 
-			IndexBufferObject(std::vector<uint32_t> indicesData, DataCarryFlag dataCarryFlag = DataCarryFlag::Invalidate);
+			IndexBufferObject(const std::vector<uint32_t>& indicesData, DataCarryFlag dataCarryFlag = DataCarryFlag::Invalidate);
 
 			virtual ~IndexBufferObject();
 
