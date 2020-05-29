@@ -23,9 +23,7 @@ namespace Graphics
       {
       }
 
-
       float timeFlow = 0.0f;
-
 
       void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
@@ -74,7 +72,7 @@ namespace Graphics
             bAnimationTransformationDirty = false;
          }
 
-         timeFlow += m_animationDeltaTime * 1000.0f;
+         timeFlow += m_animationDeltaTime;
 
         return m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
 

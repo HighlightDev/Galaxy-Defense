@@ -43,38 +43,32 @@ namespace Resources
          MeshResource* meshResource = static_cast<MeshResource*>(outResource);
          MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
 
-         MeshData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
+         //MeshData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
 
-         const std::vector<float>& vertices = meshData->Verts;
-         const std::vector<float>& normals = meshData->N_Verts;
-         const std::vector<float>& texCoords = meshData->T_Verts;
-         const std::vector<float>& tangents = meshData->Tangent_Verts;
-         const std::vector<float>& bitangents = meshData->Bitanget_Verts;
-         const std::vector<float>& blendWeights = meshData->BlendWeights;
-			const std::vector<int32_t>& blendIndices = meshData->BlendIndices;
-			const std::vector<uint32_t>& indices = meshData->Indices;
+         MeshAttributes* meshAttributes = meshInfo->MeshAttributes;
 
 			IndexBufferObject* ibo = nullptr;
 
 			VertexBufferObjectBase* vertexVBO, *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
 
-			if (meshData->bHasIndices)
-				ibo = new IndexBufferObject(indices);
+			if (meshAttributes->VertexIndices.size())
+				ibo = new IndexBufferObject(meshAttributes->VertexIndices);
 
-			vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
+			vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
 
-			if (meshData->bHasNormals)
-				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
-			if (meshData->bHasTextureCoordinates)
-				texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT>(texCoords, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
-			if (meshData->bHasTangentVertices)
-				tangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(tangents, GL_ARRAY_BUFFER, 4, DataCarryFlag::Invalidate);
-			if (meshData->bHasTangentVertices)
-				bitangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(bitangents, GL_ARRAY_BUFFER, 5, DataCarryFlag::Invalidate);
-			if (meshData->bHasAnimation)
+			if (meshAttributes->Normals.size())
+				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
+			if (meshAttributes->TextureCoordinates.size())
+				texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT>(meshAttributes->TextureCoordinates, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
+			if (meshAttributes->TangentNormals.size())
+				tangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->TangentNormals, GL_ARRAY_BUFFER, 4, DataCarryFlag::Invalidate);
+			if (meshAttributes->BitangetNormals.size())
+				bitangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->BitangetNormals, GL_ARRAY_BUFFER, 5, DataCarryFlag::Invalidate);
+
+			if (meshAttributes->BoneIndices.size() && meshAttributes->BoneWeights.size())
 			{
-				blendWeightsVBO = new VertexBufferObject<float, countOfBonesInfluencingOnVertex, GL_FLOAT>(blendWeights, GL_ARRAY_BUFFER, 6, DataCarryFlag::Invalidate);
-				blendIndicesVBO = new VertexBufferObject<int32_t, countOfBonesInfluencingOnVertex, GL_FLOAT>(blendIndices, GL_ARRAY_BUFFER, 7, DataCarryFlag::Invalidate);
+				blendWeightsVBO = new VertexBufferObject<float, countOfBonesInfluencingOnVertex, GL_FLOAT>(meshAttributes->BoneWeights, GL_ARRAY_BUFFER, 6, DataCarryFlag::Invalidate);
+				blendIndicesVBO = new VertexBufferObject<int32_t, countOfBonesInfluencingOnVertex, GL_FLOAT>(meshAttributes->BoneIndices, GL_ARRAY_BUFFER, 7, DataCarryFlag::Invalidate);
 			}
 
 			vao.AddVBO(vertexVBO, normalsVBO, texCoordsVBO, tangentsVBO, bitangentsVBO, blendWeightsVBO, blendIndicesVBO);
@@ -82,13 +76,12 @@ namespace Resources
 			vao.AddIndexBuffer(ibo);
 			vao.BindBuffersToVao();
 
-			if (meshData->bHasAnimation)
+			if (meshInfo->MeshAnimatedData)
 			{
-				Bone* rootBone = EngineUtility::AssimpSkeletonConverter::ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
-            meshData->SkeletonRoot->CleanUp();
-            delete meshData->SkeletonRoot;
-            meshData->SkeletonRoot = nullptr;
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::make_shared<Bone>(*rootBone), std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
+            Bone* rootBone = nullptr;
+               //EngineUtility::AssimpSkeletonConverter::ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
+
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<Bone>(rootBone), std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
 			}
 			else
 			{

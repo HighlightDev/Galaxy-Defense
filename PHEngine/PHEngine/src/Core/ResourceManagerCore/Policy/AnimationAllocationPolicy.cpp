@@ -30,7 +30,7 @@ namespace Resources
       MeshResource* meshResource = static_cast<MeshResource*>(outResource);
       MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
 
-      if (meshInfo->MeshData->bHasAnimation)
+      if (meshInfo->MeshAnimatedData)
       {
          AnimationData* animationData = meshInfo->AninationData;
          resultAnimationCollection = EngineUtility::AssimpSkeletonConverter::ConvertAssimpAnimationToEngineAnimation(animationData->GetAnimations());

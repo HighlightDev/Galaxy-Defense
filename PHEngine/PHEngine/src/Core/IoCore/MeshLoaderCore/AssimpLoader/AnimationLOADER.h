@@ -23,7 +23,7 @@ namespace IO
 
 			public:
 
-            AnimationLOADER(aiAnimation* animation, const std::map<std::string, size_t>& validBoneMapping);
+            AnimationLOADER(aiAnimation* animation);
 
 				~AnimationLOADER();
 			};

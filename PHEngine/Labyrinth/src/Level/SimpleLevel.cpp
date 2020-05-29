@@ -84,7 +84,7 @@ namespace Labyrinth
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "playerCube.obj");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "City_House_2_BI.obj");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
-      //ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "player_walk.fbx");
+      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "player_walk.fbx");
       //ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "dark_templar_knight.dae");
 
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
@@ -95,7 +95,7 @@ namespace Labyrinth
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
             auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0), glm::vec3(), glm::vec3(1),
+            StaticMeshComponentData mData(folderManager->GetModelPath() + "player_walk.fbx", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor",
@@ -117,7 +117,7 @@ namespace Labyrinth
          {
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "dark_knight_d.png");
 
-            SkeletalMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0), glm::vec3(270, 0, 0), glm::vec3(1),
+            SkeletalMeshComponentData mData(folderManager->GetModelPath() + "player_walk.fbx", glm::vec3(0), glm::vec3(270, 0, 0), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",

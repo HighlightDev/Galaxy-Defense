@@ -116,6 +116,18 @@ namespace IO
 
             std::vector<int32_t> BoneIndices;
 
+            std::vector<size_t> VertexIndices;
+
+            std::vector<float> Positions;
+
+            std::vector<float> TextureCoordinates;
+
+            std::vector<float> Normals;
+
+            std::vector<float> TangentNormals;
+
+            std::vector<float> BitangetNormals;
+
          private:
 
             std::map<std::string /* Bone Name */, size_t /* Bone index */> BoneIndexMapping;
@@ -141,6 +153,41 @@ namespace IO
             void VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData);
 
             void StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData);
+
+            void StoreVertexData(const aiMesh* pMesh);
+
+            void StoreIndices(const aiMesh* pMesh);
+         };
+
+         struct MeshAttributes
+         {
+            std::vector<float> BoneWeights;
+
+            std::vector<int32_t> BoneIndices;
+
+            std::vector<size_t> VertexIndices;
+
+            std::vector<float> Positions;
+
+            std::vector<float> TextureCoordinates;
+
+            std::vector<float> Normals;
+
+            std::vector<float> TangentNormals;
+
+            std::vector<float> BitangetNormals;
+
+            MeshAttributes(const Collector& collector)
+               : BoneWeights(std::move(collector.BoneWeights))
+               , BoneIndices(std::move(collector.BoneIndices))
+               , VertexIndices(std::move(collector.VertexIndices))
+               , Positions(std::move(collector.Positions))
+               , TextureCoordinates(std::move(collector.TextureCoordinates))
+               , Normals(std::move(collector.Normals))
+               , TangentNormals(std::move(collector.TangentNormals))
+               , BitangetNormals(std::move(collector.BitangetNormals))
+            {
+            }
          };
 
          struct AnimatedMeshData

@@ -11,7 +11,7 @@ namespace IO
 		namespace Assimp
 		{
 
-			AnimationLOADER::AnimationLOADER(aiAnimation* animation, const std::map<std::string, size_t>& validBoneMapping)
+			AnimationLOADER::AnimationLOADER(aiAnimation* animation)
 			{
 				Name = animation->mName.C_Str();
 				AnimationDuration = animation->mDuration;

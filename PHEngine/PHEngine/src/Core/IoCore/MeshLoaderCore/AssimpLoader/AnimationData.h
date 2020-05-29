@@ -20,7 +20,7 @@ namespace IO
 
 			public:
 
-				AnimationData(aiAnimation** animations, size_t animationCount, const std::map<std::string, size_t>& validBoneMapping);
+				AnimationData(aiAnimation** animations, size_t animationCount);
 
 				~AnimationData();
 

@@ -12,13 +12,15 @@ namespace IO
 {
    struct MeshResourceInfo
    {
-      MeshData<GlobalSettings::GetCountBonesPerVertexForAnimation()>* MeshData = nullptr;
+      //MeshData<GlobalSettings::GetCountBonesPerVertexForAnimation()>* MeshData = nullptr;
       AnimationData* AninationData = nullptr;
       AnimatedMeshData* MeshAnimatedData = nullptr;
+      MeshAttributes* MeshAttributes = nullptr;
 
       ~MeshResourceInfo() {
-         delete MeshData;
+         //delete MeshData;
          delete AninationData;
+         delete MeshAttributes;
       }
    };
 }

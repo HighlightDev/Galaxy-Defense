@@ -54,8 +54,6 @@ vec4 ApplySkinningToVec(vec4 vector)
 	 for (int i = 0; i < MaxWeights; ++i)
 	{
 		int blendIndex = VertexBlendIndices[i];
-		if (blendIndex < 0)
-			continue;
 
 		float blendWeight = VertexBlendWeights[i];
 		skinnedVec += ((bonesMatrices[blendIndex]  * vector) * blendWeight);

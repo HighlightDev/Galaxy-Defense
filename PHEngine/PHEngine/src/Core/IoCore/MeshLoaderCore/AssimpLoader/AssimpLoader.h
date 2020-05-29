@@ -20,6 +20,7 @@ namespace IO
 				MeshData<count_bones_influence_vertex>* m_meshData;
 				AnimationData* m_meshAninationData;
             AnimatedMeshData* m_animatedMeshData;
+            MeshAttributes* m_meshAttributes;
 
 			public:
 
@@ -32,6 +33,8 @@ namespace IO
 				AnimationData* GetAnimationData() const;
 
             AnimatedMeshData* GetAnimatedMeshData() const;
+
+            MeshAttributes* GetMeshAttributes() const;
 
          private:
 
