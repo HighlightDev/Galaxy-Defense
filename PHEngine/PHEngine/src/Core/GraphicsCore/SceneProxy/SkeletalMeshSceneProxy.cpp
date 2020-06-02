@@ -74,7 +74,15 @@ namespace Graphics
 
          timeFlow += m_animationDeltaTime;
 
-        return m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
+         if (m_animatedMeshData->AnimationMapping.size() > 10)
+         {
+            return m_animatedMeshData->GetAnimatedMatrices("combinedAnim_" + char(-123), timeFlow);
+         }
+         else
+         {
+
+            return m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
+         }
 
 
          //return m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());

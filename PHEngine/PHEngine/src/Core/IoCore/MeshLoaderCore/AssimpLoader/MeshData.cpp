@@ -338,16 +338,16 @@ namespace IO
          // 1. Apply animation transform influence
          if (AnimationMapping[animationName].NodeAnimationBindings.count(nodeName) > 0)
          {
-            const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
+            //const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
             const glm::vec3& translation = InterpolateTranslation(animationTime, animationName, nodeName);
             const glm::quat& rotation = InterpolateRotation(animationTime, animationName, nodeName);
 
             glm::mat4 identityMatrix(1);
             glm::mat4 translationMatrix = glm::translate(identityMatrix, translation);
-            glm::mat4 scaleMatrix = glm::scale(identityMatrix, scale);
+            //glm::mat4 scaleMatrix = glm::scale(identityMatrix, scale);
             glm::mat4 rotationMatrix = glm::toMat4(rotation);
 
-            nodeTransformation = translationMatrix * rotationMatrix * scaleMatrix;
+            nodeTransformation = translationMatrix * rotationMatrix/* * scaleMatrix*/;
          }
 
          // 2. Apply parent transform influence

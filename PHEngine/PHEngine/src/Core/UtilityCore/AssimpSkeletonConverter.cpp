@@ -17,7 +17,12 @@ namespace EngineUtility
 
    glm::quat AssimpSkeletonConverter::ConvertAssimpQuatToGlmQuat(const aiQuaternion& rotation)
    {
-      return glm::quat(rotation.x, rotation.y, rotation.z, rotation.w);
+      glm::quat result;
+      result.x = rotation.x;
+      result.y = rotation.y;
+      result.z = rotation.z;
+      result.w = rotation.w;
+      return result;
    }
 
    glm::vec3 AssimpSkeletonConverter::ConvertAssimpVec3ToGlmVec3(const aiVector3D& vector)
