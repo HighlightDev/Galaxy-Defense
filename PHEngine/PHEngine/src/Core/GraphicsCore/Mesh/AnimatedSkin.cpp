@@ -1,17 +1,18 @@
 #include "AnimatedSkin.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
+
+using namespace MeshLoader::Assimp;
 
 namespace Graphics
 {
 	namespace Mesh
 	{
 
-		AnimatedSkin::AnimatedSkin(const VertexArrayObject& vao, std::shared_ptr<Bone> rootBone, std::shared_ptr<AnimatedMeshData> animatedMeshData)
+		AnimatedSkin::AnimatedSkin(const VertexArrayObject& vao, std::shared_ptr<AnimatedMeshData> animatedMeshData)
 			: Skin(vao)
-			, m_rootBone(rootBone)
          , m_animatedMeshData(animatedMeshData)
 		{
 		}
-
 
 		AnimatedSkin::~AnimatedSkin()
 		{
@@ -20,7 +21,6 @@ namespace Graphics
 		void AnimatedSkin::CleanUp() {
 
 			Skin::CleanUp();
-			m_rootBone->CleanUp();
 		}
 
 	}

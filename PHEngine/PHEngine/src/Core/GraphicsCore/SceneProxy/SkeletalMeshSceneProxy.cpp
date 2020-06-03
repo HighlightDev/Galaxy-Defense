@@ -1,5 +1,6 @@
 #include "SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
 
 using namespace Graphics::Mesh;
 
@@ -9,13 +10,12 @@ namespace Graphics
    {
 
       SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
-         , m_animations(component->GetRenderData().m_animations)
-         , m_animationHolder(m_animations)
-         , m_animationDeltaTime(component->GetAnimationDeltaTime())
+         : PrimitiveSceneProxy(component->GetRelativeMatrix()
+            , component->GetRenderData().m_skin
+            , component->GetRenderData().m_materialShader
+            , component->GetRenderData().mMaterialInstance)
+         , mTimeTick(0.0f)
       {
-         m_animationHolder.SetAnimationByNameNoBlend(m_animations->at(0).GetName());
-
          m_animatedMeshData = std::static_pointer_cast<AnimatedSkin>(m_skin)->GetAnimatedMeshData();
       }
 
@@ -23,26 +23,15 @@ namespace Graphics
       {
       }
 
-      float timeFlow = 0.0f;
-
       void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         std::shared_ptr<AnimatedSkin> animatedSkin = std::static_pointer_cast<AnimatedSkin>(m_skin);
-
-         if (bAnimationTransformationDirty)
-         {
-            m_animationHolder.UpdateAnimationLoopTime(m_animationDeltaTime);
-            bAnimationTransformationDirty = false;
-         }
-
-         std::vector<glm::mat4> skinningMatrices = m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
-            //m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
+         std::vector<glm::mat4> skinningMatrices = GetSkinningMatrices();
 
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(skinningMatrices);
          GetShader()->GetMaterialShader()->SetUniformValues(mMaterialInstance);
-         animatedSkin->GetBuffer()->RenderVAO(GL_TRIANGLES);
+         m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          GetShader()->StopShader();
       }
 
@@ -53,7 +42,7 @@ namespace Graphics
 
       void SkeletalMeshSceneProxy::SetAnimationDeltaTime(float animationDeltaTime)
       {
-         m_animationDeltaTime = animationDeltaTime;
+         mTimeTick += animationDeltaTime;
          bAnimationTransformationDirty = true;
       }
 
@@ -64,28 +53,13 @@ namespace Graphics
 
       std::vector<glm::mat4> SkeletalMeshSceneProxy::GetSkinningMatrices()
       {
-         AnimatedSkin* animatedSkin = static_cast<AnimatedSkin*>(m_skin.get());
-
          if (bAnimationTransformationDirty)
          {
-            m_animationHolder.UpdateAnimationLoopTime(m_animationDeltaTime);
+            // todo: update cached skinning matrices
             bAnimationTransformationDirty = false;
          }
 
-         timeFlow += m_animationDeltaTime;
-
-         if (m_animatedMeshData->AnimationMapping.size() > 10)
-         {
-            return m_animatedMeshData->GetAnimatedMatrices("combinedAnim_" + char(-123), timeFlow);
-         }
-         else
-         {
-
-            return m_animatedMeshData->GetAnimatedMatrices(m_animations->at(0).GetName(), timeFlow);
-         }
-
-
-         //return m_animationHolder.GetAnimatedOffsetedMatrices(animatedSkin->GetRootBone().get());
+         return m_animatedMeshData->GetAnimatedMatricesByIndex(0, mTimeTick);
       }
 
       bool SkeletalMeshSceneProxy::IsDeferred() const

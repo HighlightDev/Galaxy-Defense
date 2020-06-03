@@ -50,7 +50,7 @@ namespace IO
          delete data;
       }
 
-      MeshResourceInfo* GetMeshResourceInfo() {
+      MeshResourceInfo* GetMeshResourceInfo() const {
          MeshResourceInfo* data = (MeshResourceInfo*)DATA;
          return data;
       }

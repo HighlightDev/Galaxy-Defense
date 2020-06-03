@@ -1295,28 +1295,10 @@
     <ClInclude Include="src\Core\UtilityCore\StringStreamWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\UtilityCore\AssimpSkeletonConverter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Animation\Bone.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Mesh\Skin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationFrameLOADER.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\VertexLOADER.h">
@@ -1511,25 +1493,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationSequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationFrame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Animation\BoneTransform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationHolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SkeletalMeshRenderData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\ResourceManagerCore\Pool\AnimationPool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h">
@@ -1835,10 +1799,10 @@
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.h">
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h">
+    <ClInclude Include="src\Core\UtilityCore\AssimpToGlmConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1879,31 +1843,10 @@
     <ClCompile Include="src\Core\UtilityCore\StringExtendedFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\UtilityCore\AssimpSkeletonConverter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\Animation\Bone.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Mesh\Skin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationFrameLOADER.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\VertexLOADER.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\IoCore\TextureLoaderCore\StbLoader\StbLoader.cpp">
@@ -2033,15 +1976,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\Animation\AnimationHolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\ResourceManagerCore\Pool\AnimationPool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.cpp">
@@ -2221,10 +2155,10 @@
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.cpp">
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp">
+    <ClCompile Include="src\Core\UtilityCore\AssimpToGlmConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

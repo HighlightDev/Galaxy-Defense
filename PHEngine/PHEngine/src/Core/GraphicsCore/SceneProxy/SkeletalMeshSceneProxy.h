@@ -5,8 +5,6 @@
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
-#include "Core/GraphicsCore/Animation/AnimationSequence.h"
-#include "Core/GraphicsCore/Animation/AnimationHolder.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
@@ -14,7 +12,6 @@
 
 using namespace Game;
 using namespace Game::ShaderImpl;
-using namespace Graphics::Animation;
 
 namespace Graphics
 {
@@ -27,11 +24,7 @@ namespace Graphics
          using ShaderType = CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>;
          using Base = PrimitiveSceneProxy;
 
-         std::shared_ptr<std::vector<AnimationSequence>> m_animations;
-
-         AnimationHolder m_animationHolder;
-
-         float m_animationDeltaTime;
+         float mTimeTick;
 
          bool bAnimationTransformationDirty = true;
 

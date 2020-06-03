@@ -1,45 +1,34 @@
 #pragma once
 
 #include "MeshData.h"
-#include "AnimationData.h"
 
 #include <assimp/Importer.hpp>
 
-namespace IO
+namespace MeshLoader
 {
-	namespace MeshLoader
-	{
-		namespace Assimp
-		{
-			template <int32_t count_bones_influence_vertex>
-			class AssimpLoader
-			{
-				typename ::Assimp::Importer importer;
-				const struct aiScene* m_scene;
+   namespace Assimp
+   {
+      class AssimpLoader
+      {
+         typename ::Assimp::Importer importer_t;
 
-				MeshData<count_bones_influence_vertex>* m_meshData;
-				AnimationData* m_meshAninationData;
-            AnimatedMeshData* m_animatedMeshData;
-            MeshAttributes* m_meshAttributes;
+         AnimatedMeshData* m_animatedMeshData;
 
-			public:
+         MeshAttributes* m_meshAttributes;
 
-				AssimpLoader(const std::string& modelFilePath);
+      public:
 
-				~AssimpLoader();
+         AssimpLoader(const std::string& modelFilePath);
 
-				MeshData<count_bones_influence_vertex>* GetMeshData() const;
+         ~AssimpLoader();
 
-				AnimationData* GetAnimationData() const;
+         AnimatedMeshData* GetAnimatedMeshData() const;
 
-            AnimatedMeshData* GetAnimatedMeshData() const;
+         MeshAttributes* GetMeshAttributes() const;
 
-            MeshAttributes* GetMeshAttributes() const;
+      private:
 
-         private:
-
-            void LoadMeshAndAnimations();
-			};
-		}
-	}
+         void LoadMeshAndAnimations(const struct aiScene* scene);
+      };
+   }
 }

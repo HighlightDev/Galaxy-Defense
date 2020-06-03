@@ -30,7 +30,6 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
-#include "Core/ResourceManagerCore/Pool/AnimationPool.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 
@@ -217,8 +216,6 @@ namespace Game
 
             typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
 
-            typename AnimationPool::sharedValue_t animations = AnimationPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
-
             const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
@@ -227,7 +224,7 @@ namespace Game
 
             CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>>(compositeParams);
 
-            SkeletalMeshRenderData renderData(skin, animations, skeletalMeshShader, mData.m_material);
+            SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
              
             resultComponent = std::make_shared<SkeletalMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }

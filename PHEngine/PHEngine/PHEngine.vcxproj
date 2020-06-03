@@ -462,10 +462,7 @@
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasCell.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasHandler.h" />
-    <ClInclude Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.h" />
-    <ClInclude Include="src\Core\ResourceManagerCore\Pool\AnimationPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationHolder.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
@@ -475,9 +472,6 @@
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h" />
     <ClInclude Include="src\Core\GameCore\Components\InputComponent.h" />
     <ClInclude Include="src\Core\GameCore\Input\Keys.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationFrame.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Animation\AnimationSequence.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Animation\BoneTransform.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SkeletalMeshRenderData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\RenderTargetPool.h" />
@@ -529,13 +523,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Texture\ITexture.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\Skin.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Animation\Bone.h" />
-    <ClInclude Include="src\Core\UtilityCore\AssimpSkeletonConverter.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationFrameLOADER.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
@@ -789,6 +776,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\DataCarryFlag.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderType.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefineUtility.h" />
+    <ClInclude Include="src\Core\UtilityCore\AssimpToGlmConverter.h" />
     <ClInclude Include="src\Core\UtilityCore\EngineMath.h" />
     <ClInclude Include="src\Core\UtilityCore\GlmToBulletConverter.h" />
     <ClInclude Include="src\Core\UtilityCore\PlatformDependentFunctions.h" />
@@ -865,10 +853,7 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />
-    <ClCompile Include="src\Core\ResourceManagerCore\Policy\AnimationAllocationPolicy.cpp" />
-    <ClCompile Include="src\Core\ResourceManagerCore\Pool\AnimationPool.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Animation\AnimationHolder.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\KeyboardInputManager.cpp" />
@@ -907,14 +892,7 @@
     <ClCompile Include="src\Core\GraphicsCore\Texture\CubemapTexture.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\Skin.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Animation\Bone.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Texture\ITexture.cpp" />
-    <ClCompile Include="src\Core\UtilityCore\AssimpSkeletonConverter.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationData.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationFrameLOADER.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AnimationLOADER.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\BoneFrameCollectionLOADER.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\SkeletonBoneLOADER.cpp" />
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp" />
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.cpp" />
     <ClCompile Include="Dependencies\GLM\include\glm\detail\glm.cpp" />
@@ -922,6 +900,7 @@
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderPredefine.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\Shader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\IndexBufferObject.cpp" />
+    <ClCompile Include="src\Core\UtilityCore\AssimpToGlmConverter.cpp" />
     <ClCompile Include="src\Core\UtilityCore\EngineMath.cpp" />
     <ClCompile Include="src\Core\UtilityCore\GlmToBulletConverter.cpp" />
     <ClCompile Include="src\Core\UtilityCore\PlatformDependentFunctions.cpp" />
@@ -932,7 +911,6 @@
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\VertexArrayObject.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\VertexBufferObjectBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\Uniform.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\VertexLOADER.cpp" />
     <ClCompile Include="src\Core\IoCore\TextureLoaderCore\StbLoader\StbLoader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Texture\TexParams.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Texture\TextureMipMapState.cpp" />

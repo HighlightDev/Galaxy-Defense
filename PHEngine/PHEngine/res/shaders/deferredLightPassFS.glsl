@@ -366,6 +366,5 @@ void main()
 		vec4 totalColor = vec4(albedoAndSpecular.rgb * (diffuseColor + ambientColor), 1);
 	#endif
 
-	FragColor = vec4(albedoAndSpecular.xyz, 1.0);
-	//vec4(totalColor);
+	FragColor = vec4(totalColor);
 }

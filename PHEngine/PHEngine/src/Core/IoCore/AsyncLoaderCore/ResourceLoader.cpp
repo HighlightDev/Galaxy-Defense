@@ -9,7 +9,7 @@
 using namespace IO::Images;
 using namespace IO::Images::Stb;
 using namespace Graphics::Texture;
-using namespace IO::MeshLoader::Assimp;
+using namespace MeshLoader::Assimp;
 
 namespace IO
 {
@@ -60,14 +60,10 @@ namespace IO
    Resource* MeshResourceLoader::LoadResource(const std::string& key)
    {
       const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
-      AssimpLoader<GlobalSettings::GetCountBonesPerVertexForAnimation()> loader(absolutePath);
-
-      //auto meshData = loader.GetMeshData();
-      AnimationData* animationData = loader.GetAnimationData();
+      AssimpLoader loader(absolutePath);
 
       MeshResourceInfo* data = new MeshResourceInfo();
-      //data->MeshData = meshData;
-      data->AninationData = animationData;
+
       data->MeshAnimatedData = loader.GetAnimatedMeshData();
       data->MeshAttributes = loader.GetMeshAttributes();
 

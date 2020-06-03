@@ -5,79 +5,51 @@
 #include <assimp/postprocess.h>
 #include <string>
 
-namespace IO
+namespace MeshLoader
 {
-	namespace MeshLoader
-	{
-		namespace Assimp
-		{
-			template class AssimpLoader<3>;
+   namespace Assimp
+   {
+      AssimpLoader::AssimpLoader(const std::string& modelFilePath)
+      {
+         size_t LOAD_FLAGS = (
+            aiProcess_Triangulate |
+            aiProcess_GenSmoothNormals |
+            aiProcess_FlipUVs |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_CalcTangentSpace);
 
-			template <int32_t count_bones_influence_vertex>
-			AssimpLoader<count_bones_influence_vertex>::AssimpLoader(const std::string& modelFilePath)
-			{
-            size_t LOAD_FLAGS = (
-               aiProcess_Triangulate |
-               aiProcess_GenSmoothNormals |
-               aiProcess_FlipUVs |
-               aiProcess_JoinIdenticalVertices |
-               aiProcess_CalcTangentSpace);
+         const aiScene* scene = importer_t.ReadFile(modelFilePath, LOAD_FLAGS);
 
-            m_scene = importer.ReadFile(modelFilePath, LOAD_FLAGS);
-               //aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace | aiProcess_Debone | aiProcess_LimitBoneWeights);
+         assert((scene));
+         LoadMeshAndAnimations(scene);
+      }
 
-            assert((m_scene));
+      AssimpLoader::~AssimpLoader()
+      {
+      }
 
-            LoadMeshAndAnimations();
-			}
+      MeshAttributes* AssimpLoader::GetMeshAttributes() const
+      {
+         return m_meshAttributes;
+      }
 
-			template <int32_t count_bones_influence_vertex>
-			AssimpLoader<count_bones_influence_vertex>::~AssimpLoader()
-			{
-				m_meshData = nullptr;
-				m_meshAninationData = nullptr;
-			}
+      AnimatedMeshData* AssimpLoader::GetAnimatedMeshData() const
+      {
+         return m_animatedMeshData;
+      }
 
-         template <int32_t count_bones_influence_vertex>
-         MeshAttributes*  AssimpLoader<count_bones_influence_vertex>::GetMeshAttributes() const
+      void AssimpLoader::LoadMeshAndAnimations(const struct aiScene* scene)
+      {
+         Collector collector(scene);
+         collector.Collect();
+
+         m_meshAttributes = new MeshAttributes(collector);
+
+         if (scene->HasAnimations())
          {
-            return m_meshAttributes;
+            m_animatedMeshData = new AnimatedMeshData(collector);
          }
+      }
 
-         template <int32_t count_bones_influence_vertex>
-         void AssimpLoader<count_bones_influence_vertex>::LoadMeshAndAnimations()
-         {
-            //m_meshData = new MeshData<count_bones_influence_vertex>(m_scene);
-
-            Collector collector(m_scene);
-            collector.Collect();
-            m_meshAttributes = new MeshAttributes(collector);
-
-            if (m_scene->HasAnimations())
-            {
-               m_animatedMeshData = new AnimatedMeshData(collector);
-
-               m_meshAninationData = new AnimationData(m_scene->mAnimations, m_scene->mNumAnimations);
-            }
-         }
-
-         template <int32_t count_bones_influence_vertex>
-         AnimatedMeshData* AssimpLoader<count_bones_influence_vertex>::GetAnimatedMeshData() const
-         {
-            return m_animatedMeshData;
-         }
-
-			template <int32_t count_bones_influence_vertex>
-			MeshData<count_bones_influence_vertex>* AssimpLoader<count_bones_influence_vertex>::GetMeshData() const
-			{
-				return m_meshData;
-			}
-
-			template <int32_t count_bones_influence_vertex>
-			AnimationData* AssimpLoader<count_bones_influence_vertex>::GetAnimationData() const
-			{
-				return m_meshAninationData;
-			}
-		}
-	}
+   }
 }

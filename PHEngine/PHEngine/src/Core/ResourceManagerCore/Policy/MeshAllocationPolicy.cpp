@@ -1,12 +1,9 @@
 #include "MeshAllocationPolicy.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/AnimationData.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
-#include "Core/GraphicsCore/Animation/Bone.h"
-#include "Core/UtilityCore/AssimpSkeletonConverter.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 #include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -16,9 +13,8 @@
 #include <gl/glew.h>
 
 using namespace Graphics::OpenGL;
-using namespace Graphics::Animation;
 using namespace Graphics::Mesh;
-using namespace IO::MeshLoader::Assimp;
+using namespace MeshLoader::Assimp;
 using namespace IO;
 
 namespace Resources
@@ -28,7 +24,7 @@ namespace Resources
    template <typename Model>
 	std::shared_ptr<Skin> MeshAllocationPolicy<Model>::AllocateMemory(Model& arg)
 	{
-		const int32_t countOfBonesInfluencingOnVertex = 3;
+		const int32_t countOfBonesInfluencingOnVertex = GlobalSettings::GetCountBonesPerVertexForAnimation();
 
 		std::shared_ptr<Skin> resultSkin;
 
@@ -40,10 +36,8 @@ namespace Resources
 
          assert(bResourceValid);
 
-         MeshResource* meshResource = static_cast<MeshResource*>(outResource);
-         MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
-
-         //MeshData<countOfBonesInfluencingOnVertex>* meshData = meshInfo->MeshData;
+         const MeshResource* meshResource = static_cast<MeshResource*>(outResource);
+         const MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
 
          MeshAttributes* meshAttributes = meshInfo->MeshAttributes;
 
@@ -78,10 +72,7 @@ namespace Resources
 
 			if (meshInfo->MeshAnimatedData)
 			{
-            Bone* rootBone = nullptr;
-               //EngineUtility::AssimpSkeletonConverter::ConvertAssimpBoneToEngineBone(meshData->SkeletonRoot);
-
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<Bone>(rootBone), std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
 			}
 			else
 			{

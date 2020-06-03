@@ -17,6 +17,7 @@
 
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <limits>
 
 using namespace Resources;
 using namespace Common; 
@@ -123,7 +124,7 @@ namespace Graphics
          std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
 
          const auto firstDirLightProxyWithShadowInfo = std::find_if(dirLightProxies.begin(), dirLightProxies.end(), [](const std::shared_ptr<DirectionalLightSceneProxy>& proxy) { return proxy->GetProjectedDirShadowInfo() != nullptr; });
-         uint32_t lastDirLightFramebufferDesc = std::numeric_limits<uint32_t>::max();
+         size_t lastDirLightFramebufferDesc = UINT_MAX;
 
          for (auto& dirLightProxy : dirLightProxies)
          {
