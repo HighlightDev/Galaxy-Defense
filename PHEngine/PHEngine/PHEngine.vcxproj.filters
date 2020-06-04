@@ -513,6 +513,9 @@
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
     <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_2.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_3.fbx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">

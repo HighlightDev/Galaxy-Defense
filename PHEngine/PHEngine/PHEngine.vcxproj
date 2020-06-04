@@ -141,6 +141,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_2.fbx" />
+    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_3.fbx" />
     <None Include="Dependencies\GLEW\doc\advanced.html" />
     <None Include="Dependencies\GLEW\doc\basic.html" />
     <None Include="Dependencies\GLEW\doc\build.html" />

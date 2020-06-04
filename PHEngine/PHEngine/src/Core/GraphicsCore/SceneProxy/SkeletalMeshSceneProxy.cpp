@@ -16,7 +16,11 @@ namespace Graphics
             , component->GetRenderData().mMaterialInstance)
          , mTimeTick(0.0f)
       {
-         m_animatedMeshData = std::static_pointer_cast<AnimatedSkin>(m_skin)->GetAnimatedMeshData();
+         std::shared_ptr<AnimatedSkin> spt_AnimatedSkin = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
+
+         assert((spt_AnimatedSkin));
+
+         m_animatedMeshData = spt_AnimatedSkin->GetAnimatedMeshData();
       }
 
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()
