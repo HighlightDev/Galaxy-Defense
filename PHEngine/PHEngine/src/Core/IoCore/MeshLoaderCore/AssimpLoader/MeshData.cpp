@@ -98,7 +98,7 @@ namespace MeshLoader
          StoreVertexBoneData(vertexBoneData);
       }
 
-      void Collector::StoreIndices(const aiMesh* pMesh)
+      void Collector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh)
       {
          const size_t lastIndexPerMesh = VertexIndices.size();
          const size_t countOfFaces = pMesh->mNumFaces;
@@ -106,17 +106,10 @@ namespace MeshLoader
          for (size_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++)
          {
             const aiFace& face = pMesh->mFaces[faceIndex];
-
-            if (face.mNumIndices == 3) // triangulated face
-            {
-               VertexIndices.emplace_back(face.mIndices[0]);
-               VertexIndices.emplace_back(face.mIndices[1]);
-               VertexIndices.emplace_back(face.mIndices[2]);
-            }
-            else
-            {
-               throw std::invalid_argument("Face isn't triangulated.");
-            }
+            assert(face.mNumIndices == 3);
+            VertexIndices.emplace_back(face.mIndices[0] + meshBaseVertexIndex);
+            VertexIndices.emplace_back(face.mIndices[1] + meshBaseVertexIndex);
+            VertexIndices.emplace_back(face.mIndices[2] + meshBaseVertexIndex);
          }
       }
 
@@ -185,13 +178,12 @@ namespace MeshLoader
          }
 
          StoreVertexData(pMesh);
-         StoreIndices(pMesh);
+         StoreIndices(meshBaseVertexIndex, pMesh);
       }
 
       void Collector::CollectAnimation()
       {
          aiNode* rootNode = mScene->mRootNode;
-
 
          for (size_t i = 0; i < mScene->mNumAnimations; ++i)
          {
@@ -199,6 +191,7 @@ namespace MeshLoader
 
             std::string animationName(pAnimation->mName.data);
             AnimationMapping[animationName].AnimationDuration = (float)pAnimation->mDuration;
+            AnimationIndices.push_back(animationName);
 
             AnimationIterateNodes(pAnimation, rootNode, AnimationMapping[animationName].NodeAnimationBindings);
          }
@@ -268,6 +261,51 @@ namespace MeshLoader
          return result;
       }
 
+      //void LoadSubMesh(const aiMesh* paiMesh, Collector& outStorage, const int meshBaseVertex)
+      //{
+
+      //}
+      //uint32_t numBones = 0;
+      //void CollectBonesFromSubMesh(const aiMesh* pMesh, Collector& outStorage, const int meshBaseVertex)
+      //{
+      //   for (uint32_t i = 0; i < pMesh->mNumBones; i++)
+      //   {
+      //      uint32_t boneIndex = 0;
+      //      std::string boneName(pMesh->mBones[i]->mName.data);
+
+      //      if (outStorage.BoneMapping.find(boneName) == outStorage.BoneMapping.end())
+      //      {
+      //         // Allocate an index for a new bone
+      //         boneIndex = numBones;
+      //         outStorage.BoneIndexMapping[boneName] = boneIndex;
+      //      
+      //         numBones++;
+      //         BoneMatrix bm = makeBoneMatrix(pMesh->mBones[i]->mOffsetMatrix);
+      //         boneMatrices.push_back(bm);
+      //         boneMapping[boneName] = boneIndex;
+      //      }
+      //      else
+      //      {
+      //         boneIndex = boneMapping[boneName];
+      //      }
+
+      //      //printf("BONE : %s; weights %d\n", BoneName.c_str(), pMesh->mBones[i]->mNumWeights);
+      //      //for (uint j = 0 ; j < pMesh->mBones[i]->mNumWeights ; j++) {
+      //      //    printf("              Bone[%d] : %f\n", j, pMesh->mBones[i]->mWeights[j].mWeight);
+      //      //}
+
+      //      for (uint32_t j = 0; j < pMesh->mBones[i]->mNumWeights; j++)
+      //      {
+      //         uint32_t vertexID = meshEntries[MeshIndex].BaseVertex + pMesh->mBones[i]->mWeights[j].mVertexId;
+      //         float weight = pMesh->mBones[i]->mWeights[j].mWeight;
+
+      //         //printf("VertexID: %i  BoneIndex: %i   Weight: %f\n", VertexID, BoneIndex, Weight);
+
+      //         outStorage.bones[vertexID].addBoneData(boneIndex, weight);
+      //      }
+      //   }
+      //}
+
       void Collector::CollectBones()
       {
          size_t meshCount = mScene->mNumMeshes;
@@ -281,12 +319,16 @@ namespace MeshLoader
             for (size_t j = 0; j < mesh->mNumBones; ++j)
             {
                aiBone* boneInfo = mesh->mBones[j];
-               MeshBoneInfo meshBoneInfo;
-               meshBoneInfo.BoneOffset = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix);
                const std::string& boneName = std::string(boneInfo->mName.data);
-               BoneMapping[boneName] = meshBoneInfo;
-               BoneIndexMapping[boneName] = totalCountBones;
-               ++totalCountBones;
+               if (BoneMapping.find(boneName) == BoneMapping.end())
+               {
+                  MeshBoneInfo meshBoneInfo;
+                  meshBoneInfo.BoneOffset = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(boneInfo->mOffsetMatrix);
+
+                  BoneMapping[boneName] = meshBoneInfo;
+                  BoneIndexMapping[boneName] = totalCountBones;
+                  ++totalCountBones;
+               }
             }
          }
       }
@@ -317,9 +359,8 @@ namespace MeshLoader
 
       std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesByIndex(const size_t index, const float animationTime)
       {
-         auto it = std::next(AnimationMapping.begin(), index);
-         std::string animationName = it->first;
-         return GetAnimatedMatricesFacade(animationName, animationTime);
+         std::string animName = AnimationIndices[index];
+         return GetAnimatedMatricesFacade(animName, animationTime);
       }
 
       std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesFacade(const std::string& animationName, const float animationTime)
@@ -341,7 +382,8 @@ namespace MeshLoader
       {
          const std::string& nodeName = node->Name;
 
-         glm::mat4 nodeTransformation(node->NodeTransformation);
+         glm::mat4 nodeTransformation(1);
+            //node->NodeTransformation);
 
          // 1. Apply animation transform influence
          if (AnimationMapping[animationName].NodeAnimationBindings.count(nodeName) > 0)
@@ -365,7 +407,7 @@ namespace MeshLoader
          if (const auto& cit = BoneMapping.find(nodeName); cit != BoneMapping.end())
          {
             const glm::mat4& boneOffset = cit->second.BoneOffset;
-            finalOutput.emplace_back(GlobalInverseTransform * globalTransformation *  boneOffset);
+            finalOutput.emplace_back(/*GlobalInverseTransform * */globalTransformation *  boneOffset);
          }
 
          for (size_t i = 0; i < node->Children.size(); ++i)

@@ -20,7 +20,7 @@ namespace Game
       const float   mShadowMapBiasPointLight;
       const int32_t mDirLightPCFSamplesCount;
       const int32_t mPointLightPCFSamplesCount;
-      static constexpr int32_t CountBonesPerVertexForAnimation = 3;
+      static constexpr int32_t CountBonesPerVertexForAnimation = 4;
 
       GlobalSettings();
 

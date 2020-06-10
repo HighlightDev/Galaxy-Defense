@@ -6,8 +6,8 @@ layout (location = 2) in vec2 VertexTexCoords;
 layout (location = 3) in vec3 VertexColor;
 layout (location = 4) in vec3 VertexTangent;
 layout (location = 5) in vec3 VertexBitangent;
-layout(location = 6) in vec3 VertexBlendWeights;
-layout(location = 7) in ivec3 VertexBlendIndices;
+layout(location = 6) in vec4 VertexBlendWeights;
+layout(location = 7) in ivec4 VertexBlendIndices;
 
 #include "materialCommon.glsl"
 
@@ -31,8 +31,8 @@ struct VERTEX_FACTORY_INPUT
 	vec3 VertexColor;
 	vec3 VertexTangent;
 	vec3 VertexBitangent;
-	vec3 VertexBlendWeights;
-	ivec3 VertexBlendIndices;
+	vec4 VertexBlendWeights;
+	ivec4 VertexBlendIndices;
 } Input;
 
 VERTEX_FACTORY_INPUT GetVertexFactoryInput()

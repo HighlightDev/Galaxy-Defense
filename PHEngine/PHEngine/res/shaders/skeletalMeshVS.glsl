@@ -7,8 +7,8 @@ layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 uv;
 layout(location = 4) in vec3 tangent;
 layout(location = 5) in vec3 bitangent;
-layout(location = 6) in vec3 blendWeights;
-layout(location = 7) in ivec3 blendIndices;
+layout(location = 6) in vec4 blendWeights;
+layout(location = 7) in ivec4 blendIndices;
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;
@@ -27,8 +27,6 @@ void main()
     for (int i = 0; i < MaxWeights; i++)
     {
         int blendIndex = blendIndices[i];
-        if (blendIndex < 0)
-            continue;
 
         float blendWeight = blendWeights[i];
 

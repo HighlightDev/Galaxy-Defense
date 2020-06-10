@@ -220,9 +220,9 @@ namespace Game
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
            
-            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<3>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
+            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
 
-            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>>(compositeParams);
+            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>>(compositeParams);
 
             SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
              

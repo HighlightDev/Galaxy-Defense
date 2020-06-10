@@ -10,7 +10,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/ext/quaternion_float.hpp>
 
-#define MAX_BONES_PER_VERT 3
+#define MAX_BONES_PER_VERT 4
 
 namespace MeshLoader
 {
@@ -114,6 +114,7 @@ namespace MeshLoader
          glm::mat4 GlobalInverseTransform;
 
          std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
+         std::vector<std::string /*Animation Name*/> AnimationIndices;
 
          std::vector<float> BoneWeights;
 
@@ -130,8 +131,6 @@ namespace MeshLoader
          std::vector<float> TangentNormals;
 
          std::vector<float> BitangetNormals;
-
-      private:
 
          std::map<std::string /* Bone Name */, size_t /* Bone index */> BoneIndexMapping;
 
@@ -159,7 +158,7 @@ namespace MeshLoader
 
          void StoreVertexData(const aiMesh* pMesh);
 
-         void StoreIndices(const aiMesh* pMesh);
+         void StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh);
       };
 
       struct MeshAttributes
@@ -202,6 +201,7 @@ namespace MeshLoader
          std::map<std::string /* Bone Name */, MeshBoneInfo> BoneMapping;
 
          std::map<std::string /* Animation Name */, AnimationMappingData> AnimationMapping;
+         std::vector<std::string /*Animation Name*/> AnimationIndices;
 
          glm::mat4 GlobalInverseTransform;
 
@@ -209,6 +209,7 @@ namespace MeshLoader
             : RootNode(collector.meshRootNode)
             , BoneMapping(std::move(collector.BoneMapping))
             , AnimationMapping(std::move(collector.AnimationMapping))
+            , AnimationIndices(std::move(collector.AnimationIndices))
             , GlobalInverseTransform(std::move(collector.GlobalInverseTransform))
          {
          }

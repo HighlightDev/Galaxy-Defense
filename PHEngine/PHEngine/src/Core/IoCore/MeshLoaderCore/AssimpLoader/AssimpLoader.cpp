@@ -16,7 +16,8 @@ namespace MeshLoader
             aiProcess_GenSmoothNormals |
             aiProcess_FlipUVs |
             aiProcess_JoinIdenticalVertices |
-            aiProcess_CalcTangentSpace);
+            aiProcess_CalcTangentSpace | 
+            aiProcess_LimitBoneWeights);
 
          const aiScene* scene = importer_t.ReadFile(modelFilePath, LOAD_FLAGS);
 

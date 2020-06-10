@@ -21,7 +21,7 @@ namespace Graphics
       class SkeletalMeshSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<SkeletalMeshVertexFactory<3>, SimpleShader>;
+         using ShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
          using Base = PrimitiveSceneProxy;
 
          float mTimeTick;

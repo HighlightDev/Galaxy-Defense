@@ -63,6 +63,11 @@ namespace Graphics
             bAnimationTransformationDirty = false;
          }
 
+         if (m_animatedMeshData->AnimationIndices.size() > 5)
+         {
+            return m_animatedMeshData->GetAnimatedMatricesByIndex(8, mTimeTick);
+         }
+
          return m_animatedMeshData->GetAnimatedMatricesByIndex(0, mTimeTick);
       }
 

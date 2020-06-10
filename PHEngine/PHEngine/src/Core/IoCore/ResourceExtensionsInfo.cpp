@@ -25,6 +25,8 @@ namespace IO
 
       std::string extension = filePath.substr(extensionStartIndex + 1);
 
+      extension = EngineUtility::ToLower(extension);
+
       return GetResourceType(extension);
    }
 

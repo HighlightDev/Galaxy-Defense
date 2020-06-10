@@ -37,8 +37,8 @@ namespace Game
 
       /*     SKELETAL MESH DEPTH SHADER   */
 
-#define MaxWeights 3
-#define MaxBones 55
+#define MaxWeights 4
+#define MaxBones 155
 
       DepthShader<true>::DepthShader(const ShaderParams& params)
          : DepthShaderBase(params)

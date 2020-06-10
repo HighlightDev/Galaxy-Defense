@@ -1,7 +1,7 @@
 #version 400
 
-#define MaxWeights 3
-#define MaxBones 55
+#define MaxWeights 4
+#define MaxBones 155
 layout (location = 0) in vec3 vertex_position;
 
 uniform mat4 worldMatrix;

@@ -81,4 +81,12 @@ namespace EngineUtility
 		return seglist;
 	}
 
+   std::string ToLower(const std::string& source)
+   {
+      std::string result = source;
+      std::transform(source.begin(), source.end(), result.begin(),
+         [](unsigned char c) { return std::tolower(c); });
+
+      return result;
+   }
 }

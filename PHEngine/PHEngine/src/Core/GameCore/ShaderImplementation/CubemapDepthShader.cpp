@@ -72,8 +72,8 @@ namespace Game
             u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
       }
 
-#define MaxWeights 3
-#define MaxBones 55
+#define MaxWeights 4
+#define MaxBones 155
 
       void CubemapDepthShader<true>::AccessAllUniformLocations(uint32_t shaderProgramId)
       {

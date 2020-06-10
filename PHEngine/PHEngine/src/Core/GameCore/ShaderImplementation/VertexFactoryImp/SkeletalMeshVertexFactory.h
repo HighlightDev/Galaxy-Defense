@@ -18,7 +18,7 @@ namespace Game
       Uniform u_projectionMatrix;
       UniformArray u_boneMatrices;
 
-      static constexpr int32_t MaxBones = 55;
+      static constexpr int32_t MaxBones = 155;
       static constexpr int32_t MaxWeightsIndices = InfluenceWeightsCount;
 
   public:
