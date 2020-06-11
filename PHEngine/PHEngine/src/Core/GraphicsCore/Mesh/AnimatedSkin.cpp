@@ -1,7 +1,4 @@
 #include "AnimatedSkin.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
-
-using namespace MeshLoader::Assimp;
 
 namespace Graphics
 {

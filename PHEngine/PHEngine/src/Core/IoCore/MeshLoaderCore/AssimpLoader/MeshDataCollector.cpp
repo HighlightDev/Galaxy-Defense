@@ -1,4 +1,4 @@
-#include "MeshData.h"
+#include "MeshDataCollector.h"
 #include "Core/UtilityCore/AssimpToGlmConverter.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -7,10 +7,6 @@
 #include <memory>
 #include <algorithm>
 
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/compatibility.hpp>
-
 using namespace EngineUtility;
 
 namespace MeshLoader
@@ -18,13 +14,30 @@ namespace MeshLoader
    namespace Assimp
    {
 
-      Collector::Collector(const aiScene* scene)
+      void MeshDataCollector::VertexBoneData::AddBoneData(size_t boneIndex, float weight)
+      {
+         if (!IsFilled)
+         {
+            for (size_t i = 0; i < MAX_BONES_PER_VERT; ++i)
+            {
+               if (Weights[i] <= 0.0005f)
+               {
+                  BoneIndices[i] = boneIndex;
+                  Weights[i] = weight;
+                  IsFilled = (i == (MAX_BONES_PER_VERT - 1));
+                  return;
+               }
+            }
+         }
+      }
+
+      MeshDataCollector::MeshDataCollector(const aiScene* scene)
          : mScene(scene)
          , GlobalInverseTransform(1)
       {
       }
 
-      void Collector::Collect()
+      void MeshDataCollector::Collect()
       {
          if (!mScene)
             return;
@@ -64,7 +77,7 @@ namespace MeshLoader
          }
       }
 
-      void Collector::CollectVertexData()
+      void MeshDataCollector::CollectVertexData()
       {
          size_t verticesCount = 0;
 
@@ -98,7 +111,7 @@ namespace MeshLoader
          StoreVertexBoneData(vertexBoneData);
       }
 
-      void Collector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh)
+      void MeshDataCollector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh)
       {
          const size_t lastIndexPerMesh = VertexIndices.size();
          const size_t countOfFaces = pMesh->mNumFaces;
@@ -113,7 +126,7 @@ namespace MeshLoader
          }
       }
 
-      void Collector::StoreVertexData(const aiMesh* pMesh)
+      void MeshDataCollector::StoreVertexData(const aiMesh* pMesh)
       {
          const bool bCollectNormals = pMesh->HasNormals();
          const bool bCollectTexCoords = pMesh->HasTextureCoords(0);
@@ -149,7 +162,7 @@ namespace MeshLoader
          }
       }
 
-      void Collector::StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData)
+      void MeshDataCollector::StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData)
       {
          for (size_t i = 0; i < vertexBoneData.size(); ++i)
          {
@@ -163,7 +176,7 @@ namespace MeshLoader
          }
       }
 
-      void Collector::VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
+      void MeshDataCollector::VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
       {
          for (size_t i = 0; i < pMesh->mNumBones; ++i) {
 
@@ -181,7 +194,7 @@ namespace MeshLoader
          StoreIndices(meshBaseVertexIndex, pMesh);
       }
 
-      void Collector::CollectAnimation()
+      void MeshDataCollector::CollectAnimation()
       {
          aiNode* rootNode = mScene->mRootNode;
 
@@ -199,7 +212,7 @@ namespace MeshLoader
 
       aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::string& nodeName);
 
-      void Collector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings)
+      void MeshDataCollector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings)
       {
          std::string nodeName(pNode->mName.data);
 
@@ -261,52 +274,7 @@ namespace MeshLoader
          return result;
       }
 
-      //void LoadSubMesh(const aiMesh* paiMesh, Collector& outStorage, const int meshBaseVertex)
-      //{
-
-      //}
-      //uint32_t numBones = 0;
-      //void CollectBonesFromSubMesh(const aiMesh* pMesh, Collector& outStorage, const int meshBaseVertex)
-      //{
-      //   for (uint32_t i = 0; i < pMesh->mNumBones; i++)
-      //   {
-      //      uint32_t boneIndex = 0;
-      //      std::string boneName(pMesh->mBones[i]->mName.data);
-
-      //      if (outStorage.BoneMapping.find(boneName) == outStorage.BoneMapping.end())
-      //      {
-      //         // Allocate an index for a new bone
-      //         boneIndex = numBones;
-      //         outStorage.BoneIndexMapping[boneName] = boneIndex;
-      //      
-      //         numBones++;
-      //         BoneMatrix bm = makeBoneMatrix(pMesh->mBones[i]->mOffsetMatrix);
-      //         boneMatrices.push_back(bm);
-      //         boneMapping[boneName] = boneIndex;
-      //      }
-      //      else
-      //      {
-      //         boneIndex = boneMapping[boneName];
-      //      }
-
-      //      //printf("BONE : %s; weights %d\n", BoneName.c_str(), pMesh->mBones[i]->mNumWeights);
-      //      //for (uint j = 0 ; j < pMesh->mBones[i]->mNumWeights ; j++) {
-      //      //    printf("              Bone[%d] : %f\n", j, pMesh->mBones[i]->mWeights[j].mWeight);
-      //      //}
-
-      //      for (uint32_t j = 0; j < pMesh->mBones[i]->mNumWeights; j++)
-      //      {
-      //         uint32_t vertexID = meshEntries[MeshIndex].BaseVertex + pMesh->mBones[i]->mWeights[j].mVertexId;
-      //         float weight = pMesh->mBones[i]->mWeights[j].mWeight;
-
-      //         //printf("VertexID: %i  BoneIndex: %i   Weight: %f\n", VertexID, BoneIndex, Weight);
-
-      //         outStorage.bones[vertexID].addBoneData(boneIndex, weight);
-      //      }
-      //   }
-      //}
-
-      void Collector::CollectBones()
+      void MeshDataCollector::CollectBones()
       {
          size_t meshCount = mScene->mNumMeshes;
 
@@ -333,7 +301,7 @@ namespace MeshLoader
          }
       }
 
-      void Collector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode)
+      void MeshDataCollector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode)
       {
          if (!pNode)
             return;
@@ -349,173 +317,6 @@ namespace MeshLoader
 
             CollectNodeHierarchy(pChildNode, meshChildNode);
          }
-      }
-
-
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesByName(const std::string& animationName, const float animationTime)
-      {
-         return GetAnimatedMatricesFacade(animationName, animationTime);
-      }
-
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesByIndex(const size_t index, const float animationTime)
-      {
-         std::string animName = AnimationIndices[index];
-         return GetAnimatedMatricesFacade(animName, animationTime);
-      }
-
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesFacade(const std::string& animationName, const float animationTime)
-      {
-         std::vector<glm::mat4> FinalTransformationMatrices;
-         FinalTransformationMatrices.reserve(BoneMapping.size());
-
-         AnimationMappingData& mappingData = AnimationMapping[animationName];
-
-         float time = fmod(animationTime, mappingData.AnimationDuration);
-
-         ReadNodeHierarchy(time, animationName, RootNode, glm::mat4(1) /* identity */, FinalTransformationMatrices);
-
-         return FinalTransformationMatrices;
-      }
-
-      void AnimatedMeshData::ReadNodeHierarchy(float animationTime, const std::string& animationName,
-         MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput)
-      {
-         const std::string& nodeName = node->Name;
-
-         glm::mat4 nodeTransformation(1);
-            //node->NodeTransformation);
-
-         // 1. Apply animation transform influence
-         if (AnimationMapping[animationName].NodeAnimationBindings.count(nodeName) > 0)
-         {
-            //const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
-            const glm::vec3& translation = InterpolateTranslation(animationTime, animationName, nodeName);
-            const glm::quat& rotation = InterpolateRotation(animationTime, animationName, nodeName);
-
-            glm::mat4 identityMatrix(1);
-            glm::mat4 translationMatrix = glm::translate(identityMatrix, translation);
-            //glm::mat4 scaleMatrix = glm::scale(identityMatrix, scale);
-            glm::mat4 rotationMatrix = glm::toMat4(rotation);
-
-            nodeTransformation = translationMatrix * rotationMatrix/* * scaleMatrix*/;
-         }
-
-         // 2. Apply parent transform influence
-         glm::mat4 globalTransformation = parentTransform * nodeTransformation;
-
-         // 3. Apply bone transform influence
-         if (const auto& cit = BoneMapping.find(nodeName); cit != BoneMapping.end())
-         {
-            const glm::mat4& boneOffset = cit->second.BoneOffset;
-            finalOutput.emplace_back(/*GlobalInverseTransform * */globalTransformation *  boneOffset);
-         }
-
-         for (size_t i = 0; i < node->Children.size(); ++i)
-         {
-            ReadNodeHierarchy(animationTime, animationName, node->Children[i], globalTransformation, finalOutput);
-         }
-      }
-
-      glm::vec3 AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName)
-      {
-         const std::vector<FrameScale>& scalingFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].ScaleFrames;
-
-         assert(scalingFrames.size() > 0);
-
-         // we need at least two values to interpolate...
-         if (scalingFrames.size() == 1)
-         {
-            return scalingFrames[0].Scale;
-         }
-
-         size_t scalingIndex = FindScalingIndex(animationTime, scalingFrames);
-         size_t nextScalingIndex = scalingIndex + 1;
-
-         assert(nextScalingIndex < scalingFrames.size());
-
-         const float DeltaTime = scalingFrames[nextScalingIndex].Time - scalingFrames[scalingIndex].Time;
-         const float Factor = (animationTime - scalingFrames[scalingIndex].Time) / DeltaTime;
-         return glm::lerp(scalingFrames[scalingIndex].Scale, scalingFrames[nextScalingIndex].Scale, Factor);
-      }
-
-      glm::vec3 AnimatedMeshData::InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName)
-      {
-         const std::vector<FrameTranslation>& translationFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].TranslationFrames;
-
-         assert(translationFrames.size() > 0);
-
-         // we need at least two values to interpolate...
-         if (translationFrames.size() == 1)
-         {
-            return translationFrames[0].Translation;
-         }
-
-         size_t translationIndex = FindTranslationIndex(animationTime, translationFrames);
-         size_t nextTranslationIndex = translationIndex + 1;
-
-         assert(nextTranslationIndex < translationFrames.size());
-
-         const float DeltaTime = translationFrames[nextTranslationIndex].Time - translationFrames[translationIndex].Time;
-         const float Factor = (animationTime - translationFrames[translationIndex].Time) / DeltaTime;
-         return glm::lerp(translationFrames[translationIndex].Translation, translationFrames[nextTranslationIndex].Translation, Factor);
-      }
-
-      glm::quat AnimatedMeshData::InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName)
-      {
-         const std::vector<FrameRotation>& rotationFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].RotationFrames;
-
-         assert(rotationFrames.size() > 0);
-
-         // we need at least two values to interpolate...
-         if (rotationFrames.size() == 1)
-         {
-            return rotationFrames[0].Rotation;
-         }
-
-         size_t rotationIndex = FindRotationIndex(animationTime, rotationFrames);
-         size_t nextRotationIndex = rotationIndex + 1;
-
-         assert(nextRotationIndex < rotationFrames.size());
-
-         const float DeltaTime = rotationFrames[nextRotationIndex].Time - rotationFrames[rotationIndex].Time;
-         const float Factor = (animationTime - rotationFrames[rotationIndex].Time) / DeltaTime;
-         return glm::slerp(rotationFrames[rotationIndex].Rotation, rotationFrames[nextRotationIndex].Rotation, Factor);
-      }
-
-      size_t AnimatedMeshData::FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames)
-      {
-         for (size_t i = 0; i < scalingFrames.size() - 1; ++i) {
-            if (animationTime < scalingFrames[i + 1].Time) {
-               return i;
-            }
-         }
-
-         assert(0);
-         return 0;
-      }
-
-      size_t AnimatedMeshData::FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames)
-      {
-         for (size_t i = 0; i < translationFrames.size() - 1; ++i) {
-            if (animationTime < translationFrames[i + 1].Time) {
-               return i;
-            }
-         }
-
-         assert(0);
-         return 0;
-      }
-
-      size_t AnimatedMeshData::FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames)
-      {
-         for (size_t i = 0; i < rotationFrames.size() - 1; ++i) {
-            if (animationTime < rotationFrames[i + 1].Time) {
-               return i;
-            }
-         }
-
-         assert(0);
-         return 0;
       }
    }
 }

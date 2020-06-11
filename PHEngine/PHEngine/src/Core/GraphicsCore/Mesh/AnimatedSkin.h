@@ -1,21 +1,12 @@
 #pragma once
 
 #include "Skin.h"
-
-using namespace Graphics::Mesh;
-
-namespace MeshLoader {
-   namespace Assimp {
-      struct AnimatedMeshData;
-   }
-}
+#include "AnimatedMeshData.h"
 
 namespace Graphics 
 {
 	namespace Mesh 
 	{
-
-      using MeshLoader::Assimp::AnimatedMeshData;
 
 		class AnimatedSkin : public Skin
 		{

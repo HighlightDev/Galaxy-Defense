@@ -1,8 +1,12 @@
 #pragma once
 
-#include "MeshData.h"
+#include "MeshDataCollector.h"
+#include "Core/GraphicsCore/Mesh/MeshAttributes.h"
+#include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
 
 #include <assimp/Importer.hpp>
+
+using namespace Graphics::Mesh;
 
 namespace MeshLoader
 {

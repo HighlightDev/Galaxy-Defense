@@ -512,10 +512,6 @@
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
-    <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_2.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_3.fbx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -1802,10 +1798,25 @@
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h">
+    <ClInclude Include="src\Core\UtilityCore\AssimpToGlmConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\UtilityCore\AssimpToGlmConverter.h">
+    <ClInclude Include="src\Core\GraphicsCore\Mesh\MeshAttributes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshBoneInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AnimationSequenceData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshDataCollector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2158,16 +2169,17 @@
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\UtilityCore\AssimpToGlmConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\dzinovev\Desktop\91-anime_character\textures.png">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClCompile Include="src\Core\GraphicsCore\Mesh\MeshAttributes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshDataCollector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

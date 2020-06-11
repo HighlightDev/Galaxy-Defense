@@ -1,14 +1,16 @@
 #include "MeshAllocationPolicy.h"
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
-#include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+
 #include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/IoCore/RawResource.h"
+
 #include "Core/CommonCore/Assertion.h"
+
+#include "Core/UtilityCore/PlatformDependentFunctions.h"
 
 #include <gl/glew.h>
 

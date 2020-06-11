@@ -41,7 +41,7 @@ namespace MeshLoader
 
       void AssimpLoader::LoadMeshAndAnimations(const struct aiScene* scene)
       {
-         Collector collector(scene);
+         MeshDataCollector collector(scene);
          collector.Collect();
 
          m_meshAttributes = new MeshAttributes(collector);

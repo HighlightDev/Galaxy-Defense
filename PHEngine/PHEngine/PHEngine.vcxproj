@@ -140,10 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="C:\Users\dzinovev\Desktop\91-anime_character\Anime_character.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_2.fbx" />
-    <None Include="C:\Users\dzinovev\Desktop\spider_model\64-fbx\fbx\Spider_3.fbx" />
     <None Include="Dependencies\GLEW\doc\advanced.html" />
     <None Include="Dependencies\GLEW\doc\basic.html" />
     <None Include="Dependencies\GLEW\doc\build.html" />
@@ -381,6 +377,9 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h" />
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AnimationSequenceData.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Mesh\MeshAttributes.h" />
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncDataProxy.h" />
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\AsyncJob.h" />
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.h" />
@@ -426,6 +425,8 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\CompositeShader.h" />
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshBoneInfo.h" />
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshNode.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\MeshResourceInfo.h" />
     <ClInclude Include="src\Core\IoCore\RawResource.h" />
     <ClInclude Include="src\Core\IoCore\ResourceExtensionsInfo.h" />
@@ -526,7 +527,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Texture\ITexture.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\Skin.h" />
-    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.h" />
+    <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshDataCollector.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h" />
     <ClInclude Include="Dependencies\GLEW\include\GL\glew.h" />
@@ -813,6 +814,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Mesh\MeshAttributes.cpp" />
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\RigidBodyController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.cpp" />
@@ -896,7 +899,7 @@
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\Skin.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Texture\ITexture.cpp" />
-    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshData.cpp" />
+    <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\MeshDataCollector.cpp" />
     <ClCompile Include="src\Core\IoCore\MeshLoaderCore\AssimpLoader\AssimpLoader.cpp" />
     <ClCompile Include="Dependencies\GLM\include\glm\detail\glm.cpp" />
     <ClCompile Include="src\Core\IoCore\FolderManager.cpp" />
@@ -931,9 +934,6 @@
     <ClCompile Include="src\Core\GameCore\ThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="C:\Users\dzinovev\Desktop\91-anime_character\textures.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

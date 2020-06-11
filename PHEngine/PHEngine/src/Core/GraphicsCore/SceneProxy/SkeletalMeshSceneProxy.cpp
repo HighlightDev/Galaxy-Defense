@@ -1,6 +1,5 @@
 #include "SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
-#include "Core/IoCore/MeshLoaderCore/AssimpLoader/MeshData.h"
 
 using namespace Graphics::Mesh;
 
