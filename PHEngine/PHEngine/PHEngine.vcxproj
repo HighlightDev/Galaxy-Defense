@@ -377,6 +377,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AnimationSequenceData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\MeshAttributes.h" />
@@ -814,6 +815,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\MeshAttributes.cpp" />
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceLoader.cpp" />

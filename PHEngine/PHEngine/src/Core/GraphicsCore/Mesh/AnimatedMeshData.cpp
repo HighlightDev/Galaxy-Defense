@@ -17,23 +17,12 @@ namespace Graphics
       {
       }
 
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesByName(const std::string& animationName, const float animationTime)
-      {
-         return GetAnimatedMatricesFacade(animationName, animationTime);
-      }
-
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesByIndex(const size_t index, const float animationTime)
-      {
-         std::string animName = AnimationIndices[index];
-         return GetAnimatedMatricesFacade(animName, animationTime);
-      }
-
-      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesFacade(const std::string& animationName, const float animationTime)
+      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatrices(const std::string& animationName, const float animationTime) const
       {
          std::vector<glm::mat4> FinalTransformationMatrices;
          FinalTransformationMatrices.reserve(BoneMapping.size());
 
-         AnimationMappingData& mappingData = AnimationMapping[animationName];
+         const AnimationMappingData& mappingData = AnimationMapping.at(animationName);
 
          float time = fmod(animationTime, mappingData.AnimationDuration);
 
@@ -42,8 +31,41 @@ namespace Graphics
          return FinalTransformationMatrices;
       }
 
+      std::map<std::string, AnimatedMeshData::AnimationBoneData_t> AnimatedMeshData::GetAnimationBoneMapping(const std::string& animationName, const float animationTime)
+      {
+         std::map<std::string, AnimatedMeshData::AnimationBoneData_t> animationBoneData;
+
+         const AnimationMappingData& mappingData = AnimationMapping.at(animationName);
+
+         float time = fmod(animationTime, mappingData.AnimationDuration);
+
+         GetBoneDataNodeHierarchy(time, animationName, RootNode, animationBoneData);
+
+         return animationBoneData;
+      }
+
+      void AnimatedMeshData::GetBoneDataNodeHierarchy(float animationTime, const std::string& animationName,
+         MeshNode* node, std::map<std::string, AnimatedMeshData::AnimationBoneData_t>& animationBoneData) const
+      {
+         const std::string& nodeName = node->Name;
+
+         if (AnimationMapping.at(animationName).NodeAnimationBindings.count(nodeName) > 0)
+         {
+            const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
+            const glm::vec3& translation = InterpolateTranslation(animationTime, animationName, nodeName);
+            const glm::quat& rotation = InterpolateRotation(animationTime, animationName, nodeName);
+
+            animationBoneData[nodeName] = std::make_tuple(scale, rotation, translation);
+         }
+
+         for (size_t i = 0; i < node->Children.size(); ++i)
+         {
+            GetBoneDataNodeHierarchy(animationTime, animationName, node->Children[i], animationBoneData);
+         }
+      }
+
       void AnimatedMeshData::ReadNodeHierarchy(float animationTime, const std::string& animationName,
-         MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput)
+         MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const
       {
          const std::string& nodeName = node->Name;
 
@@ -51,7 +73,7 @@ namespace Graphics
          //node->NodeTransformation);
 
       // 1. Apply animation transform influence
-         if (AnimationMapping[animationName].NodeAnimationBindings.count(nodeName) > 0)
+         if (AnimationMapping.at(animationName).NodeAnimationBindings.count(nodeName) > 0)
          {
             //const glm::vec3& scale = InterpolateScaling(animationTime, animationName, nodeName);
             const glm::vec3& translation = InterpolateTranslation(animationTime, animationName, nodeName);
@@ -81,9 +103,9 @@ namespace Graphics
          }
       }
 
-      glm::vec3 AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName)
+      glm::vec3 AnimatedMeshData::InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName) const
       {
-         const std::vector<FrameScale>& scalingFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].ScaleFrames;
+         const std::vector<FrameScale>& scalingFrames = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).ScaleFrames;
 
          assert(scalingFrames.size() > 0);
 
@@ -103,9 +125,9 @@ namespace Graphics
          return glm::lerp(scalingFrames[scalingIndex].Scale, scalingFrames[nextScalingIndex].Scale, Factor);
       }
 
-      glm::vec3 AnimatedMeshData::InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName)
+      glm::vec3 AnimatedMeshData::InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName) const
       {
-         const std::vector<FrameTranslation>& translationFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].TranslationFrames;
+         const std::vector<FrameTranslation>& translationFrames = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).TranslationFrames;
 
          assert(translationFrames.size() > 0);
 
@@ -125,9 +147,9 @@ namespace Graphics
          return glm::lerp(translationFrames[translationIndex].Translation, translationFrames[nextTranslationIndex].Translation, Factor);
       }
 
-      glm::quat AnimatedMeshData::InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName)
+      glm::quat AnimatedMeshData::InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName) const
       {
-         const std::vector<FrameRotation>& rotationFrames = AnimationMapping[animationName].NodeAnimationBindings[nodeName].RotationFrames;
+         const std::vector<FrameRotation>& rotationFrames = AnimationMapping.at(animationName).NodeAnimationBindings.at(nodeName).RotationFrames;
 
          assert(rotationFrames.size() > 0);
 
@@ -147,7 +169,7 @@ namespace Graphics
          return glm::slerp(rotationFrames[rotationIndex].Rotation, rotationFrames[nextRotationIndex].Rotation, Factor);
       }
 
-      size_t AnimatedMeshData::FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames)
+      size_t AnimatedMeshData::FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames) const
       {
          for (size_t i = 0; i < scalingFrames.size() - 1; ++i) {
             if (animationTime < scalingFrames[i + 1].Time) {
@@ -159,7 +181,7 @@ namespace Graphics
          return 0;
       }
 
-      size_t AnimatedMeshData::FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames)
+      size_t AnimatedMeshData::FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames) const
       {
          for (size_t i = 0; i < translationFrames.size() - 1; ++i) {
             if (animationTime < translationFrames[i + 1].Time) {
@@ -171,7 +193,7 @@ namespace Graphics
          return 0;
       }
 
-      size_t AnimatedMeshData::FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames)
+      size_t AnimatedMeshData::FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames) const
       {
          for (size_t i = 0; i < rotationFrames.size() - 1; ++i) {
             if (animationTime < rotationFrames[i + 1].Time) {

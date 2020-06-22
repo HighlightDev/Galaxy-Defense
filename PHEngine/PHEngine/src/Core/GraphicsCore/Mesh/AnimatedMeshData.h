@@ -25,6 +25,8 @@ namespace Graphics
 
          glm::mat4 GlobalInverseTransform;
 
+      public:
+
          AnimatedMeshData(const struct MeshDataCollector& collector);
 
          ~AnimatedMeshData()
@@ -32,23 +34,25 @@ namespace Graphics
             delete RootNode;
          }
 
-         std::vector<glm::mat4> GetAnimatedMatricesByName(const std::string& animationName, const float animationTime);
+         using AnimationBoneData_t = std::tuple <glm::vec3 /*scale*/, glm::quat/*rotation*/, glm::vec3/*translation*/>;
 
-         std::vector<glm::mat4> GetAnimatedMatricesByIndex(const size_t index, const float animationTime);
+         std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime) const;
+
+         std::map<AnimationBoneData_t> GetAnimationBoneMapping(const std::string& animationName, const float animationTime);
 
       private:
 
-         std::vector<glm::mat4> GetAnimatedMatricesFacade(const std::string& animationName, const float animationTime);
+         void GetBoneDataNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, std::map<AnimationBoneData_t>& boneData) const;
 
-         void ReadNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput);
+         void ReadNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
 
-         glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName);
-         glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName);
-         glm::quat InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName);
+         glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName) const;
+         glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName) const;
+         glm::quat InterpolateRotation(float animationTime, const std::string& animationName, const std::string& nodeName) const;
 
-         size_t FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames);
-         size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames);
-         size_t FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames);
+         size_t FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames) const;
+         size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames) const;
+         size_t FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames) const;
       };
 
    }

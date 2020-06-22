@@ -8,7 +8,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+#include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
 
 using namespace Game;
 using namespace Game::ShaderImpl;
@@ -24,11 +24,11 @@ namespace Graphics
          using ShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
          using Base = PrimitiveSceneProxy;
 
-         float mTimeTick;
-
          bool bAnimationTransformationDirty = true;
 
-         std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
+         AnimationPlayer mAnimationPlayer;
+
+         std::vector<glm::mat4> mCachedMatrices;
 
       private:
 

@@ -13,13 +13,12 @@ namespace Graphics
             , component->GetRenderData().m_skin
             , component->GetRenderData().m_materialShader
             , component->GetRenderData().mMaterialInstance)
-         , mTimeTick(0.0f)
       {
          std::shared_ptr<AnimatedSkin> spt_AnimatedSkin = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
 
          assert((spt_AnimatedSkin));
 
-         m_animatedMeshData = spt_AnimatedSkin->GetAnimatedMeshData();
+         mAnimationPlayer = AnimationPlayer(spt_AnimatedSkin->GetAnimatedMeshData());
       }
 
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()
@@ -45,7 +44,7 @@ namespace Graphics
 
       void SkeletalMeshSceneProxy::SetAnimationDeltaTime(float animationDeltaTime)
       {
-         mTimeTick += animationDeltaTime;
+         mAnimationPlayer.UpdateAnimationTime(animationDeltaTime);
          bAnimationTransformationDirty = true;
       }
 
@@ -58,16 +57,11 @@ namespace Graphics
       {
          if (bAnimationTransformationDirty)
          {
-            // todo: update cached skinning matrices
+            mCachedMatrices = std::move(mAnimationPlayer.GetAnimatedMatrices());
             bAnimationTransformationDirty = false;
          }
 
-         if (m_animatedMeshData->AnimationIndices.size() > 5)
-         {
-            return m_animatedMeshData->GetAnimatedMatricesByIndex(8, mTimeTick);
-         }
-
-         return m_animatedMeshData->GetAnimatedMatricesByIndex(0, mTimeTick);
+         return mCachedMatrices;
       }
 
       bool SkeletalMeshSceneProxy::IsDeferred() const
