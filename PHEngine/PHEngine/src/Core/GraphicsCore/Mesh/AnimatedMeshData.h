@@ -38,13 +38,19 @@ namespace Graphics
 
          std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime) const;
 
-         std::map<AnimationBoneData_t> GetAnimationBoneMapping(const std::string& animationName, const float animationTime);
+         std::vector<glm::mat4> GetAnimatedMatricesWithBlendedBoneData(const std::map<std::string, AnimationBoneData_t>& blendedBoneData);
+
+         std::map<std::string, AnimationBoneData_t> GetAnimationBoneMapping(const std::string& animationName, const float animationTime);
+
+         static std::map<std::string, AnimationBoneData_t> BlendAnimationBoneMappings(const std::map<std::string, AnimationBoneData_t>& srcBoneData,
+            const std::map<std::string, AnimationBoneData_t>& dstBoneData, const float blendFactor);
 
       private:
 
-         void GetBoneDataNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, std::map<AnimationBoneData_t>& boneData) const;
+         void GetBoneDataNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, std::map<std::string, AnimationBoneData_t>& boneData) const;
 
          void ReadNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
+         void ReadNodeHierarchyWithBlendedBoneData( MeshNode* node, const std::map<std::string, AnimationBoneData_t>& blendedBoneData, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
 
          glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName) const;
          glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName) const;
@@ -53,6 +59,8 @@ namespace Graphics
          size_t FindScalingIndex(const float animationTime, const std::vector<FrameScale>& scalingFrames) const;
          size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames) const;
          size_t FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames) const;
+
+         static AnimationBoneData_t BlendBoneData(const AnimationBoneData_t& src, const AnimationBoneData_t& dst, const float blendFactor);
       };
 
    }

@@ -1,13 +1,17 @@
 #pragma once
 
 #include "AnimatedMeshData.h"
+#include "Core/GameCore/StateMachine/IStateMachineController.h"
+
+using namespace Game;
 
 namespace Graphics
 {
    namespace Mesh
    {
 
-      class AnimationPlayer
+      class AnimationPlayer 
+         : public IStateMachineController
       {
          std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 
@@ -17,10 +21,10 @@ namespace Graphics
          /* this time is used when blending of animations is being calculated*/
          float mDstAnimationTime;
 
-         bool bBlendingEnabled;
-
+         /* this is the main animation name*/
          std::string mSrcAnimationName;
 
+         /* this animation name is used when blending of animations is being occurred*/
          std::string mDstAnimationName;
 
       public:
@@ -36,6 +40,10 @@ namespace Graphics
          bool SetCurrentAnimationByIndex(const size_t index);
 
          std::vector<glm::mat4> GetAnimatedMatrices() const;
+
+         virtual void MakeTransitionToState(BaseState& srcState, BaseState& dstState, const float duration) override;
+
+         virtual void OnTransitionFinished() override;
       };
 
    }

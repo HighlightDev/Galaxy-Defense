@@ -377,6 +377,8 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\StateMachine\BaseState.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\IStateMachineController.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AnimationSequenceData.h" />

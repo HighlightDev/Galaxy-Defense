@@ -17,6 +17,40 @@ namespace Graphics
       {
       }
 
+      std::map<std::string, AnimatedMeshData::AnimationBoneData_t> AnimatedMeshData::BlendAnimationBoneMappings(const std::map<std::string, AnimatedMeshData::AnimationBoneData_t>& srcBoneData,
+         const std::map<std::string, AnimatedMeshData::AnimationBoneData_t>& dstBoneData, const float blendFactor)
+      {
+         std::map<std::string, AnimatedMeshData::AnimationBoneData_t> result;
+         for (const auto& srcDataItem : srcBoneData)
+         {
+            const std::string& nodeName = srcDataItem.first;
+            const auto& srcData = srcDataItem.second;
+            const auto& dstData = dstBoneData.at(nodeName);
+            result[nodeName] = BlendBoneData(srcData, dstData, blendFactor);
+         }
+         
+         return result;
+      }
+
+      AnimatedMeshData::AnimationBoneData_t AnimatedMeshData::BlendBoneData(const AnimatedMeshData::AnimationBoneData_t& src,
+         const AnimatedMeshData::AnimationBoneData_t& dst, const float blendFactor)
+      {
+         glm::vec3 blendedScale = glm::lerp(std::get<0>(src), std::get<0>(dst), blendFactor);
+         glm::quat blendedRotation = glm::slerp(std::get<1>(src), std::get<1>(dst), blendFactor);
+         glm::vec3 blendedTranslation = glm::lerp(std::get<2>(src), std::get<2>(dst), blendFactor);
+         return std::make_tuple(blendedScale, blendedRotation, blendedTranslation);
+      }
+
+      std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatricesWithBlendedBoneData(const std::map<std::string, AnimatedMeshData::AnimationBoneData_t>& blendedBoneData)
+      {
+         std::vector<glm::mat4> FinalTransformationMatrices;
+         FinalTransformationMatrices.reserve(BoneMapping.size());
+
+         ReadNodeHierarchyWithBlendedBoneData(RootNode, blendedBoneData, glm::mat4(1) /* identity */, FinalTransformationMatrices);
+
+         return FinalTransformationMatrices;
+      }
+
       std::vector<glm::mat4> AnimatedMeshData::GetAnimatedMatrices(const std::string& animationName, const float animationTime) const
       {
          std::vector<glm::mat4> FinalTransformationMatrices;
@@ -61,6 +95,43 @@ namespace Graphics
          for (size_t i = 0; i < node->Children.size(); ++i)
          {
             GetBoneDataNodeHierarchy(animationTime, animationName, node->Children[i], animationBoneData);
+         }
+      }
+
+      void AnimatedMeshData::ReadNodeHierarchyWithBlendedBoneData(MeshNode* node, const std::map<std::string, AnimatedMeshData::AnimationBoneData_t>& blendedBoneData,
+         const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const
+      {
+         const std::string& nodeName = node->Name;
+
+         glm::mat4 nodeTransformation(1);
+         //node->NodeTransformation);
+
+      // 1. Apply animation transform influence
+         if (blendedBoneData.count(nodeName) > 0)
+         {
+            const auto& boneData = blendedBoneData.at(nodeName);
+
+            glm::mat4 identityMatrix(1);
+            glm::mat4 translationMatrix = glm::translate(identityMatrix, std::get<2>(boneData));
+            //glm::mat4 scaleMatrix = glm::scale(identityMatrix, scale);
+            glm::mat4 rotationMatrix = glm::toMat4(std::get<1>(boneData));
+
+            nodeTransformation = translationMatrix * rotationMatrix/* * scaleMatrix*/;
+         }
+
+         // 2. Apply parent transform influence
+         glm::mat4 globalTransformation = parentTransform * nodeTransformation;
+
+         // 3. Apply bone transform influence
+         if (const auto& cit = BoneMapping.find(nodeName); cit != BoneMapping.end())
+         {
+            const glm::mat4& boneOffset = cit->second.BoneOffset;
+            finalOutput.emplace_back(/*GlobalInverseTransform * */globalTransformation *  boneOffset);
+         }
+
+         for (size_t i = 0; i < node->Children.size(); ++i)
+         {
+            ReadNodeHierarchyWithBlendedBoneData(node->Children[i], blendedBoneData, globalTransformation, finalOutput);
          }
       }
 

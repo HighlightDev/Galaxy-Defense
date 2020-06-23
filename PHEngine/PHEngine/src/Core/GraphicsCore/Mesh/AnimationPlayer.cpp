@@ -5,10 +5,10 @@ namespace Graphics
    namespace Mesh
    {
       AnimationPlayer::AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData)
-         : m_animatedMeshData(animatedData)
+         : IStateMachineController()
+         , m_animatedMeshData(animatedData)
          , mSrcAnimationTime(0.0f)
          , mDstAnimationTime(0.0f)
-         , bBlendingEnabled(false)
          , mSrcAnimationName("")
          , mDstAnimationName("")
       {
@@ -32,7 +32,9 @@ namespace Graphics
       {
          mSrcAnimationTime += deltaTime;
 
-         if (bBlendingEnabled)
+         UpdateTransitionTime(deltaTime);
+
+         if (bTransitionEnabled)
             mDstAnimationTime += deltaTime;
       }
 
@@ -55,16 +57,30 @@ namespace Graphics
          return true;
       }
 
+      void AnimationPlayer::MakeTransitionToState(BaseState& srcState, BaseState& dstState, const float transitionDuration)
+      {
+         IStateMachineController::MakeTransitionToState(srcState, dstState, transitionDuration);
+
+         mDstAnimationName = ""; // dstState;
+      }
+
+      void AnimationPlayer::OnTransitionFinished()
+      {
+         mSrcAnimationName = mDstAnimationName;
+         mSrcAnimationTime = mDstAnimationTime;
+         mDstAnimationTime = 0.0f;
+         mDstAnimationName = "NoAnimation";
+      }
+
       std::vector<glm::mat4> AnimationPlayer::GetAnimatedMatrices() const
       {
          std::vector<glm::mat4> result;
-         if (bBlendingEnabled)
+         if (bTransitionEnabled)
          {
-            // todo: 
-            // m_animatedMeshData->GetAnimationBoneData(mSrcAnimationName, mSrcAnimationTime);
-            // m_animatedMeshData->GetAnimationBoneData(mDstAnimationName, mDstAnimationTime);
-            // blend and get result
-            // result = ...
+            auto srcBoneData = std::move(m_animatedMeshData->GetAnimationBoneMapping(mSrcAnimationName, mSrcAnimationTime));
+            auto dstBoneData = std::move(m_animatedMeshData->GetAnimationBoneMapping(mDstAnimationName, mDstAnimationTime));
+            auto blendedBoneData = std::move(m_animatedMeshData->BlendAnimationBoneMappings(srcBoneData, dstBoneData, transitionParameter));
+            result = m_animatedMeshData->GetAnimatedMatricesWithBlendedBoneData(blendedBoneData);
          }
          else
          {
