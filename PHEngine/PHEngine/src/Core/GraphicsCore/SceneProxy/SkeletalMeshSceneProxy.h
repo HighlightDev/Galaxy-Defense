@@ -28,8 +28,6 @@ namespace Graphics
 
          AnimationPlayer mAnimationPlayer;
 
-         std::vector<glm::mat4> mCachedMatrices;
-
       private:
 
          std::shared_ptr<ShaderType> GetShader() const;

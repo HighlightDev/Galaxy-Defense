@@ -1,5 +1,4 @@
 #pragma once
-#include "BaseState.h"
 
 namespace Game
 {
@@ -21,13 +20,13 @@ namespace Game
       
       virtual void OnTransitionFinished() = 0;
 
-      virtual void MakeTransitionToState(BaseState& srcState, BaseState& dstState, const float transitionDuration)
+      virtual void MakeTransitionToState(struct BaseStateProperty& srcState, struct BaseStateProperty& dstState, const float transitionDuration)
       {
          bTransitionEnabled = true;
          mTransitionDuration = transitionDuration;
       }
 
-      void UpdateTransitionTime(const float deltaTime)
+      virtual void UpdateTransitionTime(const float deltaTime)
       {
          if (bTransitionEnabled)
          {

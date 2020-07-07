@@ -2,10 +2,8 @@
 
 namespace Game
 {
-
-   struct BaseState
+   struct StateTransition
    {
 
    };
-
 }

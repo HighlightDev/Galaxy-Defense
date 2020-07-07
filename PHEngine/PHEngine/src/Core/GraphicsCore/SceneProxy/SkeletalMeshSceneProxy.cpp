@@ -27,11 +27,9 @@ namespace Graphics
 
       void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         std::vector<glm::mat4> skinningMatrices = GetSkinningMatrices();
-
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
-         GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(skinningMatrices);
+         GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
          GetShader()->GetMaterialShader()->SetUniformValues(mMaterialInstance);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          GetShader()->StopShader();
@@ -57,11 +55,11 @@ namespace Graphics
       {
          if (bAnimationTransformationDirty)
          {
-            mCachedMatrices = std::move(mAnimationPlayer.GetAnimatedMatrices());
+            mAnimationPlayer.UpdateAnimationMatrices();
             bAnimationTransformationDirty = false;
          }
 
-         return mCachedMatrices;
+         return mAnimationPlayer.GetAnimatedMatrices();
       }
 
       bool SkeletalMeshSceneProxy::IsDeferred() const

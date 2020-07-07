@@ -377,8 +377,12 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\GameCore\StateMachine\BaseState.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\State.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\IStateMachineController.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\StateMachine.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\StateProperty.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\StateTransition.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h" />
     <ClInclude Include="src\Core\IoCore\MeshLoaderCore\AnimationSequenceData.h" />
@@ -817,6 +821,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp" />
+    <ClCompile Include="src\Core\GameCore\StateMachine\StateMachine.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\MeshAttributes.cpp" />
