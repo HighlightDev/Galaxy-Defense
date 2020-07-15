@@ -19,6 +19,8 @@ namespace Game
       ~StateMachine();
 
       void ChangeState(const std::string& dstStateName);
+
+      State* GetCurrentState() const;
    };
 
 }

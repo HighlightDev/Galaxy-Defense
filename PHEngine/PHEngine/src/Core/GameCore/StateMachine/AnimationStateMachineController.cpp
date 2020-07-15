@@ -9,16 +9,18 @@ namespace Game
    {
    }
 
-   void AnimationStateMachineController::MakeTransitionToState(BaseStateProperty& srcProperty, BaseStateProperty& dstProperty, const float transitionDuration)
+   void AnimationStateMachineController::MakeTransitionToState(BaseStateProperty* srcProperty,
+      BaseStateProperty* dstProperty,
+      const float transitionDuration)
    {
       Base::MakeTransitionToState(srcProperty, dstProperty, transitionDuration);
 
-      StateProperty<StatePropertyType::Animation>& srcAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>&>(srcProperty);
-      StateProperty<StatePropertyType::Animation>& dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>&>(dstProperty);
+      StateProperty<StatePropertyType::Animation>* srcAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(srcProperty);
+      StateProperty<StatePropertyType::Animation>* dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(dstProperty);
 
       if (std::shared_ptr<AnimationPlayer> spAnimPlayer = mAnimationPlayer.lock())
       {
-         spAnimPlayer->mDstAnimationName = dstAnimationProperty.AnimationName; // dstState;
+         spAnimPlayer->mDstAnimationName = dstAnimationProperty->AnimationName; // dstState;
       }
    }
 

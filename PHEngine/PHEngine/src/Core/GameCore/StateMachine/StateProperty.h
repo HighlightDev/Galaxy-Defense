@@ -22,6 +22,16 @@ namespace Game
 
       virtual StatePropertyType GetStatePropertyType() = 0;
 
+      void ChangeState(BaseStateProperty* dstState, const float transitionDuration)
+      {
+         std::shared_ptr<IStateMachineController> controller = StateMachineControllerWP.lock();
+
+         if (controller)
+         {
+            controller->MakeTransitionToState(this, dstState, transitionDuration);
+         }
+      }
+
       BaseStateProperty(std::string propertyName, std::weak_ptr<IStateMachineController> stateMachineControllerWP)
          : PropertyName(propertyName)
          , StateMachineControllerWP(stateMachineControllerWP)

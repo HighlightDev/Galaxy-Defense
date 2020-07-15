@@ -19,7 +19,7 @@ namespace Game
 
       AnimationStateMachineController(std::weak_ptr<AnimationPlayer> animationPlayer);
 
-      virtual void MakeTransitionToState(BaseStateProperty& srcProperty, BaseStateProperty& dstProperty, const float duration) override;
+      virtual void MakeTransitionToState(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float duration) override;
 
       virtual void OnTransitionFinished() override;
 

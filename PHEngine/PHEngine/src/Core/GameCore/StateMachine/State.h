@@ -14,7 +14,7 @@ namespace Game
    {
       std::string StateName;
 
-      std::vector<std::unique_ptr<BaseStateProperty>> mStateProperties;
+      std::map<std::string /*Property Name*/, BaseStateProperty*> mStateProperties;
 
       std::map<std::string /*StateName*/, StateTransition> mTransitions;
 
@@ -25,14 +25,23 @@ namespace Game
       {
       }
 
-      void AddStateProperty(std::unique_ptr<BaseStateProperty> stateProperty)
+      std::string GetStateName() const
       {
-         mStateProperties.emplace_back(std::move(stateProperty));
+         return StateName;
+      }
+
+      void AddStateProperty(const std::string& propertyName, BaseStateProperty* stateProperty)
+      {
+         mStateProperties.emplace(std::make_pair(propertyName, stateProperty));
       }
 
       const std::map<std::string /*StateName*/, StateTransition>& GetTransitions() const
       {
          return mTransitions;
+      }
+
+      std::map<std::string /*Property Name*/, BaseStateProperty*> GetStateProperties() {
+         return mStateProperties;
       }
 
    };
