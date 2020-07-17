@@ -13,17 +13,35 @@ namespace Game
    {
       using Base = IStateMachineController;
 
-      std::weak_ptr<AnimationPlayer> mAnimationPlayer;
+      /* this is the main animation time counter*/
+      float mSrcAnimationTime;
+
+      /* this time is used when blending of animations is being calculated*/
+      float mDstAnimationTime;
+
+      /* this is the main animation name*/
+      std::string mSrcAnimationName;
+
+      /* this animation name is used when blending of animations is being occurred*/
+      std::string mDstAnimationName;
 
    public:
 
-      AnimationStateMachineController(std::weak_ptr<AnimationPlayer> animationPlayer);
+      AnimationStateMachineController();
 
-      virtual void MakeTransitionToState(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float duration) override;
+      virtual void OnTransitionStarted(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float duration) override;
 
       virtual void OnTransitionFinished() override;
 
-      virtual void UpdateTransitionTime(const float deltaTime) override;
+      virtual void OnTransitionUpdate(const float deltaTime) override;
+
+      float GetSrcAnimationTime() const;
+
+      float GetDstAnimationTime() const;
+
+      std::string GetSrcAnimationName() const;
+
+      std::string GetDstAnimationName() const;
    };
 
 }

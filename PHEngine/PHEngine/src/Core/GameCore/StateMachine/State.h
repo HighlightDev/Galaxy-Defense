@@ -6,36 +6,49 @@
 
 #include "StateProperty.h"
 #include "StateTransition.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Game
 {
 
    class State
    {
-      std::string StateName;
+      std::string mStateName;
 
       std::map<std::string /*Property Name*/, BaseStateProperty*> mStateProperties;
 
-      std::map<std::string /*StateName*/, StateTransition> mTransitions;
+      std::map<std::string /*dstStateName*/, StateTransition> mTransitions;
 
    public:
 
-      State()
-         : mStateProperties()
+      State(const std::string& stateName)
+         : mStateName(stateName)
+         , mStateProperties()
       {
       }
 
       std::string GetStateName() const
       {
-         return StateName;
+         return mStateName;
       }
 
       void AddStateProperty(const std::string& propertyName, BaseStateProperty* stateProperty)
       {
+         assert(mStateProperties.count(propertyName) == 0); // make sure that property doesn't duplicate
+
          mStateProperties.emplace(std::make_pair(propertyName, stateProperty));
       }
 
-      const std::map<std::string /*StateName*/, StateTransition>& GetTransitions() const
+      void AddStateTransition(const StateTransition& dstStateTransition)
+      {
+         const std::string& dstStateName = dstStateTransition.StateDestination->GetStateName();
+
+         assert(mTransitions.count(dstStateName) == 0); // make sure that transition doesn't duplicate
+
+         mTransitions.emplace(std::make_pair(dstStateName, dstStateTransition));
+      }
+
+      const std::map<std::string /*dstStateName*/, StateTransition>& GetTransitions() const
       {
          return mTransitions;
       }

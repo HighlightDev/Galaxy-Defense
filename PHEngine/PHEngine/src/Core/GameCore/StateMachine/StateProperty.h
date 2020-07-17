@@ -15,28 +15,9 @@ namespace Game
 
    struct BaseStateProperty
    {
-      /* During transition this name will be used to determine which properties should be blended together */
-      std::string PropertyName;
-
-      std::weak_ptr<IStateMachineController> StateMachineControllerWP;
-
       virtual StatePropertyType GetStatePropertyType() = 0;
 
-      void ChangeState(BaseStateProperty* dstState, const float transitionDuration)
-      {
-         std::shared_ptr<IStateMachineController> controller = StateMachineControllerWP.lock();
-
-         if (controller)
-         {
-            controller->MakeTransitionToState(this, dstState, transitionDuration);
-         }
-      }
-
-      BaseStateProperty(std::string propertyName, std::weak_ptr<IStateMachineController> stateMachineControllerWP)
-         : PropertyName(propertyName)
-         , StateMachineControllerWP(stateMachineControllerWP)
-      {
-      }
+      BaseStateProperty() { }
    };
 
    template <StatePropertyType propType>
@@ -53,11 +34,9 @@ namespace Game
          return StatePropertyType::Animation;
       }
 
-      StateProperty(std::string propertyName, std::weak_ptr<IStateMachineController> animationPlayerWP, std::string animationName)
-         : BaseStateProperty(propertyName, animationPlayerWP)
-         , AnimationName(animationName)
-      {
-      }
+      StateProperty(std::string animationName)
+         : BaseStateProperty()
+         , AnimationName(animationName) { }
    };
 
 }

@@ -822,6 +822,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp" />
+    <ClCompile Include="src\Core\GameCore\StateMachine\IStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\StateMachine.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\StateTransition.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.cpp" />

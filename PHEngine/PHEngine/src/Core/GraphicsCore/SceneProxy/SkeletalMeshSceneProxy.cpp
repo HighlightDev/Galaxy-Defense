@@ -1,7 +1,11 @@
 #include "SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
+#include "Core/GameCore/StateMachine/StateMachine.h"
+#include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
+
 using namespace Graphics::Mesh;
+using namespace Game;
 
 namespace Graphics
 {
@@ -18,7 +22,23 @@ namespace Graphics
 
          assert((spt_AnimatedSkin));
 
-         mAnimationPlayer = AnimationPlayer(spt_AnimatedSkin->GetAnimatedMeshData());
+         mAnimationPlayer = std::make_shared<AnimationPlayer>(spt_AnimatedSkin->GetAnimatedMeshData());
+      }
+
+      void SkeletalMeshSceneProxy::InitStateMachine()
+      {
+         State* stateIdle = new State("State Idle");
+         State* stateWalking = new State("State Walking");
+
+         StateProperty<StatePropertyType::Animation>* animationProp = new StateProperty<StatePropertyType::Animation>("Idle");
+
+         StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 1.0f);
+         stateIdle->AddStateTransition(transitionFromIdleToWalking);
+
+         StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 1.0f);
+         stateWalking->AddStateTransition(transitionFromWalkingToIdle);
+
+         mStateMachine = new StateMachine(stateIdle);
       }
 
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()
@@ -42,7 +62,7 @@ namespace Graphics
 
       void SkeletalMeshSceneProxy::SetAnimationDeltaTime(float animationDeltaTime)
       {
-         mAnimationPlayer.UpdateAnimationTime(animationDeltaTime);
+         mAnimationPlayer->UpdateAnimationTime(animationDeltaTime);
          bAnimationTransformationDirty = true;
       }
 
@@ -55,11 +75,11 @@ namespace Graphics
       {
          if (bAnimationTransformationDirty)
          {
-            mAnimationPlayer.UpdateAnimationMatrices();
+            mAnimationPlayer->UpdateAnimationMatrices();
             bAnimationTransformationDirty = false;
          }
 
-         return mAnimationPlayer.GetAnimatedMatrices();
+         return mAnimationPlayer->GetAnimatedMatrices();
       }
 
       bool SkeletalMeshSceneProxy::IsDeferred() const

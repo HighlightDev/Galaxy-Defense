@@ -10,7 +10,11 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
 
-using namespace Game;
+namespace Game
+{
+   class StateMachine;
+}
+
 using namespace Game::ShaderImpl;
 
 namespace Graphics
@@ -26,7 +30,11 @@ namespace Graphics
 
          bool bAnimationTransformationDirty = true;
 
-         AnimationPlayer mAnimationPlayer;
+         std::shared_ptr<AnimationPlayer> mAnimationPlayer;
+
+         class Game::StateMachine* mStateMachine;
+
+         void InitStateMachine();
 
       private:
 
