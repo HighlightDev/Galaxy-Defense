@@ -20,11 +20,6 @@ namespace Game
       {
       }
 
-      virtual uint64_t GetType() const override {
-
-         return LIGHT_COMPONENT;
-      }
-
       glm::vec3 Ambient;
       glm::vec3 Diffuse;
       glm::vec3 Specular;

@@ -25,7 +25,6 @@
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/MovementComponentData.h"
 #include "ComponentData/BillboardComponentData.h"
-#include "ComponentData/PhyShapeDebugComponentData.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -49,18 +48,32 @@ using namespace IO;
 
 namespace Game
 {
-   template <typename ComponentType>
-   struct ComponentCreatorFactory;
-
-   // Skybox component
-   template <>
-   struct ComponentCreatorFactory<SkyboxComponent>
+   enum class ComponentMetaType
    {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      DirectionalLight,
+      PointLight,
+      Skybox,
+      StaticMesh,
+      WaterPlane,
+      SkeletalMesh,
+      Cubemap,
+      Billboard,
+      Input,
+      Movement,
+   };
+
+   template <ComponentMetaType metaType, typename ComponentType>
+   struct ComponentCreatorFactory
+   {
+   private:
+
+      template <ComponentMetaType metaType, typename ConstructType> struct CreatorFromMetaType { };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Skybox, ConstructType>
       {
-         std::shared_ptr<Component> resultComponent;
-         if (SKYBOX_COMPONENT == data.GetType())
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
+
             const SkyboxComponentData& mData = static_cast<const SkyboxComponentData&>(data);
 
             int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
@@ -73,21 +86,13 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<SkyboxVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t skyboxMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkyboxVertexFactory, SimpleShader>>(compositeParams);
 
-            resultComponent = std::make_shared<SkyboxComponent>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, mData.m_materialInstance));
+            return std::make_shared<ConstructType>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, mData.m_materialInstance));
          }
+      };
 
-         return resultComponent;
-      }
-   };
-
-   //Static Mesh component
-   template <>
-   struct ComponentCreatorFactory<StaticMeshComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::StaticMesh, ConstructType>
       {
-         std::shared_ptr<Component> resultComponent;
-         if (STATIC_MESH_COMPONENT == data.GetType())
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const StaticMeshComponentData& mData = static_cast<const StaticMeshComponentData&>(data);
 
@@ -102,59 +107,37 @@ namespace Game
 
             StaticMeshRenderData renderData(skin, staticMeshShader, mData.m_material);
 
-            resultComponent = std::make_shared<StaticMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
+      };
 
-         return resultComponent;
-      }
-   };
-
-   // Directional light component
-   template <>
-   struct ComponentCreatorFactory<DirectionalLightComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::SkeletalMesh, ConstructType>
       {
-         std::shared_ptr<Component> resultComponent;
-         if (DIR_LIGHT_COMPONENT == data.GetType())
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            const DirectionalLightComponentData& mData = static_cast<const DirectionalLightComponentData&>(data);
-            DirectionalLightRenderData renderData(mData.Direction, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            resultComponent = std::make_shared<DirectionalLightComponent>(std::move(mData.Rotation), renderData);
+            const SkeletalMeshComponentData& mData = static_cast<const SkeletalMeshComponentData&>(data);
+
+            typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
+
+            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
+
+            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
+
+            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>>(compositeParams);
+
+            SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
+
+            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
+      };
 
-         return resultComponent;
-      }
-   };
-
-   // Point light component
-   template <>
-   struct ComponentCreatorFactory<PointLightComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::WaterPlane, ConstructType>
       {
-         std::shared_ptr<Component> resultComponent;
-         if (POINT_LIGHT_COMPONENT == data.GetType())
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
-            PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            resultComponent = std::make_shared<PointLightComponent>(std::move(mData.Translation), std::move(mData.Rotation), renderData);
-         }
 
-         return resultComponent;
-      }
-   };
-
-   // Water plane component
-   template <>
-   struct ComponentCreatorFactory<WaterPlaneComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
-      {
-         std::shared_ptr<Component> resultComponent;
-
-         if (WATER_PLANE_COMPONENT == data.GetType())
-         {
             const WaterPlaneComponentData& mData = static_cast<const WaterPlaneComponentData&>(data);
 
             const int32_t primitive = (int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES;
@@ -167,81 +150,13 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
-            resultComponent = std::make_shared<WaterPlaneComponent>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, mData.m_materialInstance));
+            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, mData.m_materialInstance));
          }
+      };
 
-         return resultComponent;
-      }
-   };
-
-   // Input component
-   template <>
-   struct ComponentCreatorFactory<InputComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Billboard, ConstructType>
       {
-         return std::make_shared<InputComponent>();
-      }
-   };
-
-   // Movement component 
-   template <>
-   struct ComponentCreatorFactory<MovementComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
-      {
-         std::shared_ptr<Component> resultComponent;
-         if (MOVEMENT_COMPONENT == data.GetType())
-         {
-            const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
-            resultComponent = std::make_shared<MovementComponent>(mData.mCameraName, mData.m_launchVelocity);
-         }
-
-         return resultComponent;
-      }
-   };
-
-   // Skeletal mesh component
-   template <>
-   struct ComponentCreatorFactory<SkeletalMeshComponent>
-   {
-
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
-      {
-         std::shared_ptr<Component> resultComponent;
-
-         if (SKELETAL_MESH_COMPONENT == data.GetType())
-         {
-            const SkeletalMeshComponentData& mData = static_cast<const SkeletalMeshComponentData&>(data);
-
-            typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
-
-            const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
-               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
-               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
-           
-            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
-
-            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>>(compositeParams);
-
-            SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
-             
-            resultComponent = std::make_shared<SkeletalMeshComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
-         }
-
-         return resultComponent;
-      }
-
-   };
-
-   // Billboard component
-   template<>
-   struct ComponentCreatorFactory<BillboardComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
-      {
-         std::shared_ptr<Component> resultComponent;
-
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const BillboardComponentData& mData = static_cast<const BillboardComponentData&>(data);
 
@@ -253,22 +168,15 @@ namespace Game
 
             BillboardRenderData renderData(skin, shader, texture);
 
-            resultComponent = std::make_shared<BillboardComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
+      };
 
-         return resultComponent;
-      }
-   };
-
-   // Cubemap component
-   template<>
-   struct ComponentCreatorFactory<CubemapComponent>
-   {
-      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Cubemap, ConstructType>
       {
-         std::shared_ptr<Component> resultComponent;
-
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
+
             const CubemapComponentData& mData = static_cast<const CubemapComponentData&>(data);
 
             int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
@@ -278,10 +186,54 @@ namespace Game
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
 
-            resultComponent = std::make_shared<CubemapComponent>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
          }
+      };
 
-         return resultComponent;
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::DirectionalLight, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const DirectionalLightComponentData& mData = static_cast<const DirectionalLightComponentData&>(data);
+            DirectionalLightRenderData renderData(mData.Direction, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
+            return std::make_shared<ComponentType>(std::move(mData.Rotation), renderData);
+         }
+      };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::PointLight, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
+            PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
+            return std::make_shared<ComponentType>(std::move(mData.Translation), std::move(mData.Rotation), renderData);
+         }
+      };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Movement, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
+            return std::make_shared<ComponentType>(mData.mCameraName, mData.m_launchVelocity);
+         }
+      };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Input, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            return std::make_shared<ComponentType>();
+         }
+      };
+
+
+   public:
+
+      static std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+      {
+         CreatorFromMetaType<metaType, ComponentType> creator;
+         return creator.CreateComponent(data);
       }
    };
 }

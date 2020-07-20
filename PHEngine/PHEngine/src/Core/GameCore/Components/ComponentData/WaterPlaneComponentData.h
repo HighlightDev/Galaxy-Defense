@@ -20,11 +20,6 @@ namespace Game
 		{
 		}
 
-		virtual uint64_t GetType() const override {
-
-			return WATER_PLANE_COMPONENT;
-		}
-
 		glm::vec3 m_translation;
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;

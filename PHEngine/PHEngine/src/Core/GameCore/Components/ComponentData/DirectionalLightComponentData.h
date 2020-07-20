@@ -17,11 +17,6 @@ namespace Game
       {
       }
 
-      virtual uint64_t GetType() const override {
-
-         return DIR_LIGHT_COMPONENT;
-      }
-
       glm::vec3 Direction;
       glm::vec3 Rotation;
 	};

@@ -19,11 +19,6 @@ namespace Game
       {
       }
 
-      virtual uint64_t GetType() const override {
-
-         return POINT_LIGHT_COMPONENT;
-      }
-
       glm::vec3 Attenuation;
       float RadianceSqrRadius;
       glm::vec3 Translation;

@@ -15,11 +15,6 @@ namespace Game
 			: ComponentData()
 		{
 		}
-
-		virtual uint64_t GetType() const override {
-
-			return INPUT_COMPONENT;
-		}
 		
 	};
 

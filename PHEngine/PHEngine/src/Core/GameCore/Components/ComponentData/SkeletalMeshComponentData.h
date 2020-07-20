@@ -21,11 +21,6 @@ namespace Game
       {
       }
 
-      virtual uint64_t GetType() const override {
-
-         return SKELETAL_MESH_COMPONENT;
-      }
-
       std::string m_pathToMesh;
       glm::vec3 m_translation;
       glm::vec3 m_eulerRotationDegrees;

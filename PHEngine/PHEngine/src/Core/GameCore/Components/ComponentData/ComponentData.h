@@ -4,16 +4,6 @@
 
 namespace Game
 {
-
-	struct ComponentData
-	{
-
-		ComponentData() { }
-
-      virtual uint64_t GetType() const
-      {
-         return COMPONENT;
-      }
-	};
+   struct ComponentData { };
 
 }

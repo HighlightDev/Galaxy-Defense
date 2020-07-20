@@ -396,7 +396,6 @@
     <ClInclude Include="src\Core\GameCore\Physics\DebugRender\DebugPhysicsRenderData.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.h" />
     <ClInclude Include="src\Core\CommonCore\Assertion.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhyShapeDebugComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
     <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h" />

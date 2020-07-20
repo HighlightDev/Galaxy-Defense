@@ -84,10 +84,10 @@ namespace Game
 
       ~Scene();
 
-      template <typename PrimitiveType>
+      template <ComponentMetaType metaType, typename ComponentType>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
-         auto component = ComponentCreatorFactory<PrimitiveType>::CreateComponent(componentData);
+         auto component = ComponentCreatorFactory<metaType, ComponentType>::CreateComponent(componentData);
          uint64_t type = component->GetComponentType();
          if ((type & SCENE_COMPONENT) == SCENE_COMPONENT)
          {

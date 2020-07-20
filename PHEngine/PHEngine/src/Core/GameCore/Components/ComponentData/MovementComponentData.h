@@ -18,11 +18,6 @@ namespace Game
 		{
 		}
 
-		virtual uint64_t GetType() const override {
-
-			return MOVEMENT_COMPONENT;
-		}
-
       std::string mCameraName;
 		glm::vec3 m_launchVelocity;
 	};

@@ -16,11 +16,6 @@ namespace Game
 		{
 		}
 
-		virtual uint64_t GetType() const override {
-
-			return SKYBOX_COMPONENT;
-		}
-
       glm::vec3 m_scale;
 
       std::shared_ptr<IMaterial> m_materialInstance;

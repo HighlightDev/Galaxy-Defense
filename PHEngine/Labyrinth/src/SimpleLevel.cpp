@@ -18,7 +18,6 @@
 #include "Core/GameCore/Components/ComponentData/StaticMeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkeletalMeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
-#include "Core/GameCore/Components/ComponentData/PhyShapeDebugComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
@@ -41,6 +40,8 @@
 
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+
+#include "PlayerSkeletalMeshComponent.h"
 
 #include <LogInterface.h>
 
@@ -99,7 +100,7 @@ namespace Labyrinth
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor",
                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
-            auto component = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+            auto component = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
             PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.5f));
@@ -121,7 +122,7 @@ namespace Labyrinth
 
             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",
                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
-            auto component = mScene->CreateComponent_GameThread<SkeletalMeshComponent>(mData);
+            auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
             PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
@@ -151,7 +152,7 @@ namespace Labyrinth
             glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
 
          //auto dirLightComponent1 =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
-         auto dirLightComponent2 = mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData2);
+         auto dirLightComponent2 = mScene->CreateComponent_GameThread<ComponentMetaType::DirectionalLight, DirectionalLightComponent>(mData2);
 
          std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
 
@@ -169,7 +170,7 @@ namespace Labyrinth
 
          std::shared_ptr<Actor> waterActor = std::make_shared<Actor>("Water", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
-         auto waterComp = mScene->CreateComponent_GameThread<WaterPlaneComponent>(mData);
+         auto waterComp = mScene->CreateComponent_GameThread<ComponentMetaType::WaterPlane, WaterPlaneComponent>(mData);
          waterActor->AddComponent(waterComp);
 
          mScene->AllActors.push_back(waterActor);
@@ -187,7 +188,7 @@ namespace Labyrinth
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 10.0f));
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
-         auto floorComponent = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(50, 1 , 50));
@@ -211,7 +212,7 @@ namespace Labyrinth
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
             std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
-         auto floorComponent = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(8, 1, 8));
@@ -234,7 +235,7 @@ namespace Labyrinth
 
          StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0 ,-2.5f, 0), glm::vec3(), glm::vec3(2.5f),
             std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr, 1.0f));
-         auto staticComp = mScene->CreateComponent_GameThread<StaticMeshComponent>(mData);
+         auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
 
          std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
        
@@ -261,14 +262,14 @@ namespace Labyrinth
 
          std::shared_ptr<Actor> skeletActor = std::make_shared<Actor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         auto skeletalComp = mScene->CreateComponent_GameThread<SkeletalMeshComponent>(mData);
+         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(mData);
          skeletActor->AddComponent(skeletalComp);
 
          InputComponentData inputComponentData;
-         auto inputComp = mScene->CreateComponent_GameThread<InputComponent>(inputComponentData);
+         auto inputComp = mScene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(inputComponentData);
          skeletActor->AddComponent(inputComp);
          MovementComponentData movementComponentData(glm::vec3(0), GetCamera()->GetCameraName());
-         auto movementComp = mScene->CreateComponent_GameThread<MovementComponent>(movementComponentData);
+         auto movementComp = mScene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(movementComponentData);
          skeletActor->AddComponent(movementComp);
 
          PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
@@ -304,7 +305,7 @@ namespace Labyrinth
 
          SkyboxComponentData mData(glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
          std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         auto skyboxComp = mScene->CreateComponent_GameThread<SkyboxComponent>(mData);
+         auto skyboxComp = mScene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(mData);
          skyboxActor->AddComponent(skyboxComp);
          mScene->AllActors.push_back(skyboxActor);
       }
