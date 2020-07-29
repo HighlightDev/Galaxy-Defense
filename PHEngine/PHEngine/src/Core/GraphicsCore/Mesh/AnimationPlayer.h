@@ -30,6 +30,10 @@ namespace Graphics
          /* this animation name is used when blending of animations is being occurred*/
          std::string mDstAnimationName;
 
+         float mTransitionParameter = 0.0f;
+
+         bool bTransitionEnabled = false;
+
          std::vector<glm::mat4> mCachedAnimatedMatrices;
 
       public:
@@ -38,13 +42,8 @@ namespace Graphics
 
          AnimationPlayer() = default;
 
-         void UpdateAnimationTime(const float deltaTime);
-
-         /* call this when just need to update matrices with current animation*/
+         /* updates matrices with current animation*/
          void UpdateAnimationMatrices();
-
-         /* call this when need to update matrices during animation transition */
-         void UpdateAnimationTransitionMatrices(const float transitionParameter);
 
          bool SetCurrentAnimationByName(const std::string& animationName);
 
@@ -55,6 +54,16 @@ namespace Graphics
          void SetSrcAnimationName(const std::string& srcAnimationName);
 
          void SetDstAnimationName(const std::string& dstAnimationName);
+
+         void SetSrcAnimationTime(const float srcAnimationTime);
+
+         void SetDstAnimationTime(const float dstAnimationTime);
+
+         void SetTransitionParameter(const bool isTransitionEnabled, const float transitionParam);
+
+      private:
+
+         void UpdateAnimationMatrices_Inner();
 
       };
 

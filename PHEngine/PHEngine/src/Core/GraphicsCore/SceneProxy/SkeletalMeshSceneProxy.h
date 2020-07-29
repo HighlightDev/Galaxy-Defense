@@ -32,10 +32,6 @@ namespace Graphics
 
          std::shared_ptr<AnimationPlayer> mAnimationPlayer;
 
-         class Game::StateMachine* mStateMachine;
-
-         void InitStateMachine();
-
       private:
 
          std::shared_ptr<ShaderType> GetShader() const;
@@ -47,7 +43,23 @@ namespace Graphics
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         void SetAnimationDeltaTime(float animationDeltaTime);
+         float mSrcAnimationTime;
+
+         /* this time is used when blending of animations is being calculated*/
+         float mDstAnimationTime;
+
+         /* this is the main animation name*/
+         std::string mSrcAnimationName;
+
+         /* this animation name is used when blending of animations is being occurred*/
+         std::string mDstAnimationName;
+
+         float mTransitionParameter = 0.0f;
+
+         bool bTransitionEnabled = false;
+
+         void SetAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
+            const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName);
 
          virtual uint64_t GetComponentType() const override;
 

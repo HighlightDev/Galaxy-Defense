@@ -1,9 +1,6 @@
 #include "SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
-#include "Core/GameCore/StateMachine/StateMachine.h"
-#include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
-
 using namespace Graphics::Mesh;
 using namespace Game;
 
@@ -25,22 +22,6 @@ namespace Graphics
          mAnimationPlayer = std::make_shared<AnimationPlayer>(spt_AnimatedSkin->GetAnimatedMeshData());
       }
 
-      void SkeletalMeshSceneProxy::InitStateMachine()
-      {
-         State* stateIdle = new State("State Idle");
-         State* stateWalking = new State("State Walking");
-
-         StateProperty<StatePropertyType::Animation>* animationProp = new StateProperty<StatePropertyType::Animation>("Idle");
-
-         StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 1.0f);
-         stateIdle->AddStateTransition(transitionFromIdleToWalking);
-
-         StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 1.0f);
-         stateWalking->AddStateTransition(transitionFromWalkingToIdle);
-
-         mStateMachine = new StateMachine(stateIdle);
-      }
-
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()
       {
       }
@@ -60,9 +41,14 @@ namespace Graphics
          return std::static_pointer_cast<SkeletalMeshSceneProxy::ShaderType>(m_shader);
       }
 
-      void SkeletalMeshSceneProxy::SetAnimationDeltaTime(float animationDeltaTime)
+      void SkeletalMeshSceneProxy::SetAnimationData(bool transtionEnabled, const float transitionValue,
+         const float srcAnimationTime, const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName)
       {
-         mAnimationPlayer->UpdateAnimationTime(animationDeltaTime);
+         mAnimationPlayer->SetSrcAnimationTime(srcAnimationTime);
+         mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
+         mAnimationPlayer->SetSrcAnimationName(srcAnimationName);
+         mAnimationPlayer->SetDstAnimationName(dstAnimationName);
+         mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
          bAnimationTransformationDirty = true;
       }
 
