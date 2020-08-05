@@ -15,9 +15,14 @@ namespace Game
 
    struct BaseStateProperty
    {
+      std::weak_ptr<StatePropertyBinding> PropertyBinding;
+
       virtual StatePropertyType GetStatePropertyType() = 0;
 
-      BaseStateProperty() { }
+      BaseStateProperty(std::weak_ptr<StatePropertyBinding> propertyBinding) 
+         : PropertyBinding(propertyBinding)
+      {
+      }
    };
 
    template <StatePropertyType propType>
@@ -34,9 +39,11 @@ namespace Game
          return StatePropertyType::Animation;
       }
 
-      StateProperty(std::string animationName)
-         : BaseStateProperty()
-         , AnimationName(animationName) { }
+      StateProperty(std::string animationName, std::weak_ptr<AnimationPropertyBinding> animationPropertyBinding)
+         : BaseStateProperty(animationPropertyBinding)
+         , AnimationName(animationName)
+      {
+      }
    };
 
 }

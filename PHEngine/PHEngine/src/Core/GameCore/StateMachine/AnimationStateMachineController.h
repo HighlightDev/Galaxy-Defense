@@ -13,18 +13,6 @@ namespace Game
    {
       using Base = IStateMachineController;
 
-      /* this is the main animation time counter*/
-      float mSrcAnimationTime;
-
-      /* this time is used when blending of animations is being calculated*/
-      float mDstAnimationTime;
-
-      /* this is the main animation name*/
-      std::string mSrcAnimationName;
-
-      /* this animation name is used when blending of animations is being occurred*/
-      std::string mDstAnimationName;
-
    public:
 
       AnimationStateMachineController();
@@ -33,15 +21,11 @@ namespace Game
 
       virtual void OnTransitionFinished() override;
 
-      virtual void OnTransitionUpdate(const float deltaTime) override;
+      virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
 
-      float GetSrcAnimationTime() const;
+   private:
 
-      float GetDstAnimationTime() const;
-
-      std::string GetSrcAnimationName() const;
-
-      std::string GetDstAnimationName() const;
+      std::shared_ptr<AnimationPropertyBinding> GetAnimationPropertyBindingSP() const;
    };
 
 }

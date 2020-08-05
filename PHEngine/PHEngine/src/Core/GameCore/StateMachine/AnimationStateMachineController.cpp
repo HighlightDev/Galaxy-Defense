@@ -4,22 +4,36 @@
 namespace Game
 {
    AnimationStateMachineController::AnimationStateMachineController()
-      : mSrcAnimationTime(0)
-      , mDstAnimationTime(0)
-      , mSrcAnimationName("NoAnimation")
-      , mDstAnimationName("NoAnimation")
+      : IStateMachineController()
    {
    }
 
-   void AnimationStateMachineController::OnTransitionUpdate(const float deltaTime)
+   std::shared_ptr<AnimationPropertyBinding> AnimationStateMachineController::GetAnimationPropertyBindingSP() const
    {
-      Base::OnTransitionUpdate(deltaTime);
+      std::shared_ptr<AnimationPropertyBinding> result(nullptr);
 
-      mDstAnimationTime += deltaTime;
-      mSrcAnimationTime += deltaTime;
+      if (auto baseSp = mPropertyBinding.lock()) {
+         result = std::static_pointer_cast<AnimationPropertyBinding>(baseSp);
+      }
+
+      return result;
    }
 
-   void AnimationStateMachineController::OnTransitionStarted(BaseStateProperty* srcProperty,
+   void AnimationStateMachineController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+   {
+      Base::OnTransitionUpdate(deltaTime, transitionParameter);
+
+      if (auto animBinding = GetAnimationPropertyBindingSP())
+      {
+         animBinding->DstTime += deltaTime;
+         animBinding->SrcTime += deltaTime;
+         animBinding->bTranstitionEnabled = true;
+         animBinding->TransitionValue = transitionParameter;
+      }
+   }
+
+   void AnimationStateMachineController::OnTransitionStarted(
+      BaseStateProperty* srcProperty,
       BaseStateProperty* dstProperty,
       const float transitionDuration)
    {
@@ -28,36 +42,26 @@ namespace Game
       StateProperty<StatePropertyType::Animation>* srcAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(srcProperty);
       StateProperty<StatePropertyType::Animation>* dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(dstProperty);
 
-      mSrcAnimationName = srcAnimationProperty->AnimationName;
-      mDstAnimationName = dstAnimationProperty->AnimationName;
-      mDstAnimationTime = 0.0f;
+      if (auto animBinding = GetAnimationPropertyBindingSP())
+      {
+         animBinding->SrcName = srcAnimationProperty->AnimationName;
+         animBinding->DstName = dstAnimationProperty->AnimationName;
+         animBinding->DstTime = 0.0f;
+         animBinding->bTranstitionEnabled = true;
+         animBinding->TransitionValue = 0.0f;
+      }
    }
 
    void AnimationStateMachineController::OnTransitionFinished()
    {
-      mSrcAnimationName = mDstAnimationName;
-      mSrcAnimationTime = mDstAnimationTime;
-      mDstAnimationTime = 0.0f;
-      mDstAnimationName = "NoAnimation";
-   }
-
-   float AnimationStateMachineController::GetSrcAnimationTime() const
-   {
-      return mSrcAnimationTime;
-   }
-
-   float AnimationStateMachineController::GetDstAnimationTime() const
-   {
-      return mDstAnimationTime;
-   }
-
-   std::string AnimationStateMachineController::GetSrcAnimationName() const
-   {
-      return mSrcAnimationName;
-   }
-
-   std::string AnimationStateMachineController::GetDstAnimationName() const
-   {
-      return mDstAnimationName;
+      if (auto animBinding = GetAnimationPropertyBindingSP())
+      {
+         animBinding->SrcName = animBinding->DstName;
+         animBinding->SrcTime = animBinding->DstTime;
+         animBinding->DstTime = 0.0f;
+         animBinding->DstName = "NoAnimation";
+         animBinding->bTranstitionEnabled = false;
+         animBinding->TransitionValue = 0.0f;
+      }
    }
 }

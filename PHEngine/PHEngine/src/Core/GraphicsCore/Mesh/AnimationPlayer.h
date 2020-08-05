@@ -45,21 +45,29 @@ namespace Graphics
          /* updates matrices with current animation*/
          void UpdateAnimationMatrices();
 
-         bool SetCurrentAnimationByName(const std::string& animationName);
-
-         bool SetCurrentAnimationByIndex(const size_t index);
-
          std::vector<glm::mat4> GetAnimatedMatrices() const;
 
-         void SetSrcAnimationName(const std::string& srcAnimationName);
+         bool SetSrcAnimationByIndex(const size_t index);
 
-         void SetDstAnimationName(const std::string& dstAnimationName);
+         bool SetDstAnimationByIndex(const size_t index);
+
+         bool SetSrcAnimationName(const std::string& srcAnimationName);
+
+         bool SetDstAnimationName(const std::string& dstAnimationName);
 
          void SetSrcAnimationTime(const float srcAnimationTime);
 
          void SetDstAnimationTime(const float dstAnimationTime);
 
          void SetTransitionParameter(const bool isTransitionEnabled, const float transitionParam);
+
+         std::string GetSrcAnimationName() const;
+
+         std::string GetDstAnimationName() const;
+
+         float GetSrcAnimationTime() const;
+         
+         float GetDstAnimationTime() const;
 
       private:
 

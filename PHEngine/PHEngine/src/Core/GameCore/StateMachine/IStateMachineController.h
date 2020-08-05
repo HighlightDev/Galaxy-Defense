@@ -1,4 +1,5 @@
 #pragma once
+#include "StatePropertyBinding.h"
 
 namespace Game
 {
@@ -14,13 +15,17 @@ namespace Game
 
       struct BaseStateProperty* TranstionProperties[2];
 
+      std::weak_ptr<StatePropertyBinding> mPropertyBinding;
+
    public:
+
+      IStateMachineController();
 
       virtual void OnTransitionFinished() = 0;
 
-      virtual void OnTransitionStarted(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float transitionDuration);
+      virtual void OnTransitionStarted(struct BaseStateProperty* srcStateProperty, struct BaseStateProperty* dstStateProperty, const float transitionDuration);
 
-      virtual void OnTransitionUpdate(const float deltaTime);
+      virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter);
 
       enum class StatePropertyType GetControllerPropertyType() const;
    };

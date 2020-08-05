@@ -125,6 +125,9 @@ namespace Labyrinth
             auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
             cubeActor->AddComponent(component);
 
+            auto plComp = std::static_pointer_cast<PlayerSkeletalMeshComponent>(component);
+            plComp->ChangeState();
+
             PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<CharacterPhysicsComponent>(physDesc);

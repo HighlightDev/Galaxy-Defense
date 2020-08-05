@@ -14,6 +14,7 @@ namespace Graphics
             , component->GetRenderData().m_skin
             , component->GetRenderData().m_materialShader
             , component->GetRenderData().mMaterialInstance)
+         , mAnimationPlayer(nullptr)
       {
          std::shared_ptr<AnimatedSkin> spt_AnimatedSkin = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
 
@@ -41,15 +42,28 @@ namespace Graphics
          return std::static_pointer_cast<SkeletalMeshSceneProxy::ShaderType>(m_shader);
       }
 
-      void SkeletalMeshSceneProxy::SetAnimationData(bool transtionEnabled, const float transitionValue,
+      void SkeletalMeshSceneProxy::UpdateAnimationData(bool transtionEnabled, const float transitionValue,
          const float srcAnimationTime, const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName)
+      {
+         mAnimationPlayer->SetSrcAnimationName(srcAnimationName);
+         mAnimationPlayer->SetDstAnimationName(dstAnimationName);
+         mAnimationPlayer->SetSrcAnimationTime(srcAnimationTime);
+         mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
+         mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
+      
+         bIsDirty = true;
+      }
+
+      void SkeletalMeshSceneProxy::UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
+         const float dstAnimationTime, const size_t srcAnimationIndex, const size_t dstAnimationIndex)
       {
          mAnimationPlayer->SetSrcAnimationTime(srcAnimationTime);
          mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
-         mAnimationPlayer->SetSrcAnimationName(srcAnimationName);
-         mAnimationPlayer->SetDstAnimationName(dstAnimationName);
+         mAnimationPlayer->SetSrcAnimationByIndex(srcAnimationIndex);
+         mAnimationPlayer->SetDstAnimationByIndex(dstAnimationIndex);
          mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
-         bAnimationTransformationDirty = true;
+
+         bIsDirty = true;
       }
 
       uint64_t SkeletalMeshSceneProxy::GetComponentType() const
@@ -59,10 +73,10 @@ namespace Graphics
 
       std::vector<glm::mat4> SkeletalMeshSceneProxy::GetSkinningMatrices()
       {
-         if (bAnimationTransformationDirty)
+         if (bIsDirty)
          {
             mAnimationPlayer->UpdateAnimationMatrices();
-            bAnimationTransformationDirty = false;
+            bIsDirty = false;
          }
 
          return mAnimationPlayer->GetAnimatedMatrices();

@@ -4,13 +4,18 @@
 
 namespace Game {
 
-   void IStateMachineController::OnTransitionStarted(BaseStateProperty* srcState, BaseStateProperty* dstState, const float transitionDuration)
+   IStateMachineController::IStateMachineController()
    {
-      TranstionProperties[(int)StateType::SourceState] = srcState;
-      TranstionProperties[(int)StateType::DestinationState] = dstState;
    }
 
-   void IStateMachineController::OnTransitionUpdate(const float deltaTime) { }
+   void IStateMachineController::OnTransitionStarted(BaseStateProperty* srcStateProperty, BaseStateProperty* dstStateProperty, const float transitionDuration)
+   {
+      mPropertyBinding = srcStateProperty->PropertyBinding;
+      TranstionProperties[(int)StateType::SourceState] = srcStateProperty;
+      TranstionProperties[(int)StateType::DestinationState] = dstStateProperty;
+   }
+
+   void IStateMachineController::OnTransitionUpdate(const float deltaTime, const float transitionParameter) { }
 
    StatePropertyType IStateMachineController::GetControllerPropertyType() const
    {

@@ -13,7 +13,12 @@ namespace Game
    SkeletalMeshComponent::SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const SkeletalMeshRenderData& renderData)
       : PrimitiveComponent(translation, rotation, scale)
       , m_renderData(renderData)
-      , m_animationDeltaTime(.0f)
+      , mSrcAnimationTime(0.0f)
+      , mDstAnimationTime(0.0f)
+      , mSrcAnimationName("")
+      , mDstAnimationName("")
+      , mTransitionValue(0.0f)
+      , bTransitionEnabled(false)
    {
 
    }
@@ -29,18 +34,21 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(float deltaTime)
    {
-      m_animationDeltaTime = deltaTime * 1000.0f;
+      const float animDeltaTime = deltaTime * 1000.0f;
+
+      mSrcAnimationTime += animDeltaTime;
 
       if (m_tickCounter == 1) // TODO: hot fix for optimization, later should be done much better way
       {
          constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+         mSrcAnimationTime = fmod(mSrcAnimationTime, 1000000.0f);
 
          if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
                SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
-               proxyPtr->SetAnimationDeltaTime(m_animationDeltaTime);
+               proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, 0, 0);
             });
          }
 
@@ -53,11 +61,6 @@ namespace Game
    std::shared_ptr<PrimitiveSceneProxy> SkeletalMeshComponent::CreateSceneProxy() const
    {
       return std::make_shared<SkeletalMeshSceneProxy>(this);
-   }
-
-   float SkeletalMeshComponent::GetAnimationDeltaTime() const
-   {
-      return m_animationDeltaTime;
    }
 
 }

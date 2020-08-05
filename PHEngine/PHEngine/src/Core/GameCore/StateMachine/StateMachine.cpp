@@ -98,7 +98,7 @@ namespace Game
          {
             if (bTransitionEnabled)
             {
-               controllerSp->OnTransitionUpdate(deltaTime);
+               controllerSp->OnTransitionUpdate(deltaTime, mTransitionParameter);
             }
             else
             {

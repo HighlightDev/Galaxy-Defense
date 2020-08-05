@@ -27,6 +27,19 @@ namespace Game
       {
       }
 
+      ~State()
+      {
+         for (auto prop : mStateProperties)
+         {
+            delete prop.second;
+         }
+
+         for (auto transition : mTransitions)
+         {
+            delete transition.second.StateDestination;
+         }
+      }
+
       std::string GetStateName() const
       {
          return mStateName;

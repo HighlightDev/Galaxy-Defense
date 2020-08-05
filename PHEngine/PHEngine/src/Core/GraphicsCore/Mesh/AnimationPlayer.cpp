@@ -11,7 +11,7 @@ namespace Graphics
          , mSrcAnimationName("")
          , mDstAnimationName("")
          , mTransitionParameter (0.0f)
-      ,bTransitionEnabled( false)
+      , bTransitionEnabled( false)
       {
          assert((m_animatedMeshData));
 
@@ -19,43 +19,52 @@ namespace Graphics
          bool bResult = false;
          if (m_animatedMeshData->AnimationIndices.size() > 5)
          {
-            bResult = SetCurrentAnimationByIndex(8);
+            bResult = SetSrcAnimationByIndex(8);
          }
          else
          {
-            bResult = SetCurrentAnimationByIndex(0);
+            bResult = SetSrcAnimationByIndex(0);
          }
 
          assert((bResult));
       }
 
-      bool AnimationPlayer::SetCurrentAnimationByName(const std::string& animationName)
+      bool AnimationPlayer::SetDstAnimationByIndex(const size_t index)
       {
-         bool bResult = false;
-
-         if (bResult = m_animatedMeshData->AnimationMapping.count(animationName))
-         {
-            mSrcAnimationName = animationName;
-         }
-
-         return bResult;
+         assert(m_animatedMeshData->AnimationIndices.size() > index);
+         mDstAnimationName = m_animatedMeshData->AnimationIndices[index];
+         return true;
       }
 
-      bool AnimationPlayer::SetCurrentAnimationByIndex(const size_t index)
+      bool AnimationPlayer::SetSrcAnimationByIndex(const size_t index)
       {
          assert(m_animatedMeshData->AnimationIndices.size() > index);
          mSrcAnimationName = m_animatedMeshData->AnimationIndices[index];
          return true;
       }
 
-      void AnimationPlayer::SetSrcAnimationName(const std::string& srcAnimationName)
+      bool AnimationPlayer::SetSrcAnimationName(const std::string& srcAnimationName)
       {
-         mSrcAnimationName = srcAnimationName;
+         bool bResult = false;
+
+         if (bResult = m_animatedMeshData->AnimationMapping.count(srcAnimationName))
+         {
+            mSrcAnimationName = srcAnimationName;
+         }
+
+         return bResult;
       }
 
-      void AnimationPlayer::SetDstAnimationName(const std::string& dstAnimationName)
+      bool AnimationPlayer::SetDstAnimationName(const std::string& dstAnimationName)
       {
-         mDstAnimationName = dstAnimationName;
+         bool bResult = false;
+
+         if (bResult = m_animatedMeshData->AnimationMapping.count(dstAnimationName))
+         {
+            mDstAnimationName = dstAnimationName;
+         }
+
+         return bResult;
       }
 
       void AnimationPlayer::SetSrcAnimationTime(const float srcAnimationTime)
@@ -66,6 +75,26 @@ namespace Graphics
       void AnimationPlayer::SetDstAnimationTime(const float dstAnimationTime)
       {
          mDstAnimationTime = dstAnimationTime;
+      }
+
+      std::string AnimationPlayer::GetSrcAnimationName() const
+      {
+         return mSrcAnimationName;
+      }
+
+      std::string AnimationPlayer::GetDstAnimationName() const
+      {
+         return mDstAnimationName;
+      }
+
+      float AnimationPlayer::GetSrcAnimationTime() const
+      {
+         return mSrcAnimationTime;
+      }
+
+      float AnimationPlayer::GetDstAnimationTime() const
+      {
+         return mDstAnimationTime;
       }
 
       void AnimationPlayer::SetTransitionParameter(const bool isTransitionEnabled, const float transitionParam)
