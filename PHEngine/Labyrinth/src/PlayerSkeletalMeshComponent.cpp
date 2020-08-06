@@ -21,9 +21,11 @@ namespace Labyrinth
       delete mAnimationStateMachine;
    }
 
+   int tickerdebug = 0;
+
    void PlayerSkeletalMeshComponent::Tick(float deltaTime)
    {
-      const float animDeltaTime = deltaTime * 1000.0f;
+      const float animDeltaTime = deltaTime;
 
       constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
 
@@ -35,16 +37,21 @@ namespace Labyrinth
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
             SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
-            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, 8, 0);
+            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, mSrcAnimationName, mDstAnimationName);
          });
       }
 
       mAnimationStateMachine->Tick(deltaTime);
+      tickerdebug++;
+      if (tickerdebug == 100)
+      {
+         mAnimationStateMachine->ChangeState("State Walking");
+      }
    }
 
    void PlayerSkeletalMeshComponent::ChangeState()
    {
-      mAnimationStateMachine->ChangeState("State Walking");
+
    }
 
    void PlayerSkeletalMeshComponent::InitStateMachine()
@@ -56,7 +63,7 @@ namespace Labyrinth
       State* stateIdle = new State("State Idle");
       State* stateWalking = new State("State Walking");
 
-      StateProperty<StatePropertyType::Animation>* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Idle", mPropertiesBinding);
+      StateProperty<StatePropertyType::Animation>* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
       stateIdle->AddStateProperty("Prop_AnimationTina", prop_idleAnim);
 
       StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 1.0f);
@@ -65,7 +72,7 @@ namespace Labyrinth
       StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 1.0f);
       stateWalking->AddStateTransition(transitionFromWalkingToIdle);
 
-      StateProperty<StatePropertyType::Animation>* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Walk", mPropertiesBinding);
+      StateProperty<StatePropertyType::Animation>* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);
       stateWalking->AddStateProperty("Prop_AnimationTina", prop_walkAnim);
 
       mAnimationStateMachine = new StateMachine(stateIdle);

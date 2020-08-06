@@ -24,9 +24,13 @@ namespace Graphics
          for (const auto& srcDataItem : srcBoneData)
          {
             const std::string& nodeName = srcDataItem.first;
-            const auto& srcData = srcDataItem.second;
-            const auto& dstData = dstBoneData.at(nodeName);
-            result[nodeName] = BlendBoneData(srcData, dstData, blendFactor);
+
+            if (dstBoneData.count(nodeName))
+            {
+               const auto& srcData = srcDataItem.second;
+               const auto& dstData = dstBoneData.at(nodeName);
+               result[nodeName] = BlendBoneData(srcData, dstData, blendFactor);
+            }
          }
          
          return result;
