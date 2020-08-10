@@ -44,7 +44,7 @@ namespace Game
 
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 
-		Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent = nullptr);
+		Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent);
 
 		virtual ~Actor();
 
@@ -52,6 +52,10 @@ namespace Game
 
 		// Tick is executed on game thread
 		virtual void Tick(const float deltaTime) override;
+
+      virtual void ChangeState(const std::string& stateName);
+
+      virtual void PostConstructorInitialize();
 
       void AddComponent(std::shared_ptr<Component> component);
 
@@ -109,6 +113,24 @@ namespace Game
 
       // When primitive component is removed, all primitive components which are alive and have index greater than removed component's index should do proxy index offset (-1)
       void RemoveComponentIndexOffset(size_t removedProxyIndex);
+
+   protected:
+
+      template <typename ComponentT>
+      std::shared_ptr<ComponentT> GetComponent(uint64_t type)
+      {
+         std::shared_ptr<ComponentT> result(nullptr);
+
+         assert(m_allComponents.size());
+
+         if (auto it = std::find_if(m_allComponents.begin(), m_allComponents.end(), [&](auto& compItem) { return compItem->GetComponentType() == type; });
+            m_allComponents.end() != it)
+         {
+            result = std::static_pointer_cast<ComponentT>(*it);
+         }
+
+         return result;
+      }
 	};
 
 }

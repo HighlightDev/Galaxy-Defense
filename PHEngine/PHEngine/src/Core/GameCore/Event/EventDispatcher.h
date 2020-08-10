@@ -3,6 +3,7 @@
 #include "PlayerMovedEvent.h"
 #include "CameraTransformChangedEvent.h"
 #include "PhysicsSimulationUpdatedEvent.h"
+#include "KeyboradInputEvent.h"
 
 #include <tuple>
 
@@ -42,7 +43,8 @@ namespace Event {
    using EngineEventDispatcher = EventDispatcher<
       CameraTransformChangedEvent,
       PlayerMovedEvent,
-      PhysicsSimulationUpdatedEvent
+      PhysicsSimulationUpdatedEvent,
+      KeyboardInputEvent
    >;
 
 }

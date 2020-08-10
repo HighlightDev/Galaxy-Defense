@@ -42,6 +42,7 @@
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
 #include "PlayerSkeletalMeshComponent.h"
+#include "PlayerActor.h"
 
 #include <LogInterface.h>
 
@@ -83,7 +84,7 @@ namespace Labyrinth
 
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "playerCube.obj");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "City_House_2_BI.obj");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
+      //ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "player_walk.fbx");
       ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "tina.fbx");
 
@@ -91,14 +92,14 @@ namespace Labyrinth
 
       {
          // Test for PBR
-         {
+         /*{
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
             auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
 
             StaticMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
-            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor",
+            std::shared_ptr<PlayerActor> cubeActor = std::make_shared<PlayerActor>("TestPhysicsActor",
                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
             cubeActor->AddComponent(component);
@@ -110,7 +111,7 @@ namespace Labyrinth
             cubeActor->AddComponent(cubePhysComponent);
 
             mScene->AllActors.push_back(cubeActor);
-         }
+         }*/
       }
 
       {
@@ -124,9 +125,6 @@ namespace Labyrinth
                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
             auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
             cubeActor->AddComponent(component);
-
-            auto plComp = std::static_pointer_cast<PlayerSkeletalMeshComponent>(component);
-            plComp->ChangeState();
 
             PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
             mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
@@ -260,12 +258,12 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "diffuse.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
-         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "model.dae", glm::vec3(0, -5, 0), glm::vec3(270, 0, 0), glm::vec3(0.5f),
+         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0, 0, 0), glm::vec3(0, 0, 0), glm::vec3(3),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
-         std::shared_ptr<Actor> skeletActor = std::make_shared<Actor>("Buddy", std::make_shared<SceneComponent>(
+         std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(mData);
+         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
          skeletActor->AddComponent(skeletalComp);
 
          InputComponentData inputComponentData;

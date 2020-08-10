@@ -14,11 +14,13 @@ namespace Game
       : m_playerPhysicsComponent()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+      KeyboardInputEvent::GetInstance()->AddListener(this);
    }
 
    PlayerController::~PlayerController()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+      KeyboardInputEvent::GetInstance()->RemoveListener(this);
    }
 
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
@@ -47,6 +49,26 @@ namespace Game
       }
    }
 
+   void PlayerController::ProcessEvent(const KeyboardInputEvent::EventData_t& eventData)
+   {
+      if (m_playerActor)
+      {
+         const auto& data = std::get<0>(eventData);
+
+         if (data.Key == Keys::W)
+         {
+            if (data.State == KeyState::PRESSED)
+            {
+               m_playerActor->ChangeState("State Walking");
+            }
+            else
+            {
+               m_playerActor->ChangeState("State Idle");
+            }
+         }
+      }
+   }
+
    void PlayerController::Tick(float deltaTime)
    {
       if (!m_playerActor)
@@ -63,30 +85,29 @@ namespace Game
 
       if (m_playerActor->GetInputComponent())
       {
-         auto& bindings = m_playerActor->GetInputComponent()->GetKeyboardBindings();
+         const auto& bindings = m_playerActor->GetInputComponent()->GetKeyboardBindings();
 
          if (bindings.HasPressedKeys())
          {
-            if (bindings.GetKeyState(Keys::W))
+            if (KeyState::PRESSED == bindings.GetKeyState(Keys::W))
             {
                m_playerPhysicsComponent->SetWalkVelocity(movementComponent->Velocity);
             }
-            else if (bindings.GetKeyState(Keys::A))
+            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::A))
             {
             }
-            else if (bindings.GetKeyState(Keys::D))
+            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::D))
             {
             }
-            else if (bindings.GetKeyState(Keys::S))
+            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::S))
             {
             }
 
-            if (bindings.GetKeyState(Keys::Space))
+            if (KeyState::PRESSED == bindings.GetKeyState(Keys::Space))
             {
                m_playerPhysicsComponent->SetJumpVelocity();
             }
          }
-   
       }
 
    }

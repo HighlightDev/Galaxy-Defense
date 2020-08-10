@@ -164,11 +164,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Labyrinth.cpp" />
+    <ClCompile Include="src\PlayerActor.cpp" />
     <ClCompile Include="src\LabyrinthLevelFactory.cpp" />
     <ClCompile Include="src\PlayerSkeletalMeshComponent.cpp" />
     <ClCompile Include="src\SimpleLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\PlayerActor.h" />
     <ClInclude Include="src\LabyrinthLevelFactory.h" />
     <ClInclude Include="src\PlayerSkeletalMeshComponent.h" />
     <ClInclude Include="src\SimpleLevel.h" />

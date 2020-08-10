@@ -20,16 +20,16 @@ namespace Game
 
    protected:
 
-      /* this is the main animation time counter*/
+      /* src is the main animation time counter*/
       float mSrcAnimationTime;
 
-      /* this time is used when blending of animations is being calculated*/
+      /* dst time is used when blending of animations is being calculated*/
       float mDstAnimationTime;
 
-      /* this is the main animation name*/
+      /* src is the main animation name*/
       std::string mSrcAnimationName;
 
-      /* this animation name is used when blending of animations is being occurred*/
+      /* dst animation name is used when blending of animations is being occurred*/
       std::string mDstAnimationName;
 
       bool bTransitionEnabled;
@@ -52,6 +52,31 @@ namespace Game
 
          return m_renderData;
       }
+
+      float& GetSrcAnimationTimeRef() {
+         return mSrcAnimationTime;
+      }
+
+      float& GetDstAnimationTimeRef() {
+         return mDstAnimationTime;
+      }
+
+      std::string& GetSrcAnimationNameRef() {
+         return mSrcAnimationName;
+      }
+
+      std::string& GetDstAnimationNameRef() {
+         return mDstAnimationName;
+      }
+
+      float& GetTransitionValueRef() {
+         return mTransitionValue;
+      }
+
+      bool& GetIsTransitionEnabledRef() {
+         return bTransitionEnabled;
+      }
+
    };
 
 }

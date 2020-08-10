@@ -37,6 +37,10 @@ namespace Game
       bool IsTransitionActive() const;
 
       float GetTransitionParameter() const;
+
+   private:
+
+      void MakeTransition(const std::string& stateName);
    };
 
 }

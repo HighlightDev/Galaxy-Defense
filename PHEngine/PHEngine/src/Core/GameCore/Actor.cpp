@@ -15,6 +15,8 @@ namespace Game
       , m_movementComponent(nullptr)
       , m_parent(nullptr)
    {
+      assert(m_rootComponent);
+
       m_rootComponent->bIsRootComponent = true;
    }
 
@@ -33,6 +35,11 @@ namespace Game
       {
          child->PostPhysicsInitialize();
       }
+   }
+
+   void Actor::PostConstructorInitialize()
+   {
+
    }
   
 	void Actor::UpdateRootComponentTransform()
@@ -143,6 +150,11 @@ namespace Game
                --compPtr->PrimitiveProxyComponentId;
          }
       }
+   }
+
+   void Actor::ChangeState(const std::string& stateName)
+   {
+
    }
 
 	void Actor::Tick(const float deltaTime)

@@ -11,6 +11,7 @@ namespace Game
       : mStateNodeInitRoot(rootNode)
       , mCurrentStateNode(mStateNodeInitRoot)
    {
+      MakeTransition(rootNode->GetStateName()); // set initial state
    }
 
    StateMachine::~StateMachine()
@@ -18,16 +19,13 @@ namespace Game
       delete mStateNodeInitRoot;
    }
 
-   void StateMachine::ChangeState(const std::string& dstStateName)
+   void StateMachine::MakeTransition(const std::string& stateName)
    {
-      if (bTransitionEnabled) // not finished previous transition
-         return;
+      const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
 
-      const std::map<std::string /*dstStateName*/ , StateTransition>& transitions = mCurrentStateNode->GetTransitions();
-
-      if (transitions.count(dstStateName))
+      if (transitions.count(stateName))
       {
-         const StateTransition& transition = transitions.at(dstStateName);
+         const StateTransition& transition = transitions.at(stateName);
 
          State* stateTo = transition.StateDestination;
          State* stateFrom = transition.StateFrom;
@@ -66,8 +64,15 @@ namespace Game
                }
             }
          }
-
       }
+   }
+
+   void StateMachine::ChangeState(const std::string& dstStateName)
+   {
+      if (bTransitionEnabled || mCurrentStateNode->GetStateName() == dstStateName)
+         return;
+
+      MakeTransition(dstStateName);
    }
    
    void StateMachine::Tick(const float deltaTime)
@@ -104,6 +109,11 @@ namespace Game
             {
                controllerSp->OnTransitionFinished();
             }
+         }
+
+         if (!bTransitionEnabled)
+         {
+            CurrentActiveTransitionControllers.clear();
          }
       }
    }

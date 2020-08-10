@@ -1,6 +1,9 @@
 #include "KeyboardBindings.h"
+#include "Core/GameCore/Event/KeyboradInputEvent.h"
 
 #include <algorithm>
+
+using namespace Event;
 
 namespace Game
 {
@@ -19,43 +22,43 @@ namespace Game
       return mPressedKeysCount > 0;
    }
 
-   void KeyboardBindings::AllocateKey(Keys key)
-   {
-      keyboardMaskMap.emplace(std::make_pair(key, true));
-      mPressedKeysCount++;
-   }
-
    void  KeyboardBindings::KeyPress(Keys key)
    {
-      auto it = keyboardMaskMap.find(key);
-      if (it == keyboardMaskMap.end())
+      if (auto it = keyboardMaskMap.find(key); it == keyboardMaskMap.end())
       {
-         AllocateKey(key);
+         keyboardMaskMap.emplace(std::make_pair(key, KeyState::PRESSED));
       }
-      else
+      else 
       {
-         if (!it->second)
-         {
-            it->second = true;
-            mPressedKeysCount++;
-         }
+         it->second = KeyState::PRESSED;
       }
+
+      mPressedKeysCount++;
+
+      KeyboardEventData data(key, KeyState::PRESSED);
+      KeyboardInputEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
    }
 
    void KeyboardBindings::KeyRelease(Keys key)
    {
-      auto it = keyboardMaskMap.find(key);
-      if (it != keyboardMaskMap.end())
+      if (auto it = keyboardMaskMap.find(key); it != keyboardMaskMap.end())
       {
-         it->second = false;
+         it->second = KeyState::RELEASED;
          mPressedKeysCount--;
       }
+
+      KeyboardEventData data(key, KeyState::RELEASED);
+      KeyboardInputEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
    }
 
-   bool KeyboardBindings::GetKeyState(Keys key) const
+   KeyState KeyboardBindings::GetKeyState(Keys key) const
    {
-      const auto& it = keyboardMaskMap.find(key);
-      return  it != keyboardMaskMap.end() && it->second;
+      KeyState result = KeyState::RELEASED;
+
+      if (const auto& it = keyboardMaskMap.find(key); it != keyboardMaskMap.end())
+         result = it->second;
+
+      return result;
    }
 
 }

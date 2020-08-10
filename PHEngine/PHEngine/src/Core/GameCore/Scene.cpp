@@ -20,6 +20,10 @@ namespace Game
 
    void Scene::PostConstructorInitialize()
    {
+      for (auto& actor : AllActors)
+      {
+         actor->PostConstructorInitialize();
+      }
    }
 
    void Scene::PostPhysicsInitialize()

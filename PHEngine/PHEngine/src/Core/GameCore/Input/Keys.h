@@ -2,6 +2,12 @@
 
 namespace Game
 {
+   enum class KeyState
+   {
+      RELEASED,
+      PRESSED,
+   };
+
    enum class Keys
    {
       //

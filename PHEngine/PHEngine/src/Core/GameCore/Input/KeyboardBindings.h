@@ -9,7 +9,7 @@ namespace Game
 
    class KeyboardBindings
    {
-      std::unordered_map<Keys, bool> keyboardMaskMap;
+      std::unordered_map<Keys, KeyState> keyboardMaskMap;
 
       size_t mPressedKeysCount = 0;
 
@@ -21,13 +21,11 @@ namespace Game
 
       bool HasPressedKeys() const;
 
-      void AllocateKey(Keys key);
-
       void KeyPress(Keys key);
 
       void KeyRelease(Keys key);
 
-      bool GetKeyState(Keys key) const;
+      KeyState GetKeyState(Keys key) const;
    };
 
 };
