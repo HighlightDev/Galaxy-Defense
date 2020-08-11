@@ -23,6 +23,8 @@ namespace Game
 
       virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
 
+      virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty) override;
+
    private:
 
       std::shared_ptr<AnimationPropertyBinding> GetAnimationPropertyBindingSP() const;

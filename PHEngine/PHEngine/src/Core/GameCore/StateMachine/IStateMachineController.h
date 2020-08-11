@@ -27,6 +27,8 @@ namespace Game
 
       virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter);
 
+      virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty);
+
       enum class StatePropertyType GetControllerPropertyType() const;
    };
 }

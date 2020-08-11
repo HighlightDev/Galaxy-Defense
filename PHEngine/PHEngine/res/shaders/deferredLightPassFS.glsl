@@ -94,7 +94,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 #ifdef SHADING_MODEL_PBR
 
-	const float Metallic = 0.5;
+	const float Metallic = 0.3;
 	const float Roughness = 0.6;
 	const float Epsilon = 0.00001;
 	uniform float ao;

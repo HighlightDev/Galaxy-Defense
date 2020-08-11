@@ -49,10 +49,10 @@ namespace Labyrinth
       StateProperty<StatePropertyType::Animation>* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
       stateIdle->AddStateProperty("Prop_AnimationTina", prop_idleAnim);
 
-      StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 1.0f);
+      StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 0.5f);
       stateIdle->AddStateTransition(transitionFromIdleToWalking);
 
-      StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 1.0f);
+      StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 0.5f);
       stateWalking->AddStateTransition(transitionFromWalkingToIdle);
 
       StateProperty<StatePropertyType::Animation>* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);

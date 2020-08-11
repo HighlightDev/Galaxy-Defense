@@ -39,7 +39,7 @@ namespace EnginePhysics
 
    void CharacterPhysicsComponent::SetWalkVelocity(const  glm::vec3& velocity)
    {
-      const float m_acceleration_walk = 5;
+      const float m_acceleration_walk = 2;
       const float timeMult = 1;
 
       characterController->Walk(velocity * m_acceleration_walk * timeMult);
@@ -47,7 +47,7 @@ namespace EnginePhysics
 
    void CharacterPhysicsComponent::SetRunVelocity(const glm::vec3& velocity)
    {
-      const float m_acceleration_run = 15;
+      const float m_acceleration_run = 5;
       const float timeMult = 1;
 
       characterController->Walk(velocity * m_acceleration_run * timeMult);

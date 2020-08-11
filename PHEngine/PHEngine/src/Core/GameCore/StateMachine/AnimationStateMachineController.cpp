@@ -32,6 +32,22 @@ namespace Game
       }
    }
 
+   void AnimationStateMachineController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   {
+      mPropertyBinding = dstStateProperty->PropertyBinding;
+      if (auto animBinding = GetAnimationPropertyBindingSP())
+      {
+         StateProperty<StatePropertyType::Animation>* dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(dstStateProperty);
+
+         animBinding->SrcName = dstAnimationProperty->AnimationName;
+         animBinding->SrcTime = 0.0f;
+         animBinding->DstTime = 0.0f;
+         animBinding->DstName = "NoAnimation";
+         animBinding->bTranstitionEnabled = false;
+         animBinding->TransitionValue = 0.0f;
+      }
+   }
+
    void AnimationStateMachineController::OnTransitionStarted(
       BaseStateProperty* srcProperty,
       BaseStateProperty* dstProperty,

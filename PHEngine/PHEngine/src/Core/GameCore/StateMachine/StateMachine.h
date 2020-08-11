@@ -40,7 +40,7 @@ namespace Game
 
    private:
 
-      void MakeTransition(const std::string& stateName);
+      void InitRootState();
    };
 
 }

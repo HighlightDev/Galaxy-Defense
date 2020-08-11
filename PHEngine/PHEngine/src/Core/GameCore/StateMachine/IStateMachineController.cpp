@@ -25,4 +25,9 @@ namespace Game {
 
       return srcProp->GetStatePropertyType();
    }
+
+   void IStateMachineController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   {
+
+   }
 }
