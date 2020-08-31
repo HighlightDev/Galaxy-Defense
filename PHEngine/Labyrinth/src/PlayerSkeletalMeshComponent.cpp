@@ -17,31 +17,29 @@ namespace Labyrinth
    {
    }
 
-   int tickCounter = 0;
-
    void PlayerSkeletalMeshComponent::Tick(float deltaTime)
    {
-      const float animDeltaTime = deltaTime * 90;
-
-      constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
-
+      const float animDeltaTime = deltaTime * 90.0f;
       mSrcAnimationTime += animDeltaTime;
-      mSrcAnimationTime = fmod(mSrcAnimationTime, 1000000.0f);
 
-      if (tickCounter == 10) // TODO: hot fix for optimization, later should be done much better way
+      mUpdateDataResetTimeCounter += deltaTime;
+      const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
+      mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
+
+      if (bUpdateData)
       {
          if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]() {
+            static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+            mSrcAnimationTime = fmod(mSrcAnimationTime, 1000000.0f);
+
+            m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
                SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
                proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, mSrcAnimationName, mDstAnimationName);
             });
          }
-         tickCounter = -1;
       }
-
-      tickCounter++;
    }
   
 }

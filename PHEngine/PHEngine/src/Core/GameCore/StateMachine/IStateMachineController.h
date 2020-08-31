@@ -21,6 +21,8 @@ namespace Game
 
       IStateMachineController();
 
+      virtual ~IStateMachineController();
+
       virtual void OnTransitionFinished() = 0;
 
       virtual void OnTransitionStarted(struct BaseStateProperty* srcStateProperty, struct BaseStateProperty* dstStateProperty, const float transitionDuration);

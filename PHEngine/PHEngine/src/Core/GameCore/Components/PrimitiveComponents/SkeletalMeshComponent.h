@@ -14,11 +14,13 @@ namespace Game
 
       using Base = PrimitiveComponent;
 
+   protected:
+
       SkeletalMeshRenderData m_renderData;
 
-      int32_t m_tickCounter = 0;
+      float mUpdateDataResetTimeCounter;
 
-   protected:
+      static constexpr float update_data_reset_time = 0.01f;
 
       /* src is the main animation time counter*/
       float mSrcAnimationTime;

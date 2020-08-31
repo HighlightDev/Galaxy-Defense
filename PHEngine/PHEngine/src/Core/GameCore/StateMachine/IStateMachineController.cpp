@@ -2,10 +2,18 @@
 #include "StateProperty.h"
 #include "Core/CommonCore/Assertion.h"
 
+#include <iostream>
+
 namespace Game {
 
    IStateMachineController::IStateMachineController()
    {
+      std::cout << "IStateMachineController::ctor" << std::endl;
+   }
+
+   IStateMachineController::~IStateMachineController()
+   {
+      std::cout << "IStateMachineController::dctor" << std::endl;
    }
 
    void IStateMachineController::OnTransitionStarted(BaseStateProperty* srcStateProperty, BaseStateProperty* dstStateProperty, const float transitionDuration)
