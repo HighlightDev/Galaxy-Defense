@@ -14,6 +14,13 @@ namespace Graphics
 
       struct AnimatedMeshData
       {
+         struct BoneData
+         {
+            glm::vec3 Scale;
+            glm::quat Rotation;
+            glm::vec3 Translation;
+         };
+
          // Node hierarchy root
          MeshNode* RootNode = nullptr;
 
@@ -25,8 +32,6 @@ namespace Graphics
 
          glm::mat4 GlobalInverseTransform;
 
-      public:
-
          AnimatedMeshData(const struct MeshDataCollector& collector);
 
          ~AnimatedMeshData()
@@ -34,23 +39,23 @@ namespace Graphics
             delete RootNode;
          }
 
-         using AnimationBoneData_t = std::tuple <glm::vec3 /*scale*/, glm::quat/*rotation*/, glm::vec3/*translation*/>;
-
          std::vector<glm::mat4> GetAnimatedMatrices(const std::string& animationName, const float animationTime) const;
 
-         std::vector<glm::mat4> GetAnimatedMatricesWithBlendedBoneData(const std::map<std::string, AnimationBoneData_t>& blendedBoneData);
+         std::vector<glm::mat4> GetAnimatedMatricesWithBlendedBoneData(const std::map<std::string, BoneData>& blendedBoneData);
 
-         std::map<std::string, AnimationBoneData_t> GetAnimationBoneMapping(const std::string& animationName, const float animationTime);
+         std::map<std::string, BoneData> GetBoneMappingForBlendedAnimation(const std::string& srcAnimationName, const std::string& dstAnimationName,
+            const float srcAnimationTime, const float dstAnimationTime, const float blendFactor);
 
-         static std::map<std::string, AnimationBoneData_t> BlendAnimationBoneMappings(const std::map<std::string, AnimationBoneData_t>& srcBoneData,
-            const std::map<std::string, AnimationBoneData_t>& dstBoneData, const float blendFactor);
+         static std::map<std::string, BoneData> BlendAnimationBoneMappings(const std::map<std::string, BoneData>& srcBoneData,
+            const std::map<std::string, BoneData>& dstBoneData, const float blendFactor);
 
       private:
 
-         void GetBoneDataNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, std::map<std::string, AnimationBoneData_t>& boneData) const;
+         void GetBlendedBoneDataNodeHierarchy(const float srcTime, const float dstTime, const std::string& srcAnimName, const std::string& dstAnimName,
+            const float blendFactor, MeshNode* node, std::map<std::string, BoneData>& blendedBoneData) const;
 
          void ReadNodeHierarchy(float animationTime, const std::string& animationName, MeshNode* node, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
-         void ReadNodeHierarchyWithBlendedBoneData( MeshNode* node, const std::map<std::string, AnimationBoneData_t>& blendedBoneData, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
+         void ReadNodeHierarchyWithBlendedBoneData( MeshNode* node, const std::map<std::string, BoneData>& blendedBoneData, const glm::mat4& parentTransform, std::vector<glm::mat4>& finalOutput) const;
 
          glm::vec3 InterpolateScaling(float animationTime, const std::string& animationName, const std::string& nodeName) const;
          glm::vec3 InterpolateTranslation(float animationTime, const std::string& animationName, const std::string& nodeName) const;
@@ -60,7 +65,7 @@ namespace Graphics
          size_t FindTranslationIndex(const float animationTime, const std::vector<FrameTranslation>& translationFrames) const;
          size_t FindRotationIndex(const float animationTime, const std::vector<FrameRotation>& rotationFrames) const;
 
-         static AnimationBoneData_t BlendBoneData(const AnimationBoneData_t& src, const AnimationBoneData_t& dst, const float blendFactor);
+         static BoneData BlendBoneData(const BoneData& src, const BoneData& dst, const float blendFactor);
       };
 
    }

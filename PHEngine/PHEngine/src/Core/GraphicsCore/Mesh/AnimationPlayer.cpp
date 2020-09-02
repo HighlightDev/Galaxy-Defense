@@ -1,17 +1,21 @@
 #include "AnimationPlayer.h"
+#include <chrono>
+#include <iostream>
 
 namespace Graphics
 {
    namespace Mesh
    {
+      using Clock_t = std::chrono::high_resolution_clock;
+
       AnimationPlayer::AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData)
          : m_animatedMeshData(animatedData)
          , mSrcAnimationTime(0.0f)
          , mDstAnimationTime(0.0f)
          , mSrcAnimationName("")
          , mDstAnimationName("")
-         , mTransitionParameter (0.0f)
-      , bTransitionEnabled( false)
+         , mTransitionParameter(0.0f)
+         , bTransitionEnabled(false)
       {
          assert((m_animatedMeshData));
 
@@ -108,19 +112,33 @@ namespace Graphics
          UpdateAnimationMatrices_Inner();
       }
 
+      double longestTime = 0.0;
+
       void AnimationPlayer::UpdateAnimationMatrices_Inner()
       {
+         Clock_t::time_point time1;
+
+         time1 = Clock_t::now();
          if (bTransitionEnabled)
          {
-            auto srcBoneData = std::move(m_animatedMeshData->GetAnimationBoneMapping(mSrcAnimationName, mSrcAnimationTime));
-            auto dstBoneData = std::move(m_animatedMeshData->GetAnimationBoneMapping(mDstAnimationName, mDstAnimationTime));
-            auto blendedBoneData = std::move(m_animatedMeshData->BlendAnimationBoneMappings(srcBoneData, dstBoneData, mTransitionParameter));
+            auto blendedBoneData = m_animatedMeshData->GetBoneMappingForBlendedAnimation(mSrcAnimationName, mDstAnimationName,
+               mSrcAnimationTime, mDstAnimationTime, mTransitionParameter);
             mCachedAnimatedMatrices = m_animatedMeshData->GetAnimatedMatricesWithBlendedBoneData(blendedBoneData);
          }
          else
          {
             mCachedAnimatedMatrices = m_animatedMeshData->GetAnimatedMatrices(mSrcAnimationName, mSrcAnimationTime);
          }
+
+         Clock_t::duration deltaTime = Clock_t::now() - time1;
+
+         const double invFromNanoToSec = 0.000000001;
+
+         auto time = static_cast<double>(deltaTime.count()) * invFromNanoToSec;
+         if (time > longestTime)
+            longestTime = time;
+
+         std::cout << "Time For Blending : " << longestTime << std::endl;
       }
 
       std::vector<glm::mat4> AnimationPlayer::GetAnimatedMatrices() const
