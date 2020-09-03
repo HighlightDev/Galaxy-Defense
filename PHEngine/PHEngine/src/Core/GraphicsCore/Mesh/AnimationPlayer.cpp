@@ -1,4 +1,6 @@
 #include "AnimationPlayer.h"
+
+// todo: remove this part later
 #include <chrono>
 #include <iostream>
 
@@ -112,6 +114,7 @@ namespace Graphics
          UpdateAnimationMatrices_Inner();
       }
 
+      // todo: remove this part later
       double longestTime = 0.0;
 
       void AnimationPlayer::UpdateAnimationMatrices_Inner()
@@ -138,10 +141,10 @@ namespace Graphics
          if (time > longestTime)
             longestTime = time;
 
-         std::cout << "Time For Blending : " << longestTime << std::endl;
+         //std::cout << "Time For Blending : " << longestTime << std::endl;
       }
 
-      std::vector<glm::mat4> AnimationPlayer::GetAnimatedMatrices() const
+      const std::vector<glm::mat4>& AnimationPlayer::GetAnimatedMatrices() const
       {
          return mCachedAnimatedMatrices;
       }

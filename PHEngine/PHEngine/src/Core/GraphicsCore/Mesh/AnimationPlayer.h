@@ -45,7 +45,7 @@ namespace Graphics
          /* updates matrices with current animation*/
          void UpdateAnimationMatrices();
 
-         std::vector<glm::mat4> GetAnimatedMatrices() const;
+         const std::vector<glm::mat4>& GetAnimatedMatrices() const;
 
          bool SetSrcAnimationByIndex(const size_t index);
 

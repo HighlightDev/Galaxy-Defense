@@ -258,7 +258,7 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "diffuse.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
-         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0, -0.5f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
+         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(

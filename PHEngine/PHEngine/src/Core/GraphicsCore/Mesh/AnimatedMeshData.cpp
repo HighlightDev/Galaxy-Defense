@@ -41,9 +41,7 @@ namespace Graphics
          std::vector<glm::mat4> FinalTransformationMatrices;
          FinalTransformationMatrices.reserve(BoneMapping.size());
 
-         const AnimationMappingData& mappingData = AnimationMapping.at(animationName);
-
-         float time = fmod(animationTime, mappingData.AnimationDuration);
+         float time = fmod(animationTime, AnimationMapping.at(animationName).AnimationDuration);
 
          ReadNodeHierarchy(time, animationName, RootNode, glm::mat4(1) /* identity */, FinalTransformationMatrices);
 

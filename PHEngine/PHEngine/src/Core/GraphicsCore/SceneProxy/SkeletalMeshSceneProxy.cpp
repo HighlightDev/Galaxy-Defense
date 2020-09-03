@@ -71,7 +71,7 @@ namespace Graphics
          return SKELETAL_MESH_COMPONENT;
       }
 
-      std::vector<glm::mat4> SkeletalMeshSceneProxy::GetSkinningMatrices()
+      const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices()
       {
          if (bIsDirty)
          {

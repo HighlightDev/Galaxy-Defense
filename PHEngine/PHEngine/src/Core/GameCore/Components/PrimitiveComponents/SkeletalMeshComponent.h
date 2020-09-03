@@ -20,7 +20,7 @@ namespace Game
 
       float mUpdateDataResetTimeCounter;
 
-      static constexpr float update_data_reset_time = 0.01f;
+      float update_data_reset_time;
 
       /* src is the main animation time counter*/
       float mSrcAnimationTime;

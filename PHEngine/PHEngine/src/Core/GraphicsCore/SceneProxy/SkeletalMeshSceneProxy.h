@@ -51,7 +51,7 @@ namespace Graphics
 
          virtual uint64_t GetComponentType() const override;
 
-         std::vector<glm::mat4> GetSkinningMatrices();
+         const std::vector<glm::mat4>& GetSkinningMatrices();
 
          virtual bool IsDeferred() const;
       };

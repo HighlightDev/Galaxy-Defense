@@ -3,12 +3,11 @@
 #include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
 
 #include <algorithm>
-#include <iostream>
 
-namespace Game 
+namespace Game
 {
 
-   StateMachine::StateMachine(State*& rootNode) 
+   StateMachine::StateMachine(State*& rootNode)
       : mStateNodeInitRoot(rootNode)
       , mCurrentStateNode(mStateNodeInitRoot)
    {
@@ -43,35 +42,68 @@ namespace Game
       }
    }
 
-   void StateMachine::ChangeStateInstantly(const std::string& dstStateName)
+   void StateMachine::DoTranstionInstantly(const std::string& dstStateName)
    {
       if (mCurrentActiveStateTransition)
       {
-         const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentActiveStateTransition->StateDestination->GetTransitions();
-
-         if (transitions.count(dstStateName))
+         // Finish current transition
+         for (std::shared_ptr<IStateMachineController>& controllerSp : CurrentActiveTransitionControllers)
          {
-            const StateTransition& transition = transitions.at(dstStateName);
-            std::map<std::string /*Property Name*/, BaseStateProperty*> dstProperties = transition.StateDestination->GetStateProperties();
+            controllerSp->OnTransitionFinished();
+         }
 
-            std::shared_ptr<IStateMachineController> propertyController;
+         SetTransitionValuesFinished(mCurrentActiveStateTransition->StateDestination);
+         CurrentActiveTransitionControllers.clear();
 
-            for (auto& dstNameAndPropertyPair : dstProperties)
+         // Begin new transition
+         DoTransition(dstStateName);
+      }
+   }
+
+   void StateMachine::DoTransition(const std::string& dstStateName)
+   {
+      const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
+
+      if (transitions.count(dstStateName))
+      {
+         const StateTransition& transition = transitions.at(dstStateName);
+
+         State* stateTo = transition.StateDestination;
+         State* stateFrom = transition.StateFrom;
+
+         assert(stateFrom->GetStateName() == mCurrentStateNode->GetStateName());
+
+         mCurrentActiveStateTransition = &transition;
+         mTransitionTime = 0.0f;
+         mTransitionParameter = 0.0f;
+         mTransitionDuration = transition.TransitionDuration;
+         bTransitionEnabled = true;
+
+         std::map<std::string /*Property Name*/, BaseStateProperty*> srcProperties = stateFrom->GetStateProperties();
+         std::map<std::string /*Property Name*/, BaseStateProperty*> dstProperties = stateTo->GetStateProperties();
+
+         for (auto& srcNameAndPropertyPair : srcProperties)
+         {
+            const std::string& name = srcNameAndPropertyPair.first;
+
+            if (dstProperties.count(name))
             {
-               BaseStateProperty* dstProperty = dstNameAndPropertyPair.second;
-               if (dstProperty->GetStatePropertyType() == StatePropertyType::Animation)
+               BaseStateProperty* srcProperty = srcNameAndPropertyPair.second;
+               BaseStateProperty* dstProperty = dstProperties[name];
+
+               IStateMachineController* propertyController = nullptr;
+
+               if (srcProperty->GetStatePropertyType() == StatePropertyType::Animation)
                {
-                  propertyController = std::make_shared<AnimationStateMachineController>();
+                  propertyController = new AnimationStateMachineController();
                }
 
                if (propertyController)
                {
-                  propertyController->InitWithPropsInstant(dstProperty);
+                  CurrentActiveTransitionControllers.emplace_back(std::shared_ptr<IStateMachineController>(propertyController));
+                  propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
                }
             }
-
-            SetTransitionValuesFinished(mCurrentActiveStateTransition->StateDestination);
-            CurrentActiveTransitionControllers.clear();
          }
       }
    }
@@ -81,56 +113,11 @@ namespace Game
       if (bTransitionEnabled)
       {
          // Transition is not finished yet, but state should be already changed
-         ChangeStateInstantly(dstStateName);
+         DoTranstionInstantly(dstStateName);
       }
       else
       {
-         //std::cout << "Change state : " << dstStateName << std::endl;
-
-         const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
-
-         if (transitions.count(dstStateName))
-         {
-            const StateTransition& transition = transitions.at(dstStateName);
-
-            State* stateTo = transition.StateDestination;
-            State* stateFrom = transition.StateFrom;
-
-            assert(stateFrom->GetStateName() == mCurrentStateNode->GetStateName());
-
-            mCurrentActiveStateTransition = &transition;
-            mTransitionTime = 0.0f;
-            mTransitionParameter = 0.0f;
-            mTransitionDuration = transition.TransitionDuration;
-            bTransitionEnabled = true;
-
-            std::map<std::string /*Property Name*/, BaseStateProperty*> srcProperties = stateFrom->GetStateProperties();
-            std::map<std::string /*Property Name*/, BaseStateProperty*> dstProperties = stateTo->GetStateProperties();
-
-            for (auto& srcNameAndPropertyPair : srcProperties)
-            {
-               const std::string& name = srcNameAndPropertyPair.first;
-
-               if (dstProperties.count(name))
-               {
-                  BaseStateProperty* srcProperty = srcNameAndPropertyPair.second;
-                  BaseStateProperty* dstProperty = dstProperties[name];
-
-                  IStateMachineController* propertyController = nullptr;
-
-                  if (srcProperty->GetStatePropertyType() == StatePropertyType::Animation)
-                  {
-                     propertyController = new AnimationStateMachineController();
-                  }
-
-                  if (propertyController)
-                  {
-                     CurrentActiveTransitionControllers.emplace_back(std::shared_ptr<IStateMachineController>(propertyController));
-                     propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
-                  }
-               }
-            }
-         }
+         DoTransition(dstStateName);
       }
    }
 
@@ -142,7 +129,7 @@ namespace Game
       mCurrentActiveStateTransition = nullptr;
       bTransitionEnabled = false;
    }
-   
+
    void StateMachine::Tick(const float deltaTime)
    {
       // process current transition

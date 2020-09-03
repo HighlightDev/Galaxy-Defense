@@ -41,8 +41,10 @@ namespace Game
    private:
 
       void InitRootState();
+
+      void DoTransition(const std::string& dstStateName);
       
-      void ChangeStateInstantly(const std::string& dstStateName);
+      void DoTranstionInstantly(const std::string& dstStateName);
 
       void SetTransitionValuesFinished(State* newCurrentState);
    };

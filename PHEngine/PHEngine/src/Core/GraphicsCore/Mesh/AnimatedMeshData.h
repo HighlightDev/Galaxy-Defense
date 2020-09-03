@@ -46,9 +46,6 @@ namespace Graphics
          std::map<std::string, BoneData> GetBoneMappingForBlendedAnimation(const std::string& srcAnimationName, const std::string& dstAnimationName,
             const float srcAnimationTime, const float dstAnimationTime, const float blendFactor);
 
-         static std::map<std::string, BoneData> BlendAnimationBoneMappings(const std::map<std::string, BoneData>& srcBoneData,
-            const std::map<std::string, BoneData>& dstBoneData, const float blendFactor);
-
       private:
 
          void GetBlendedBoneDataNodeHierarchy(const float srcTime, const float dstTime, const std::string& srcAnimName, const std::string& dstAnimName,

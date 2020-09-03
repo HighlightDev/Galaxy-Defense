@@ -1,9 +1,10 @@
 #include "ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
-#include <functional>
 #include "AsyncDataProxy.h"
 #include "Core/IoCore/ResourceExtensionsInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/AsyncJob.h"
+
+#include <functional>
 
 namespace IO {
 
@@ -30,7 +31,7 @@ namespace IO {
 
    bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
    {
-      const bool bValid = ReadyToReadResources.count(key) > 0;;
+      const bool bValid = ReadyToReadResources.count(key) > 0;
 
       if (bValid)
       {
@@ -47,7 +48,7 @@ namespace IO {
       switch (resType)
       {
          case RESOURCE_TYPE::TEXTURE:
-         {  
+         {
             AsyncJob<Resource*, const std::string&> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
             std::future<Resource*> futureResult = job.StartAsync(std::launch::async, key);
             mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
