@@ -24,6 +24,6 @@ void main()
 	gBuffer_Position = VsOutput.WorldCoordinates;
 
 	gBuffer_Normal = normalFromNM;
-	//normalFromNM;
+
 	gBuffer_AlbedoNSpecular = vec4(albedoColor, 1.0);
 }

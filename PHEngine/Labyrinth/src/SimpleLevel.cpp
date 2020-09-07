@@ -255,7 +255,7 @@ namespace Labyrinth
       // SKELETAL MESH
       {
 
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "diffuse.png");
+         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
          SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),

@@ -1843,6 +1843,9 @@
     <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

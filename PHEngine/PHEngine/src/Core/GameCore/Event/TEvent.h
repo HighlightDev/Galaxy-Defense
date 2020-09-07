@@ -59,7 +59,7 @@ namespace Event
       {
          while (mPolicy[currentOrder].HasData())
          {
-            EventData_t packedData = mPolicy[currentOrder].PopData();
+            const EventData_t& packedData = mPolicy[currentOrder].PopData();
             for (auto& listener : m_listeners)
             {
                listener->ProcessEvent(packedData);

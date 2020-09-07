@@ -14,7 +14,7 @@ namespace Game
       : PrimitiveComponent(translation, rotation, scale)
       , m_renderData(renderData)
       , mUpdateDataResetTimeCounter(0.0f)
-      , update_data_reset_time(0.03f)
+      , update_data_reset_time(0.015f)
       , mSrcAnimationTime(0.0f)
       , mDstAnimationTime(0.0f)
       , mSrcAnimationName("")
