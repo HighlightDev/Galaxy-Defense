@@ -1,3 +1,6 @@
 [submodule "PHEngine/External/Assimp"]
 	path = PHEngine/External/Assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "PHEngine/External/LuaBridge"]
+	path = PHEngine/External/LuaBridge
+	url = https://github.com/vinniefalco/LuaBridge.git
