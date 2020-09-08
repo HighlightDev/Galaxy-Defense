@@ -21,15 +21,9 @@ namespace Game
 
       virtual ~Level();
 
-      void PostConstructorInitialize();
-
       void PostPhysicsInitialize();
 
       void InitLevel();
-
-      virtual void TickLevel(const float deltaTime);
-
-      virtual void LoadLevel();
 
       ICamera* GetCamera() const;
 
@@ -39,6 +33,14 @@ namespace Game
       void CameraMove();
 
       void CameraRotate();
+
+      virtual void PreConstructorInitialize();
+
+      virtual void PostConstructorInitialize();
+
+      virtual void TickLevel(const float deltaTime);
+
+      virtual void LoadLevel();
    };
 }
 

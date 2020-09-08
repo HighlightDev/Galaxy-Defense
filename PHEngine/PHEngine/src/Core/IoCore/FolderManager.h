@@ -58,6 +58,7 @@ namespace IO
 		const std::string GetPostprocessTexturePath() const;
 		const std::string GetEditorTexturePath() const;
       const std::string GetPersistencyPath() const;
+      const std::string GetScriptPath() const;
 	};
 }
 

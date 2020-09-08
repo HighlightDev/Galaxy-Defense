@@ -46,6 +46,8 @@ public:
 
    void PlayLevel(std::shared_ptr<Level> level);
 
+   void PreConstructorInitialize();
+
    void PostConstructorInitialize();
 
    void PostPhysicsInitialize();

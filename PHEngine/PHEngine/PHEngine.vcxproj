@@ -283,6 +283,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
+    <None Include="res\scripts\test.lua" />
     <None Include="res\shaders\basicFS.glsl" />
     <None Include="res\shaders\basicShadowFS.glsl" />
     <None Include="res\shaders\basicShadowNonSkeletalVS.glsl" />
@@ -380,6 +381,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\State.h" />
@@ -825,6 +827,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\IStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\StateMachine.cpp" />

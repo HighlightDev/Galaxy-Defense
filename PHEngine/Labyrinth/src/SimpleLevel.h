@@ -10,6 +10,8 @@ namespace Labyrinth
    class SimpleLevel :
       public Level
    {
+      using Base = Level;
+
    public:
 
       SimpleLevel(InterThreadCommunicationMgr& threadMgr);
@@ -17,6 +19,10 @@ namespace Labyrinth
       virtual ~SimpleLevel();
 
       virtual void LoadLevel() override;
+
+      virtual void PreConstructorInitialize();
+
+      virtual void PostConstructorInitialize();
    };
 
 }

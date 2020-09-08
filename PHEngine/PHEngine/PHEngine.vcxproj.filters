@@ -512,6 +512,7 @@
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
+    <None Include="res\scripts\test.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -1846,6 +1847,9 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2221,6 +2225,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\StateMachine\IStateMachineController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

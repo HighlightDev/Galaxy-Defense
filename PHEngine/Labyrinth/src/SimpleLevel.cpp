@@ -45,6 +45,8 @@
 #include "PlayerActor.h"
 
 #include <LogInterface.h>
+#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
+#include "Core/GameCore/ScriptingCore/LuaCore.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -52,6 +54,8 @@ using namespace IO;
 
 namespace Labyrinth
 {
+
+   #define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
    SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
       : Level(threadMgr)
@@ -63,33 +67,45 @@ namespace Labyrinth
 
    }
 
+   void SimpleLevel::PreConstructorInitialize()
+   {
+      Base::PreConstructorInitialize();
+
+      const auto folderManager = IO::FolderManager::GetInstance();
+
+      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
+      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
+      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
+      ALLOC_RES_ASYNC(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
+      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "diffuse.png");
+      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "dummy_nm.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/right.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/left.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/top.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/back.png");
+      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/front.png");
+
+      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "playerCube.obj");
+      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "City_House_2_BI.obj");
+      //ALLOC_RES_ASYNC(folderManager->GetModelPath() + "model.dae");
+      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "player_walk.fbx");
+      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "tina.fbx");
+   }
+
+   void SimpleLevel::PostConstructorInitialize()
+   {
+      Base::PostConstructorInitialize();
+
+      ResourceMap::DeleteInstance();
+   }
+
    void SimpleLevel::LoadLevel()
    {
-
-      const auto& folderManager = IO::FolderManager::GetInstance();
-
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetAlbedoTexturePath() + "diffuse.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetNormalMapPath() + "dummy_nm.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/right.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/left.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/top.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/back.png");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetCubemapTexturePath() + "Day/front.png");
-
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "playerCube.obj");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "City_House_2_BI.obj");
-      //ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "model.dae");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "player_walk.fbx");
-      ResourceMap::GetInstance()->AllocateAsync(folderManager->GetModelPath() + "tina.fbx");
-
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
+      const auto folderManager = IO::FolderManager::GetInstance();
       {
          // Test for PBR
          /*{
@@ -313,6 +329,14 @@ namespace Labyrinth
 
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
 
-      ResourceMap::DeleteInstance();
+      LuaWrapper instance;
+      if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
+      {
+         double var1 = 5.0;
+         double var2 = 123.0;
+
+         double result = LuaFunction<double(double, double)>::Call(instance, "foo", var1, var2);
+         std::cout << result;
+      }
    }
 }

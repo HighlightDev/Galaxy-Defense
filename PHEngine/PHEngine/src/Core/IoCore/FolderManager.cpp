@@ -134,4 +134,9 @@ namespace IO
    {
       return GetResPath() + "persistency\\";
    }
+
+   const std::string FolderManager::GetScriptPath() const
+   {
+      return GetResPath() + "scripts\\";
+   }
 }
