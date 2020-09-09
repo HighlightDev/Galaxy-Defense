@@ -67,9 +67,36 @@ namespace Labyrinth
 
    }
 
+   void SimpleLevel::operator()(double value)
+   {
+      std::cout << value;
+   }
+
+   void SimpleLevel::operator()(double value1, double value2)
+   {
+      std::cout << value1 << std::endl << value2;
+   }
+
+   void SimpleLevel::TestLua()
+   {
+      const auto folderManager = IO::FolderManager::GetInstance();
+
+      LuaWrapper instance;
+
+      LuaRegisterCallback<SimpleLevel, void(double)>::Rigister(instance, "_foo1");
+      LuaRegisterCallback<SimpleLevel, void(double, double)>::Rigister(instance, "_foo2");
+
+      if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
+      {
+         LuaFunction<void(LightUserData, double, double)>::Call(instance, "foo", LightUserData(this), 5.0, 126.0);
+      }
+   }
+
    void SimpleLevel::PreConstructorInitialize()
    {
       Base::PreConstructorInitialize();
+
+      TestLua();
 
       const auto folderManager = IO::FolderManager::GetInstance();
 
@@ -328,15 +355,5 @@ namespace Labyrinth
       }
 
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
-
-      LuaWrapper instance;
-      if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
-      {
-         double var1 = 5.0;
-         double var2 = 123.0;
-
-         double result = LuaFunction<double(double, double)>::Call(instance, "foo", var1, var2);
-         std::cout << result;
-      }
    }
 }

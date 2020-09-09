@@ -7,8 +7,15 @@ using namespace Game;
 namespace Labyrinth
 {
 
+   class ILuaLevelExecutor
+   {
+   public:
+      virtual void operator()(double value) = 0;
+      virtual void operator()(double, double) = 0;
+   };
+
    class SimpleLevel :
-      public Level
+      public Level, public ILuaLevelExecutor
    {
       using Base = Level;
 
@@ -23,6 +30,12 @@ namespace Labyrinth
       virtual void PreConstructorInitialize();
 
       virtual void PostConstructorInitialize();
+        
+      virtual void operator()(double value) override;
+
+      virtual void operator()(double, double) override;
+
+      void TestLua();
    };
 
 }

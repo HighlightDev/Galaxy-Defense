@@ -1,3 +1,6 @@
-function foo(a, b)
-	return a * b;
+function foo(host, a, b)
+	
+	_foo1(host, a * b)
+	
+	_foo2(host, a, b)
 end
