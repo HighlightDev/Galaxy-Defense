@@ -2,6 +2,8 @@
 
 #include "Core/GameCore/Level.h"
 
+#include <tuple>
+
 using namespace Game;
 
 namespace Labyrinth
@@ -10,8 +12,9 @@ namespace Labyrinth
    class ILuaLevelExecutor
    {
    public:
-      virtual void operator()(double value) = 0;
-      virtual void operator()(double, double) = 0;
+      virtual void operator()(const std::tuple<double>& parameters) = 0;
+      virtual void operator()(const std::tuple<double, double>& parameters) = 0;
+      virtual void operator()(const std::tuple<float>& parameters) = 0;
    };
 
    class SimpleLevel :
@@ -31,9 +34,10 @@ namespace Labyrinth
 
       virtual void PostConstructorInitialize();
         
-      virtual void operator()(double value) override;
+      virtual void operator()(const std::tuple<double>& parameters) override;
 
-      virtual void operator()(double, double) override;
+      virtual void operator()(const std::tuple<double, double>& parameters) override;
+      virtual void operator()(const std::tuple<float>& parameters) override;
 
       void TestLua();
    };

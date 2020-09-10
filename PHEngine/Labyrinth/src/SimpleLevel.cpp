@@ -67,14 +67,19 @@ namespace Labyrinth
 
    }
 
-   void SimpleLevel::operator()(double value)
+   void SimpleLevel::operator()(const std::tuple<double>& parameters)
    {
-      std::cout << value;
+      std::cout << std::get<0>(parameters) << std::endl;
    }
 
-   void SimpleLevel::operator()(double value1, double value2)
+   void SimpleLevel::operator()(const std::tuple<float>& parameters)
    {
-      std::cout << value1 << std::endl << value2;
+      std::cout << std::get<0>(parameters) << std::endl;
+   }
+
+   void SimpleLevel::operator()(const std::tuple<double , double>& parameters)
+   {
+      std::cout << std::get<0>(parameters) << std::endl << std::get<1>(parameters);
    }
 
    void SimpleLevel::TestLua()
@@ -83,12 +88,14 @@ namespace Labyrinth
 
       LuaWrapper instance;
 
-      LuaRegisterCallback<SimpleLevel, void(double)>::Rigister(instance, "_foo1");
-      LuaRegisterCallback<SimpleLevel, void(double, double)>::Rigister(instance, "_foo2");
+      LuaRegisterCallback<SimpleLevel, double>::Rigister(instance, "_foo1");
+      LuaRegisterCallback<SimpleLevel, double, double>::Rigister(instance, "_foo2");
+      LuaRegisterCallback<SimpleLevel, float>::Rigister(instance, "_foo3");
 
       if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
       {
-         LuaFunction<void(LightUserData, double, double)>::Call(instance, "foo", LightUserData(this), 5.0, 126.0);
+         LuaFunction<void(void*, double, double, float)>::Call(instance, "foo", (void*)this, 5.0, 126.0, 25.0f);
+         LuaFunction<void(void*, double, float)>::Call(instance, "functiontest", (void*)this, 126.0, 25.0f);
       }
    }
 
