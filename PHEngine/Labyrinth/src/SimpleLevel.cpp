@@ -46,7 +46,6 @@
 
 #include <LogInterface.h>
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -67,19 +66,9 @@ namespace Labyrinth
 
    }
 
-   void SimpleLevel::operator()(const std::tuple<double>& parameters)
+   void SimpleLevel::operator()(const std::tuple<LuaTable<std::string, int, float, double>>& parameters)
    {
-      std::cout << std::get<0>(parameters) << std::endl;
-   }
-
-   void SimpleLevel::operator()(const std::tuple<float>& parameters)
-   {
-      std::cout << std::get<0>(parameters) << std::endl;
-   }
-
-   void SimpleLevel::operator()(const std::tuple<double , double>& parameters)
-   {
-      std::cout << std::get<0>(parameters) << std::endl << std::get<1>(parameters);
+      //std::cout << std::get<0>(parameters) << std::endl;
    }
 
    void SimpleLevel::TestLua()
@@ -88,14 +77,11 @@ namespace Labyrinth
 
       LuaWrapper instance;
 
-      LuaRegisterCallback<SimpleLevel, double>::Rigister(instance, "_foo1");
-      LuaRegisterCallback<SimpleLevel, double, double>::Rigister(instance, "_foo2");
-      LuaRegisterCallback<SimpleLevel, float>::Rigister(instance, "_foo3");
+      LuaRegisterCallback<SimpleLevel, LuaTable<std::string, int, float, double>>::Rigister(instance, "_CreateActor");
 
       if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
       {
-         LuaFunction<void(void*, double, double, float)>::Call(instance, "foo", (void*)this, 5.0, 126.0, 25.0f);
-         LuaFunction<void(void*, double, float)>::Call(instance, "functiontest", (void*)this, 126.0, 25.0f);
+         LuaFunction<void(void*)>::Call(instance, "LoadLevel", (void*)this);
       }
    }
 
@@ -232,13 +218,13 @@ namespace Labyrinth
       // Ground
 
       {
+         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         mScene->AllActors.push_back(groundActor);
+
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
-
          StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 10.0f));
-         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-
          auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
@@ -248,8 +234,6 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
          groundActor->AddComponent(floorPhysComponent);
-   
-         mScene->AllActors.push_back(groundActor);
       }
 
       // Ground

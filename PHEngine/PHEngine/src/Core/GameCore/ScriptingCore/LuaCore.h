@@ -2,6 +2,7 @@
 #include <string>
 #include <stdint.h>
 #include <tuple>
+#include <type_traits>
 
 extern "C"
 {
@@ -18,6 +19,10 @@ namespace Game
    namespace LuaInnerCore
    {
       /*------------ Inner Core  --------------*/
+
+      struct LuaTableBase
+      {
+      };
 
       template <typename ArgType>
       struct PushValue;
@@ -196,14 +201,49 @@ namespace Game
          }
       };
 
+      template <typename T>
+      struct IsLuaTable
+      {
+         enum
+         {
+            value = std::is_base_of<LuaTableBase, T>::value
+         };
+      };
+
       template <typename tuple_type, size_t argsCount>
-      struct CollectArgsFromLuaHostInvoke
+      struct CollectArgsFromLuaHostInvoke;
+
+      template <typename tuple_type, size_t argsCount, bool isLuaTableParam>
+      struct CollectInner;
+
+      template <typename tuple_type, size_t argsCount>
+      struct CollectInner<tuple_type, argsCount, true>
+      {
+         static void Collect(lua_State* state, tuple_type& params)
+         {
+            std::cout << "Hello man!" << std::endl;
+         }
+      };
+
+      template <typename tuple_type, size_t argsCount>
+      struct CollectInner<tuple_type, argsCount, false>
       {
          static void Collect(lua_State* state, tuple_type& params)
          {
             using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
             std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, argsCount + 1); // + 1 because of host data at index 1
             CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params);
+         }
+      };
+
+      template <typename tuple_type, size_t argsCount>
+      struct CollectArgsFromLuaHostInvoke
+      {
+         static constexpr bool is_lua_table_param = IsLuaTable<typename std::tuple_element<argsCount - 1, tuple_type>::type>::value;
+
+         static void Collect(lua_State* state, tuple_type& params)
+         {
+            CollectInner<tuple_type, argsCount, is_lua_table_param>::Collect(state, params);
          }
       };
 
@@ -217,6 +257,13 @@ namespace Game
 
       /*------------ Inner Core  --------------*/
    }
+
+   template <typename... Args>
+   struct LuaTable :
+      public LuaInnerCore::LuaTableBase,
+      public std::tuple<Args...>
+   {
+   };
 
    template <typename GlobalVariableType>
    struct LuaGetGlobal;
@@ -253,7 +300,7 @@ namespace Game
       {
          lua_getglobal(instanceWrapper.GetState(), functionName.c_str());
          assert(lua_isfunction(instanceWrapper.GetState(), -1));
-        
+
          LuaInnerCore::IterateFunctionArgs<TArgs...>::PushArg(instanceWrapper, std::forward<TArgs>(args)...);
 
          static constexpr size_t argsCount = sizeof...(args);
@@ -302,13 +349,13 @@ namespace Game
       {
          static constexpr size_t argsCount = sizeof...(Args);
          assert(lua_gettop(state) != argsCount);
-         
+
          ILuaExecutor* instance = static_cast<ILuaExecutor*>(lua_touserdata(state, 1));
          assert(instance);
 
          args_t parameterPackInstance;
          LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance);
-         
+
          instance->operator()(parameterPackInstance);
          return 0;
       }
