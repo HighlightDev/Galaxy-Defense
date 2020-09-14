@@ -23,3 +23,13 @@ function CreateActor(host, name, translation, eulerRot, scale)
 
 	_CreateActor(host, actor)
 end
+
+function Create(host)
+	
+	rootComponent = _CreateSceneComponent(host);
+	if rootComponent ~= nil then
+		_GetSceneComponent(host, rootComponent)
+	else 
+		print("rootComponent is nil!")
+	end
+end

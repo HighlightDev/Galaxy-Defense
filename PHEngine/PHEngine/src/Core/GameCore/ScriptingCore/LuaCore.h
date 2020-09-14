@@ -16,59 +16,87 @@ extern "C"
 
 namespace Game
 {
+   struct LuaTableBase
+   {
+   };
+
+   template <typename... Args>
+   struct LuaTable :
+      public LuaTableBase,
+      public std::tuple<Args...>
+   {
+   };
+
    namespace LuaInnerCore
    {
       /*------------ Inner Core  --------------*/
 
-      struct LuaTableBase
+      template <typename ArgType>
+      struct PushValue;
+
+      template <typename ArgType, bool isPtr>
+      struct PushUnknownValue;
+
+      template <typename ArgType>
+      struct PushUnknownValue<ArgType, true>
       {
+         static void Do(lua_State* state, const ArgType& value)
+         {
+            PushValue<void*>::Do(state, (void*)value);
+         }
       };
 
       template <typename ArgType>
-      struct PushValue;
+      struct PushUnknownValue<ArgType, false>
+      {
+         static void Do(lua_State* state, const ArgType& value)
+         {
+            PushValue<ArgType>::Do(state, value);
+         }
+      };
 
       template <>
       struct PushValue<void*>
       {
-         static void Do(const LuaWrapper& instanceWrapper, void* value)
+         static void Do(lua_State* state, void* value)
          {
-            lua_pushlightuserdata(instanceWrapper.GetState(), value);
+            lua_pushlightuserdata(state, value);
          }
       };
 
       template <>
       struct PushValue<float>
       {
-         static void Do(const LuaWrapper& instanceWrapper, const float& value)
+         static void Do(lua_State* state, const float& value)
          {
-            lua_pushnumber(instanceWrapper.GetState(), value);
+            lua_pushnumber(state, value);
          }
       };
 
       template <>
       struct PushValue<int32_t>
       {
-         static void Do(const LuaWrapper& instanceWrapper, const int32_t& value)
+         static void Do(lua_State* state, const int32_t& value)
          {
-            lua_pushinteger(instanceWrapper.GetState(), value);
+            lua_pushinteger(state, value);
          }
       };
 
       template <>
       struct PushValue<double>
       {
-         static void Do(const LuaWrapper& instanceWrapper, const double& value)
+         static void Do(lua_State* state, const double& value)
          {
-            lua_pushnumber(instanceWrapper.GetState(), value);
+            lua_pushnumber(state, value);
          }
       };
 
       template <>
       struct PushValue<int64_t>
       {
-         static void Do(const LuaWrapper& instanceWrapper, const int64_t& value)
+         static void Do(lua_State* state, const int64_t& value)
          {
-            lua_pushinteger(instanceWrapper.GetState(), value);
+            lua_pushinteger(state, value);
          }
       };
 
@@ -80,7 +108,7 @@ namespace Game
       {
          static void PushArg(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
          {
-            PushValue<Arg>::Do(instanceWrapper, std::forward<Arg>(arg));
+            PushValue<Arg>::Do(instanceWrapper.GetState(), std::forward<Arg>(arg));
             IterateFunctionArgs<Args...>::PushArg(instanceWrapper, std::forward<Args>(args)...);
          }
       };
@@ -93,9 +121,26 @@ namespace Game
          }
       };
 
-
       template <typename VariableType>
-      struct GetValue;
+      struct GetValue
+      {
+         static VariableType Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static VariableType Value(lua_State* state, const int32_t stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type Inner_Value(lua_State* state, const int32_t stackIndex)
+         {
+            return (VariableType)lua_touserdata(state, stackIndex);
+         }
+      };
 
       template <>
       struct GetValue<int64_t>
@@ -201,6 +246,23 @@ namespace Game
          }
       };
 
+      template <size_t LuaTableParamCount, typename tuple_type, typename LuaTableType>
+      struct GetLuaTableValue;
+
+      template <size_t LuaTableParamCount, typename tuple_type, typename... Args>
+      struct GetLuaTableValue<LuaTableParamCount, tuple_type, LuaTable<Args...>>
+      {
+         static void Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         {
+         }
+      };
+
+      template <typename tuple_type, typename... Args>
+      struct GetLuaTableValue<0, tuple_type, LuaTable<Args...>>
+      {
+
+      };
+
       template <typename T>
       struct IsLuaTable
       {
@@ -213,37 +275,15 @@ namespace Game
       template <typename tuple_type, size_t argsCount>
       struct CollectArgsFromLuaHostInvoke;
 
-      template <typename tuple_type, size_t argsCount, bool isLuaTableParam>
-      struct CollectInner;
-
-      template <typename tuple_type, size_t argsCount>
-      struct CollectInner<tuple_type, argsCount, true>
-      {
-         static void Collect(lua_State* state, tuple_type& params)
-         {
-            std::cout << "Hello man!" << std::endl;
-         }
-      };
-
-      template <typename tuple_type, size_t argsCount>
-      struct CollectInner<tuple_type, argsCount, false>
-      {
-         static void Collect(lua_State* state, tuple_type& params)
-         {
-            using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
-            std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, argsCount + 1); // + 1 because of host data at index 1
-            CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params);
-         }
-      };
-
       template <typename tuple_type, size_t argsCount>
       struct CollectArgsFromLuaHostInvoke
       {
-         static constexpr bool is_lua_table_param = IsLuaTable<typename std::tuple_element<argsCount - 1, tuple_type>::type>::value;
+         using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
 
          static void Collect(lua_State* state, tuple_type& params)
          {
-            CollectInner<tuple_type, argsCount, is_lua_table_param>::Collect(state, params);
+            std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, argsCount + 1); // + 1 because of host data at index 1
+            CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params);
          }
       };
 
@@ -255,15 +295,37 @@ namespace Game
          }
       };
 
+      struct LuaGetGlobalBase
+      {
+         static void GetGlobal(const LuaWrapper& instanceWrapper, const std::string& variableName)
+         {
+            lua_getglobal(instanceWrapper.GetState(), variableName.c_str());
+         }
+      };
+
+      template <typename ILuaExecutor_t, typename ArgsPack_t, typename ReturnValueType>
+      struct LuaCallbackReturnValue
+      {
+         static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
+         {
+            auto value = executorInstance->operator()(packArgs);
+            LuaInnerCore::PushUnknownValue<ReturnValueType, std::is_pointer<ReturnValueType>::value>::Do(state, value);
+            return 1;
+         }
+      };
+
+      template <typename ILuaExecutor_t, typename ArgsPack_t>
+      struct LuaCallbackReturnValue<ILuaExecutor_t, ArgsPack_t, void>
+      {
+         static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
+         {
+            executorInstance->operator()(packArgs);
+            return 0;
+         }
+      };
+
       /*------------ Inner Core  --------------*/
    }
-
-   template <typename... Args>
-   struct LuaTable :
-      public LuaInnerCore::LuaTableBase,
-      public std::tuple<Args...>
-   {
-   };
 
    template <typename GlobalVariableType>
    struct LuaGetGlobal;
@@ -273,8 +335,8 @@ namespace Game
    {
       static int64_t Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
       {
-         lua_getglobal(instanceWrapper.GetState(), variableName.c_str());
-         LuaInnerCore::GetValue<int64_t>::Value(instanceWrapper, stackIndex);
+         LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
+         return LuaInnerCore::GetValue<int64_t>::Value(instanceWrapper, stackIndex);
       }
    };
 
@@ -283,8 +345,18 @@ namespace Game
    {
       static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
       {
-         lua_getglobal(instanceWrapper.GetState(), variableName.c_str());
-         LuaInnerCore::GetValue<double>::Value(instanceWrapper, stackIndex);
+         LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
+         return LuaInnerCore::GetValue<double>::Value(instanceWrapper, stackIndex);
+      }
+   };
+
+   template <>
+   struct LuaGetGlobal<float>
+   {
+      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
+      {
+         LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
+         return LuaInnerCore::GetValue<float>::Value(instanceWrapper, stackIndex);
       }
    };
 
@@ -333,10 +405,13 @@ namespace Game
       }
    };
 
-   template <typename ILuaExecutor, typename... Args>
-   struct LuaRegisterCallback
+   template <typename ILuaExecutor, typename FunctorType>
+   struct LuaRegisterCallback;
+
+   template <typename ILuaExecutor, typename RetType, typename... Args>
+   struct LuaRegisterCallback<ILuaExecutor, RetType(Args...)>
    {
-      using type = LuaRegisterCallback<ILuaExecutor, Args...>;
+      using type = LuaRegisterCallback<ILuaExecutor, RetType(Args...)>;
       using args_t = std::tuple<Args...>;
 
       static void Rigister(const LuaWrapper& instanceWrapper, const std::string& functionName)
@@ -356,8 +431,7 @@ namespace Game
          args_t parameterPackInstance;
          LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance);
 
-         instance->operator()(parameterPackInstance);
-         return 0;
+         return LuaInnerCore::LuaCallbackReturnValue<ILuaExecutor, args_t, RetType>::PushToLua(state, instance, parameterPackInstance);
       }
    };
 }

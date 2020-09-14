@@ -66,9 +66,19 @@ namespace Labyrinth
 
    }
 
-   void SimpleLevel::operator()(const std::tuple<LuaTable<std::string, int, float, double>>& parameters)
+   SceneComponent* SimpleLevel::operator()(const std::tuple<>& parameters)
    {
+      SceneComponent* result = new SceneComponent();
+
+      std::cout << result << std::endl;
+
+      return result;
       //std::cout << std::get<0>(parameters) << std::endl;
+   }
+
+   void SimpleLevel::operator()(const std::tuple<SceneComponent*>& parameters)
+   {
+      std::cout << std::get<0>(parameters) << std::endl;
    }
 
    void SimpleLevel::TestLua()
@@ -77,11 +87,12 @@ namespace Labyrinth
 
       LuaWrapper instance;
 
-      LuaRegisterCallback<SimpleLevel, LuaTable<std::string, int, float, double>>::Rigister(instance, "_CreateActor");
+      LuaRegisterCallback<SimpleLevel, SceneComponent*()>::Rigister(instance, "_CreateSceneComponent");
+      LuaRegisterCallback<SimpleLevel, void(SceneComponent*)>::Rigister(instance, "_GetSceneComponent");
 
       if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
       {
-         LuaFunction<void(void*)>::Call(instance, "LoadLevel", (void*)this);
+         LuaFunction<void(void*)>::Call(instance, "Create", (void*)this);
       }
    }
 

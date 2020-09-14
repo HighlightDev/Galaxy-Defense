@@ -13,7 +13,7 @@ namespace Labyrinth
    class ILuaLevelExecutor
    {
    public:
-      virtual void operator()(const std::tuple<LuaTable<std::string, int, float, double>>& parameters) = 0;
+      //virtual void operator()(const std::tuple<float>& parameters) = 0;
    };
 
    class SimpleLevel :
@@ -33,7 +33,9 @@ namespace Labyrinth
 
       virtual void PostConstructorInitialize();
         
-      virtual void operator()(const std::tuple<LuaTable<std::string, int, float, double>>& parameters) override;
+      class SceneComponent* operator()(const std::tuple<>& parameters);
+
+      void operator()(const std::tuple<SceneComponent*>& parameters);
 
       void TestLua();
    };
