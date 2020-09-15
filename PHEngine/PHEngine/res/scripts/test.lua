@@ -1,32 +1,11 @@
-function LoadLevel(host)
-	translation = {}
-	translation["x"] = 0
-	translation["y"] = 0
-	translation["z"] = 0
-	CreateActor(host, "TestActor", translation, translation, translation)
-end
-
-function CreateActor(host, name, translation, eulerRot, scale)
-	actor = { }
-	actor["Name"] = name
-	actor["translationX"] = translation["x"]
-	actor["translationY"] = translation["y"]
-	actor["translationZ"] = translation["z"]
-
-	actor["rotationX"] = eulerRot["x"]
-	actor["rotationY"] = eulerRot["y"]
-	actor["rotationZ"] = eulerRot["z"]
-
-	actor["scaleX"] = scale["x"]
-	actor["scaleY"] = scale["y"]
-	actor["scaleZ"] = scale["z"]
-
-	_CreateActor(host, actor)
-end
-
-function Create(host)
+function Create(host, name)
 	
-	rootComponent = _CreateSceneComponent(host);
+	local translation = { x = 10, y = 25, z = 15 }
+	local rotation = { x = 0.5, y = 45, z = 15 }
+	local scale = { x = 1, y = 1, z = 1}
+
+	local rootComponent = _CreateSceneComponent(host,translation.x, translation.y, translation.z, rotation.x, rotation.y, translation.z, scale.x, scale.y, scale.z)
+
 	if rootComponent ~= nil then
 		_GetSceneComponent(host, rootComponent)
 	else 

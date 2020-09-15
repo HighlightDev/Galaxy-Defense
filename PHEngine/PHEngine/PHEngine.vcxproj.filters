@@ -1847,7 +1847,7 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

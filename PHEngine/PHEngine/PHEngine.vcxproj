@@ -381,7 +381,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\State.h" />

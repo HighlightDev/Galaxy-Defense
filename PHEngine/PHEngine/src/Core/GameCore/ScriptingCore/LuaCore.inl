@@ -30,6 +30,19 @@ namespace Game
    namespace LuaInnerCore
    {
       /*------------ Inner Core  --------------*/
+      struct CheckLuaExecution
+      {
+         static bool Do(const LuaWrapper& instanceWrapper, int32_t luaCallResult)
+         {
+            if (LUA_OK != luaCallResult)
+            {
+               std::cout << instanceWrapper.GetErrorMessageAt(-1) << std::endl;
+               return false;
+            }
+
+            return true;
+         }
+      };
 
       template <typename ArgType>
       struct PushValue;
@@ -61,6 +74,15 @@ namespace Game
          static void Do(lua_State* state, void* value)
          {
             lua_pushlightuserdata(state, value);
+         }
+      };
+
+      template <>
+      struct PushValue<std::string>
+      {
+         static void Do(lua_State* state, const std::string& value)
+         {
+            lua_pushstring(state, value.c_str());
          }
       };
 
@@ -139,6 +161,30 @@ namespace Game
          static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type Inner_Value(lua_State* state, const int32_t stackIndex)
          {
             return (VariableType)lua_touserdata(state, stackIndex);
+         }
+      };
+
+      template <>
+      struct GetValue<std::string>
+      {
+      public:
+
+         static std::string Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static std::string Value(lua_State* state, const int32_t stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static std::string Inner_Value(lua_State* state, const int32_t stackIndex)
+         {
+            assert(lua_isstring(state, stackIndex));
+            return lua_tostring(state, stackIndex);
          }
       };
 
@@ -308,7 +354,7 @@ namespace Game
       {
          static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
          {
-            auto value = executorInstance->operator()(packArgs);
+            auto value = executorInstance->ExecuteLuaCallback(packArgs);
             LuaInnerCore::PushUnknownValue<ReturnValueType, std::is_pointer<ReturnValueType>::value>::Do(state, value);
             return 1;
          }
@@ -319,7 +365,7 @@ namespace Game
       {
          static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
          {
-            executorInstance->operator()(packArgs);
+            executorInstance->ExecuteLuaCallback(packArgs);
             return 0;
          }
       };
@@ -376,10 +422,7 @@ namespace Game
          LuaInnerCore::IterateFunctionArgs<TArgs...>::PushArg(instanceWrapper, std::forward<TArgs>(args)...);
 
          static constexpr size_t argsCount = sizeof...(args);
-         if (LUA_OK != lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/0))
-         {
-            std::cout << instanceWrapper.GetErrorMessageAt(-1) << std::endl;
-         }
+         LuaInnerCore::CheckLuaExecution::Do(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/0));
 
          return LuaInnerCore::GetValue<RetType>::Value(instanceWrapper, -1);
       }
@@ -398,10 +441,7 @@ namespace Game
          LuaInnerCore::IterateFunctionArgs<TArgs...>::PushArg(instanceWrapper, std::forward<TArgs>(args)...);
 
          static constexpr size_t argsCount = sizeof...(args);
-         if (LUA_OK != lua_pcall(instanceWrapper.GetState(), argsCount, 0, /*error handling in lua*/0))
-         {
-            std::cout << instanceWrapper.GetErrorMessageAt(-1) << std::endl;
-         }
+         LuaInnerCore::CheckLuaExecution::Do(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 0, /*error handling in lua*/0));
       }
    };
 

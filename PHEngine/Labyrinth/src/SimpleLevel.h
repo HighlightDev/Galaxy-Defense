@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Level.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.h"
+#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 #include <tuple>
 
@@ -33,9 +33,9 @@ namespace Labyrinth
 
       virtual void PostConstructorInitialize();
         
-      class SceneComponent* operator()(const std::tuple<>& parameters);
+      class SceneComponent* ExecuteLuaCallback(const std::tuple<float, float, float, float, float, float, float, float, float>& parameters);
 
-      void operator()(const std::tuple<SceneComponent*>& parameters);
+      void ExecuteLuaCallback(const std::tuple<SceneComponent*>& parameters);
 
       void TestLua();
    };

@@ -6,6 +6,7 @@ namespace Game
    LuaWrapper::LuaWrapper()
    {
       mState = luaL_newstate();
+      luaL_openlibs(mState);
    }
 
    LuaWrapper::~LuaWrapper()

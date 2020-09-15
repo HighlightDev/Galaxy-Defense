@@ -66,17 +66,18 @@ namespace Labyrinth
 
    }
 
-   SceneComponent* SimpleLevel::operator()(const std::tuple<>& parameters)
+   SceneComponent* SimpleLevel::ExecuteLuaCallback(const std::tuple<float, float, float, float, float, float, float, float, float>& parameters)
    {
-      SceneComponent* result = new SceneComponent();
+      glm::vec3 translation = glm::vec3(std::get<0>(parameters), std::get<1>(parameters), std::get<2>(parameters));
+      glm::vec3 rotation = glm::vec3(std::get<3>(parameters), std::get<4>(parameters), std::get<5>(parameters));
+      glm::vec3 scale = glm::vec3(std::get<6>(parameters), std::get<7>(parameters), std::get<8>(parameters));
 
-      std::cout << result << std::endl;
+      SceneComponent* result = new SceneComponent(translation, rotation, scale);
 
       return result;
-      //std::cout << std::get<0>(parameters) << std::endl;
    }
 
-   void SimpleLevel::operator()(const std::tuple<SceneComponent*>& parameters)
+   void SimpleLevel::ExecuteLuaCallback(const std::tuple<SceneComponent*>& parameters)
    {
       std::cout << std::get<0>(parameters) << std::endl;
    }
@@ -87,12 +88,12 @@ namespace Labyrinth
 
       LuaWrapper instance;
 
-      LuaRegisterCallback<SimpleLevel, SceneComponent*()>::Rigister(instance, "_CreateSceneComponent");
+      LuaRegisterCallback<SimpleLevel, SceneComponent*(float, float, float, float, float, float, float, float, float)>::Rigister(instance, "_CreateSceneComponent");
       LuaRegisterCallback<SimpleLevel, void(SceneComponent*)>::Rigister(instance, "_GetSceneComponent");
 
       if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
       {
-         LuaFunction<void(void*)>::Call(instance, "Create", (void*)this);
+         LuaFunction<void(void*, std::string)>::Call(instance, "Create", (void*)this, std::string("Vasyan"));
       }
    }
 
