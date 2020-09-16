@@ -46,6 +46,7 @@
 
 #include <LogInterface.h>
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
+#include "ComponentCreator.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -54,10 +55,11 @@ using namespace IO;
 namespace Labyrinth
 {
 
-   #define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
+#define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
    SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
       : Level(threadMgr)
+      , mActiveComponents()
    {
    }
 
@@ -66,20 +68,41 @@ namespace Labyrinth
 
    }
 
-   SceneComponent* SimpleLevel::ExecuteLuaCallback(const std::tuple<float, float, float, float, float, float, float, float, float>& parameters)
+   Actor* SimpleLevel::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
    {
-      glm::vec3 translation = glm::vec3(std::get<0>(parameters), std::get<1>(parameters), std::get<2>(parameters));
-      glm::vec3 rotation = glm::vec3(std::get<3>(parameters), std::get<4>(parameters), std::get<5>(parameters));
-      glm::vec3 scale = glm::vec3(std::get<6>(parameters), std::get<7>(parameters), std::get<8>(parameters));
+      std::shared_ptr<Actor> actor = std::make_shared<Actor>(std::get<0>(actorData),
+         std::make_shared<SceneComponent>(std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
 
-      SceneComponent* result = new SceneComponent(translation, rotation, scale);
+      mScene->AllActors.push_back(actor);
 
-      return result;
+      return actor.get();
    }
 
-   void SimpleLevel::ExecuteLuaCallback(const std::tuple<SceneComponent*>& parameters)
+   void SimpleLevel::ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent)
    {
-      std::cout << std::get<0>(parameters) << std::endl;
+      Actor* actor = std::get<0>(dataToAttachActorToComponent);
+      Component* component = std::get<1>(dataToAttachActorToComponent);
+
+      assert(actor && component);
+
+      assert(mActiveComponents.count(component->GetObjectId()));
+
+      actor->AddComponent(mActiveComponents[component->GetObjectId()]);
+   }
+
+   Component* SimpleLevel::ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData)
+   {
+      std::shared_ptr<Component> component = ComponentCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), mScene.get());
+
+      mActiveComponents[component->GetObjectId()] = component;
+
+      return component.get();
+   }
+
+   ComponentData* SimpleLevel::ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3>& dirLightComponentData)
+   {
+      return ComponentCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
+         std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), nullptr);
    }
 
    void SimpleLevel::TestLua()
@@ -88,12 +111,14 @@ namespace Labyrinth
 
       LuaWrapper instance;
 
-      LuaRegisterCallback<SimpleLevel, SceneComponent*(float, float, float, float, float, float, float, float, float)>::Rigister(instance, "_CreateSceneComponent");
-      LuaRegisterCallback<SimpleLevel, void(SceneComponent*)>::Rigister(instance, "_GetSceneComponent");
+      LuaRegisterCallback<SimpleLevel, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(instance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<SimpleLevel, Component*(std::string, ComponentData*)> ::Rigister(instance, "_CreateComponent");
+      LuaRegisterCallback<SimpleLevel, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(instance, "_CreateActor");
+      LuaRegisterCallback<SimpleLevel, void(Actor*, Component*)> ::Rigister(instance, "_AttachComponentToActor");
 
       if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
       {
-         LuaFunction<void(void*, std::string)>::Call(instance, "Create", (void*)this, std::string("Vasyan"));
+         LuaFunction<void(void*)>::Call(instance, "Create", (void*)this);
       }
    }
 
@@ -163,26 +188,27 @@ namespace Labyrinth
       }
 
       {
-        /* {
-            auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
+         /* {
+             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
 
-            SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(0, 0, 0), glm::vec3(5),
-               std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
+             SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(0, 0, 0), glm::vec3(5),
+                std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
 
-            std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",
-               std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
-            auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
-            cubeActor->AddComponent(component);
+             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",
+                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
+             auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
+             cubeActor->AddComponent(component);
 
-            PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
-            mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
-            std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<CharacterPhysicsComponent>(physDesc);
-            cubeActor->AddComponent(cubePhysComponent);
+             PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
+             mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
+             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<CharacterPhysicsComponent>(physDesc);
+             cubeActor->AddComponent(cubePhysComponent);
 
-            mScene->AllActors.push_back(cubeActor);
-         }*/
+             mScene->AllActors.push_back(cubeActor);
+          }*/
       }
 
+#if 0
       // Dir light
       {
          /*  auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
@@ -194,8 +220,8 @@ namespace Labyrinth
          ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2,
             GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent());
 
-       /*  DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);*/
+         /*  DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
+              glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);*/
 
          DirectionalLightComponentData mData2(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
             glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
@@ -209,6 +235,7 @@ namespace Labyrinth
          dirLightActor->AddComponent(dirLightComponent2);
          mScene->AllActors.push_back(dirLightActor);
       }
+#endif
 
 #if 0
       // Water
@@ -240,7 +267,7 @@ namespace Labyrinth
          auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
-         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(50, 1 , 50));
+         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(50, 1, 50));
          PhysicsDescriptor* floorPhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 0.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
@@ -268,7 +295,7 @@ namespace Labyrinth
          std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
 
          groundActor->AddComponent(floorPhysComponent);
-     
+
          mScene->AllActors.push_back(groundActor);
       }
 
@@ -280,12 +307,12 @@ namespace Labyrinth
          auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
          auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0 ,-2.5f, 0), glm::vec3(), glm::vec3(2.5f),
+         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f),
             std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr, 1.0f));
          auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
 
          std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-       
+
          houseActor->AddComponent(staticComp);
 
          PhyShapeBase* shape = new PhyBoxShape(glm::vec3(6, 6.5f, 6));

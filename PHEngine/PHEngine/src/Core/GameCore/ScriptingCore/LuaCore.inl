@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <tuple>
 #include <type_traits>
+#include <glm/vec3.hpp>
 
 extern "C"
 {
@@ -146,21 +147,23 @@ namespace Game
       template <typename VariableType>
       struct GetValue
       {
-         static VariableType Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static VariableType Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static VariableType Value(lua_State* state, const int32_t stackIndex)
+         static VariableType Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type Inner_Value(lua_State* state, const int32_t stackIndex)
+         static typename std::enable_if<std::is_pointer<VariableType>::value, VariableType>::type Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            return (VariableType)lua_touserdata(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            return (VariableType)lua_touserdata(state, currentStackIndex);
          }
       };
 
@@ -169,22 +172,24 @@ namespace Game
       {
       public:
 
-         static std::string Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static std::string Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static std::string Value(lua_State* state, const int32_t stackIndex)
+         static std::string Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static std::string Inner_Value(lua_State* state, const int32_t stackIndex)
+         static std::string Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            assert(lua_isstring(state, stackIndex));
-            return lua_tostring(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            assert(lua_isstring(state, currentStackIndex));
+            return lua_tostring(state, currentStackIndex);
          }
       };
 
@@ -193,22 +198,24 @@ namespace Game
       {
       public:
 
-         static int64_t Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static int64_t Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static int64_t Value(lua_State* state, const int32_t stackIndex)
+         static int64_t Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static int64_t Inner_Value(lua_State* state, const int32_t stackIndex)
+         static int64_t Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            assert(lua_isinteger(state, stackIndex));
-            return lua_tointeger(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            assert(lua_isinteger(state, currentStackIndex));
+            return lua_tointeger(state, currentStackIndex);
          }
       };
 
@@ -217,22 +224,24 @@ namespace Game
       {
       public:
 
-         static double Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static double Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static double Value(lua_State* state, const int32_t stackIndex)
+         static double Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static double Inner_Value(lua_State* state, const int32_t stackIndex)
+         static double Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            assert(lua_isnumber(state, stackIndex));
-            return lua_tonumber(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            assert(lua_isnumber(state, currentStackIndex));
+            return lua_tonumber(state, currentStackIndex);
          }
       };
 
@@ -241,22 +250,24 @@ namespace Game
       {
       public:
 
-         static int32_t Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static int32_t Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static int32_t Value(lua_State* state, const int32_t stackIndex)
+         static int32_t Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static int32_t Inner_Value(lua_State* state, const int32_t stackIndex)
+         static int32_t Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            assert(lua_isinteger(state, stackIndex));
-            return (int32_t)lua_tointeger(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            assert(lua_isinteger(state, currentStackIndex));
+            return (int32_t)lua_tointeger(state, currentStackIndex);
          }
       };
 
@@ -265,30 +276,59 @@ namespace Game
       {
       public:
 
-         static float Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static float Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static float Value(lua_State* state, const int32_t stackIndex)
+         static float Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static float Inner_Value(lua_State* state, const int32_t stackIndex)
+         static float Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            assert(lua_isnumber(state, stackIndex));
-            return (float)lua_tonumber(state, stackIndex);
+            const int32_t currentStackIndex = stackIndex;
+            --stackIndex;
+            assert(lua_isnumber(state, currentStackIndex));
+            return (float)lua_tonumber(state, currentStackIndex);
          }
       };
 
       template <>
       struct GetValue<void>
       {
-         static void Value(const LuaWrapper& instanceWrapper, const int32_t stackIndex)
+         static void Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
+         }
+      };
+
+      template <>
+      struct GetValue<glm::vec3>
+      {
+      public:
+
+         static glm::vec3 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static glm::vec3 Value(lua_State* state, int32_t& stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static glm::vec3 Inner_Value(lua_State* state, int32_t& stackIndex)
+         {
+            // direction is reversed because stackIndex is decreasing
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::vec3(x, y, z);
          }
       };
 
@@ -326,17 +366,17 @@ namespace Game
       {
          using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
 
-         static void Collect(lua_State* state, tuple_type& params)
+         static void Collect(lua_State* state, tuple_type& params, int32_t& stackIndex)
          {
-            std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, argsCount + 1); // + 1 because of host data at index 1
-            CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params);
+            std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, stackIndex);
+            CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params, stackIndex);
          }
       };
 
       template <typename tuple_type>
       struct CollectArgsFromLuaHostInvoke<tuple_type, 0>
       {
-         static void Collect(lua_State* state, tuple_type& params)
+         static void Collect(lua_State* state, tuple_type& params, int32_t& stackIndex)
          {
          }
       };
@@ -370,6 +410,40 @@ namespace Game
          }
       };
 
+      template <typename T>
+      struct LuaArgsCountForType
+      {
+         enum
+         {
+            value = 1
+         };
+      };
+
+      template <>
+      struct LuaArgsCountForType<glm::vec3>
+      {
+         enum
+         {
+            value = 3
+         };
+      };
+
+      template <typename tuple_t, int32_t currentIndex>
+      struct CollectLuaArgsCount_Inner
+      {
+         using arg_t = typename std::tuple_element<currentIndex, tuple_t>::type;
+         enum {
+            value = LuaArgsCountForType<arg_t>::value + CollectLuaArgsCount_Inner<tuple_t, currentIndex - 1>::value
+         };
+      };
+
+      template <typename tuple_t>
+      struct CollectLuaArgsCount_Inner<tuple_t, -1>
+      {
+         enum {
+            value = 0
+         };
+      };
       /*------------ Inner Core  --------------*/
    }
 
@@ -379,7 +453,7 @@ namespace Game
    template <>
    struct LuaGetGlobal<int64_t>
    {
-      static int64_t Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
+      static int64_t Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
       {
          LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
          return LuaInnerCore::GetValue<int64_t>::Value(instanceWrapper, stackIndex);
@@ -389,7 +463,7 @@ namespace Game
    template <>
    struct LuaGetGlobal<double>
    {
-      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
+      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
       {
          LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
          return LuaInnerCore::GetValue<double>::Value(instanceWrapper, stackIndex);
@@ -399,7 +473,7 @@ namespace Game
    template <>
    struct LuaGetGlobal<float>
    {
-      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, const int32_t stackIndex)
+      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
       {
          LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
          return LuaInnerCore::GetValue<float>::Value(instanceWrapper, stackIndex);
@@ -468,8 +542,10 @@ namespace Game
          ILuaExecutor* instance = static_cast<ILuaExecutor*>(lua_touserdata(state, 1));
          assert(instance);
 
+         int32_t stackIndex = LuaInnerCore::CollectLuaArgsCount_Inner<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
+
          args_t parameterPackInstance;
-         LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance);
+         LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance, stackIndex);
 
          return LuaInnerCore::LuaCallbackReturnValue<ILuaExecutor, args_t, RetType>::PushToLua(state, instance, parameterPackInstance);
       }

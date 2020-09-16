@@ -4,22 +4,19 @@
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 #include <tuple>
+#include <unordered_map>
 
 using namespace Game;
 
 namespace Labyrinth
 {
 
-   class ILuaLevelExecutor
-   {
-   public:
-      //virtual void operator()(const std::tuple<float>& parameters) = 0;
-   };
-
    class SimpleLevel :
-      public Level, public ILuaLevelExecutor
+      public Level
    {
       using Base = Level;
+
+      std::unordered_map<uint64_t, std::shared_ptr<Component>> mActiveComponents;
 
    public:
 
@@ -32,10 +29,11 @@ namespace Labyrinth
       virtual void PreConstructorInitialize();
 
       virtual void PostConstructorInitialize();
-        
-      class SceneComponent* ExecuteLuaCallback(const std::tuple<float, float, float, float, float, float, float, float, float>& parameters);
-
-      void ExecuteLuaCallback(const std::tuple<SceneComponent*>& parameters);
+      
+      Actor* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData);
+      void ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent);
+      Component* ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3>& dirLightComponentData);
 
       void TestLua();
    };
