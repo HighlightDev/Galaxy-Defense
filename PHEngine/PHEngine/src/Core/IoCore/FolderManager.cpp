@@ -1,4 +1,7 @@
 #include "FolderManager.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <filesystem>
 
 namespace IO
 {
@@ -15,6 +18,8 @@ namespace IO
 	{
 	}
 
+#ifdef WIN32
+
 	std::string FolderManager::ConcatDirectoryBack(int32_t countChangeDirectoryBack)
 	{
 		std::string resultStr = std::move(std::string(""));
@@ -24,9 +29,11 @@ namespace IO
 		}
 		return resultStr + "PHEngine\\";
 	}
+#endif
 
 	void FolderManager::BuildPathToFolders()
 	{
+#ifdef WIN32
 		// Root folder
 		std::string currentDirPath = std::move(EngineUtility::GetExecutablePath());
 		size_t indexOfRootEntrance = EngineUtility::IndexOf(currentDirPath, BINARY_FOLDER_NAME);
@@ -38,7 +45,29 @@ namespace IO
 		}
 
 		m_rootFolder = std::move(ConcatDirectoryBack(countChangeDirectoryBack));
+#endif
 	}
+
+
+   void FolderManager::CreateFilePathMap(const std::string& pathToDir)
+   {
+      using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+
+      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(pathToDir);
+
+      for (const auto& dirEntry : recursive_directory_iterator(absolutePath))
+      {
+         const std::string& fileName = std::string(dirEntry.path().filename().string());
+         assert(mFilesPathMap.count(fileName) == 0);
+         mFilesPathMap[fileName] = pathToDir;
+      }
+   }
+
+   std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string& fileName) const
+   {
+      assert(mFilesPathMap.count(fileName));
+      return mFilesPathMap.at(fileName) + fileName;
+   }
 
    const std::string FolderManager::GetRootPath() const
 	{
@@ -83,11 +112,6 @@ namespace IO
    const std::string FolderManager::GetGrassTexturePath() const
 	{
 		return GetTexturesPath() + "grass\\";
-	}
-
-   const std::string FolderManager::GetHeightMapsTexturePath() const
-	{
-		return GetTexturesPath() + "heightmaps\\";
 	}
 
    const std::string FolderManager::GetLandscapeTexturePath() const

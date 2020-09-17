@@ -512,7 +512,7 @@
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
-    <None Include="res\scripts\test.lua" />
+    <None Include="res\scripts\createTestLevel.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">

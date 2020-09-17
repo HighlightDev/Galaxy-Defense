@@ -29,6 +29,9 @@
     <ClCompile Include="src\PlayerSkeletalMeshComponent.cpp">
       <Filter>src\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\LuaScriptExecutor_LevelBuilder.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\PlayerSkeletalMeshComponent.h">
@@ -42,6 +45,9 @@
     </ClInclude>
     <ClInclude Include="src\PlayerActor.h" />
     <ClInclude Include="src\ComponentCreator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LuaScriptExecutor_LevelBuilder.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

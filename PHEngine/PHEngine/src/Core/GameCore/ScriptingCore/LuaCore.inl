@@ -537,7 +537,7 @@ namespace Game
       static int Wrapper(lua_State* state)
       {
          static constexpr size_t argsCount = sizeof...(Args);
-         assert(lua_gettop(state) != argsCount);
+         assert((lua_gettop(state) != 0, "Missing host data"));
 
          ILuaExecutor* instance = static_cast<ILuaExecutor*>(lua_touserdata(state, 1));
          assert(instance);

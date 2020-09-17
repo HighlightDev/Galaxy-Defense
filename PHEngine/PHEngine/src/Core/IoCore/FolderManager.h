@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <stdint.h>
+#include <unordered_map>
 
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
@@ -14,15 +15,20 @@ namespace IO
 
 	private:
 
+      std::unordered_map<std::string/*file name*/, std::string/*full path to file*/> mFilesPathMap;
+
 		const std::string BINARY_FOLDER_NAME = "\\bin";
 
 		std::string m_rootFolder;
 
 		static std::shared_ptr<FolderManager> m_instance;
 
+#ifdef WIN32
 		std::string ConcatDirectoryBack(int32_t countChangeDirectoryBack);
+#endif
 
 		void BuildPathToFolders();
+
 
 	public:
 
@@ -48,7 +54,6 @@ namespace IO
 		const std::string GetIniPath() const;
 
 		const std::string GetGrassTexturePath() const;
-		const std::string GetHeightMapsTexturePath() const;
 		const std::string GetLandscapeTexturePath() const;
 		const std::string GetCubemapTexturePath() const;
 		const std::string GetNormalMapPath() const;
@@ -59,6 +64,9 @@ namespace IO
 		const std::string GetEditorTexturePath() const;
       const std::string GetPersistencyPath() const;
       const std::string GetScriptPath() const;
+
+      void CreateFilePathMap(const std::string& pathToDir);
+      std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;
 	};
 }
 

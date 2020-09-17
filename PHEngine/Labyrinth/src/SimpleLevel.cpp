@@ -45,8 +45,7 @@
 #include "PlayerActor.h"
 
 #include <LogInterface.h>
-#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
-#include "ComponentCreator.h"
+#include "LuaScriptExecutor_LevelBuilder.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -55,11 +54,10 @@ using namespace IO;
 namespace Labyrinth
 {
 
-#define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
+#define GET_REL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(fileName))
 
    SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
       : Level(threadMgr)
-      , mActiveComponents()
    {
    }
 
@@ -68,87 +66,49 @@ namespace Labyrinth
 
    }
 
-   Actor* SimpleLevel::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
+   void SimpleLevel::RunLuaBuildLevelScript()
    {
-      std::shared_ptr<Actor> actor = std::make_shared<Actor>(std::get<0>(actorData),
-         std::make_shared<SceneComponent>(std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
+      LuaScriptExecutor_LevelBuilder mLuaLevelBuilder = LuaScriptExecutor_LevelBuilder(mScene, "createTestLevel.lua");
 
-      mScene->AllActors.push_back(actor);
-
-      return actor.get();
-   }
-
-   void SimpleLevel::ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent)
-   {
-      Actor* actor = std::get<0>(dataToAttachActorToComponent);
-      Component* component = std::get<1>(dataToAttachActorToComponent);
-
-      assert(actor && component);
-
-      assert(mActiveComponents.count(component->GetObjectId()));
-
-      actor->AddComponent(mActiveComponents[component->GetObjectId()]);
-   }
-
-   Component* SimpleLevel::ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData)
-   {
-      std::shared_ptr<Component> component = ComponentCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), mScene.get());
-
-      mActiveComponents[component->GetObjectId()] = component;
-
-      return component.get();
-   }
-
-   ComponentData* SimpleLevel::ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3>& dirLightComponentData)
-   {
-      return ComponentCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
-         std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), nullptr);
-   }
-
-   void SimpleLevel::TestLua()
-   {
-      const auto folderManager = IO::FolderManager::GetInstance();
-
-      LuaWrapper instance;
-
-      LuaRegisterCallback<SimpleLevel, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(instance, "_CreateDirLightComponentData");
-      LuaRegisterCallback<SimpleLevel, Component*(std::string, ComponentData*)> ::Rigister(instance, "_CreateComponent");
-      LuaRegisterCallback<SimpleLevel, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(instance, "_CreateActor");
-      LuaRegisterCallback<SimpleLevel, void(Actor*, Component*)> ::Rigister(instance, "_AttachComponentToActor");
-
-      if (instance.ExecuteScript(folderManager->GetScriptPath() + "test.lua"))
-      {
-         LuaFunction<void(void*)>::Call(instance, "Create", (void*)this);
-      }
+      mLuaLevelBuilder.RegisterCallbacks();
+      mLuaLevelBuilder.RunScript();
    }
 
    void SimpleLevel::PreConstructorInitialize()
    {
       Base::PreConstructorInitialize();
 
-      TestLua();
-
       const auto folderManager = IO::FolderManager::GetInstance();
 
-      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
-      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
-      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
-      ALLOC_RES_ASYNC(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
-      ALLOC_RES_ASYNC(folderManager->GetAlbedoTexturePath() + "diffuse.png");
-      ALLOC_RES_ASYNC(folderManager->GetNormalMapPath() + "dummy_nm.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/right.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/left.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/top.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/bottom.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/back.png");
-      ALLOC_RES_ASYNC(folderManager->GetCubemapTexturePath() + "Day/front.png");
+#define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
-      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "playerCube.obj");
-      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "City_House_2_BI.obj");
-      //ALLOC_RES_ASYNC(folderManager->GetModelPath() + "model.dae");
-      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "player_walk.fbx");
-      ALLOC_RES_ASYNC(folderManager->GetModelPath() + "tina.fbx");
+      folderManager->CreateFilePathMap(folderManager->GetAlbedoTexturePath());
+      folderManager->CreateFilePathMap(folderManager->GetNormalMapPath());
+      folderManager->CreateFilePathMap(folderManager->GetSpecularMapPath());
+      folderManager->CreateFilePathMap(folderManager->GetCubemapTexturePath());
+      folderManager->CreateFilePathMap(folderManager->GetModelPath());
+
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_mid.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("city_house_2_Col.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("city_house_2_Nor.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("city_house_2_Spec.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("diffuse.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dummy_nm.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayRight.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayLeft.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayTop.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBottom.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBack.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayFront.png"));
+
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("playerCube.obj"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("model.dae"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("player_walk.fbx"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
+
+#undef ALLOC_RES_ASYNC
    }
 
    void SimpleLevel::PostConstructorInitialize()
@@ -156,18 +116,19 @@ namespace Labyrinth
       Base::PostConstructorInitialize();
 
       ResourceMap::DeleteInstance();
+      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
    void SimpleLevel::LoadLevel()
    {
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-      const auto folderManager = IO::FolderManager::GetInstance();
+      RunLuaBuildLevelScript();
       {
          // Test for PBR
          /*{
             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-            auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+            auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png");
 
             StaticMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(), glm::vec3(1),
                std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
@@ -189,7 +150,7 @@ namespace Labyrinth
 
       {
          /* {
-             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
+             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png");
 
              SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(0, 0, 0), glm::vec3(5),
                 std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
@@ -209,38 +170,9 @@ namespace Labyrinth
       }
 
 #if 0
-      // Dir light
-      {
-         /*  auto directionalLightTextureAtlasRequest1 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-           ProjectedShadowInfo* shadowProjInfo1 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest1,
-           GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent(),
-              GlobalSettings::GetInstance()->GetShadowTransitionAreaLength());*/
-
-         auto directionalLightTextureAtlasRequest2 = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(512, 512));
-         ProjectedShadowInfo* shadowProjInfo2 = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest2,
-            GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent());
-
-         /*  DirectionalLightComponentData mData1(glm::vec3(0), glm::vec3(0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-              glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(2.7f, 2.7f, 2.7f), shadowProjInfo1);*/
-
-         DirectionalLightComponentData mData2(glm::vec3(0), glm::vec3(-0.5f, -0.5f, 0), glm::vec3(0.2f, 0.2f, 0.2f),
-            glm::vec3(1.68f, 1.5f, 1.5f), glm::vec3(0.7f, 0.7f, 0.7f), shadowProjInfo2);
-
-         //auto dirLightComponent1 =  mScene->CreateComponent_GameThread<DirectionalLightComponent>(mData1);
-         auto dirLightComponent2 = mScene->CreateComponent_GameThread<ComponentMetaType::DirectionalLight, DirectionalLightComponent>(mData2);
-
-         std::shared_ptr<Actor> dirLightActor = std::make_shared<Actor>("Main lights", std::make_shared<SceneComponent>());
-
-         //dirLightActor->AddComponent(dirLightComponent1);
-         dirLightActor->AddComponent(dirLightComponent2);
-         mScene->AllActors.push_back(dirLightActor);
-      }
-#endif
-
-#if 0
       // Water
       {
-         auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "water_normal.png");
+         auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("water_normal.png");
          auto distortionTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetDistortionTexturePath() + "water_dudv.png");
          WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>(normalTex, distortionTex));
 
@@ -260,9 +192,9 @@ namespace Labyrinth
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
          mScene->AllActors.push_back(groundActor);
 
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50),
+         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
+         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
+         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 10.0f));
          auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
@@ -278,10 +210,10 @@ namespace Labyrinth
       // Ground
 
       {
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "brick_nm_mid.png");
+         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
+         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "playerCube.obj", glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8),
+         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
             std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
@@ -303,11 +235,11 @@ namespace Labyrinth
 
       // Test for PBR
       {
-         auto albedoTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "city_house_2_Col.png");
-         auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "city_house_2_Nor.png");
-         auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetSpecularMapPath() + "city_house_2_Spec.png");
+         auto albedoTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Col.png"));
+         auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Nor.png"));
+         auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Spec.png"));
 
-         StaticMeshComponentData mData(folderManager->GetModelPath() + "City_House_2_BI.obj", glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f),
+         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"), glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f),
             std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr, 1.0f));
          auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
 
@@ -328,10 +260,10 @@ namespace Labyrinth
       // SKELETAL MESH
       {
 
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetNormalMapPath() + "dummy_nm.png");
+         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
+         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
 
-         SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
+         SkeletalMeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
             std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
@@ -367,12 +299,12 @@ namespace Labyrinth
       // SKYBOX
       {
          StringStreamWrapper::ToString(
-            folderManager->GetCubemapTexturePath(), "Day/", "right.png", ",",
-            folderManager->GetCubemapTexturePath(), "Day/", "left.png", ",",
-            folderManager->GetCubemapTexturePath(), "Day/", "top.png", ",",
-            folderManager->GetCubemapTexturePath(), "Day/", "bottom.png", ",",
-            folderManager->GetCubemapTexturePath(), "Day/", "back.png", ",",
-            folderManager->GetCubemapTexturePath(), "Day/", "front.png");
+            GET_REL_PATH_TO_FILE("dayRight.png"), ",",
+            GET_REL_PATH_TO_FILE("dayLeft.png"), ",",
+            GET_REL_PATH_TO_FILE("dayTop.png"), ",",
+            GET_REL_PATH_TO_FILE("dayBottom.png"), ",",
+            GET_REL_PATH_TO_FILE("dayBack.png"), ",",
+            GET_REL_PATH_TO_FILE("dayFront.png"));
          auto dTexPath = StringStreamWrapper::FlushString();
 
          std::shared_ptr<ITexture> dayTex = TexturePool::GetInstance()->GetOrAllocateResource(dTexPath);
@@ -383,7 +315,6 @@ namespace Labyrinth
          skyboxActor->AddComponent(skyboxComp);
          mScene->AllActors.push_back(skyboxActor);
       }
-
-      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
+#undef GET_REL_PATH_TO_FILE
 }

@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="Labyrinth.cpp" />
     <ClCompile Include="src\ComponentCreator.cpp" />
+    <ClCompile Include="src\LuaScriptExecutor_LevelBuilder.cpp" />
     <ClCompile Include="src\PlayerActor.cpp" />
     <ClCompile Include="src\LabyrinthLevelFactory.cpp" />
     <ClCompile Include="src\PlayerSkeletalMeshComponent.cpp" />
@@ -175,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ComponentCreator.h" />
+    <ClInclude Include="src\LuaScriptExecutor_LevelBuilder.h" />
     <ClInclude Include="src\PlayerActor.h" />
     <ClInclude Include="src\LabyrinthLevelFactory.h" />
     <ClInclude Include="src\PlayerSkeletalMeshComponent.h" />
