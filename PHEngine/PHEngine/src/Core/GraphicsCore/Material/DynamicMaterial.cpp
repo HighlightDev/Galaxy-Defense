@@ -3,8 +3,8 @@
 
 namespace Graphics
 {
-   DynamicMaterial::DynamicMaterial(const std::string& materialName, const std::string& relativeMaterialShaderPath)
-      : IMaterial(materialName, relativeMaterialShaderPath)
+   DynamicMaterial::DynamicMaterial(const std::string& materialName, const std::string& materialShaderName)
+      : IMaterial(materialName, materialShaderName)
    {
    }
 

@@ -8,7 +8,6 @@
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GraphicsCore/Material/PBRMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"

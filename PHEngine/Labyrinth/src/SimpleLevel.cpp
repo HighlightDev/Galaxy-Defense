@@ -24,7 +24,6 @@
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 
-#include "Core/GraphicsCore/Material/PBRMaterial.h"
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
@@ -46,6 +45,7 @@
 
 #include <LogInterface.h>
 #include "LuaScriptExecutor_LevelBuilder.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -87,6 +87,7 @@ namespace Labyrinth
       folderManager->CreateFilePathMap(folderManager->GetSpecularMapPath());
       folderManager->CreateFilePathMap(folderManager->GetCubemapTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetModelPath());
+      folderManager->CreateFilePathMap(folderManager->GetMaterialPath());
 
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_mid.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
@@ -189,13 +190,18 @@ namespace Labyrinth
       // Ground
 
       {
-         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1)));
          mScene->AllActors.push_back(groundActor);
 
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
-         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50),
-            std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 10.0f));
+
+         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 10.0f);
+      
+         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50), std::shared_ptr<IMaterial>(pbrMaterial));
          auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
@@ -213,8 +219,13 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
 
+         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
+
          StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8),
-            std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
+            std::shared_ptr<IMaterial>(pbrMaterial));
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
             std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
@@ -239,8 +250,14 @@ namespace Labyrinth
          auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Nor.png"));
          auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Spec.png"));
 
+         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex1);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex1);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "metallicMap", specualrMapTex1);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
+
          StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"), glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f),
-            std::make_shared<PBRMaterial>(albedoTex1, normalMapTex1, specualrMapTex1, nullptr, nullptr, 1.0f));
+            std::shared_ptr<IMaterial>(pbrMaterial));
          auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
 
          std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
@@ -263,8 +280,13 @@ namespace Labyrinth
          auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
          auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
 
+         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
+         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
+
          SkeletalMeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
-            std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
+            std::shared_ptr<IMaterial>(pbrMaterial));
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));

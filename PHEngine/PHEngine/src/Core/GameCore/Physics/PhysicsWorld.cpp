@@ -96,7 +96,7 @@ namespace EnginePhysics
    void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t& data)
    {
       auto removedDescriptorIt 
-         = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [=](const PhysicsDescriptor* physDesc) { return physDesc->GetId() == std::get<0>(data); });
+         = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [&](const PhysicsDescriptor* physDesc) { return physDesc->GetId() == std::get<0>(data); });
 
       mPhysicsDescriptors.erase(removedDescriptorIt);
       RemovePhysDescriptorFromSimulation(*removedDescriptorIt);

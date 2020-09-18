@@ -31,6 +31,12 @@ public:
    {
    }
 
+   FloatMaterialProperty()
+      : MaterialProperty()
+      , m_value(0.0f)
+   {
+   }
+
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
    {
       uniform.LoadUniform(m_value);
@@ -59,6 +65,11 @@ public:
    {
    }
 
+   TextureMaterialProperty()
+      : MaterialProperty()
+   {
+   }
+
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
    {
       int32_t slot = 10 + propertyIndex;
@@ -71,5 +82,9 @@ public:
 
    inline void SetValue(MaterialPropertyValueType value) {
       m_value = value;
+   }
+
+   inline void SetValue(ITexture* value) {
+      m_value = std::shared_ptr<ITexture>(value);
    }
 };

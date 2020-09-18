@@ -15,7 +15,7 @@ function Create(host)
 		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
 		local specular = { x = 0.7, y = 0.7, z = 0.7}
 
-		local shadowInfo = _CreateDirLightProjectedShadowInfo(host, 256)
+		local shadowInfo = _CreateDirLightProjectedShadowInfo(host, 512)
 
 		local dirLightComponentData = _CreateDirLightComponentData(host, rotation.x, rotation.y, rotation.z,
 			direction.x, direction.y, direction.z,

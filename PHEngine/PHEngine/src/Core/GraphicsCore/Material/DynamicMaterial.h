@@ -11,7 +11,7 @@ namespace Graphics
 
    public:
 
-      DynamicMaterial(const std::string& materialName, const std::string& relativeMaterialShaderPath);
+      DynamicMaterial(const std::string& materialName, const std::string& materialShaderName);
 
       ~DynamicMaterial();
    };

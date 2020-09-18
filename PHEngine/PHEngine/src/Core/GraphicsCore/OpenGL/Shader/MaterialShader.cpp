@@ -1,7 +1,6 @@
 #include "MaterialShader.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringStreamWrapper.h"
-#include "Core/GraphicsCore/Material/PBRMaterial.h"
 
 #include <fstream>
 #include <type_traits>

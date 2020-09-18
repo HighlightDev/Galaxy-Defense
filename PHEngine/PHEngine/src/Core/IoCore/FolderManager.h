@@ -64,6 +64,7 @@ namespace IO
 		const std::string GetEditorTexturePath() const;
       const std::string GetPersistencyPath() const;
       const std::string GetScriptPath() const;
+      const std::string GetMaterialPath() const;
 
       void CreateFilePathMap(const std::string& pathToDir);
       std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;

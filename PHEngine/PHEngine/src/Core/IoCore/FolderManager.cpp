@@ -163,4 +163,9 @@ namespace IO
    {
       return GetResPath() + "scripts\\";
    }
+
+   const std::string FolderManager::GetMaterialPath() const
+   {
+      return GetResPath() + "materials\\";
+   }
 }

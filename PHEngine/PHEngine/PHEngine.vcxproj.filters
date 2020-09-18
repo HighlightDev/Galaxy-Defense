@@ -513,6 +513,7 @@
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
     <None Include="res\scripts\createTestLevel.lua" />
+    <None Include="res\materials\Pbs.m" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -1592,9 +1593,6 @@
     <ClInclude Include="src\Core\GameCore\ICamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\PBRMaterial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\CompositeShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1850,6 +1848,9 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2098,9 +2099,6 @@
     <ClCompile Include="src\Core\GameCore\ICamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\Material\PBRMaterial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2228,6 +2226,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

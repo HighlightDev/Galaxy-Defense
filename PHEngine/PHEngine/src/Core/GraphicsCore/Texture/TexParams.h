@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 #include <gl/glew.h>
-#include <stdint.h>
 #include <type_traits>
 
 namespace Graphics

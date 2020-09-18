@@ -2,6 +2,7 @@
 #include "ComponentCreator.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
 
 using namespace Graphics;
 
@@ -21,11 +22,14 @@ namespace Labyrinth
 
    void LuaScriptExecutor_LevelBuilder::RegisterCallbacks()
    {
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)> ::Rigister(mLuaInstance, "_CreateDirLightComponentData");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Component*(std::string, ComponentData*)> ::Rigister(mLuaInstance, "_CreateComponent");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(mLuaInstance, "_CreateActor");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(Actor*, Component*)> ::Rigister(mLuaInstance, "_AttachComponentToActor");
+
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ProjectedShadowInfo*(int32_t)> ::Rigister(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)> ::Rigister(mLuaInstance, "_CreateDirLightComponentData");
+
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ITexture*(std::string)> ::Rigister(mLuaInstance, "_GetTexture");
    }
 
    void LuaScriptExecutor_LevelBuilder::RunScript()
@@ -37,6 +41,8 @@ namespace Labyrinth
       assert((bScriptExecuted, "Lua script execution failure"));
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "Create", (void*)this);
+
+      //IMaterial* materialInstance = MaterialParser::ParseMaterialDescriptor(folderManager->GetMaterialPath() + "Pbs.m");
    }
 
    Actor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
@@ -97,5 +103,12 @@ namespace Labyrinth
       ProjectedShadowInfo* dirShadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
 
       return dirShadowProjInfo;
+   }
+
+   ITexture* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string>& getTextureResource)
+   {
+      const std::string& filePath = IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(getTextureResource));
+      std::shared_ptr<ITexture> resultTexture = TexturePool::GetInstance()->GetOrAllocateResource(filePath);
+      return resultTexture.get();
    }
 }

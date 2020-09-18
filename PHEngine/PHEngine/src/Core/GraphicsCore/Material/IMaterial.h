@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/Material/MaterialProperty.h"
 
 #include <string>
@@ -12,6 +11,13 @@ using namespace Graphics::Texture;
 
 namespace Graphics
 {
+
+   struct MaterialPropertySetter
+   {
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, ITexture* texture);
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, float value);
+   };
 
    class IMaterial
    {
@@ -28,18 +34,15 @@ namespace Graphics
 
    public:
 
-      IMaterial(const std::string& materialName, const std::string& relativeMaterialShaderPath);
+      IMaterial(const std::string& materialName, const std::string& materialShaderName);
 
       virtual ~IMaterial();
 
-      void PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue) {
-         mProperties.emplace(std::make_pair(propertyName, std::forward<std::shared_ptr<MaterialProperty>>(propertyValue)));
-      }
+      std::shared_ptr<MaterialProperty> GetMaterialPropertyByName(const std::string& propertyName) const;
 
-      const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const
-      {
-         return mProperties;
-      }
+      void PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue);
+
+      const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
    };
 
 }

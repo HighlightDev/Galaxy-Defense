@@ -52,6 +52,8 @@ namespace Labyrinth
 
       /* -------------------  Create dir light projection shadow info --------------------*/
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
+
+      ITexture* ExecuteLuaCallback(const std::tuple<std::string>& getTextureResource);
    };
 
 }
