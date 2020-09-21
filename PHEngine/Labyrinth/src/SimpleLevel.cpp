@@ -15,8 +15,7 @@
 #include "Core/GameCore/Components/MovementComponent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/GameCore/Components/ComponentData/StaticMeshComponentData.h"
-#include "Core/GameCore/Components/ComponentData/SkeletalMeshComponentData.h"
+#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
@@ -107,7 +106,7 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("model.dae"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("player_walk.fbx"));
-      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
+      //ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
 
 #undef ALLOC_RES_ASYNC
    }
@@ -201,7 +200,7 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 10.0f);
       
-         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50), std::shared_ptr<IMaterial>(pbrMaterial));
+         MeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50), pbrMaterial);
          auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
          groundActor->AddComponent(floorComponent);
 
@@ -224,8 +223,7 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
 
-         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8),
-            std::shared_ptr<IMaterial>(pbrMaterial));
+         MeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8), pbrMaterial);
          std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
             std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
 
@@ -256,8 +254,7 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "metallicMap", specualrMapTex1);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
 
-         StaticMeshComponentData mData(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"), glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f),
-            std::shared_ptr<IMaterial>(pbrMaterial));
+         MeshComponentData mData(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"), glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f), pbrMaterial);
          auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
 
          std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
@@ -285,8 +282,7 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
 
-         SkeletalMeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
-            std::shared_ptr<IMaterial>(pbrMaterial));
+         MeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3), pbrMaterial);
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));

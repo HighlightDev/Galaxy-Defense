@@ -22,14 +22,18 @@ namespace Labyrinth
 
    void LuaScriptExecutor_LevelBuilder::RegisterCallbacks()
    {
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Component*(std::string, ComponentData*)> ::Rigister(mLuaInstance, "_CreateComponent");
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)> ::Rigister(mLuaInstance, "_CreateActor");
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(Actor*, Component*)> ::Rigister(mLuaInstance, "_AttachComponentToActor");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
 
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ProjectedShadowInfo*(int32_t)> ::Rigister(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)> ::Rigister(mLuaInstance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
 
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ITexture*(std::string)> ::Rigister(mLuaInstance, "_GetTexture");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
+      LuaRegisterCallback <LuaScriptExecutor_LevelBuilder, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
+      LuaRegisterCallback <LuaScriptExecutor_LevelBuilder, void(IMaterial*, float, std::string) >::Register(mLuaInstance, "_SetFloatToMaterial");
    }
 
    void LuaScriptExecutor_LevelBuilder::RunScript()
@@ -40,11 +44,10 @@ namespace Labyrinth
 
       assert((bScriptExecuted, "Lua script execution failure"));
 
-      LuaFunction<void(void*)>::Call(mLuaInstance, "Create", (void*)this);
-
-      //IMaterial* materialInstance = MaterialParser::ParseMaterialDescriptor(folderManager->GetMaterialPath() + "Pbs.m");
+      LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
    }
 
+   /* -------------------  Create Actor ----------------------------*/
    Actor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
    {
       Actor* createdActor = nullptr;
@@ -61,6 +64,7 @@ namespace Labyrinth
       return createdActor;
    }
 
+   /* -------------------  Attach component to Actor ----------------------------*/
    void LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent)
    {
       Actor* actor = std::get<0>(dataToAttachActorToComponent);
@@ -73,6 +77,7 @@ namespace Labyrinth
       actor->AddComponent(mActiveComponents[component->GetObjectId()]);
    }
 
+   /* -------------------  Create component ----------------------------*/
    Component* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData)
    {
       Component* createdComponent = nullptr;
@@ -88,12 +93,22 @@ namespace Labyrinth
       return createdComponent;
    }
 
+   /* -------------------  Create mesh component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData)
+   {
+      return ComponentCreator::CreateMeshComponentData(std::get<0>(meshComponentData), std::get<1>(meshComponentData), std::get<2>(meshComponentData),
+         std::get<3>(meshComponentData), std::get<4>(meshComponentData));
+   }
+
+   /* -------------------  Create dir light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
    {
       return ComponentCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData));
    }
 
+
+   /* -------------------  Create dir light projection shadow info --------------------*/
    ProjectedShadowInfo* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData)
    {
       const int32_t shadowAtlasSize = std::get<0>(dirLightProjectionData);
@@ -105,10 +120,54 @@ namespace Labyrinth
       return dirShadowProjInfo;
    }
 
-   ITexture* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string>& getTextureResource)
+   /* -------------------  Create material --------------------*/
+   IMaterial* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder>& buildMaterial)
    {
-      const std::string& filePath = IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(getTextureResource));
-      std::shared_ptr<ITexture> resultTexture = TexturePool::GetInstance()->GetOrAllocateResource(filePath);
-      return resultTexture.get();
+      return MaterialParser::ParseMaterialDescriptor(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(buildMaterial)));
+   }
+
+   /* -------------------  Set texture --------------------*/
+   void LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple <IMaterial*, std::string, std::string > & setTextureToMaterial)
+   {
+      IMaterial* material = std::get<0>(setTextureToMaterial);
+
+      const std::string& filePath = IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(setTextureToMaterial));
+      std::shared_ptr<ITexture> texture = TexturePool::GetInstance()->GetOrAllocateResource(filePath);
+
+      const std::string& propertyName = std::get<2>(setTextureToMaterial);
+      MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, texture);
+   }
+
+   /* -------------------  Set float --------------------*/
+   void LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<IMaterial*, float, std::string>& setFloatValueToMaterial)
+   {
+      IMaterial* material = std::get<0>(setFloatValueToMaterial);
+      float value = std::get<1>(setFloatValueToMaterial);
+      const std::string& propertyName = std::get<2>(setFloatValueToMaterial);
+      MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, value);
+   }
+
+   /*-------------------- Create physics collision sphere shape --------------*/
+   PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<float>& value)
+   {
+      return ComponentCreator::CreatePhysicsSphereShape(std::get<0>(value));
+   }
+
+   /*-------------------- Create physics collision box shape --------------*/
+   PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent)
+   {
+      return ComponentCreator::CreatePhysicsBoxShape(std::get<0>(halfExtent));
+   }
+
+   /*-------------------- Create physics collision capsule shape --------------*/
+   PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<float, float>& capsuleData)
+   {
+      return ComponentCreator::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
+   }
+
+   /*-------------------- Create physics collision plane shape --------------*/
+   PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
+   {
+      return ComponentCreator::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
    }
 }

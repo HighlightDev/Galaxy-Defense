@@ -28,6 +28,11 @@ namespace Game
    {
    };
 
+   struct LuaArgDummyPlaceholder
+   {
+
+   };
+
    namespace LuaInnerCore
    {
       /*------------ Inner Core  --------------*/
@@ -164,6 +169,29 @@ namespace Game
             const int32_t currentStackIndex = stackIndex;
             --stackIndex;
             return (VariableType)lua_touserdata(state, currentStackIndex);
+         }
+      };
+
+      template <>
+      struct GetValue<LuaArgDummyPlaceholder>
+      {
+      public:
+
+         static LuaArgDummyPlaceholder Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static LuaArgDummyPlaceholder Value(lua_State* state, int32_t& stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static LuaArgDummyPlaceholder Inner_Value(lua_State* state, int32_t& stackIndex)
+         {
+            return LuaArgDummyPlaceholder();
          }
       };
 
@@ -420,6 +448,15 @@ namespace Game
       };
 
       template <>
+      struct LuaArgsCountForType<LuaArgDummyPlaceholder>
+      {
+         enum
+         {
+            value = 0
+         };
+      };
+
+      template <>
       struct LuaArgsCountForType<glm::vec3>
       {
          enum
@@ -528,7 +565,7 @@ namespace Game
       using type = LuaRegisterCallback<ILuaExecutor, RetType(Args...)>;
       using args_t = std::tuple<Args...>;
 
-      static void Rigister(const LuaWrapper& instanceWrapper, const std::string& functionName)
+      static void Register(const LuaWrapper& instanceWrapper, const std::string& functionName)
       {
          lua_register(instanceWrapper.GetState(), functionName.c_str(), type::Wrapper);
       }

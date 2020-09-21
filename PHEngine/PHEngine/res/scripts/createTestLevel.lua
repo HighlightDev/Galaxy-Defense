@@ -1,4 +1,4 @@
-function Create(host)
+function CreateTestLevel(host)
 	
 	local actorTranslation = { x = 0, y = 0, z = 0 }
 	local actorRotation = { x = 0, y = 0, z = 0 }
@@ -25,8 +25,12 @@ function Create(host)
 			shadowInfo
 			)
 
-		local dirLightComponent = _CreateComponent(host, "DirLComponent", dirLightComponentData)
+		local dirLightComponent = _CreateComponent(host, "DirLightComponent", dirLightComponentData)
 
 		_AttachComponentToActor(host, lightActor, dirLightComponent)
 	end
+
+	local material = _CreateMaterial(host, "Pbs.m")
+	_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
+	_SetFloatToMaterial(host, material, 10.0, "uvScale")
 end

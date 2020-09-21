@@ -1368,9 +1368,6 @@
     <ClInclude Include="src\Core\GameCore\Components\SceneComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\StaticMeshComponentData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Common\ScreenQuad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1501,9 +1498,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\SkeletalMeshComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\DebugCore\TextureRenderer.h">
@@ -1849,6 +1843,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\MeshComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

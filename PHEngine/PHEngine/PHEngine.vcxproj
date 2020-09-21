@@ -473,7 +473,6 @@
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.h" />
     <ClInclude Include="src\Core\DebugCore\TextureRenderer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShader.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\SkeletalMeshComponentData.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.h" />
@@ -520,7 +519,7 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\ResolveTextureShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\Common\ScreenQuad.h" />
     <ClInclude Include="src\Core\GraphicsCore\Renderer\DeferredShadingSceneRenderer.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\StaticMeshComponentData.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\MeshComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\SceneComponent.h" />
     <ClInclude Include="src\Core\GameCore\FirstPersonCamera.h" />
     <ClInclude Include="src\Core\GameCore\ICamera.h" />

@@ -47,13 +47,36 @@ namespace Labyrinth
       Component* ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData);
 
       // Specific callbacks
+
+       /* -------------------  Create mesh component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData);
+    
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
 
       /* -------------------  Create dir light projection shadow info --------------------*/
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
 
-      ITexture* ExecuteLuaCallback(const std::tuple<std::string>& getTextureResource);
+      /* -------------------  Create material --------------------*/
+      IMaterial* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder>& buildMaterial);
+
+      /* -------------------  Set texture --------------------*/
+      void ExecuteLuaCallback(const std::tuple<IMaterial*, /* texture name*/std::string, /*property name*/std::string>& setTextureToMaterial);
+
+      /* -------------------  Set float --------------------*/
+      void ExecuteLuaCallback(const std::tuple<IMaterial*, float, std::string>& setFloatValueToMaterial);
+
+      /*-------------------- Create physics collision sphere shape --------------*/
+      PhyShapeBase* ExecuteLuaCallback(const std::tuple<float>& value);
+
+      /*-------------------- Create physics collision box shape --------------*/
+      PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent);
+
+      /*-------------------- Create physics collision capsule shape --------------*/
+      PhyShapeBase* ExecuteLuaCallback(const std::tuple<float, float>& capsuleData);
+
+      /*-------------------- Create physics collision plane shape --------------*/
+      PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
    };
 
 }

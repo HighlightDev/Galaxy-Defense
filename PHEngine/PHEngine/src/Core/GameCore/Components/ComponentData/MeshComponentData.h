@@ -9,9 +9,9 @@
 
 namespace Game
 {
-	struct StaticMeshComponentData : public ComponentData
+	struct MeshComponentData : public ComponentData
 	{
-		StaticMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, std::shared_ptr<IMaterial> material)
+      MeshComponentData(const std::string& pathToMesh, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, Graphics::IMaterial* material)
 			: ComponentData()
 			, m_pathToMesh(pathToMesh)
 			, m_translation(translation)
@@ -26,7 +26,7 @@ namespace Game
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
 
-      std::shared_ptr<IMaterial> m_material;
+      std::shared_ptr<Graphics::IMaterial> m_material;
 	};
 
 }

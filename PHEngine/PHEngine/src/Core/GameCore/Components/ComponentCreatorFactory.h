@@ -17,10 +17,9 @@
 
 #include "ComponentData/ComponentData.h"
 #include "ComponentData/SkyboxComponentData.h"
-#include "ComponentData/StaticMeshComponentData.h"
+#include "ComponentData/MeshComponentData.h"
 #include "ComponentData/DirectionalLightComponentData.h"
 #include "ComponentData/PointLightComponentData.h"
-#include "ComponentData/SkeletalMeshComponentData.h"
 #include "ComponentData/CubemapComponentData.h"
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/MovementComponentData.h"
@@ -94,7 +93,7 @@ namespace Game
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            const StaticMeshComponentData& mData = static_cast<const StaticMeshComponentData&>(data);
+            const MeshComponentData& mData = static_cast<const MeshComponentData&>(data);
 
             typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
 
@@ -115,7 +114,7 @@ namespace Game
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            const SkeletalMeshComponentData& mData = static_cast<const SkeletalMeshComponentData&>(data);
+            const MeshComponentData& mData = static_cast<const MeshComponentData&>(data);
 
             typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
 
