@@ -8,20 +8,23 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyShapeBase.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 using namespace Game;
 using namespace Graphics;
+using namespace EnginePhysics;
 
 namespace Game
 {
    class Scene;
 }
 
-using namespace EnginePhysics;
+
 
 namespace Labyrinth
 {
    using Game::Scene;
+   using EnginePhysics::PhysicsWorld;
 
    class ComponentCreator
    {
@@ -35,10 +38,16 @@ namespace Labyrinth
       static ComponentData* CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
          const glm::vec3& rotation, const glm::vec3& scale, IMaterial* material);
 
+      static ComponentData* CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor);
+
       static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhyShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);
       static PhyShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const float d);
       static PhyShapeBase* CreatePhysicsSphereShape(const float radius);
+
+      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const float mass);
+      static PhysicsDescriptor* CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
+         float mass, float stepHeight);
    };
 
 }

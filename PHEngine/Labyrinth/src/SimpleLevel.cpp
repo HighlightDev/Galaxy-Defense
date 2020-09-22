@@ -22,6 +22,7 @@
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
@@ -124,51 +125,7 @@ namespace Labyrinth
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
       RunLuaBuildLevelScript();
-      {
-         // Test for PBR
-         /*{
-            auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetAlbedoTexturePath() + "brick_mid.png");
-            auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png");
-
-            StaticMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(), glm::vec3(1),
-               std::make_shared<PBRMaterial>(albedoTex, normalMapTex, nullptr, nullptr, nullptr, 1.0f));
-
-            std::shared_ptr<PlayerActor> cubeActor = std::make_shared<PlayerActor>("TestPhysicsActor",
-               std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25 , 0)), std::move(glm::vec3(1))));
-            auto component = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
-            cubeActor->AddComponent(component);
-
-            PhyShapeBase* shape = new PhyBoxShape(glm::vec3(1.5f));
-            PhysicsDescriptor* cubePhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 25.0f);
-            mScene->mPhysicsWorld->AddPhysDescriptor(cubePhysDesc);
-            std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<PhysicsComponent>(cubePhysDesc);
-            cubeActor->AddComponent(cubePhysComponent);
-
-            mScene->AllActors.push_back(cubeActor);
-         }*/
-      }
-
-      {
-         /* {
-             auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png");
-
-             SkeletalMeshComponentData mData(folderManager->GetModelPath() + "tina.fbx", glm::vec3(0), glm::vec3(0, 0, 0), glm::vec3(5),
-                std::make_shared<PBRMaterial>(albedoTex, nullptr, nullptr, nullptr, nullptr, 1.0f));
-
-             std::shared_ptr<Actor> cubeActor = std::make_shared<Actor>("TestPhysicsActor1",
-                std::make_shared<SceneComponent>(std::move(glm::vec3(0, 50, 0)), std::move(glm::vec3(17, 25, 0)), std::move(glm::vec3(1))));
-             auto component = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
-             cubeActor->AddComponent(component);
-
-             PhysicsDescriptor* physDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5f, 10, 1.0f);
-             mScene->mPhysicsWorld->AddPhysDescriptor(physDesc);
-             std::shared_ptr<PhysicsComponent> cubePhysComponent = std::make_shared<CharacterPhysicsComponent>(physDesc);
-             cubeActor->AddComponent(cubePhysComponent);
-
-             mScene->AllActors.push_back(cubeActor);
-          }*/
-      }
-
+    
 #if 0
       // Water
       {
@@ -184,92 +141,6 @@ namespace Labyrinth
          mScene->AllActors.push_back(waterActor);
       }
 #endif
-
-#if 1
-      // Ground
-
-      {
-         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(glm::vec3(0), glm::vec3(0), glm::vec3(1)));
-         mScene->AllActors.push_back(groundActor);
-
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
-
-         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 10.0f);
-      
-         MeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(50, 1, 50), pbrMaterial);
-         auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
-         groundActor->AddComponent(floorComponent);
-
-         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(50, 1, 50));
-         PhysicsDescriptor* floorPhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 0.0f);
-         mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
-         std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
-
-         groundActor->AddComponent(floorPhysComponent);
-      }
-
-      // Ground
-
-      {
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_mid.png"));
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
-
-         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
-
-         MeshComponentData mData(GET_REL_PATH_TO_FILE("playerCube.obj"), glm::vec3(0, 0, 0), glm::vec3(0), glm::vec3(8, 1, 8), pbrMaterial);
-         std::shared_ptr<Actor> groundActor = std::make_shared<Actor>("Ground", std::make_shared<SceneComponent>(
-            std::move(glm::vec3(0, 10, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-
-         auto floorComponent = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
-         groundActor->AddComponent(floorComponent);
-
-         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(8, 1, 8));
-         PhysicsDescriptor* floorPhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 0.0f);
-         mScene->mPhysicsWorld->AddPhysDescriptor(floorPhysDesc);
-         std::shared_ptr<PhysicsComponent> floorPhysComponent = std::make_shared<PhysicsComponent>(floorPhysDesc);
-
-         groundActor->AddComponent(floorPhysComponent);
-
-         mScene->AllActors.push_back(groundActor);
-      }
-
-#endif
-
-      // Test for PBR
-      {
-         auto albedoTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Col.png"));
-         auto normalMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Nor.png"));
-         auto specualrMapTex1 = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("city_house_2_Spec.png"));
-
-         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex1);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex1);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "metallicMap", specualrMapTex1);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
-
-         MeshComponentData mData(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"), glm::vec3(0, -2.5f, 0), glm::vec3(), glm::vec3(2.5f), pbrMaterial);
-         auto staticComp = mScene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(mData);
-
-         std::shared_ptr<Actor> houseActor = std::make_shared<Actor>("House Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0, 20, 0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-
-         houseActor->AddComponent(staticComp);
-
-         PhyShapeBase* shape = new PhyBoxShape(glm::vec3(6, 6.5f, 6));
-
-         PhysicsDescriptor* housePhysDesc = new RigidBodyController(mScene->mPhysicsWorld, shape, 125.0f);
-         mScene->mPhysicsWorld->AddPhysDescriptor(housePhysDesc);
-         std::shared_ptr<PhysicsComponent> housePhysComponent = std::make_shared<PhysicsComponent>(housePhysDesc);
-         houseActor->AddComponent(housePhysComponent);
-
-         mScene->AllActors.push_back(houseActor);
-      }
 
       // SKELETAL MESH
       {
@@ -298,7 +169,7 @@ namespace Labyrinth
 
          PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<PhysicsComponent> playerPhysComponent = std::make_shared<CharacterPhysicsComponent>(playerPhysDesc);
+         std::shared_ptr<Component> playerPhysComponent = mScene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(PhysicsComponentData(playerPhysDesc));
 
          skeletActor->AddComponent(playerPhysComponent);
 

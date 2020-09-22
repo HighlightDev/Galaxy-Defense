@@ -6,6 +6,10 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 
 namespace Labyrinth
 {
@@ -36,7 +40,15 @@ namespace Labyrinth
       }
       else if ("SkeletalMeshComponent" == componentName)
       {
-
+         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(*componentData);
+      }
+      else if ("PhysicsComponent" == componentName)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Physics, PhysicsComponent>(*componentData);
+      }
+      else if ("CharacterPhysicsComponent" == componentName)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(*componentData);
       }
 
       delete componentData;
@@ -62,6 +74,22 @@ namespace Labyrinth
    PhyShapeBase* ComponentCreator::CreatePhysicsSphereShape(const float radius)
    {
       return new PhySphereShape(radius);
+   }
+
+   PhysicsDescriptor* ComponentCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const float mass)
+   {
+      return new RigidBodyController(physWorld, phyShape, mass);
+   }
+
+   PhysicsDescriptor* ComponentCreator::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
+      float mass, float stepHeight)
+   {
+      return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
+   }
+
+   ComponentData* ComponentCreator::CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor)
+   {
+      return new PhysicsComponentData(physDescriptor);
    }
 
 }

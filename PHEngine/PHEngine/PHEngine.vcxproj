@@ -381,6 +381,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h" />

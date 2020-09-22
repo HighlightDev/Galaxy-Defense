@@ -30,10 +30,16 @@ namespace Labyrinth
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
 
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
 
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
-      LuaRegisterCallback <LuaScriptExecutor_LevelBuilder, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
-      LuaRegisterCallback <LuaScriptExecutor_LevelBuilder, void(IMaterial*, float, std::string) >::Register(mLuaInstance, "_SetFloatToMaterial");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
+
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, PhyShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
+
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, PhysicsDescriptor*(PhyShapeBase*, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
    }
 
    void LuaScriptExecutor_LevelBuilder::RunScript()
@@ -96,7 +102,8 @@ namespace Labyrinth
    /* -------------------  Create mesh component data ----------------------------*/
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData)
    {
-      return ComponentCreator::CreateMeshComponentData(std::get<0>(meshComponentData), std::get<1>(meshComponentData), std::get<2>(meshComponentData),
+      return ComponentCreator::CreateMeshComponentData(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(meshComponentData)),
+         std::get<1>(meshComponentData), std::get<2>(meshComponentData),
          std::get<3>(meshComponentData), std::get<4>(meshComponentData));
    }
 
@@ -107,6 +114,11 @@ namespace Labyrinth
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData));
    }
 
+   /* -------------------  Create physics component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData)
+   {
+      return ComponentCreator::CreatePhysicsComponentData(std::get<0>(phyComponentData));
+   }
 
    /* -------------------  Create dir light projection shadow info --------------------*/
    ProjectedShadowInfo* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData)
@@ -169,5 +181,34 @@ namespace Labyrinth
    PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
    {
       return ComponentCreator::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
+   }
+
+   /*-------------------- Create rigid body controller--------------*/
+   PhysicsDescriptor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<PhyShapeBase*, float> descData)
+   {
+      PhysicsDescriptor* descriptor = nullptr;
+      
+      if (auto scene = mSceneWP.lock())
+      {
+         descriptor = ComponentCreator::CreateRigidBodyController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData));
+         scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
+      }
+
+      return descriptor;
+   }
+
+   /*-------------------- Create dynamic character controller--------------*/
+   PhysicsDescriptor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<float, float, float, float> descData)
+   {
+      PhysicsDescriptor* descriptor = nullptr;
+
+      if (auto scene = mSceneWP.lock())
+      {
+         descriptor = ComponentCreator::CreateDynamicCharacterController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData),
+            std::get<2>(descData), std::get<3>(descData));
+         scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
+      }
+
+      return descriptor;
    }
 }

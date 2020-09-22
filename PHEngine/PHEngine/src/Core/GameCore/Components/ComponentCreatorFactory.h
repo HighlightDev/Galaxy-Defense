@@ -24,6 +24,7 @@
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/MovementComponentData.h"
 #include "ComponentData/BillboardComponentData.h"
+#include "ComponentData/PhysicsComponentData.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -59,6 +60,7 @@ namespace Game
       Billboard,
       Input,
       Movement,
+      Physics
    };
 
    template <ComponentMetaType metaType, typename ComponentType>
@@ -226,6 +228,14 @@ namespace Game
          }
       };
 
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Physics, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const PhysicsComponentData& mData = static_cast<const PhysicsComponentData&>(data);
+            return std::make_shared<ComponentType>(mData.mPhysicsDescriptor);
+         }
+      };
 
    public:
 

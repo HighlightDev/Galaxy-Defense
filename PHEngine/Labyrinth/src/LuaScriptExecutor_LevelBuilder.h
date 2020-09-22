@@ -53,6 +53,9 @@ namespace Labyrinth
     
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
+      
+      /* -------------------  Create physics component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData);
 
       /* -------------------  Create dir light projection shadow info --------------------*/
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
@@ -77,6 +80,12 @@ namespace Labyrinth
 
       /*-------------------- Create physics collision plane shape --------------*/
       PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
+
+      /*-------------------- Create rigid body controller--------------*/
+      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhyShapeBase*, float> descData);
+
+      /*-------------------- Create dynamic character controller--------------*/
+      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);
    };
 
 }
