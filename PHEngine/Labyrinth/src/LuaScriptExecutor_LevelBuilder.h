@@ -38,7 +38,7 @@ namespace Labyrinth
 
       // Common callbacks
       /* -------------------  Create Actor ----------------------------*/
-      Actor* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData);
+      Actor* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3>& actorData);
 
       /* -------------------  Attach component to Actor ----------------------------*/
       void ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent);

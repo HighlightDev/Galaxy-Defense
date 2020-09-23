@@ -1,5 +1,5 @@
 #include "LuaScriptExecutor_LevelBuilder.h"
-#include "ComponentCreator.h"
+#include "LuaToCPPCreator.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -23,7 +23,7 @@ namespace Labyrinth
    void LuaScriptExecutor_LevelBuilder::RegisterCallbacks()
    {
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, Actor*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
 
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
@@ -54,17 +54,17 @@ namespace Labyrinth
    }
 
    /* -------------------  Create Actor ----------------------------*/
-   Actor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
+   Actor* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
    {
       Actor* createdActor = nullptr;
 
       if (auto scene = mSceneWP.lock())
       {
-         std::shared_ptr<Actor> actor = std::make_shared<Actor>(std::get<0>(actorData),
-            std::make_shared<SceneComponent>(std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
-
-         scene->AllActors.push_back(actor);
-         createdActor = actor.get();
+       
+         auto actorSP = LuaToCPPCreator::CreateActorByString(std::get<0>(actorData), std::get<1>(actorData), 
+            std::make_shared<Game::SceneComponent>(std::get<2>(actorData), std::get<3>(actorData), std::get<4>(actorData)));
+         scene->AllActors.push_back(actorSP);
+         createdActor = actorSP.get();
       }
 
       return createdActor;
@@ -90,7 +90,7 @@ namespace Labyrinth
 
       if (auto scene = mSceneWP.lock())
       {
-         std::shared_ptr<Component> component = ComponentCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
+         std::shared_ptr<Component> component = LuaToCPPCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
 
          mActiveComponents[component->GetObjectId()] = component;
          createdComponent = component.get();
@@ -102,7 +102,7 @@ namespace Labyrinth
    /* -------------------  Create mesh component data ----------------------------*/
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData)
    {
-      return ComponentCreator::CreateMeshComponentData(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(meshComponentData)),
+      return LuaToCPPCreator::CreateMeshComponentData(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(meshComponentData)),
          std::get<1>(meshComponentData), std::get<2>(meshComponentData),
          std::get<3>(meshComponentData), std::get<4>(meshComponentData));
    }
@@ -110,14 +110,14 @@ namespace Labyrinth
    /* -------------------  Create dir light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
    {
-      return ComponentCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
+      return LuaToCPPCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData));
    }
 
    /* -------------------  Create physics component data ----------------------------*/
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData)
    {
-      return ComponentCreator::CreatePhysicsComponentData(std::get<0>(phyComponentData));
+      return LuaToCPPCreator::CreatePhysicsComponentData(std::get<0>(phyComponentData));
    }
 
    /* -------------------  Create dir light projection shadow info --------------------*/
@@ -162,25 +162,25 @@ namespace Labyrinth
    /*-------------------- Create physics collision sphere shape --------------*/
    PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<float>& value)
    {
-      return ComponentCreator::CreatePhysicsSphereShape(std::get<0>(value));
+      return LuaToCPPCreator::CreatePhysicsSphereShape(std::get<0>(value));
    }
 
    /*-------------------- Create physics collision box shape --------------*/
    PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent)
    {
-      return ComponentCreator::CreatePhysicsBoxShape(std::get<0>(halfExtent));
+      return LuaToCPPCreator::CreatePhysicsBoxShape(std::get<0>(halfExtent));
    }
 
    /*-------------------- Create physics collision capsule shape --------------*/
    PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<float, float>& capsuleData)
    {
-      return ComponentCreator::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
+      return LuaToCPPCreator::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
    }
 
    /*-------------------- Create physics collision plane shape --------------*/
    PhyShapeBase* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
    {
-      return ComponentCreator::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
+      return LuaToCPPCreator::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
    }
 
    /*-------------------- Create rigid body controller--------------*/
@@ -190,7 +190,7 @@ namespace Labyrinth
       
       if (auto scene = mSceneWP.lock())
       {
-         descriptor = ComponentCreator::CreateRigidBodyController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData));
+         descriptor = LuaToCPPCreator::CreateRigidBodyController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData));
          scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
       }
 
@@ -204,7 +204,7 @@ namespace Labyrinth
 
       if (auto scene = mSceneWP.lock())
       {
-         descriptor = ComponentCreator::CreateDynamicCharacterController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData),
+         descriptor = LuaToCPPCreator::CreateDynamicCharacterController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData),
             std::get<2>(descData), std::get<3>(descData));
          scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
       }

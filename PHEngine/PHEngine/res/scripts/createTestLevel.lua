@@ -4,7 +4,7 @@ function CreateTestLevel(host)
 	local actorRotation = { x = 0, y = 0, z = 0 }
 	local actorScale = { x = 1, y = 1, z = 1 }
 
-	local lightActor = _CreateActor(host, "MainLightActor", actorTranslation.x,actorTranslation.y,actorTranslation.z,
+	local lightActor = _CreateActor(host, "Actor", "MainLightActor", actorTranslation.x,actorTranslation.y,actorTranslation.z,
 		actorRotation.x,actorRotation.y,actorRotation.z,
 		actorScale.x, actorScale.y, actorScale.z)
 
@@ -35,7 +35,7 @@ function CreateTestLevel(host)
 	_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 	_SetFloatToMaterial(host, material, 10.0, "uvScale")
 
-	local groundActor = _CreateActor(host, "Ground", 
+	local groundActor = _CreateActor(host, "Actor", "Ground", 
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -52,7 +52,7 @@ function CreateTestLevel(host)
 
 	-- ****************************SMALL GROUND***************************** --
 
-	local smallGroundActor = _CreateActor(host, "SmallGround", 
+	local smallGroundActor = _CreateActor(host, "Actor", "SmallGround", 
 	0, 10, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -75,7 +75,7 @@ function CreateTestLevel(host)
 
 	-- ***************************HOUSE******************** --
 
-	local house = _CreateActor(host, "House", 
+	local house = _CreateActor(host, "Actor", "House", 
 	0, 55, 0,
 	0, 0, 0,
 	1, 1, 1)

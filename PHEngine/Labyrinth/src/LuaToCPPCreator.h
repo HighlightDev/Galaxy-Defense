@@ -17,6 +17,7 @@ using namespace EnginePhysics;
 namespace Game
 {
    class Scene;
+   class SceneComponent;
 }
 
 
@@ -24,13 +25,16 @@ namespace Game
 namespace Labyrinth
 {
    using Game::Scene;
+   using Game::SceneComponent;
    using EnginePhysics::PhysicsWorld;
 
-   class ComponentCreator
+   class LuaToCPPCreator
    {
    public:
 
-      static std::shared_ptr<Component> CreateComponentByString(const std::string& componentName, ComponentData* data, class Scene* scene);
+      static std::shared_ptr<Actor> CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent);
+
+      static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
 
       static ComponentData* CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
          const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo);
