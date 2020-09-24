@@ -22,13 +22,13 @@ namespace Game
 
       bool bIsCameraRotationDirty = false;
 
+      glm::vec3 mDirection;
+
+      float mSpeed;
+
    public:
 
-      glm::vec3 Velocity;
-
-      float Speed;
-
-      MovementComponent(const std::string& cameraName, glm::vec3 launchVelocity);
+      MovementComponent(const glm::vec3& launchDirection, const std::string& cameraName);
 
       virtual ~MovementComponent();
 
@@ -38,11 +38,15 @@ namespace Game
 
       virtual void ProcessEvent(const CameraTransformChangedEvent::EventData_t& data) override;
 
-      glm::vec3 GetMoveOffset() const;
+      glm::vec3 GetVelocity() const;
 
       glm::mat3 GetCameraYawRotationMatrix() const;
 
       glm::vec3 GetCameraPitchYawRoll() const;
+
+      float GetSpeed() const;
+
+      void SetSpeed(const float speed);
 
       inline bool GetIsCameraRotationDirty() const {
          return bIsCameraRotationDirty;

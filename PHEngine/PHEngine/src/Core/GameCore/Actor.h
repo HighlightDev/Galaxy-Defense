@@ -11,6 +11,7 @@
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/StateMachine/StateMachine.h"
 
 using namespace EnginePhysics;
 
@@ -39,6 +40,8 @@ namespace Game
       std::shared_ptr<InputComponent> m_inputComponent;
 
       std::shared_ptr<MovementComponent> m_movementComponent;
+
+      std::shared_ptr<StateMachine> mStateMachine;
 
 	public:
 

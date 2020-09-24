@@ -136,7 +136,7 @@ namespace Game
       {
          static void PushArg(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
          {
-            PushValue<Arg>::Do(instanceWrapper.GetState(), std::forward<Arg>(arg));
+            PushValue<std::decay<Arg>::type>::Do(instanceWrapper.GetState(), std::forward<Arg>(arg));
             IterateFunctionArgs<Args...>::PushArg(instanceWrapper, std::forward<Args>(args)...);
          }
       };
@@ -535,7 +535,8 @@ namespace Game
          static constexpr size_t argsCount = sizeof...(args);
          LuaInnerCore::CheckLuaExecution::Do(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/0));
 
-         return LuaInnerCore::GetValue<RetType>::Value(instanceWrapper, -1);
+         int32_t stackIndex = -1;
+         return LuaInnerCore::GetValue<std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
       }
    };
 

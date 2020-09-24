@@ -40,7 +40,7 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
-#include "PlayerSkeletalMeshComponent.h"
+#include "GameSkeletalMeshComponent.h"
 #include "PlayerActor.h"
 
 #include <LogInterface.h>
@@ -88,6 +88,7 @@ namespace Labyrinth
       folderManager->CreateFilePathMap(folderManager->GetCubemapTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetModelPath());
       folderManager->CreateFilePathMap(folderManager->GetMaterialPath());
+      folderManager->CreateFilePathMap(folderManager->GetScriptPath());
 
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_mid.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("brick_nm_mid.png"));
@@ -153,11 +154,12 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
 
-         MeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3), pbrMaterial);
+         MeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
+            GET_REL_PATH_TO_FILE("skeletComponentAction.lua"), pbrMaterial);
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, PlayerSkeletalMeshComponent>(mData);
+         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, GameSkeletalMeshComponent>(mData);
          skeletActor->AddComponent(skeletalComp);
 
          InputComponentData inputComponentData;

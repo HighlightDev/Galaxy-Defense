@@ -87,17 +87,13 @@ namespace Game
 
    glm::vec3 ThirdPersonCamera::GetEyeVector() const
    {
-      if (!m_thirdPersonTarget)
-         return glm::vec3(0);
-
+      assert(m_thirdPersonTarget);
       return GetTargetVector() - (GetEyeSpaceForwardVector() * m_distanceFromTargetToCamera);
    }
 
    glm::vec3 ThirdPersonCamera::GetTargetVector() const
    {
-      if (!m_thirdPersonTarget)
-         return glm::vec3(1);
-
+      assert(m_thirdPersonTarget);
       return m_actualTargetVector + glm::vec3(0, 5, 0); // attach to "head"
    }
 

@@ -5,12 +5,12 @@
 namespace Game
 {
 
-   MovementComponent::MovementComponent(const std::string& cameraName, glm::vec3 launchVelocity)
+   MovementComponent::MovementComponent(const glm::vec3& launchDirection, const std::string& cameraName)
       : Component()
       , CameraTransformChangedEvent()
       , mCameraName(cameraName)
-      , Velocity(launchVelocity)
-      , Speed(10)
+      , mDirection(launchDirection)
+      , mSpeed(2.5f)
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
    }
@@ -38,16 +38,26 @@ namespace Game
       {
          SetIsCameraRotationDirty(true);
 
-         Velocity = cameraPtr->GetEyeSpaceForwardVector();
+         mDirection = cameraPtr->GetEyeSpaceForwardVector();
 
          mCameraYaw = cameraPtr->GetRotationYaw();
          mCameraPitch = cameraPtr->GetRotationPitch();
       }
    }
 
-   glm::vec3 MovementComponent::GetMoveOffset() const
+   float MovementComponent::GetSpeed() const
    {
-      return Velocity * Speed;
+      return mSpeed;
+   }
+
+   void MovementComponent::SetSpeed(const float speed)
+   {
+      mSpeed = speed;
+   }
+
+   glm::vec3 MovementComponent::GetVelocity() const
+   {
+      return mDirection * mSpeed;
    }
 
    glm::mat3 MovementComponent::GetCameraYawRotationMatrix() const

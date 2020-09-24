@@ -18,6 +18,8 @@ namespace Game
 
       SkeletalMeshRenderData m_renderData;
 
+      std::string mLuaScriptRelPath;
+
       float mUpdateDataResetTimeCounter;
 
       float update_data_reset_time;
@@ -40,13 +42,13 @@ namespace Game
 
    public:
 
-      SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const SkeletalMeshRenderData& renderData);
+      SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& mLuaScriptRelPath, const SkeletalMeshRenderData& renderData);
 
       virtual ~SkeletalMeshComponent();
 
       virtual uint64_t GetComponentType() const override;
 
-      virtual void Tick(float deltaTime) override;
+      virtual void Tick(const float deltaTime) override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
@@ -78,6 +80,10 @@ namespace Game
       bool& GetIsTransitionEnabledRef() {
          return bTransitionEnabled;
       }
+
+   protected:
+
+      void SyncDataWithRenderThread();
 
    };
 

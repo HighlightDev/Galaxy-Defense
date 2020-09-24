@@ -10,8 +10,10 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
+#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 
 #include "PlayerActor.h"
+#include "GameSkeletalMeshComponent.h"
 
 namespace Labyrinth
 {
@@ -23,9 +25,9 @@ namespace Labyrinth
    }
 
    ComponentData* LuaToCPPCreator::CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
-      const glm::vec3& rotation, const glm::vec3& scale, IMaterial* material)
+      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
    {
-         return new MeshComponentData(pathToMesh, translation, rotation, scale, material);
+         return new MeshComponentData(pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
    std::shared_ptr<Actor> LuaToCPPCreator::CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent)
@@ -58,7 +60,7 @@ namespace Labyrinth
       }
       else if ("SkeletalMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, GameSkeletalMeshComponent>(*componentData);
       }
       else if ("PhysicsComponent" == componentType)
       {
@@ -68,6 +70,15 @@ namespace Labyrinth
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(*componentData);
       }
+      else if ("InputComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(*componentData);
+      }
+      else if ("MovementComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(*componentData);
+      }
+      else assert((false, "Unknown component type."));
 
       delete componentData;
 
@@ -108,6 +119,16 @@ namespace Labyrinth
    ComponentData* LuaToCPPCreator::CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor)
    {
       return new PhysicsComponentData(physDescriptor);
+   }
+
+   ComponentData* LuaToCPPCreator::CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName)
+   {
+      return new MovementComponentData(launchDirection, cameraName);
+   }
+
+   ComponentData* LuaToCPPCreator::CreateInputComponentData()
+   {
+      return new InputComponentData();
    }
 
 }

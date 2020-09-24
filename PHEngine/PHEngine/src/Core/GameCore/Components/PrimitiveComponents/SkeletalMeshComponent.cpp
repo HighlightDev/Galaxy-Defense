@@ -10,9 +10,10 @@ using namespace Graphics::Renderer;
 namespace Game
 {
 
-   SkeletalMeshComponent::SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const SkeletalMeshRenderData& renderData)
+   SkeletalMeshComponent::SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& mLuaScriptRelPath, const SkeletalMeshRenderData& renderData)
       : PrimitiveComponent(translation, rotation, scale)
       , m_renderData(renderData)
+      , mLuaScriptRelPath(mLuaScriptRelPath)
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
       , mSrcAnimationTime(0.0f)
@@ -34,27 +35,32 @@ namespace Game
       return SKELETAL_MESH_COMPONENT;
    }
 
-   void SkeletalMeshComponent::Tick(float deltaTime)
+   void SkeletalMeshComponent::Tick(const float deltaTime)
    {
-      const float animDeltaTime = deltaTime * 1000.0f;
-      mSrcAnimationTime += animDeltaTime;
+      static constexpr float toSecMult = 1000.0f;
 
+      mSrcAnimationTime += deltaTime * toSecMult;
       mUpdateDataResetTimeCounter += deltaTime;
-      const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
+
+      if (mUpdateDataResetTimeCounter >= update_data_reset_time)
+      {
+         SyncDataWithRenderThread();
+      }
+   }
+
+   void SkeletalMeshComponent::SyncDataWithRenderThread()
+   {
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-      if (bUpdateData)
+      static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
-         if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
-         {
-            mSrcAnimationTime = fmod(mSrcAnimationTime, 1000000.0f);
-            m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+         mSrcAnimationTime = fmod(mSrcAnimationTime, 100000.0f);
+         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-               SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
-               proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, 0, 0);
-            });
-         }
+            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
+            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, 0, 0);
+         });
       }
    }
 

@@ -6,14 +6,8 @@ namespace Labyrinth
 
    PlayerActor::PlayerActor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
       : Actor(name, rootComponent)
-      , mStateMachine(nullptr)
       , mPropertiesBinding(nullptr)
    {
-   }
-
-   PlayerActor::~PlayerActor()
-   {
-      delete mStateMachine;
    }
 
    void PlayerActor::PostConstructorInitialize()
@@ -21,18 +15,6 @@ namespace Labyrinth
       Actor::PostConstructorInitialize();
 
       InitStateMachine();
-   }
-
-   void PlayerActor::ChangeState(const std::string& stateName)
-   {
-      mStateMachine->ChangeState(stateName);
-   }
-
-   void PlayerActor::Tick(const float deltaTime) 
-   {
-      Actor::Tick(deltaTime);
-
-      mStateMachine->Tick(deltaTime);
    }
 
    void PlayerActor::InitStateMachine()
@@ -46,7 +28,7 @@ namespace Labyrinth
       State* stateIdle = new State("State Idle");
       State* stateWalking = new State("State Walking");
 
-      StateProperty<StatePropertyType::Animation>* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
+      BaseStateProperty* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
       stateIdle->AddStateProperty("Prop_AnimationTina", prop_idleAnim);
 
       StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 0.5f);
@@ -55,10 +37,10 @@ namespace Labyrinth
       StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 0.5f);
       stateWalking->AddStateTransition(transitionFromWalkingToIdle);
 
-      StateProperty<StatePropertyType::Animation>* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);
+      BaseStateProperty* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);
       stateWalking->AddStateProperty("Prop_AnimationTina", prop_walkAnim);
 
-      mStateMachine = new StateMachine(stateIdle);
+      mStateMachine = std::make_shared<StateMachine>(stateIdle);
    }
 
 }

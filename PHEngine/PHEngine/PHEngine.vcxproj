@@ -285,6 +285,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
     <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\createTestLevel.lua" />
+    <None Include="res\scripts\skeletComponentAction.lua" />
     <None Include="res\shaders\basicFS.glsl" />
     <None Include="res\shaders\basicShadowFS.glsl" />
     <None Include="res\shaders\basicShadowNonSkeletalVS.glsl" />

@@ -38,11 +38,11 @@ namespace Labyrinth
 
       static ComponentData* CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
          const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo);
-
       static ComponentData* CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
-         const glm::vec3& rotation, const glm::vec3& scale, IMaterial* material);
-
+         const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material);
       static ComponentData* CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor);
+      static ComponentData* CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName);
+      static ComponentData* CreateInputComponentData();
 
       static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhyShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);

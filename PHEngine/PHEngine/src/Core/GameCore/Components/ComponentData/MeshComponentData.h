@@ -11,12 +11,14 @@ namespace Game
 {
 	struct MeshComponentData : public ComponentData
 	{
-      MeshComponentData(const std::string& pathToMesh, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, Graphics::IMaterial* material)
+      MeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
+         const glm::vec3& rotation, const glm::vec3& scale, const std::string& mLuaScriptRelPath, Graphics::IMaterial* material)
 			: ComponentData()
 			, m_pathToMesh(pathToMesh)
 			, m_translation(translation)
 			, m_eulerRotationDegrees(rotation)
 			, m_scale(scale)
+         , m_luaScriptPath(mLuaScriptRelPath)
          , m_material(material)
 		{
 		}
@@ -25,6 +27,7 @@ namespace Game
 		glm::vec3 m_translation;
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
+      std::string m_luaScriptPath;
 
       std::shared_ptr<Graphics::IMaterial> m_material;
 	};

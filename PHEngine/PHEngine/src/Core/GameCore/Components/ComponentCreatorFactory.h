@@ -108,7 +108,7 @@ namespace Game
 
             StaticMeshRenderData renderData(skin, staticMeshShader, mData.m_material);
 
-            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -130,7 +130,8 @@ namespace Game
 
             SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
 
-            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
+               mData.m_luaScriptPath, renderData);
          }
       };
 
@@ -169,7 +170,7 @@ namespace Game
 
             BillboardRenderData renderData(skin, shader, texture);
 
-            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -187,7 +188,7 @@ namespace Game
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
 
-            return std::make_shared<ComponentType>(std::move(mData.m_translation), std::move(mData.m_eulerRotationDegrees), std::move(mData.m_scale), renderData);
+            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -197,7 +198,7 @@ namespace Game
          {
             const DirectionalLightComponentData& mData = static_cast<const DirectionalLightComponentData&>(data);
             DirectionalLightRenderData renderData(mData.Direction, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(std::move(mData.Rotation), renderData);
+            return std::make_shared<ComponentType>(mData.Rotation, renderData);
          }
       };
 
@@ -207,7 +208,7 @@ namespace Game
          {
             const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
             PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(std::move(mData.Translation), std::move(mData.Rotation), renderData);
+            return std::make_shared<ComponentType>(mData.Translation, mData.Rotation, renderData);
          }
       };
 
@@ -216,7 +217,7 @@ namespace Game
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
-            return std::make_shared<ComponentType>(mData.mCameraName, mData.m_launchVelocity);
+            return std::make_shared<ComponentType>(mData.m_launchDirection, mData.mCameraName);
          }
       };
 

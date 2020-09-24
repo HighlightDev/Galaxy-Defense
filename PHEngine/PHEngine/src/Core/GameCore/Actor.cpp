@@ -13,6 +13,7 @@ namespace Game
       , mIsVisible(true)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
+      , mStateMachine(nullptr)
       , m_parent(nullptr)
    {
       assert(m_rootComponent);
@@ -154,7 +155,8 @@ namespace Game
 
    void Actor::ChangeState(const std::string& stateName)
    {
-
+      if (mStateMachine)
+         mStateMachine->ChangeState(stateName);
    }
 
 	void Actor::Tick(const float deltaTime)
@@ -186,6 +188,9 @@ namespace Game
 
       if (m_movementComponent)
          m_movementComponent->Tick(deltaTime);
+
+      if (mStateMachine)
+         mStateMachine->Tick(deltaTime);
 	}
 
 	void Actor::AddComponent(std::shared_ptr<Game::Component> component)

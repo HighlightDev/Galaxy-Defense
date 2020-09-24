@@ -50,8 +50,9 @@ namespace Graphics
 
 		void TextureAnisotropy::ExecuteTextureSampleFilteringInstructions()
 		{
-			if (GetSupportedAnisotropyLvl() > 0.0f)
-				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, GetSupportedAnisotropyLvl());
+         const float anisotropyLvl = GetSupportedAnisotropyLvl();
+			if (anisotropyLvl > 0.0f)
+				glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropyLvl);
 		}
 
 		float TextureAnisotropy::GetSupportedAnisotropyLvl()

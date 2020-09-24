@@ -1,11 +1,11 @@
 #pragma once
 
 #include "State.h"
+#include "Core/GameCore/ITickable.h"
 
 namespace Game
 {
-
-   class StateMachine
+   class StateMachine : public ITickable
    {
       /* At beginning we are here */
       State* mStateNodeInitRoot = nullptr;

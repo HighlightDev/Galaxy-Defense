@@ -91,7 +91,7 @@ namespace Game
          {
             if (KeyState::PRESSED == bindings.GetKeyState(Keys::W))
             {
-               m_playerPhysicsComponent->SetWalkVelocity(movementComponent->Velocity);
+               m_playerPhysicsComponent->SetWalkVelocity(movementComponent->GetVelocity());
             }
             else if (KeyState::PRESSED == bindings.GetKeyState(Keys::A))
             {

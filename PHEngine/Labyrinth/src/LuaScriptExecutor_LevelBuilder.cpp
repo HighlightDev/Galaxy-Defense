@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 
 using namespace Graphics;
 
@@ -29,7 +30,7 @@ namespace Labyrinth
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
 
-      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, ComponentData*(PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
 
       LuaRegisterCallback<LuaScriptExecutor_LevelBuilder, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
@@ -78,9 +79,29 @@ namespace Labyrinth
 
       assert((actor && component, "Actor or component is null"));
 
-      assert((mActiveComponents.count(component->GetObjectId()), "Sought component doesn't exist"));
+      const bool componentExists = mActiveComponents.count(component->GetObjectId());
+      assert((componentExists, "Sought component doesn't exist"));
 
       actor->AddComponent(mActiveComponents[component->GetObjectId()]);
+   }
+
+   /* ------------------- Attach actor to player controller ----------------------------*/
+   void LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<Actor*>& actorData)
+   {
+      Actor* actor = std::get<0>(actorData);
+      assert((actor, "Actor is null"));
+
+      if (auto scene = mSceneWP.lock())
+      {
+         ICamera* camera = scene->GetCamera();
+         assert(ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
+
+         auto actorIt = std::find_if(scene->AllActors.begin(), scene->AllActors.end(), [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
+         assert(actorIt != scene->AllActors.end());
+
+         scene->m_playerController.SetPlayerActor(*actorIt);
+         static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(*actorIt);
+      }
    }
 
    /* -------------------  Create component ----------------------------*/
@@ -100,11 +121,11 @@ namespace Labyrinth
    }
 
    /* -------------------  Create mesh component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData)
+   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
    {
       return LuaToCPPCreator::CreateMeshComponentData(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(meshComponentData)),
          std::get<1>(meshComponentData), std::get<2>(meshComponentData),
-         std::get<3>(meshComponentData), std::get<4>(meshComponentData));
+         std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData));
    }
 
    /* -------------------  Create dir light component data ----------------------------*/
@@ -118,6 +139,18 @@ namespace Labyrinth
    ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData)
    {
       return LuaToCPPCreator::CreatePhysicsComponentData(std::get<0>(phyComponentData));
+   }
+
+   /* -------------------  Create input component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<>& inputComponentData)
+   {
+      return LuaToCPPCreator::CreateInputComponentData();
+   }
+
+   /* -------------------  Create movement component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_LevelBuilder::ExecuteLuaCallback(const std::tuple<glm::vec3, std::string>& movementComponentData)
+   {
+      return LuaToCPPCreator::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
    }
 
    /* -------------------  Create dir light projection shadow info --------------------*/

@@ -40,7 +40,7 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local meshData = _CreateMeshComponentData(host, "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, material)
+	local meshData = _CreateMeshComponentData(host, "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
 	local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
 	_AttachComponentToActor(host, groundActor, floorComponent)
 
@@ -62,7 +62,7 @@ function CreateTestLevel(host)
 	_SetTextureToMaterial(host, material1, "brick_nm_mid.png", "normalMap")
 	_SetFloatToMaterial(host, material1, 1, "uvScale")
 
-	local smallMeshData = _CreateMeshComponentData(host, "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, material1)
+	local smallMeshData = _CreateMeshComponentData(host, "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
 	local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
 	_AttachComponentToActor(host, smallGroundActor, floorComponent)
 
@@ -90,6 +90,7 @@ function CreateTestLevel(host)
 	0, -2.5, 0,
 	0, 0, 0,
 	2.5, 2.5, 2.5, 
+	"",
 	houseMat)
 
 	local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)

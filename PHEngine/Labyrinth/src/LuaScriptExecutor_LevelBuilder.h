@@ -40,6 +40,9 @@ namespace Labyrinth
       /* -------------------  Create Actor ----------------------------*/
       Actor* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3>& actorData);
 
+      /* ------------------- Attach actor to player controller ----------------------------*/
+      void ExecuteLuaCallback(const std::tuple<Actor*>& actorData);
+
       /* -------------------  Attach component to Actor ----------------------------*/
       void ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent);
 
@@ -49,10 +52,16 @@ namespace Labyrinth
       // Specific callbacks
 
        /* -------------------  Create mesh component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>& meshComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
     
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
+
+      /* -------------------  Create input component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<>& inputComponentData);
+
+      /* -------------------  Create movement component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, std::string>& movementComponentData);
       
       /* -------------------  Create physics component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData);

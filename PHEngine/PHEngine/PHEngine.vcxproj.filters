@@ -512,8 +512,9 @@
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
     <None Include="res\shaders\defaultRenderFS.glsl" />
     <None Include="res\shaders\defaultRenderVS.glsl" />
-    <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\materials\Pbs.m" />
+    <None Include="res\scripts\skeletComponentAction.lua" />
+    <None Include="res\scripts\createTestLevel.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
