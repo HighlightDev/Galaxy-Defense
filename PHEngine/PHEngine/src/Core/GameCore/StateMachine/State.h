@@ -45,11 +45,13 @@ namespace Game
          return mStateName;
       }
 
-      void AddStateProperty(const std::string& propertyName, BaseStateProperty* stateProperty)
+      void AddStateProperty(BaseStateProperty* stateProperty)
       {
-         assert(mStateProperties.count(propertyName) == 0); // make sure that property doesn't duplicate
-
-         mStateProperties.emplace(std::make_pair(propertyName, stateProperty));
+         auto bindingSP = stateProperty->PropertyBinding.lock();
+         assert(bindingSP);
+         const std::string& name = bindingSP->MutualName;
+         assert(mStateProperties.count(name) == 0); // make sure that property doesn't duplicate
+         mStateProperties.emplace(std::make_pair(name, stateProperty));
       }
 
       void AddStateTransition(const StateTransition& dstStateTransition)

@@ -22,14 +22,14 @@ namespace Labyrinth
       std::shared_ptr<SkeletalMeshComponent> comp = GetComponent<SkeletalMeshComponent>(SKELETAL_MESH_COMPONENT);
 
       //// Init reference binding
-      mPropertiesBinding = std::make_shared<AnimationPropertyBinding>(comp->GetSrcAnimationNameRef(), comp->GetDstAnimationNameRef(),
+      mPropertiesBinding = std::make_shared<AnimationPropertyBinding>("Prop_Animation", comp->GetSrcAnimationNameRef(), comp->GetDstAnimationNameRef(),
          comp->GetSrcAnimationTimeRef(), comp->GetDstAnimationTimeRef(), comp->GetIsTransitionEnabledRef(), comp->GetTransitionValueRef());
 
       State* stateIdle = new State("State Idle");
       State* stateWalking = new State("State Walking");
 
       BaseStateProperty* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
-      stateIdle->AddStateProperty("Prop_AnimationTina", prop_idleAnim);
+      stateIdle->AddStateProperty(prop_idleAnim);
 
       StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 0.5f);
       stateIdle->AddStateTransition(transitionFromIdleToWalking);
@@ -38,7 +38,7 @@ namespace Labyrinth
       stateWalking->AddStateTransition(transitionFromWalkingToIdle);
 
       BaseStateProperty* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);
-      stateWalking->AddStateProperty("Prop_AnimationTina", prop_walkAnim);
+      stateWalking->AddStateProperty(prop_walkAnim);
 
       mStateMachine = std::make_shared<StateMachine>(stateIdle);
    }

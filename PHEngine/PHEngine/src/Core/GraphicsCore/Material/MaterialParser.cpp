@@ -1,9 +1,9 @@
 #include "MaterialParser.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
-#include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/IoCore/FileFacade.h"
+#include "Core/CommonCore/ParsingXmlStructure.h"
 
-#include <algorithm>
+using namespace Common;
 
 namespace Graphics
 {
@@ -14,28 +14,6 @@ namespace Graphics
 #define PROPERTY_START_NODE_NAME    "<property>"
 #define PROPERTY_END_NODE_NAME      "</property>"
 
-   using iterator_t = typename std::list<std::string>::const_iterator;
-
-   iterator_t GetItByNodeName(const std::list<std::string>& fileSource, const std::string& nodeName)
-   {
-      return std::find_if(fileSource.begin(), fileSource.end(), [&](const std::string& srcNode) { return EngineUtility::TrimStart(srcNode) == nodeName; });
-   }
-
-   iterator_t GetItByNodeName(const iterator_t& beginIt, const iterator_t& endIt, const std::string& nodeName)
-   {
-      return std::find_if(beginIt, endIt, [&](const std::string& srcNode) { return EngineUtility::TrimStart(srcNode) == nodeName; });
-   }
-
-   std::string GetPropertyNodeByName(const std::string& trimmedNodeStr, const std::string& propName)
-   {
-      std::string result;
-
-      const size_t nameStartIndex = EngineUtility::IndexOf(trimmedNodeStr, "\"") + 1;
-      const size_t nameEndIndex = EngineUtility::IndexOf(trimmedNodeStr, "\"", nameStartIndex);
-      result = trimmedNodeStr.substr(nameStartIndex, nameEndIndex - nameStartIndex);
-
-      return result;
-   }
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType)
    {

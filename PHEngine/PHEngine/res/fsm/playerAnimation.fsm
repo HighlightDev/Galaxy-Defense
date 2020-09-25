@@ -1,0 +1,48 @@
+<FSM>
+  <states>
+    <state>
+      name: "Idle"
+    </state>
+    <state>
+      name: "Walking"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "StartWalk"
+      from: "State Idle"
+      to: "State Walking"
+      duration: 0.5
+    </transition>
+    <transition>
+      name: "Stop"
+      from: "State Walking"
+      to: "State Idle"
+      duration: 0.5
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "animationBinding"
+      type: "animation"
+    </binding>
+  </bindings>
+  <properties>
+    <property>
+      name: "Idle"
+      mutual_name: "PropertyAnimation"
+      binding_name: "animationBinding"
+      type: "animation"
+      value: "Iddle"
+      state: "Walking"
+    </property>
+    <property>
+      name: "AnimationWalking"
+      mutual_name: "PropertyAnimation"
+      binding_name: "animationBinding"
+      type: "animation"
+      value: "Armature|Walk"
+      state: "Idle"
+    </property>
+  </properties>
+</FSM>

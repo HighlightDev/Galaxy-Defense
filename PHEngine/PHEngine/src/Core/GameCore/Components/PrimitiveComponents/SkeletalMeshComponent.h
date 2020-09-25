@@ -8,6 +8,8 @@ using namespace Graphics::Data;
 namespace Game
 {
 
+   class LuaWrapper;
+
    class SkeletalMeshComponent :
       public PrimitiveComponent
    {
@@ -19,6 +21,8 @@ namespace Game
       SkeletalMeshRenderData m_renderData;
 
       std::string mLuaScriptRelPath;
+
+      std::unique_ptr<LuaWrapper> mLuaInstance;
 
       float mUpdateDataResetTimeCounter;
 

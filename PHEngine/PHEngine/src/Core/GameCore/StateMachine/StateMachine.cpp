@@ -3,6 +3,7 @@
 #include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace Game
 {
@@ -123,6 +124,7 @@ namespace Game
 
    void StateMachine::SetTransitionValuesFinished(State* newCurrentState)
    {
+      std::cout << "TRANSITION FINISHED, new STATE : " + newCurrentState->GetStateName() << std::endl;
       mTransitionParameter = 1.0f;
       mTransitionTime = 0.0f;
       mCurrentStateNode = newCurrentState;

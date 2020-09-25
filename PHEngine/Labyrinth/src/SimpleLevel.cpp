@@ -4,13 +4,10 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
-
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
-#include "Core/GameCore/Components/DirectionalLightComponent.h"
-
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 
@@ -18,34 +15,30 @@
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
-#include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
+#include "Core/GameCore/GlobalSettings.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+
 #include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 
-#include <glm/vec3.hpp>
-
-#include "Core/GameCore/GlobalSettings.h"
-#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
-
-#include "GameSkeletalMeshComponent.h"
-#include "PlayerActor.h"
-
-#include <LogInterface.h>
-#include "LuaScriptExecutor_LevelBuilder.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
+
+#include <glm/vec3.hpp>
+#include <LogInterface.h>
+
+#include "PlayerActor.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -68,7 +61,7 @@ namespace Labyrinth
 
    void SimpleLevel::RunLuaBuildLevelScript()
    {
-      LuaScriptExecutor_LevelBuilder mLuaLevelBuilder = LuaScriptExecutor_LevelBuilder(mScene, "createTestLevel.lua");
+      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(mScene, "createTestLevel.lua");
 
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
@@ -159,7 +152,7 @@ namespace Labyrinth
 
          std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
             std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, GameSkeletalMeshComponent>(mData);
+         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(mData);
          skeletActor->AddComponent(skeletalComp);
 
          InputComponentData inputComponentData;

@@ -167,19 +167,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Labyrinth.cpp" />
-    <ClCompile Include="src\LuaToCPPCreator.cpp" />
-    <ClCompile Include="src\LuaScriptExecutor_LevelBuilder.cpp" />
     <ClCompile Include="src\PlayerActor.cpp" />
     <ClCompile Include="src\LabyrinthLevelFactory.cpp" />
-    <ClCompile Include="src\GameSkeletalMeshComponent.cpp" />
     <ClCompile Include="src\SimpleLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LuaToCPPCreator.h" />
-    <ClInclude Include="src\LuaScriptExecutor_LevelBuilder.h" />
     <ClInclude Include="src\PlayerActor.h" />
     <ClInclude Include="src\LabyrinthLevelFactory.h" />
-    <ClInclude Include="src\GameSkeletalMeshComponent.h" />
     <ClInclude Include="src\SimpleLevel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

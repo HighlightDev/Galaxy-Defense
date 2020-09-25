@@ -515,6 +515,7 @@
     <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\skeletComponentAction.lua" />
     <None Include="res\scripts\createTestLevel.lua" />
+    <None Include="res\fsm\playerAnimation.fsm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -1852,6 +1853,18 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\CommonCore\ParsingXmlStructure.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2230,6 +2243,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

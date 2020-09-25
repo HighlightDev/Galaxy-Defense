@@ -10,25 +10,14 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 
-using namespace Game;
 using namespace Graphics;
 using namespace EnginePhysics;
 
 namespace Game
 {
-   class Scene;
    class SceneComponent;
-}
 
-
-
-namespace Labyrinth
-{
-   using Game::Scene;
-   using Game::SceneComponent;
-   using EnginePhysics::PhysicsWorld;
-
-   class LuaToCPPCreator
+   class LuaToCPPAdapter
    {
    public:
 

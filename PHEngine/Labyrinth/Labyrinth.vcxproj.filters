@@ -22,17 +22,8 @@
     <ClCompile Include="src\SimpleLevel.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\LuaScriptExecutor_LevelBuilder.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\PlayerActor.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LuaToCPPCreator.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\GameSkeletalMeshComponent.cpp">
-      <Filter>src\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -42,17 +33,8 @@
     <ClInclude Include="src\SimpleLevel.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\LuaScriptExecutor_LevelBuilder.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\PlayerActor.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\LuaToCPPCreator.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\GameSkeletalMeshComponent.h">
-      <Filter>src\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

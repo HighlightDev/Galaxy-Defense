@@ -1,8 +1,10 @@
 #include "SkeletalMeshComponent.h"
-#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
+#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
@@ -14,6 +16,7 @@ namespace Game
       : PrimitiveComponent(translation, rotation, scale)
       , m_renderData(renderData)
       , mLuaScriptRelPath(mLuaScriptRelPath)
+      , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
       , mSrcAnimationTime(0.0f)
@@ -37,12 +40,16 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
-      static constexpr float toSecMult = 1000.0f;
+      if (mLuaInstance->ExecuteScript(mLuaScriptRelPath))
+      {
+         const float updatedTime = LuaFunction<float(float)>::Call(*mLuaInstance.get(), "UpdateAnimationTime", deltaTime);
+         mSrcAnimationTime += updatedTime;
+      }
 
-      mSrcAnimationTime += deltaTime * toSecMult;
       mUpdateDataResetTimeCounter += deltaTime;
+      const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
 
-      if (mUpdateDataResetTimeCounter >= update_data_reset_time)
+      if (bUpdateData)
       {
          SyncDataWithRenderThread();
       }
@@ -59,7 +66,7 @@ namespace Game
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
             SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
-            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, 0, 0);
+            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, mSrcAnimationName, mDstAnimationName);
          });
       }
    }

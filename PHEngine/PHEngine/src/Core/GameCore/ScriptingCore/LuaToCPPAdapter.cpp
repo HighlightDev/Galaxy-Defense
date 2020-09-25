@@ -1,4 +1,4 @@
-#include "LuaToCPPCreator.h"
+#include "LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
@@ -12,25 +12,22 @@
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 
-#include "PlayerActor.h"
-#include "GameSkeletalMeshComponent.h"
-
-namespace Labyrinth
+namespace Game
 {
 
-   ComponentData* LuaToCPPCreator::CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
+   ComponentData* LuaToCPPAdapter::CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo)
    {
       return new DirectionalLightComponentData(rotation, direction, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* LuaToCPPCreator::CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
+   ComponentData* LuaToCPPAdapter::CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
       const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
    {
          return new MeshComponentData(pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   std::shared_ptr<Actor> LuaToCPPCreator::CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent)
+   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent)
    {
       std::shared_ptr<Actor> actor;
 
@@ -40,13 +37,13 @@ namespace Labyrinth
       }
       else if ("PlayerActor" == actorType)
       {
-         actor = std::make_shared<PlayerActor>(name, rootComponent);
+         //actor = std::make_shared<PlayerActor>(name, rootComponent);
       }
 
       return actor;
    }
 
-   std::shared_ptr<Component> LuaToCPPCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
+   std::shared_ptr<Component> LuaToCPPAdapter::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
    {
       std::shared_ptr<Component> result;
 
@@ -60,7 +57,7 @@ namespace Labyrinth
       }
       else if ("SkeletalMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, GameSkeletalMeshComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(*componentData);
       }
       else if ("PhysicsComponent" == componentType)
       {
@@ -85,48 +82,48 @@ namespace Labyrinth
       return result;
    }
 
-   PhyShapeBase* LuaToCPPCreator::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
+   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
    {
       return new PhyBoxShape(halfExtent);
    }
 
-   PhyShapeBase* LuaToCPPCreator::CreatePhysicsCapsuleShape(const float radius, const float height)
+   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsCapsuleShape(const float radius, const float height)
    {
       return new PhyCapsuleShape(radius, height);
    }
 
-   PhyShapeBase* LuaToCPPCreator::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
+   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
    {
       return new PhyPlaneShape(normal, d);
    }
 
-   PhyShapeBase* LuaToCPPCreator::CreatePhysicsSphereShape(const float radius)
+   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsSphereShape(const float radius)
    {
       return new PhySphereShape(radius);
    }
 
-   PhysicsDescriptor* LuaToCPPCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const float mass)
+   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const float mass)
    {
       return new RigidBodyController(physWorld, phyShape, mass);
    }
 
-   PhysicsDescriptor* LuaToCPPCreator::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
+   PhysicsDescriptor* LuaToCPPAdapter::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
       float mass, float stepHeight)
    {
       return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
    }
 
-   ComponentData* LuaToCPPCreator::CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor)
+   ComponentData* LuaToCPPAdapter::CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor)
    {
       return new PhysicsComponentData(physDescriptor);
    }
 
-   ComponentData* LuaToCPPCreator::CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName)
+   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName)
    {
       return new MovementComponentData(launchDirection, cameraName);
    }
 
-   ComponentData* LuaToCPPCreator::CreateInputComponentData()
+   ComponentData* LuaToCPPAdapter::CreateInputComponentData()
    {
       return new InputComponentData();
    }

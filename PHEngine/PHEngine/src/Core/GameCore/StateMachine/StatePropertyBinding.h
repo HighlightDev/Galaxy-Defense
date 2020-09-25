@@ -5,7 +5,12 @@ namespace Game {
 
    struct StatePropertyBinding
    {
+      std::string MutualName;
+      StatePropertyBinding(const std::string& mutualName)
+         : MutualName(mutualName)
+      {
 
+      }
    };
 
    struct AnimationPropertyBinding
@@ -20,8 +25,9 @@ namespace Game {
       bool& bTranstitionEnabled;
       float& TransitionValue;
 
-      AnimationPropertyBinding(std::string& srcName, std::string& dstName, float& srcTime, float& dstTime, bool& isTransitionEnabled, float& transitionValue)
-         : SrcName(srcName)
+      AnimationPropertyBinding(const std::string& mutualName, std::string& srcName, std::string& dstName, float& srcTime, float& dstTime, bool& isTransitionEnabled, float& transitionValue)
+         : StatePropertyBinding(mutualName)
+         , SrcName(srcName)
          , DstName(dstName)
          , SrcTime(srcTime)
          , DstTime(dstTime)

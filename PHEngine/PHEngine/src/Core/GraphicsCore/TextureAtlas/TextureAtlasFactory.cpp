@@ -72,6 +72,9 @@ namespace Graphics
 
    void TextureAtlasFactory::AllocateTexture2dAtlasSpace()
    {
+      if (!Reservations.size())
+         return;
+
       auto getRelevantEmptyChunk = [](const std::vector<TextureAtlasCell>& emptyChunks, const glm::ivec2& reservation)
       {
          size_t reverseIndex = emptyChunks.size() - 1;
@@ -125,6 +128,9 @@ namespace Graphics
 
    void TextureAtlasFactory::AllocateTextureCubeSpace()
    {
+      if (!CubemapReservations.size())
+         return;
+
       for (std::vector<std::pair<size_t, glm::ivec2>>::const_iterator it = CubemapReservations.cbegin(); it != CubemapReservations.cend(); ++it)
       { 
          TextureAtlasCube atlas(it->first, std::make_tuple(it->second, it->second, it->second, it->second, it->second, it->second));

@@ -8,14 +8,12 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
+#include "LuaCore.inl"
 
-using namespace Game;
-
-namespace Labyrinth
+namespace Game
 {
 
-   class LuaScriptExecutor_LevelBuilder
+   class LuaScriptExecutor_EngineObjectsCreator
    {
       // To make sure that shared ptr on component will live while raw pointers on that components are used only within Lua code
       std::unordered_map<uint64_t, std::shared_ptr<Component>> mActiveComponents;
@@ -28,9 +26,9 @@ namespace Labyrinth
 
    public:
 
-      LuaScriptExecutor_LevelBuilder(std::weak_ptr<Scene> scene, const std::string& scriptName);
+      LuaScriptExecutor_EngineObjectsCreator(std::weak_ptr<Scene> scene, const std::string& scriptName);
 
-      ~LuaScriptExecutor_LevelBuilder();
+      ~LuaScriptExecutor_EngineObjectsCreator();
 
       void RegisterCallbacks();
 
