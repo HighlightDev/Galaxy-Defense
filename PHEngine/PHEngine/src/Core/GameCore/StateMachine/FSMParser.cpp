@@ -3,6 +3,8 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/CommonCore/XMLParserHelper.h"
 
+#include <unordered_map>
+
 using namespace Common;
 
 namespace Game
@@ -43,10 +45,6 @@ namespace Game
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
             property.Name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
-         }
-         else if (EngineUtility::StartsWith(currentNodeStr, "mutual_name"))
-         {
-            property.MutualName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "mutual_name");
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "binding_name"))
          {
@@ -200,10 +198,72 @@ namespace Game
          }
       }
 
-      // Build FSM
+      return BuildFSM();
+   }
 
-      State* stub;
-      return std::make_shared<StateMachine>(stub);
+   std::shared_ptr<StatePropertyBinding> CreatePropertyBinding(const FSMParser::FSMP_Binding& binding)
+   {
+      std::shared_ptr<StatePropertyBinding> result;
+
+      if ("animation" == binding.Type) {
+         result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
+      }
+      else {
+         assert((false, "unknown binding type."));
+      }
+
+      return result;
+   }
+
+   BaseStateProperty* CreateProperty(const FSMParser::FSMP_Property& property, const std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>>& bindings)
+   {
+      BaseStateProperty* result = nullptr;
+
+      if ("animation" == property.Type) 
+      {
+         assert(bindings.count(property.BindingName));
+         result = new StateProperty<StatePropertyType::Animation>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+      }
+      else 
+      {
+         assert((false, "unknown binding type."));
+      }
+
+      return result;
+   }
+
+   std::shared_ptr<StateMachine> FSMParser::BuildFSM()
+   {
+      std::unordered_map<std::string, State*> states;
+      std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>> bindings;
+
+      for (const auto& item : mStates)
+      {
+         states[item.Name] = new State(item.Name);
+      }
+
+      auto fsm = std::make_shared<StateMachine>(states[mStates[0].Name]);
+
+      for (const auto& item : mTransitions)
+      {
+         assert(states.count(item.From));
+         auto transition = StateTransition(states.at(item.From), states.at(item.To), std::stof(item.Duration));
+         states.at(item.From)->AddStateTransition(transition);
+      }
+
+      for (const auto& item : mBindings)
+      {
+         bindings[item.BindingName] = CreatePropertyBinding(item);
+         fsm->AddPropertyBinding(item.BindingName, bindings.at(item.BindingName));
+      }
+
+      for (const auto& item : mProperties)
+      {
+         BaseStateProperty* property = CreateProperty(item, bindings);
+         states[item.State]->AddStateProperty(property);
+      }
+
+      return fsm;
    }
 
 #undef FSM_START_NODE_NAME             

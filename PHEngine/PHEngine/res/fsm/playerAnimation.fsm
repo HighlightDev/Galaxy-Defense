@@ -12,13 +12,13 @@
       name: "StartWalk"
       from_state: "Idle"
       to_state: "Walking"
-      duration: 0.5
+      duration: "0.5"
     </transition>
     <transition>
       name: "Stop"
       from_state: "Walking"
       to_state: "Idle"
-      duration: 0.5
+      duration: "0.5"
     </transition>
   </transitions>
   <bindings>
@@ -30,19 +30,17 @@
   <properties>
     <property>
       name: "Idle"
-      mutual_name: "PropertyAnimation"
       binding_name: "animationBinding"
       type: "animation"
       value: "Iddle"
-      state: "Walking"
+      state: "Idle"
     </property>
     <property>
       name: "AnimationWalking"
-      mutual_name: "PropertyAnimation"
       binding_name: "animationBinding"
       type: "animation"
       value: "Armature|Walk"
-      state: "Idle"
+      state: "Walking"
     </property>
   </properties>
 </FSM>

@@ -3,6 +3,8 @@
 #include "State.h"
 #include "Core/GameCore/ITickable.h"
 
+#include <unordered_map>
+
 namespace Game
 {
    class StateMachine : public ITickable
@@ -13,6 +15,8 @@ namespace Game
       State* mCurrentStateNode = nullptr;
 
       const StateTransition* mCurrentActiveStateTransition = nullptr;
+
+      std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<StatePropertyBinding>> mPropertyBindings;
 
       std::vector<std::shared_ptr<IStateMachineController>> CurrentActiveTransitionControllers;
 
@@ -38,9 +42,13 @@ namespace Game
 
       float GetTransitionParameter() const;
 
-   private:
+      void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding);
+
+      std::shared_ptr<StatePropertyBinding> GetPropertyBindingByName(const std::string& name) const;
 
       void InitRootState();
+
+   private:
 
       void DoTransition(const std::string& dstStateName);
       

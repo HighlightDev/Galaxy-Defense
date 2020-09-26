@@ -39,7 +39,7 @@ namespace Game
          return StatePropertyType::Animation;
       }
 
-      StateProperty(std::string animationName, std::weak_ptr<AnimationPropertyBinding> animationPropertyBinding)
+      StateProperty(std::string animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
          : BaseStateProperty(animationPropertyBinding)
          , AnimationName(animationName)
       {

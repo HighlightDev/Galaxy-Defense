@@ -54,16 +54,14 @@ namespace Game
       struct FSMP_Property
       {
          std::string Name;
-         std::string MutualName;
          std::string BindingName;
          std::string Type;
          std::string Value;
          std::string State;
 
-         FSMP_Property(const std::string& name, const std::string& mutualName, const std::string& bindingName,
+         FSMP_Property(const std::string& name, const std::string& bindingName,
             const std::string& type, const std::string& value, const std::string& state)
             : Name(name)
-            , MutualName(mutualName)
             , BindingName(bindingName)
             , Type(type)
             , Value(value)
@@ -84,7 +82,10 @@ namespace Game
    public:
       std::shared_ptr<StateMachine> ParseFSMDescriptor(const std::string& relPathToFSM);
 
-      
+   private:
+
+      std::shared_ptr<StateMachine> BuildFSM();
+
    };
 
 }

@@ -54,8 +54,8 @@ namespace Game
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
 
-      FSMParser fsmParser;
-      fsmParser.ParseFSMDescriptor(folderManager->GetFSMPath() + "playerAnimation.fsm");
+     // FSMParser fsmParser;
+      //fsmParser.ParseFSMDescriptor(folderManager->GetFSMPath() + "playerAnimation.fsm");
    }
 
    /* -------------------  Create Actor ----------------------------*/

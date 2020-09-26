@@ -61,28 +61,28 @@ namespace Game
          return m_renderData;
       }
 
-      float& GetSrcAnimationTimeRef() {
-         return mSrcAnimationTime;
+      float* GetSrcAnimationTimePtr() {
+         return &mSrcAnimationTime;
       }
 
-      float& GetDstAnimationTimeRef() {
-         return mDstAnimationTime;
+      float* GetDstAnimationTimePtr() {
+         return &mDstAnimationTime;
       }
 
-      std::string& GetSrcAnimationNameRef() {
-         return mSrcAnimationName;
+      std::string* GetSrcAnimationNamePtr() {
+         return &mSrcAnimationName;
       }
 
-      std::string& GetDstAnimationNameRef() {
-         return mDstAnimationName;
+      std::string* GetDstAnimationNamePtr() {
+         return &mDstAnimationName;
       }
 
-      float& GetTransitionValueRef() {
-         return mTransitionValue;
+      float* GetTransitionValuePtr() {
+         return &mTransitionValue;
       }
 
-      bool& GetIsTransitionEnabledRef() {
-         return bTransitionEnabled;
+      bool* GetIsTransitionEnabledPtr() {
+         return &bTransitionEnabled;
       }
 
    protected:

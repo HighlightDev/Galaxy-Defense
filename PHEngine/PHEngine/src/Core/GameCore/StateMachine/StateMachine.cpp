@@ -12,7 +12,6 @@ namespace Game
       : mStateNodeInitRoot(rootNode)
       , mCurrentStateNode(mStateNodeInitRoot)
    {
-      InitRootState();
    }
 
    StateMachine::~StateMachine()
@@ -130,6 +129,17 @@ namespace Game
       mCurrentStateNode = newCurrentState;
       mCurrentActiveStateTransition = nullptr;
       bTransitionEnabled = false;
+   }
+
+   std::shared_ptr<StatePropertyBinding> StateMachine::GetPropertyBindingByName(const std::string& name) const
+   {
+      return mPropertyBindings.at(name);
+   }
+
+   void StateMachine::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding)
+   {
+      assert(binding);
+      mPropertyBindings[propBindingName] = binding;
    }
 
    void StateMachine::Tick(const float deltaTime)

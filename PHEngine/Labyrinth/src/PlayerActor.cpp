@@ -1,12 +1,13 @@
 #include "PlayerActor.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
+#include "Core/GameCore/StateMachine/FSMParser.h"
+#include "Core/IoCore/FolderManager.h"
 
 namespace Labyrinth
 {
 
    PlayerActor::PlayerActor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
       : Actor(name, rootComponent)
-      , mPropertiesBinding(nullptr)
    {
    }
 
@@ -21,26 +22,15 @@ namespace Labyrinth
    {
       std::shared_ptr<SkeletalMeshComponent> comp = GetComponent<SkeletalMeshComponent>(SKELETAL_MESH_COMPONENT);
 
-      //// Init reference binding
-      mPropertiesBinding = std::make_shared<AnimationPropertyBinding>("Prop_Animation", comp->GetSrcAnimationNameRef(), comp->GetDstAnimationNameRef(),
-         comp->GetSrcAnimationTimeRef(), comp->GetDstAnimationTimeRef(), comp->GetIsTransitionEnabledRef(), comp->GetTransitionValueRef());
+      FSMParser fsmParser;
+      mStateMachine = fsmParser.ParseFSMDescriptor(IO::FolderManager::GetInstance()->GetFSMPath() + "playerAnimation.fsm");
 
-      State* stateIdle = new State("State Idle");
-      State* stateWalking = new State("State Walking");
+      auto animationPropBinding = std::static_pointer_cast<AnimationPropertyBinding>(mStateMachine->GetPropertyBindingByName("animationBinding"));
 
-      BaseStateProperty* prop_idleAnim = new StateProperty<StatePropertyType::Animation>("Iddle", mPropertiesBinding);
-      stateIdle->AddStateProperty(prop_idleAnim);
+      animationPropBinding->SetBindingProperties(comp->GetSrcAnimationNamePtr(), comp->GetDstAnimationNamePtr(),
+         comp->GetSrcAnimationTimePtr(), comp->GetDstAnimationTimePtr(), comp->GetIsTransitionEnabledPtr(), comp->GetTransitionValuePtr());
 
-      StateTransition transitionFromIdleToWalking(stateIdle, stateWalking, 0.5f);
-      stateIdle->AddStateTransition(transitionFromIdleToWalking);
-
-      StateTransition transitionFromWalkingToIdle(stateWalking, stateIdle, 0.5f);
-      stateWalking->AddStateTransition(transitionFromWalkingToIdle);
-
-      BaseStateProperty* prop_walkAnim = new StateProperty<StatePropertyType::Animation>("Armature|Walk", mPropertiesBinding);
-      stateWalking->AddStateProperty(prop_walkAnim);
-
-      mStateMachine = std::make_shared<StateMachine>(stateIdle);
+      mStateMachine->InitRootState();
    }
 
 }

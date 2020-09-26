@@ -59,11 +59,11 @@ namespace Game
          {
             if (data.State == KeyState::PRESSED)
             {
-               m_playerActor->ChangeState("State Walking");
+               m_playerActor->ChangeState("Walking");
             }
             else
             {
-               m_playerActor->ChangeState("State Idle");
+               m_playerActor->ChangeState("Idle");
             }
          }
       }

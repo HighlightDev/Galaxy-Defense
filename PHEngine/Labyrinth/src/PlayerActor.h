@@ -9,8 +9,6 @@ namespace Labyrinth
       public Actor
    {
 
-      std::shared_ptr<AnimationPropertyBinding> mPropertiesBinding;
-
    public:
 
       PlayerActor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent);
