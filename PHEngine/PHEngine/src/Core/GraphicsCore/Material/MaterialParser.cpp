@@ -1,7 +1,7 @@
 #include "MaterialParser.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/FileFacade.h"
-#include "Core/CommonCore/ParsingXmlStructure.h"
+#include "Core/CommonCore/XMLParserHelper.h"
 
 using namespace Common;
 
@@ -35,10 +35,10 @@ namespace Graphics
       return resultProperty;
    }
 
-   std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(iterator_t& propertiesBeginIt, const iterator_t& propertiesEndIt, std::string& outPropertyName)
+   std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, std::string& outPropertyName)
    {
-      auto propertyStartNode = GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_START_NODE_NAME);
-      auto propertyEndNode = GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_END_NODE_NAME);
+      auto propertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_START_NODE_NAME);
+      auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_END_NODE_NAME);
 
       assert(propertyStartNode != propertiesEndIt);
 
@@ -51,11 +51,11 @@ namespace Graphics
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
-            propertyName = GetPropertyNodeByName(currentNodeStr, "name");
+            propertyName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "type"))
          {
-            propertyType = GetPropertyNodeByName(currentNodeStr, "type");
+            propertyType = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
          }
       }
 
@@ -78,8 +78,8 @@ namespace Graphics
       std::string materialName;
       std::string materialShaderName;
 
-      auto generalStartNode = GetItByNodeName(fileSource, GENERAL_START_NODE_NAME);
-      auto generalEndNode = GetItByNodeName(fileSource, GENERAL_END_NODE_NAME);
+      auto generalStartNode = XMLParserHelper::GetItByNodeName(fileSource, GENERAL_START_NODE_NAME);
+      auto generalEndNode = XMLParserHelper::GetItByNodeName(fileSource, GENERAL_END_NODE_NAME);
 
       ++generalStartNode;
       for (auto it = generalStartNode; it != generalEndNode; ++it)
@@ -88,18 +88,18 @@ namespace Graphics
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
-            materialName = GetPropertyNodeByName(currentNodeStr, "name");
+            materialName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "shader"))
          {
-            materialShaderName = GetPropertyNodeByName(currentNodeStr, "shader");
+            materialShaderName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "shader");
          }
       }
 
       IMaterial* material = new IMaterial(materialName, materialShaderName);
 
-      auto propertiesStartNode = GetItByNodeName(fileSource, PROPERTIES_START_NODE_NAME);
-      auto propertiesEndNode = GetItByNodeName(fileSource, PROPERTIES_END_NODE_NAME);
+      auto propertiesStartNode = XMLParserHelper::GetItByNodeName(fileSource, PROPERTIES_START_NODE_NAME);
+      auto propertiesEndNode = XMLParserHelper::GetItByNodeName(fileSource, PROPERTIES_END_NODE_NAME);
 
       ++propertiesStartNode;
       for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)

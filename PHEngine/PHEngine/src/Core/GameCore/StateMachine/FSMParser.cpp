@@ -1,7 +1,7 @@
 #include "FSMParser.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
-#include "Core/CommonCore/ParsingXmlStructure.h"
+#include "Core/CommonCore/XMLParserHelper.h"
 
 using namespace Common;
 
@@ -26,6 +26,120 @@ namespace Game
 #define PROPERTY_START_NODE_NAME             "<property>"
 #define PROPERTY_END_NODE_NAME               "</property>"
 
+   FSMParser::FSMP_Property GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   {
+      auto propertyStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, PROPERTY_START_NODE_NAME);
+      auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertyStartNode, endIt, PROPERTY_END_NODE_NAME);
+      ++propertyStartNode;
+
+      FSMParser::FSMP_Property property;
+
+      for (auto it = propertyStartNode; it != propertyEndNode; ++it)
+      {
+         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+
+         std::string name, from, to, duration;
+
+         if (EngineUtility::StartsWith(currentNodeStr, "name"))
+         {
+            property.Name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "mutual_name"))
+         {
+            property.MutualName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "mutual_name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "binding_name"))
+         {
+            property.BindingName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "binding_name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "type"))
+         {
+            property.Type = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "value"))
+         {
+            property.Value = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "value");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "state"))
+         {
+            property.State = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "state");
+         }
+         else
+            assert((false, "unknown xml node."));
+      }
+
+      beginIt = propertyEndNode;
+      return property;
+   }
+
+   FSMParser::FSMP_Binding GetBindingAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   {
+      auto bindingStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, BINDING_START_NODE_NAME);
+      auto bindingEndNode = XMLParserHelper::GetItByNodeName(bindingStartNode, endIt, BINDING_END_NODE_NAME);
+      ++bindingStartNode;
+
+      FSMParser::FSMP_Binding binding;
+
+      for (auto it = bindingStartNode; it != bindingEndNode; ++it)
+      {
+         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+
+         std::string name, from, to, duration;
+
+         if (EngineUtility::StartsWith(currentNodeStr, "binding_name"))
+         {
+            binding.BindingName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "binding_name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "type"))
+         {
+            binding.Type = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+         }
+         else
+            assert((false, "unknown xml node."));
+      }
+
+      beginIt = bindingEndNode;
+      return binding;
+   }
+
+   FSMParser::FSMP_Transition GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   {
+      auto transitionStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, TRANSITION_START_NODE_NAME);
+      auto transitionEndNode = XMLParserHelper::GetItByNodeName(transitionStartNode, endIt, TRANSITION_END_NODE_NAME);
+      ++transitionStartNode;
+
+      FSMParser::FSMP_Transition transition;
+
+      for (auto it = transitionStartNode; it != transitionEndNode; ++it)
+      {
+         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+
+         std::string name, from, to, duration;
+
+         if (EngineUtility::StartsWith(currentNodeStr, "name"))
+         {
+            transition.Name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "from_state"))
+         {
+            transition.From = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "from_state");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "to_state"))
+         {
+            transition.To = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "to_state");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "duration"))
+         {
+            transition.Duration = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "duration");
+         }
+         else
+            assert((false, "unknown xml node."));
+      }
+
+      beginIt = transitionEndNode;
+      return transition;
+   }
+
    std::shared_ptr<StateMachine> FSMParser::ParseFSMDescriptor(const std::string& relPathToFSM)
    {
       const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(relPathToFSM);
@@ -36,55 +150,57 @@ namespace Game
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();
 
-      std::string materialName;
-      std::string materialShaderName;
-
-      auto fsmStartNode = GetItByNodeName(fileSource, FSM_START_NODE_NAME);
-      auto fsmEndNode = GetItByNodeName(fileSource, FSM_END_NODE_NAME);
-      ++fsmStartNode;
-
-      auto statesStartNode = GetItByNodeName(fsmStartNode, fsmEndNode, STATES_START_NODE_NAME);
-      auto statesEndNode = GetItByNodeName(fsmStartNode, fsmEndNode, STATES_END_NODE_NAME);
-      ++statesStartNode;
-
-      for (auto it = statesStartNode; it != statesEndNode; ++it)
+      // Collect FSM data
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
 
-         if (EngineUtility::StartsWith(currentNodeStr, "name"))
+         auto fsmStartNode = XMLParserHelper::GetItByNodeName(fileSource, FSM_START_NODE_NAME);
+         auto fsmEndNode = XMLParserHelper::GetItByNodeName(fileSource, FSM_END_NODE_NAME);
+         ++fsmStartNode;
+
+         auto statesStartNode = XMLParserHelper::GetItByNodeName(fsmStartNode, fsmEndNode, STATES_START_NODE_NAME);
+         auto statesEndNode = XMLParserHelper::GetItByNodeName(fsmStartNode, fsmEndNode, STATES_END_NODE_NAME);
+         ++statesStartNode;
+
+         for (auto it = statesStartNode; it != statesEndNode; ++it)
          {
-            const std::string& name = GetPropertyNodeByName(currentNodeStr, "name");
-            mStates.emplace_back(FSMP_State(name));
+            const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+
+            if (EngineUtility::StartsWith(currentNodeStr, "name"))
+            {
+               const std::string& name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+               mStates.emplace_back(FSMP_State(name));
+            }
+         }
+
+         auto transitionsStartNode = XMLParserHelper::GetItByNodeName(statesEndNode, fsmEndNode, TRANSITIONS_START_NODE_NAME);
+         auto transitionsEndNode = XMLParserHelper::GetItByNodeName(transitionsStartNode, fsmEndNode, TRANSITIONS_END_NODE_NAME);
+         ++transitionsStartNode;
+
+         for (auto it = transitionsStartNode; it != transitionsEndNode; ++it)
+         {
+            mTransitions.emplace_back(GetTransitionAndAdvanceIt(it, transitionsEndNode));
+         }
+
+         auto bindingsStartNode = XMLParserHelper::GetItByNodeName(transitionsEndNode, fsmEndNode, BINDINGS_START_NODE_NAME);
+         auto bindingsEndNode = XMLParserHelper::GetItByNodeName(bindingsStartNode, fsmEndNode, BINDINGS_END_NODE_NAME);
+         ++bindingsStartNode;
+
+         for (auto it = bindingsStartNode; it != bindingsEndNode; ++it)
+         {
+            mBindings.emplace_back(GetBindingAndAdvanceIt(it, bindingsEndNode));
+         }
+
+         auto propertiesStartNode = XMLParserHelper::GetItByNodeName(bindingsEndNode, fsmEndNode, PROPERTIES_START_NODE_NAME);
+         auto propertiesEndNode = XMLParserHelper::GetItByNodeName(propertiesStartNode, fsmEndNode, PROPERTIES_END_NODE_NAME);
+         ++propertiesStartNode;
+
+         for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
+         {
+            mProperties.emplace_back(GetPropertyAndAdvanceIt(it, propertiesEndNode));
          }
       }
 
-      auto transitionsStartNode = GetItByNodeName(statesEndNode, fsmEndNode, TRANSITIONS_START_NODE_NAME);
-      auto transitionsEndNode = GetItByNodeName(transitionsStartNode, fsmEndNode, TRANSITIONS_END_NODE_NAME);
-      ++transitionsStartNode;
-
-      for (auto it = transitionsStartNode; it != transitionsEndNode; ++it)
-      {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
-
-         std::string name, from, to, duration;
-
-         if (EngineUtility::StartsWith(currentNodeStr, "name"))
-         {
-            name = GetPropertyNodeByName(currentNodeStr, "name");
-         }
-         else if (EngineUtility::StartsWith(currentNodeStr, "from"))
-         {
-            from = GetPropertyNodeByName(currentNodeStr, "from");
-         }
-         else if (EngineUtility::StartsWith(currentNodeStr, "to"))
-         {
-            to = GetPropertyNodeByName(currentNodeStr, "to");
-         }
-         else if (EngineUtility::StartsWith(currentNodeStr, "duration"))
-         {
-            duration = GetPropertyNodeByName(currentNodeStr, "duration");
-         }
-      }
+      // Build FSM
 
       State* stub;
       return std::make_shared<StateMachine>(stub);

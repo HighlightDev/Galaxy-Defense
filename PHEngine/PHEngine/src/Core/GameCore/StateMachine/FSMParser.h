@@ -9,6 +9,7 @@ namespace Game
 
    class FSMParser
    {
+   public:
       struct FSMP_State
       {
          std::string Name;
@@ -33,6 +34,8 @@ namespace Game
             , Duration(duration)
          {
          }
+
+         FSMP_Transition() = default;
       };
 
       struct FSMP_Binding
@@ -45,6 +48,7 @@ namespace Game
             , Type(type)
          {
          }
+         FSMP_Binding() = default;
       };
 
       struct FSMP_Property
@@ -66,7 +70,11 @@ namespace Game
             , State(state)
          {
          }
+
+         FSMP_Property() = default;
       };
+
+   private:
 
       std::vector<FSMP_State> mStates;
       std::vector<FSMP_Transition> mTransitions;
@@ -75,6 +83,8 @@ namespace Game
 
    public:
       std::shared_ptr<StateMachine> ParseFSMDescriptor(const std::string& relPathToFSM);
+
+      
    };
 
 }

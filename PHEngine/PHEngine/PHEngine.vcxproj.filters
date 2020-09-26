@@ -1859,10 +1859,10 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\CommonCore\ParsingXmlStructure.h">
+    <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h">
+    <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

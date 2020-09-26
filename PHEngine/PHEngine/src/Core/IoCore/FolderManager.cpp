@@ -168,4 +168,9 @@ namespace IO
    {
       return GetResPath() + "materials\\";
    }
+
+   const std::string FolderManager::GetFSMPath() const
+   {
+      return GetResPath() + "fsm\\";
+   }
 }

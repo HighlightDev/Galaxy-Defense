@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GameCore/StateMachine/FSMParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 
 using namespace Graphics;
@@ -52,6 +53,9 @@ namespace Game
       assert((bScriptExecuted, "Lua script execution failure"));
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
+
+      FSMParser fsmParser;
+      fsmParser.ParseFSMDescriptor(folderManager->GetFSMPath() + "playerAnimation.fsm");
    }
 
    /* -------------------  Create Actor ----------------------------*/

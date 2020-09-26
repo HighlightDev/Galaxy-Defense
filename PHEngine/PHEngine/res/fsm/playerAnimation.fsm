@@ -10,14 +10,14 @@
   <transitions>
     <transition>
       name: "StartWalk"
-      from: "State Idle"
-      to: "State Walking"
+      from_state: "Idle"
+      to_state: "Walking"
       duration: 0.5
     </transition>
     <transition>
       name: "Stop"
-      from: "State Walking"
-      to: "State Idle"
+      from_state: "Walking"
+      to_state: "Idle"
       duration: 0.5
     </transition>
   </transitions>
