@@ -11,8 +11,6 @@ namespace Game
 
    Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
       : m_interThreadMgr(interThreadMgr)
-      // m_camera(new FirstPersonCamera(" Test camera ", glm::vec3(0, 0, 1), glm::vec3(0, 0, -10)))
-      , m_camera(new ThirdPersonCamera("MainCamera", 50, 20 , 20))
       , mPhysicsWorld(new PhysicsWorld())
    {
       mPhysicsWorld->InitPhysicsWorld();
@@ -32,6 +30,52 @@ namespace Game
       {
          actor->PostPhysicsInitialize();
       }
+   }
+
+   void Scene::AddCamera(ICamera* camera)
+   {
+      m_camera = camera;
+      const std::string& goName = camera->GameObjectName;
+      assert(GameObjects.count(goName) == 0);
+      GameObjects[goName] = camera;
+   }
+
+   const std::vector<std::shared_ptr<Actor>>& Scene::GetAllActors() const
+   {
+      return AllActors;
+   }
+
+   void Scene::AddActor(std::shared_ptr<Actor> actor)
+   {
+      const std::string& goName = actor->GameObjectName;
+      assert(GameObjects.count(goName) == 0);
+      GameObjects[goName] = actor.get();
+      AllActors.emplace_back(actor);
+   }
+
+   void Scene::RemoveActor(std::shared_ptr<Actor> actor)
+   {
+      const std::string& goName = actor->GameObjectName;
+      if (!GameObjects.count(goName))
+      {
+         GameObjects.erase(goName);
+      }
+
+      const std::vector<std::shared_ptr<Actor>>::const_iterator it = std::find(AllActors.begin(), AllActors.end(), actor);
+      if (it != AllActors.end())
+         AllActors.erase(it); 
+   }
+
+   GameObject* Scene::GetGameObjectByName(const std::string& name) const
+   {
+      GameObject* go = nullptr;
+
+      if (GameObjects.count(name))
+      {
+         go = GameObjects.at(name);
+      }
+
+      return go;
    }
 
    void Scene::RemoveComponent_GameThread(std::shared_ptr<Component> component)
@@ -87,6 +131,14 @@ namespace Game
          {
             ownerActor->RemoveComponent(component);
          }
+      }
+
+      const std::string& goName = component->GameObjectName;
+
+      // Remove game object
+      if (GameObjects.count(goName))
+      {
+         GameObjects.erase(goName);
       }
    }
 

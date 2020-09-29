@@ -1853,9 +1853,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1863,6 +1860,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GameObjectProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2245,13 +2254,16 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

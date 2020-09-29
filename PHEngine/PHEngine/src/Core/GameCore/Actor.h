@@ -47,7 +47,7 @@ namespace Game
 
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 
-		Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent);
+		Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent);
 
 		virtual ~Actor();
 
@@ -86,6 +86,10 @@ namespace Game
 
 		void DetachActor(std::shared_ptr<Actor> actor);
 
+      void AttachStateMachine(std::shared_ptr<StateMachine> fsm);
+
+      std::shared_ptr<StateMachine> GetStateMachine() const;
+
 		inline std::shared_ptr<Game::SceneComponent> GetRootComponent() const {
 
 			return m_rootComponent;
@@ -116,8 +120,6 @@ namespace Game
 
       // When primitive component is removed, all primitive components which are alive and have index greater than removed component's index should do proxy index offset (-1)
       void RemoveComponentIndexOffset(size_t removedProxyIndex);
-
-   protected:
 
       template <typename ComponentT>
       std::shared_ptr<ComponentT> GetComponent(uint64_t type)

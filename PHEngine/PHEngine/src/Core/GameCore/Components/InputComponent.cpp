@@ -4,10 +4,10 @@
 namespace Game
 {
 
-   InputComponent::InputComponent()
+   InputComponent::InputComponent(const std::string& gameObjectName)
+      : Component(gameObjectName)
    {
    }
-
 
    InputComponent::~InputComponent()
    {

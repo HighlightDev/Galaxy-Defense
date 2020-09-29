@@ -6,8 +6,8 @@
 namespace Game
 {
 
-   Actor::Actor(const std::string& name, std::shared_ptr<Game::SceneComponent> rootComponent)
-      : mName(name)
+   Actor::Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
+      : GameObject(gameObjectName)
       , m_rootComponent(rootComponent)
       , m_physicsComponent(nullptr)
       , mIsVisible(true)
@@ -161,13 +161,13 @@ namespace Game
 
 	void Actor::Tick(const float deltaTime)
 	{
+      UpdateRootComponentTransform();
+
       // Update physics
       if (m_physicsComponent)
       {
          m_physicsComponent->Tick(deltaTime);
       }
-
-      UpdateRootComponentTransform();
 
 		m_rootComponent->Tick(deltaTime);
 
@@ -260,6 +260,17 @@ namespace Game
 			m_children.erase(actorIt);
 		}
 	}
+
+   void Actor::AttachStateMachine(std::shared_ptr<StateMachine> fsm)
+   {
+      assert((!mStateMachine, "Current state machine member was already attached."));
+      mStateMachine = fsm;
+   }
+
+   std::shared_ptr<StateMachine> Actor::GetStateMachine() const
+   {
+      return mStateMachine;
+   }
 
    std::shared_ptr<SceneComponent> Actor::GetBaseRootComponent() const
    {

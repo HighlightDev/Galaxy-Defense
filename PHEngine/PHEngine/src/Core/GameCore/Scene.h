@@ -22,13 +22,15 @@ namespace Game
    {
    public:
 
-      std::vector<std::shared_ptr<Actor>> AllActors;
+      std::unordered_map<std::string, GameObject*> GameObjects;
 
       PlayerController m_playerController;
 
       class EnginePhysics::PhysicsWorld* mPhysicsWorld;
 
    private:
+
+      std::vector<std::shared_ptr<Actor>> AllActors;
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -42,6 +44,8 @@ namespace Game
 
       void PostPhysicsInitialize();
 
+      void AddCamera(class ICamera* camera);
+
       inline class ICamera* GetCamera() const
       {
          return m_camera;
@@ -51,6 +55,14 @@ namespace Game
       {
          return m_interThreadMgr;
       }
+
+      GameObject* GetGameObjectByName(const std::string& name) const;
+
+      const std::vector<std::shared_ptr<Actor>>& GetAllActors() const;
+
+      void AddActor(std::shared_ptr<Actor> actor);
+
+      void RemoveActor(std::shared_ptr<Actor> actor);
 
       void Tick_GameThread(float delta);
 
@@ -108,6 +120,12 @@ namespace Game
                LightSceneProxyAdded(componentPtr->LightSceneProxyId, lightProxyShared);
             }
          }
+
+         const std::string& goName = component->GameObjectName;
+
+         // Add game object
+         assert(!GameObjects.count(goName));
+         GameObjects[goName] = component.get();
 
          return component;
       }

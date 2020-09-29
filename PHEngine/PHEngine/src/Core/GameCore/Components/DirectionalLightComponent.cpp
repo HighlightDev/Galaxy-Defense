@@ -14,8 +14,8 @@ using namespace Graphics;
 namespace Game
 {
 
-   DirectionalLightComponent::DirectionalLightComponent(glm::vec3 rotation, const DirectionalLightRenderData& renderData)
-      : LightComponent(glm::vec3(0), rotation, glm::vec3(1))
+   DirectionalLightComponent::DirectionalLightComponent(const std::string& gameObjectName, glm::vec3 rotation, const DirectionalLightRenderData& renderData)
+      : LightComponent(gameObjectName, glm::vec3(0), rotation, glm::vec3(1))
       , m_renderData(renderData)
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);

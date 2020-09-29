@@ -9,8 +9,8 @@ using namespace EngineMath;
 namespace Game
 {
 
-   SceneComponent::SceneComponent()
-      : Component()
+   SceneComponent::SceneComponent(const std::string& gameObjectName)
+      : Component(gameObjectName)
       , bTransformationDirty(true)
       , mIsVisible(true)
       , mTransform(std::make_shared<Transform>())
@@ -21,8 +21,8 @@ namespace Game
 
    }
 
-	SceneComponent::SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
-		: Component()
+	SceneComponent::SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
+		: Component(gameObjectName)
       , bTransformationDirty(true)
       , mIsVisible(true)
       , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))

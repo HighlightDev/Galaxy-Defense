@@ -18,7 +18,7 @@ namespace EnginePhysics {
 
    public:
 
-      PhysicsComponent(PhysicsDescriptor* descriptor);
+      PhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor);
 
       virtual ~PhysicsComponent();
 

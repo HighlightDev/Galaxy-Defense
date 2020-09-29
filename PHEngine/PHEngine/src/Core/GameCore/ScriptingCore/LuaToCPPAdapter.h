@@ -21,17 +21,17 @@ namespace Game
    {
    public:
 
-      static std::shared_ptr<Actor> CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent);
+      static std::shared_ptr<Actor> CreateActorByString(const std::string& gameObjectName, const std::string& actorType, std::shared_ptr<SceneComponent> rootComponent);
 
       static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
 
-      static ComponentData* CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
+      static ComponentData* CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
          const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo);
-      static ComponentData* CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
+      static ComponentData* CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
          const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material);
-      static ComponentData* CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor);
-      static ComponentData* CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName);
-      static ComponentData* CreateInputComponentData();
+      static ComponentData* CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor);
+      static ComponentData* CreateMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
+      static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
 
       static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhyShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);

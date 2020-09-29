@@ -5,8 +5,8 @@
 namespace Game
 {
 
-   MovementComponent::MovementComponent(const glm::vec3& launchDirection, const std::string& cameraName)
-      : Component()
+   MovementComponent::MovementComponent(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+      : Component(gameObjectName)
       , CameraTransformChangedEvent()
       , mCameraName(cameraName)
       , mDirection(launchDirection)

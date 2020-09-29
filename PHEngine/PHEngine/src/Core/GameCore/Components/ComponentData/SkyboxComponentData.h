@@ -9,8 +9,8 @@ namespace Game
 {
 	struct SkyboxComponentData : public ComponentData
 	{
-		SkyboxComponentData(const glm::vec3& scale, std::shared_ptr<IMaterial> materialInstance)
-			: ComponentData()
+		SkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, std::shared_ptr<IMaterial> materialInstance)
+			: ComponentData(gameObjectName)
          , m_scale(scale)
          , m_materialInstance(materialInstance)
 		{

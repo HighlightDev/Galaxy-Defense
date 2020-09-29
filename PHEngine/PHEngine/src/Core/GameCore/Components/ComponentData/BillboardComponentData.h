@@ -10,10 +10,10 @@ namespace Game
 {
    struct BillboardComponentData : public ComponentData
    {
-      BillboardComponentData(glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
+      BillboardComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
          std::string&& vsPath, std::string&& fsPath, std::string&& gsPath, std::string&& pathToTexture)
 
-         : ComponentData()
+         : ComponentData(gameObjectName)
          , m_translation(std::move(translation))
          , m_eulerRotationDegrees(std::move(rotation))
          , m_scale(std::move(scale))

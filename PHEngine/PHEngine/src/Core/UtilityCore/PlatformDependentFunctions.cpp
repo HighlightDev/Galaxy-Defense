@@ -28,11 +28,13 @@ namespace EngineUtility
 
 	std::string GetExecutablePath()
 	{
-		std::string exeFilePath = std::move(std::string(get_module_file_name()));
+      char* fileName = get_module_file_name();
+		std::string exeFilePath = std::string(fileName);
 		size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
 		std::string currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
 
-		return std::move(currentDirPath);
+      delete fileName;
+		return currentDirPath;
 	}
 
 	std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath)
@@ -40,7 +42,7 @@ namespace EngineUtility
       if ("" == relativePath)
          return relativePath;
 
-		std::string pathToExe = std::move(EngineUtility::GetExecutablePath());
+		std::string pathToExe = EngineUtility::GetExecutablePath();
 		std::string absolutePath = pathToExe;
 
 		int32_t countOfGoBack = 0;

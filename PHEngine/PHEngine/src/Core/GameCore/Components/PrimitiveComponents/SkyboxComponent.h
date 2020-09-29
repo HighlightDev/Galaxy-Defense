@@ -29,7 +29,7 @@ namespace Game
 
 	public:
 
-		SkyboxComponent(const glm::vec3& scale, const SkyboxRenderData& renderData);
+		SkyboxComponent(const std::string& gameObjectName, const glm::vec3& scale, const SkyboxRenderData& renderData);
 
 		virtual ~SkyboxComponent();
 

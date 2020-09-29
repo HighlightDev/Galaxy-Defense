@@ -12,8 +12,9 @@ namespace Game
       : public ComponentData
 	{
 
-      LightComponentData(glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-      : Ambient(ambient)
+      LightComponentData(const std::string& gameObjectName, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
+      : ComponentData(gameObjectName)
+      , Ambient(ambient)
       , Diffuse(diffuse)
       , Specular(specular) 
       , ShadowInfo(shadowInfo)

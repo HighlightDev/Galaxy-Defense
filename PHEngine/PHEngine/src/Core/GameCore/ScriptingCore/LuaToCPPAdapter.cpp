@@ -15,25 +15,25 @@
 namespace Game
 {
 
-   ComponentData* LuaToCPPAdapter::CreateDirLightComponentData(const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
+   ComponentData* LuaToCPPAdapter::CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo)
    {
-      return new DirectionalLightComponentData(rotation, direction, ambient, diffuse, specular, shadowInfo);
+      return new DirectionalLightComponentData(gameObjectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateMeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
+   ComponentData* LuaToCPPAdapter::CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
       const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
    {
-         return new MeshComponentData(pathToMesh, translation, rotation, scale, luaPathToFile, material);
+         return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& actorType, const std::string& name, std::shared_ptr<SceneComponent> rootComponent)
+   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& gameObjectName, const std::string& actorType, std::shared_ptr<SceneComponent> rootComponent)
    {
       std::shared_ptr<Actor> actor;
 
       if ("Actor" == actorType)
       {
-         actor = std::make_shared<Actor>(name, rootComponent);
+         actor = std::make_shared<Actor>(gameObjectName, rootComponent);
       }
       else if ("PlayerActor" == actorType)
       {
@@ -113,19 +113,19 @@ namespace Game
       return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
    }
 
-   ComponentData* LuaToCPPAdapter::CreatePhysicsComponentData(PhysicsDescriptor* physDescriptor)
+   ComponentData* LuaToCPPAdapter::CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor)
    {
-      return new PhysicsComponentData(physDescriptor);
+      return new PhysicsComponentData(gameObjectName, physDescriptor);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName)
+   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
    {
-      return new MovementComponentData(launchDirection, cameraName);
+      return new MovementComponentData(gameObjectName, launchDirection, cameraName);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateInputComponentData()
+   ComponentData* LuaToCPPAdapter::CreateInputComponentData(const std::string& gameObjectName)
    {
-      return new InputComponentData();
+      return new InputComponentData(gameObjectName);
    }
 
 }

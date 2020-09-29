@@ -383,12 +383,15 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
+    <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h" />
@@ -834,8 +837,9 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp" />
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutor_EngineObjectsCreator.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp" />

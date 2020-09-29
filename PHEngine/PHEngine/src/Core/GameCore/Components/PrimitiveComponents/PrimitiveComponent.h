@@ -30,7 +30,7 @@ namespace Game
       // Id of scene proxy, this value may change
       size_t PrimitiveProxyComponentId = 0;
 
-		PrimitiveComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
+		PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 
 		virtual ~PrimitiveComponent();
 

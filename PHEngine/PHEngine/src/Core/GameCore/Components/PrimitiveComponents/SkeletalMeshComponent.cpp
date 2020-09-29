@@ -12,21 +12,28 @@ using namespace Graphics::Renderer;
 namespace Game
 {
 
-   SkeletalMeshComponent::SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& mLuaScriptRelPath, const SkeletalMeshRenderData& renderData)
-      : PrimitiveComponent(translation, rotation, scale)
+   SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptAbsPath, const SkeletalMeshRenderData& renderData)
+      : PrimitiveComponent(gameObjectName, translation, rotation, scale)
       , m_renderData(renderData)
-      , mLuaScriptRelPath(mLuaScriptRelPath)
+      , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(LuaScriptAbsPath))
       , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
-      , mSrcAnimationTime(0.0f)
-      , mDstAnimationTime(0.0f)
-      , mSrcAnimationName("")
-      , mDstAnimationName("")
-      , mTransitionValue(0.0f)
-      , bTransitionEnabled(false)
+      , SrcAnimationTime(GenericObjectProperty<float>(0.0f, "SrcAnimTime"))
+      , DstAnimationTime(GenericObjectProperty<float>(0.0f, "DstAnimTime"))
+      , SrcAnimationName(GenericObjectProperty<std::string>("", "SrcAnimName"))
+      , DstAnimationName(GenericObjectProperty<std::string>("", "DstAnimName"))
+      , TransitionValue(GenericObjectProperty<float>(0.0f, "AnimTransitionValue"))
+      , bTransitionEnabled(GenericObjectProperty<bool>(false, "bAnimTransitionEnabled"))
    {
-
+      /* Meta table */
+      mEngineProperties["SrcAnimTime"] = &SrcAnimationTime;
+      mEngineProperties["DstAnimTime"] = &DstAnimationTime;
+      mEngineProperties["SrcAnimName"] = &SrcAnimationName;
+      mEngineProperties["DstAnimName"] = &DstAnimationName;
+      mEngineProperties["AnimTransitionValue"] = &TransitionValue;
+      mEngineProperties["bAnimTransitionEnabled"] = &bTransitionEnabled;
+      /* Meta table */
    }
 
    SkeletalMeshComponent::~SkeletalMeshComponent()
@@ -40,10 +47,10 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
-      if (mLuaInstance->ExecuteScript(mLuaScriptRelPath))
+      if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
       {
          const float updatedTime = LuaFunction<float(float)>::Call(*mLuaInstance.get(), "UpdateAnimationTime", deltaTime);
-         mSrcAnimationTime += updatedTime;
+         SrcAnimationTime += updatedTime;
       }
 
       mUpdateDataResetTimeCounter += deltaTime;
@@ -62,11 +69,11 @@ namespace Game
       static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
       if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         mSrcAnimationTime = fmod(mSrcAnimationTime, 100000.0f);
+         SrcAnimationTime = fmod(SrcAnimationTime, 100000.0f);
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
             SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
-            proxyPtr->UpdateAnimationData(bTransitionEnabled, mTransitionValue, mSrcAnimationTime, mDstAnimationTime, mSrcAnimationName, mDstAnimationName);
+            proxyPtr->UpdateAnimationData(bTransitionEnabled, TransitionValue, SrcAnimationTime, DstAnimationTime, SrcAnimationName, DstAnimationName);
          });
       }
    }

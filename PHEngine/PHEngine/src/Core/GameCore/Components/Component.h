@@ -23,7 +23,7 @@ namespace Game
 
 	public:
 
-      Component();
+      Component(const std::string& gameObjectName);
 
 		virtual ~Component();
 

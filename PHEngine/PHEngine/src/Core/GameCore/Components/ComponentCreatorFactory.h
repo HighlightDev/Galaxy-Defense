@@ -87,7 +87,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<SkyboxVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t skyboxMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkyboxVertexFactory, SimpleShader>>(compositeParams);
 
-            return std::make_shared<ConstructType>(mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, mData.m_materialInstance));
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, mData.m_materialInstance));
          }
       };
 
@@ -108,7 +108,7 @@ namespace Game
 
             StaticMeshRenderData renderData(skin, staticMeshShader, mData.m_material);
 
-            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -130,7 +130,7 @@ namespace Game
 
             SkeletalMeshRenderData renderData(skin, skeletalMeshShader, mData.m_material);
 
-            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
                mData.m_luaScriptPath, renderData);
          }
       };
@@ -152,7 +152,7 @@ namespace Game
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_materialInstance->MaterialName), shaderParams, mData.m_materialInstance);
             CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
 
-            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, mData.m_materialInstance));
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, mData.m_materialInstance));
          }
       };
 
@@ -170,7 +170,7 @@ namespace Game
 
             BillboardRenderData renderData(skin, shader, texture);
 
-            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -188,7 +188,7 @@ namespace Game
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
 
-            return std::make_shared<ComponentType>(mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
       };
 
@@ -198,7 +198,7 @@ namespace Game
          {
             const DirectionalLightComponentData& mData = static_cast<const DirectionalLightComponentData&>(data);
             DirectionalLightRenderData renderData(mData.Direction, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(mData.Rotation, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.Rotation, renderData);
          }
       };
 
@@ -208,7 +208,7 @@ namespace Game
          {
             const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
             PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(mData.Translation, mData.Rotation, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.Translation, mData.Rotation, renderData);
          }
       };
 
@@ -217,7 +217,7 @@ namespace Game
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
-            return std::make_shared<ComponentType>(mData.m_launchDirection, mData.mCameraName);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_launchDirection, mData.mCameraName);
          }
       };
 
@@ -225,7 +225,7 @@ namespace Game
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            return std::make_shared<ComponentType>();
+            return std::make_shared<ComponentType>(data.GameObjectName);
          }
       };
 
@@ -234,7 +234,7 @@ namespace Game
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const PhysicsComponentData& mData = static_cast<const PhysicsComponentData&>(data);
-            return std::make_shared<ComponentType>(mData.mPhysicsDescriptor);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.mPhysicsDescriptor);
          }
       };
 

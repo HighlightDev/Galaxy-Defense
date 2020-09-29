@@ -10,9 +10,8 @@ namespace Game
 {
 	struct InputComponentData : public ComponentData
 	{
-      InputComponentData()
-
-			: ComponentData()
+      InputComponentData(const std::string& gameObjectName)
+			: ComponentData(gameObjectName)
 		{
 		}
 		

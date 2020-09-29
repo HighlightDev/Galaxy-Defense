@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
-#include "LuaCore.inl"
+#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 namespace Game
 {
@@ -50,19 +50,19 @@ namespace Game
       // Specific callbacks
 
        /* -------------------  Create mesh component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
     
       /* -------------------  Create dir light component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
 
       /* -------------------  Create input component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<>& inputComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData);
 
       /* -------------------  Create movement component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<glm::vec3, std::string>& movementComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData);
       
       /* -------------------  Create physics component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData);
 
       /* -------------------  Create dir light projection shadow info --------------------*/
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
@@ -93,6 +93,12 @@ namespace Game
 
       /*-------------------- Create dynamic character controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);
+
+      /* -------------------  Create State machine ----------------------------*/
+      StateMachine* ExecuteLuaCallback(const std::tuple<Actor*, std::string>& fsmData);
+    
+      /* -------------------  Set bindings ------------------------*/
+      void ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData);
    };
 
 }

@@ -20,7 +20,7 @@ namespace Game
 
    public:
 
-      PointLightComponent(glm::vec3 translation, glm::vec3 rotation, const PointLightRenderData& renderData);
+      PointLightComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, const PointLightRenderData& renderData);
 
       virtual ~PointLightComponent();
 

@@ -3,14 +3,22 @@
 
 namespace Game {
 
+   enum class BindingType
+   {
+      ANIMATION
+   };
+
    struct StatePropertyBinding
    {
       std::string MutualName;
+
       StatePropertyBinding(const std::string& mutualName)
          : MutualName(mutualName)
       {
 
       }
+
+      virtual BindingType GetBindingType() const = 0;
    };
 
    struct AnimationPropertyBinding
@@ -57,6 +65,11 @@ namespace Game {
          DstTime = dstTime;
          bTranstitionEnabled = isTransitionEnabled;
          TransitionValue = transitionValue;
+      }
+
+      virtual BindingType GetBindingType() const override
+      {
+         return BindingType::ANIMATION;
       }
    };
 }

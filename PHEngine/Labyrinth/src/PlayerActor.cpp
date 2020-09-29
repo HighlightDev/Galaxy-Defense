@@ -27,8 +27,8 @@ namespace Labyrinth
 
       auto animationPropBinding = std::static_pointer_cast<AnimationPropertyBinding>(mStateMachine->GetPropertyBindingByName("animationBinding"));
 
-      animationPropBinding->SetBindingProperties(comp->GetSrcAnimationNamePtr(), comp->GetDstAnimationNamePtr(),
-         comp->GetSrcAnimationTimePtr(), comp->GetDstAnimationTimePtr(), comp->GetIsTransitionEnabledPtr(), comp->GetTransitionValuePtr());
+      animationPropBinding->SetBindingProperties(comp->SrcAnimationName.GetValuePtr(), comp->DstAnimationName.GetValuePtr(),
+         comp->SrcAnimationTime.GetValuePtr(), comp->DstAnimationTime.GetValuePtr(), comp->bTransitionEnabled.GetValuePtr(), comp->TransitionValue.GetValuePtr());
 
       mStateMachine->InitRootState();
    }

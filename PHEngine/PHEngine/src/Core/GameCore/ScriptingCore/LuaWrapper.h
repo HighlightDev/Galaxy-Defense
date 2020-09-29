@@ -26,7 +26,7 @@ namespace Game
 
       lua_State* GetState() const;
 
-      bool ExecuteScript(const std::string& pathToFile);
+      bool ExecuteScript(const std::string& absPath);
 
       std::string GetErrorMessageAt(int32_t stackIndex) const;
    };

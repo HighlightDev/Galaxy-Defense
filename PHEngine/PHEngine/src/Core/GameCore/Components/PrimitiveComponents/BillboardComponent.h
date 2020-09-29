@@ -24,7 +24,7 @@ namespace Game
 
    public:
 
-      BillboardComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const BillboardRenderData& renderData);
+      BillboardComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const BillboardRenderData& renderData);
 
       virtual ~BillboardComponent();
 

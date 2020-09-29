@@ -1,5 +1,9 @@
 #pragma once
 
+#include <string>
+#include <stdint.h>
+#include "Core/CommonCore/Assertion.h"
+
 namespace Game
 {
    namespace ComponentType

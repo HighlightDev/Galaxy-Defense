@@ -22,7 +22,7 @@ namespace Game
 
 	public:
 
-		StaticMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const StaticMeshRenderData& renderData);
+		StaticMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const StaticMeshRenderData& renderData);
 
 		virtual ~StaticMeshComponent();
 

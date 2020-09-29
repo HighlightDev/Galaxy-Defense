@@ -11,9 +11,9 @@ namespace Game
 {
 	struct MeshComponentData : public ComponentData
 	{
-      MeshComponentData(const std::string& pathToMesh, const glm::vec3& translation,
+      MeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
          const glm::vec3& rotation, const glm::vec3& scale, const std::string& mLuaScriptRelPath, Graphics::IMaterial* material)
-			: ComponentData()
+			: ComponentData(gameObjectName)
 			, m_pathToMesh(pathToMesh)
 			, m_translation(translation)
 			, m_eulerRotationDegrees(rotation)

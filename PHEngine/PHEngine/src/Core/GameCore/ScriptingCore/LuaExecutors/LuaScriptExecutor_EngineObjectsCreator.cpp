@@ -1,10 +1,13 @@
 #include "LuaScriptExecutor_EngineObjectsCreator.h"
-#include "LuaToCPPAdapter.h"
+#include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
-#include "Core/GameCore/StateMachine/FSMParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/StateMachine/FSMParser.h"
+#include "Core/IoCore/FolderManager.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
+#include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
 
 using namespace Graphics;
 
@@ -29,10 +32,10 @@ namespace Game
       LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
 
       LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
 
       LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
       LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
@@ -48,14 +51,11 @@ namespace Game
    {
       const auto folderManager = IO::FolderManager::GetInstance();
 
-      const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetScriptPath() + mScriptName);
+      const bool bScriptExecuted = mLuaInstance.ExecuteScript(EngineUtility::ConvertFromRelativeToAbsolutePath(folderManager->GetScriptPath() + mScriptName));
 
       assert((bScriptExecuted, "Lua script execution failure"));
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
-
-     // FSMParser fsmParser;
-      //fsmParser.ParseFSMDescriptor(folderManager->GetFSMPath() + "playerAnimation.fsm");
    }
 
    /* -------------------  Create Actor ----------------------------*/
@@ -65,10 +65,9 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-       
          auto actorSP = LuaToCPPAdapter::CreateActorByString(std::get<0>(actorData), std::get<1>(actorData), 
-            std::make_shared<Game::SceneComponent>(std::get<2>(actorData), std::get<3>(actorData), std::get<4>(actorData)));
-         scene->AllActors.push_back(actorSP);
+            std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<2>(actorData), std::get<3>(actorData), std::get<4>(actorData)));
+         scene->AddActor(actorSP);
          createdActor = actorSP.get();
       }
 
@@ -100,8 +99,9 @@ namespace Game
          ICamera* camera = scene->GetCamera();
          assert(ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
 
-         auto actorIt = std::find_if(scene->AllActors.begin(), scene->AllActors.end(), [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
-         assert(actorIt != scene->AllActors.end());
+         auto actorIt = std::find_if(scene->GetAllActors().begin(), scene->GetAllActors().end(),
+            [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
+         assert(actorIt != scene->GetAllActors().end());
 
          scene->m_playerController.SetPlayerActor(*actorIt);
          static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(*actorIt);
@@ -125,36 +125,36 @@ namespace Game
    }
 
    /* -------------------  Create mesh component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
    {
-      return LuaToCPPAdapter::CreateMeshComponentData(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(meshComponentData)),
-         std::get<1>(meshComponentData), std::get<2>(meshComponentData),
-         std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData));
+      return LuaToCPPAdapter::CreateMeshComponentData(std::get<0>(meshComponentData), 
+         IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)) , std::get<2>(meshComponentData),
+         std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
    }
 
    /* -------------------  Create dir light component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
    {
       return LuaToCPPAdapter::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
-         std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData));
+         std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData), std::get<6>(dirLightComponentData));
    }
 
    /* -------------------  Create physics component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhysicsDescriptor*>& phyComponentData)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData)
    {
-      return LuaToCPPAdapter::CreatePhysicsComponentData(std::get<0>(phyComponentData));
+      return LuaToCPPAdapter::CreatePhysicsComponentData(std::get<0>(phyComponentData), std::get<1>(phyComponentData));
    }
 
    /* -------------------  Create input component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<>& inputComponentData)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData)
    {
-      return LuaToCPPAdapter::CreateInputComponentData();
+      return LuaToCPPAdapter::CreateInputComponentData(std::get<0>(inputComponentData));
    }
 
    /* -------------------  Create movement component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3, std::string>& movementComponentData)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData)
    {
-      return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
+      return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
    }
 
    /* -------------------  Create dir light projection shadow info --------------------*/
@@ -247,5 +247,38 @@ namespace Game
       }
 
       return descriptor;
+   }
+
+   /* -------------------  Create State machine ----------------------------*/
+   StateMachine* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<Actor*, std::string>& fsmData)
+   {
+      StateMachine* createdStateMachine = nullptr;
+
+      FSMParser fsmParser;
+      auto stateMachine = fsmParser.ParseFSMDescriptor(IO::FolderManager::GetInstance()->GetFSMPath() + std::get<1>(fsmData));
+      Actor* actor = std::get<0>(fsmData);
+
+      assert(actor && stateMachine);
+
+      actor->AttachStateMachine(stateMachine);
+
+      createdStateMachine = stateMachine.get();
+
+      return createdStateMachine;
+   }
+
+   /* -------------------  Set bindings ------------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData)
+   {
+      auto stateMachine = std::get<0>(fsmData);
+      assert(stateMachine);
+
+      if (auto scene = mSceneWP.lock())
+      {
+         GameObject* gameObject = scene->GetGameObjectByName(std::get<1>(fsmData));
+         const auto& binding = stateMachine->GetPropertyBindingByName(std::get<2>(fsmData));
+         BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(fsmData));
+      }
+
    }
 }

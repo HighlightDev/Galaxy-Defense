@@ -9,8 +9,8 @@ namespace Game
 {
 	using namespace EngineUtility;
 
-	SkyboxComponent::SkyboxComponent(const glm::vec3& scale, const SkyboxRenderData& renderData)
-		: PrimitiveComponent(glm::vec3(), glm::vec3(), scale)
+	SkyboxComponent::SkyboxComponent(const std::string& gameObjectName, const glm::vec3& scale, const SkyboxRenderData& renderData)
+		: PrimitiveComponent(gameObjectName, glm::vec3(), glm::vec3(), scale)
 		, m_rotateSpeed(2.0f)
       , m_renderData(renderData)
 	{

@@ -9,8 +9,8 @@
 namespace Game
 {
 
-   PointLightComponent::PointLightComponent(glm::vec3 translation, glm::vec3 rotation, const PointLightRenderData& renderData)
-      : LightComponent(translation, rotation, glm::vec3(1))
+   PointLightComponent::PointLightComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, const PointLightRenderData& renderData)
+      : LightComponent(gameObjectName, translation, rotation, glm::vec3(1))
       , m_renderData(renderData)
    {
 

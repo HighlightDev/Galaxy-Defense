@@ -9,8 +9,8 @@ namespace Game
 {
    struct PhysicsComponentData : public ComponentData
    {
-      PhysicsComponentData(PhysicsDescriptor* descriptor)
-         : ComponentData()
+      PhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* descriptor)
+         : ComponentData(gameObjectName)
          , mPhysicsDescriptor(descriptor)
       {
       }

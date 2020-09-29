@@ -34,9 +34,9 @@ namespace Game
 
       bool bIsRootComponent = false;
 
-		SceneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
+		SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 
-      SceneComponent();
+      SceneComponent(const std::string& gameObjectName);
 
 		~SceneComponent();
 

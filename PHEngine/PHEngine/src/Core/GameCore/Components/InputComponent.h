@@ -13,7 +13,7 @@ namespace Game
 
    public:
 
-      InputComponent();
+      InputComponent(const std::string& gameObjectName);
 
       virtual ~InputComponent();
 

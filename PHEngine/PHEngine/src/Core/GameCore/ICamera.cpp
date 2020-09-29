@@ -9,7 +9,8 @@ namespace Game
 {
 
    ICamera::ICamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg)
-      : m_rotateSensetivity(0.08f)
+      : GameObject(cameraName)
+      , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
       , m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
       , m_localSpaceUpVector(std::move(glm::vec3(0, 1, 0)))

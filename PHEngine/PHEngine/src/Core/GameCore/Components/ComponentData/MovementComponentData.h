@@ -11,8 +11,8 @@ namespace Game
 {
 	struct MovementComponentData : public ComponentData
 	{
-      MovementComponentData(const glm::vec3& launchDirection, const std::string& cameraName)
-			: ComponentData()
+      MovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+			: ComponentData(gameObjectName)
          , mCameraName(cameraName)
          , m_launchDirection(launchDirection)
 		{

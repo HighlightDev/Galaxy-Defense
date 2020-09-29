@@ -9,8 +9,9 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   PhysicsComponent::PhysicsComponent(PhysicsDescriptor* descriptor)
-      : mDescriptor(descriptor)
+   PhysicsComponent::PhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor)
+      : Component(gameObjectName)
+      , mDescriptor(descriptor)
       , bIsTransformationDirty(true)
    {
    }

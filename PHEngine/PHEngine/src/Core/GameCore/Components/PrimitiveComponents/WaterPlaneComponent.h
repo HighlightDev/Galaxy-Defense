@@ -34,7 +34,7 @@ namespace Game
 
       using Base = PrimitiveComponent;
 
-      WaterPlaneComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, WaterPlaneRenderData&& renderData,
+      WaterPlaneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, WaterPlaneRenderData&& renderData,
          WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
 
       virtual ~WaterPlaneComponent();

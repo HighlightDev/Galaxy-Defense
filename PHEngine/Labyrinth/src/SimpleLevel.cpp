@@ -32,7 +32,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 
-#include "Core/GameCore/ScriptingCore/LuaScriptExecutor_EngineObjectsCreator.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 
 #include <glm/vec3.hpp>
@@ -136,6 +136,11 @@ namespace Labyrinth
       }
 #endif
 
+      //Camera
+      {
+         mScene->AddCamera(new ThirdPersonCamera("MainCamera", 50, 20, 20));
+      }
+
       // SKELETAL MESH
       {
 
@@ -147,30 +152,30 @@ namespace Labyrinth
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
          MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
 
-         MeshComponentData mData(GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
+         MeshComponentData mData("Skelet comp,", GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
             GET_REL_PATH_TO_FILE("skeletComponentAction.lua"), pbrMaterial);
 
-         std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy", std::make_shared<SceneComponent>(
-            std::move(glm::vec3(10, 50, 10)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy",
+            std::make_shared<SceneComponent>("BuddyRootComponent", glm::vec3(10, 50, 10), glm::vec3(0), glm::vec3(1)));
          auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(mData);
          skeletActor->AddComponent(skeletalComp);
 
-         InputComponentData inputComponentData;
+         InputComponentData inputComponentData("Skelet input comp");
          auto inputComp = mScene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(inputComponentData);
          skeletActor->AddComponent(inputComp);
-         MovementComponentData movementComponentData(glm::vec3(0), GetCamera()->GetCameraName());
+         MovementComponentData movementComponentData("Skelet Movement comp", glm::vec3(0), GetCamera()->GetCameraName());
          auto movementComp = mScene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(movementComponentData);
          skeletActor->AddComponent(movementComp);
 
          PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
          mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<Component> playerPhysComponent = mScene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(PhysicsComponentData(playerPhysDesc));
+         std::shared_ptr<Component> playerPhysComponent = mScene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(PhysicsComponentData("Skelet phys comp", playerPhysDesc));
 
          skeletActor->AddComponent(playerPhysComponent);
 
          mScene->m_playerController.SetPlayerActor(skeletActor);
 
-         mScene->AllActors.push_back(skeletActor);
+         mScene->AddActor(skeletActor);
 
          ICamera* camera = GetCamera();
 
@@ -193,11 +198,12 @@ namespace Labyrinth
 
          std::shared_ptr<ITexture> dayTex = TexturePool::GetInstance()->GetOrAllocateResource(dTexPath);
 
-         SkyboxComponentData mData(glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
-         std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
+         SkyboxComponentData mData("Skybox component", glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
+         std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor",
+            std::make_shared<SceneComponent>("SkyboxRootComponent", glm::vec3(0), glm::vec3(0), glm::vec3(1)));
          auto skyboxComp = mScene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(mData);
          skyboxActor->AddComponent(skyboxComp);
-         mScene->AllActors.push_back(skyboxActor);
+         mScene->AddActor(skyboxActor);
       }
    }
 #undef GET_REL_PATH_TO_FILE

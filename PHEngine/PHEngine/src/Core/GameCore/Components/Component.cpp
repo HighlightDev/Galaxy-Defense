@@ -6,8 +6,9 @@
 namespace Game
 {
 
-	Component::Component()
-		: m_owner(nullptr)
+	Component::Component(const std::string& gameObjectName)
+		: GameObject(gameObjectName)
+      , m_owner(nullptr)
 	{
 	}
 

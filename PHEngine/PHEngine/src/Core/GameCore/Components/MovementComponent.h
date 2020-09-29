@@ -28,7 +28,7 @@ namespace Game
 
    public:
 
-      MovementComponent(const glm::vec3& launchDirection, const std::string& cameraName);
+      MovementComponent(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
 
       virtual ~MovementComponent();
 

@@ -10,8 +10,8 @@ namespace Game
       public LightComponentData
 	{
 
-      PointLightComponentData(glm::vec3 translation, glm::vec3 rotation, glm::vec3 attenuation, float radianceSqrRadius, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-         : LightComponentData(ambient, diffuse, specular, shadowInfo)
+      PointLightComponentData(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 attenuation, float radianceSqrRadius, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
+         : LightComponentData(gameObjectName, ambient, diffuse, specular, shadowInfo)
          , Attenuation(attenuation)
          , RadianceSqrRadius(radianceSqrRadius)
          , Translation(translation)

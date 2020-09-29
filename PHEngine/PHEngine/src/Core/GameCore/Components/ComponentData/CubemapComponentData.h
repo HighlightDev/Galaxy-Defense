@@ -10,10 +10,10 @@ namespace Game
 {
    struct CubemapComponentData : public ComponentData
    {
-      CubemapComponentData(glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
+      CubemapComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
          std::string&& vsPath, std::string&& fsPath, const LazyTextureAtlasObtainer& textureObtainer)
 
-         : ComponentData()
+         : ComponentData(gameObjectName)
          , m_translation(std::move(translation))
          , m_eulerRotationDegrees(std::move(rotation))
          , m_scale(std::move(scale))

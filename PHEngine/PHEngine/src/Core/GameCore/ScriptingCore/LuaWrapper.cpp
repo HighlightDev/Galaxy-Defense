@@ -18,9 +18,9 @@ namespace Game
       }
    }
 
-   bool LuaWrapper::ExecuteScript(const std::string& relativePathToFile)
+   bool LuaWrapper::ExecuteScript(const std::string& absPath)
    {
-      std::string pathToFile = EngineUtility::ConvertFromRelativeToAbsolutePath(relativePathToFile);
+      std::string pathToFile = absPath;
 
       if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
       {

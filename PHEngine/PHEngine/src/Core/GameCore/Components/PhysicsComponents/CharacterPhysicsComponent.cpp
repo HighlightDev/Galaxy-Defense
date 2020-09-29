@@ -12,8 +12,8 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   CharacterPhysicsComponent::CharacterPhysicsComponent(PhysicsDescriptor* descriptor)
-      : PhysicsComponent(descriptor)
+   CharacterPhysicsComponent::CharacterPhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor)
+      : PhysicsComponent(gameObjectName, descriptor)
       , characterController(static_cast<DynamicCharacterController*>(descriptor))
    {
       assert(characterController);

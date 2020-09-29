@@ -20,7 +20,7 @@ namespace Game
 
       SkeletalMeshRenderData m_renderData;
 
-      std::string mLuaScriptRelPath;
+      std::string mLuaScriptAbsPath;
 
       std::unique_ptr<LuaWrapper> mLuaInstance;
 
@@ -28,25 +28,27 @@ namespace Game
 
       float update_data_reset_time;
 
+   public:
+
       /* src is the main animation time counter*/
-      float mSrcAnimationTime;
+      GenericObjectProperty<float> SrcAnimationTime;
 
       /* dst time is used when blending of animations is being calculated*/
-      float mDstAnimationTime;
+      GenericObjectProperty<float> DstAnimationTime;
 
       /* src is the main animation name*/
-      std::string mSrcAnimationName;
+      GenericObjectProperty<std::string> SrcAnimationName;
 
       /* dst animation name is used when blending of animations is being occurred*/
-      std::string mDstAnimationName;
+      GenericObjectProperty<std::string> DstAnimationName;
 
-      bool bTransitionEnabled;
+      GenericObjectProperty<bool> bTransitionEnabled;
 
-      float mTransitionValue;
+      GenericObjectProperty<float> TransitionValue;
 
    public:
 
-      SkeletalMeshComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& mLuaScriptRelPath, const SkeletalMeshRenderData& renderData);
+      SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& luaScriptAbsPath, const SkeletalMeshRenderData& renderData);
 
       virtual ~SkeletalMeshComponent();
 
@@ -59,30 +61,6 @@ namespace Game
       inline const SkeletalMeshRenderData& GetRenderData() const {
 
          return m_renderData;
-      }
-
-      float* GetSrcAnimationTimePtr() {
-         return &mSrcAnimationTime;
-      }
-
-      float* GetDstAnimationTimePtr() {
-         return &mDstAnimationTime;
-      }
-
-      std::string* GetSrcAnimationNamePtr() {
-         return &mSrcAnimationName;
-      }
-
-      std::string* GetDstAnimationNamePtr() {
-         return &mDstAnimationName;
-      }
-
-      float* GetTransitionValuePtr() {
-         return &mTransitionValue;
-      }
-
-      bool* GetIsTransitionEnabledPtr() {
-         return &bTransitionEnabled;
       }
 
    protected:

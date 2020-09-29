@@ -4,8 +4,8 @@
 namespace Game
 {
 
-   CubemapComponent::CubemapComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const CubemapRenderData& renderData)
-      : PrimitiveComponent(translation, rotation, scale)
+   CubemapComponent::CubemapComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const CubemapRenderData& renderData)
+      : PrimitiveComponent(gameObjectName, translation, rotation, scale)
       , m_renderData(renderData)
    {
    }

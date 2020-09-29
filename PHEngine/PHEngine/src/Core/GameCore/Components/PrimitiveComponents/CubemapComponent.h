@@ -24,7 +24,7 @@ namespace Game
 
    public:
 
-      CubemapComponent(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const CubemapRenderData& renderData);
+      CubemapComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const CubemapRenderData& renderData);
 
       virtual ~CubemapComponent();
 
