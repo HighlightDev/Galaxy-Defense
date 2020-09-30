@@ -1874,6 +1874,9 @@
     <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2264,6 +2267,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

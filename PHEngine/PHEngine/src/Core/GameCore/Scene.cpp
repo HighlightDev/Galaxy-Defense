@@ -11,6 +11,7 @@ namespace Game
 
    Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
       : m_interThreadMgr(interThreadMgr)
+      , m_camera(nullptr)
       , mPhysicsWorld(new PhysicsWorld())
    {
       mPhysicsWorld->InitPhysicsWorld();
@@ -337,6 +338,7 @@ namespace Game
    Scene::~Scene()
    {
       AllActors.clear();
+      delete m_camera;
    }
 
 }

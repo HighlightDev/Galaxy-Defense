@@ -118,6 +118,11 @@ namespace Labyrinth
    {
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
+      //Camera
+      {
+         mScene->AddCamera(new ThirdPersonCamera("MainCamera", 50, 20, 20));
+      }
+
       RunLuaBuildLevelScript();
     
 #if 0
@@ -135,55 +140,6 @@ namespace Labyrinth
          mScene->AllActors.push_back(waterActor);
       }
 #endif
-
-      //Camera
-      {
-         mScene->AddCamera(new ThirdPersonCamera("MainCamera", 50, 20, 20));
-      }
-
-      // SKELETAL MESH
-      {
-
-         auto albedoTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
-         auto normalMapTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("dummy_nm.png"));
-
-         IMaterial* pbrMaterial = MaterialParser::ParseMaterialDescriptor(GET_REL_PATH_TO_FILE("Pbs.m"));
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "albedo", albedoTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "normalMap", normalMapTex);
-         MaterialPropertySetter::SetMaterialPropertyValue(pbrMaterial, "uvScale", 1.0f);
-
-         MeshComponentData mData("Skelet comp,", GET_REL_PATH_TO_FILE("player_walk.fbx"), glm::vec3(0, -0.6f, 0), glm::vec3(0, 0, 0), glm::vec3(3),
-            GET_REL_PATH_TO_FILE("skeletComponentAction.lua"), pbrMaterial);
-
-         std::shared_ptr<PlayerActor> skeletActor = std::make_shared<PlayerActor>("Buddy",
-            std::make_shared<SceneComponent>("BuddyRootComponent", glm::vec3(10, 50, 10), glm::vec3(0), glm::vec3(1)));
-         auto skeletalComp = mScene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(mData);
-         skeletActor->AddComponent(skeletalComp);
-
-         InputComponentData inputComponentData("Skelet input comp");
-         auto inputComp = mScene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(inputComponentData);
-         skeletActor->AddComponent(inputComp);
-         MovementComponentData movementComponentData("Skelet Movement comp", glm::vec3(0), GetCamera()->GetCameraName());
-         auto movementComp = mScene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(movementComponentData);
-         skeletActor->AddComponent(movementComp);
-
-         PhysicsDescriptor* playerPhysDesc = new DynamicCharacterController(mScene->mPhysicsWorld, 1, 2.5, 10, 1.0f);
-         mScene->mPhysicsWorld->AddPhysDescriptor(playerPhysDesc);
-         std::shared_ptr<Component> playerPhysComponent = mScene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(PhysicsComponentData("Skelet phys comp", playerPhysDesc));
-
-         skeletActor->AddComponent(playerPhysComponent);
-
-         mScene->m_playerController.SetPlayerActor(skeletActor);
-
-         mScene->AddActor(skeletActor);
-
-         ICamera* camera = GetCamera();
-
-         if (camera->GetCameraType() == ICamera::CameraType::THIRD_PERSON)
-         {
-            static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(skeletActor);
-         }
-      }
 
       // SKYBOX
       {

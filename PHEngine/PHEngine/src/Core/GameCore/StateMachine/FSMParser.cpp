@@ -208,7 +208,11 @@ namespace Game
       if ("animation" == binding.Type) {
          result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
       }
-      else {
+      else if ("float" == binding.Type) {
+         result = std::make_shared<FloatPropertyBinding>(binding.BindingName);
+      }
+      else 
+      {
          assert((false, "unknown binding type."));
       }
 
@@ -219,10 +223,16 @@ namespace Game
    {
       BaseStateProperty* result = nullptr;
 
+      assert(bindings.count(property.BindingName));
+
       if ("animation" == property.Type) 
       {
-         assert(bindings.count(property.BindingName));
          result = new StateProperty<StatePropertyType::Animation>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+      }
+      else if ("float" == property.Type)
+      {
+         const float value = std::stof(property.Value);
+         result = new StateProperty<StatePropertyType::Float>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
       }
       else 
       {

@@ -5,6 +5,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
@@ -15,7 +16,7 @@ namespace Game
    SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptAbsPath, const SkeletalMeshRenderData& renderData)
       : PrimitiveComponent(gameObjectName, translation, rotation, scale)
       , m_renderData(renderData)
-      , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(LuaScriptAbsPath))
+      , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(LuaScriptAbsPath)))
       , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
@@ -25,6 +26,8 @@ namespace Game
       , DstAnimationName(GenericObjectProperty<std::string>("", "DstAnimName"))
       , TransitionValue(GenericObjectProperty<float>(0.0f, "AnimTransitionValue"))
       , bTransitionEnabled(GenericObjectProperty<bool>(false, "bAnimTransitionEnabled"))
+      , testScale(GenericObjectProperty<float>((0.0f), "scale"))
+      , timeMult(GenericObjectProperty<float>((1.0f), "timeMult"))
    {
       /* Meta table */
       mEngineProperties["SrcAnimTime"] = &SrcAnimationTime;
@@ -33,6 +36,8 @@ namespace Game
       mEngineProperties["DstAnimName"] = &DstAnimationName;
       mEngineProperties["AnimTransitionValue"] = &TransitionValue;
       mEngineProperties["bAnimTransitionEnabled"] = &bTransitionEnabled;
+      mEngineProperties["scale"] = &testScale;
+      mEngineProperties["timeMult"] = &timeMult;
       /* Meta table */
    }
 
@@ -47,10 +52,12 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
+      SetScale(glm::vec3((float)testScale));
+
       if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
       {
          const float updatedTime = LuaFunction<float(float)>::Call(*mLuaInstance.get(), "UpdateAnimationTime", deltaTime);
-         SrcAnimationTime += updatedTime;
+         SrcAnimationTime += updatedTime * timeMult;
       }
 
       mUpdateDataResetTimeCounter += deltaTime;

@@ -25,4 +25,6 @@ namespace EngineMath
 #define ENGINE_FLOAT_EPSILON 0.01f
 
    bool CompareFloats(const float X, const float Y);
+   
+   float LerpFloat(const float src, const float dst, const float factor);
 }

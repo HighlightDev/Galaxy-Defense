@@ -28,12 +28,20 @@ namespace EngineUtility
 
 	std::string GetExecutablePath()
 	{
-      char* fileName = get_module_file_name();
-		std::string exeFilePath = std::string(fileName);
-		size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
-		std::string currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
+      static std::string currentDirPath;
+      static bool bFirstExecution = true;
 
-      delete fileName;
+      if (currentDirPath == "")
+      {
+         bFirstExecution = false;
+         char* fileName = get_module_file_name();
+         std::string exeFilePath = std::string(fileName);
+         size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
+         currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
+
+         delete fileName;
+      }
+
 		return currentDirPath;
 	}
 

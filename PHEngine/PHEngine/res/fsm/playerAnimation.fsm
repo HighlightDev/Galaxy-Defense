@@ -18,13 +18,21 @@
       name: "Stop"
       from_state: "Walking"
       to_state: "Idle"
-      duration: "0.5"
+      duration: "1.5"
     </transition>
   </transitions>
   <bindings>
     <binding>
       binding_name: "animationBinding"
       type: "animation"
+    </binding>
+    <binding>
+      binding_name: "floatBinding"
+      type: "float"
+    </binding>
+    <binding>
+      binding_name: "timeMult"
+      type: "float"
     </binding>
   </bindings>
   <properties>
@@ -40,6 +48,34 @@
       binding_name: "animationBinding"
       type: "animation"
       value: "Armature|Walk"
+      state: "Walking"
+    </property>
+    <property>
+      name: "IdleScale"
+      binding_name: "floatBinding"
+      type: "float"
+      value: "3"
+      state: "Idle"
+    </property>
+    <property>
+      name: "WalkingScale"
+      binding_name: "floatBinding"
+      type: "float"
+      value: "10"
+      state: "Walking"
+    </property>
+    <property>
+      name: "IdleTimeMult"
+      binding_name: "timeMult"
+      type: "float"
+      value: "1"
+      state: "Idle"
+    </property>
+    <property>
+      name: "WalkingTimeMult"
+      binding_name: "timeMult"
+      type: "float"
+      value: "2"
       state: "Walking"
     </property>
   </properties>

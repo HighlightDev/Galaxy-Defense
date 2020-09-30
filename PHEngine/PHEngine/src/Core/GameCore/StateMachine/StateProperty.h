@@ -11,6 +11,7 @@ namespace Game
    enum class StatePropertyType
    {
       Animation,
+      Float,
    };
 
    struct BaseStateProperty
@@ -39,9 +40,27 @@ namespace Game
          return StatePropertyType::Animation;
       }
 
-      StateProperty(std::string animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
+      StateProperty(const std::string& animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
          : BaseStateProperty(animationPropertyBinding)
          , AnimationName(animationName)
+      {
+      }
+   };
+
+   template <>
+   struct StateProperty<StatePropertyType::Float>
+      : public BaseStateProperty
+   {
+      float Value;
+
+      virtual StatePropertyType GetStatePropertyType() override
+      {
+         return StatePropertyType::Float;
+      }
+
+      StateProperty(float value, std::shared_ptr<FloatPropertyBinding> animationPropertyBinding)
+         : BaseStateProperty(animationPropertyBinding)
+         , Value(value)
       {
       }
    };

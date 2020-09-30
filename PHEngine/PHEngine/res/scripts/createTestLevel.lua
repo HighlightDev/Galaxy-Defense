@@ -105,5 +105,43 @@ function CreateTestLevel(host)
 	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 	local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
 	_AttachComponentToActor(host, house, housePhysComp)
+	
+	-- ***************************SKELET******************** --
+	local buddy = _CreateActor(host,"SkeletBuddy", "Actor", 
+	10, 50, 10,
+	0, 0, 0,
+	1, 1, 1)
 
+	local buddyMat = _CreateMaterial(host, "Pbs.m")
+	_SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "albedo")
+	_SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "normalMap")
+	_SetFloatToMaterial(host, buddyMat, 1.0, "uvScale")
+
+	local skeletDesc = _CreateDynamicCharacterController(host, 1, 2.5, 10, 1.0)
+	local skeletPhysCompData = _CreatePhysicsComponentData(host, "buddyPhyComp", skeletDesc)
+	local skeletInputCompData = _CreateInputComponentData(host, "skeletInputComp")
+	local skeletMovementCompData = _CreateMovementComponentData(host, "movementCompData", 0, 0, 0, "MainCamera")
+	local buddyData = _CreateMeshComponentData(host, "buddyMeshComp", "player_walk.fbx",
+	0, -0.6, 0,
+	0, 0, 0,
+	3, 3, 3, 
+	"skeletComponentAction.lua",
+	buddyMat)
+
+	local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
+	local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
+	local skeletMovementComponent = _CreateComponent(host, "MovementComponent", skeletMovementCompData)
+	local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
+
+	_AttachComponentToActor(host, buddy, skeletComponent)
+	_AttachComponentToActor(host, buddy, skeletPhysComp)
+	_AttachComponentToActor(host, buddy, skeletInputComponent)
+	_AttachComponentToActor(host, buddy, skeletMovementComponent)
+
+	local buddyAnimationStateMachine = _CreateStateMachine(host, buddy, "playerAnimation.fsm")
+	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "animationBinding", "")
+	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "floatBinding", "scale")
+	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "timeMult", "timeMult")
+
+	_AttachPlayerControllerToActor(host, buddy)
 end

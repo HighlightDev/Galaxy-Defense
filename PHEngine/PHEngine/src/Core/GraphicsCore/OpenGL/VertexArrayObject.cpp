@@ -81,7 +81,8 @@ namespace Graphics
 
 		void VertexArrayObject::CleanUp()
 		{
-			m_ibo->CleanUp();
+         if (m_ibo)
+			   m_ibo->CleanUp();
 
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{

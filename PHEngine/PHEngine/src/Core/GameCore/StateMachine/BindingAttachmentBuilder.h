@@ -25,8 +25,15 @@ namespace Game
                   propDstTime->GetValuePtr(), propIsTransition->GetValuePtr(), propTransitionValue->GetValuePtr());
                break;
             }
+            case BindingType::FLOAT:
+            {
+               FloatPropertyBinding* floatBinding = static_cast<FloatPropertyBinding*>(binding);
+               GenericObjectProperty<float>* propValue = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName(propertyName));
+               floatBinding->SetBindingProperty(propValue->GetValuePtr());
+               break;
+            }
             default:
-               assert((false, "unknown binding type."));
+               assert(false, "unknown binding type.");
                break;
          }
       }

@@ -40,7 +40,8 @@ namespace Game
 
    void Actor::PostConstructorInitialize()
    {
-
+      if (mStateMachine)
+         mStateMachine->InitRootState();
    }
   
 	void Actor::UpdateRootComponentTransform()

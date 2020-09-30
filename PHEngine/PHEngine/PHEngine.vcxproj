@@ -383,6 +383,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h" />
@@ -837,6 +838,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp" />

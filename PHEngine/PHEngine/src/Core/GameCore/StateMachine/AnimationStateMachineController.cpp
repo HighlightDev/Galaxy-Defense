@@ -26,7 +26,6 @@ namespace Game
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
          *animBinding->DstTime += deltaTime;
-         *animBinding->SrcTime += deltaTime;
          *animBinding->bTranstitionEnabled = true;
          *animBinding->TransitionValue = transitionParameter;
       }

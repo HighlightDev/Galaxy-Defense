@@ -20,7 +20,7 @@ namespace Graphics
 
       DirectionalLightSceneProxy::~DirectionalLightSceneProxy()
       {
-         delete m_shadowInfo;
+
       }
 
       void DirectionalLightSceneProxy::PostConstructorInitialize()

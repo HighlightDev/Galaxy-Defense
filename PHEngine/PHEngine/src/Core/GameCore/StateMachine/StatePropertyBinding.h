@@ -5,7 +5,8 @@ namespace Game {
 
    enum class BindingType
    {
-      ANIMATION
+      ANIMATION,
+      FLOAT
    };
 
    struct StatePropertyBinding
@@ -19,6 +20,34 @@ namespace Game {
       }
 
       virtual BindingType GetBindingType() const = 0;
+   };
+
+   struct FloatPropertyBinding
+      : public StatePropertyBinding
+   {
+      float* Value;
+
+      FloatPropertyBinding(const std::string& mutualName, float* value)
+         : StatePropertyBinding(mutualName)
+         , Value(value)
+      {
+      }
+
+      FloatPropertyBinding(const std::string& mutualName)
+         : StatePropertyBinding(mutualName)
+         , Value(nullptr)
+      {
+      }
+
+      void SetBindingProperty(float* value)
+      {
+         Value = value;
+      }
+
+      virtual BindingType GetBindingType() const override
+      {
+         return BindingType::FLOAT;
+      }
    };
 
    struct AnimationPropertyBinding

@@ -123,7 +123,6 @@ namespace Graphics
 
          std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
 
-         const auto firstDirLightProxyWithShadowInfo = std::find_if(dirLightProxies.begin(), dirLightProxies.end(), [](const std::shared_ptr<DirectionalLightSceneProxy>& proxy) { return proxy->GetProjectedDirShadowInfo() != nullptr; });
          size_t lastDirLightFramebufferDesc = UINT_MAX;
 
          for (auto& dirLightProxy : dirLightProxies)

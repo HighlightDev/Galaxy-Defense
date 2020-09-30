@@ -27,24 +27,31 @@ namespace Game
 
    void LuaScriptExecutor_EngineObjectsCreator::RegisterCallbacks()
    {
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, Actor*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
+      using LuaExecutor_t = LuaScriptExecutor_EngineObjectsCreator;
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<LuaExecutor_t, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
+      LuaRegisterCallback<LuaExecutor_t, Actor*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
+      LuaRegisterCallback<LuaExecutor_t, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
+      LuaRegisterCallback<LuaExecutor_t, void(Actor*)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
+      LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
+      LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
+      LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, PhyShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
+      LuaRegisterCallback<LuaExecutor_t, PhyShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
 
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, PhysicsDescriptor*(PhyShapeBase*, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
-      LuaRegisterCallback<LuaScriptExecutor_EngineObjectsCreator, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(PhyShapeBase*, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
+
+      LuaRegisterCallback<LuaExecutor_t, StateMachine*(Actor*, std::string)>::Register(mLuaInstance, "_CreateStateMachine");
+      LuaRegisterCallback<LuaExecutor_t, void(StateMachine*, std::string, std::string, std::string)>::Register(mLuaInstance, "_SetFSMBinding");
    }
 
    void LuaScriptExecutor_EngineObjectsCreator::RunScript()
@@ -97,7 +104,7 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          ICamera* camera = scene->GetCamera();
-         assert(ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
+         assert(camera && ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetAllActors().begin(), scene->GetAllActors().end(),
             [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
@@ -267,7 +274,7 @@ namespace Game
       return createdStateMachine;
    }
 
-   /* -------------------  Set bindings ------------------------*/
+   /* -------------------  Set fsm bindings ------------------------*/
    void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData)
    {
       auto stateMachine = std::get<0>(fsmData);
