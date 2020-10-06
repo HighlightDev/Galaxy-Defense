@@ -22,12 +22,12 @@ void Engine::PlayLevel(std::shared_ptr<Level> level)
    m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
    m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
 
-   PreConstructorInitialize();
+   PreLevelInit();
 
    m_level->InitLevel();
    m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
-   PostConstructorInitialize();
+   PostLevelInit();
 
    PostPhysicsInitialize();
 
@@ -40,15 +40,15 @@ InterThreadCommunicationMgr& Engine::GetThreadCommunicationManager()
    return m_interThreadMgr;
 }
 
-void Engine::PreConstructorInitialize()
+void Engine::PreLevelInit()
 {
-   m_level->PreConstructorInitialize();
+   m_level->PreLevelInit();
 }
 
-void Engine::PostConstructorInitialize()
+void Engine::PostLevelInit()
 {
-   m_level->PostConstructorInitialize();
-   m_sceneRenderer->PostConstructorInitialize();
+   m_level->PostLevelInit();
+   m_sceneRenderer->PostLevelInit();
 }
 
 void Engine::PostPhysicsInitialize()

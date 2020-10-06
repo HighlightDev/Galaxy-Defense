@@ -37,6 +37,8 @@ namespace Game
 
       Actor* GetBaseOwner() const;
 
+      virtual void PostLevelInit();
+
 	};
 
    inline Actor* Component::GetOwner() const

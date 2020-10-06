@@ -41,7 +41,7 @@ namespace Graphics
 
          virtual LightSceneProxyType GetLightProxyType() const = 0;
 
-         virtual void PostConstructorInitialize();
+         virtual void PostLevelInit();
 
          void SetTransformationMatrix(const glm::mat4& relativeMatrix);
 

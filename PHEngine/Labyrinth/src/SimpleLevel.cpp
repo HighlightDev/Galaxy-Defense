@@ -4,20 +4,14 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
-#include "Core/GameCore/Components/InputComponent.h"
-#include "Core/GameCore/Components/MovementComponent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
-#include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
-#include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 #include "Core/GameCore/GlobalSettings.h"
@@ -27,18 +21,12 @@
 #include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 
 #include "Core/GameCore/Physics/PhysicsWorld.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 
 #include <glm/vec3.hpp>
 #include <LogInterface.h>
-
-#include "PlayerActor.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -67,9 +55,9 @@ namespace Labyrinth
       mLuaLevelBuilder.RunScript();
    }
 
-   void SimpleLevel::PreConstructorInitialize()
+   void SimpleLevel::PreLevelInit()
    {
-      Base::PreConstructorInitialize();
+      Base::PreLevelInit();
 
       const auto folderManager = IO::FolderManager::GetInstance();
 
@@ -106,9 +94,9 @@ namespace Labyrinth
 #undef ALLOC_RES_ASYNC
    }
 
-   void SimpleLevel::PostConstructorInitialize()
+   void SimpleLevel::PostLevelInit()
    {
-      Base::PostConstructorInitialize();
+      Base::PostLevelInit();
 
       ResourceMap::DeleteInstance();
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();

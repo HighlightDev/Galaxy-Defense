@@ -6,7 +6,7 @@ function CreateTestLevel(host)
 
 	-- ****************************LIGHT***************************** --
 
-	local lightActor = _CreateActor(host, "MainLightActor", "Actor", actorTranslation.x,actorTranslation.y,actorTranslation.z,
+	local lightActor = _CreateActor(host, "MainLightActor", actorTranslation.x,actorTranslation.y,actorTranslation.z,
 		actorRotation.x,actorRotation.y,actorRotation.z,
 		actorScale.x, actorScale.y, actorScale.z)
 
@@ -39,7 +39,7 @@ function CreateTestLevel(host)
 	_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 	_SetFloatToMaterial(host, material, 10.0, "uvScale")
 
-	local groundActor = _CreateActor(host, "Ground", "Actor", 
+	local groundActor = _CreateActor(host, "Ground",
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -56,7 +56,7 @@ function CreateTestLevel(host)
 
 	-- ****************************SMALL GROUND***************************** --
 
-	local smallGroundActor = _CreateActor(host, "SmallGround", "Actor", 
+	local smallGroundActor = _CreateActor(host, "SmallGround",
 	0, 10, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -79,7 +79,7 @@ function CreateTestLevel(host)
 
 	-- ***************************HOUSE******************** --
 
-	local house = _CreateActor(host,"House", "Actor", 
+	local house = _CreateActor(host,"House", 
 	0, 55, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -107,7 +107,7 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, house, housePhysComp)
 	
 	-- ***************************SKELET******************** --
-	local buddy = _CreateActor(host,"SkeletBuddy", "Actor", 
+	local buddy = _CreateActor(host,"SkeletBuddy", 
 	10, 50, 10,
 	0, 0, 0,
 	1, 1, 1)

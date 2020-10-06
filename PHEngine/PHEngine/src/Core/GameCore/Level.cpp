@@ -16,13 +16,13 @@ namespace Game
    {
    }
 
-   void Level::PreConstructorInitialize()
+   void Level::PreLevelInit()
    {
    }
 
-   void Level::PostConstructorInitialize() 
+   void Level::PostLevelInit()
    {
-      mScene->PostConstructorInitialize();
+      mScene->PostLevelInit();
    }
 
    void Level::PostPhysicsInitialize()

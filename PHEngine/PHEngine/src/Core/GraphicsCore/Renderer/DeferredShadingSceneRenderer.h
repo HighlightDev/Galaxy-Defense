@@ -96,7 +96,7 @@ namespace Graphics
 
 			~DeferredShadingSceneRenderer();
 
-         void PostConstructorInitialize();
+         void PostLevelInit();
 
          void RenderScene_RenderThread();
 

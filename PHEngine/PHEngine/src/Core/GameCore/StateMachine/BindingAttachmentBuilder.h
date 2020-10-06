@@ -33,7 +33,7 @@ namespace Game
                break;
             }
             default:
-               assert(false, "unknown binding type.");
+               assert(false); // "unknown binding type."
                break;
          }
       }

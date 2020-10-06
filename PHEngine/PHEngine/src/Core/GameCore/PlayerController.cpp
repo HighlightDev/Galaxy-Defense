@@ -75,7 +75,7 @@ namespace Game
          return;
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-      std::shared_ptr<MovementComponent> movementComponent = m_playerActor->GetMovementComponent();
+      std::shared_ptr<CharacterMovementComponent> movementComponent = m_playerActor->GetMovementComponent();
 
       if (movementComponent->GetIsCameraRotationDirty())
       {

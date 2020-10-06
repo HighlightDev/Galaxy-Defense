@@ -21,7 +21,7 @@ namespace Game
    {
    public:
 
-      static std::shared_ptr<Actor> CreateActorByString(const std::string& gameObjectName, const std::string& actorType, std::shared_ptr<SceneComponent> rootComponent);
+      static std::shared_ptr<Actor> CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent);
 
       static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
 

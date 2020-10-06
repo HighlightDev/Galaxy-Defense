@@ -34,9 +34,9 @@ namespace Game
 
       void CameraRotate();
 
-      virtual void PreConstructorInitialize();
+      virtual void PreLevelInit();
 
-      virtual void PostConstructorInitialize();
+      virtual void PostLevelInit();
 
       virtual void TickLevel(const float deltaTime);
 

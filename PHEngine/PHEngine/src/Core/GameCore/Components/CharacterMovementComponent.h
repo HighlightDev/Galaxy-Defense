@@ -10,7 +10,7 @@ using namespace Event;
 namespace Game
 {
 
-   class MovementComponent
+   class CharacterMovementComponent
       : public Component
       , public CameraTransformChangedEvent
    {
@@ -28,9 +28,9 @@ namespace Game
 
    public:
 
-      MovementComponent(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
+      CharacterMovementComponent(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
 
-      virtual ~MovementComponent();
+      virtual ~CharacterMovementComponent();
 
       virtual uint64_t GetComponentType() const override;
 

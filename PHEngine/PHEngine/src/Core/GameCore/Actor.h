@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
-#include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/CharacterMovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/StateMachine/StateMachine.h"
@@ -24,8 +24,8 @@ namespace Game
 	{
 	private:
 
-      std::string mName;
 		std::shared_ptr<SceneComponent> m_rootComponent;
+
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
 	protected:
@@ -39,7 +39,7 @@ namespace Game
 
       std::shared_ptr<InputComponent> m_inputComponent;
 
-      std::shared_ptr<MovementComponent> m_movementComponent;
+      std::shared_ptr<CharacterMovementComponent> m_movementComponent;
 
       std::shared_ptr<StateMachine> mStateMachine;
 
@@ -58,7 +58,7 @@ namespace Game
 
       virtual void ChangeState(const std::string& stateName);
 
-      virtual void PostConstructorInitialize();
+      virtual void PostLevelInit();
 
       void AddComponent(std::shared_ptr<Component> component);
 
@@ -75,8 +75,6 @@ namespace Game
       }
 
 		void SetParent(Actor* actor);
-
-      void SetName(const std::string& name);
 
       Actor* GetParent() const;
 
@@ -102,7 +100,7 @@ namespace Game
          return m_inputComponent;
       }
 
-      inline std::shared_ptr<MovementComponent> GetMovementComponent() const
+      inline std::shared_ptr<CharacterMovementComponent> GetMovementComponent() const
       {
          return m_movementComponent;
       }

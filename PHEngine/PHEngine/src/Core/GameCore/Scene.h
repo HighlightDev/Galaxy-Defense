@@ -40,7 +40,7 @@ namespace Game
 
       Scene(InterThreadCommunicationMgr& interThreadMgr);
 
-      void PostConstructorInitialize();
+      void PostLevelInit();
 
       void PostPhysicsInitialize();
 

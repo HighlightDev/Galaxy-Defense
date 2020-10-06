@@ -20,7 +20,7 @@ namespace Game
 
       bool bTransformationDirty;
 
-      bool mIsVisible;
+      GenericObjectProperty<bool> mIsVisible;
 
       std::shared_ptr<Transform> mTransform;
 

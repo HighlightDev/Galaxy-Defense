@@ -20,6 +20,7 @@ namespace Game
       , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
+      , mTimeIncreaseMultiply(1.0f)
       , SrcAnimationTime(GenericObjectProperty<float>(0.0f, "SrcAnimTime"))
       , DstAnimationTime(GenericObjectProperty<float>(0.0f, "DstAnimTime"))
       , SrcAnimationName(GenericObjectProperty<std::string>("", "SrcAnimName"))
@@ -30,19 +31,27 @@ namespace Game
       , timeMult(GenericObjectProperty<float>((1.0f), "timeMult"))
    {
       /* Meta table */
-      mEngineProperties["SrcAnimTime"] = &SrcAnimationTime;
-      mEngineProperties["DstAnimTime"] = &DstAnimationTime;
-      mEngineProperties["SrcAnimName"] = &SrcAnimationName;
-      mEngineProperties["DstAnimName"] = &DstAnimationName;
-      mEngineProperties["AnimTransitionValue"] = &TransitionValue;
-      mEngineProperties["bAnimTransitionEnabled"] = &bTransitionEnabled;
-      mEngineProperties["scale"] = &testScale;
-      mEngineProperties["timeMult"] = &timeMult;
+      ENGINE_PROPERTY("SrcAnimTime", &SrcAnimationTime);
+      ENGINE_PROPERTY("DstAnimTime", &DstAnimationTime);
+      ENGINE_PROPERTY("SrcAnimName", &SrcAnimationName);
+      ENGINE_PROPERTY("DstAnimName", &DstAnimationName);
+      ENGINE_PROPERTY("AnimTransitionValue", &TransitionValue);
+      ENGINE_PROPERTY("bAnimTransitionEnabled", &bTransitionEnabled);
+      ENGINE_PROPERTY("scale", &testScale);
+      ENGINE_PROPERTY("timeMult", &timeMult);
       /* Meta table */
    }
 
    SkeletalMeshComponent::~SkeletalMeshComponent()
    {
+   }
+
+   void SkeletalMeshComponent::PostLevelInit() 
+   {
+      if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
+      {
+         mTimeIncreaseMultiply = LuaGetGlobal<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
+      }
    }
 
    uint64_t SkeletalMeshComponent::GetComponentType() const
@@ -54,11 +63,7 @@ namespace Game
    {
       SetScale(glm::vec3((float)testScale));
 
-      if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
-      {
-         const float updatedTime = LuaFunction<float(float)>::Call(*mLuaInstance.get(), "UpdateAnimationTime", deltaTime);
-         SrcAnimationTime += updatedTime * timeMult;
-      }
+      SrcAnimationTime += deltaTime * mTimeIncreaseMultiply * timeMult;
 
       mUpdateDataResetTimeCounter += deltaTime;
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;

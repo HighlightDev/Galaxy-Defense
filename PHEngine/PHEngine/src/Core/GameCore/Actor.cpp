@@ -38,10 +38,30 @@ namespace Game
       }
    }
 
-   void Actor::PostConstructorInitialize()
+   void Actor::PostLevelInit()
    {
       if (mStateMachine)
          mStateMachine->InitRootState();
+
+      for (const auto& comp : m_allComponents)
+      {
+         comp->PostLevelInit();
+      }
+
+      for (auto& actor : m_children)
+      {
+         // tick all attached actors
+         actor->PostLevelInit();
+      }
+
+      if (m_physicsComponent)
+         m_physicsComponent->PostLevelInit();
+
+      if (m_inputComponent)
+         m_inputComponent->PostLevelInit();
+
+      if (m_movementComponent)
+         m_movementComponent->PostLevelInit();
    }
   
 	void Actor::UpdateRootComponentTransform()
@@ -200,7 +220,7 @@ namespace Game
 
       if (component->GetComponentType() == MOVEMENT_COMPONENT)
       {
-         m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
+         m_movementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
       }
       else if (component->GetComponentType() == INPUT_COMPONENT)
       {
@@ -228,7 +248,7 @@ namespace Game
 
    void Actor::RemoveMovementComponent()
    {
-      m_movementComponent = std::shared_ptr<MovementComponent>(nullptr);
+      m_movementComponent = std::shared_ptr<CharacterMovementComponent>(nullptr);
    }
 
    void Actor::RemoveInputComponent()
@@ -288,12 +308,7 @@ namespace Game
    }
 
    std::string Actor::GetName() const {
-      return mName;
-   }
-
-   void Actor::SetName(const std::string& name)
-   {
-      mName = name;
+      return GameObjectName;
    }
 
 }

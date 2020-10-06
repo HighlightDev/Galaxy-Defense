@@ -30,7 +30,7 @@ namespace Game
       using LuaExecutor_t = LuaScriptExecutor_EngineObjectsCreator;
 
       LuaRegisterCallback<LuaExecutor_t, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
-      LuaRegisterCallback<LuaExecutor_t, Actor*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
+      LuaRegisterCallback<LuaExecutor_t, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor*)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
@@ -66,14 +66,13 @@ namespace Game
    }
 
    /* -------------------  Create Actor ----------------------------*/
-   Actor* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
+   Actor* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData)
    {
       Actor* createdActor = nullptr;
 
       if (auto scene = mSceneWP.lock())
       {
-         auto actorSP = LuaToCPPAdapter::CreateActorByString(std::get<0>(actorData), std::get<1>(actorData), 
-            std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<2>(actorData), std::get<3>(actorData), std::get<4>(actorData)));
+         auto actorSP = LuaToCPPAdapter::CreateActorByString(std::get<0>(actorData), std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
          scene->AddActor(actorSP);
          createdActor = actorSP.get();
       }

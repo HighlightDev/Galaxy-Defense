@@ -23,7 +23,7 @@ namespace Graphics
 
       }
 
-      void DirectionalLightSceneProxy::PostConstructorInitialize()
+      void DirectionalLightSceneProxy::PostLevelInit()
       {
          auto shadowInfo = static_cast<ProjectedDirShadowInfo*>(m_shadowInfo);
          if (shadowInfo)

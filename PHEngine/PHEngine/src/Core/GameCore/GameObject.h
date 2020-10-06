@@ -7,7 +7,7 @@
 
 namespace Game
 {
-
+#define ENGINE_PROPERTY(NAME, PROPERTY_PTR) AddEngineProperty(NAME, PROPERTY_PTR)
    class GameObject 
    {
       static uint64_t mTotalObjectIdCounter;
@@ -29,6 +29,8 @@ namespace Game
       uint64_t GetObjectId() const;
 
       GameObjectProperty* GetEnginePropertyByName(const std::string& key) const;
+
+      void AddEngineProperty(const std::string& key, GameObjectProperty* goPtr);
 
    };
 

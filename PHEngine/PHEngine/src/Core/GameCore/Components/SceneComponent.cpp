@@ -12,24 +12,29 @@ namespace Game
    SceneComponent::SceneComponent(const std::string& gameObjectName)
       : Component(gameObjectName)
       , bTransformationDirty(true)
-      , mIsVisible(true)
+      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
       , mTransform(std::make_shared<Transform>())
       , m_additionalRotationEuler()
       , m_relativeMatrix(1)
       , m_scene(nullptr)
    {
-
+      /******  HOOKS ****/
+      ENGINE_PROPERTY("IsVisible", &mIsVisible);
+      /******  HOOKS ****/
    }
 
 	SceneComponent::SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
 		: Component(gameObjectName)
       , bTransformationDirty(true)
-      , mIsVisible(true)
+      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
       , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
       , m_additionalRotationEuler()
 		, m_relativeMatrix(std::move(glm::mat4(1)))
       , m_scene(nullptr)
 	{
+      /******  HOOKS ****/
+      ENGINE_PROPERTY("IsVisible", &mIsVisible);
+      /******  HOOKS ****/
 	}
 
 	SceneComponent::~SceneComponent()

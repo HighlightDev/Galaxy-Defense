@@ -26,7 +26,7 @@ namespace Graphics
       {
       }
 
-      void PointLightSceneProxy::PostConstructorInitialize()
+      void PointLightSceneProxy::PostLevelInit()
       {
          auto shadowInfo = static_cast<ProjectedPointShadowInfo*>(m_shadowInfo);
          if (shadowInfo)

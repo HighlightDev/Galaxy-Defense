@@ -17,11 +17,11 @@ namespace Game
       mPhysicsWorld->InitPhysicsWorld();
    }
 
-   void Scene::PostConstructorInitialize()
+   void Scene::PostLevelInit()
    {
       for (auto& actor : AllActors)
       {
-         actor->PostConstructorInitialize();
+         actor->PostLevelInit();
       }
    }
 

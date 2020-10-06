@@ -80,14 +80,14 @@ namespace Graphics
       {
       }
 
-      void DeferredShadingSceneRenderer::PostConstructorInitialize()
+      void DeferredShadingSceneRenderer::PostLevelInit()
       {
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(0, 0, [=]()
          {
             for (auto& lightProxy : LightProxies)
             {
-               lightProxy->PostConstructorInitialize();
+               lightProxy->PostLevelInit();
             }
          }));
       }

@@ -27,7 +27,7 @@ namespace Graphics
 
          virtual ~DirectionalLightSceneProxy();
 
-         virtual void PostConstructorInitialize() override;
+         virtual void PostLevelInit() override;
 
          ProjectedDirShadowInfo* GetProjectedDirShadowInfo();
 

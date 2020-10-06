@@ -22,18 +22,12 @@
     <ClCompile Include="src\SimpleLevel.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\PlayerActor.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\LabyrinthLevelFactory.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\SimpleLevel.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PlayerActor.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

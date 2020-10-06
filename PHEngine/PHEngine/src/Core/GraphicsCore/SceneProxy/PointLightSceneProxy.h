@@ -24,7 +24,7 @@ namespace Graphics
 
          virtual ~PointLightSceneProxy();
 
-         virtual void PostConstructorInitialize() override;
+         virtual void PostLevelInit() override;
 
          glm::vec3 GetPosition() const;
 

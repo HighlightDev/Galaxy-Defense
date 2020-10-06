@@ -33,7 +33,7 @@ namespace Game
 
    Actor* Component::GetBaseOwner() const 
    {
-      Actor* base = this->m_owner;
+      Actor* base = m_owner;
 
       while (base && base->GetParent())
       {
@@ -41,6 +41,10 @@ namespace Game
       }
 
       return base;
+   }
+
+   void Component::PostLevelInit() {
+
    }
 
 }

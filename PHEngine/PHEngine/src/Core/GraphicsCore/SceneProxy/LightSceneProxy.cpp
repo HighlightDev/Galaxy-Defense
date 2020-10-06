@@ -19,7 +19,7 @@ namespace Graphics
          delete m_shadowInfo;
       }
 
-      void LightSceneProxy::PostConstructorInitialize()
+      void LightSceneProxy::PostLevelInit()
       {
       }
 

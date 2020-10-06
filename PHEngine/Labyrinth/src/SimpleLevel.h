@@ -20,9 +20,9 @@ namespace Labyrinth
 
       virtual void LoadLevel() override;
 
-      virtual void PreConstructorInitialize();
+      virtual void PreLevelInit();
 
-      virtual void PostConstructorInitialize();
+      virtual void PostLevelInit();
 
       void RunLuaBuildLevelScript();
    };

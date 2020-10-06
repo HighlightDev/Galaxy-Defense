@@ -27,20 +27,9 @@ namespace Game
          return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& gameObjectName, const std::string& actorType, std::shared_ptr<SceneComponent> rootComponent)
+   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
    {
-      std::shared_ptr<Actor> actor;
-
-      if ("Actor" == actorType)
-      {
-         actor = std::make_shared<Actor>(gameObjectName, rootComponent);
-      }
-      else if ("PlayerActor" == actorType)
-      {
-         //actor = std::make_shared<PlayerActor>(name, rootComponent);
-      }
-
-      return actor;
+      return std::make_shared<Actor>(gameObjectName, rootComponent);
    }
 
    std::shared_ptr<Component> LuaToCPPAdapter::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
@@ -73,7 +62,7 @@ namespace Game
       }
       else if ("MovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, CharacterMovementComponent>(*componentData);
       }
       else assert((false, "Unknown component type."));
 

@@ -283,7 +283,9 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
-    <None Include="res\fsm\playerAnimation.fsm" />
+    <None Include="res\fsm\playerAnimation.fsm">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\scripts\skeletComponentAction.lua" />
@@ -383,6 +385,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
@@ -495,7 +498,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h" />
-    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\KeyboardInputManager.h" />
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h" />
     <ClInclude Include="src\Core\GameCore\Components\InputComponent.h" />
@@ -838,6 +840,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp" />
@@ -896,7 +899,6 @@
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\KeyboardInputManager.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\KeyboardBindings.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\InputComponent.cpp" />

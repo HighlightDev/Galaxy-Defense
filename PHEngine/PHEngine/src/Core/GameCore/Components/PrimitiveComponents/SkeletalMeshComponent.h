@@ -28,6 +28,8 @@ namespace Game
 
       float update_data_reset_time;
 
+      float mTimeIncreaseMultiply;
+
    public:
 
       /* src is the main animation time counter*/
@@ -54,6 +56,8 @@ namespace Game
       SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& luaScriptAbsPath, const SkeletalMeshRenderData& renderData);
 
       virtual ~SkeletalMeshComponent();
+
+      virtual void PostLevelInit() override;
 
       virtual uint64_t GetComponentType() const override;
 
