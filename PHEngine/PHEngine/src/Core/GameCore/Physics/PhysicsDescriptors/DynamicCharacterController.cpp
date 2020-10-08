@@ -38,7 +38,7 @@ namespace EnginePhysics
 
    DynamicCharacterController::DynamicCharacterController(
       PhysicsWorld* pPhysicsWorld, float radius, float height, float mass, float stepHeight)
-      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), mass)
+      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), PhysicsBodyType::DYNAMIC, mass)
       , mGhostObject(nullptr)
       , mOnGround(false)
       , mHittingWall(false)
@@ -103,7 +103,6 @@ namespace EnginePhysics
       mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
-      mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, btBroadphaseProxy::KinematicFilter, btBroadphaseProxy::StaticFilter | btBroadphaseProxy::DefaultFilter);
    }
 
    void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)

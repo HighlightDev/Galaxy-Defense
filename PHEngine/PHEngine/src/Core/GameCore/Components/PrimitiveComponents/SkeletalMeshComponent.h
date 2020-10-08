@@ -48,9 +48,6 @@ namespace Game
 
       GenericObjectProperty<float> TransitionValue;
 
-      GenericObjectProperty<float> testScale;
-      GenericObjectProperty<float> timeMult;
-
    public:
 
       SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& luaScriptAbsPath, const SkeletalMeshRenderData& renderData);

@@ -1,10 +1,11 @@
 #include "RigidBodyController.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 namespace EnginePhysics
 {
-   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass, const MotionModifiers& motionModifier)
-      : PhysicsDescriptor(pPhysicsWorld, shape, mass, motionModifier)
+   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
+      : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier)
    {
    }
 
@@ -26,6 +27,13 @@ namespace EnginePhysics
       // apply motion modifiers
       mRigidBody->setLinearFactor(mMotionModifier.LinearFactor);
       mRigidBody->setAngularFactor(mMotionModifier.AngularFactor);
+
+      switch (mBodyType)
+      {
+         case PhysicsBodyType::DYNAMIC: mRigidBody->setActivationState(DISABLE_DEACTIVATION); break;
+         case PhysicsBodyType::KINEMATIC: mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); break;
+         case PhysicsBodyType::STATIC: assert(EngineMath::CompareFloats(mMass, 0.0f)); break;
+      }
 
       mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
    }

@@ -60,9 +60,9 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(*componentData);
       }
-      else if ("MovementComponent" == componentType)
+      else if ("CharacterMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, CharacterMovementComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<ComponentMetaType::CharacterMovement, CharacterMovementComponent>(*componentData);
       }
       else assert((false, "Unknown component type."));
 
@@ -91,9 +91,10 @@ namespace Game
       return new PhySphereShape(radius);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const float mass)
+   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const std::string& bodyType, const float mass)
    {
-      return new RigidBodyController(physWorld, phyShape, mass);
+      const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC : PhysicsBodyType::DYNAMIC;
+      return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
    PhysicsDescriptor* LuaToCPPAdapter::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,

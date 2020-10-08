@@ -49,7 +49,7 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, groundActor, floorComponent)
 
 	local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
-	local floorPhysDesc = _CreateRigidBodyController(host, shape, 0.0)
+	local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
 	local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
 	local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
 	_AttachComponentToActor(host, groundActor, phyComponent)
@@ -57,7 +57,7 @@ function CreateTestLevel(host)
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",
-	0, 10, 0,
+	0, 5, 0,
 	0, 0, 0,
 	1, 1, 1)
 
@@ -71,7 +71,7 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, smallGroundActor, floorComponent)
 
 	local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
-	local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, 0.0)
+	local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
 	local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
 	local phyComponent1 = _CreateComponent(host, "PhysicsComponent", physData1)
 	_AttachComponentToActor(host, smallGroundActor, phyComponent1)
@@ -80,7 +80,7 @@ function CreateTestLevel(host)
 	-- ***************************HOUSE******************** --
 
 	local house = _CreateActor(host,"House", 
-	0, 55, 0,
+	0, 10, 0,
 	0, 0, 0,
 	1, 1, 1)
 
@@ -101,7 +101,7 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, house, meshComponent)
 
 	local houseShape = _CreatePhysicsBoxShape(host, 6, 6.5, 6)
-	local houseDesc = _CreateRigidBodyController(host, houseShape, 125.0)
+	local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 125.0)
 	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 	local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
 	_AttachComponentToActor(host, house, housePhysComp)
@@ -130,7 +130,7 @@ function CreateTestLevel(host)
 
 	local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
 	local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
-	local skeletMovementComponent = _CreateComponent(host, "MovementComponent", skeletMovementCompData)
+	local skeletMovementComponent = _CreateComponent(host, "CharacterMovementComponent", skeletMovementCompData)
 	local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
 
 	_AttachComponentToActor(host, buddy, skeletComponent)
@@ -140,8 +140,6 @@ function CreateTestLevel(host)
 
 	local buddyAnimationStateMachine = _CreateStateMachine(host, buddy, "playerAnimation.fsm")
 	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "animationBinding", "")
-	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "floatBinding", "scale")
-	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "timeMult", "timeMult")
 
 	_AttachPlayerControllerToActor(host, buddy)
 end

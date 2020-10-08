@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <glm/trigonometric.hpp>
+#include <glm/vec3.hpp>
 
 namespace EngineMath
 {
@@ -27,4 +28,7 @@ namespace EngineMath
    bool CompareFloats(const float X, const float Y);
    
    float LerpFloat(const float src, const float dst, const float factor);
+
+   glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3& position1, const glm::vec3& position2);
+
 }

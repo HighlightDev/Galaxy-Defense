@@ -22,7 +22,7 @@ namespace Game
 
    uint64_t CharacterMovementComponent::GetComponentType() const
    {
-      return MOVEMENT_COMPONENT;
+      return CHARACTER_MOVEMENT_COMPONENT;
    }
 
    void CharacterMovementComponent::Tick(const float deltaTime)

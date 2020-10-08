@@ -120,7 +120,7 @@ namespace Game
       Actor* ownerActor = component->GetOwner();
       if (ownerActor)
       {
-         if ((type & MOVEMENT_COMPONENT) == MOVEMENT_COMPONENT)
+         if ((type & CHARACTER_MOVEMENT_COMPONENT) == CHARACTER_MOVEMENT_COMPONENT)
          {
             ownerActor->RemoveMovementComponent();
          }

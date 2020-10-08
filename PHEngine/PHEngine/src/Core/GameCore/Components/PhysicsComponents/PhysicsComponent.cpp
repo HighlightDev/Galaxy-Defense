@@ -63,6 +63,26 @@ namespace EnginePhysics
       mDescriptor->CompleteRigidBodyConstruction();
    }
 
+   glm::vec3 PhysicsComponent::GetWorldTranslation() const
+   {
+      return Converter::bulletToGlm(mDescriptor->GetTranslation());
+   }
+
+   glm::quat PhysicsComponent::GetWorldRotator() const
+   {
+      return Converter::bulletToGlm(mDescriptor->GetRotator());
+   }
+
+   void PhysicsComponent::SetWorldTranslation(const glm::vec3& translation) const
+   {
+       mDescriptor->SetTranslation(Converter::glmToBullet(translation));
+   }
+
+   void PhysicsComponent::SetWorldRotator(const glm::quat& rotator) const
+   {
+
+   }
+
    uint64_t PhysicsComponent::GetComponentType() const 
    {
       return PHYSICS_COMPONENT;

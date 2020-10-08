@@ -89,7 +89,7 @@ namespace Game
       PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
 
       /*-------------------- Create rigid body controller--------------*/
-      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhyShapeBase*, float> descData);
+      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhyShapeBase*, std::string, float> descData);
 
       /*-------------------- Create dynamic character controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);

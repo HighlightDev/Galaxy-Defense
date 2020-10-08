@@ -19,6 +19,14 @@ namespace Game
       Transform(Transform&& transform);
 
       Transform(const glm::vec3& translation, const glm::quat& rotator, const glm::vec3& scale);
+
+      Transform& operator=(const Transform& t)
+      {
+         Translation = t.Translation;
+         Rotator = t.Rotator;
+         Scale = t.Scale;
+         return *this;
+      }
    };
 
 }

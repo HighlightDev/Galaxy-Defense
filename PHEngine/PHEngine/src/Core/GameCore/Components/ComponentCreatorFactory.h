@@ -59,8 +59,9 @@ namespace Game
       Cubemap,
       Billboard,
       Input,
+      CharacterMovement,
       Movement,
-      Physics
+      Physics,
    };
 
    template <ComponentMetaType metaType, typename ComponentType>
@@ -212,7 +213,7 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Movement, ConstructType>
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::CharacterMovement, ConstructType>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {

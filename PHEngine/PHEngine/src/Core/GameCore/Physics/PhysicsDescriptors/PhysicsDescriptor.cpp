@@ -20,8 +20,9 @@ namespace EnginePhysics
 
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass, const MotionModifiers& motionModifier)
-      : mPhysicsWorld(pPhysicsWorld)
+   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
+      : mBodyType(bodyType)
+      , mPhysicsWorld(pPhysicsWorld)
       , mCurrentId(PhysicsDescriptor::mTotalIds++)
       , mShape(shape)
       , mMotionState(new btDefaultMotionState())
@@ -88,5 +89,20 @@ namespace EnginePhysics
    btVector3 PhysicsDescriptor::GetVelocity() const {
 
       return mVelocity;
+   }
+
+
+   void PhysicsDescriptor::SetTranslation(const btVector3& translation)
+   {
+      assert(mRigidBody);
+      btTransform& worldTransform = mRigidBody->getWorldTransform();
+      worldTransform.setOrigin(translation);
+   }
+
+   void PhysicsDescriptor::SetRotator(const btQuaternion& rotator)
+   {
+      assert(mRigidBody);
+      btTransform& worldTransform = mRigidBody->getWorldTransform();
+      worldTransform.setRotation(rotator);
    }
 }

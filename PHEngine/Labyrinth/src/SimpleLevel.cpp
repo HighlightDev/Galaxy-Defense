@@ -13,6 +13,7 @@
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -128,6 +129,20 @@ namespace Labyrinth
          mScene->AllActors.push_back(waterActor);
       }
 #endif
+
+      struct MData : public ComponentData
+      {
+         MData(const std::string& name)
+            : ComponentData(name)
+         {
+
+         }
+      };
+      
+      MData data{ "MoveComp" };
+      auto moveComp = std::make_shared<MovementComponent>(data.GameObjectName);
+      auto actor = static_cast<Actor*>(mScene->GetGameObjectByName("SmallGround"));
+      actor->AddComponent(moveComp);
 
       // SKYBOX
       {

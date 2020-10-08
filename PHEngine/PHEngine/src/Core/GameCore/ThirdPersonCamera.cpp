@@ -48,7 +48,7 @@ namespace Game
          m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
 
          glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
-         m_actualTargetVector = LerpPosition(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
+         m_actualTargetVector = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
 
          // If camera is at final position  
          if (EngineMath::CompareFloats(m_lerpTimeElapsed, m_timeForInterpolation))

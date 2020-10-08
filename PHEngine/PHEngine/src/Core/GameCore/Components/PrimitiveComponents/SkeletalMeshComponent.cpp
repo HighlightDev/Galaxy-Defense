@@ -27,8 +27,6 @@ namespace Game
       , DstAnimationName(GenericObjectProperty<std::string>("", "DstAnimName"))
       , TransitionValue(GenericObjectProperty<float>(0.0f, "AnimTransitionValue"))
       , bTransitionEnabled(GenericObjectProperty<bool>(false, "bAnimTransitionEnabled"))
-      , testScale(GenericObjectProperty<float>((0.0f), "scale"))
-      , timeMult(GenericObjectProperty<float>((1.0f), "timeMult"))
    {
       /* Meta table */
       ENGINE_PROPERTY("SrcAnimTime", &SrcAnimationTime);
@@ -37,8 +35,6 @@ namespace Game
       ENGINE_PROPERTY("DstAnimName", &DstAnimationName);
       ENGINE_PROPERTY("AnimTransitionValue", &TransitionValue);
       ENGINE_PROPERTY("bAnimTransitionEnabled", &bTransitionEnabled);
-      ENGINE_PROPERTY("scale", &testScale);
-      ENGINE_PROPERTY("timeMult", &timeMult);
       /* Meta table */
    }
 
@@ -61,11 +57,9 @@ namespace Game
 
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
-      SetScale(glm::vec3((float)testScale));
-
-      SrcAnimationTime += deltaTime * mTimeIncreaseMultiply * timeMult;
-
+      SrcAnimationTime += deltaTime * mTimeIncreaseMultiply;
       mUpdateDataResetTimeCounter += deltaTime;
+
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
 
       if (bUpdateData)

@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include <glm/ext/quaternion_float.hpp>
 
 using namespace Game;
 
@@ -32,6 +33,13 @@ namespace EnginePhysics {
 
       virtual uint64_t GetComponentType() const override;
 
+      glm::vec3 GetWorldTranslation() const;
+
+      glm::quat GetWorldRotator() const;
+
+      void SetWorldTranslation(const glm::vec3& translation) const;
+
+      void SetWorldRotator(const glm::quat& rotator) const;
    };
 }
 

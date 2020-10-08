@@ -218,7 +218,7 @@ namespace Game
 	{
       component->SetOwner(this);
 
-      if (component->GetComponentType() == MOVEMENT_COMPONENT)
+      if (component->GetComponentType() == CHARACTER_MOVEMENT_COMPONENT)
       {
          m_movementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
       }

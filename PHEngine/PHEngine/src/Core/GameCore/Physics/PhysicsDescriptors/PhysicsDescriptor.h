@@ -7,6 +7,13 @@
 namespace EnginePhysics
 {
 
+   enum class PhysicsBodyType
+   {
+      STATIC,  // deactivates when velocity is 0
+      DYNAMIC, // never deactivates
+      KINEMATIC // deactivates + cannot be applied linear velocity to body
+   };
+
    struct MotionModifiers
    {
       btVector3 LinearFactor;
@@ -22,6 +29,8 @@ namespace EnginePhysics
    protected:
 
       static size_t mTotalIds;
+
+      const PhysicsBodyType mBodyType;
 
       size_t mCurrentId;
 
@@ -50,7 +59,7 @@ namespace EnginePhysics
 
    public:
 
-      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
+      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
       virtual ~PhysicsDescriptor();
 
@@ -76,6 +85,9 @@ namespace EnginePhysics
 
       btVector3 GetVelocity() const;
 
+      void SetTranslation(const btVector3& translation);
+
+      void SetRotator(const btQuaternion& rotator);
    };
 
 }

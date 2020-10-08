@@ -8,7 +8,7 @@ namespace EnginePhysics
    {
    public:
 
-      RigidBodyController(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
+      RigidBodyController(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
       virtual ~RigidBodyController();
 
