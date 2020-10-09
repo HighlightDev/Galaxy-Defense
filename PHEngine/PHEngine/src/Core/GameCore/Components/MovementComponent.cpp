@@ -7,16 +7,12 @@
 namespace Game
 {
 
-   MovementComponent::MovementComponent(const std::string& gameObjectName)
+   MovementComponent::MovementComponent(const std::string& gameObjectName, const std::string& relPathToScript)
       : Component(gameObjectName)
-      , mCurrentPoint("INIT")
-      , mDestinationPoint("UP1")
+      , mScriptExecutor(this, relPathToScript)
+      , mDestinationPoint("NO")
       , mTime(0.0f)
    {
-      mMovementPoints["UP1"] = Transform(glm::vec3(0, 40, 0), glm::quat(), glm::vec3(1));
-      mMovementPoints["LEFT1"] = Transform(glm::vec3(20, 40, 0), glm::quat(), glm::vec3(1));
-      mMovementPoints["RIGHT1"] = Transform(glm::vec3(0, 40, 0), glm::quat(), glm::vec3(1));
-      mMovementPoints["DOWN1"] = Transform(glm::vec3(0, 20, 0), glm::quat(), glm::vec3(1));
    }
 
    MovementComponent::~MovementComponent()
@@ -31,13 +27,38 @@ namespace Game
          mWorldRotation = rootCompSP->GetRotator();
          mStartPosition = mWorldPosition;
       }
+
+      mScriptExecutor.RegisterCallbacks();
+      mScriptExecutor.RunScript();
    }
 
    uint64_t MovementComponent::GetComponentType() const
    {
       return COMPONENT;
    }   
-   int counter = -1;
+
+   const std::unordered_map<std::string, Transform>&  MovementComponent::GetMovementPoints() const
+   {
+      return mMovementPoints;
+   }
+
+   void MovementComponent::AddMovementPoint(const std::string& pointName, const Transform& t)
+   {
+      assert(!mMovementPoints.count(pointName));
+
+      mMovementPoints.emplace(pointName, std::move(t));
+   }
+
+   void MovementComponent::SetDestinationPoint(const std::string& pointName)
+   {
+      mDestinationPoint = pointName;
+      mLastDestinationPoint = pointName;
+   }
+
+   std::string MovementComponent::GetDestinationPoint() const
+   {
+      return mDestinationPoint;
+   }
 
    void MovementComponent::Move(const float deltaTime)
    {
@@ -45,16 +66,15 @@ namespace Game
 
       glm::vec3 finalTargetVector = mMovementPoints[mDestinationPoint].Translation;
 
-      mWorldPosition = EngineMath::LerpVec3(mTime, 0.0f, 5.0f, mStartPosition, finalTargetVector);
+      mWorldPosition = EngineMath::LerpVec3(mTime, 0.0f, 2.0f, mStartPosition, finalTargetVector);
 
       // If camera is at final position  
-      if (EngineMath::CompareFloats(mTime, 5.0f))
+      if (EngineMath::CompareFloats(mTime, 2.0f))
       {
          mTime = 0.0f;
          mDestinationPoint = "NO";
-         counter++;
       }
-      mTime = fmod(mTime, 5.0f);
+      mTime = fmod(mTime, 2.0f);
    }
 
    void MovementComponent::Tick(const float deltaTime)
@@ -70,14 +90,11 @@ namespace Game
          }
          else
          {
-            if (counter == 0) mDestinationPoint = "LEFT1";
-            else if (counter == 1) mDestinationPoint = "RIGHT1";
-            else if (counter == 2) mDestinationPoint = "DOWN1";
-            else if (counter == 3)
-            {
-               mDestinationPoint = "UP1";
-               counter = -1;
-            }
+            auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
+            if (itNext == mMovementPoints.end())
+               itNext = mMovementPoints.begin();
+
+            SetDestinationPoint(itNext->first);
             mStartPosition = mWorldPosition;
          }
       }

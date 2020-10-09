@@ -4,6 +4,7 @@
 #include <tuple>
 #include <type_traits>
 #include <glm/vec3.hpp>
+#include <glm/ext/quaternion_float.hpp>
 
 extern "C"
 {
@@ -334,6 +335,34 @@ namespace Game
       };
 
       template <>
+      struct GetValue<glm::quat>
+      {
+      public:
+
+         static glm::quat Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static glm::quat Value(lua_State* state, int32_t& stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static glm::quat Inner_Value(lua_State* state, int32_t& stackIndex)
+         {
+            // direction is reversed because stackIndex is decreasing
+            const float w = GetValue<float>::Value(state, stackIndex);
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::quat(w, x, y, z);
+         }
+      };
+
+      template <>
       struct GetValue<glm::vec3>
       {
       public:
@@ -359,7 +388,7 @@ namespace Game
             return glm::vec3(x, y, z);
          }
       };
-
+      
       template <size_t LuaTableParamCount, typename tuple_type, typename LuaTableType>
       struct GetLuaTableValue;
 
@@ -465,6 +494,15 @@ namespace Game
          };
       };
 
+      template <>
+      struct LuaArgsCountForType<glm::quat>
+      {
+         enum
+         {
+            value = 4
+         };
+      };
+
       template <typename tuple_t, int32_t currentIndex>
       struct CollectLuaArgsCount_Inner
       {
@@ -486,6 +524,16 @@ namespace Game
 
    template <typename GlobalVariableType>
    struct LuaGetGlobal;
+
+   template <>
+   struct LuaGetGlobal<std::string>
+   {
+      static std::string Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
+      {
+         LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
+         return LuaInnerCore::GetValue<std::string>::Value(instanceWrapper, stackIndex);
+      }
+   };
 
    template <>
    struct LuaGetGlobal<int64_t>

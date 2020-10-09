@@ -140,7 +140,7 @@ namespace Labyrinth
       };
       
       MData data{ "MoveComp" };
-      auto moveComp = std::make_shared<MovementComponent>(data.GameObjectName);
+      auto moveComp = std::make_shared<MovementComponent>(data.GameObjectName, "platformMovementComponentAction.lua");
       auto actor = static_cast<Actor*>(mScene->GetGameObjectByName("SmallGround"));
       actor->AddComponent(moveComp);
 

@@ -60,7 +60,7 @@ namespace Game
 
       const bool bScriptExecuted = mLuaInstance.ExecuteScript(EngineUtility::ConvertFromRelativeToAbsolutePath(folderManager->GetScriptPath() + mScriptName));
 
-      assert((bScriptExecuted, "Lua script execution failure"));
+      assert(bScriptExecuted);
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
    }

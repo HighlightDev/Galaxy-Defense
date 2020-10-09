@@ -288,6 +288,7 @@
     </None>
     <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\createTestLevel.lua" />
+    <None Include="res\scripts\platformMovementComponentAction.lua" />
     <None Include="res\scripts\skeletComponentAction.lua" />
     <None Include="res\shaders\basicFS.glsl" />
     <None Include="res\shaders\basicShadowFS.glsl" />
@@ -387,6 +388,7 @@
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
@@ -843,6 +845,7 @@
   <ItemGroup>
     <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />
     <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp" />
