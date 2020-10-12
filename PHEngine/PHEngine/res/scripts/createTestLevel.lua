@@ -80,7 +80,7 @@ function CreateTestLevel(host)
 	-- ***************************HOUSE******************** --
 
 	local house = _CreateActor(host,"House", 
-	0, 10, 0,
+	0, 25, 0,
 	0, 0, 0,
 	1, 1, 1)
 

@@ -2,6 +2,7 @@
 
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include <iostream>
 
 namespace Game
@@ -26,6 +27,7 @@ namespace Game
          mWorldPosition = rootCompSP->GetTranslation();
          mWorldRotation = rootCompSP->GetRotator();
          mStartPosition = mWorldPosition;
+         mWorldTranslationDelta = glm::vec3(0);
       }
 
       mScriptExecutor.RegisterCallbacks();
@@ -37,16 +39,16 @@ namespace Game
       return COMPONENT;
    }   
 
-   const std::unordered_map<std::string, Transform>&  MovementComponent::GetMovementPoints() const
+   const std::unordered_map<std::string, std::tuple<Transform, float>>&  MovementComponent::GetMovementPoints() const
    {
       return mMovementPoints;
    }
 
-   void MovementComponent::AddMovementPoint(const std::string& pointName, const Transform& t)
+   void MovementComponent::AddMovementPoint(const std::string& pointName, const Transform& t, const float transitionTime)
    {
       assert(!mMovementPoints.count(pointName));
 
-      mMovementPoints.emplace(pointName, std::move(t));
+      mMovementPoints.emplace(pointName, std::make_tuple(std::move(t), transitionTime));
    }
 
    void MovementComponent::SetDestinationPoint(const std::string& pointName)
@@ -64,17 +66,20 @@ namespace Game
    {
       mTime += deltaTime;
 
-      glm::vec3 finalTargetVector = mMovementPoints[mDestinationPoint].Translation;
+      const glm::vec3& finalTargetVector = std::get<0>(mMovementPoints[mDestinationPoint]).Translation;
+      const float transitionTime = std::get<1>(mMovementPoints[mDestinationPoint]);
 
-      mWorldPosition = EngineMath::LerpVec3(mTime, 0.0f, 2.0f, mStartPosition, finalTargetVector);
+      const auto prevPosition = mWorldPosition;
+      mWorldPosition = EngineMath::LerpVec3(mTime, 0.0f, transitionTime, mStartPosition, finalTargetVector);
+      mWorldTranslationDelta = mWorldPosition - prevPosition;
 
       // If camera is at final position  
-      if (EngineMath::CompareFloats(mTime, 2.0f))
+      if (EngineMath::CompareFloats(mTime, transitionTime))
       {
          mTime = 0.0f;
          mDestinationPoint = "NO";
       }
-      mTime = fmod(mTime, 2.0f);
+      mTime = fmod(mTime, transitionTime);
    }
 
    void MovementComponent::Tick(const float deltaTime)
@@ -85,8 +90,13 @@ namespace Game
          {
             Move(deltaTime);
             physCompSP->SetWorldTranslation(mWorldPosition);
+
             auto rootComp = GetOwner()->GetRootComponent();
             rootComp->SetTranslation(mWorldPosition);
+
+            Transform t;
+            t.Translation = mWorldTranslationDelta;
+            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), std::move(t));
          }
          else
          {

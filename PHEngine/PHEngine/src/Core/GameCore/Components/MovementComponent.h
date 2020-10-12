@@ -13,7 +13,7 @@ namespace Game
       : public Component
    {
 
-      std::unordered_map<std::string, Transform> mMovementPoints;
+      std::unordered_map<std::string, std::tuple<Transform, float>> mMovementPoints;
 
       LuaScriptExecutor_MovementComponent mScriptExecutor;
 
@@ -24,6 +24,7 @@ namespace Game
       std::string mLastDestinationPoint;
 
       glm::vec3 mWorldPosition;
+      glm::vec3 mWorldTranslationDelta;
       glm::quat mWorldRotation;
 
       glm::vec3 mStartPosition;
@@ -43,9 +44,9 @@ namespace Game
 
       virtual void PostLevelInit() override;
 
-      const std::unordered_map<std::string, Transform>& GetMovementPoints() const;
+      const std::unordered_map<std::string, std::tuple<Transform, float>>& GetMovementPoints() const;
 
-      void AddMovementPoint(const std::string& pointName, const Transform& t);
+      void AddMovementPoint(const std::string& pointName, const Transform& t, const float transitionTime);
 
       void SetDestinationPoint(const std::string& pointName);
 

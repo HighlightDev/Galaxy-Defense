@@ -15,9 +15,8 @@ namespace Game
 {
 
    LuaScriptExecutor_EngineObjectsCreator::LuaScriptExecutor_EngineObjectsCreator(std::weak_ptr<Scene> scene, const std::string& scriptName)
-      : mActiveComponents()
-      , mSceneWP(scene)
-      , mScriptName(scriptName)
+      : LuaScriptExecutor_EngineBase(scene, scriptName)
+      , mActiveComponents()
    {
    }
 
@@ -27,6 +26,8 @@ namespace Game
 
    void LuaScriptExecutor_EngineObjectsCreator::RegisterCallbacks()
    {
+      LuaScriptExecutor_EngineBase::RegisterCallbacks();
+
       using LuaExecutor_t = LuaScriptExecutor_EngineObjectsCreator;
 
       LuaRegisterCallback<LuaExecutor_t, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");

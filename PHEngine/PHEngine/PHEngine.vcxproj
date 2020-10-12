@@ -386,6 +386,8 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
@@ -843,6 +845,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp" />

@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "PhysicsDescriptor.h"
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 
 namespace EnginePhysics
 {
 
    class DynamicCharacterController
       : public PhysicsDescriptor
+      , public Event::KinematicBodyMovedEvent
    {
    private:
       // Physics
@@ -38,6 +40,8 @@ namespace EnginePhysics
       btVector3 mManualVelocity;
       std::vector<btVector3> mSurfaceHitNormals;
 
+      PhysicsDescriptor* mLastRayCastObjectResult;
+
    public:
 
       DynamicCharacterController(class PhysicsWorld* pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
@@ -49,6 +53,8 @@ namespace EnginePhysics
       virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
+
+      virtual void ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data) override;
 
       // Acceleration vector in XZ plane
       void Walk(const glm::vec2& dir);

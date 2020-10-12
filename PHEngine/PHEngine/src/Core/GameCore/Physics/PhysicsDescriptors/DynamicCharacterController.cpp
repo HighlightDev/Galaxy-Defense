@@ -3,6 +3,7 @@
 #include "Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
+#include "Core/GameCore/Components/Transform.h"
 
 #include <glm/gtx/projection.hpp>
 
@@ -55,11 +56,15 @@ namespace EnginePhysics
       , mPreviousPosition()
       , mManualVelocity(0.0f, 0.0f, 0.0f)
       , mSurfaceHitNormals()
+      , mLastRayCastObjectResult(nullptr)
    {
+      KinematicBodyMovedEvent::GetInstance()->AddListener(this);
    }
 
    DynamicCharacterController::~DynamicCharacterController()
    {
+      KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+
       mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
       mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
 
@@ -89,6 +94,7 @@ namespace EnginePhysics
 
       // Keep upright
       mRigidBody->setAngularFactor(0.0f);
+      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));
 
       // No sleeping (or else setLinearVelocity won't work)
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -99,8 +105,10 @@ namespace EnginePhysics
       mGhostObject = new btPairCachingGhostObject();
 
       mGhostObject->setCollisionShape(mShape->GetCollisionShape());
-      mGhostObject->setUserPointer(this);
+      mGhostObject->setUserPointer(static_cast<PhysicsDescriptor*>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+
+     
 
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
    }
@@ -242,22 +250,41 @@ namespace EnginePhysics
       }
    }
 
+   void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data)
+   {
+      PhysicsDescriptor* kinematicObjDesc = std::get<0>(data);
+      Game::Transform transform = std::get<1>(data);
+      
+      if (mLastRayCastObjectResult && kinematicObjDesc == mLastRayCastObjectResult)
+      {
+         // Collision
+         auto& worldTransform = mRigidBody->getWorldTransform();
+         const auto& currentTranslation = worldTransform.getOrigin();
+         worldTransform.setOrigin(btVector3(currentTranslation.x() + transform.Translation.x, currentTranslation.y() + transform.Translation.y, currentTranslation.z() + transform.Translation.z));
+      }
+   }
+
    void DynamicCharacterController::UpdatePosition()
    {
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_bottom(mRigidBody, mGhostObject);
-
+      
+      auto rayCastResult = IgnoreBodyAndGhostCast(mRigidBody, mGhostObject);
       auto& worldTransform = mRigidBody->getWorldTransform();
 
       mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(),
-         worldTransform.getOrigin() - btVector3(0.0f, mBottomYOffset + mStepHeight, 0.0f), rayCallBack_bottom);
+         worldTransform.getOrigin() - btVector3(0.0f, mBottomYOffset + mStepHeight, 0.0f), rayCastResult);
 
       // Bump up if hit
-      if (rayCallBack_bottom.hasHit())
+      if (rayCastResult.hasHit())
       {
+         if (auto collidedUserPtr = rayCastResult.m_collisionObject->getUserPointer())
+         {
+            mLastRayCastObjectResult = static_cast<PhysicsDescriptor*>(collidedUserPtr);
+         }
+
          float previousY = worldTransform.getOrigin().getY();
 
-         worldTransform.getOrigin().setY(previousY + (mBottomYOffset + mStepHeight) * (1.0f - rayCallBack_bottom.m_closestHitFraction));
+         worldTransform.getOrigin().setY(previousY + (mBottomYOffset + mStepHeight) * (1.0f - rayCastResult.m_closestHitFraction));
 
          btVector3 vel(mRigidBody->getLinearVelocity());
 

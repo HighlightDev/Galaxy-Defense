@@ -4,6 +4,7 @@
 #include "CameraTransformChangedEvent.h"
 #include "PhysicsSimulationUpdatedEvent.h"
 #include "KeyboradInputEvent.h"
+#include "KinematicBodyMovedEvent.h"
 
 #include <tuple>
 
@@ -44,7 +45,8 @@ namespace Event {
       CameraTransformChangedEvent,
       PlayerMovedEvent,
       PhysicsSimulationUpdatedEvent,
-      KeyboardInputEvent
+      KeyboardInputEvent,
+      KinematicBodyMovedEvent
    >;
 
 }

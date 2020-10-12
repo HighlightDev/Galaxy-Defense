@@ -35,6 +35,8 @@ namespace EnginePhysics
          case PhysicsBodyType::STATIC: assert(EngineMath::CompareFloats(mMass, 0.0f)); break;
       }
 
+      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));
+
       mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
    }
 

@@ -1,5 +1,4 @@
 #pragma once
-#include <tuple>
 #include <unordered_map>
 #include <glm/vec3.hpp>
 #include <memory>
@@ -8,21 +7,16 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
+#include "LuaScriptExecutor_EngineBase.h"
 
 namespace Game
 {
 
-   class LuaScriptExecutor_EngineObjectsCreator
+   class LuaScriptExecutor_EngineObjectsCreator 
+      : public LuaScriptExecutor_EngineBase
    {
       // To make sure that shared ptr on component will live while raw pointers on that components are used only within Lua code
       std::unordered_map<uint64_t, std::shared_ptr<Component>> mActiveComponents;
-
-      std::weak_ptr<Scene> mSceneWP;
-
-      LuaWrapper mLuaInstance;
-
-      std::string mScriptName;
 
    public:
 
@@ -30,7 +24,7 @@ namespace Game
 
       ~LuaScriptExecutor_EngineObjectsCreator();
 
-      void RegisterCallbacks();
+      virtual void RegisterCallbacks() override;
 
       void RunScript();
 
