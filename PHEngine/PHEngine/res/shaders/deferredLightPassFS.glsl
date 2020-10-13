@@ -1,6 +1,6 @@
 #version 400
 
-#define SHADING_MODEL_PBR
+#define NO_LIT
 #define MAX_DIR_LIGHT_COUNT 5
 #define MAX_POINT_LIGHT_COUNT 50
 #define SHADOWMAP_BIAS_DIR_LIGHT 0.005
@@ -361,9 +361,17 @@ void main()
 	#ifdef SHADING_MODEL_PBR
 		vec4 totalColor = vec4(GetPBRColor(worldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0);
 	#else
+		#ifdef NO_LIT
+			vec4 totalColor = albedoAndSpecular;
+		#endif
+	#endif
+
+	#ifndef SHADING_MODEL_PBR
+		#ifndef NO_LIT
 		vec3 diffuseColor = GetDiffuseColor(worldPos, worldNormal, shadowTransitionValue);
 		vec3 ambientColor = GetAmbientColor();
 		vec4 totalColor = vec4(albedoAndSpecular.rgb * (diffuseColor + ambientColor), 1);
+		#endif
 	#endif
 
 	FragColor = vec4(totalColor);

@@ -100,12 +100,15 @@ namespace Game
          }
          else
          {
-            auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
-            if (itNext == mMovementPoints.end())
-               itNext = mMovementPoints.begin();
+            if (mMovementPoints.size())
+            {
+               auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
+               if (itNext == mMovementPoints.end())
+                  itNext = mMovementPoints.begin();
 
-            SetDestinationPoint(itNext->first);
-            mStartPosition = mWorldPosition;
+               SetDestinationPoint(itNext->first);
+               mStartPosition = mWorldPosition;
+            }
          }
       }
    }

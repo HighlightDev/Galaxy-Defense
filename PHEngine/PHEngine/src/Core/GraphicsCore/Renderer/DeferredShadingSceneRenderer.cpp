@@ -277,6 +277,7 @@ namespace Graphics
             // TODO: Make some check if light source (point or spot light) is too far from current view position
             m_deferredLightShader->ExecuteShader();
 
+#ifndef NO_LIT
             // ************************** SHADOWS ************************** //
             size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
             for (auto& lightProxy : lightSourcesProxy)
@@ -315,6 +316,7 @@ namespace Graphics
             m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
             m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
             // ************************** SHADOWS ************************** //
+#endif
 
             m_gbuffer->BindPositionTexture(0);
             m_gbuffer->BindAlbedoWithSpecularTexture(1);
@@ -324,7 +326,9 @@ namespace Graphics
             m_deferredLightShader->SetGBufferAlbedoNSpecular(1);
             m_deferredLightShader->SetGBufferNormal(2);
 
+#ifndef NO_LIT
             m_deferredLightShader->SetLightsInfo(LightProxies);
+#endif
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             m_deferredLightShader->StopShader();
          }

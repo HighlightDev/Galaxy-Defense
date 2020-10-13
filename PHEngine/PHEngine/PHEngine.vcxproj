@@ -90,10 +90,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)External\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)External\Assimp\project\include;$(SolutionDir)External\Assimp\include;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_LIT;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>SHADING_MODEL_PBR;</UndefinePreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,10 +102,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)External\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NO_LIT;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>SHADING_MODEL_PBR;</UndefinePreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

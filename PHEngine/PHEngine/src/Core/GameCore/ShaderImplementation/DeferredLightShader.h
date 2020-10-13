@@ -21,6 +21,7 @@ namespace Game
 
          Uniform u_CameraWorldPosition;
 
+#ifndef NO_LIT
          UniformArray u_DirLightAmbientColor;
          UniformArray u_DirLightDiffuseColor;
          UniformArray u_DirLightSpecularColor;
@@ -41,6 +42,7 @@ namespace Game
          UniformArray u_PointLightShadowProjectionFarPlane;
          Uniform u_PointLightShadowMapCount;
          Uniform u_PointLightCount;
+#endif
 
          Uniform u_gBuffer_Position;
          Uniform u_gBuffer_Normal;
@@ -66,6 +68,7 @@ namespace Game
 
          void SetGBufferPosition(int32_t slot);
 
+#ifndef NO_LIT
          void SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>>& lightsProxies);
 
          void SetDirectionalLightShadowMapSlot(size_t index, int32_t slot);
@@ -76,6 +79,7 @@ namespace Game
          void SetPointLightShadowMapSlot(size_t index, int32_t slot);
          void SetPointLightShadowMapCount(int32_t count);
          void SetPointLightShadowProjectionFarPlane(size_t index, float FarPlane);
+#endif
 
 #ifdef SHADING_MODEL_PBR
          void SetMaterialMetallic(const float metallic);

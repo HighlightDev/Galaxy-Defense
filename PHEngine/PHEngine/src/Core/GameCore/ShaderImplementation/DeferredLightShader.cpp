@@ -31,6 +31,7 @@ namespace Game
          u_gBuffer_Normal = GetUniform("gBuffer_Normal", shaderProgramId);
          u_gBuffer_AlbedoNSpecular = GetUniform("gBuffer_AlbedoNSpecular", shaderProgramId);
 
+#ifndef NO_LIT
          u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", MAX_POINT_LIGHT_COUNT, shaderProgramId);
@@ -51,6 +52,7 @@ namespace Game
          u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", MAX_DIR_LIGHT_COUNT, shaderProgramId);
          u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
          u_DirectionalLightCount = GetUniform("DirLightCount", shaderProgramId);
+#endif
 
 #ifdef SHADING_MODEL_PBR
          u_MaterialMetallic = GetUniform("Metallic", shaderProgramId);
@@ -68,6 +70,12 @@ namespace Game
          DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
+#ifdef NO_LIT
+         Define(FragmentShader, "NO_LIT");
+#else
+         Undefine(FragmentShader, "NO_LIT");
+#endif
+
 #ifdef SHADING_MODEL_PBR
          Define(FragmentShader, "SHADING_MODEL_PBR");
 #else
@@ -94,6 +102,8 @@ namespace Game
       {
          u_gBuffer_Position.LoadUniform(slot);
       }
+
+#ifndef NO_LIT
 
       void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
       {
@@ -171,6 +181,8 @@ namespace Game
 
          u_PointLightCount.LoadUniform(pointLightProxyIndex);
       }
+
+#endif
 
 #ifdef SHADING_MODEL_PBR
 
