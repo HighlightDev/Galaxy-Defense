@@ -253,14 +253,14 @@ namespace EnginePhysics
    void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data)
    {
       PhysicsDescriptor* kinematicObjDesc = std::get<0>(data);
-      Game::Transform transform = std::get<1>(data);
+      const btVector3& offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
       
       if (mLastRayCastObjectResult && kinematicObjDesc == mLastRayCastObjectResult)
       {
          // Collision
          auto& worldTransform = mRigidBody->getWorldTransform();
-         const auto& currentTranslation = worldTransform.getOrigin();
-         worldTransform.setOrigin(btVector3(currentTranslation.x() + transform.Translation.x, currentTranslation.y() + transform.Translation.y, currentTranslation.z() + transform.Translation.z));
+         const auto& offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
+         worldTransform.setOrigin(offsetedTranslation);
       }
    }
 

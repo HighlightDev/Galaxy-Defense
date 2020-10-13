@@ -91,16 +91,16 @@ function CreateTestLevel(host)
 	_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
 	local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
-	0, -2.5, 0,
+	0, -2, 0,
 	0, 0, 0,
-	2.5, 2.5, 2.5, 
+	0.5, 0.5, 0.5, 
 	"",
 	houseMat)
 
 	local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
 	_AttachComponentToActor(host, house, meshComponent)
 
-	local houseShape = _CreatePhysicsBoxShape(host, 6, 6.5, 6)
+	local houseShape = _CreatePhysicsBoxShape(host, 1, 1.5, 1)
 	local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 125.0)
 	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 	local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
