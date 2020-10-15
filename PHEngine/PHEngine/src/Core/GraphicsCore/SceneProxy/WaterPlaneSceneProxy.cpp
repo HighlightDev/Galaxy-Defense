@@ -59,9 +59,9 @@ namespace Graphics
          m_farClipPlane = farClipPlane;
       }
 
-      uint64_t WaterPlaneSceneProxy::GetComponentType() const
+      PrimitiveProxyType WaterPlaneSceneProxy::GetPrimitiveProxyType() const
       {
-         return WATER_PLANE_COMPONENT;
+         return PrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
       bool WaterPlaneSceneProxy::IsDeferred() const

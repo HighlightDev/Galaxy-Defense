@@ -66,9 +66,9 @@ namespace Graphics
          bIsDirty = true;
       }
 
-      uint64_t SkeletalMeshSceneProxy::GetComponentType() const
+      PrimitiveProxyType SkeletalMeshSceneProxy::GetPrimitiveProxyType() const
       {
-         return SKELETAL_MESH_COMPONENT;
+         return PrimitiveProxyType::SKELETAL_MESH_PROXY;
       }
 
       const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices()

@@ -17,7 +17,7 @@ namespace Game
 
       virtual ~InputComponent();
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       // Game thread tick
       virtual void Tick(const float deltaTime) override;

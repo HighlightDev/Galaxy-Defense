@@ -45,9 +45,9 @@ namespace Graphics
          return m_skin;
       }
 
-      uint64_t PrimitiveSceneProxy::GetComponentType() const
+      PrimitiveProxyType PrimitiveSceneProxy::GetPrimitiveProxyType() const
       {
-         return PRIMITIVE_COMPONENT;
+         return PrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
    }

@@ -67,8 +67,11 @@ function CreateTestLevel(host)
 	_SetFloatToMaterial(host, material1, 1, "uvScale")
 
 	local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
+	local moveCompData = _CreateMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
 	local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
+	local moveComponent = _CreateComponent(host, "MovementComponent", moveCompData)
 	_AttachComponentToActor(host, smallGroundActor, floorComponent)
+	_AttachComponentToActor(host, smallGroundActor, moveComponent)
 
 	local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 	local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
@@ -120,7 +123,7 @@ function CreateTestLevel(host)
 	local skeletDesc = _CreateDynamicCharacterController(host, 1, 2.5, 10, 1.0)
 	local skeletPhysCompData = _CreatePhysicsComponentData(host, "buddyPhyComp", skeletDesc)
 	local skeletInputCompData = _CreateInputComponentData(host, "skeletInputComp")
-	local skeletMovementCompData = _CreateMovementComponentData(host, "movementCompData", 0, 0, 0, "MainCamera")
+	local skeletMovementCompData = _CreateCharacterMovementComponentData(host, "charMovementCompData", 0, 0, 0, "MainCamera")
 	local buddyData = _CreateMeshComponentData(host, "buddyMeshComp", "player_walk.fbx",
 	0, -0.6, 0,
 	0, 0, 0,

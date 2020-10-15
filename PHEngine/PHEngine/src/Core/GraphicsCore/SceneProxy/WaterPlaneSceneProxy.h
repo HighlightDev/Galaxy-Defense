@@ -44,7 +44,7 @@ namespace Graphics
 
          virtual bool IsDeferred() const;
 
-         virtual uint64_t GetComponentType() const override;
+         virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
 
          void SetMoveFactor(float moveFactor);
          void SetWaveStrength(float waveStr);

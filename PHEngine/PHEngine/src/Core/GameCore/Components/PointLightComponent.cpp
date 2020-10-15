@@ -26,9 +26,9 @@ namespace Game
       return std::make_shared<PointLightSceneProxy>(this);
    }
 
-   uint64_t PointLightComponent::GetComponentType() const
+   ComponentType PointLightComponent::GetComponentType() const
    {
-      return POINT_LIGHT_COMPONENT;
+      return LIGHT_COMPONENT;
    }
 
    float time = 0.0f;

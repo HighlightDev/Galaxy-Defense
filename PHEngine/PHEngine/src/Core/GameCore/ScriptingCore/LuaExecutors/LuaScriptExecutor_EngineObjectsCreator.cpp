@@ -40,7 +40,8 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
-      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateCharacterMovementComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
 
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
@@ -158,10 +159,16 @@ namespace Game
       return LuaToCPPAdapter::CreateInputComponentData(std::get<0>(inputComponentData));
    }
 
-   /* -------------------  Create movement component data ----------------------------*/
+   /* -------------------  Create character movement component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData)
    {
-      return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
+      return LuaToCPPAdapter::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
+   }
+
+   /* -------------------  Create movement component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData)
+   {
+      return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
    }
 
    /* -------------------  Create dir light projection shadow info --------------------*/

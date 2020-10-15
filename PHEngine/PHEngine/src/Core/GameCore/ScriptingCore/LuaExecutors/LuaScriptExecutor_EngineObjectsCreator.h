@@ -52,8 +52,11 @@ namespace Game
       /* -------------------  Create input component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData);
 
-      /* -------------------  Create movement component data ----------------------------*/
+      /* -------------------  Create character movement component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData);
+
+      /* -------------------  Create movement component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData);
       
       /* -------------------  Create physics component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData);

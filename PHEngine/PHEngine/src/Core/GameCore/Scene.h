@@ -96,23 +96,23 @@ namespace Game
 
       ~Scene();
 
-      template <ComponentMetaType metaType, typename ComponentType>
+      template <ComponentMetaType metaType, typename ComponentT>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
-         auto component = ComponentCreatorFactory<metaType, ComponentType>::CreateComponent(componentData);
-         uint64_t type = component->GetComponentType();
-         if ((type & SCENE_COMPONENT) == SCENE_COMPONENT)
+         auto component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData);
+         ComponentType type = component->GetComponentType();
+         if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
          {
             SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
             sceneComponentPtr->SetScene(this);
-            if ((type & PRIMITIVE_COMPONENT) == PRIMITIVE_COMPONENT)
+            if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
             {
                PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
                componentPtr->PrimitiveProxyComponentId = PrimitiveComponent::TotalPrimitiveSceneProxyIndex++;
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
                PrimitiveSceneProxyAdded(componentPtr->PrimitiveProxyComponentId, sceneProxyShared);
             }
-            else if ((type & LIGHT_COMPONENT) == LIGHT_COMPONENT)
+            else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
             {
                LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
                componentPtr->LightSceneProxyId = LightComponent::TotalLightSceneProxyId++;

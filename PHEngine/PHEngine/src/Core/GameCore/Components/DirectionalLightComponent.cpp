@@ -46,9 +46,9 @@ namespace Game
       ProcessEvent(PhysicsSimulationUpdatedEvent::EventData_t());
    }
 
-   uint64_t DirectionalLightComponent::GetComponentType() const
+   ComponentType DirectionalLightComponent::GetComponentType() const
    {
-      return DIR_LIGHT_COMPONENT;
+      return ComponentType::LIGHT_COMPONENT;
    }
 
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)

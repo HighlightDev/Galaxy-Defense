@@ -120,7 +120,7 @@ namespace Game
       void RemoveComponentIndexOffset(size_t removedProxyIndex);
 
       template <typename ComponentT>
-      std::shared_ptr<ComponentT> GetComponent(uint64_t type)
+      std::shared_ptr<ComponentT> GetComponent(ComponentType type)
       {
          std::shared_ptr<ComponentT> result(nullptr);
 

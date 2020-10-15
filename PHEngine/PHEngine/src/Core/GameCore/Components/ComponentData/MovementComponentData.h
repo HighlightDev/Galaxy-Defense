@@ -9,9 +9,9 @@
 
 namespace Game
 {
-	struct MovementComponentData : public ComponentData
+	struct CharacterMovementComponentData : public ComponentData
 	{
-      MovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+      CharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
 			: ComponentData(gameObjectName)
          , mCameraName(cameraName)
          , m_launchDirection(launchDirection)
@@ -22,4 +22,14 @@ namespace Game
 		glm::vec3 m_launchDirection;
 	};
 
+   struct MovementComponentData : public ComponentData
+   {
+      MovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+         : ComponentData(gameObjectName)
+         , mScriptName(scriptName)
+      {
+      }
+
+      std::string mScriptName;
+   };
 }

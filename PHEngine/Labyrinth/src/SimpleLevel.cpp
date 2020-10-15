@@ -130,19 +130,9 @@ namespace Labyrinth
       }
 #endif
 
-      struct MData : public ComponentData
-      {
-         MData(const std::string& name)
-            : ComponentData(name)
-         {
-
-         }
-      };
-      
-      MData data{ "MoveComp" };
-      auto moveComp = std::make_shared<MovementComponent>(data.GameObjectName, "platformMovementComponentAction.lua");
-      auto actor = static_cast<Actor*>(mScene->GetGameObjectByName("SmallGround"));
-      actor->AddComponent(moveComp);
+      /*MovementComponentData data("MoveComp", "platformMovementComponentAction.lua");
+      auto moveComp = mScene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(data);*/
+      //auto actor = static_cast<Actor*>(mScene->GetGameObjectByName("SmallGround"));
 
       // SKYBOX
       {

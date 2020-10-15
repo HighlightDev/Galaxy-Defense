@@ -26,7 +26,7 @@ namespace Game
 
 		virtual ~StaticMeshComponent();
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
 		virtual void Tick(const float deltaTime) override;
 

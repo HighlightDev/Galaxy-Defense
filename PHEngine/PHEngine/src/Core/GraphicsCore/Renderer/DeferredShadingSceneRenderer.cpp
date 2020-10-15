@@ -420,7 +420,7 @@ namespace Graphics
 
                   if (proxyPtr->IsDeferred())
                   {
-                     if (proxy->GetComponentType() == SKELETAL_MESH_COMPONENT)
+                     if (proxy->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
                      {
                         skeletalProxies.push_back(proxyPtr);
                      }

@@ -13,7 +13,7 @@ namespace Game
    {
    }
 
-   uint64_t InputComponent::GetComponentType() const
+   ComponentType InputComponent::GetComponentType() const
    {
       return INPUT_COMPONENT;
    }

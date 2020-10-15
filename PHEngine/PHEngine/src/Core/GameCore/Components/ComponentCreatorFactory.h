@@ -217,8 +217,17 @@ namespace Game
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
-            const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
+            const CharacterMovementComponentData& mData = static_cast<const CharacterMovementComponentData&>(data);
             return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_launchDirection, mData.mCameraName);
+         }
+      };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Movement, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const MovementComponentData& mData = static_cast<const MovementComponentData&>(data);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.mScriptName);
          }
       };
 

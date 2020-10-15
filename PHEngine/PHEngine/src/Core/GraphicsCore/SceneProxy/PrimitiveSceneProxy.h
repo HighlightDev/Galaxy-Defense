@@ -19,6 +19,13 @@ namespace Graphics
 {
    namespace Proxy
    {
+      enum class PrimitiveProxyType
+      {
+         PRIMITIVE_PROXY,
+         STATIC_MESH_PROXY,
+         SKELETAL_MESH_PROXY
+      };
+
       class PrimitiveSceneProxy
          : public GameObject
       {
@@ -50,7 +57,7 @@ namespace Graphics
 
          virtual std::shared_ptr<Skin> GetSkin() const;
 
-         virtual uint64_t GetComponentType() const;
+         virtual PrimitiveProxyType GetPrimitiveProxyType() const;
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 

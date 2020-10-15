@@ -14,7 +14,7 @@ namespace Game
    {
    }
 
-   uint64_t BillboardComponent::GetComponentType() const
+   ComponentType BillboardComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

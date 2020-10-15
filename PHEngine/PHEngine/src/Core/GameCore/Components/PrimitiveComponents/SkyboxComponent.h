@@ -35,7 +35,7 @@ namespace Game
 
 		virtual void Tick(const float deltaTime) override;
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

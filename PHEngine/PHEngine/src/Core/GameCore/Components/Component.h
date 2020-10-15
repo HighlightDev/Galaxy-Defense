@@ -27,7 +27,7 @@ namespace Game
 
 		virtual ~Component();
 
-      virtual uint64_t GetComponentType() const;
+      virtual ComponentType GetComponentType() const;
 
 		void SetOwner(Actor* ownerActor);
 

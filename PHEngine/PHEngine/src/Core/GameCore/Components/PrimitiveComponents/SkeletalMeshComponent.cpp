@@ -50,9 +50,9 @@ namespace Game
       }
    }
 
-   uint64_t SkeletalMeshComponent::GetComponentType() const
+   ComponentType SkeletalMeshComponent::GetComponentType() const
    {
-      return SKELETAL_MESH_COMPONENT;
+      return PRIMITIVE_COMPONENT;
    }
 
    void SkeletalMeshComponent::Tick(const float deltaTime)

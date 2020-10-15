@@ -49,7 +49,7 @@ namespace Graphics
          void UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
             const float dstAnimationTime, const size_t srcAnimationIndex, const size_t dstAnimationIndex);
 
-         virtual uint64_t GetComponentType() const override;
+         virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
 
          const std::vector<glm::mat4>& GetSkinningMatrices();
 

@@ -25,9 +25,9 @@ namespace Graphics
          return std::static_pointer_cast<SkyboxSceneProxy::ShaderType>(m_shader);
       }
 
-      uint64_t SkyboxSceneProxy::GetComponentType() const
+      PrimitiveProxyType SkyboxSceneProxy::GetPrimitiveProxyType() const
       {
-         return SKYBOX_COMPONENT;
+         return PrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
       void SkyboxSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)

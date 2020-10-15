@@ -56,7 +56,7 @@ namespace Game
 
       virtual void PostLevelInit() override;
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       virtual void Tick(const float deltaTime) override;
 

@@ -36,7 +36,7 @@ namespace Graphics
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         virtual uint64_t GetComponentType() const override;
+         virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
 
          virtual bool IsDeferred() const;
       };

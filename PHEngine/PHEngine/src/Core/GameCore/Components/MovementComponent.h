@@ -2,6 +2,7 @@
 #include "SceneComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.h"
+#include "MoveCompBehaviorVisitor.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace EnginePhysics;
@@ -17,18 +18,10 @@ namespace Game
 
       LuaScriptExecutor_MovementComponent mScriptExecutor;
 
-      std::weak_ptr<SceneComponent> mOwnerRootComponent;
-      std::weak_ptr<PhysicsComponent> mOwnerPhysicsComponent;
+      std::unique_ptr<MoveCompBehaviorVisitorBase> mBehaviorVisitor;
 
       std::string mDestinationPoint;
       std::string mLastDestinationPoint;
-
-      glm::vec3 mWorldPosition;
-      glm::vec3 mWorldTranslationDelta;
-      glm::quat mWorldRotation;
-
-      glm::vec3 mStartPosition;
-      glm::quat mStartRotation;
 
       float mTime;
 
@@ -38,7 +31,7 @@ namespace Game
 
       virtual ~MovementComponent();
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       virtual void Tick(const float deltaTime) override;
 

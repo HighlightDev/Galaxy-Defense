@@ -34,7 +34,7 @@ namespace Game
 
 		virtual ~PrimitiveComponent();
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 

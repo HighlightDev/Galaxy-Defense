@@ -16,7 +16,7 @@ namespace Game
 	{
 	}
 
-   uint64_t PrimitiveComponent::GetComponentType() const
+   ComponentType PrimitiveComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

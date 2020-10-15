@@ -28,7 +28,7 @@ namespace Game
 
       virtual ~BillboardComponent();
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
       virtual void Tick(float deltaTime) override;
 

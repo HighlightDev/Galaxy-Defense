@@ -42,7 +42,7 @@ namespace Game
 
 		virtual void Tick(const float deltaTime) override;
 
-      virtual uint64_t GetComponentType() const override;
+      virtual ComponentType GetComponentType() const override;
 
 		/* This method works every time when this component has dirty transform */
 		virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix);

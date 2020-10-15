@@ -45,7 +45,7 @@ namespace Game
 	{
 	}
 
-   uint64_t SceneComponent::GetComponentType() const
+   ComponentType SceneComponent::GetComponentType() const
    {
       return SCENE_COMPONENT;
    }

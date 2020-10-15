@@ -30,7 +30,8 @@ namespace Game
       static ComponentData* CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
          const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material);
       static ComponentData* CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor);
-      static ComponentData* CreateMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
+      static ComponentData* CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
+      static ComponentData* CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName);
       static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
 
       static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);

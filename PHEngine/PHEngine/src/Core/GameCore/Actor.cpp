@@ -86,7 +86,7 @@ namespace Game
 				glm::mat4 rootRelativeMatrix = m_rootComponent->GetRelativeMatrix();
 				for (auto& component : m_allComponents)
 				{
-					if ((component->GetComponentType() & SCENE_COMPONENT) == SCENE_COMPONENT)
+					if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
 					{
 						SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
 						sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
@@ -113,7 +113,7 @@ namespace Game
          mIsVisible = isVisible;
          for (std::shared_ptr<Component> component : m_allComponents)
          {
-            if ((component->GetComponentType() & PRIMITIVE_COMPONENT) == PRIMITIVE_COMPONENT)
+            if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
             {
                static_cast<PrimitiveComponent*>(component.get())->SetIsVisible(isVisible);
             }
@@ -144,7 +144,7 @@ namespace Game
        
 			for (auto& component : m_allComponents)
 			{
-				if ((component->GetComponentType() & SCENE_COMPONENT) == SCENE_COMPONENT)
+				if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
 				{
 					SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
 					if (sceneComp->GetIsTransformationDirty())
@@ -165,7 +165,7 @@ namespace Game
 
       for (auto& component : m_allComponents)
       {
-         if ((component->GetComponentType() & PRIMITIVE_COMPONENT) == PRIMITIVE_COMPONENT)
+         if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
          {
             PrimitiveComponent* compPtr = static_cast<PrimitiveComponent*>(component.get());
             if (compPtr->PrimitiveProxyComponentId > removedProxyIndex)
@@ -218,15 +218,15 @@ namespace Game
 	{
       component->SetOwner(this);
 
-      if (component->GetComponentType() == CHARACTER_MOVEMENT_COMPONENT)
+      if (component->GetComponentType() == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
       {
          m_movementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
       }
-      else if (component->GetComponentType() == INPUT_COMPONENT)
+      else if (component->GetComponentType() == ComponentType::INPUT_COMPONENT)
       {
          m_inputComponent = std::static_pointer_cast<InputComponent>(component);
       }
-      else if (component->GetComponentType() == PHYSICS_COMPONENT)
+      else if (component->GetComponentType() == ComponentType::PHYSICS_COMPONENT)
       {
          m_physicsComponent = std::static_pointer_cast<PhysicsComponent>(component);
       }

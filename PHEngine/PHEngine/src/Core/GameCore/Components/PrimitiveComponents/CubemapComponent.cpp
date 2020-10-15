@@ -14,7 +14,7 @@ namespace Game
    {
    }
 
-   uint64_t CubemapComponent::GetComponentType() const
+   ComponentType CubemapComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

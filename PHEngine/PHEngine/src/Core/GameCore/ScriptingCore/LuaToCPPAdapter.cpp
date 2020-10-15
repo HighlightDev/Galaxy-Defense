@@ -1,6 +1,7 @@
 #include "LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
@@ -64,6 +65,10 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::CharacterMovement, CharacterMovementComponent>(*componentData);
       }
+      else if ("MovementComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(*componentData);
+      }
       else assert((false, "Unknown component type."));
 
       delete componentData;
@@ -108,9 +113,14 @@ namespace Game
       return new PhysicsComponentData(gameObjectName, physDescriptor);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+   ComponentData* LuaToCPPAdapter::CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
    {
-      return new MovementComponentData(gameObjectName, launchDirection, cameraName);
+      return new CharacterMovementComponentData(gameObjectName, launchDirection, cameraName);
+   }
+
+   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+   {
+      return new MovementComponentData(gameObjectName, scriptName);
    }
 
    ComponentData* LuaToCPPAdapter::CreateInputComponentData(const std::string& gameObjectName)

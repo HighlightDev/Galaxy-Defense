@@ -81,10 +81,10 @@ namespace Game
 
    void Scene::RemoveComponent_GameThread(std::shared_ptr<Component> component)
    {
-       uint64_t type = component->GetComponentType();
+      ComponentType type = component->GetComponentType();
 
       // Remove corresponding primitive proxy
-      if ((type & PRIMITIVE_COMPONENT) == PRIMITIVE_COMPONENT)
+      if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
       {
          PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(component.get());
          const size_t removeProxyIndex = componentPtr->PrimitiveProxyComponentId;
@@ -100,7 +100,7 @@ namespace Game
             // delete light proxy from render thread
          PrimitiveSceneProxyDeleted(removeProxyIndex);
       }
-      if ((type & LIGHT_COMPONENT) == LIGHT_COMPONENT)
+      if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
       {
          LightComponent* componentPtr = static_cast<LightComponent*>(component.get());
          const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
@@ -120,11 +120,11 @@ namespace Game
       Actor* ownerActor = component->GetOwner();
       if (ownerActor)
       {
-         if ((type & CHARACTER_MOVEMENT_COMPONENT) == CHARACTER_MOVEMENT_COMPONENT)
+         if ((type & ComponentType::CHARACTER_MOVEMENT_COMPONENT) == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
          {
             ownerActor->RemoveMovementComponent();
          }
-         else if ((type & INPUT_COMPONENT) == INPUT_COMPONENT)
+         else if ((type & ComponentType::INPUT_COMPONENT) == ComponentType::INPUT_COMPONENT)
          {
             ownerActor->RemoveInputComponent();
          }

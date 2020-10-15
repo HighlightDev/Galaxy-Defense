@@ -83,7 +83,7 @@ namespace EnginePhysics
 
    }
 
-   uint64_t PhysicsComponent::GetComponentType() const 
+   ComponentType PhysicsComponent::GetComponentType() const
    {
       return PHYSICS_COMPONENT;
    }

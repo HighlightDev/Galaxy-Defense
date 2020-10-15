@@ -22,21 +22,29 @@ namespace Game
 
    void MovementComponent::PostLevelInit()
    {
-      if (auto rootCompSP = GetOwner()->GetRootComponent())
+      const auto& rootComponent = GetOwner()->GetRootComponent();
+      assert(rootComponent);
+
+      const auto& physComponent = GetOwner()->GetPhysicsComponent();
+
+      if (physComponent)
       {
-         mWorldPosition = rootCompSP->GetTranslation();
-         mWorldRotation = rootCompSP->GetRotator();
-         mStartPosition = mWorldPosition;
-         mWorldTranslationDelta = glm::vec3(0);
+         mBehaviorVisitor = std::make_unique<MoveCompBehaviorVisitorWithPhys>(rootComponent, physComponent);
       }
+      else
+      {
+         mBehaviorVisitor = std::make_unique<MoveCompBehaviorVisitorNoPhys>(rootComponent);
+      }
+
+      mBehaviorVisitor->Init();
 
       mScriptExecutor.RegisterCallbacks();
       mScriptExecutor.RunScript();
    }
 
-   uint64_t MovementComponent::GetComponentType() const
+   ComponentType MovementComponent::GetComponentType() const
    {
-      return COMPONENT;
+      return MOVEMENT_COMPONENT;
    }   
 
    const std::unordered_map<std::string, std::tuple<Transform, float>>&  MovementComponent::GetMovementPoints() const
@@ -69,9 +77,7 @@ namespace Game
       const glm::vec3& finalTargetVector = std::get<0>(mMovementPoints[mDestinationPoint]).Translation;
       const float transitionTime = std::get<1>(mMovementPoints[mDestinationPoint]);
 
-      const auto prevPosition = mWorldPosition;
-      mWorldPosition = EngineMath::LerpVec3(mTime, 0.0f, transitionTime, mStartPosition, finalTargetVector);
-      mWorldTranslationDelta = mWorldPosition - prevPosition;
+      mBehaviorVisitor->LerpTranslation(mTime, transitionTime, finalTargetVector);
 
       // If camera is at final position  
       if (EngineMath::CompareFloats(mTime, transitionTime))
@@ -89,13 +95,11 @@ namespace Game
          if (mDestinationPoint != "NO")
          {
             Move(deltaTime);
-            physCompSP->SetWorldTranslation(mWorldPosition);
-
-            auto rootComp = GetOwner()->GetRootComponent();
-            rootComp->SetTranslation(mWorldPosition);
+            
+            mBehaviorVisitor->CommitMove();
 
             Transform t;
-            t.Translation = mWorldTranslationDelta;
+            t.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
             KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), std::move(t));
          }
          else
@@ -107,7 +111,7 @@ namespace Game
                   itNext = mMovementPoints.begin();
 
                SetDestinationPoint(itNext->first);
-               mStartPosition = mWorldPosition;
+               mBehaviorVisitor->CommitDestinationPointReached();
             }
          }
       }

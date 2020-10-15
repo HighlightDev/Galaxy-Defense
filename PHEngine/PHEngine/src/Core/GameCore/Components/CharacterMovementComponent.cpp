@@ -20,7 +20,7 @@ namespace Game
       CameraTransformChangedEvent::GetInstance()->RemoveListener(this);
    }
 
-   uint64_t CharacterMovementComponent::GetComponentType() const
+   ComponentType CharacterMovementComponent::GetComponentType() const
    {
       return CHARACTER_MOVEMENT_COMPONENT;
    }
