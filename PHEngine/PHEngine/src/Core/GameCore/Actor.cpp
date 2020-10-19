@@ -2,6 +2,9 @@
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Serialize/SerializeData/ActorSerializeData.h"
+
+#include <glm/gtc/quaternion.hpp>
 
 namespace Game
 {
@@ -62,6 +65,17 @@ namespace Game
 
       if (m_movementComponent)
          m_movementComponent->PostLevelInit();
+   }
+
+   void Actor::Serialize(cereal::BinaryOutputArchive& archive)
+   {
+      ActorSerializeData data;
+      data.ActorName = GameObject::GameObjectName;
+      data.RootCompTranslation = m_rootComponent->GetTranslation();
+      data.RootCompRotation = glm::eulerAngles(m_rootComponent->GetRotator()) * 180.f / 3.14159f;
+      data.RootCompScale = m_rootComponent->GetScale();
+
+      archive(data);
    }
   
 	void Actor::UpdateRootComponentTransform()

@@ -12,6 +12,7 @@
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/StateMachine/StateMachine.h"
+#include "Core/GameCore/Serialize/ISerializable.h"
 
 using namespace EnginePhysics;
 
@@ -21,6 +22,7 @@ namespace Game
 	class Actor 
       : public GameObject
       , public ITickable
+      , public ISerializable
 	{
 	private:
 
@@ -55,6 +57,8 @@ namespace Game
 
 		// Tick is executed on game thread
 		virtual void Tick(const float deltaTime) override;
+
+      virtual void Serialize(cereal::BinaryOutputArchive& archive) override;
 
       virtual void ChangeState(const std::string& stateName);
 

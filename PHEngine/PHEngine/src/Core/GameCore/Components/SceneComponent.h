@@ -42,6 +42,8 @@ namespace Game
 
 		virtual void Tick(const float deltaTime) override;
 
+      virtual void Serialize(cereal::BinaryOutputArchive& archive) override;
+
       virtual ComponentType GetComponentType() const override;
 
 		/* This method works every time when this component has dirty transform */

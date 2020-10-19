@@ -45,6 +45,10 @@ namespace Game
 	{
 	}
 
+   void SceneComponent::Serialize(cereal::BinaryOutputArchive& archive)
+   {
+   }
+
    ComponentType SceneComponent::GetComponentType() const
    {
       return SCENE_COMPONENT;

@@ -3,6 +3,7 @@
 #include "ComponentType.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Serialize/ISerializable.h"
 
 #include <memory>
 #include <vector>
@@ -18,6 +19,7 @@ namespace Game
 	class Component
       : public GameObject
       , public ITickable
+      , public ISerializable
 	{
 		Actor* m_owner;
 
@@ -38,6 +40,8 @@ namespace Game
       Actor* GetBaseOwner() const;
 
       virtual void PostLevelInit();
+
+      virtual void Serialize(cereal::BinaryOutputArchive& archive) = 0;
 
 	};
 
