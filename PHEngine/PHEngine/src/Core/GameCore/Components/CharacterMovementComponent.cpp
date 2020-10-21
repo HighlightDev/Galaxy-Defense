@@ -30,6 +30,11 @@ namespace Game
       
    }
 
+   void CharacterMovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    void CharacterMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t& data)
    {
       auto& cameraPtr = std::get<0>(data);

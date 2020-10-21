@@ -41,7 +41,7 @@ namespace Game
 
       virtual void PostLevelInit();
 
-      virtual void Serialize(cereal::BinaryOutputArchive& archive) = 0;
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
 
 	};
 

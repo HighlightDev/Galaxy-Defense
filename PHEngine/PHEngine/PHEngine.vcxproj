@@ -384,12 +384,15 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeData.h" />
     <ClInclude Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.h" />
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h" />
+    <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeDataContainer.h" />
     <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />

@@ -42,7 +42,7 @@ namespace Game
 
 		virtual void Tick(const float deltaTime) override;
 
-      virtual void Serialize(cereal::BinaryOutputArchive& archive) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       virtual ComponentType GetComponentType() const override;
 
@@ -51,73 +51,35 @@ namespace Game
 
       void SetIsVisible(bool isVisible);
 
-      inline bool IsVisible() const {
-         return mIsVisible;
-      }
+      bool IsVisible() const;
 
-      virtual void OnVisibilityChanged() {}
+      virtual void OnVisibilityChanged();
 
-      inline void SetScene(class Scene* scene)
-      {
-         m_scene = scene;
-      }
+      void SetScene(class Scene* scene);
 
-      void SetIsTransformationDirty(const bool isDirty)
-      {
-         bTransformationDirty = true;
-      }
+      void SetIsTransformationDirty(const bool isDirty);
 
-		void SetTranslation(const glm::vec3& translation)
-		{
-         mTransform->Translation = translation;
-         SetIsTransformationDirty(true);
-		}
+      void SetTranslation(const glm::vec3& translation);
 
-		void SetRotator(const glm::quat& rotator)
-		{
-         mTransform->Rotator = rotator;
-         SetIsTransformationDirty(true);
-		}
+      void SetRotator(const glm::quat& rotator);
 
-		void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true)
-		{
-         mTransform->Scale = scale;
-         SetIsTransformationDirty(true);
-		}
+      void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true);
 
-      void SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent = true)
-      {
-         m_additionalRotationEuler = rotationEuler;
-         SetIsTransformationDirty(true);
-      }
+      void SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent = true);
 
-      std::weak_ptr<Transform> GetTransformWeakPtr() const {
-         return mTransform;
-      }
+      std::weak_ptr<Transform> GetTransformWeakPtr() const;
 
-		inline bool GetIsTransformationDirty() const {
-			return bTransformationDirty;
-		}
+      bool GetIsTransformationDirty() const;
 
-		inline glm::vec3 GetTranslation() const
-		{
-			return mTransform->Translation;
-		}
+      glm::vec3 GetTranslation() const;
 
-		inline glm::quat GetRotator() const
-		{
-			return mTransform->Rotator;
-		}
+      glm::quat GetRotator() const;
 
-		inline glm::vec3 GetScale() const
-		{
-			return mTransform->Scale;
-		}
+      glm::vec3 GetRotationEuler() const;
 
-		inline glm::mat4 GetRelativeMatrix() const
-		{
-			return m_relativeMatrix;
-		}
+      glm::vec3 GetScale() const;
+
+      glm::mat4 GetRelativeMatrix() const;
 	};
 }
 

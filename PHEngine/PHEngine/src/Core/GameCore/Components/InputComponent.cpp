@@ -23,6 +23,11 @@ namespace Game
       return m_keyboardBindings;
    }
 
+   void InputComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    // Game thread tick
    void InputComponent::Tick(const float deltaTime)
    {

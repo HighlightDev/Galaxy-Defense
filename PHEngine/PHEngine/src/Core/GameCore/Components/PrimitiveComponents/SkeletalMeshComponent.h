@@ -60,6 +60,8 @@ namespace Game
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
       inline const SkeletalMeshRenderData& GetRenderData() const {

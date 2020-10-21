@@ -2,10 +2,12 @@
 
 #include <cereal/archives/binary.hpp>
 
+#include "SerializeData/SerializeDataContainer.h"
+
 namespace Game
 {
    struct ISerializable
    {
-      virtual void Serialize(cereal::BinaryOutputArchive& archive) = 0;
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
    };
 }

@@ -16,6 +16,11 @@ namespace Game
    {
    }
 
+   void LightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    ComponentType LightComponent::GetComponentType() const
    {
       return LIGHT_COMPONENT;

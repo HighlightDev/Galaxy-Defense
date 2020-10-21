@@ -35,6 +35,8 @@ namespace Game
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       virtual void PostLevelInit() override;
 
       const std::unordered_map<std::string, std::tuple<Transform, float>>& GetMovementPoints() const;

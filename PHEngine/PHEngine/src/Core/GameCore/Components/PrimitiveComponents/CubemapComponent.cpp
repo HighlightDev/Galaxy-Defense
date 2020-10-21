@@ -24,6 +24,11 @@ namespace Game
 
    }
 
+   void CubemapComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    std::shared_ptr<PrimitiveSceneProxy> CubemapComponent::CreateSceneProxy() const
    {
       return std::make_shared<CubemapSceneProxy>(this);

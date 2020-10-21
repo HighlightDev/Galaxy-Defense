@@ -35,6 +35,8 @@ namespace Game
 
 		virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       virtual ComponentType GetComponentType() const override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;

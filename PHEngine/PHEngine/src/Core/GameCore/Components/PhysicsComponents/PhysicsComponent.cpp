@@ -47,6 +47,11 @@ namespace EnginePhysics
       }
    }
 
+   void PhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    bool PhysicsComponent::IsTransformDirty() const
    {
       return bIsTransformationDirty;

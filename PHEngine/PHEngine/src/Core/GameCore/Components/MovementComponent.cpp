@@ -116,4 +116,9 @@ namespace Game
          }
       }
    }
+
+   void MovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) 
+   {
+
+   }
 }

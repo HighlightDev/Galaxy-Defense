@@ -29,6 +29,11 @@ namespace Game
       SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP));
 	}
 
+   void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const
    {
       return std::make_shared<SkyboxSceneProxy>(this);

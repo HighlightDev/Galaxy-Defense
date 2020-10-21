@@ -3,6 +3,10 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
+
+#include <cereal/archives/xml.hpp>
+#include <fstream>
 
 using namespace Graphics;
 
@@ -22,6 +26,29 @@ namespace Game
       for (auto& actor : AllActors)
       {
          actor->PostLevelInit();
+      }
+
+      {
+         std::ofstream os("polymorphism_test.xml");
+         cereal::XMLOutputArchive oarchive(os);
+         SerializeDataContainer container;
+
+         for (auto& actor : AllActors)
+         {
+            actor->CollectDataForSerialization(container);
+         }
+
+         oarchive(container);
+         
+      }
+
+      {
+         std::ifstream is("polymorphism_test.xml");
+         cereal::XMLInputArchive iarchive(is);
+
+         SerializeDataContainer container;
+
+         iarchive(container);
       }
    }
 

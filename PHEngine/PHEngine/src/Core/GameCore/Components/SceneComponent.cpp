@@ -45,7 +45,7 @@ namespace Game
 	{
 	}
 
-   void SceneComponent::Serialize(cereal::BinaryOutputArchive& archive)
+   void SceneComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
    }
 
@@ -87,5 +87,82 @@ namespace Game
 
 		SetIsTransformationDirty(false);
 	}
+
+   bool SceneComponent::IsVisible() const {
+      return mIsVisible;
+   }
+
+   void SceneComponent::OnVisibilityChanged() 
+   {
+
+   }
+
+   void SceneComponent::SetScene(class Scene* scene)
+   {
+      m_scene = scene;
+   }
+
+   void SceneComponent::SetIsTransformationDirty(const bool isDirty)
+   {
+      bTransformationDirty = true;
+   }
+
+   void SceneComponent::SetTranslation(const glm::vec3& translation)
+   {
+      mTransform->Translation = translation;
+      SetIsTransformationDirty(true);
+   }
+
+   void SceneComponent::SetRotator(const glm::quat& rotator)
+   {
+      mTransform->Rotator = rotator;
+      SetIsTransformationDirty(true);
+   }
+
+   void SceneComponent::SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent)
+   {
+      mTransform->Scale = scale;
+      SetIsTransformationDirty(true);
+   }
+
+   void SceneComponent::SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent)
+   {
+      m_additionalRotationEuler = rotationEuler;
+      SetIsTransformationDirty(true);
+   }
+
+   std::weak_ptr<Transform> SceneComponent::GetTransformWeakPtr() const {
+      return mTransform;
+   }
+
+   bool SceneComponent::GetIsTransformationDirty() const {
+      return bTransformationDirty;
+   }
+
+   glm::vec3 SceneComponent::GetTranslation() const
+   {
+      return mTransform->Translation;
+   }
+
+   glm::quat SceneComponent::GetRotator() const
+   {
+      return mTransform->Rotator;
+   }
+
+   glm::vec3 SceneComponent::GetRotationEuler() const
+   {
+      constexpr float radToDeg = 180.f / 3.14159f;
+      return glm::eulerAngles(GetRotator()) * radToDeg;
+   }
+
+   glm::vec3 SceneComponent::GetScale() const
+   {
+      return mTransform->Scale;
+   }
+
+   glm::mat4 SceneComponent::GetRelativeMatrix() const
+   {
+      return m_relativeMatrix;
+   }
 
 }

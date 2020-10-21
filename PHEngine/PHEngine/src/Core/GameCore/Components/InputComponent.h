@@ -22,6 +22,8 @@ namespace Game
       // Game thread tick
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       const KeyboardBindings& GetKeyboardBindings() const;
    };
 

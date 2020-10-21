@@ -58,7 +58,7 @@ namespace Game
 		// Tick is executed on game thread
 		virtual void Tick(const float deltaTime) override;
 
-      virtual void Serialize(cereal::BinaryOutputArchive& archive) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       virtual void ChangeState(const std::string& stateName);
 

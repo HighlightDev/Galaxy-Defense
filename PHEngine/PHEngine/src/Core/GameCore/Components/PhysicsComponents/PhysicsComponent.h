@@ -25,6 +25,8 @@ namespace EnginePhysics {
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       void PostPhysicsInit();
 
       PhysicsDescriptor* GetDescriptor();

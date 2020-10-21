@@ -36,6 +36,8 @@ namespace Game
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       virtual void ProcessEvent(const CameraTransformChangedEvent::EventData_t& data) override;
 
       glm::vec3 GetVelocity() const;

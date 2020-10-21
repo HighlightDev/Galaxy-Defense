@@ -68,6 +68,11 @@ namespace Game
       }
    }
 
+   void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+
+   }
+
    void SkeletalMeshComponent::SyncDataWithRenderThread()
    {
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
