@@ -30,6 +30,8 @@ namespace Game
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       inline const PointLightRenderData& GetRenderData() const {
 
          return m_renderData;

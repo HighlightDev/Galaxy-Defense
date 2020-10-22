@@ -8,9 +8,17 @@ using namespace Graphics::OpenGL;
 
 struct MaterialProperty
 {
+   enum class MaterialPropertyType
+   {
+      FLOAT_PROPERTY,
+      TEXTURE_PROPERTY,
+   };
+
 public:
 
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
+
+   virtual MaterialPropertyType GetMaterialPropertyType() const = 0;
 
 };
 
@@ -37,6 +45,11 @@ public:
    {
    }
 
+   virtual MaterialPropertyType GetMaterialPropertyType() const override
+   {
+      return MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY;
+   }
+
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
    {
       uniform.LoadUniform(m_value);
@@ -44,6 +57,10 @@ public:
 
    inline void SetValue(MaterialPropertyValueType value) {
       m_value = value;
+   }
+
+   inline float GetValue() const {
+      return m_value;
    }
 
 };
@@ -70,6 +87,11 @@ public:
    {
    }
 
+   virtual MaterialPropertyType GetMaterialPropertyType() const override
+   {
+      return MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY;
+   }
+
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
    {
       int32_t slot = 10 + propertyIndex;
@@ -86,5 +108,9 @@ public:
 
    inline void SetValue(ITexture* value) {
       m_value = std::shared_ptr<ITexture>(value);
+   }
+
+   inline std::shared_ptr<ITexture> GetValue() const {
+      return m_value;
    }
 };

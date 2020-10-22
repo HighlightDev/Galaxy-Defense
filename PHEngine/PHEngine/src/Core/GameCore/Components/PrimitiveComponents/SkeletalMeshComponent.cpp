@@ -6,6 +6,8 @@
 #include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
@@ -70,7 +72,23 @@ namespace Game
 
    void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
 
+      assert(it != dataContainer.Actors.end());
+
+      auto meshData = std::make_shared<SerializeDataMesh>();
+      meshData->ComponentName = GameObjectName;
+      meshData->ModelName = GameObjectName;
+      meshData->Translation = GetTranslation();
+      meshData->Rotation = GetRotationEuler();
+      meshData->Scale = GetScale();
+      meshData->LuaScriptName = mLuaScriptAbsPath;
+
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
+
+      meshData->MeshMaterial = material;
+
+      it->ComponentsData.emplace_back(meshData);
    }
 
    void SkeletalMeshComponent::SyncDataWithRenderThread()

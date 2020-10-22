@@ -67,32 +67,17 @@ namespace Resources
 			}
 		}
 
-		sharedValue_t GetResource(key_t& key) const
-		{
-			sharedValue_t value;
-			auto it = resourceMap.find(key);
-			if (it != resourceMap.end())
-			{
-				value = it->second;
-			}
+      sharedValue_t GetResource(key_t& key) const
+      {
+         sharedValue_t value;
+         auto it = resourceMap.find(key);
+         if (it != resourceMap.end())
+         {
+            value = it->second;
+         }
 
-			return value;
-		}
-
-      key_t GetKey(sharedValue_t value) const
-		{
-         key_t key;
-			auto predicate = [&value](auto& keyvalue)
-			{
-				return (keyvalue.second == value);
-			};
-			auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
-
-			if (it != resourceMap.end())
-				key = it->first;
-
-			return key;
-		}
+         return value;
+      }
 
 		void FreeResource(key_t& key)
 		{
@@ -162,6 +147,21 @@ namespace Resources
 		{
          return GetOrAllocateResourceBridge<InnerAllocationType>(key);
 		}
+
+      key_t GetKey(sharedValue_t value) const
+      {
+         key_t key;
+         auto predicate = [&value](auto& keyvalue)
+         {
+            return (keyvalue.second == value);
+         };
+         auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
+
+         if (it != resourceMap.end())
+            key = it->first;
+
+         return key;
+      }
 
 		int32_t GetReferenceCount(key_t& key) const
 		{

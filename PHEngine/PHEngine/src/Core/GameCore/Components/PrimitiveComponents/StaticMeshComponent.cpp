@@ -2,6 +2,7 @@
 #include "Core/GraphicsCore/SceneProxy/StaticMeshSceneProxy.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 #include <memory>
 #include <algorithm>
@@ -32,13 +33,17 @@ namespace Game
 
       assert(it != dataContainer.Actors.end());
 
-      auto meshData = std::make_shared<SerializeDataStaticMesh>();
+      auto meshData = std::make_shared<SerializeDataMesh>();
       meshData->ComponentName = GameObjectName;
       meshData->ModelName = GameObjectName;
       meshData->Translation = GetTranslation();
       meshData->Rotation = GetRotationEuler();
       meshData->Scale = GetScale();
       meshData->LuaScriptName = ""; // TODO: for now
+      
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
+      
+      meshData->MeshMaterial = material;
 
       it->ComponentsData.emplace_back(meshData);
    }

@@ -33,6 +33,37 @@ namespace Game
       return std::make_shared<DirectionalLightSceneProxy>(this);
    }
 
+   void DirectionalLightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) {
+
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
+
+      assert(it != dataContainer.Actors.end());
+
+      auto lightCompData = std::make_shared<SerializeDataDirLightComponent>();
+
+      lightCompData->ComponentName = GameObjectName;
+      lightCompData->AmbientLight = m_renderData.Ambient;
+      lightCompData->DiffuseLight = m_renderData.Diffuse;
+      lightCompData->SpecularLight = m_renderData.Specular;
+      lightCompData->Direction = m_renderData.Direction;
+      lightCompData->Rotation = GetRotationEuler();
+
+      const bool bHasShadowMap = !!m_renderData.ShadowInfo;
+
+      if (bHasShadowMap)
+      {
+         lightCompData->ShadowMapSize = m_renderData.ShadowInfo->GetAtlasResource()->GetTextureRezolution().x;
+      }
+      else 
+      {
+         lightCompData->ShadowMapSize = 0.0f;
+      }
+
+      lightCompData->bHasShadowMap = bHasShadowMap;
+
+      it->ComponentsData.emplace_back(lightCompData);
+   }
+
    void DirectionalLightComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);

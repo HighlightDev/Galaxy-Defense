@@ -22,8 +22,6 @@ namespace Game
 
       size_t LightSceneProxyId = 0;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
-
       virtual ComponentType GetComponentType() const override;
 
       virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix) override;

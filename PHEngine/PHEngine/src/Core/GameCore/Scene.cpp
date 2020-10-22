@@ -27,6 +27,14 @@ namespace Game
       {
          actor->PostLevelInit();
       }
+   }
+
+   void Scene::PostPhysicsInitialize()
+   {
+      for (auto& actor : AllActors)
+      {
+         actor->PostPhysicsInitialize();
+      }
 
       {
          std::ofstream os("polymorphism_test.xml");
@@ -39,7 +47,7 @@ namespace Game
          }
 
          oarchive(container);
-         
+
       }
 
       {
@@ -49,14 +57,6 @@ namespace Game
          SerializeDataContainer container;
 
          iarchive(container);
-      }
-   }
-
-   void Scene::PostPhysicsInitialize()
-   {
-      for (auto& actor : AllActors)
-      {
-         actor->PostPhysicsInitialize();
       }
    }
 
