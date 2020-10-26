@@ -43,6 +43,9 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
 
+   protected:
+
+      SerializeDataActor& GetSerializeDataActor(SerializeDataContainer& dataContainer);
 	};
 
    inline Actor* Component::GetOwner() const

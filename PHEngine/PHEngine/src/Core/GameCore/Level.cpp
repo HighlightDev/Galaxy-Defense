@@ -22,7 +22,7 @@ namespace Game
 
    void Level::PostLevelInit()
    {
-      mScene->PostLevelInit();
+      mScene->PostLevelInit(mScene);
    }
 
    void Level::PostPhysicsInitialize()

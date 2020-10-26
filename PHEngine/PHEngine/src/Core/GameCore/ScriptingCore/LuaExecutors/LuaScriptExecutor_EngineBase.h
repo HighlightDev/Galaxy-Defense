@@ -20,13 +20,17 @@ namespace Game
 
    public:
 
-      LuaScriptExecutor_EngineBase(std::weak_ptr<Scene> scene, const std::string& scriptName);
+      LuaScriptExecutor_EngineBase(const std::string& scriptName);
 
       virtual ~LuaScriptExecutor_EngineBase();
 
       virtual void RegisterCallbacks();
 
       GameObject* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder, LuaArgDummyPlaceholder>& gameObjectName);
+
+      std::string GetScriptRelPath() const;
+
+      void PostInit(std::weak_ptr<Scene> scene);
    };
 
 }

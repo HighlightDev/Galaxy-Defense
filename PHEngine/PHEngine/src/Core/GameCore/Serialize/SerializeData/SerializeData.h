@@ -25,7 +25,9 @@ struct SerializeDataBase
       Skybox,
       Material,
       DirectionalLight,
-      PointLight
+      PointLight,
+      CharacterMovement,
+      Movement
    };
 
    virtual SerializeDataType GetSerializeDataType() const = 0;
@@ -158,6 +160,45 @@ struct SerializeDataPointLightComponent
    }
 };
 
+struct SerializeDataCharacterMovementComponent
+   : public SerializeDataComponent
+{
+   glm::vec3 LaunchDirection;
+   std::string CameraName;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+
+      archive(LaunchDirection, CameraName);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::CharacterMovement;
+   }
+};
+
+struct SerializeDataMovementComponent
+   : public SerializeDataComponent
+{
+   std::string ScriptName;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+
+      archive(ScriptName);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::Movement;
+   }
+};
+
 struct SerializeDataActor
    : public SerializeDataBase
 {
@@ -185,9 +226,13 @@ CEREAL_REGISTER_TYPE(SerializeDataMesh);
 CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPointLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataMaterial);
+CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
+CEREAL_REGISTER_TYPE(SerializeDataMovementComponent);
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataActor)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMesh)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataDirLightComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPointLightComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMaterial)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterMovementComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementComponent)

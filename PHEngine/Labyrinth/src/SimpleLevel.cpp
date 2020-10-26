@@ -50,8 +50,8 @@ namespace Labyrinth
 
    void SimpleLevel::RunLuaBuildLevelScript()
    {
-      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(mScene, "createTestLevel.lua");
-
+      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator("createTestLevel.lua");
+      mLuaLevelBuilder.PostInit(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
    }

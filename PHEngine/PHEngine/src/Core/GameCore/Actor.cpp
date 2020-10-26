@@ -3,6 +3,7 @@
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
+#include "Core/GameCore/Scene.h"
 
 #include <glm/gtc/quaternion.hpp>
 
@@ -282,9 +283,19 @@ namespace Game
 		m_parent = actor;
 	}
 
+   void Actor::SetScene(std::weak_ptr<Scene> sceneOwner)
+   {
+      mSceneOwner = sceneOwner;
+   }
+
    Actor* Actor::GetParent() const
    {
       return m_parent;
+   }
+
+   std::weak_ptr<Scene> Actor::GetSceneOwner() const
+   {
+      return mSceneOwner;
    }
 
 	void Actor::AttachActor(std::shared_ptr<Actor> actor)

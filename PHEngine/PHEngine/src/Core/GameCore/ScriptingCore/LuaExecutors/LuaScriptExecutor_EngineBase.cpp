@@ -3,9 +3,8 @@
 namespace Game
 {
 
-   LuaScriptExecutor_EngineBase::LuaScriptExecutor_EngineBase(std::weak_ptr<Scene> scene, const std::string& scriptName)
-      : mSceneWP(scene)
-      , mScriptName(scriptName)
+   LuaScriptExecutor_EngineBase::LuaScriptExecutor_EngineBase(const std::string& scriptName)
+      : mScriptName(scriptName)
    {
    }
 
@@ -30,6 +29,16 @@ namespace Game
       }
 
       return gameObject;
+   }
+
+   std::string LuaScriptExecutor_EngineBase::GetScriptRelPath() const
+   {
+      return mScriptName;
+   }
+
+   void LuaScriptExecutor_EngineBase::PostInit(std::weak_ptr<Scene> scene)
+   {
+      mSceneWP = scene;
    }
 
 }

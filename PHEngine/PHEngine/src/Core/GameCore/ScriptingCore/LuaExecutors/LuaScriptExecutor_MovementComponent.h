@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineBase.h"
 
 namespace Game
 {
    class MovementComponent;
 
    class LuaScriptExecutor_MovementComponent
+      : public LuaScriptExecutor_EngineBase
    {
 
       LuaWrapper mLuaInstance;

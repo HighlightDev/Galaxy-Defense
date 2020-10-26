@@ -20,7 +20,7 @@ namespace Game
 
    public:
 
-      LuaScriptExecutor_EngineObjectsCreator(std::weak_ptr<Scene> scene, const std::string& scriptName);
+      LuaScriptExecutor_EngineObjectsCreator(const std::string& scriptName);
 
       ~LuaScriptExecutor_EngineObjectsCreator();
 

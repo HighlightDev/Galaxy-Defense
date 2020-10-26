@@ -31,7 +31,7 @@ namespace Game
 
    void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
-
+      auto& actorData = GetSerializeDataActor(dataContainer);
    }
 
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

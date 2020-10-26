@@ -47,4 +47,11 @@ namespace Game
 
    }
 
+   SerializeDataActor& Component::GetSerializeDataActor(SerializeDataContainer& dataContainer)
+   {
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
+      assert(it != dataContainer.Actors.end());
+      return *it;
+   }
+
 }

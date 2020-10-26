@@ -25,6 +25,8 @@ namespace Game
       const auto& rootComponent = GetOwner()->GetRootComponent();
       assert(rootComponent);
 
+      mScriptExecutor.PostInit(GetOwner()->GetSceneOwner());
+
       const auto& physComponent = GetOwner()->GetPhysicsComponent();
 
       if (physComponent)
@@ -119,6 +121,12 @@ namespace Game
 
    void MovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) 
    {
+      auto& actorData = GetSerializeDataActor(dataContainer);
 
+      std::shared_ptr<SerializeDataMovementComponent> data = std::make_shared<SerializeDataMovementComponent>();
+      data->ComponentName = GameObjectName;
+      data->ScriptName= mScriptExecutor.GetScriptRelPath();
+
+      actorData.ComponentsData.emplace_back(data);
    }
 }

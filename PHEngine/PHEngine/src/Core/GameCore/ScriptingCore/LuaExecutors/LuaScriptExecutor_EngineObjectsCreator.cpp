@@ -14,8 +14,8 @@ using namespace Graphics;
 namespace Game
 {
 
-   LuaScriptExecutor_EngineObjectsCreator::LuaScriptExecutor_EngineObjectsCreator(std::weak_ptr<Scene> scene, const std::string& scriptName)
-      : LuaScriptExecutor_EngineBase(scene, scriptName)
+   LuaScriptExecutor_EngineObjectsCreator::LuaScriptExecutor_EngineObjectsCreator(const std::string& scriptName)
+      : LuaScriptExecutor_EngineBase(scriptName)
       , mActiveComponents()
    {
    }

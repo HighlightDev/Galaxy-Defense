@@ -35,9 +35,7 @@ namespace Game
 
    void DirectionalLightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) {
 
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
-
-      assert(it != dataContainer.Actors.end());
+      auto& actorData = GetSerializeDataActor(dataContainer);
 
       auto lightCompData = std::make_shared<SerializeDataDirLightComponent>();
 
@@ -61,7 +59,7 @@ namespace Game
 
       lightCompData->bHasShadowMap = bHasShadowMap;
 
-      it->ComponentsData.emplace_back(lightCompData);
+      actorData.ComponentsData.emplace_back(lightCompData);
    }
 
    void DirectionalLightComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)

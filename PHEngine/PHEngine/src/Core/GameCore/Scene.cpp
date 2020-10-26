@@ -21,11 +21,12 @@ namespace Game
       mPhysicsWorld->InitPhysicsWorld();
    }
 
-   void Scene::PostLevelInit()
+   void Scene::PostLevelInit(std::weak_ptr<Scene> thisWeakPtr)
    {
       for (auto& actor : AllActors)
       {
          actor->PostLevelInit();
+         actor->SetScene(thisWeakPtr);
       }
    }
 

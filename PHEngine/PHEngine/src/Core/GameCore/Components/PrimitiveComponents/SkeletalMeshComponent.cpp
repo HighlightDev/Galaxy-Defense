@@ -72,9 +72,7 @@ namespace Game
 
    void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
-
-      assert(it != dataContainer.Actors.end());
+      auto& actorData = GetSerializeDataActor(dataContainer);
 
       auto meshData = std::make_shared<SerializeDataMesh>();
       meshData->ComponentName = GameObjectName;
@@ -88,7 +86,7 @@ namespace Game
 
       meshData->MeshMaterial = material;
 
-      it->ComponentsData.emplace_back(meshData);
+      actorData.ComponentsData.emplace_back(meshData);
    }
 
    void SkeletalMeshComponent::SyncDataWithRenderThread()

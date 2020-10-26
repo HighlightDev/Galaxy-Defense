@@ -19,6 +19,8 @@ using namespace EnginePhysics;
 namespace Game
 {
 
+   class Scene;
+
 	class Actor 
       : public GameObject
       , public ITickable
@@ -44,6 +46,8 @@ namespace Game
       std::shared_ptr<CharacterMovementComponent> m_movementComponent;
 
       std::shared_ptr<StateMachine> mStateMachine;
+
+      std::weak_ptr<Scene> mSceneOwner;
 
 	public:
 
@@ -80,9 +84,13 @@ namespace Game
 
 		void SetParent(Actor* actor);
 
+      void SetScene(std::weak_ptr<Scene> sceneOwner);
+
       Actor* GetParent() const;
 
       std::string GetName() const;
+
+      std::weak_ptr<Scene> GetSceneOwner() const;
 
 		void AttachActor(std::shared_ptr<Actor> actor);
 

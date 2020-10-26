@@ -32,7 +32,14 @@ namespace Game
 
    void CharacterMovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
+      auto& actorData = GetSerializeDataActor(dataContainer);
 
+      std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::shared_ptr<SerializeDataCharacterMovementComponent>();
+      data->ComponentName = GameObjectName;
+      data->CameraName = mCameraName;
+      data->LaunchDirection = mDirection;
+
+      actorData.ComponentsData.emplace_back(data);
    }
 
    void CharacterMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t& data)

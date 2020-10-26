@@ -18,7 +18,7 @@ class EnginePhysics::PhysicsWorld;
 
 namespace Game
 {
-   class Scene
+   class Scene 
    {
    public:
 
@@ -40,7 +40,7 @@ namespace Game
 
       Scene(InterThreadCommunicationMgr& interThreadMgr);
 
-      void PostLevelInit();
+      void PostLevelInit(std::weak_ptr<Scene> thisWeakPtr);
 
       void PostPhysicsInitialize();
 

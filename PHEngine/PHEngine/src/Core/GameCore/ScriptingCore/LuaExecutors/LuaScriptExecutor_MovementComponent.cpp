@@ -5,7 +5,8 @@ namespace Game
 {
   
    LuaScriptExecutor_MovementComponent::LuaScriptExecutor_MovementComponent(MovementComponent* owner, const std::string& scriptName)
-      : mOwnerComponent(owner)
+      : LuaScriptExecutor_EngineBase(scriptName)
+      , mOwnerComponent(owner)
       , mScriptName(scriptName)
    {
 

@@ -26,7 +26,7 @@ namespace Game
 
    void BillboardComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
-
+      auto& actorData = GetSerializeDataActor(dataContainer);
    }
 
    std::shared_ptr<PrimitiveSceneProxy> BillboardComponent::CreateSceneProxy() const
