@@ -2,10 +2,57 @@
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 
 using namespace Graphics;
+using namespace EnginePhysics;
 
 namespace Game {
+
+   std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(PhysicsComponent* component)
+   {
+      std::shared_ptr<SerializeDataPhysicsComponent> physCompData = std::make_shared<SerializeDataPhysicsComponent>();
+
+      std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
+
+      PhyShapeBase* physShape = component->GetDescriptor()->GetShape();
+      int32_t shapeType = physShape->GetCollisionShape()->getShapeType();
+      
+      if (SPHERE_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhySphereShape* sphere = static_cast<PhySphereShape*>(physShape);
+         auto shape = std::make_shared<SerializeDataSpherePhysicsShape>();
+         shape->Radius = sphere->GetRadius();
+         PhysicsShape = shape;
+      }
+      else if (BOX_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhyBoxShape* box = static_cast<PhyBoxShape*>(physShape);
+         auto shape = std::make_shared<SerializeDataBoxPhysicsShape>();
+         shape->HalfExtent = box->GetHalfExtent();
+         PhysicsShape = shape;
+      }
+      else if (CAPSULE_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhyCapsuleShape* capsule = static_cast<PhyCapsuleShape*>(physShape);
+         auto shape = std::make_shared<SerializeDataCapsulePhysicsShape>();
+         shape->Height = capsule->GetHeight();
+         shape->Radius = capsule->GetRadius();
+         PhysicsShape = shape;
+      }
+
+      physCompData->PhysicsShape = PhysicsShape;
+      physCompData->Mass = component->GetDescriptor()->GetMass();
+      auto motionModifiers = component->GetDescriptor()->GetMotionModifiers();
+      physCompData->AngularFactor = Converter::bulletToGlm(motionModifiers.AngularFactor);
+      physCompData->LinearFactor = Converter::bulletToGlm(motionModifiers.LinearFactor);
+      physCompData->BodyType = component->GetDescriptor()->GetPhysicsBodyType();
+
+      return physCompData;
+   }
 
    SerializeDataMaterial SerializeHelper::GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance)
    {

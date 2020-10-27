@@ -9,6 +9,9 @@
 #include <cereal/types/memory.hpp>
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+
+using namespace EnginePhysics;
 
 namespace glm 
 {
@@ -27,7 +30,9 @@ struct SerializeDataBase
       DirectionalLight,
       PointLight,
       CharacterMovement,
-      Movement
+      Movement,
+      Physics,
+      CharacterPhysics
    };
 
    virtual SerializeDataType GetSerializeDataType() const = 0;
@@ -199,6 +204,89 @@ struct SerializeDataMovementComponent
    }
 };
 
+struct SerializeDataPhysicsShape
+{
+   virtual int32_t GetShapeProxyType() = 0;
+};
+
+struct SerializeDataBoxPhysicsShape
+   : public SerializeDataPhysicsShape
+{
+   glm::vec3 HalfExtent;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(HalfExtent);
+   }
+
+   virtual int32_t GetShapeProxyType() override
+   {
+      return BOX_SHAPE_PROXYTYPE;
+   }
+};
+
+struct SerializeDataCapsulePhysicsShape
+   : public SerializeDataPhysicsShape
+{
+   float Radius;
+   float Height;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(Radius, Height);
+   }
+
+   virtual int32_t GetShapeProxyType() override
+   {
+      return CAPSULE_SHAPE_PROXYTYPE;
+   }
+};
+
+struct SerializeDataSpherePhysicsShape
+   : public SerializeDataPhysicsShape
+{
+   float Radius;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(Radius);
+   }
+
+   virtual int32_t GetShapeProxyType() override
+   {
+      return SPHERE_SHAPE_PROXYTYPE;
+   }
+};
+
+struct SerializeDataPhysicsComponent
+   : public SerializeDataComponent
+{
+   std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
+
+   PhysicsBodyType BodyType;
+   /*Motion modifiers*/
+   glm::vec3 LinearFactor;
+   glm::vec3 AngularFactor;
+   /*Motion modifiers*/
+   float Mass;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+
+      archive(PhysicsShape, BodyType, LinearFactor, AngularFactor, Mass);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::Physics;
+   }
+};
+
 struct SerializeDataActor
    : public SerializeDataBase
 {
@@ -226,8 +314,17 @@ CEREAL_REGISTER_TYPE(SerializeDataMesh);
 CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPointLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataMaterial);
-CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataMovementComponent);
+CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
+CEREAL_REGISTER_TYPE(SerializeDataPhysicsComponent);
+
+CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
+CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);
+CEREAL_REGISTER_TYPE(SerializeDataBoxPhysicsShape);
+
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataCapsulePhysicsShape)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataSpherePhysicsShape)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataBoxPhysicsShape)
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataActor)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMesh)
@@ -236,3 +333,4 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPointLightC
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterMovementComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPhysicsComponent)

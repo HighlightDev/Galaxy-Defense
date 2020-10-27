@@ -4,6 +4,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 using namespace EngineMath;
 
@@ -49,7 +50,11 @@ namespace EnginePhysics
 
    void PhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
+      SerializeDataActor& actorData = Component::GetSerializeDataActor(dataContainer);
+      auto physCompData = SerializeHelper::GetSerializeDataPhysicsComponent(this);
+      physCompData->ComponentName = GameObjectName;
 
+      actorData.ComponentsData.emplace_back(physCompData);
    }
 
    bool PhysicsComponent::IsTransformDirty() const

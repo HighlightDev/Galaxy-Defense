@@ -73,6 +73,12 @@ namespace EnginePhysics
 
       size_t GetId() const;
 
+      float GetMass() const;
+
+      PhysicsBodyType GetPhysicsBodyType() const;
+
+      MotionModifiers GetMotionModifiers() const;
+
       void SetLinearVelocity(const btVector3& velocity);
 
       btRigidBody* GetRigidBody() const;

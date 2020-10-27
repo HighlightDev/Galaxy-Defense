@@ -84,6 +84,11 @@ namespace Game
       {
          component->CollectDataForSerialization(dataContainer);
       }
+
+      if (m_physicsComponent)
+      {
+         m_physicsComponent->CollectDataForSerialization(dataContainer);
+      }
    }
   
 	void Actor::UpdateRootComponentTransform()

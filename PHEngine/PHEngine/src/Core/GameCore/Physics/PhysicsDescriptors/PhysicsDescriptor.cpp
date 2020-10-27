@@ -50,6 +50,20 @@ namespace EnginePhysics
       delete mRigidBody;
    }
 
+   float PhysicsDescriptor::GetMass() const
+   {
+      return mMass;
+   }
+
+   PhysicsBodyType PhysicsDescriptor::GetPhysicsBodyType() const
+   {
+      return mBodyType;
+   }
+
+   MotionModifiers PhysicsDescriptor::GetMotionModifiers() const {
+      return mMotionModifier;
+   }
+
    PhyShapeBase* PhysicsDescriptor::GetShape() const {
       return mShape;
    }

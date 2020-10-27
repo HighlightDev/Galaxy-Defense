@@ -13,6 +13,10 @@ namespace EnginePhysics
          : PhyShapeBase(new btSphereShape(btScalar(radius)))
       {
       }
+
+      float GetRadius() const {
+         return static_cast<btCapsuleShape*>(mCollisionShape)->getRadius();
+      }
    };
 
 }
