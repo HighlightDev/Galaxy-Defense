@@ -66,6 +66,12 @@ namespace EnginePhysics
 
       bool IsOnGround() const;
 
+      float GetStepHeight() const;
+
+      float GetCapsuleHeight() const;
+
+      float GetCapsuleRadius() const;
+
    private:
 
       void ParseGhostContacts();

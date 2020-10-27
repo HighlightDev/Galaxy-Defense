@@ -31,6 +31,7 @@ struct SerializeDataBase
       PointLight,
       CharacterMovement,
       Movement,
+      Input,
       Physics,
       CharacterPhysics
    };
@@ -204,6 +205,21 @@ struct SerializeDataMovementComponent
    }
 };
 
+struct SerializeDataInputComponent
+   : public SerializeDataComponent
+{
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::Input;
+   }
+};
+
 struct SerializeDataPhysicsShape
 {
    virtual int32_t GetShapeProxyType() = 0;
@@ -309,6 +325,28 @@ struct SerializeDataActor
    }
 };
 
+struct SerializeDataCharacterPhysicsComponent
+   : public SerializeDataComponent
+{
+   float CapsuleRadius;
+   float CapsuleHeight;
+   float Mass;
+   float StepHeight;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+
+      archive(CapsuleRadius, CapsuleHeight, Mass, StepHeight);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::CharacterPhysics;
+   }
+};
+
 CEREAL_REGISTER_TYPE(SerializeDataActor);
 CEREAL_REGISTER_TYPE(SerializeDataMesh);
 CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
@@ -317,6 +355,8 @@ CEREAL_REGISTER_TYPE(SerializeDataMaterial);
 CEREAL_REGISTER_TYPE(SerializeDataMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPhysicsComponent);
+CEREAL_REGISTER_TYPE(SerializeDataCharacterPhysicsComponent);
+CEREAL_REGISTER_TYPE(SerializeDataInputComponent);
 
 CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
 CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);
@@ -334,3 +374,5 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterMovementComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPhysicsComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterPhysicsComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataInputComponent)

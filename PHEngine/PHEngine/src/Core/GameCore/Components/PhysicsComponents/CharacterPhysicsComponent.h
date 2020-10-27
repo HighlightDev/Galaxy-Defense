@@ -19,6 +19,8 @@ namespace EnginePhysics {
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       void SetWalkVelocity(const glm::vec3& velocity);
 
       void SetJumpVelocity();

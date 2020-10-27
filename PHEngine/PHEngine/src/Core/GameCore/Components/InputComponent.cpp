@@ -25,7 +25,10 @@ namespace Game
 
    void InputComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
-
+      auto& dataActor = GetSerializeDataActor(dataContainer);
+      std::shared_ptr<SerializeDataInputComponent> inputComp = std::make_shared<SerializeDataInputComponent>();
+      inputComp->ComponentName = GameObjectName;
+      dataActor.ComponentsData.emplace_back(inputComp);
    }
 
    // Game thread tick

@@ -18,7 +18,7 @@ namespace EnginePhysics
       }
 
       float GetHeight() const {
-         return static_cast<btCapsuleShape*>(mCollisionShape)->getHalfHeight();
+         return static_cast<btCapsuleShape*>(mCollisionShape)->getHalfHeight() * 2.0f;
       }
    };
 

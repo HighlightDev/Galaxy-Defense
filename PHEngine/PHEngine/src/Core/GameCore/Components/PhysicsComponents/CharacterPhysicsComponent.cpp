@@ -37,6 +37,19 @@ namespace EnginePhysics
       }
    }
 
+   void CharacterPhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+      auto& actorData = GetSerializeDataActor(dataContainer);
+      std::shared_ptr<SerializeDataCharacterPhysicsComponent> charPhysCompData = std::make_shared<SerializeDataCharacterPhysicsComponent>();
+      charPhysCompData->ComponentName = GameObjectName;
+      charPhysCompData->CapsuleHeight = characterController->GetCapsuleHeight();
+      charPhysCompData->CapsuleRadius = characterController->GetCapsuleRadius();
+      charPhysCompData->Mass = characterController->GetMass();
+      charPhysCompData->StepHeight = characterController->GetStepHeight();
+
+      actorData.ComponentsData.emplace_back(charPhysCompData);
+   }
+
    void CharacterPhysicsComponent::SetWalkVelocity(const glm::vec3& velocity)
    {
       characterController->Walk(velocity);

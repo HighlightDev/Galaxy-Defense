@@ -77,7 +77,7 @@ namespace EnginePhysics
       mMotionState->setWorldTransform(worldTransform);
    }
 
-   void DynamicCharacterController::CompleteRigidBodyConstruction() 
+   void DynamicCharacterController::CompleteRigidBodyConstruction()
    {
       btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
 
@@ -108,7 +108,7 @@ namespace EnginePhysics
       mGhostObject->setUserPointer(static_cast<PhysicsDescriptor*>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
 
-     
+
 
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
    }
@@ -254,7 +254,7 @@ namespace EnginePhysics
    {
       PhysicsDescriptor* kinematicObjDesc = std::get<0>(data);
       const btVector3& offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
-      
+
       if (mLastRayCastObjectResult && kinematicObjDesc == mLastRayCastObjectResult)
       {
          // Collision
@@ -267,7 +267,7 @@ namespace EnginePhysics
    void DynamicCharacterController::UpdatePosition()
    {
       // Ray cast, ignore rigid body
-      
+
       auto rayCastResult = IgnoreBodyAndGhostCast(mRigidBody, mGhostObject);
       auto& worldTransform = mRigidBody->getWorldTransform();
 
@@ -335,9 +335,23 @@ namespace EnginePhysics
       }
    }
 
+   float DynamicCharacterController::GetStepHeight() const {
+      return mStepHeight;
+   }
+
    bool DynamicCharacterController::IsOnGround() const
    {
       return mOnGround;
+   }
+
+   float DynamicCharacterController::GetCapsuleHeight() const
+   {
+      return static_cast<PhyCapsuleShape*>(GetShape())->GetHeight();
+   }
+
+   float DynamicCharacterController::GetCapsuleRadius() const 
+   {
+      return static_cast<PhyCapsuleShape*>(GetShape())->GetRadius();
    }
 
 }
