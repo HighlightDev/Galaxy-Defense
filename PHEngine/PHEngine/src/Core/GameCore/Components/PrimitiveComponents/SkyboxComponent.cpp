@@ -1,6 +1,7 @@
 #include "SkyboxComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 #include <glm/vec3.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -32,6 +33,13 @@ namespace Game
    void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
+
+      std::shared_ptr<SerializeDataSkyboxComponent> skyboxCompData = std::make_shared<SerializeDataSkyboxComponent>();
+
+      skyboxCompData->ComponentName = GameObjectName;
+      skyboxCompData->Scale = GetScale();
+      skyboxCompData->Material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
+      actorData.ComponentsData.emplace_back(skyboxCompData);
    }
 
    std::shared_ptr<PrimitiveSceneProxy> SkyboxComponent::CreateSceneProxy() const

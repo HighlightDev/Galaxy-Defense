@@ -84,7 +84,7 @@ namespace Game
 
    private:
 
-      std::shared_ptr<StateMachine> BuildFSM();
+      std::shared_ptr<StateMachine> BuildFSM(const std::string& relPathFSM);
 
    };
 

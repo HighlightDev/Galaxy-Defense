@@ -69,6 +69,10 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(*componentData);
       }
+      else if ("SkyboxComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(*componentData);
+      }
       else assert((false, "Unknown component type."));
 
       delete componentData;
@@ -126,6 +130,11 @@ namespace Game
    ComponentData* LuaToCPPAdapter::CreateInputComponentData(const std::string& gameObjectName)
    {
       return new InputComponentData(gameObjectName);
+   }
+
+   ComponentData* LuaToCPPAdapter::CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material) 
+   {
+      return new SkyboxComponentData(gameObjectName, scale, material);
    }
 
 }

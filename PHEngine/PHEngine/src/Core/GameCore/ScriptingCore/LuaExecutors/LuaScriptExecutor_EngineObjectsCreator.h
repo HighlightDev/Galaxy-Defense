@@ -61,6 +61,9 @@ namespace Game
       /* -------------------  Create physics component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData);
 
+      /* -------------------  Create skybox component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, IMaterial*>& skyboxComponentData);
+
       /* -------------------  Create dir light projection shadow info --------------------*/
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
 

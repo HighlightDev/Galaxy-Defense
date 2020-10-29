@@ -10,6 +10,9 @@ namespace Game
    {
       static void SetAttachment(GameObject* gameObject, StatePropertyBinding* binding, const std::string& propertyName)
       {
+         binding->GameObjectName = gameObject->GameObjectName;
+         binding->GameObjectPropertyName = propertyName;
+
          switch (binding->GetBindingType())
          {
             case BindingType::ANIMATION:

@@ -33,6 +33,7 @@ namespace Game
       static ComponentData* CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
       static ComponentData* CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName);
       static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
+      static ComponentData* CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material);
 
       static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhyShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);

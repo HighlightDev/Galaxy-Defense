@@ -108,7 +108,24 @@ function CreateTestLevel(host)
 	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 	local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
 	_AttachComponentToActor(host, house, housePhysComp)
-	
+
+	-- ***************************SKYBOX******************** --
+
+	local skyboxActor = _CreateActor(host,"Skybox actor", 
+	0, 0, 0,
+	0, 0, 0,
+	1, 1, 1)
+
+	local skyboxMat = _CreateMaterial(host, "Skybox.m")
+	_SetTextureToMaterial(host, skyboxMat, "dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png", "dayTexture")
+
+	local skyboxData = _CreateSkyboxComponentData(host, "SkyboxComp",
+	140, 140, 140,
+	skyboxMat)
+
+	local skyboxComponent = _CreateComponent(host, "SkyboxComponent", skyboxData)
+	_AttachComponentToActor(host, skyboxActor, skyboxComponent)
+
 	-- ***************************SKELET******************** --
 	local buddy = _CreateActor(host,"SkeletBuddy", 
 	10, 50, 10,
@@ -145,4 +162,5 @@ function CreateTestLevel(host)
 	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "animationBinding", "")
 
 	_AttachPlayerControllerToActor(host, buddy)
+
 end

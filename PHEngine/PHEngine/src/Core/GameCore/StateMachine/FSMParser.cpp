@@ -198,7 +198,7 @@ namespace Game
          }
       }
 
-      return BuildFSM();
+      return BuildFSM(relPathToFSM);
    }
 
    std::shared_ptr<StatePropertyBinding> CreatePropertyBinding(const FSMParser::FSMP_Binding& binding)
@@ -242,7 +242,7 @@ namespace Game
       return result;
    }
 
-   std::shared_ptr<StateMachine> FSMParser::BuildFSM()
+   std::shared_ptr<StateMachine> FSMParser::BuildFSM(const std::string& relPathFSM)
    {
       std::unordered_map<std::string, State*> states;
       std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>> bindings;
@@ -252,7 +252,7 @@ namespace Game
          states[item.Name] = new State(item.Name);
       }
 
-      auto fsm = std::make_shared<StateMachine>(states[mStates[0].Name]);
+      auto fsm = std::make_shared<StateMachine>(relPathFSM, states[mStates[0].Name]);
 
       for (const auto& item : mTransitions)
       {

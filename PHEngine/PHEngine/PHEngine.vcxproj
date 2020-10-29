@@ -285,6 +285,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="res\materials\Pbs.m" />
+    <None Include="res\materials\Skybox.m" />
     <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\scripts\platformMovementComponentAction.lua" />
     <None Include="res\scripts\skeletComponentAction.lua" />

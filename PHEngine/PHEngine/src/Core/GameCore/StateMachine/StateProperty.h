@@ -18,6 +18,8 @@ namespace Game
    {
       std::weak_ptr<StatePropertyBinding> PropertyBinding;
 
+   std::string 
+
       virtual StatePropertyType GetStatePropertyType() = 0;
 
       BaseStateProperty(std::weak_ptr<StatePropertyBinding> propertyBinding) 

@@ -2,13 +2,19 @@
 
 #include "State.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Serialize/ISerializable.h"
+#include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 
 #include <unordered_map>
 
 namespace Game
 {
-   class StateMachine : public ITickable
+   class StateMachine 
+      : public ITickable
+      , public ISerializable
    {
+      std::string mRelPathFSM;
+
       /* At beginning we are here */
       State* mStateNodeInitRoot = nullptr;
 
@@ -28,19 +34,23 @@ namespace Game
 
    public:
 
-      StateMachine(State*& rootNode);
+      StateMachine(const std::string& relPathFSM, State*& rootNode);
 
       ~StateMachine();
 
       void ChangeState(const std::string& dstStateName);
 
-      void Tick(const float deltaTime);
+      virtual void Tick(const float deltaTime) override;
+
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       State* GetCurrentState() const;
 
       bool IsTransitionActive() const;
 
       float GetTransitionParameter() const;
+
+      std::string GetRelPathFSM() const;
 
       void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding);
 

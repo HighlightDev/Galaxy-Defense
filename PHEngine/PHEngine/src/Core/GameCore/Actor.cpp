@@ -94,6 +94,11 @@ namespace Game
       {
          m_inputComponent->CollectDataForSerialization(dataContainer);
       }
+
+      if (mStateMachine)
+      {
+         mStateMachine->CollectDataForSerialization(dataContainer);
+      }
    }
   
 	void Actor::UpdateRootComponentTransform()

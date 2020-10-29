@@ -33,7 +33,8 @@ struct SerializeDataBase
       Movement,
       Input,
       Physics,
-      CharacterPhysics
+      CharacterPhysics,
+      FSM
    };
 
    virtual SerializeDataType GetSerializeDataType() const = 0;
@@ -347,6 +348,59 @@ struct SerializeDataCharacterPhysicsComponent
    }
 };
 
+struct SerializeDataSkyboxComponent
+   : public SerializeDataComponent
+{
+   glm::vec3 Scale;
+
+   SerializeDataMaterial Material;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataComponent::serialize(archive);
+
+      archive(Scale, Material);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::Skybox;
+   }
+};
+
+struct SerializeDataStateMachine
+   : public SerializeDataBase
+{
+   struct SerializeFSMBinding
+   {
+      std::string GameObjectName;
+      std::string BindingName;
+      std::string GameObjectPropertyName;
+
+      template <typename Archive>
+      void serialize(Archive& archive)
+      {
+         archive(GameObjectName, BindingName, GameObjectPropertyName);
+      }
+   };
+
+   std::string FsmRelPath;
+
+   std::vector<SerializeFSMBinding> Bindings;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(FsmRelPath, Bindings);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::FSM;
+   }
+};
+
 CEREAL_REGISTER_TYPE(SerializeDataActor);
 CEREAL_REGISTER_TYPE(SerializeDataMesh);
 CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
@@ -357,14 +411,7 @@ CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPhysicsComponent);
 CEREAL_REGISTER_TYPE(SerializeDataCharacterPhysicsComponent);
 CEREAL_REGISTER_TYPE(SerializeDataInputComponent);
-
-CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
-CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);
-CEREAL_REGISTER_TYPE(SerializeDataBoxPhysicsShape);
-
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataCapsulePhysicsShape)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataSpherePhysicsShape)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataBoxPhysicsShape)
+CEREAL_REGISTER_TYPE(SerializeDataSkyboxComponent);
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataActor)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMesh)
@@ -376,3 +423,12 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementCom
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPhysicsComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterPhysicsComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataInputComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSkyboxComponent)
+
+CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
+CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);
+CEREAL_REGISTER_TYPE(SerializeDataBoxPhysicsShape);
+
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataCapsulePhysicsShape)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataSpherePhysicsShape)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataBoxPhysicsShape)

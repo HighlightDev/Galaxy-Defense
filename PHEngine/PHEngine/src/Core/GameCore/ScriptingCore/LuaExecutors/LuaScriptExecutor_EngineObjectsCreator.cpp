@@ -42,6 +42,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateCharacterMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
 
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder)>::Register(mLuaInstance, "_CreateMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
@@ -171,6 +172,12 @@ namespace Game
       return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
    }
 
+   /* -------------------  Create skybox component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, IMaterial*>& skyboxComponentData)
+   {
+      return LuaToCPPAdapter::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
+   }
+
    /* -------------------  Create dir light projection shadow info --------------------*/
    ProjectedShadowInfo* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData)
    {
@@ -190,12 +197,24 @@ namespace Game
    }
 
    /* -------------------  Set texture --------------------*/
-   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple <IMaterial*, std::string, std::string > & setTextureToMaterial)
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple <IMaterial*, std::string, std::string> & setTextureToMaterial)
    {
       IMaterial* material = std::get<0>(setTextureToMaterial);
 
-      const std::string& filePath = IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(setTextureToMaterial));
-      std::shared_ptr<ITexture> texture = TexturePool::GetInstance()->GetOrAllocateResource(filePath);
+      const std::vector<std::string>& pathToTextures = Split(std::get<1>(setTextureToMaterial), ',');
+      std::shared_ptr<ITexture> texture;
+
+      std::string resultPathToAllTextures;
+      for (int32_t i = 0; i < pathToTextures.size(); ++i)
+      {
+         resultPathToAllTextures += IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(pathToTextures[i]);
+
+         if (i + 1 < pathToTextures.size())
+         {
+            resultPathToAllTextures += ",";
+         }
+      }
+      texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
 
       const std::string& propertyName = std::get<2>(setTextureToMaterial);
       MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, texture);

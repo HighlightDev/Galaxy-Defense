@@ -2,6 +2,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
 #include "Core/GameCore/StateMachine/FloatStateMachineController.h"
+#include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 
 #include <algorithm>
 #include <iostream>
@@ -9,8 +10,9 @@
 namespace Game
 {
 
-   StateMachine::StateMachine(State*& rootNode)
-      : mStateNodeInitRoot(rootNode)
+   StateMachine::StateMachine(const std::string& relPathFSM, State*& rootNode)
+      : mRelPathFSM(relPathFSM)
+      , mStateNodeInitRoot(rootNode)
       , mCurrentStateNode(mStateNodeInitRoot)
    {
    }
@@ -133,6 +135,23 @@ namespace Game
       }
    }
 
+   void StateMachine::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+      std::shared_ptr<SerializeDataStateMachine> fsmData = std::make_shared<SerializeDataStateMachine>();
+
+      fsmData->FsmRelPath = GetRelPathFSM();
+
+      for (const auto& binding : mPropertyBindings)
+      {
+         SerializeDataStateMachine::SerializeFSMBinding bindingData;
+         bindingData.BindingName = binding.second->BindingName;
+         bindingData.GameObjectName = binding.second->GameObjectName;
+         bindingData.GameObjectPropertyName = binding.second->GameObjectPropertyName;
+         fsmData->Bindings.emplace_back(bindingData);
+      }
+      
+   }
+
    void StateMachine::SetTransitionValuesFinished(State* newCurrentState)
    {
       std::cout << "TRANSITION FINISHED, new STATE : " + newCurrentState->GetStateName() << std::endl;
@@ -205,5 +224,9 @@ namespace Game
    State* StateMachine::GetCurrentState() const
    {
       return mCurrentStateNode;
+   }
+
+   std::string StateMachine::GetRelPathFSM() const {
+      return mRelPathFSM;
    }
 }

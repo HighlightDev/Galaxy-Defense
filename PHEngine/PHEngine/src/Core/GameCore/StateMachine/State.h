@@ -49,7 +49,7 @@ namespace Game
       {
          auto bindingSP = stateProperty->PropertyBinding.lock();
          assert(bindingSP);
-         const std::string& name = bindingSP->MutualName;
+         const std::string& name = bindingSP->BindingName;
          assert(mStateProperties.count(name) == 0); // make sure that property doesn't duplicate
          mStateProperties.emplace(std::make_pair(name, stateProperty));
       }

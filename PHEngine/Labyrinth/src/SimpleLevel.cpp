@@ -129,31 +129,6 @@ namespace Labyrinth
          mScene->AllActors.push_back(waterActor);
       }
 #endif
-
-      /*MovementComponentData data("MoveComp", "platformMovementComponentAction.lua");
-      auto moveComp = mScene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(data);*/
-      //auto actor = static_cast<Actor*>(mScene->GetGameObjectByName("SmallGround"));
-
-      // SKYBOX
-      {
-         StringStreamWrapper::ToString(
-            GET_REL_PATH_TO_FILE("dayRight.png"), ",",
-            GET_REL_PATH_TO_FILE("dayLeft.png"), ",",
-            GET_REL_PATH_TO_FILE("dayTop.png"), ",",
-            GET_REL_PATH_TO_FILE("dayBottom.png"), ",",
-            GET_REL_PATH_TO_FILE("dayBack.png"), ",",
-            GET_REL_PATH_TO_FILE("dayFront.png"));
-         auto dTexPath = StringStreamWrapper::FlushString();
-
-         std::shared_ptr<ITexture> dayTex = TexturePool::GetInstance()->GetOrAllocateResource(dTexPath);
-
-         SkyboxComponentData mData("Skybox component", glm::vec3(140.0f), std::make_shared<SkyboxDynamicMaterial>(dayTex, nullptr));
-         std::shared_ptr<Actor> skyboxActor = std::make_shared<Actor>("Skybox Actor",
-            std::make_shared<SceneComponent>("SkyboxRootComponent", glm::vec3(0), glm::vec3(0), glm::vec3(1)));
-         auto skyboxComp = mScene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(mData);
-         skyboxActor->AddComponent(skyboxComp);
-         mScene->AddActor(skyboxActor);
-      }
    }
 #undef GET_REL_PATH_TO_FILE
 }

@@ -11,10 +11,13 @@ namespace Game {
 
    struct StatePropertyBinding
    {
-      std::string MutualName;
+      std::string BindingName;
+      std::string GameObjectName;
+      std::string GameObjectPropertyName;
 
-      StatePropertyBinding(const std::string& mutualName)
-         : MutualName(mutualName)
+      StatePropertyBinding(const std::string& bindingName)
+         : BindingName(bindingName)
+         , GameObjectName("")
       {
 
       }
@@ -27,14 +30,14 @@ namespace Game {
    {
       float* Value;
 
-      FloatPropertyBinding(const std::string& mutualName, float* value)
-         : StatePropertyBinding(mutualName)
+      FloatPropertyBinding(const std::string& bindingName, float* value)
+         : StatePropertyBinding(bindingName)
          , Value(value)
       {
       }
 
-      FloatPropertyBinding(const std::string& mutualName)
-         : StatePropertyBinding(mutualName)
+      FloatPropertyBinding(const std::string& bindingName)
+         : StatePropertyBinding(bindingName)
          , Value(nullptr)
       {
       }
@@ -62,9 +65,9 @@ namespace Game {
       bool* bTranstitionEnabled;
       float* TransitionValue;
 
-      AnimationPropertyBinding(const std::string& mutualName, std::string* srcName, std::string* dstName,
+      AnimationPropertyBinding(const std::string& bindingName, std::string* srcName, std::string* dstName,
          float* srcTime, float* dstTime, bool* isTransitionEnabled, float* transitionValue)
-         : StatePropertyBinding(mutualName)
+         : StatePropertyBinding(bindingName)
          , SrcName(srcName)
          , DstName(dstName)
          , SrcTime(srcTime)
@@ -74,8 +77,8 @@ namespace Game {
       {
       }
 
-      AnimationPropertyBinding(const std::string& mutualName)
-         : StatePropertyBinding(mutualName)
+      AnimationPropertyBinding(const std::string& bindingName)
+         : StatePropertyBinding(bindingName)
          , SrcName(nullptr)
          , DstName(nullptr)
          , SrcTime(nullptr)
