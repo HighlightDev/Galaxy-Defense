@@ -130,12 +130,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h" />
-    <ClInclude Include="LogInterface.h" />
+    <ClInclude Include="TinyLogger\Core.h" />
+    <ClInclude Include="TinyLogger\LoggerClient.h" />
+    <ClInclude Include="TinyLogger\LogInterface.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Core.cpp" />
-    <ClCompile Include="LogInterface.cpp" />
+    <ClCompile Include="TinyLogger\Core.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

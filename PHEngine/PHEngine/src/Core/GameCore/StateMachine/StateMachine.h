@@ -13,6 +13,8 @@ namespace Game
       : public ITickable
       , public ISerializable
    {
+      class Actor* mParent = nullptr;
+
       std::string mRelPathFSM;
 
       /* At beginning we are here */
@@ -57,6 +59,10 @@ namespace Game
       std::shared_ptr<StatePropertyBinding> GetPropertyBindingByName(const std::string& name) const;
 
       void InitRootState();
+
+      void SetParentActor(class Actor* parent);
+
+      class Actor* GetParentActor() const;
 
    private:
 

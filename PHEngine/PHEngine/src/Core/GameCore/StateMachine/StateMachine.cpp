@@ -3,6 +3,7 @@
 #include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
 #include "Core/GameCore/StateMachine/FloatStateMachineController.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
+#include "Core/GameCore/Actor.h"
 
 #include <algorithm>
 #include <iostream>
@@ -137,6 +138,9 @@ namespace Game
 
    void StateMachine::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetParentActor()->GetName(); });
+      assert(it != dataContainer.Actors.end());
+
       std::shared_ptr<SerializeDataStateMachine> fsmData = std::make_shared<SerializeDataStateMachine>();
 
       fsmData->FsmRelPath = GetRelPathFSM();
@@ -150,6 +154,15 @@ namespace Game
          fsmData->Bindings.emplace_back(bindingData);
       }
       
+      it->StateMachineData = fsmData;
+   }
+
+   void StateMachine::SetParentActor(Actor* parent) {
+      mParent = parent;
+   }
+
+   Actor* StateMachine::GetParentActor() const {
+      return mParent;
    }
 
    void StateMachine::SetTransitionValuesFinished(State* newCurrentState)

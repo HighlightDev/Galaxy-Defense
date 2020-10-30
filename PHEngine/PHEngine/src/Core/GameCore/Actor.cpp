@@ -333,6 +333,7 @@ namespace Game
    {
       assert((!mStateMachine, "Current state machine member was already attached."));
       mStateMachine = fsm;
+      mStateMachine->SetParentActor(this);
    }
 
    std::shared_ptr<StateMachine> Actor::GetStateMachine() const

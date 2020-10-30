@@ -6,6 +6,11 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
+#include "Core/GameCore/Actor.h"
+#include "Core/GameCore/StateMachine/StateMachine.h"
+#include "Core/GameCore/StateMachine/FSMParser.h"
+#include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
+#include "Core/GameCore/Scene.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -94,5 +99,34 @@ namespace Game {
       }
 
       return materialData;
+   }
+
+   std::shared_ptr<Actor> SerializeHelper::CreateActorFromSerializedData(const SerializeDataActor& data) {
+
+      auto actor = std::make_shared<Actor>(data.ActorName, 
+         std::make_shared<SceneComponent>(data.ActorName + "_RootComp", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
+      return actor;
+   }
+
+   std::shared_ptr<StateMachine> SerializeHelper::CreateFsmFromSerializedData(std::shared_ptr<SerializeDataStateMachine> data) {
+      FSMParser fsmParser;
+      return fsmParser.ParseFSMDescriptor(data->FsmRelPath);
+   }
+
+   std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) {
+
+      std::shared_ptr<Component> result;
+
+      const auto dataType = data->GetSerializeDataType();
+
+      if (dataType == SerializeDataBase::SerializeDataType::StaticMesh)
+      {
+         SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+         auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
+            meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, nullptr);
+         result = LuaToCPPAdapter::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
+      }
+
+      return result;
    }
 }

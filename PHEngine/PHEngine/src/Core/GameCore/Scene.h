@@ -30,7 +30,7 @@ namespace Game
 
    private:
 
-      std::vector<std::shared_ptr<Actor>> AllActors;
+      std::vector<std::shared_ptr<Actor>> mActors;
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -58,7 +58,7 @@ namespace Game
 
       GameObject* GetGameObjectByName(const std::string& name) const;
 
-      const std::vector<std::shared_ptr<Actor>>& GetAllActors() const;
+      const std::vector<std::shared_ptr<Actor>>& GetActors() const;
 
       void AddActor(std::shared_ptr<Actor> actor);
 

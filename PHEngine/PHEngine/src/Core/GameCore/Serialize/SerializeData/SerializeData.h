@@ -133,7 +133,7 @@ struct SerializeDataDirLightComponent
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
-      return SerializeDataBase::SerializeDataType::StaticMesh;
+      return SerializeDataBase::SerializeDataType::DirectionalLight;
    }
 };
 
@@ -304,6 +304,38 @@ struct SerializeDataPhysicsComponent
    }
 };
 
+struct SerializeDataStateMachine
+   : public SerializeDataBase
+{
+   struct SerializeFSMBinding
+   {
+      std::string GameObjectName;
+      std::string BindingName;
+      std::string GameObjectPropertyName;
+
+      template <typename Archive>
+      void serialize(Archive& archive)
+      {
+         archive(GameObjectName, BindingName, GameObjectPropertyName);
+      }
+   };
+
+   std::string FsmRelPath;
+
+   std::vector<SerializeFSMBinding> Bindings;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(FsmRelPath, Bindings);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::FSM;
+   }
+};
+
 struct SerializeDataActor
    : public SerializeDataBase
 {
@@ -311,18 +343,18 @@ struct SerializeDataActor
    glm::vec3 RootCompTranslation;
    glm::vec3 RootCompRotation;
    glm::vec3 RootCompScale;
-
+   std::shared_ptr<SerializeDataStateMachine> StateMachineData;
    std::vector<std::shared_ptr<SerializeDataBase>> ComponentsData;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, ComponentsData);
+      archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, StateMachineData, ComponentsData);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
-      return SerializeDataBase::SerializeDataType::DirectionalLight;
+      return SerializeDataBase::SerializeDataType::Actor;
    }
 };
 
@@ -366,38 +398,6 @@ struct SerializeDataSkyboxComponent
    virtual SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Skybox;
-   }
-};
-
-struct SerializeDataStateMachine
-   : public SerializeDataBase
-{
-   struct SerializeFSMBinding
-   {
-      std::string GameObjectName;
-      std::string BindingName;
-      std::string GameObjectPropertyName;
-
-      template <typename Archive>
-      void serialize(Archive& archive)
-      {
-         archive(GameObjectName, BindingName, GameObjectPropertyName);
-      }
-   };
-
-   std::string FsmRelPath;
-
-   std::vector<SerializeFSMBinding> Bindings;
-
-   template <typename Archive>
-   void serialize(Archive& archive)
-   {
-      archive(FsmRelPath, Bindings);
-   }
-
-   virtual SerializeDataType GetSerializeDataType() const override
-   {
-      return SerializeDataBase::SerializeDataType::FSM;
    }
 };
 

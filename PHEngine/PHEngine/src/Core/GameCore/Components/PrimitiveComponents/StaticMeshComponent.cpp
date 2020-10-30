@@ -33,7 +33,7 @@ namespace Game
 
       auto meshData = std::make_shared<SerializeDataMesh>();
       meshData->ComponentName = GameObjectName;
-      meshData->ModelName = GameObjectName;
+      meshData->ModelName = "";
       meshData->Translation = GetTranslation();
       meshData->Rotation = GetRotationEuler();
       meshData->Scale = GetScale();

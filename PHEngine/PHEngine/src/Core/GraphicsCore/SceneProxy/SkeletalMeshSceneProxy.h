@@ -10,11 +10,6 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
 
-namespace Game
-{
-   class StateMachine;
-}
-
 using namespace Game::ShaderImpl;
 
 namespace Graphics

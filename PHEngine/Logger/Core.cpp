@@ -1,9 +1,0 @@
-#include "Core.h"
-
-#include <thread>
-#include <chrono>   
-
-namespace Log
-{
-   Logger* Logger::mInstance = nullptr;
-}

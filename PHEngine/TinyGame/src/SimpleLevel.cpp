@@ -27,7 +27,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 
 #include <glm/vec3.hpp>
-#include <LogInterface.h>
+//#include <TinyLogger/LogInterface.h>
 
 using namespace Graphics;
 using namespace EnginePhysics;

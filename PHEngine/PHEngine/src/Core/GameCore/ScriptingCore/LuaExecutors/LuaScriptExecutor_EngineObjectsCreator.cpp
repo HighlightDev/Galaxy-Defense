@@ -108,9 +108,9 @@ namespace Game
          ICamera* camera = scene->GetCamera();
          assert(camera && ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
 
-         auto actorIt = std::find_if(scene->GetAllActors().begin(), scene->GetAllActors().end(),
+         auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
             [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
-         assert(actorIt != scene->GetAllActors().end());
+         assert(actorIt != scene->GetActors().end());
 
          scene->m_playerController.SetPlayerActor(*actorIt);
          static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(*actorIt);
@@ -205,7 +205,7 @@ namespace Game
       std::shared_ptr<ITexture> texture;
 
       std::string resultPathToAllTextures;
-      for (int32_t i = 0; i < pathToTextures.size(); ++i)
+      for (size_t i = 0; i < pathToTextures.size(); ++i)
       {
          resultPathToAllTextures += IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(pathToTextures[i]);
 

@@ -5,9 +5,6 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 
-#include <cereal/archives/xml.hpp>
-#include <fstream>
-
 using namespace Graphics;
 
 namespace Game
@@ -23,7 +20,7 @@ namespace Game
 
    void Scene::PostLevelInit(std::weak_ptr<Scene> thisWeakPtr)
    {
-      for (auto& actor : AllActors)
+      for (auto& actor : mActors)
       {
          actor->PostLevelInit();
          actor->SetScene(thisWeakPtr);
@@ -32,32 +29,9 @@ namespace Game
 
    void Scene::PostPhysicsInitialize()
    {
-      for (auto& actor : AllActors)
+      for (auto& actor : mActors)
       {
          actor->PostPhysicsInitialize();
-      }
-
-      {
-         std::ofstream os("polymorphism_test.xml");
-         cereal::XMLOutputArchive oarchive(os);
-         SerializeDataContainer container;
-
-         for (auto& actor : AllActors)
-         {
-            actor->CollectDataForSerialization(container);
-         }
-
-         oarchive(container);
-
-      }
-
-      {
-         std::ifstream is("polymorphism_test.xml");
-         cereal::XMLInputArchive iarchive(is);
-
-         SerializeDataContainer container;
-
-         iarchive(container);
       }
    }
 
@@ -69,9 +43,9 @@ namespace Game
       GameObjects[goName] = camera;
    }
 
-   const std::vector<std::shared_ptr<Actor>>& Scene::GetAllActors() const
+   const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const
    {
-      return AllActors;
+      return mActors;
    }
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
@@ -79,7 +53,7 @@ namespace Game
       const std::string& goName = actor->GameObjectName;
       assert(GameObjects.count(goName) == 0);
       GameObjects[goName] = actor.get();
-      AllActors.emplace_back(actor);
+      mActors.emplace_back(actor);
    }
 
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
@@ -90,9 +64,9 @@ namespace Game
          GameObjects.erase(goName);
       }
 
-      const std::vector<std::shared_ptr<Actor>>::const_iterator it = std::find(AllActors.begin(), AllActors.end(), actor);
-      if (it != AllActors.end())
-         AllActors.erase(it); 
+      const std::vector<std::shared_ptr<Actor>>::const_iterator it = std::find(mActors.begin(), mActors.end(), actor);
+      if (it != mActors.end())
+         mActors.erase(it); 
    }
 
    GameObject* Scene::GetGameObjectByName(const std::string& name) const
@@ -118,7 +92,7 @@ namespace Game
          const size_t removeProxyIndex = componentPtr->PrimitiveProxyComponentId;
       
          // Remove proxy index offset
-         for (auto& actor : AllActors)
+         for (auto& actor : mActors)
          {
             actor->RemoveComponentIndexOffset(removeProxyIndex);
          }
@@ -134,7 +108,7 @@ namespace Game
          const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
 
          // Remove proxy index offset
-         for (auto& actor : AllActors)
+         for (auto& actor : mActors)
          {
             actor->RemoveComponentIndexOffset(removeProxyIndex);
          }
@@ -353,7 +327,7 @@ namespace Game
 
       m_playerController.Tick(delta);
 
-      for (auto& actor : AllActors)
+      for (auto& actor : mActors)
       {
          actor->Tick(delta);
       }
@@ -365,7 +339,7 @@ namespace Game
 
    Scene::~Scene()
    {
-      AllActors.clear();
+      mActors.clear();
       delete m_camera;
    }
 

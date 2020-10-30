@@ -41,6 +41,14 @@ namespace Game
       virtual void TickLevel(const float deltaTime);
 
       virtual void LoadLevel();
+
+      void SerializeLevel(const std::string& pathToFolder);
+
+      void DeserializeLevel(const std::string& pathToFile);
+
+   private:
+
+      void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer& container);
    };
 }
 

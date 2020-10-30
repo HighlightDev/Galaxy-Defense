@@ -1,8 +1,12 @@
 #include "Level.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 #include <glm/vec3.hpp>
+#include <cereal/archives/xml.hpp>
+#include <fstream>
 
 namespace Game
 {
@@ -42,6 +46,56 @@ namespace Game
 
    void Level::LoadLevel()
    {
+   }
+
+   void Level::SerializeLevel(const std::string& pathToFolder) {
+
+      std::ofstream os(pathToFolder);
+      cereal::XMLOutputArchive oarchive(os);
+
+      SerializeDataContainer container;
+
+      for (auto& actor : mScene->GetActors())
+      {
+         actor->CollectDataForSerialization(container);
+      }
+
+      oarchive(container);
+   }
+
+   void Level::DeserializeLevel(const std::string& pathToFile)
+   {
+      std::ifstream is(pathToFile);
+      cereal::XMLInputArchive iarchive(is);
+      SerializeDataContainer container;
+      iarchive(container);
+
+      InstantiateLevelFromSerializedContainer(container);
+   }
+
+   void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer& container) 
+   {
+      for (const auto& actorData : container.Actors)
+      {
+         std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
+
+         for (const auto& componentData : actorData.ComponentsData)
+         {
+            auto component = SerializeHelper::CreateComponentFromSerializedData(mScene.get(), componentData);
+
+            auto dataType = componentData->GetSerializeDataType();
+
+            if (component)
+               actor->AddComponent(component);
+         }
+
+         // todo: components
+         if (actorData.StateMachineData)
+         {
+            std::shared_ptr<StateMachine> actorFSM = SerializeHelper::CreateFsmFromSerializedData(actorData.StateMachineData);
+
+         }
+      }
    }
 
    void Level::TickLevel(const float deltaTime)
