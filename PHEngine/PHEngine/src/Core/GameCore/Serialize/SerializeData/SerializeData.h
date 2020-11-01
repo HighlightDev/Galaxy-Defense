@@ -69,14 +69,14 @@ struct SerializeDataMaterial
    };
 
    std::string MaterialName;
-   std::string MaterialShaderRelPath;
+   std::string MaterialShaderName;
 
    std::vector<SerializeDataMaterialProperty> Properties;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(MaterialName, MaterialShaderRelPath, Properties);
+      archive(MaterialName, MaterialShaderName, Properties);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override

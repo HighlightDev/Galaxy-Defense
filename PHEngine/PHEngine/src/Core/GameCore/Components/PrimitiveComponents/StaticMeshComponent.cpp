@@ -31,19 +31,8 @@ namespace Game
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
 
-      auto meshData = std::make_shared<SerializeDataMesh>();
-      meshData->ComponentName = GameObjectName;
-      meshData->ModelName = "";
-      meshData->Translation = GetTranslation();
-      meshData->Rotation = GetRotationEuler();
-      meshData->Scale = GetScale();
-      meshData->LuaScriptName = ""; // TODO: for now
-      
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
-      
-      meshData->MeshMaterial = material;
-
-      actorData.ComponentsData.emplace_back(meshData);
+      auto staticCompData = SerializeHelper::GetSerializedDataStaticMesh(this);
+      actorData.ComponentsData.emplace_back(staticCompData);
    }
 
    std::shared_ptr<PrimitiveSceneProxy> StaticMeshComponent::CreateSceneProxy() const

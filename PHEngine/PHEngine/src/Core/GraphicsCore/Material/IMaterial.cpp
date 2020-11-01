@@ -42,7 +42,8 @@ namespace Graphics
 
    IMaterial::IMaterial(const std::string& materialName, const std::string& materialShaderName)
       : MaterialName(materialName)
-      , RelativeMaterialShaderPath(IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\" + materialShaderName)
+      , MaterialShaderName(materialShaderName)
+      , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\" + materialShaderName)
    {
    }
 

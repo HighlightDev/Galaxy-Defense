@@ -558,7 +558,7 @@ namespace Game
    template <>
    struct LuaGetGlobal<float>
    {
-      static double Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
+      static float Value(const LuaWrapper& instanceWrapper, const std::string& variableName, int32_t stackIndex)
       {
          LuaInnerCore::LuaGetGlobalBase::GetGlobal(instanceWrapper, variableName);
          return LuaInnerCore::GetValue<float>::Value(instanceWrapper, stackIndex);

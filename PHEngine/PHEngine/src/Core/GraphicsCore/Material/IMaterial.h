@@ -30,7 +30,8 @@ namespace Graphics
    public :
 
       const std::string MaterialName;
-      const std::string RelativeMaterialShaderPath;
+      const std::string MaterialShaderName;
+      const std::string MaterialShaderRelativePath;
 
    public:
 

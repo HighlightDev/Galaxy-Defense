@@ -25,7 +25,7 @@ namespace Game {
 
       PhyShapeBase* physShape = component->GetDescriptor()->GetShape();
       int32_t shapeType = physShape->GetCollisionShape()->getShapeType();
-      
+
       if (SPHERE_SHAPE_PROXYTYPE == shapeType)
       {
          PhySphereShape* sphere = static_cast<PhySphereShape*>(physShape);
@@ -64,7 +64,7 @@ namespace Game {
       SerializeDataMaterial materialData;
 
       materialData.MaterialName = materialInstance->MaterialName;
-      materialData.MaterialShaderRelPath = materialInstance->RelativeMaterialShaderPath;
+      materialData.MaterialShaderName = materialInstance->MaterialShaderName;
 
       const auto& properties = materialInstance->GetProperties();
 
@@ -103,7 +103,7 @@ namespace Game {
 
    std::shared_ptr<Actor> SerializeHelper::CreateActorFromSerializedData(const SerializeDataActor& data) {
 
-      auto actor = std::make_shared<Actor>(data.ActorName, 
+      auto actor = std::make_shared<Actor>(data.ActorName,
          std::make_shared<SceneComponent>(data.ActorName + "_RootComp", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
       return actor;
    }
@@ -113,20 +113,75 @@ namespace Game {
       return fsmParser.ParseFSMDescriptor(data->FsmRelPath);
    }
 
+   std::shared_ptr<SerializeDataMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)
+   {
+      auto meshData = std::make_shared<SerializeDataMesh>();
+      meshData->ComponentName = component->GameObjectName;
+      meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
+      meshData->Translation = component->GetTranslation();
+      meshData->Rotation = component->GetRotationEuler();
+      meshData->Scale = component->GetScale();
+      meshData->LuaScriptName = ""; // TODO: for now
+
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetRenderData().mMaterialInstance);
+
+      meshData->MeshMaterial = material;
+
+      return meshData;
+   }
+
    std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) {
 
       std::shared_ptr<Component> result;
 
       const auto dataType = data->GetSerializeDataType();
 
-      if (dataType == SerializeDataBase::SerializeDataType::StaticMesh)
+      if (dataType == SerializeDataBase::SerializeDataType::StaticMesh || dataType == SerializeDataBase::SerializeDataType::SkeletalMesh)
       {
          SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+
+         IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
+
          auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
-            meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, nullptr);
+            meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
          result = LuaToCPPAdapter::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
       }
 
       return result;
+   }
+
+   IMaterial* SerializeHelper::CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData) {
+      IMaterial* material = new IMaterial(materialData.MaterialName, materialData.MaterialShaderName);
+
+      for (const auto& property : materialData.Properties)
+      {
+         if (property.PropertyType == "texture" && property.Value != "")
+         {
+            material->PushMaterialProperty(property.UniformName, std::make_shared<TextureMaterialProperty>());
+            const std::vector<std::string>& pathToTextures = Split(property.Value, ',');
+            std::shared_ptr<ITexture> texture;
+
+            std::string resultPathToAllTextures;
+            for (size_t i = 0; i < pathToTextures.size(); ++i)
+            {
+               resultPathToAllTextures += pathToTextures[i];
+
+               if (i + 1 < pathToTextures.size())
+               {
+                  resultPathToAllTextures += ",";
+               }
+            }
+            texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
+
+            MaterialPropertySetter::SetMaterialPropertyValue(material, property.UniformName, texture);
+         }
+         else if (property.PropertyType == "float")
+         {
+            material->PushMaterialProperty(property.UniformName, std::make_shared<FloatMaterialProperty>());
+            MaterialPropertySetter::SetMaterialPropertyValue(material, property.UniformName, std::stof(property.Value));
+         }
+      }
+
+      return material;
    }
 }

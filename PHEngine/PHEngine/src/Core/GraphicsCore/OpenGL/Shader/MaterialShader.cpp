@@ -16,7 +16,7 @@ namespace Graphics
          : IShader(materialInstance->MaterialName)
          , mMaterialInstance(materialInstance)
       {
-         InitMaterialShader(materialInstance->RelativeMaterialShaderPath);
+         InitMaterialShader(materialInstance->MaterialShaderRelativePath);
       }
 
       IMaterialShader::~IMaterialShader()
