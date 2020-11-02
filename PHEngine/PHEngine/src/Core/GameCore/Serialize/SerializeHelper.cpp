@@ -11,6 +11,8 @@
 #include "Core/GameCore/StateMachine/FSMParser.h"
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/GlobalSettings.h"
+#include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -104,7 +106,7 @@ namespace Game {
    std::shared_ptr<Actor> SerializeHelper::CreateActorFromSerializedData(const SerializeDataActor& data) {
 
       auto actor = std::make_shared<Actor>(data.ActorName,
-         std::make_shared<SceneComponent>(data.ActorName + "_RootComp", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
+         std::make_shared<SceneComponent>(data.ActorName + "_RootComponent", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
       return actor;
    }
 
@@ -130,21 +132,161 @@ namespace Game {
       return meshData;
    }
 
+   std::shared_ptr<SerializeDataMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component)
+   {
+      auto meshData = std::make_shared<SerializeDataMesh>();
+      meshData->ComponentName = component->GameObjectName;
+      meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
+      meshData->Translation = component->GetTranslation();
+      meshData->Rotation = component->GetRotationEuler();
+      meshData->Scale = component->GetScale();
+      meshData->LuaScriptName = component->LuaScriptName;
+
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetRenderData().mMaterialInstance);
+
+      meshData->MeshMaterial = material;
+
+      return meshData;
+   }
+
    std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) {
 
       std::shared_ptr<Component> result;
 
       const auto dataType = data->GetSerializeDataType();
 
-      if (dataType == SerializeDataBase::SerializeDataType::StaticMesh || dataType == SerializeDataBase::SerializeDataType::SkeletalMesh)
+      switch (dataType)
       {
-         SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+         case SerializeDataBase::SerializeDataType::StaticMesh:
+         {
+            SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
 
-         IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
+            IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
-         auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
-            meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
-         result = LuaToCPPAdapter::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
+            auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
+               meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+            result = LuaToCPPAdapter::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::SkeletalMesh:
+         {
+            SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+
+            IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
+
+            auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
+               meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+            result = LuaToCPPAdapter::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::Skybox: {
+            SerializeDataSkyboxComponent* skyboxData = static_cast<SerializeDataSkyboxComponent*>(data.get());
+
+            IMaterial* material = CreateMaterialFromSerializedData(skyboxData->Material);
+
+            auto skyboxCompData = LuaToCPPAdapter::CreateSkyboxComponentData(skyboxData->ComponentName, skyboxData->Scale, material);
+            result = LuaToCPPAdapter::CreateComponentByString("SkyboxComponent", skyboxCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::DirectionalLight:
+         {
+            SerializeDataDirLightComponent* dirLightSerData = static_cast<SerializeDataDirLightComponent*>(data.get());
+
+            ProjectedShadowInfo* dirShadowProjInfo = nullptr;
+            if (dirLightSerData->bHasShadowMap)
+            {
+               const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+
+               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize));
+               dirShadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
+            }
+
+               auto dirLightCompData = LuaToCPPAdapter::CreateDirLightComponentData(dirLightSerData->ComponentName,
+                  dirLightSerData->Rotation, dirLightSerData->Direction,
+                  dirLightSerData->AmbientLight,
+                  dirLightSerData->DiffuseLight,
+                  dirLightSerData->SpecularLight, dirShadowProjInfo);
+            
+
+               result = LuaToCPPAdapter::CreateComponentByString("DirLightComponent", dirLightCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::PointLight:
+         {
+
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::Input:
+         {
+            SerializeDataInputComponent* inputSerData = static_cast<SerializeDataInputComponent*>(data.get());
+            auto inputCompData = LuaToCPPAdapter::CreateInputComponentData(inputSerData->ComponentName);
+            result = LuaToCPPAdapter::CreateComponentByString("InputComponent", inputCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::CharacterMovement:
+         {
+            SerializeDataCharacterMovementComponent* charMovSerData = static_cast<SerializeDataCharacterMovementComponent*>(data.get());
+            auto charMoveCompData = LuaToCPPAdapter::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
+            result = LuaToCPPAdapter::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::Movement:
+         {
+            SerializeDataMovementComponent* movSerData = static_cast<SerializeDataMovementComponent*>(data.get());
+            auto moveCompData = LuaToCPPAdapter::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
+            result = LuaToCPPAdapter::CreateComponentByString("MovementComponent", moveCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::Physics:
+         {
+            SerializeDataPhysicsComponent* serData = static_cast<SerializeDataPhysicsComponent*>(data.get());
+            auto physShape = CreatePhysicsShape(serData);
+            auto compController = LuaToCPPAdapter::CreateRigidBodyController(scene->mPhysicsWorld, physShape, serData->BodyType, serData->Mass);
+            auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
+            result = LuaToCPPAdapter::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::CharacterPhysics:
+         {
+            SerializeDataCharacterPhysicsComponent* serData = static_cast<SerializeDataCharacterPhysicsComponent*>(data.get());
+            auto compController = LuaToCPPAdapter::CreateDynamicCharacterController(scene->mPhysicsWorld, serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
+            auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
+            result = LuaToCPPAdapter::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
+            break;
+         }
+
+         default:
+            break;
+      }
+
+      return result;
+   }
+
+   PhyShapeBase* SerializeHelper::CreatePhysicsShape(const SerializeDataPhysicsComponent* serData) {
+      PhyShapeBase* result = nullptr;
+
+      switch (serData->PhysicsShape->GetShapeProxyType())
+      {
+         case BOX_SHAPE_PROXYTYPE:
+         {
+            auto shape = static_cast<SerializeDataBoxPhysicsShape*>(serData->PhysicsShape.get());
+            result = new PhyBoxShape(shape->HalfExtent);
+            break;
+         }
+         case CAPSULE_SHAPE_PROXYTYPE:
+         {
+            auto shape = static_cast<SerializeDataCapsulePhysicsShape*>(serData->PhysicsShape.get());
+            result = new PhyCapsuleShape(shape->Radius, shape->Height);
+            break;
+         }
+         case SPHERE_SHAPE_PROXYTYPE:
+         {
+            auto shape = static_cast<SerializeDataSpherePhysicsShape*>(serData->PhysicsShape.get());
+            result = new PhySphereShape(shape->Radius);
+            break;
+         }
+         default:
+            break;
       }
 
       return result;

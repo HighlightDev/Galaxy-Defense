@@ -106,6 +106,11 @@ namespace Game
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
+   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
+   {
+      return new RigidBodyController(physWorld, phyShape, bodyType, mass);
+   }
+
    PhysicsDescriptor* LuaToCPPAdapter::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
       float mass, float stepHeight)
    {

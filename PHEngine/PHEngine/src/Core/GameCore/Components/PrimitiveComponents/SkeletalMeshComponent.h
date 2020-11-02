@@ -32,6 +32,8 @@ namespace Game
 
    public:
 
+      std::string LuaScriptName;
+
       /* src is the main animation time counter*/
       GenericObjectProperty<float> SrcAnimationTime;
 

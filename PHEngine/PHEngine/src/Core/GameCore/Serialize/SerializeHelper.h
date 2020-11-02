@@ -21,12 +21,15 @@ namespace Game {
    class Scene;
    class Component;
    class StaticMeshComponent;
+   class SkeletalMeshComponent;
 
    class SerializeHelper
    {
    public:
       
       static std::shared_ptr<SerializeDataMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
+
+      static std::shared_ptr<SerializeDataMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 
@@ -37,6 +40,8 @@ namespace Game {
       static std::shared_ptr<StateMachine> CreateFsmFromSerializedData(std::shared_ptr<SerializeDataStateMachine> data);
 
       static std::shared_ptr<Component> CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data);
+
+      static PhyShapeBase* CreatePhysicsShape(const SerializeDataPhysicsComponent* serData);
 
       static IMaterial* CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData);
    };

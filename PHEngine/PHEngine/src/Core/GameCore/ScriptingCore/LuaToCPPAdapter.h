@@ -41,6 +41,7 @@ namespace Game
       static PhyShapeBase* CreatePhysicsSphereShape(const float radius);
 
       static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const std::string& bodyType, const float mass);
+      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass);
       static PhysicsDescriptor* CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
          float mass, float stepHeight);
    };

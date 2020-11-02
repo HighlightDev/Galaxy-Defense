@@ -15,14 +15,15 @@ using namespace Graphics::Renderer;
 namespace Game
 {
 
-   SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptAbsPath, const SkeletalMeshRenderData& renderData)
+   SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptName, const SkeletalMeshRenderData& renderData)
       : PrimitiveComponent(gameObjectName, translation, rotation, scale)
       , m_renderData(renderData)
-      , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(LuaScriptAbsPath)))
+      , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(LuaScriptName)))
       , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
       , mTimeIncreaseMultiply(1.0f)
+      , LuaScriptName(LuaScriptName)
       , SrcAnimationTime(GenericObjectProperty<float>(0.0f, "SrcAnimTime"))
       , DstAnimationTime(GenericObjectProperty<float>(0.0f, "DstAnimTime"))
       , SrcAnimationName(GenericObjectProperty<std::string>("", "SrcAnimName"))

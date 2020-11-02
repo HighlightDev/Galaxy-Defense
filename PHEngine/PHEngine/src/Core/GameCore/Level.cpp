@@ -82,20 +82,18 @@ namespace Game
          for (const auto& componentData : actorData.ComponentsData)
          {
             auto component = SerializeHelper::CreateComponentFromSerializedData(mScene.get(), componentData);
-
-            auto dataType = componentData->GetSerializeDataType();
-
             if (component)
                actor->AddComponent(component);
          }
 
-         // todo: components
          if (actorData.StateMachineData)
          {
             std::shared_ptr<StateMachine> actorFSM = SerializeHelper::CreateFsmFromSerializedData(actorData.StateMachineData);
 
          }
       }
+
+      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
    void Level::TickLevel(const float deltaTime)
