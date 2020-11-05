@@ -95,6 +95,11 @@ namespace Game
          m_inputComponent->CollectDataForSerialization(dataContainer);
       }
 
+      if (m_movementComponent)
+      {
+         m_movementComponent->CollectDataForSerialization(dataContainer);
+      }
+
       if (mStateMachine)
       {
          mStateMachine->CollectDataForSerialization(dataContainer);

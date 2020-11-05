@@ -3,6 +3,7 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -60,6 +61,8 @@ namespace Game
          actor->CollectDataForSerialization(container);
       }
 
+      container.PlayerControllerData = std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GameObjectName);
+
       oarchive(container);
    }
 
@@ -88,8 +91,28 @@ namespace Game
 
          if (actorData.StateMachineData)
          {
-            std::shared_ptr<StateMachine> actorFSM = SerializeHelper::CreateFsmFromSerializedData(actorData.StateMachineData);
+            auto fsmSerializeData = actorData.StateMachineData;
 
+            std::shared_ptr<StateMachine> actorFSM = SerializeHelper::CreateFsmFromSerializedData(fsmSerializeData);
+
+            for (const auto& bindingData : fsmSerializeData->Bindings)
+            {
+               auto gameObject = mScene->GetGameObjectByName(bindingData.GameObjectName);
+               const auto& binding = actorFSM->GetPropertyBindingByName(bindingData.BindingName);
+               BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
+            }
+
+            actor->AttachStateMachine(actorFSM);
+         }
+         mScene->AddActor(actor);
+
+         if (actor->GameObjectName == container.PlayerControllerData->BindedActorName)
+         {
+            mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
+            if (auto thirdPersonCamera = static_cast<ThirdPersonCamera*>(mScene->GetCamera()))
+            {
+               thirdPersonCamera->SetThirdPersonTarget(actor);
+            }
          }
       }
 

@@ -34,7 +34,7 @@ namespace Game
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
 
-      std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::shared_ptr<SerializeDataCharacterMovementComponent>();
+      std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
       data->ComponentName = GameObjectName;
       data->CameraName = mCameraName;
       data->LaunchDirection = mDirection;

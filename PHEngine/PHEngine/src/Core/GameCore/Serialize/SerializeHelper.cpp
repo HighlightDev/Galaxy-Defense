@@ -115,9 +115,9 @@ namespace Game {
       return fsmParser.ParseFSMDescriptor(data->FsmRelPath);
    }
 
-   std::shared_ptr<SerializeDataMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)
+   std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)
    {
-      auto meshData = std::make_shared<SerializeDataMesh>();
+      auto meshData = std::make_shared<SerializeDataStaticMesh>();
       meshData->ComponentName = component->GameObjectName;
       meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
       meshData->Translation = component->GetTranslation();
@@ -132,9 +132,9 @@ namespace Game {
       return meshData;
    }
 
-   std::shared_ptr<SerializeDataMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component)
+   std::shared_ptr<SerializeDataSkeletalMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component)
    {
-      auto meshData = std::make_shared<SerializeDataMesh>();
+      auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
       meshData->ComponentName = component->GameObjectName;
       meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
       meshData->Translation = component->GetTranslation();
@@ -159,7 +159,7 @@ namespace Game {
       {
          case SerializeDataBase::SerializeDataType::StaticMesh:
          {
-            SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+            SerializeDataStaticMesh* meshData = static_cast<SerializeDataStaticMesh*>(data.get());
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
@@ -170,7 +170,7 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::SkeletalMesh:
          {
-            SerializeDataMesh* meshData = static_cast<SerializeDataMesh*>(data.get());
+            SerializeDataSkeletalMesh* meshData = static_cast<SerializeDataSkeletalMesh*>(data.get());
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 

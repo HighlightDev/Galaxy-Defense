@@ -112,7 +112,7 @@ namespace Game
             [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
          assert(actorIt != scene->GetActors().end());
 
-         scene->m_playerController.SetPlayerActor(*actorIt);
+         scene->SetPlayerController(std::make_shared<PlayerController>((*actorIt)));
          static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(*actorIt);
       }
    }

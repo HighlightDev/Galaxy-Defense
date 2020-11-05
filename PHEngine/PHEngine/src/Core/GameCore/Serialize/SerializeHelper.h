@@ -27,9 +27,9 @@ namespace Game {
    {
    public:
       
-      static std::shared_ptr<SerializeDataMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
+      static std::shared_ptr<SerializeDataStaticMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
 
-      static std::shared_ptr<SerializeDataMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
+      static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 

@@ -26,7 +26,7 @@ namespace Event
       }
    };
 
-   struct KeyboardInputEvent
+   struct KeyboardButtonDownEvent
       : public TEvent<AtomicEventPolicy<KeyboardEventData>>
    {
    public:

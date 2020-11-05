@@ -13,7 +13,7 @@ namespace Game
 
    class PlayerController
       : public PhysicsSimulationUpdatedEvent
-      , public KeyboardInputEvent
+      , public KeyboardButtonDownEvent
    {
 
       using Base = Actor;
@@ -24,16 +24,20 @@ namespace Game
 
    public:
 
-      PlayerController();
+      PlayerController(std::shared_ptr<Actor> playerActor);
 
       virtual ~PlayerController();
-      
-      void SetPlayerActor(std::shared_ptr<Actor> playerActor);
 
       void Tick(float deltaTime);
 
+      std::shared_ptr<Actor> GetBindedActor() const;
+
       virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const KeyboardInputEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const KeyboardButtonDownEvent::EventData_t& data) override;
+
+   private:
+
+      void SetPlayerActor(std::shared_ptr<Actor> playerActor);
    };
 
 }

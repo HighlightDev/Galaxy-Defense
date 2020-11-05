@@ -36,7 +36,7 @@ namespace Game
       mPressedKeysCount++;
 
       KeyboardEventData data(key, KeyState::PRESSED);
-      KeyboardInputEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
+      KeyboardButtonDownEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
    }
 
    void KeyboardBindings::KeyRelease(Keys key)
@@ -48,7 +48,7 @@ namespace Game
       }
 
       KeyboardEventData data(key, KeyState::RELEASED);
-      KeyboardInputEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
+      KeyboardButtonDownEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, data);
    }
 
    KeyState KeyboardBindings::GetKeyState(Keys key) const

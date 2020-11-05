@@ -24,8 +24,6 @@ namespace Game
 
       std::unordered_map<std::string, GameObject*> GameObjects;
 
-      PlayerController m_playerController;
-
       class EnginePhysics::PhysicsWorld* mPhysicsWorld;
 
    private:
@@ -35,6 +33,8 @@ namespace Game
       InterThreadCommunicationMgr& m_interThreadMgr;
 
       class ICamera* m_camera;
+
+      std::shared_ptr<PlayerController> mPlayerController;
 
    public:
 
@@ -58,7 +58,11 @@ namespace Game
 
       GameObject* GetGameObjectByName(const std::string& name) const;
 
+      std::shared_ptr<PlayerController> GetPlayerController() const;
+
       const std::vector<std::shared_ptr<Actor>>& GetActors() const;
+
+      void SetPlayerController(std::shared_ptr<PlayerController> playerController);
 
       void AddActor(std::shared_ptr<Actor> actor);
 

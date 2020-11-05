@@ -75,19 +75,8 @@ namespace Game
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
 
-      auto meshData = std::make_shared<SerializeDataMesh>();
-      meshData->ComponentName = GameObjectName;
-      meshData->ModelName = GameObjectName;
-      meshData->Translation = GetTranslation();
-      meshData->Rotation = GetRotationEuler();
-      meshData->Scale = GetScale();
-      meshData->LuaScriptName = mLuaScriptAbsPath;
-
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
-
-      meshData->MeshMaterial = material;
-
-      actorData.ComponentsData.emplace_back(meshData);
+      auto staticCompData = SerializeHelper::GetSerializedDataSkeletalMesh(this);
+      actorData.ComponentsData.emplace_back(staticCompData);
    }
 
    void SkeletalMeshComponent::SyncDataWithRenderThread()

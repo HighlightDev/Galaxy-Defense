@@ -11,10 +11,12 @@ namespace Game
    {
       std::vector<SerializeDataActor> Actors;
 
+      std::unique_ptr<SerializeDataPlayerController> PlayerControllerData;
+
       template <typename Archive>
       void serialize(Archive& archive)
       {
-         archive(Actors);
+         archive(Actors, PlayerControllerData);
       }
    };
 }

@@ -81,6 +81,16 @@ namespace Game
       return go;
    }
 
+   std::shared_ptr<PlayerController> Scene::GetPlayerController() const
+   {
+      return mPlayerController;
+   }
+
+   void Scene::SetPlayerController(std::shared_ptr<PlayerController> playerController)
+   {
+      mPlayerController = playerController;
+   }
+
    void Scene::RemoveComponent_GameThread(std::shared_ptr<Component> component)
    {
       ComponentType type = component->GetComponentType();
@@ -325,7 +335,7 @@ namespace Game
 
       m_camera->Tick(delta);
 
-      m_playerController.Tick(delta);
+      mPlayerController->Tick(delta);
 
       for (auto& actor : mActors)
       {

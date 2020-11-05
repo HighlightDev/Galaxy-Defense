@@ -10,23 +10,26 @@
 namespace Game
 {
 
-   PlayerController::PlayerController()
+   PlayerController::PlayerController(std::shared_ptr<Actor> playerActor)
       : m_playerPhysicsComponent()
+      , m_playerActor(playerActor)
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
-      KeyboardInputEvent::GetInstance()->AddListener(this);
+      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
+      SetPlayerActor(m_playerActor);
    }
 
    PlayerController::~PlayerController()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
-      KeyboardInputEvent::GetInstance()->RemoveListener(this);
+      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
    }
 
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
    {
-      m_playerActor = playerActor;
       m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(m_playerActor->GetPhysicsComponent());
+
+      assert(m_playerActor);
 
       const auto& rootComponent = m_playerActor->GetBaseRootComponent();
 
@@ -40,7 +43,9 @@ namespace Game
    {
       std::string actorName = std::move(std::get<0>(data));
 
-      if (m_playerActor && m_playerActor->GetName() == actorName)
+      assert(m_playerActor);
+
+      if (m_playerActor->GetName() == actorName)
       {
          if (auto rootComponent = m_playerActor->GetBaseRootComponent())
          {
@@ -49,30 +54,32 @@ namespace Game
       }
    }
 
-   void PlayerController::ProcessEvent(const KeyboardInputEvent::EventData_t& eventData)
+   std::shared_ptr<Actor> PlayerController::GetBindedActor() const
    {
-      if (m_playerActor)
-      {
-         const auto& data = std::get<0>(eventData);
+      return m_playerActor;
+   }
 
-         if (data.Key == Keys::W)
+   void PlayerController::ProcessEvent(const KeyboardButtonDownEvent::EventData_t& eventData)
+   {
+      assert(m_playerActor);
+      const auto& data = std::get<0>(eventData);
+
+      if (data.Key == Keys::W)
+      {
+         if (data.State == KeyState::PRESSED)
          {
-            if (data.State == KeyState::PRESSED)
-            {
-               m_playerActor->ChangeState("Walking");
-            }
-            else
-            {
-               m_playerActor->ChangeState("Idle");
-            }
+            m_playerActor->ChangeState("Walking");
+         }
+         else
+         {
+            m_playerActor->ChangeState("Idle");
          }
       }
    }
 
    void PlayerController::Tick(float deltaTime)
    {
-      if (!m_playerActor)
-         return;
+      assert(m_playerActor);
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
       std::shared_ptr<CharacterMovementComponent> movementComponent = m_playerActor->GetMovementComponent();

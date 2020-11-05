@@ -45,7 +45,7 @@ namespace Event {
       CameraTransformChangedEvent,
       PlayerMovedEvent,
       PhysicsSimulationUpdatedEvent,
-      KeyboardInputEvent,
+      KeyboardButtonDownEvent,
       KinematicBodyMovedEvent
    >;
 
