@@ -2,6 +2,8 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
 
+#include <TinyLogger/LogInterface.h>
+
 Engine::Engine(InterThreadCommunicationMgr& interThreadMgr)
    : m_interThreadMgr(interThreadMgr)
    , mLastRenderThreadPulseTime(Clock_t::now())
@@ -63,6 +65,10 @@ void Engine::GameThreadPulse()
       /* GAME THREAD*/
       {
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
+
+         const float gameThreadFramesPerSec = 1.0f / mGameThreadSumDeltaTimeSec;
+         TinyLogger::LogProxy::LogMessages("GAME THREAD FPS: ", std::to_string(gameThreadFramesPerSec));
+
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
 
          /* Events: pre execution */
@@ -95,6 +101,9 @@ void Engine::RenderThreadPulse()
    /* RENDER THREAD */
    {
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
+
+      const float renderThreadFramesPerSec = 1.0f / mRenderThreadDeltaTimeSeconds;
+      TinyLogger::LogProxy::LogMessages("RENDER THREAD FPS: ", std::to_string(renderThreadFramesPerSec));
       
       // This should be executed on render thread
       SPIN_RENDER_THREAD_JOBS(m_interThreadMgr);

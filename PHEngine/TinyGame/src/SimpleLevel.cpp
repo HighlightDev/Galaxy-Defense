@@ -112,9 +112,16 @@ namespace Labyrinth
          mScene->AddCamera(new ThirdPersonCamera("MainCamera", 50, 20, 20));
       }
 
-      DeserializeLevel("test_serialize.xml");
-
-      //RunLuaBuildLevelScript();
+      bool bDeser = true;
+      if (bDeser)
+      {
+         DeserializeLevel("test_serialize.xml");
+      }
+      else 
+      {
+         RunLuaBuildLevelScript();
+      }
+      
     
 #if 0
       // Water
