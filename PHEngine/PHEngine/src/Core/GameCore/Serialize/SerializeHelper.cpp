@@ -14,6 +14,8 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
 
+#include <TinyLogger/LogInterface.h>
+
 using namespace Graphics;
 using namespace EnginePhysics;
 
@@ -149,16 +151,20 @@ namespace Game {
       return meshData;
    }
 
-   std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) {
-
+   std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) 
+   {
       std::shared_ptr<Component> result;
 
       const auto dataType = data->GetSerializeDataType();
+
+      std::string logCompType = "";
 
       switch (dataType)
       {
          case SerializeDataBase::SerializeDataType::StaticMesh:
          {
+            logCompType = "StaticMesh";
+
             SerializeDataStaticMesh* meshData = static_cast<SerializeDataStaticMesh*>(data.get());
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
@@ -170,6 +176,8 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::SkeletalMesh:
          {
+            logCompType = "SkeletalMesh";
+
             SerializeDataSkeletalMesh* meshData = static_cast<SerializeDataSkeletalMesh*>(data.get());
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
@@ -180,6 +188,7 @@ namespace Game {
             break;
          }
          case SerializeDataBase::SerializeDataType::Skybox: {
+            logCompType = "Skybox";
             SerializeDataSkyboxComponent* skyboxData = static_cast<SerializeDataSkyboxComponent*>(data.get());
 
             IMaterial* material = CreateMaterialFromSerializedData(skyboxData->Material);
@@ -190,6 +199,7 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::DirectionalLight:
          {
+            logCompType = "DirectionalLight";
             SerializeDataDirLightComponent* dirLightSerData = static_cast<SerializeDataDirLightComponent*>(data.get());
 
             ProjectedShadowInfo* dirShadowProjInfo = nullptr;
@@ -213,11 +223,12 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::PointLight:
          {
-
+            logCompType = "PointLight";
             break;
          }
          case SerializeDataBase::SerializeDataType::Input:
          {
+            logCompType = "Input";
             SerializeDataInputComponent* inputSerData = static_cast<SerializeDataInputComponent*>(data.get());
             auto inputCompData = LuaToCPPAdapter::CreateInputComponentData(inputSerData->ComponentName);
             result = LuaToCPPAdapter::CreateComponentByString("InputComponent", inputCompData, scene);
@@ -225,6 +236,7 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::CharacterMovement:
          {
+            logCompType = "CharacterMovement";
             SerializeDataCharacterMovementComponent* charMovSerData = static_cast<SerializeDataCharacterMovementComponent*>(data.get());
             auto charMoveCompData = LuaToCPPAdapter::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
             result = LuaToCPPAdapter::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
@@ -232,6 +244,7 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::Movement:
          {
+            logCompType = "Movement";
             SerializeDataMovementComponent* movSerData = static_cast<SerializeDataMovementComponent*>(data.get());
             auto moveCompData = LuaToCPPAdapter::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
             result = LuaToCPPAdapter::CreateComponentByString("MovementComponent", moveCompData, scene);
@@ -239,15 +252,17 @@ namespace Game {
          }
          case SerializeDataBase::SerializeDataType::Physics:
          {
+            logCompType = "Physics";
             SerializeDataPhysicsComponent* serData = static_cast<SerializeDataPhysicsComponent*>(data.get());
             auto physShape = CreatePhysicsShape(serData);
             auto compController = LuaToCPPAdapter::CreateRigidBodyController(scene->mPhysicsWorld, physShape, serData->BodyType, serData->Mass);
             auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
-            result = LuaToCPPAdapter::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
+            result = LuaToCPPAdapter::CreateComponentByString("PhysicsComponent", compData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::CharacterPhysics:
          {
+            logCompType = "CharacterPhysics";
             SerializeDataCharacterPhysicsComponent* serData = static_cast<SerializeDataCharacterPhysicsComponent*>(data.get());
             auto compController = LuaToCPPAdapter::CreateDynamicCharacterController(scene->mPhysicsWorld, serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
             auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
@@ -258,6 +273,8 @@ namespace Game {
          default:
             break;
       }
+
+      //TinyLogger::LogProxy::LogMessages(std::string("Deserialize component, type:"), logCompType);
 
       return result;
    }

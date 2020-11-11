@@ -54,6 +54,11 @@ namespace Game
       return SCENE_COMPONENT;
    }
 
+   void SceneComponent::AddOffsetUp(const float offsetValue)
+   {
+      mTransform->Translation = mTransform->Translation + AXIS_UP * offsetValue;
+   }
+
    void SceneComponent::SetIsVisible(bool isVisible)
    {
       if (isVisible != mIsVisible)

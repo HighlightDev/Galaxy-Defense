@@ -80,6 +80,8 @@ namespace Game
       glm::vec3 GetScale() const;
 
       glm::mat4 GetRelativeMatrix() const;
+
+      void AddOffsetUp(const float offsetValue);
 	};
 }
 

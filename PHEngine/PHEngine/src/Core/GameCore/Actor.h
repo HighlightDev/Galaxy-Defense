@@ -132,16 +132,21 @@ namespace Game
       void RemoveComponentIndexOffset(size_t removedProxyIndex);
 
       template <typename ComponentT>
-      std::shared_ptr<ComponentT> GetComponent(ComponentType type)
+      std::shared_ptr<ComponentT> GetComponent()
       {
          std::shared_ptr<ComponentT> result(nullptr);
 
          assert(m_allComponents.size());
 
-         if (auto it = std::find_if(m_allComponents.begin(), m_allComponents.end(), [&](auto& compItem) { return compItem->GetComponentType() == type; });
-            m_allComponents.end() != it)
+         for (const auto& comp : m_allComponents)
          {
-            result = std::static_pointer_cast<ComponentT>(*it);
+            auto seekComp = std::dynamic_pointer_cast<ComponentT>(comp);
+
+            if (seekComp != nullptr)
+            {
+               result = seekComp;
+               break;
+            }
          }
 
          return result;
