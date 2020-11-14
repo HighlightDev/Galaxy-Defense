@@ -1,5 +1,6 @@
 #include "SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
+#include <TinyLogger/LogInterface.h>
 
 using namespace Graphics::Mesh;
 using namespace Game;
@@ -75,6 +76,7 @@ namespace Graphics
       {
          if (bIsDirty)
          {
+            TinyLogger::LogProxy::LogMessages(std::string("Update skinning matrices. Src animation time: "), mAnimationPlayer->GetSrcAnimationTime());
             mAnimationPlayer->UpdateAnimationMatrices();
             bIsDirty = false;
          }

@@ -62,13 +62,7 @@ namespace TinyLogger
       {
          auto message = mMessageQueue.front();
          const std::string& log = message.GetLog();
-         result += log;
-
-         if (mMessageQueue.size() > 1)
-         {
-            result += "\n";
-         }
-
+         result += log + "\n";
          mMessageQueue.pop();
       }
 

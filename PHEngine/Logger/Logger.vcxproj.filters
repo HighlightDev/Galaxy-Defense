@@ -29,5 +29,8 @@
     <ClCompile Include="TinyLogger\Core.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TinyLogger\LogInterface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

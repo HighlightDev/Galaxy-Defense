@@ -55,13 +55,19 @@ namespace TinyLogger
          {
             return std::to_string(simpleType);
          }
+
+         //template <typename U>
+         //static std::string Value(U str)
+         //{
+         //   return std::string(str);
+         //}
       };
 
       template <typename T> struct IsString { enum { value = false }; };
       template <> struct IsString<std::string> { enum { value = false }; };
 
       template <typename T, bool>
-      struct DoIfTrue
+      struct CastToStringIFTrue
       {
          static std::string Do(T notStr)
          {
@@ -70,7 +76,7 @@ namespace TinyLogger
       };
 
       template <>
-      struct DoIfTrue<std::string, false>
+      struct CastToStringIFTrue<std::string, false>
       {
          static std::string Do(const std::string& str)
          {
@@ -78,64 +84,56 @@ namespace TinyLogger
          }
       };
 
-      template <typename TupleT, size_t index>
+   /*   template<size_t N>
+      struct CastToStringIFTrue< const char[N], false > { 
+         static std::string Do(const char[N]& str)
+         {
+            return std::string(str);
+         }
+      };*/
+
+      template <typename TupleT, size_t max_index, size_t index>
       struct IterateTuple
       {
          static void Collect(std::vector<std::string>& result, TupleT& tuple)
          {
-            auto value = std::get<index>(tuple);
-
             using arg_t = typename std::tuple_element<index, TupleT>::type;
-            result.push_back(DoIfTrue<IsString<arg_t>::value>::Do(value));
-            IterateTuple<TupleT, index - 1>::Collect(result, tuple);
+
+            auto value = std::get<index>(tuple);
+            result.push_back(CastToStringIFTrue<arg_t, IsString<arg_t>::value>::Do(value));
+            IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
          }
       };
       
-      template <typename TupleT>
-      struct IterateTuple<TupleT, -1>
+      template <typename TupleT, size_t max_index>
+      struct IterateTuple<TupleT, max_index, max_index>
       {
          static void Collect(std::vector<std::string>& result, TupleT& tuple)
          {
-         }
-      };
-
-      template <typename TupleT>
-      struct IterateToString
-      {
-
-         static void Do(std::vector<std::string>& collectedStrings, TupleT& tup)
-         {
-            constexpr size_t size = sizeof(TupleT);
-
-            IterateTuple<TupleT, size - 1>::Collect(collectedStrings, tup);
          }
       };
    }
 
    struct LogProxy
    {
+      static size_t index ;
       template <typename LogArg, typename... LogArgs>
-      static void LogMessages(LogArg arg, LogArgs... args)
+      static void LogMessages(LogArg&& arg, LogArgs&&... args)
       {
          static std::hash<std::thread::id> hasher;
-
-         std::chrono::system_clock::time_point p = std::chrono::system_clock::now();
-         typename std::chrono::system_clock::time_point time = std::chrono::system_clock::now();
-         std::time_t currentTime = std::chrono::system_clock::to_time_t(time);
-
+         const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
          std::string timeFileWasChanged = std::asctime(std::localtime(&currentTime));
          timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
+        
+         using tuple_t = std::tuple<LogArg, LogArgs...>;
+         tuple_t tup = std::make_tuple<LogArg, LogArgs...>(std::forward<LogArg>(arg), std::forward<LogArgs>(args)...);
 
-         //std::string currentTimeStr = std::to_string() + " ";
+         std::vector<std::string> result{ std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id())) };
+         ++index;
+         constexpr size_t size = std::tuple_size<tuple_t>();
+         LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, tup);
 
-         std::vector<std::string> result;
-         using tuple_t = std::tuple<LogArgs...>;
-         tuple_t tup = std::make_tuple<LogArgs...>(std::forward<LogArgs>(args)...);
-         LogHelp::IterateToString<tuple_t>::Do(result, tup);
-
-         //std::initializer_list<std::string> initList({ timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id())), arg, args... });
-
-         //Logger::GetInstance_()->EnqueuLogMessage(LogMessage(initList));
+         Logger::GetInstance_()->EnqueuLogMessage(LogMessage(result));
       }
 
 #define LOG_INFO (AT)

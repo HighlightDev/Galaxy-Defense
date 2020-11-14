@@ -79,14 +79,13 @@ namespace Game
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer& container)
    {
-      //std::string t = TinyLogger::LogHelp::ToString<int>::Value(5);
-      //TinyLogger::LogProxy::LogMessages(std::string("InstantiateLevelFromSerializedContainer"));
+      TinyLogger::LogProxy::LogMessages(std::string("InstantiateLevelFromSerializedContainer"));
 
       for (const auto& actorData : container.Actors)
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         //TinyLogger::LogProxy::LogMessages(std::string("Actor name: "), actor->GetName());
+         TinyLogger::LogProxy::LogMessages(std::string("Actor name: "), actor->GetName());
 
          for (const auto& componentData : actorData.ComponentsData)
          {
