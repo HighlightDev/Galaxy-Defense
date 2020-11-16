@@ -120,7 +120,7 @@ namespace Game {
    std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)
    {
       auto meshData = std::make_shared<SerializeDataStaticMesh>();
-      meshData->ComponentName = component->GameObjectName;
+      meshData->ComponentName = component->GetGameObjectName();
       meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationEuler();
@@ -137,7 +137,7 @@ namespace Game {
    std::shared_ptr<SerializeDataSkeletalMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component)
    {
       auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
-      meshData->ComponentName = component->GameObjectName;
+      meshData->ComponentName = component->GetGameObjectName();
       meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationEuler();
@@ -274,7 +274,7 @@ namespace Game {
             break;
       }
 
-      //TinyLogger::LogProxy::LogMessages(std::string("Deserialize component, type:"), logCompType);
+      TinyLogger::LogProxy::LogMessages(std::string("Deserialize component, type:"), std::string(logCompType));
 
       return result;
    }

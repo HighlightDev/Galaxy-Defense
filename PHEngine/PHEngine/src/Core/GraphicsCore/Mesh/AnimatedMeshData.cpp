@@ -17,6 +17,11 @@ namespace Graphics
       {
       }
 
+      void AnimatedMeshData::TEST_PostInit()
+      {
+
+      }
+
       AnimatedMeshData::BoneData AnimatedMeshData::BlendBoneData(const AnimatedMeshData::BoneData& src,
          const AnimatedMeshData::BoneData& dst, const float blendFactor)
       {

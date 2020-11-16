@@ -66,7 +66,7 @@ void Engine::GameThreadPulse()
       {
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
 
-         const float gameThreadFramesPerSec = 1.0f / mGameThreadSumDeltaTimeSec;
+         const double gameThreadFramesPerSec = 1.0 / mGameThreadSumDeltaTimeSec;
          //TinyLogger::LogProxy::LogMessages("GAME THREAD FPS: ", std::to_string(gameThreadFramesPerSec));
 
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
@@ -102,7 +102,7 @@ void Engine::RenderThreadPulse()
    {
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
 
-      const float renderThreadFramesPerSec = 1.0f / mRenderThreadDeltaTimeSeconds;
+      const double renderThreadFramesPerSec = 1.0 / mRenderThreadDeltaTimeSeconds;
       //TinyLogger::LogProxy::LogMessages("RENDER THREAD FPS: ", std::to_string(renderThreadFramesPerSec));
       
       // This should be executed on render thread

@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono> 
 #include <string>
+#include <type_traits>
 
 #include "Core.h"
 
@@ -55,12 +56,6 @@ namespace TinyLogger
          {
             return std::to_string(simpleType);
          }
-
-         //template <typename U>
-         //static std::string Value(U str)
-         //{
-         //   return std::string(str);
-         //}
       };
 
       template <typename T> struct IsString { enum { value = false }; };
@@ -84,13 +79,14 @@ namespace TinyLogger
          }
       };
 
-   /*   template<size_t N>
-      struct CastToStringIFTrue< const char[N], false > { 
-         static std::string Do(const char[N]& str)
-         {
-            return std::string(str);
-         }
-      };*/
+      /* template <size_t N>
+       struct CastToStringIFTrue<const char[N], false>
+       {
+          static std::string Do(const char* str)
+          {
+             return std::string(str);
+          }
+       };*/
 
       template <typename TupleT, size_t max_index, size_t index>
       struct IterateTuple

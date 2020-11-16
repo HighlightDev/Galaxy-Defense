@@ -62,7 +62,8 @@ namespace Game
          actor->CollectDataForSerialization(container);
       }
 
-      container.PlayerControllerData = std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GameObjectName);
+      container.PlayerControllerData = 
+         std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
 
       oarchive(container);
    }
@@ -91,7 +92,7 @@ namespace Game
          {
             auto component = SerializeHelper::CreateComponentFromSerializedData(mScene.get(), componentData);
 
-            //TinyLogger::LogProxy::LogMessages(std::string("Component name: "), component->GameObjectName);
+            TinyLogger::LogProxy::LogMessages(std::string("Component name: "), component->GetGameObjectName());
 
             if (component)
                actor->AddComponent(component);
@@ -108,7 +109,7 @@ namespace Game
 
          mScene->AddActor(actor);
 
-         if (actor->GameObjectName == container.PlayerControllerData->BindedActorName)
+         if (actor->GetGameObjectName() == container.PlayerControllerData->BindedActorName)
          {
             mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
             if (auto thirdPersonCamera = static_cast<ThirdPersonCamera*>(mScene->GetCamera()))
@@ -136,7 +137,7 @@ namespace Game
 
             auto actorIt = std::find_if(mScene->GetActors().begin(), mScene->GetActors().end(), [&](const std::shared_ptr<Actor> actor)
             {
-               return actor->GameObjectName == actorData.ActorName;
+               return actor->GetGameObjectName() == actorData.ActorName;
             });
 
             assert(actorIt != mScene->GetActors().end());

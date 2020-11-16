@@ -48,6 +48,8 @@ namespace Graphics
 
       private:
 
+         void TEST_PostInit();
+
          void GetBlendedBoneDataNodeHierarchy(const float srcTime, const float dstTime, const std::string& srcAnimName, const std::string& dstAnimName,
             const float blendFactor, MeshNode* node, std::map<std::string, BoneData>& blendedBoneData) const;
 

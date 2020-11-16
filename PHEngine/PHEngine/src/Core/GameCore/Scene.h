@@ -125,7 +125,7 @@ namespace Game
             }
          }
 
-         const std::string& goName = component->GameObjectName;
+         const std::string& goName = component->GetGameObjectName();
 
          // Add game object
          assert(!GameObjects.count(goName));

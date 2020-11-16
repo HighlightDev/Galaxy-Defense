@@ -18,9 +18,7 @@ namespace Game
 
       std::unordered_map<std::string, GameObjectProperty*> mEngineProperties;
 
-   public:
-
-      const std::string GameObjectName;
+      std::string GameObjectName;
 
    public:
 
@@ -31,6 +29,8 @@ namespace Game
       GameObjectProperty* GetEnginePropertyByName(const std::string& key) const;
 
       void AddEngineProperty(const std::string& key, GameObjectProperty* goPtr);
+
+      std::string GetGameObjectName() const;
 
    };
 

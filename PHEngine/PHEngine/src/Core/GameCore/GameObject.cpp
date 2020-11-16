@@ -30,4 +30,9 @@ namespace Game
       assert((mEngineProperties.count(key)));
       return mEngineProperties.at(key);
    }
+
+   std::string GameObject::GetGameObjectName() const
+   {
+      return GameObjectName;
+   }
 }

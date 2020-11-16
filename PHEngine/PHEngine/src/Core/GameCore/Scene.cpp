@@ -38,7 +38,7 @@ namespace Game
    void Scene::AddCamera(ICamera* camera)
    {
       m_camera = camera;
-      const std::string& goName = camera->GameObjectName;
+      const std::string& goName = camera->GetGameObjectName();
       assert(GameObjects.count(goName) == 0);
       GameObjects[goName] = camera;
    }
@@ -50,7 +50,7 @@ namespace Game
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
    {
-      const std::string& goName = actor->GameObjectName;
+      const std::string& goName = actor->GetGameObjectName();
       assert(GameObjects.count(goName) == 0);
       GameObjects[goName] = actor.get();
       mActors.emplace_back(actor);
@@ -58,7 +58,7 @@ namespace Game
 
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
    {
-      const std::string& goName = actor->GameObjectName;
+      const std::string& goName = actor->GetGameObjectName();
       if (!GameObjects.count(goName))
       {
          GameObjects.erase(goName);
@@ -146,7 +146,7 @@ namespace Game
          }
       }
 
-      const std::string& goName = component->GameObjectName;
+      const std::string& goName = component->GetGameObjectName();
 
       // Remove game object
       if (GameObjects.count(goName))
