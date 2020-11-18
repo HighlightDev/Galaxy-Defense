@@ -1,0 +1,140 @@
+#include "ACamera.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/GlobalInputController.h"
+#include <iostream>
+
+using namespace EngineMath;
+
+namespace Game
+{
+
+   ACamera::ACamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg)
+      : GameObject(cameraName)
+      , m_rotateSensetivity(0.08f)
+      , mCameraName(cameraName)
+      , m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
+      , m_localSpaceUpVector(std::move(glm::vec3(0, 1, 0)))
+      , m_localSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
+      , m_eyeSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
+      , m_eyeSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
+      , mPitchClampValue_min_max(glm::vec2(-80, 80))
+      , mYaw(initYawDeg)
+      , mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y))
+      , m_cameraType(CameraType::UNINITIALIZED)
+   {
+   }
+
+   ACamera::~ACamera()
+   {
+   }
+
+   void ACamera::Rotate()
+   {
+      const int32_t x = GlobalInputController::GetInstance()->GetMouseDeltaX();
+      const int32_t y = GlobalInputController::GetInstance()->GetMouseDeltaY();
+
+      UpdateRotationMatrix(-x, -y);
+   }
+
+   void ACamera::Tick(const float DeltaTime)
+   {
+   }
+
+   void ACamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
+   {
+      if (std::abs(deltaY) > 500)
+         return;
+
+      mYaw += (deltaX * m_rotateSensetivity);
+      mPitch -= (deltaY * m_rotateSensetivity);
+
+      // restrain angle of pitch
+      mPitch = std::clamp(mPitch, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y);
+
+      glm::mat4 rotatePitch = glm::mat4(1);
+      rotatePitch = glm::rotate(rotatePitch, DEG_TO_RAD(mPitch), m_localSpaceRightVector);
+
+      glm::mat4 rotateYaw = glm::mat4(1);
+      rotateYaw = glm::rotate(rotateYaw, DEG_TO_RAD(mYaw), m_localSpaceUpVector);
+
+      glm::mat4 totalRotateMatrix = glm::mat4(1);
+      totalRotateMatrix *= rotateYaw;
+      totalRotateMatrix *= rotatePitch;
+
+      m_eyeSpaceForwardVector = totalRotateMatrix * glm::vec4(m_localSpaceForwardVector, 0.0);
+      m_eyeSpaceRightVector = totalRotateMatrix * glm::vec4(m_localSpaceRightVector, 0.0);
+
+      bTransformationDirty = true;
+   }
+
+   std::string ACamera::GetCameraName() const {
+      return mCameraName;
+   }
+
+   ACamera::CameraType ACamera::GetCameraType() const {
+      return m_cameraType;
+   }
+
+   void ACamera::SetLocalSpaceUpVector(glm::vec3& upVector)
+   {
+      m_localSpaceUpVector = upVector;
+   }
+
+   void ACamera::SetLocalSpaceForwardVector(glm::vec3& forwardVector)
+   {
+      m_localSpaceForwardVector = forwardVector;
+   }
+
+   void ACamera::SetLocalSpaceRightVector(glm::vec3& rightVector)
+   {
+      m_localSpaceRightVector = rightVector;
+   }
+
+   void ACamera::SetCameraSensetivity(float rotateSensetivity)
+   {
+      m_rotateSensetivity = rotateSensetivity;
+   }
+
+   float ACamera::GetCameraSensetivity() const
+   {
+      return m_rotateSensetivity;
+   }
+
+   glm::vec3 ACamera::GetLocalSpaceRightVector() const
+   {
+      return m_localSpaceRightVector;
+   }
+
+   glm::vec3 ACamera::GetLocalSpaceForwardVector() const
+   {
+      return m_localSpaceForwardVector;
+   }
+
+   glm::vec3 ACamera::GetEyeSpaceForwardVector() const
+   {
+      return m_eyeSpaceForwardVector;
+   }
+
+   glm::vec3 ACamera::GetEyeSpaceRightVector() const
+   {
+      return m_eyeSpaceRightVector;
+   }
+
+   glm::mat4 ACamera::GetViewMatrix() const
+   {
+      return glm::lookAt(GetEyeVector(), GetTargetVector(), GetLocalSpaceUpVector());
+   }
+
+   glm::mat3 ACamera::ACamera::GetRotationMatrix() const
+   {
+      return m_rotationMatrix;
+   }
+
+   float ACamera::GetRotationYaw() const {
+      return mYaw;
+   }
+
+   float ACamera::GetRotationPitch() const {
+      return mPitch;
+   }
+}
