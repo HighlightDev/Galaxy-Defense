@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentType.h"
-#include "Core/GameCore/ICamera.h"
+#include "Core/GameCore/ACamera.h"
 
 #include <string>
 #include <glm/vec3.hpp>

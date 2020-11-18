@@ -7,13 +7,20 @@
 using namespace MeshLoader;
 using namespace MeshLoader::Assimp;
 
+namespace Game
+{
+   struct Transform;
+}
+
 namespace Graphics
 {
    namespace Mesh
    {
-
+      using Game::Transform;
       struct AnimatedMeshData
       {
+       
+
          struct BoneData
          {
             glm::vec3 Scale;
@@ -47,8 +54,6 @@ namespace Graphics
             const float srcAnimationTime, const float dstAnimationTime, const float blendFactor);
 
       private:
-
-         void TEST_PostInit();
 
          void GetBlendedBoneDataNodeHierarchy(const float srcTime, const float dstTime, const std::string& srcAnimName, const std::string& dstAnimName,
             const float blendFactor, MeshNode* node, std::map<std::string, BoneData>& blendedBoneData) const;

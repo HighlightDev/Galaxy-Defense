@@ -154,7 +154,7 @@ namespace Game
       mScene->Tick_GameThread(deltaTime);
    }
 
-   ICamera* Level::GetCamera() const
+   ACamera* Level::GetCamera() const
    {
       return mScene->GetCamera();
    }
@@ -166,7 +166,7 @@ namespace Game
 
    void Level::CameraMove()
    {
-      if (ICamera* camera = mScene->GetCamera(); camera->GetCameraType() == ICamera::CameraType::FIRST_PERSON)
+      if (ACamera* camera = mScene->GetCamera(); camera->GetCameraType() == ACamera::CameraType::FIRST_PERSON)
       {
          (static_cast<FirstPersonCamera*>(camera))->MoveCamera(0);
       }

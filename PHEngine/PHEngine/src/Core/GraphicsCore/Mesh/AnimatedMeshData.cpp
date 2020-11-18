@@ -1,7 +1,11 @@
 #include "AnimatedMeshData.h"
 
+#include "Core/GameCore/Components/Transform.h"
+
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/compatibility.hpp>
+
+using namespace Game;
 
 namespace Graphics
 {
@@ -15,11 +19,6 @@ namespace Graphics
          , AnimationIndices(std::move(collector.AnimationIndices))
          , GlobalInverseTransform(std::move(collector.GlobalInverseTransform))
       {
-      }
-
-      void AnimatedMeshData::TEST_PostInit()
-      {
-
       }
 
       AnimatedMeshData::BoneData AnimatedMeshData::BlendBoneData(const AnimatedMeshData::BoneData& src,

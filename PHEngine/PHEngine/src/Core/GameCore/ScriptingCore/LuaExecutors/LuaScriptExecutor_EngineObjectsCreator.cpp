@@ -105,8 +105,8 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         ICamera* camera = scene->GetCamera();
-         assert(camera && ICamera::CameraType::THIRD_PERSON == camera->GetCameraType());
+         ACamera* camera = scene->GetCamera();
+         assert(camera && ACamera::CameraType::THIRD_PERSON == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
             [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });

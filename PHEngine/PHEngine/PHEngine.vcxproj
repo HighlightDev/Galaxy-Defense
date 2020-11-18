@@ -544,7 +544,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MeshComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\SceneComponent.h" />
     <ClInclude Include="src\Core\GameCore\FirstPersonCamera.h" />
-    <ClInclude Include="src\Core\GameCore\ICamera.h" />
+    <ClInclude Include="src\Core\GameCore\ACamera.h" />
     <ClInclude Include="src\Core\GameCore\GlobalInputController.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\ShaderAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\ShaderPool.h" />
@@ -938,7 +938,7 @@
     <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingSceneRenderer.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\SceneComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\FirstPersonCamera.cpp" />
-    <ClCompile Include="src\Core\GameCore\ICamera.cpp" />
+    <ClCompile Include="src\Core\GameCore\ACamera.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\ShaderPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\MeshPool.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.cpp" />

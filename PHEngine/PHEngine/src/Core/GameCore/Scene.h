@@ -32,7 +32,7 @@ namespace Game
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
-      class ICamera* m_camera;
+      class ACamera* m_camera;
 
       std::shared_ptr<PlayerController> mPlayerController;
 
@@ -44,9 +44,9 @@ namespace Game
 
       void PostPhysicsInitialize();
 
-      void AddCamera(class ICamera* camera);
+      void AddCamera(class ACamera* camera);
 
-      inline class ICamera* GetCamera() const
+      inline class ACamera* GetCamera() const
       {
          return m_camera;
       }

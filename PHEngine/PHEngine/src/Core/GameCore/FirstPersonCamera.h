@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ICamera.h"
+#include "ACamera.h"
 
 namespace Game
 {
 
-	class FirstPersonCamera : public ICamera
+	class FirstPersonCamera : public ACamera
 	{
 	private:
 

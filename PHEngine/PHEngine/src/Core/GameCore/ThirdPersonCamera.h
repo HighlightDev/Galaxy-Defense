@@ -1,5 +1,5 @@
 #pragma once
-#include "ICamera.h"
+#include "ACamera.h"
 #include "Actor.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 
@@ -8,7 +8,7 @@ using namespace Event;
 namespace Game
 {
    class ThirdPersonCamera
-      : public ICamera
+      : public ACamera
       , public PlayerMovedEvent
    {
 

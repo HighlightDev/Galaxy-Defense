@@ -35,7 +35,7 @@ namespace Game
       }
    }
 
-   void Scene::AddCamera(ICamera* camera)
+   void Scene::AddCamera(ACamera* camera)
    {
       m_camera = camera;
       const std::string& goName = camera->GetGameObjectName();

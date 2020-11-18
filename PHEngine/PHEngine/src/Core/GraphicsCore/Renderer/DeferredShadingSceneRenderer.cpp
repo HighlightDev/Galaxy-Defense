@@ -1,5 +1,5 @@
 #include "DeferredShadingSceneRenderer.h"
-#include "Core/GameCore/ICamera.h"
+#include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalInputController.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"

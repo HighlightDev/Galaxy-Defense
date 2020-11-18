@@ -8,13 +8,13 @@ namespace Game
 {
 
    ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
-      : ICamera(cameraName, initPitchDeg, initYawDeg)
+      : ACamera(cameraName, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
-      m_cameraType = ICamera::CameraType::THIRD_PERSON;
+      m_cameraType = ACamera::CameraType::THIRD_PERSON;
    }
 
    ThirdPersonCamera::~ThirdPersonCamera()
@@ -30,7 +30,7 @@ namespace Game
 
    void ThirdPersonCamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
    {
-      ICamera::UpdateRotationMatrix(deltaX, deltaY);
+      ACamera::UpdateRotationMatrix(deltaX, deltaY);
       Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, this);
    }
 
@@ -117,6 +117,6 @@ namespace Game
       m_thirdPersonTarget = thirdPersonTarget;
       m_actualTargetVector = thirdPersonTarget->GetRootComponent()->GetTranslation();
 
-      ICamera::UpdateRotationMatrix(0, 0);
+      ACamera::UpdateRotationMatrix(0, 0);
    }
 }
