@@ -385,6 +385,8 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\CameraFrustum.h" />
+    <ClInclude Include="src\Core\GameCore\LoggerExtension.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeHelper.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeData.h" />
     <ClInclude Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.h" />
@@ -849,6 +851,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\CameraFrustum.cpp" />
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp" />

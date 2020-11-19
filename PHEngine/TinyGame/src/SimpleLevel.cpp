@@ -27,7 +27,6 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 
 #include <glm/vec3.hpp>
-//#include <TinyLogger/LogInterface.h>
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -117,12 +116,12 @@ namespace Labyrinth
       {
          DeserializeLevel("test_serialize.xml");
       }
-      else 
+      else
       {
          RunLuaBuildLevelScript();
       }
-      
-    
+
+
 #if 0
       // Water
       {
@@ -136,8 +135,8 @@ namespace Labyrinth
          waterActor->AddComponent(waterComp);
 
          mScene->AllActors.push_back(waterActor);
-      }
-#endif
    }
+#endif
+}
 #undef GET_REL_PATH_TO_FILE
 }

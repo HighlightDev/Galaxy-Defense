@@ -58,11 +58,8 @@ namespace TinyLogger
          }
       };
 
-      template <typename T> struct IsString { enum { value = false }; };
-      template <> struct IsString<std::string> { enum { value = false }; };
-
-      template <typename T, bool>
-      struct CastToStringIFTrue
+      template <typename T>
+      struct CastTypeToString
       {
          static std::string Do(T notStr)
          {
@@ -71,7 +68,7 @@ namespace TinyLogger
       };
 
       template <>
-      struct CastToStringIFTrue<std::string, false>
+      struct CastTypeToString<std::string>
       {
          static std::string Do(const std::string& str)
          {
@@ -80,7 +77,7 @@ namespace TinyLogger
       };
 
       /* template <size_t N>
-       struct CastToStringIFTrue<const char[N], false>
+       struct CastTypeToString<const char[N]>
        {
           static std::string Do(const char* str)
           {
@@ -96,7 +93,7 @@ namespace TinyLogger
             using arg_t = typename std::tuple_element<index, TupleT>::type;
 
             auto value = std::get<index>(tuple);
-            result.push_back(CastToStringIFTrue<arg_t, IsString<arg_t>::value>::Do(value));
+            result.push_back(CastTypeToString<arg_t>::Do(value));
             IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
          }
       };
