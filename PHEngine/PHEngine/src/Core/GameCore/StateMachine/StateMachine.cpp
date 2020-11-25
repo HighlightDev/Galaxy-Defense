@@ -11,7 +11,7 @@
 namespace Game
 {
 
-   StateMachine::StateMachine(const std::string& relPathFSM, State*& rootNode)
+   StateMachine::StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode)
       : mRelPathFSM(relPathFSM)
       , mStateNodeInitRoot(rootNode)
       , mCurrentStateNode(mStateNodeInitRoot)
@@ -20,34 +20,36 @@ namespace Game
 
    StateMachine::~StateMachine()
    {
-      delete mStateNodeInitRoot;
    }
 
    void StateMachine::InitRootState()
    {
-      const std::string& rootStateName = mStateNodeInitRoot->GetStateName();
-
-      std::map<std::string /*Property Name*/, BaseStateProperty*> dstProperties = mStateNodeInitRoot->GetStateProperties();
-
-      for (auto& dstNameAndPropertyPair : dstProperties)
+      if (auto spInitNode = mStateNodeInitRoot.lock())
       {
-         BaseStateProperty* dstProperty = dstNameAndPropertyPair.second;
+         const std::string& rootStateName = spInitNode->GetStateName();
 
-         std::shared_ptr<IStateMachineController> propertyController;
+         std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = spInitNode->GetStateProperties();
 
-         const auto propertyType = dstProperty->GetStatePropertyType();
-         if (StatePropertyType::Animation == propertyType)
+         for (auto& dstNameAndPropertyPair : dstProperties)
          {
-            propertyController = std::make_shared<AnimationStateMachineController>();
-         }
-         else if (StatePropertyType::Float == propertyType)
-         {
-            propertyController = std::make_shared<FloatStateMachineController>();
-         }
+            std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
 
-         if (propertyController)
-         {
-            propertyController->InitWithPropsInstant(dstProperty);
+            std::shared_ptr<IStateMachineController> propertyController;
+
+            const auto propertyType = dstProperty->GetStatePropertyType();
+            if (StatePropertyType::Animation == propertyType)
+            {
+               propertyController = std::make_shared<AnimationStateMachineController>();
+            }
+            else if (StatePropertyType::Float == propertyType)
+            {
+               propertyController = std::make_shared<FloatStateMachineController>();
+            }
+
+            if (propertyController)
+            {
+               propertyController->InitWithPropsInstant(dstProperty.get());
+            }
          }
       }
    }
@@ -62,61 +64,73 @@ namespace Game
             controllerSp->OnTransitionFinished();
          }
 
-         SetTransitionValuesFinished(mCurrentActiveStateTransition->StateDestination);
-         CurrentActiveTransitionControllers.clear();
+         if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
+         {
+            SetTransitionValuesFinished(spDestination);
+            CurrentActiveTransitionControllers.clear();
 
-         // Begin new transition
-         DoTransition(dstStateName);
+            // Begin new transition
+            DoTransition(dstStateName);
+         }
       }
    }
 
    void StateMachine::DoTransition(const std::string& dstStateName)
    {
-      const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
-
-      if (transitions.count(dstStateName))
+      if (auto spCurrentNode = mCurrentStateNode.lock())
       {
-         const StateTransition& transition = transitions.at(dstStateName);
+         const std::map<std::string /*dstStateName*/, StateTransition>& transitions = spCurrentNode->GetTransitions();
 
-         State* stateTo = transition.StateDestination;
-         State* stateFrom = transition.StateFrom;
-
-         assert(stateFrom->GetStateName() == mCurrentStateNode->GetStateName());
-
-         mCurrentActiveStateTransition = &transition;
-         mTransitionTime = 0.0f;
-         mTransitionParameter = 0.0f;
-         mTransitionDuration = transition.TransitionDuration;
-         bTransitionEnabled = true;
-
-         std::map<std::string /*Property Name*/, BaseStateProperty*> srcProperties = stateFrom->GetStateProperties();
-         std::map<std::string /*Property Name*/, BaseStateProperty*> dstProperties = stateTo->GetStateProperties();
-
-         for (auto& srcNameAndPropertyPair : srcProperties)
+         if (transitions.count(dstStateName))
          {
-            const std::string& name = srcNameAndPropertyPair.first;
+            const StateTransition& transition = transitions.at(dstStateName);
 
-            if (dstProperties.count(name))
+            auto spDestination = transition.StateDestination.lock();
+            auto spFrom = transition.StateFrom.lock();
+
+            if (spDestination && spFrom)
             {
-               BaseStateProperty* srcProperty = srcNameAndPropertyPair.second;
-               BaseStateProperty* dstProperty = dstProperties[name];
+               State* stateTo = spDestination.get();
+               State* stateFrom = spFrom.get();
 
-               std::shared_ptr<IStateMachineController> propertyController;
+               assert(stateFrom->GetStateName() == spCurrentNode->GetStateName());
 
-               const auto propertyType = srcProperty->GetStatePropertyType();
-               if (StatePropertyType::Animation == propertyType)
-               {
-                  propertyController = std::make_shared<AnimationStateMachineController>();
-               }
-               else if (StatePropertyType::Float == propertyType)
-               {
-                  propertyController = std::make_shared<FloatStateMachineController>();
-               }
+               mCurrentActiveStateTransition = &transition;
+               mTransitionTime = 0.0f;
+               mTransitionParameter = 0.0f;
+               mTransitionDuration = transition.TransitionDuration;
+               bTransitionEnabled = true;
 
-               if (propertyController)
+               std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = stateFrom->GetStateProperties();
+               std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = stateTo->GetStateProperties();
+
+               for (auto& srcNameAndPropertyPair : srcProperties)
                {
-                  CurrentActiveTransitionControllers.emplace_back(propertyController);
-                  propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
+                  const std::string& name = srcNameAndPropertyPair.first;
+
+                  if (dstProperties.count(name))
+                  {
+                     std::shared_ptr<BaseStateProperty> srcProperty = srcNameAndPropertyPair.second;
+                     std::shared_ptr<BaseStateProperty> dstProperty = dstProperties[name];
+
+                     std::shared_ptr<IStateMachineController> propertyController;
+
+                     const auto propertyType = srcProperty->GetStatePropertyType();
+                     if (StatePropertyType::Animation == propertyType)
+                     {
+                        propertyController = std::make_shared<AnimationStateMachineController>();
+                     }
+                     else if (StatePropertyType::Float == propertyType)
+                     {
+                        propertyController = std::make_shared<FloatStateMachineController>();
+                     }
+
+                     if (propertyController)
+                     {
+                        CurrentActiveTransitionControllers.emplace_back(propertyController);
+                        propertyController->OnTransitionStarted(srcProperty.get(), dstProperty.get(), mTransitionDuration);
+                     }
+                  }
                }
             }
          }
@@ -165,7 +179,7 @@ namespace Game
       return mParent;
    }
 
-   void StateMachine::SetTransitionValuesFinished(State* newCurrentState)
+   void StateMachine::SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState)
    {
       std::cout << "TRANSITION FINISHED, new STATE : " + newCurrentState->GetStateName() << std::endl;
       mTransitionParameter = 1.0f;
@@ -192,34 +206,37 @@ namespace Game
       // process current transition
       if (bTransitionEnabled && mCurrentActiveStateTransition)
       {
-         State* stateTo = mCurrentActiveStateTransition->StateDestination;
-
-         mTransitionTime += deltaTime * 5.0f;
-
-         if (mTransitionTime > mTransitionDuration)
+         if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
          {
-            SetTransitionValuesFinished(stateTo);
-         }
-         else
-         {
-            mTransitionParameter = mTransitionTime / mTransitionDuration;
-         }
+            std::shared_ptr<State> stateTo = spDestination;
 
-         for (std::shared_ptr<IStateMachineController>& controllerSp : CurrentActiveTransitionControllers)
-         {
-            if (bTransitionEnabled)
+            mTransitionTime += deltaTime * 5.0f;
+
+            if (mTransitionTime > mTransitionDuration)
             {
-               controllerSp->OnTransitionUpdate(deltaTime, mTransitionParameter);
+               SetTransitionValuesFinished(stateTo);
             }
             else
             {
-               controllerSp->OnTransitionFinished();
+               mTransitionParameter = mTransitionTime / mTransitionDuration;
             }
-         }
 
-         if (!bTransitionEnabled)
-         {
-            CurrentActiveTransitionControllers.clear();
+            for (std::shared_ptr<IStateMachineController>& controllerSp : CurrentActiveTransitionControllers)
+            {
+               if (bTransitionEnabled)
+               {
+                  controllerSp->OnTransitionUpdate(deltaTime, mTransitionParameter);
+               }
+               else
+               {
+                  controllerSp->OnTransitionFinished();
+               }
+            }
+
+            if (!bTransitionEnabled)
+            {
+               CurrentActiveTransitionControllers.clear();
+            }
          }
       }
    }
@@ -234,9 +251,9 @@ namespace Game
       return mTransitionParameter;
    }
 
-   State* StateMachine::GetCurrentState() const
+   std::shared_ptr<State> StateMachine::GetCurrentState() const
    {
-      return mCurrentStateNode;
+      return mCurrentStateNode.lock();
    }
 
    std::string StateMachine::GetRelPathFSM() const {

@@ -24,7 +24,7 @@ namespace Event
          bHasData = true;
       }
 
-      TupleData_t PopData() {
+      const TupleData_t& PopData() {
          bHasData = false;
          return value;
       }
@@ -54,7 +54,7 @@ namespace Event
          bHasData = true;
       }
 
-      TupleData_t PopData() {
+      const TupleData_t& PopData() {
          const auto& result = values.front();
          values.pop();
          bHasData = values.size() > 0;

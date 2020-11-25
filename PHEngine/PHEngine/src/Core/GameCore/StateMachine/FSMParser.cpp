@@ -244,12 +244,12 @@ namespace Game
 
    std::shared_ptr<StateMachine> FSMParser::BuildFSM(const std::string& relPathFSM)
    {
-      std::unordered_map<std::string, State*> states;
+      std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>> bindings;
 
       for (const auto& item : mStates)
       {
-         states[item.Name] = new State(item.Name);
+         states[item.Name] = std::make_shared<State>(item.Name);
       }
 
       auto fsm = std::make_shared<StateMachine>(relPathFSM, states[mStates[0].Name]);

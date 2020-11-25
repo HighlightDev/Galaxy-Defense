@@ -13,11 +13,15 @@ namespace Game
 
    public:
 
+      BoundingBox();
+
       BoundingBox(const glm::vec3& origin, const glm::vec3& extent);
 
       ~BoundingBox();
 
       void UpdateScale(const glm::vec3& scale);
       void UpdateTranslation(const glm::vec3& translation);
+      glm::vec3 GetOrigin() const;
+      glm::vec3 GetExtent() const;
    };
 }

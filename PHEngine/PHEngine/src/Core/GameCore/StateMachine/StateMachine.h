@@ -18,9 +18,9 @@ namespace Game
       std::string mRelPathFSM;
 
       /* At beginning we are here */
-      State* mStateNodeInitRoot = nullptr;
+      std::weak_ptr<State> mStateNodeInitRoot;
 
-      State* mCurrentStateNode = nullptr;
+      std::weak_ptr<State> mCurrentStateNode;
 
       const StateTransition* mCurrentActiveStateTransition = nullptr;
 
@@ -36,7 +36,7 @@ namespace Game
 
    public:
 
-      StateMachine(const std::string& relPathFSM, State*& rootNode);
+      StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode);
 
       ~StateMachine();
 
@@ -46,7 +46,7 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      State* GetCurrentState() const;
+      std::shared_ptr<State> GetCurrentState() const;
 
       bool IsTransitionActive() const;
 
@@ -70,7 +70,7 @@ namespace Game
       
       void DoTranstionInstantly(const std::string& dstStateName);
 
-      void SetTransitionValuesFinished(State* newCurrentState);
+      void SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState);
    };
 
 }

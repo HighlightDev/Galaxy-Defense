@@ -46,7 +46,7 @@ public:
 
 	~Engine();
 
-   void StopExecution();
+   void StopGameThreadExecution();
 
    void PlayLevel(std::shared_ptr<Level> level);
 

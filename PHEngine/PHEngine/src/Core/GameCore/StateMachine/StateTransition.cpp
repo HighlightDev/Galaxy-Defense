@@ -3,12 +3,12 @@
 
 namespace Game
 {
-   StateTransition::StateTransition(State* stateFrom, State* stateDestination, float transitionDuration)
+   StateTransition::StateTransition(std::shared_ptr<State> stateFrom, std::shared_ptr<State> stateDestination, float transitionDuration)
       : StateFrom(stateFrom)
       , StateDestination(stateDestination)
       , TransitionDuration(transitionDuration)
    {
-      assert(StateFrom != nullptr);
-      assert(StateDestination != nullptr);
+      assert(stateFrom != nullptr);
+      assert(stateDestination != nullptr);
    }
 }

@@ -15,7 +15,7 @@ namespace Game
    {
       std::string mStateName;
 
-      std::map<std::string /*Property Name*/, BaseStateProperty*> mStateProperties;
+      std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> mStateProperties;
 
       std::map<std::string /*dstStateName*/, StateTransition> mTransitions;
 
@@ -29,15 +29,6 @@ namespace Game
 
       ~State()
       {
-         for (auto prop : mStateProperties)
-         {
-            delete prop.second;
-         }
-
-         for (auto transition : mTransitions)
-         {
-            delete transition.second.StateDestination;
-         }
       }
 
       std::string GetStateName() const
@@ -56,11 +47,14 @@ namespace Game
 
       void AddStateTransition(const StateTransition& dstStateTransition)
       {
-         const std::string& dstStateName = dstStateTransition.StateDestination->GetStateName();
+         if (auto spDestination = dstStateTransition.StateDestination.lock())
+         {
+            const std::string& dstStateName = spDestination->GetStateName();
 
-         assert(mTransitions.count(dstStateName) == 0); // make sure that transition doesn't duplicate
+            assert(mTransitions.count(dstStateName) == 0); // make sure that transition doesn't duplicate
 
-         mTransitions.emplace(std::make_pair(dstStateName, dstStateTransition));
+            mTransitions.emplace(std::make_pair(dstStateName, dstStateTransition));
+         }
       }
 
       const std::map<std::string /*dstStateName*/, StateTransition>& GetTransitions() const
@@ -68,7 +62,7 @@ namespace Game
          return mTransitions;
       }
 
-      std::map<std::string /*Property Name*/, BaseStateProperty*> GetStateProperties() {
+      std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> GetStateProperties() {
          return mStateProperties;
       }
 

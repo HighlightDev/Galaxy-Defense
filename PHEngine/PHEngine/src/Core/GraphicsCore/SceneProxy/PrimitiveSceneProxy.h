@@ -9,6 +9,7 @@
 #include "Core/GameCore/GameObject.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/VisibilityManager/AVisibleBase.h"
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -28,10 +29,9 @@ namespace Graphics
 
       class PrimitiveSceneProxy
          : public GameObject
+         , public AVisibleBase
       {
       protected:
-
-         bool mIsVisible;
 
          glm::mat4 m_relativeMatrix;
 
@@ -49,8 +49,6 @@ namespace Graphics
 
          void SetTransformationMatrix(const glm::mat4& relativeMatrix);
 
-         void SetVisibility(const bool visibility);
-
          virtual glm::mat4 GetMatrix() const;
 
          virtual void PostConstructorInitialize();
@@ -63,9 +61,6 @@ namespace Graphics
 
          virtual bool IsDeferred() const = 0;
 
-         inline bool IsVisible() const {
-            return mIsVisible;
-         }
       };
 
    }

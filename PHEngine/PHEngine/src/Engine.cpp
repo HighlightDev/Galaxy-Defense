@@ -19,7 +19,7 @@ Engine::~Engine()
    m_gameThread.join();
 }
 
-void Engine::StopExecution()
+void Engine::StopGameThreadExecution()
 {
    bGameThreadExecution = false;
 }
@@ -70,10 +70,6 @@ void Engine::GameThreadPulse()
       /* GAME THREAD*/
       {
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
-
-         const double gameThreadFramesPerSec = 1.0 / mGameThreadSumDeltaTimeSec;
-         //TinyLogger::LogProxy::LogMessages("GAME THREAD FPS: ", std::to_string(gameThreadFramesPerSec));
-
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
 
          /* Events: pre execution */
@@ -106,9 +102,6 @@ void Engine::RenderThreadPulse()
    /* RENDER THREAD */
    {
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
-
-      const double renderThreadFramesPerSec = 1.0 / mRenderThreadDeltaTimeSeconds;
-      //TinyLogger::LogProxy::LogMessages("RENDER THREAD FPS: ", std::to_string(renderThreadFramesPerSec));
       
       // This should be executed on render thread
       SPIN_RENDER_THREAD_JOBS(m_interThreadMgr);

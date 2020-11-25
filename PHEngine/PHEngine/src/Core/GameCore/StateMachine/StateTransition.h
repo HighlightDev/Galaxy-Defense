@@ -1,14 +1,18 @@
 #pragma once
 
+#include <memory>
+
 namespace Game
 {
+   class State;
+
    struct StateTransition
    {
-      class State* StateFrom = nullptr;
-      class State* StateDestination = nullptr;
+      std::weak_ptr<State> StateFrom;
+      std::weak_ptr<State> StateDestination;
       
       float TransitionDuration;
 
-      StateTransition(class State* stateFrom, class State* stateDestination, float transitionDuration);
+      StateTransition(std::shared_ptr<State> stateFrom, std::shared_ptr<State>stateDestination, float transitionDuration);
    };
 }
