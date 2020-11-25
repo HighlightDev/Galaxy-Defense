@@ -41,6 +41,8 @@ namespace Game
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
+      virtual BoundingBox GetBoundingBox() const override;
+
 		inline void SetRotateSpeed(float rotateSpeed)
 		{
 			m_rotateSpeed = rotateSpeed;

@@ -100,4 +100,9 @@ namespace Game
       return std::make_shared<SkeletalMeshSceneProxy>(this);
    }
 
+   BoundingBox SkeletalMeshComponent::GetBoundingBox() const
+   {
+      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
+   }
+
 }

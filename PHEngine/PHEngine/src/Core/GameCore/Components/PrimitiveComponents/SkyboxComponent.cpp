@@ -47,6 +47,11 @@ namespace Game
       return std::make_shared<SkyboxSceneProxy>(this);
    }
 
+   BoundingBox SkyboxComponent::GetBoundingBox() const
+   {
+      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
+   }
+
    ComponentType SkyboxComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;

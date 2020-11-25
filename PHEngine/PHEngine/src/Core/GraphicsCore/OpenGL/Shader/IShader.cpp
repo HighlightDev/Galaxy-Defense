@@ -430,7 +430,7 @@ namespace Graphics
 
          auto shaderSrc = LoadShaderSrcVector(pathToShader);
 
-         std::string result = GetPredefinedSource(shaderSrc, constantDefines, defines);
+         const std::string& result = GetPredefinedSource(shaderSrc, constantDefines, defines);
 
          WriteShaderSrc(pathToShader, result);
       }

@@ -33,4 +33,9 @@ namespace Game
    {
       return std::make_shared<CubemapSceneProxy>(this);
    }
+
+   BoundingBox CubemapComponent::GetBoundingBox() const
+   {
+      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
+   }
 }

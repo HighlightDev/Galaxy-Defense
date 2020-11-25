@@ -16,6 +16,12 @@ Engine::Engine(InterThreadCommunicationMgr& interThreadMgr)
 
 Engine::~Engine()
 {
+   m_gameThread.join();
+}
+
+void Engine::StopExecution()
+{
+   bGameThreadExecution = false;
 }
 
 void Engine::PlayLevel(std::shared_ptr<Level> level)
@@ -34,7 +40,6 @@ void Engine::PlayLevel(std::shared_ptr<Level> level)
    PostPhysicsInitialize();
 
    m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
-   m_gameThread.detach();
 }
 
 InterThreadCommunicationMgr& Engine::GetThreadCommunicationManager()
@@ -60,7 +65,7 @@ void Engine::PostPhysicsInitialize()
 
 void Engine::GameThreadPulse()
 {
-   while (true)
+   while (bGameThreadExecution)
    {
       /* GAME THREAD*/
       {

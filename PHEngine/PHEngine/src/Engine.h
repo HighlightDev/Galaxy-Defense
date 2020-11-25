@@ -28,6 +28,8 @@ private:
 
    std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
+   bool bGameThreadExecution = true;
+
 private:
    std::thread m_gameThread;
 
@@ -43,6 +45,8 @@ public:
 	Engine(InterThreadCommunicationMgr& interThreadMgr);
 
 	~Engine();
+
+   void StopExecution();
 
    void PlayLevel(std::shared_ptr<Level> level);
 

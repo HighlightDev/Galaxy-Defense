@@ -45,4 +45,9 @@ namespace Game
       return PRIMITIVE_COMPONENT;
    }
 
+   BoundingBox StaticMeshComponent::GetBoundingBox() const
+   {
+      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
+   }
+
 }

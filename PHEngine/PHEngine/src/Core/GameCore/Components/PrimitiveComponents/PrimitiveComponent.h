@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GameCore/BoundingBox.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -41,6 +42,8 @@ namespace Game
       virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix) override;
 
       virtual void OnVisibilityChanged();
+
+      virtual BoundingBox GetBoundingBox() const = 0;
 
 	};
 

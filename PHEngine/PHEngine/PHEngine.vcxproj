@@ -385,6 +385,8 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\BoundingBoxBuilder.h" />
+    <ClInclude Include="src\Core\GameCore\BoundingBox.h" />
     <ClInclude Include="src\Core\GameCore\CameraFrustum.h" />
     <ClInclude Include="src\Core\GameCore\LoggerExtension.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeHelper.h" />
@@ -851,6 +853,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\BoundingBoxBuilder.cpp" />
+    <ClCompile Include="src\Core\GameCore\BoundingBox.cpp" />
     <ClCompile Include="src\Core\GameCore\CameraFrustum.cpp" />
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.cpp" />
