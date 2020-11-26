@@ -1,10 +1,9 @@
 #include "ThirdPersonCamera.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
-
-#include "Core/GameCore/LoggerExtension.h"
 
 namespace Game
 {
@@ -114,6 +113,11 @@ namespace Game
    std::shared_ptr<Actor> ThirdPersonCamera::GetThirdPersonTarget() const
    {
       return m_thirdPersonTarget;
+   }
+
+   std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::GetSceneProxy() const
+   {
+      return std::make_shared<CameraSceneProxy>(this);
    }
 
    void ThirdPersonCamera::SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget)

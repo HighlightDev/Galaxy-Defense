@@ -9,6 +9,9 @@
 
 #include "Core/GameCore/GameObject.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
+
+using namespace Graphics;
 
 namespace Game
 {
@@ -66,6 +69,8 @@ namespace Game
       virtual glm::vec3 GetTargetVector() const = 0;
 
       virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
+
+      virtual std::shared_ptr<CameraSceneProxy> GetSceneProxy() const = 0;
 
       std::string GetCameraName() const;
 

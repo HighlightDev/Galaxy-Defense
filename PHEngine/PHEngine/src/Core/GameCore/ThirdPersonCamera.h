@@ -52,6 +52,8 @@ namespace Game
 
       virtual glm::vec3 GetTargetVector() const override;
 
+      virtual std::shared_ptr<CameraSceneProxy> GetSceneProxy() const override;
+
       void SetDistanceFromTargetToCamera(float distanceFromTargetToCamera);
 
       float GetDistanceFromTargetToCamera() const;

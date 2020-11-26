@@ -12,7 +12,7 @@ namespace Game
 
    Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
       : m_interThreadMgr(interThreadMgr)
-      , m_camera(nullptr)
+      , mActiveCameras()
       , mPhysicsWorld(new PhysicsWorld())
    {
       mPhysicsWorld->InitPhysicsWorld();
@@ -35,12 +35,16 @@ namespace Game
       }
    }
 
-   void Scene::AddCamera(ACamera* camera)
+   std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
    {
-      m_camera = camera;
-      const std::string& goName = camera->GetGameObjectName();
-      assert(GameObjects.count(goName) == 0);
-      GameObjects[goName] = camera;
+      auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto& cameraPtr) { return cameraPtr->GetGameObjectName() == cameraName; });
+
+      if (cameraIt != mActiveCameras.end())
+      {
+         return (*cameraIt);
+      }
+
+      return nullptr;
    }
 
    const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const
@@ -278,6 +282,21 @@ namespace Game
       }
    }
 
+   void Scene::CameraSceneProxyAdded(std::shared_ptr<CameraSceneProxy> cameraSceneProxy)
+   {
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash("Scene::CameraSceneProxyAdded");
+
+      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+            Job(creatorObjectId, functionId, [=]()
+         {
+            sceneRenderer->CameraSceneProxies.push_back(cameraSceneProxy);
+         }));
+      }
+   }
+
    void Scene::PrimitiveSceneProxyAdded(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
@@ -333,7 +352,10 @@ namespace Game
 
       mPhysicsWorld->Tick(physTickStep);
 
-      m_camera->Tick(delta);
+      for (const auto& cameraPtr : mActiveCameras)
+      {
+         cameraPtr->Tick(delta);
+      }
 
       mPlayerController->Tick(delta);
 
@@ -349,8 +371,7 @@ namespace Game
 
    Scene::~Scene()
    {
-      mActors.clear();
-      delete m_camera;
+      delete mPhysicsWorld;
    }
 
 }

@@ -9,6 +9,9 @@
 #include "Core/GameCore/PlayerController.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
+#include "Core/GameCore/ACamera.h"
+
+#include <type_traits>
 
 using namespace Thread;
 
@@ -32,7 +35,7 @@ namespace Game
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
-      class ACamera* m_camera;
+      std::vector<std::shared_ptr<ACamera>> mActiveCameras;
 
       std::shared_ptr<PlayerController> mPlayerController;
 
@@ -44,12 +47,7 @@ namespace Game
 
       void PostPhysicsInitialize();
 
-      void AddCamera(class ACamera* camera);
-
-      inline class ACamera* GetCamera() const
-      {
-         return m_camera;
-      }
+      std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
 
       inline InterThreadCommunicationMgr& GetThreadManager()
       {
@@ -82,6 +80,8 @@ namespace Game
 
       void ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& renderThreadJobCallback) const;
 
+      void CameraSceneProxyAdded(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
+
       void PrimitiveSceneProxyDeleted(size_t primitiveSceneProxyIndex);
 
       void PrimitiveSceneProxyAdded(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy);
@@ -100,23 +100,36 @@ namespace Game
 
       ~Scene();
 
+      template <typename CameraType, typename... CameraTypeArgs>
+      std::enable_if<std::is_base_of<ACamera, CameraType>::value> RegisterCamera(CameraTypeArgs&&... args)
+      {
+         mActiveCameras.emplace_back<CameraType>(std::forward<CameraTypeArgs>(args)...);
+         std::shared_ptr<ACamera> createdCamera = mActiveCameras.back();
+         const std::string& goName = createdCamera->GetGameObjectName();
+         assert(GameObjects.count(goName) == 0);
+         GameObjects[goName] = camera;
+
+         auto cameraProxyPtr = createdCamera->CreateSceneProxy();
+         CameraSceneProxyAdded(cameraProxyPtr);
+      }
+
       template <ComponentMetaType metaType, typename ComponentT>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
          auto component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData);
          ComponentType type = component->GetComponentType();
-         if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+         if (type & ComponentType::SCENE_COMPONENT != 0)
          {
             SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
             sceneComponentPtr->SetScene(this);
-            if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
+            if (type & ComponentType::PRIMITIVE_COMPONENT != 0)
             {
                PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
                componentPtr->PrimitiveProxyComponentId = PrimitiveComponent::TotalPrimitiveSceneProxyIndex++;
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
                PrimitiveSceneProxyAdded(componentPtr->PrimitiveProxyComponentId, sceneProxyShared);
             }
-            else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
+            else if (type & ComponentType::LIGHT_COMPONENT!= 0)
             {
                LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
                componentPtr->LightSceneProxyId = LightComponent::TotalLightSceneProxyId++;

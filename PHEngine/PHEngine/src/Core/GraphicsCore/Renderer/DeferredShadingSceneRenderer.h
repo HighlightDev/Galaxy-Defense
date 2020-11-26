@@ -39,6 +39,8 @@ namespace Graphics
 
       public:
 
+         std::vector<std::shared_ptr<CameraSceneProxy>> CameraSceneProxies;
+
          std::vector<std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
 
          std::vector<std::shared_ptr<LightSceneProxy>> LightProxies;
