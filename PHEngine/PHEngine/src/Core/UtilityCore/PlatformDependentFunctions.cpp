@@ -5,7 +5,13 @@ namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system
 
-#include <windows.h>
+   uint64_t getProcessMemmorySize()
+   {
+      PROCESS_MEMORY_COUNTERS pmc;
+      GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+      uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
+      return mHeapCapacity;
+   }
 
 	char * get_module_file_name(HMODULE hModule) {
 		size_t size = 1;

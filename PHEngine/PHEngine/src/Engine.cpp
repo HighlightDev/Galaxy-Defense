@@ -67,6 +67,8 @@ void Engine::GameThreadPulse()
 {
    while (bGameThreadExecution)
    {
+      uint64_t memoryBeforeExe = getProcessMemmorySize();
+
       /* GAME THREAD*/
       {
          mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
@@ -88,6 +90,9 @@ void Engine::GameThreadPulse()
 
          /* Events: post execution */
          ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
+
+         uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemmorySize();
+         TinyLogger::LogProxy::LogMessages(std::string("Engine::GameThread execution. Memory consumption : "), memoryAfterExe);
       }
    }
 }
