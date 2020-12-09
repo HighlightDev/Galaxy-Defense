@@ -9,7 +9,7 @@ namespace Graphics
       PrimitiveSceneProxy::PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> materialShader,
          std::shared_ptr<IMaterial> materialInstance)
          : SceneProxyBase()
-         , AVisibleBase()
+         , AVisiblePrimitiveBase()
          , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)
          , m_shader(materialShader)
@@ -43,6 +43,11 @@ namespace Graphics
       PrimitiveProxyType PrimitiveSceneProxy::GetPrimitiveProxyType() const
       {
          return PrimitiveProxyType::PRIMITIVE_PROXY;
+      }
+
+      const BoundingBox& PrimitiveSceneProxy::GetTransformedBoundingBox() const
+      {
+         return mBoundingBox;
       }
 
    }

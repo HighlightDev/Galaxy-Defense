@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
+#include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthShader.h"
@@ -40,7 +41,7 @@ namespace Graphics
 
       public:
 
-         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<CameraSceneProxy>> CameraSceneProxies;
+         std::unordered_map<size_t /*camera proxy id*/, std::shared_ptr<SceneView>> SceneViews;
 
          std::unordered_map<size_t /*proxy id*/, std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
 

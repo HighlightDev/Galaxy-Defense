@@ -7,23 +7,19 @@ using namespace Game;
 namespace Graphics
 {
 
-   class AVisibleBase
+   class AVisiblePrimitiveBase
    {
    protected:
-
-      bool mIsVisible;
 
       BoundingBox mBoundingBox;
 
    public:
 
-      AVisibleBase();
-
-      void SetVisibility(const bool visibility);
-
-      bool IsVisible() const;
+      AVisiblePrimitiveBase();
 
       const BoundingBox& GetBoundingBox() const;
+
+      virtual const BoundingBox& GetTransformedBoundingBox() const = 0;
 
    };
 

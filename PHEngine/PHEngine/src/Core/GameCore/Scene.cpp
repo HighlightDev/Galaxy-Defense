@@ -199,13 +199,14 @@ namespace Game
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         assert(sceneRenderer->CameraSceneProxies.count(sceneProxyId));
+         assert(sceneRenderer->SceneViews.count(sceneProxyId));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
-               sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateEyeVector(camera->GetEyeVector());
-               sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateViewMatrix(camera->GetViewMatrix());
+               auto sceneView = sceneRenderer->SceneViews[sceneProxyId];
+               sceneView->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
+               sceneView->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix());
             }));
          }
       }
@@ -304,7 +305,7 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
-            sceneRenderer->CameraSceneProxies[cameraSceneProxy->GetSceneProxyId()] = cameraSceneProxy;
+            sceneRenderer->SceneViews.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy));
          }));
       }
    }

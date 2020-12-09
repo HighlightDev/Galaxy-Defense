@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/VisibilityManager/CameraFrustum.h"
+#include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 namespace Game

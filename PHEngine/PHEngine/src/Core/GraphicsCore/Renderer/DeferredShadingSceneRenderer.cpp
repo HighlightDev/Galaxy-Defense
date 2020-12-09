@@ -34,7 +34,7 @@ namespace Graphics
    {
 
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
-         : CameraSceneProxies()
+         : SceneViews()
          , SceneProxies()
          , LightProxies()
          , m_interThreadMgr(interThreadMgr)
@@ -435,9 +435,9 @@ namespace Graphics
             }
             /* Prepare proxies block */
 
-            for (auto cameraProxyPair : CameraSceneProxies)
+            for (auto cameraProxyPair : SceneViews)
             {
-               auto cameraProxy = cameraProxyPair.second;
+               auto cameraProxy = cameraProxyPair.second->GetCameraProxy();
 
                glEnable(GL_DEPTH_TEST);
 

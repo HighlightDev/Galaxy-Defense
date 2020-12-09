@@ -9,7 +9,7 @@
 #include "Core/GameCore/GameObject.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GraphicsCore/VisibilityManager/AVisibleBase.h"
+#include "Core/GraphicsCore/SceneViewInfo/AVisiblePrimitiveBase.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 using namespace Graphics::OpenGL;
@@ -30,7 +30,7 @@ namespace Graphics
 
       class PrimitiveSceneProxy
          : public SceneProxyBase
-         , public AVisibleBase
+         , public AVisiblePrimitiveBase
       {
       protected:
 
@@ -57,6 +57,8 @@ namespace Graphics
          virtual std::shared_ptr<Skin> GetSkin() const;
 
          virtual PrimitiveProxyType GetPrimitiveProxyType() const;
+
+         virtual const BoundingBox& GetTransformedBoundingBox() const override;
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 

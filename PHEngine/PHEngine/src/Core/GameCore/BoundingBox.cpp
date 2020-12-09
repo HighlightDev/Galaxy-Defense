@@ -22,31 +22,39 @@ namespace Game
    {
    }
 
-   void BoundingBox::UpdateScale(const glm::vec3& scale)
+   glm::vec3 BoundingBox::GetTransformedOrigin(const glm::vec3& translation) const
    {
-      mScale = scale;
+      return mOrigin + translation;
    }
 
-   void BoundingBox::UpdateTranslation(const glm::vec3& translation)
+   glm::vec3 BoundingBox::GetTransformedExtent(const glm::vec3& scale) const
    {
-      mTranslation = translation;
+      return mExtent * scale;
    }
 
    glm::vec3 BoundingBox::GetOrigin() const
    {
-      glm::mat4 worldMatrix(1);
-
-      const glm::mat4& translationM = glm::translate(worldMatrix, mTranslation);
-      const glm::mat4& scalingM = glm::scale(worldMatrix, mScale);
-
-      worldMatrix *= scalingM;
-      worldMatrix *= translationM;
-      
-      return worldMatrix * glm::vec4(mOrigin.x, mOrigin.y, mOrigin.z, 1);
+      return mOrigin;
    }
 
    glm::vec3 BoundingBox::GetExtent() const
    {
-      return mExtent * mScale;
+      return mExtent;
+   }
+
+   BoundingBox BoundingBox::GetMeTransformed(const glm::mat4& transformMatrix) const
+   {
+      glm::vec3 bbPoints[8] =
+      { mOrigin + mExtent,
+        mOrigin - mExtent,
+        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z + mExtent.z),
+        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
+        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
+        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
+        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z - mExtent.z),
+        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
+      };
+
+      return BoundingBox();
    }
 }

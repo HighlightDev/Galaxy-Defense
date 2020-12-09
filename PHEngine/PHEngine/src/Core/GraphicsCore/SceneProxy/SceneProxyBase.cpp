@@ -6,6 +6,7 @@ namespace Graphics
 
    SceneProxyBase::SceneProxyBase()
       : mSceneProxyId(SceneProxyIdCounter)
+      , mIsVisible(true)
    {
       SceneProxyIdCounter++;
    }
@@ -17,5 +18,15 @@ namespace Graphics
    size_t SceneProxyBase::GetSceneProxyId() const {
 
       return mSceneProxyId;
+   }
+
+   bool SceneProxyBase::IsVisible() const
+   {
+      return mIsVisible;
+   }
+
+   void SceneProxyBase::SetVisibility(const bool visibility)
+   {
+      mIsVisible = visibility;
    }
 }
