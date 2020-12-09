@@ -169,7 +169,7 @@ namespace Game
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (primitiveSceneProxyIndex < sceneRenderer->SceneProxies.size())
+         assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
@@ -184,7 +184,7 @@ namespace Game
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (primitiveSceneProxyIndex < sceneRenderer->SceneProxies.size())
+         assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
@@ -199,12 +199,15 @@ namespace Game
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-            Job(creatorObjectId, functionId, [=]()
+         assert(sceneRenderer->CameraSceneProxies.count(sceneProxyId));
          {
-            sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateEyeVector(camera->GetEyeVector());
-            sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateViewMatrix(camera->GetViewMatrix());
-         }));
+            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+               Job(creatorObjectId, functionId, [=]()
+            {
+               sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateEyeVector(camera->GetEyeVector());
+               sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateViewMatrix(camera->GetViewMatrix());
+            }));
+         }
       }
    }
 
@@ -212,7 +215,7 @@ namespace Game
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (lightSceneProxyIndex < sceneRenderer->LightProxies.size())
+         assert(sceneRenderer->LightProxies.count(lightSceneProxyIndex));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
@@ -230,7 +233,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (primitiveSceneProxyIndex < sceneRenderer->SceneProxies.size())
+         assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()
@@ -264,7 +267,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (lightSceneProxyIndex < sceneRenderer->LightProxies.size())
+         assert(sceneRenderer->LightProxies.count(lightSceneProxyIndex));
          {
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()

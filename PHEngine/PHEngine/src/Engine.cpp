@@ -92,7 +92,11 @@ void Engine::GameThreadPulse()
          ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
 
          uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemmorySize();
-         TinyLogger::LogProxy::LogMessages(std::string("Engine::GameThread execution. Memory consumption : "), memoryAfterExe);
+
+         if (memoryAfterExe > 0)
+         {
+            TinyLogger::LogProxy::LogMessages(std::string("Engine::GameThread execution. Memory consumption : "), (uint64_t)memoryAfterExe);
+         }
       }
    }
 }

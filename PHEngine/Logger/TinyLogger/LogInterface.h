@@ -52,7 +52,7 @@ namespace TinyLogger
       struct ToString
       {
          template <typename U>
-         static typename std::enable_if<IsDefaultType<T>::value, std::string>::type Value(U simpleType)
+         static typename std::enable_if<IsDefaultType<typename std::decay<T>::type>::value, std::string>::type Value(U simpleType)
          {
             return std::to_string(simpleType);
          }
