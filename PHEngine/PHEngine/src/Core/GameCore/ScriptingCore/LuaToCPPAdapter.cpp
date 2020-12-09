@@ -80,33 +80,33 @@ namespace Game
       return result;
    }
 
-   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
+   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
    {
       return new PhyBoxShape(halfExtent);
    }
 
-   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsCapsuleShape(const float radius, const float height)
+   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsCapsuleShape(const float radius, const float height)
    {
       return new PhyCapsuleShape(radius, height);
    }
 
-   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
+   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
    {
       return new PhyPlaneShape(normal, d);
    }
 
-   PhyShapeBase* LuaToCPPAdapter::CreatePhysicsSphereShape(const float radius)
+   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsSphereShape(const float radius)
    {
       return new PhySphereShape(radius);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const std::string& bodyType, const float mass)
+   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass)
    {
       const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC : PhysicsBodyType::DYNAMIC;
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
+   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
    {
       return new RigidBodyController(physWorld, phyShape, bodyType, mass);
    }

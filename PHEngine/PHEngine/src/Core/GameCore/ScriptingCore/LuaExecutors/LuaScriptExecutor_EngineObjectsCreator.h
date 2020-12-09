@@ -77,19 +77,19 @@ namespace Game
       void ExecuteLuaCallback(const std::tuple<IMaterial*, float, std::string>& setFloatValueToMaterial);
 
       /*-------------------- Create physics collision sphere shape --------------*/
-      PhyShapeBase* ExecuteLuaCallback(const std::tuple<float>& value);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<float>& value);
 
       /*-------------------- Create physics collision box shape --------------*/
-      PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent);
 
       /*-------------------- Create physics collision capsule shape --------------*/
-      PhyShapeBase* ExecuteLuaCallback(const std::tuple<float, float>& capsuleData);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<float, float>& capsuleData);
 
       /*-------------------- Create physics collision plane shape --------------*/
-      PhyShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
 
       /*-------------------- Create rigid body controller--------------*/
-      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhyShapeBase*, std::string, float> descData);
+      PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*, std::string, float> descData);
 
       /*-------------------- Create dynamic character controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);

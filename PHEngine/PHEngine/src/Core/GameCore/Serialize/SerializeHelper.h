@@ -41,7 +41,7 @@ namespace Game {
 
       static std::shared_ptr<Component> CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data);
 
-      static PhyShapeBase* CreatePhysicsShape(const SerializeDataPhysicsComponent* serData);
+      static PhysicsShapeBase* CreatePhysicsShape(const SerializeDataPhysicsComponent* serData);
 
       static IMaterial* CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData);
    };

@@ -112,7 +112,10 @@ namespace Game
          if (actor->GetGameObjectName() == container.PlayerControllerData->BindedActorName)
          {
             mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
-            if (auto thirdPersonCamera = static_cast<ThirdPersonCamera*>(mScene->GetCamera()))
+
+            // stab for now!
+
+            if (auto thirdPersonCamera = std::static_pointer_cast<ThirdPersonCamera>(mScene->GetCamera("MainCamera")))
             {
                thirdPersonCamera->SetThirdPersonTarget(actor);
             }
@@ -154,21 +157,21 @@ namespace Game
       mScene->Tick_GameThread(deltaTime);
    }
 
-   ACamera* Level::GetCamera() const
+   std::shared_ptr<ACamera> Level::GetCamera() const
    {
-      return mScene->GetCamera();
+      return mScene->GetCamera("MainCamera");
    }
 
    void Level::CameraRotate()
    {
-      mScene->GetCamera()->Rotate();
+      mScene->GetCamera("MainCamera")->Rotate();
    }
 
    void Level::CameraMove()
    {
-      if (ACamera* camera = mScene->GetCamera(); camera->GetCameraType() == ACamera::CameraType::FIRST_PERSON)
+      if (auto camera = mScene->GetCamera("MainCamera"); camera->GetCameraType() == ACamera::CameraType::FIRST_PERSON)
       {
-         (static_cast<FirstPersonCamera*>(camera))->MoveCamera(0);
+         (std::static_pointer_cast<FirstPersonCamera>(camera))->MoveCamera(0);
       }
    }
 }

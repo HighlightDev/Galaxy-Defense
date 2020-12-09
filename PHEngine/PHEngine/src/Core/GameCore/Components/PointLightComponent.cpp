@@ -60,7 +60,7 @@ namespace Game
 
       if (bHasShadowMap)
       {
-         lightCompData->ShadowMapSize = m_renderData.ShadowInfo->GetAtlasResource()->GetTextureRezolution().x;
+         lightCompData->ShadowMapSize = static_cast<float>(m_renderData.ShadowInfo->GetAtlasResource()->GetTextureRezolution().x);
       }
       else
       {

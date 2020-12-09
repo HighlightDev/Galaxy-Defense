@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Shapes/PhyShapeBase.h"
+#include "Shapes/PhysicsShapeBase.h"
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
@@ -36,7 +36,7 @@ namespace EnginePhysics
 
       class PhysicsWorld* mPhysicsWorld;
 
-      PhyShapeBase* mShape;
+      PhysicsShapeBase* mShape;
 
       btMotionState* mMotionState;
 
@@ -59,7 +59,7 @@ namespace EnginePhysics
 
    public:
 
-      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
+      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const PhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
       virtual ~PhysicsDescriptor();
 
@@ -69,7 +69,7 @@ namespace EnginePhysics
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
 
-      PhyShapeBase* GetShape() const;
+      PhysicsShapeBase* GetShape() const;
 
       size_t GetId() const;
 

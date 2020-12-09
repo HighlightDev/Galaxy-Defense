@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/VisibilityManager/AVisibleBase.h"
+#include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -28,7 +29,7 @@ namespace Graphics
       };
 
       class PrimitiveSceneProxy
-         : public GameObject
+         : public SceneProxyBase
          , public AVisibleBase
       {
       protected:

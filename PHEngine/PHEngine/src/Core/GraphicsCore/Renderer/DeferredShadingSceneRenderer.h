@@ -7,6 +7,7 @@
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 
@@ -39,11 +40,11 @@ namespace Graphics
 
       public:
 
-         std::vector<std::shared_ptr<CameraSceneProxy>> CameraSceneProxies;
+         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<CameraSceneProxy>> CameraSceneProxies;
 
-         std::vector<std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
+         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
 
-         std::vector<std::shared_ptr<LightSceneProxy>> LightProxies;
+         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> LightProxies;
 
       private:
 
@@ -62,7 +63,7 @@ namespace Graphics
          // Texture renderer
          TextureRenderer m_textureRenderer;
 
-         std::function<bool(const std::shared_ptr<DirectionalLightSceneProxy>&, const std::shared_ptr<DirectionalLightSceneProxy>&)> mCompareShadowMapDescriptors;
+         std::function<bool(DirectionalLightSceneProxy*, DirectionalLightSceneProxy*)> mCompareShadowMapDescriptors;
 
          bool bProxiesDirty;
 
@@ -80,17 +81,15 @@ namespace Graphics
 
          void DebugFramePanelsPass();
 
-         void DeferredLightPass_RenderThread(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourcesProxy);
+         void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
+            const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies);
 
          void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix);
 
          void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, const glm::mat4& viewMatrix);
 
-         void DepthPass(std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies, const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies);
-
-         std::vector<std::shared_ptr<DirectionalLightSceneProxy>> RetrieveDirectionalLightProxies(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies) const;
-
-         std::vector<std::shared_ptr<PointLightSceneProxy>> RetrievePointLightProxies(const std::vector<std::shared_ptr<LightSceneProxy>>& lightSourceProxies) const;
+         void DepthPass(std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
+            std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies);
 
       public:
 

@@ -9,7 +9,7 @@ namespace Graphics
 {
    class PrimitiveVisibilityManager
    {
-      std::weak_ptr<CameraSceneProxy> mCameraProxy,
+      std::weak_ptr<CameraSceneProxy> mCameraProxy;
 
    public:
 
@@ -17,6 +17,6 @@ namespace Graphics
 
       ~PrimitiveVisibilityManager();
 
-      void DoVisibilityTest(std::vector<std::shared_ptr<AVisibleBase>> testedPrimitives);
+      void DoVisibilityTest(std::shared_ptr<CameraSceneProxy> cameraProxy, std::vector<std::shared_ptr<AVisibleBase>> testedPrimitives);
    };
 }

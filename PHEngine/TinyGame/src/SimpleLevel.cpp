@@ -108,9 +108,10 @@ namespace Labyrinth
 
       //Camera
       {
-         mScene->AddCamera(new ThirdPersonCamera("MainCamera", 50, 20, 20));
+         mScene->RegisterCamera(std::make_shared<ThirdPersonCamera>("MainCamera", mScene, 50, 20, 20));
       }
 
+      // Stab
       bool bDeser = true;
       if (bDeser)
       {

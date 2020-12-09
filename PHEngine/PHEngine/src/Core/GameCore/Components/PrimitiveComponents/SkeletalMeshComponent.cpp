@@ -89,7 +89,7 @@ namespace Game
          SrcAnimationTime = fmod(SrcAnimationTime, 100000.0f);
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[PrimitiveProxyComponentId].get());
+            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
             proxyPtr->UpdateAnimationData(bTransitionEnabled, TransitionValue, SrcAnimationTime, DstAnimationTime, SrcAnimationName, DstAnimationName);
          });
       }

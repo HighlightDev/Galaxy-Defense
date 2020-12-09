@@ -5,7 +5,7 @@
 namespace EnginePhysics
 {
 
-   struct PhyShapeBase
+   struct PhysicsShapeBase
    {
    protected:
 
@@ -13,12 +13,12 @@ namespace EnginePhysics
 
    public:
 
-      PhyShapeBase(btCollisionShape* shape)
+      PhysicsShapeBase(btCollisionShape* shape)
          : mCollisionShape(shape)
       {
       }
 
-      virtual ~PhyShapeBase()
+      virtual ~PhysicsShapeBase()
       {
          delete mCollisionShape;
       }

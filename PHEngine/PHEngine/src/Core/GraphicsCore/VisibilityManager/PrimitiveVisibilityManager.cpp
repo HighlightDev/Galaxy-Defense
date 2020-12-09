@@ -2,8 +2,8 @@
 
 namespace Graphics
 {
-   PrimitiveVisibilityManager::PrimitiveVisibilityManager(std::shared_ptr<CameraFrustum> cameraFrustum)
-      : mCameraFrustum(cameraFrustum)
+   PrimitiveVisibilityManager::PrimitiveVisibilityManager(std::shared_ptr<CameraSceneProxy> cameraProxy)
+      : mCameraProxy(cameraProxy)
    {
    }
 

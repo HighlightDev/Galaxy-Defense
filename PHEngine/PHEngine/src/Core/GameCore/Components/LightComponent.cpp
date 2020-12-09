@@ -5,8 +5,6 @@
 namespace Game
 {
 
-   size_t LightComponent::TotalLightSceneProxyId = 0;
-
    LightComponent::LightComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
       : SceneComponent(gameObjectName, translation, rotation, scale)
    {
@@ -25,9 +23,9 @@ namespace Game
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
       // Update light proxy transform
-      constexpr uint64_t functionId = Hash("LightComponent: OnUpdateLightComponentTransform_GameThread");
+      constexpr uint64_t functionId = Hash("LightComponent: UpdateLightComponentTransform_GameThread");
 
-      m_scene->OnUpdateLightComponentTransform_GameThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+      m_scene->UpdateLightComponentTransform_GameThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
    }
 
 }

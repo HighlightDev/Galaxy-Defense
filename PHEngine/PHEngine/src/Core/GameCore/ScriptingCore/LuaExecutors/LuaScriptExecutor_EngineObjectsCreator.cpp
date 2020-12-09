@@ -48,9 +48,9 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
 
-      LuaRegisterCallback<LuaExecutor_t, PhyShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
 
-      LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(PhyShapeBase*, std::string, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(PhysicsShapeBase*, std::string, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
       LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
 
       LuaRegisterCallback<LuaExecutor_t, StateMachine*(Actor*, std::string)>::Register(mLuaInstance, "_CreateStateMachine");
@@ -105,7 +105,7 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         ACamera* camera = scene->GetCamera();
+         auto camera = scene->GetCamera("MainCamera");
          assert(camera && ACamera::CameraType::THIRD_PERSON == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
@@ -113,7 +113,7 @@ namespace Game
          assert(actorIt != scene->GetActors().end());
 
          scene->SetPlayerController(std::make_shared<PlayerController>((*actorIt)));
-         static_cast<ThirdPersonCamera*>(camera)->SetThirdPersonTarget(*actorIt);
+         std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTarget(*actorIt);
       }
    }
 
@@ -230,31 +230,31 @@ namespace Game
    }
 
    /*-------------------- Create physics collision sphere shape --------------*/
-   PhyShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float>& value)
+   PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float>& value)
    {
       return LuaToCPPAdapter::CreatePhysicsSphereShape(std::get<0>(value));
    }
 
    /*-------------------- Create physics collision box shape --------------*/
-   PhyShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent)
+   PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent)
    {
       return LuaToCPPAdapter::CreatePhysicsBoxShape(std::get<0>(halfExtent));
    }
 
    /*-------------------- Create physics collision capsule shape --------------*/
-   PhyShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float, float>& capsuleData)
+   PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float, float>& capsuleData)
    {
       return LuaToCPPAdapter::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
    }
 
    /*-------------------- Create physics collision plane shape --------------*/
-   PhyShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
+   PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
    {
       return LuaToCPPAdapter::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
    }
 
    /*-------------------- Create rigid body controller--------------*/
-   PhysicsDescriptor* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhyShapeBase*, std::string, float> descData)
+   PhysicsDescriptor* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*, std::string, float> descData)
    {
       PhysicsDescriptor* descriptor = nullptr;
       

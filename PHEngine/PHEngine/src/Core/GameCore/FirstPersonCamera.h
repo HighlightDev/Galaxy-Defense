@@ -4,7 +4,7 @@
 
 namespace Game
 {
-
+   class Scene;
 	class FirstPersonCamera : public ACamera
 	{
 	private:
@@ -14,7 +14,7 @@ namespace Game
 
 	public:
 
-		FirstPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos);
+		FirstPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos);
 
 		~FirstPersonCamera();
 

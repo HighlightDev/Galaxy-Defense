@@ -27,7 +27,7 @@ namespace EnginePhysics
       }
    };
 
-   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
+   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
       : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier)
       , mLastRayCastObjectResult(nullptr)
    {

@@ -5,8 +5,6 @@
 namespace Game
 {
 
-   size_t PrimitiveComponent::TotalPrimitiveSceneProxyIndex = 0;
-
 	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
 		: SceneComponent(gameObjectName, translation, rotation, scale)
 	{
@@ -26,15 +24,15 @@ namespace Game
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
       // Update primitives proxy transform
-      constexpr uint64_t functionId = Hash("PrimitiveComponent:OnUpdatePrimitiveComponentTransform_GameThread");
+      constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
-      m_scene->OnUpdatePrimitiveComponentTransform_GameThread(PrimitiveProxyComponentId, GetObjectId(), functionId, m_relativeMatrix);
+      m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
    }
 
    void PrimitiveComponent::OnVisibilityChanged()
    {
       constexpr uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
 
-      m_scene->OnUpdatePrimitiveComponentVisibility_GameThread(PrimitiveProxyComponentId, GetObjectId(), functionId, mIsVisible);
+      m_scene->UpdatePrimitiveComponentVisibility_GameThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
    }
 }

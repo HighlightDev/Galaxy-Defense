@@ -27,7 +27,7 @@ namespace Game {
 
       std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
 
-      PhyShapeBase* physShape = component->GetDescriptor()->GetShape();
+      PhysicsShapeBase* physShape = component->GetDescriptor()->GetShape();
       int32_t shapeType = physShape->GetCollisionShape()->getShapeType();
 
       if (SPHERE_SHAPE_PROXYTYPE == shapeType)
@@ -279,8 +279,8 @@ namespace Game {
       return result;
    }
 
-   PhyShapeBase* SerializeHelper::CreatePhysicsShape(const SerializeDataPhysicsComponent* serData) {
-      PhyShapeBase* result = nullptr;
+   PhysicsShapeBase* SerializeHelper::CreatePhysicsShape(const SerializeDataPhysicsComponent* serData) {
+      PhysicsShapeBase* result = nullptr;
 
       switch (serData->PhysicsShape->GetShapeProxyType())
       {

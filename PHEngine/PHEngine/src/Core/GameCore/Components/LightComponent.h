@@ -18,8 +18,6 @@ namespace Game
 
    public:
 
-      static size_t TotalLightSceneProxyId;
-
       size_t LightSceneProxyId = 0;
 
       virtual ComponentType GetComponentType() const override;

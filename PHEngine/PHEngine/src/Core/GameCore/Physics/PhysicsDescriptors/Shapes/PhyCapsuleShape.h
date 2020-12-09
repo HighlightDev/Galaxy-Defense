@@ -1,15 +1,15 @@
 #pragma once
 
-#include "PhyShapeBase.h"
+#include "PhysicsShapeBase.h"
 
 namespace EnginePhysics
 {
 
    struct PhyCapsuleShape
-      : public PhyShapeBase
+      : public PhysicsShapeBase
    {
       PhyCapsuleShape(const float radius, const float height)
-         : PhyShapeBase(new btCapsuleShape(radius, height))
+         : PhysicsShapeBase(new btCapsuleShape(radius, height))
       {
       }
 

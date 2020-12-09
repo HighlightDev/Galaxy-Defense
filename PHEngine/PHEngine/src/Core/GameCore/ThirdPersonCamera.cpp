@@ -2,14 +2,15 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Scene.h"
 
 #include <algorithm>
 
 namespace Game
 {
 
-   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
-      : ACamera(cameraName, initPitchDeg, initYawDeg)
+   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene ,const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
+      : ACamera(cameraName, scene, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
@@ -39,7 +40,12 @@ namespace Game
 
    void ThirdPersonCamera::Tick(const float DeltaTime)
    {
-      float clampedDeltaTime = std::max(DeltaTime, 0.03f);
+      ACamera::Tick(DeltaTime);
+
+      constexpr auto max = [](const auto& left, const auto& right) -> auto{return left > right ? left : right};
+      constexpr auto min = [](const auto& left, const auto& right) -> auto{return left < right ? left : right};
+
+      float clampedDeltaTime = max(DeltaTime, 0.03f);
 
       if (bTransformationDirty)
       {
@@ -48,7 +54,7 @@ namespace Game
 
       if (m_bThirdPersonTargetTransformationDirty)
       {
-         m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
+         m_lerpTimeElapsed = min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
 
          glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
          m_actualTargetVector = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
@@ -115,7 +121,7 @@ namespace Game
       return m_thirdPersonTarget;
    }
 
-   std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::GetSceneProxy() const
+   std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::CreateSceneProxy() const
    {
       return std::make_shared<CameraSceneProxy>(this);
    }

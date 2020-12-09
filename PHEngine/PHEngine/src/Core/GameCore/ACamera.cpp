@@ -1,6 +1,7 @@
 #include "ACamera.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/GlobalInputController.h"
+#include "Core/GameCore/Scene.h"
 #include <iostream>
 
 using namespace EngineMath;
@@ -8,8 +9,9 @@ using namespace EngineMath;
 namespace Game
 {
 
-   ACamera::ACamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg)
+   ACamera::ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg)
       : GameObject(cameraName)
+      , mScene(scene)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
       , m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
@@ -38,6 +40,15 @@ namespace Game
 
    void ACamera::Tick(const float DeltaTime)
    {
+      static constexpr uint64_t functionId = Hash("ACamera: Update camera proxy data.");
+
+      if (bTransformationDirty)
+      {
+         if (auto sceneSp = mScene.lock())
+         {
+            sceneSp->UpdateCameraSceneProxyData_GameThread(SceneProxyId, GetObjectId(), functionId, this);
+         }
+      }
    }
 
    void ACamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)

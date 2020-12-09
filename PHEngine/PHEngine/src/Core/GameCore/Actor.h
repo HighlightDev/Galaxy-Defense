@@ -127,10 +127,7 @@ namespace Game
 
 		// If components from list is scene component -> check if it has dity transformation, and if it does -> update it
 		void UpdateComponentsTransform();
-
-      // When primitive component is removed, all primitive components which are alive and have index greater than removed component's index should do proxy index offset (-1)
-      void RemoveComponentIndexOffset(size_t removedProxyIndex);
-
+     
       template <typename ComponentT>
       std::shared_ptr<ComponentT> GetComponent()
       {

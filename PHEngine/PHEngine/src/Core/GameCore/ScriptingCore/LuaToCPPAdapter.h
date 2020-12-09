@@ -7,7 +7,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyShapeBase.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhysicsShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 
 using namespace Graphics;
@@ -35,13 +35,13 @@ namespace Game
       static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
       static ComponentData* CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material);
 
-      static PhyShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
-      static PhyShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);
-      static PhyShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const float d);
-      static PhyShapeBase* CreatePhysicsSphereShape(const float radius);
+      static PhysicsShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
+      static PhysicsShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);
+      static PhysicsShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const float d);
+      static PhysicsShapeBase* CreatePhysicsSphereShape(const float radius);
 
-      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const std::string& bodyType, const float mass);
-      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhyShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass);
+      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass);
+      static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass);
       static PhysicsDescriptor* CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
          float mass, float stepHeight);
    };

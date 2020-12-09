@@ -385,6 +385,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\VisibilityManager\AVisibleBase.h" />
     <ClInclude Include="src\Core\GraphicsCore\VisibilityManager\PrimitiveVisibilityManager.h" />
@@ -856,6 +857,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\VisibilityManager\AVisibleBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\VisibilityManager\PrimitiveVisibilityManager.cpp" />

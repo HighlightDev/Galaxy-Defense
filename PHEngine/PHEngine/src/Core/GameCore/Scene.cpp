@@ -35,6 +35,18 @@ namespace Game
       }
    }
 
+   void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
+   {
+      mActiveCameras.emplace_back(camera);
+      const std::string& goName = camera->GetGameObjectName();
+      assert(GameObjects.count(goName) == 0);
+      GameObjects[goName] = camera.get();
+
+      auto cameraProxyPtr = camera->CreateSceneProxy();
+      camera->SceneProxyId = cameraProxyPtr->GetSceneProxyId();
+      CameraSceneProxyAdded(cameraProxyPtr);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+   }
+
    std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
    {
       auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto& cameraPtr) { return cameraPtr->GetGameObjectName() == cameraName; });
@@ -103,31 +115,15 @@ namespace Game
       if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
       {
          PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(component.get());
-         const size_t removeProxyIndex = componentPtr->PrimitiveProxyComponentId;
-      
-         // Remove proxy index offset
-         for (auto& actor : mActors)
-         {
-            actor->RemoveComponentIndexOffset(removeProxyIndex);
-         }
-
-         PrimitiveComponent::TotalPrimitiveSceneProxyIndex--;
-
-            // delete light proxy from render thread
+         const size_t removeProxyIndex = componentPtr->SceneProxyId;
+    
+         // delete light proxy from render thread
          PrimitiveSceneProxyDeleted(removeProxyIndex);
       }
       if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
       {
          LightComponent* componentPtr = static_cast<LightComponent*>(component.get());
          const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
-
-         // Remove proxy index offset
-         for (auto& actor : mActors)
-         {
-            actor->RemoveComponentIndexOffset(removeProxyIndex);
-         }
-
-         LightComponent::TotalLightSceneProxyId--;
 
          // delete light proxy from render thread
          LightSceneProxyDeleted(removeProxyIndex);
@@ -169,7 +165,7 @@ namespace Game
       ENQUEUE_GAME_THREAD_JOB(m_interThreadMgr, policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
-   void Scene::OnUpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
+   void Scene::UpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -184,7 +180,7 @@ namespace Game
       }
    }
 
-   void Scene::OnUpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
+   void Scene::UpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -199,7 +195,20 @@ namespace Game
       }
    }
 
-   void Scene::OnUpdateLightComponentTransform_GameThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
+   void Scene::UpdateCameraSceneProxyData_GameThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera* camera)
+   {
+      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            Job(creatorObjectId, functionId, [=]()
+         {
+            sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateEyeVector(camera->GetEyeVector());
+            sceneRenderer->CameraSceneProxies[sceneProxyId]->UpdateViewMatrix(camera->GetViewMatrix());
+         }));
+      }
+   }
+
+   void Scene::UpdateLightComponentTransform_GameThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -226,7 +235,7 @@ namespace Game
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()
             {
-               sceneRenderer->SceneProxies.erase(sceneRenderer->SceneProxies.begin() + primitiveSceneProxyIndex);
+               sceneRenderer->SceneProxies.erase(primitiveSceneProxyIndex);
                sceneRenderer->SetProxiesAreDirty(true);
             }));
          }
@@ -260,7 +269,7 @@ namespace Game
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()
             {
-               sceneRenderer->LightProxies.erase(sceneRenderer->LightProxies.begin() + lightSceneProxyIndex);
+               sceneRenderer->LightProxies.erase(lightSceneProxyIndex);
                sceneRenderer->SetLightProxiesAreDirty(true);
             }));
          }
@@ -292,7 +301,7 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
-            sceneRenderer->CameraSceneProxies.push_back(cameraSceneProxy);
+            sceneRenderer->CameraSceneProxies[cameraSceneProxy->GetSceneProxyId()] = cameraSceneProxy;
          }));
       }
    }
@@ -307,7 +316,7 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
-            sceneRenderer->SceneProxies.push_back(primitiveSceneProxy);
+            sceneRenderer->SceneProxies[primitiveSceneProxyIndex] = primitiveSceneProxy;
             sceneRenderer->SetProxiesAreDirty(true);
          }));
       }
@@ -323,7 +332,7 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
-            sceneRenderer->LightProxies.push_back(lightSceneProxy);
+            sceneRenderer->LightProxies[primitiveSceneProxyIndex] = lightSceneProxy;
             sceneRenderer->SetProxiesAreDirty(true);
          }));
       }

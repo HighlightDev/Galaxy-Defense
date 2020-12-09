@@ -26,10 +26,7 @@ namespace Game
 
 	public:
 
-      static size_t TotalPrimitiveSceneProxyIndex;
-
-      // Id of scene proxy, this value may change
-      size_t PrimitiveProxyComponentId = 0;
+      size_t SceneProxyId = 0;
 
 		PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
 

@@ -15,6 +15,7 @@ using namespace Graphics;
 
 namespace Game
 {
+   class Scene;
 
    class ACamera
       : public GameObject
@@ -30,6 +31,8 @@ namespace Game
       };
 
    private:
+
+      std::weak_ptr<Scene> mScene;
 
       float m_rotateSensetivity;
 
@@ -56,9 +59,11 @@ namespace Game
 
    public:
 
+      size_t SceneProxyId = 0;
+
       float CameraCollisionSphereRadius = 8.0f;
 
-      ACamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg);
+      ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg);
 
       virtual ~ACamera();
 
@@ -70,7 +75,7 @@ namespace Game
 
       virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
 
-      virtual std::shared_ptr<CameraSceneProxy> GetSceneProxy() const = 0;
+      virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const = 0;
 
       std::string GetCameraName() const;
 

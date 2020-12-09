@@ -7,6 +7,8 @@ using namespace Event;
 
 namespace Game
 {
+   class Scene;
+
    class ThirdPersonCamera
       : public ACamera
       , public PlayerMovedEvent
@@ -28,7 +30,7 @@ namespace Game
 
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera(const std::string& cameraName, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
+      ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
 
       virtual ~ThirdPersonCamera();
 
@@ -52,7 +54,7 @@ namespace Game
 
       virtual glm::vec3 GetTargetVector() const override;
 
-      virtual std::shared_ptr<CameraSceneProxy> GetSceneProxy() const override;
+      virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
 
       void SetDistanceFromTargetToCamera(float distanceFromTargetToCamera);
 

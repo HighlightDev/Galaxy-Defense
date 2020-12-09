@@ -4,6 +4,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
+#include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 using namespace Graphics;
 
@@ -20,6 +21,7 @@ namespace Graphics
       };
 
       class LightSceneProxy
+         : public SceneProxyBase
       {
       protected:
 

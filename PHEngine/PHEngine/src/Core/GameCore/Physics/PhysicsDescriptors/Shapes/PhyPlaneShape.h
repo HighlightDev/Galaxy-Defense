@@ -2,16 +2,16 @@
 
 #include <glm/vec3.hpp>
 
-#include "PhyShapeBase.h"
+#include "PhysicsShapeBase.h"
 
 namespace EnginePhysics
 {
 
    struct PhyPlaneShape
-      : public PhyShapeBase
+      : public PhysicsShapeBase
    {
       PhyPlaneShape(const glm::vec3& normal, const float d)
-         : PhyShapeBase(new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), d))
+         : PhysicsShapeBase(new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), d))
       {
       }
    };

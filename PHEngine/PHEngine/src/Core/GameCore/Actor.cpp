@@ -198,24 +198,6 @@ namespace Game
 		}
 	}
 
-   void Actor::RemoveComponentIndexOffset(size_t removedProxyIndex)
-   {
-      for (auto& childActor : m_children)
-      {
-         RemoveComponentIndexOffset(removedProxyIndex);
-      }
-
-      for (auto& component : m_allComponents)
-      {
-         if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
-         {
-            PrimitiveComponent* compPtr = static_cast<PrimitiveComponent*>(component.get());
-            if (compPtr->PrimitiveProxyComponentId > removedProxyIndex)
-               --compPtr->PrimitiveProxyComponentId;
-         }
-      }
-   }
-
    void Actor::ChangeState(const std::string& stateName)
    {
       if (mStateMachine)

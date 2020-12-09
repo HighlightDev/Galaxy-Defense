@@ -54,6 +54,8 @@ namespace Game
          return m_interThreadMgr;
       }
 
+      void RegisterCamera(std::shared_ptr<ACamera> camera);
+
       GameObject* GetGameObjectByName(const std::string& name) const;
 
       std::shared_ptr<PlayerController> GetPlayerController() const;
@@ -68,11 +70,13 @@ namespace Game
 
       void Tick_GameThread(float delta);
 
-      void OnUpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix);
+      void UpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix);
 
-      void OnUpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility);
+      void UpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility);
 
-      void OnUpdateLightComponentTransform_GameThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix);
+      void UpdateLightComponentTransform_GameThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix);
+
+      void UpdateCameraSceneProxyData_GameThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera* camera);
 
       void RemoveComponent_GameThread(std::shared_ptr<Component> component);
 
@@ -100,40 +104,28 @@ namespace Game
 
       ~Scene();
 
-      template <typename CameraType, typename... CameraTypeArgs>
-      std::enable_if<std::is_base_of<ACamera, CameraType>::value> RegisterCamera(CameraTypeArgs&&... args)
-      {
-         mActiveCameras.emplace_back<CameraType>(std::forward<CameraTypeArgs>(args)...);
-         std::shared_ptr<ACamera> createdCamera = mActiveCameras.back();
-         const std::string& goName = createdCamera->GetGameObjectName();
-         assert(GameObjects.count(goName) == 0);
-         GameObjects[goName] = camera;
-
-         auto cameraProxyPtr = createdCamera->CreateSceneProxy();
-         CameraSceneProxyAdded(cameraProxyPtr);
-      }
-
       template <ComponentMetaType metaType, typename ComponentT>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
          auto component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData);
          ComponentType type = component->GetComponentType();
-         if (type & ComponentType::SCENE_COMPONENT != 0)
+         if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
          {
             SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
             sceneComponentPtr->SetScene(this);
-            if (type & ComponentType::PRIMITIVE_COMPONENT != 0)
+            if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
             {
                PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
-               componentPtr->PrimitiveProxyComponentId = PrimitiveComponent::TotalPrimitiveSceneProxyIndex++;
+               
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
-               PrimitiveSceneProxyAdded(componentPtr->PrimitiveProxyComponentId, sceneProxyShared);
+               componentPtr->SceneProxyId = sceneProxyShared->GetSceneProxyId();
+               PrimitiveSceneProxyAdded(componentPtr->SceneProxyId, sceneProxyShared);
             }
-            else if (type & ComponentType::LIGHT_COMPONENT!= 0)
+            else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
             {
                LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
-               componentPtr->LightSceneProxyId = LightComponent::TotalLightSceneProxyId++;
                auto lightProxyShared = componentPtr->CreateSceneProxy();
+               componentPtr->LightSceneProxyId = lightProxyShared->GetSceneProxyId();
                LightSceneProxyAdded(componentPtr->LightSceneProxyId, lightProxyShared);
             }
          }

@@ -8,7 +8,7 @@ namespace Graphics
 
       PrimitiveSceneProxy::PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> materialShader,
          std::shared_ptr<IMaterial> materialInstance)
-         : GameObject("PrimitiveSceneProxy")
+         : SceneProxyBase()
          , AVisibleBase()
          , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)

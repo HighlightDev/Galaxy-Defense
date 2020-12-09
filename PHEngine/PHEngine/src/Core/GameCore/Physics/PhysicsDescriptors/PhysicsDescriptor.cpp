@@ -20,7 +20,7 @@ namespace EnginePhysics
 
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld* pPhysicsWorld, PhyShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
+   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
       : mBodyType(bodyType)
       , mPhysicsWorld(pPhysicsWorld)
       , mCurrentId(PhysicsDescriptor::mTotalIds++)
@@ -64,7 +64,7 @@ namespace EnginePhysics
       return mMotionModifier;
    }
 
-   PhyShapeBase* PhysicsDescriptor::GetShape() const {
+   PhysicsShapeBase* PhysicsDescriptor::GetShape() const {
       return mShape;
    }
 
