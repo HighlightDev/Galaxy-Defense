@@ -68,7 +68,6 @@ namespace Game
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const;
 
-      virtual BoundingBox GetBoundingBox() const override;
    };
 
 }

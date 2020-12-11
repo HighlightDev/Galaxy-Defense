@@ -2,11 +2,13 @@
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/IndexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
+#include "Core/GameCore/BoundingBoxBuilder.h"
 
 #include <gl/glew.h>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
+using namespace Game;
 
 namespace Resources
 {
@@ -111,6 +113,9 @@ namespace Resources
                });
          }
 
+         BoundingBoxBuilder builder;
+         BoundingBox boundingBox = builder.Build(vertices);
+
          VertexBufferObjectBase* vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
 
          vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
@@ -125,7 +130,7 @@ namespace Resources
 
          vao.BindBuffersToVao();
 
-         resultSkin = std::make_shared<Skin>(vao);
+         resultSkin = std::make_shared<Skin>(vao, boundingBox);
       }
 
       return resultSkin;

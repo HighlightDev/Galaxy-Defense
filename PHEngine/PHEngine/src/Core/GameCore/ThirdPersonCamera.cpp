@@ -34,8 +34,6 @@ namespace Game
    {
       ACamera::UpdateRotationMatrix(deltaX, deltaY);
       Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, this);
-
-      TinyLogger::LogProxy::LogMessages(std::string("Matrix updated."), GetViewMatrix());
    }
 
    void ThirdPersonCamera::Tick(const float DeltaTime)

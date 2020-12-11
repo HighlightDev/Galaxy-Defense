@@ -1,6 +1,8 @@
 #pragma once
 
 #include <glm/vec3.hpp>
+#include <glm/mat4x4.hpp>
+#include <array>
 
 namespace Game
 {
@@ -25,5 +27,9 @@ namespace Game
       glm::vec3 GetOrigin() const;
 
       glm::vec3 GetExtent() const;
+
+      std::array<glm::vec3, 8> GetBoundPositions() const;
+
+      BoundingBox GetMeTransformed(const glm::mat4& transformMatrix) const;
    };
 }

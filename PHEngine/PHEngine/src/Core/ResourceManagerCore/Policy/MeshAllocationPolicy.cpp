@@ -11,12 +11,14 @@
 #include "Core/CommonCore/Assertion.h"
 
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
+#include "Core/GameCore/BoundingBoxBuilder.h"
 
 #include <gl/glew.h>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
 using namespace MeshLoader::Assimp;
+using namespace Game;
 using namespace IO;
 
 namespace Resources
@@ -45,12 +47,12 @@ namespace Resources
 
 			IndexBufferObject* ibo = nullptr;
 
-			VertexBufferObjectBase* vertexVBO, *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
+			VertexBufferObjectBase *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
 
 			if (meshAttributes->VertexIndices.size())
 				ibo = new IndexBufferObject(meshAttributes->VertexIndices);
 
-			vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
+         VertexBufferObject<float, 3, GL_FLOAT>* vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Store);
 
 			if (meshAttributes->Normals.size())
 				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
@@ -72,13 +74,17 @@ namespace Resources
 			vao.AddIndexBuffer(ibo);
 			vao.BindBuffersToVao();
 
+         BoundingBoxBuilder builder;
+         BoundingBox boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
+         vertexVBO->InvalidateData();
+
 			if (meshInfo->MeshAnimatedData)
 			{
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData));
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData), boundingBox);
 			}
 			else
 			{
-				resultSkin = std::make_shared<Skin>(vao);
+				resultSkin = std::make_shared<Skin>(vao, boundingBox);
 			}
 
 		}

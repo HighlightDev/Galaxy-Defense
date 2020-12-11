@@ -34,8 +34,6 @@ namespace Game
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      virtual BoundingBox GetBoundingBox() const override;
-
       inline const StaticMeshRenderData& GetRenderData() const {
 
          return m_renderData;

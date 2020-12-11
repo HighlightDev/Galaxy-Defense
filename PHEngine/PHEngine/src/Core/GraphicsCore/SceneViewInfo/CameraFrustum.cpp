@@ -32,4 +32,19 @@ namespace Graphics
       for (int i = 0; i < 6; ++i)
          mPlanes[i] = glm::normalize(mPlanes[i]);
    }
+
+   bool CameraFrustum::IsIntersectionWithPointVec3(const glm::vec3& point) const
+   {
+      return true;
+   }
+
+   bool CameraFrustum::IsIntersectionWithSphere(const glm::vec3& origin, const float radius) const
+   {
+      return true;
+   }
+
+   bool CameraFrustum::IsIntersectionWithBoundingBox(const BoundingBox& boundingBox, const bool doSphereTest) const
+   {
+      return true;
+   }
 }

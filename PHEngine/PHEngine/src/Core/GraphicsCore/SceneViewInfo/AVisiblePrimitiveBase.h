@@ -17,10 +17,9 @@ namespace Graphics
 
       AVisiblePrimitiveBase();
 
-      const BoundingBox& GetBoundingBox() const;
+      BoundingBox GetTransformedBoundingBox() const;
 
-      virtual const BoundingBox& GetTransformedBoundingBox() const = 0;
-
+      void SetTransformedBoundingBox(const BoundingBox& boundingBox);
    };
 
 }

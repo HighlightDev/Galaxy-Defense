@@ -24,11 +24,6 @@ namespace Game
 
    }
 
-   BoundingBox BillboardComponent::GetBoundingBox() const
-   {
-      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
-   }
-
    void BillboardComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
       auto& actorData = GetSerializeDataActor(dataContainer);

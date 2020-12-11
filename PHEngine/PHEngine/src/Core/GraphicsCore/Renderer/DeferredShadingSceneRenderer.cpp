@@ -42,9 +42,6 @@ namespace Graphics
       {
          const auto& folderManager = FolderManager::GetInstance();
 
-         const float aspectRatio = 16.0f / 9.0f;
-         ProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(60), aspectRatio, 1, 1000);
-
          ShaderParams shaderParams3("DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl", "", "", "", "");
          ShaderParams shaderParams4("DepthSkeletal Shader", folderManager->GetShadersPath() + "basicShadowSkeletalVS.glsl", folderManager->GetShadersPath() + "basicShadowFS.glsl", "", "", "", "");
          ShaderParams shaderParams5("DepthNonSkeletal Shader", folderManager->GetShadersPath() + "basicShadowNonSkeletalVS.glsl", folderManager->GetShadersPath() + "basicShadowFS.glsl", "", "", "", "");
@@ -93,7 +90,7 @@ namespace Graphics
          }));
       }
 
-      void DeferredShadingSceneRenderer::DepthPass(std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
+      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
          std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
          std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies)
       {
@@ -118,7 +115,7 @@ namespace Graphics
                   m_depthShaderNonSkeletal->ExecuteShader();
                   for (auto& proxy : shadowNonSkeletalMeshProxies)
                   {
-                     if (proxy->IsVisible())
+                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                      {
                         const auto& worldMatrix = proxy->GetMatrix();
                         const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
@@ -137,7 +134,7 @@ namespace Graphics
                   m_depthShaderSkeletal->ExecuteShader();
                   for (auto& proxy : shadowSkeletalMeshProxies)
                   {
-                     if (proxy->IsVisible())
+                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                      {
                         SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
 
@@ -174,7 +171,7 @@ namespace Graphics
                   m_depthCubemapShaderNonSkeletal->ExecuteShader();
                   for (auto& proxy : shadowNonSkeletalMeshProxies)
                   {
-                     if (proxy->IsVisible())
+                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                      {
                         const auto& worldMatrix = proxy->GetMatrix();
                         const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
@@ -194,7 +191,7 @@ namespace Graphics
                   m_depthCubemapShaderSkeletal->ExecuteShader();
                   for (auto& proxy : shadowSkeletalMeshProxies)
                   {
-                     if (proxy->IsVisible())
+                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                      {
                         SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
 
@@ -218,19 +215,19 @@ namespace Graphics
       }
 
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies,
-         std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix)
+         std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, std::shared_ptr<SceneView> sceneView)
       {
+         auto cameraProxy = sceneView->GetCameraProxy();
+
          // Deferred shading collect info
          m_gbuffer->BindDeferredGBuffer();
-
-         const glm::mat4& projectionMatrix = ProjectionMatrix;
 
          if (skeletalMeshProxies.size() > 0)
          {
             for (auto& proxy : skeletalMeshProxies)
             {
-               if (proxy->IsVisible())
-                  proxy->Render(viewMatrix, projectionMatrix);
+               if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                  proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
 
@@ -238,8 +235,8 @@ namespace Graphics
          {
             for (auto& proxy : nonSkeletalMeshProxies)
             {
-               if (proxy->IsVisible())
-                  proxy->Render(viewMatrix, projectionMatrix);
+               if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                  proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
 
@@ -308,29 +305,29 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, const glm::mat4& viewMatrix)
+      void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies,
+         std::shared_ptr<SceneView> sceneView)
       { 
          // Resolve depth buffer from gBuffer to default frame buffer
 
          int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
          int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
-         glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gbuffer->GetFramebufferDesc());
-         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-         glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         auto cameraProxy = sceneView->GetCameraProxy();
+
+         m_gbuffer->CopyFramebufferData(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_DEPTH_BUFFER_BIT);
 
          glEnable(GL_BLEND);
          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          for (auto& proxy : forwardedProxies)
          {
-            if (proxy->IsVisible())
-               proxy->Render(viewMatrix, ProjectionMatrix); // TODO: remove from scene projection matrix and camera to render thread (I think)
+            if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+               proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
          }
          glDisable(GL_BLEND);
 
 
-         DebugRenderPhysics(viewMatrix, ProjectionMatrix);
+         DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
       }
 
 #if DEBUG
@@ -435,23 +432,24 @@ namespace Graphics
             }
             /* Prepare proxies block */
 
-            for (auto cameraProxyPair : SceneViews)
+            for (auto sceneViewPair : SceneViews)
             {
-               auto cameraProxy = cameraProxyPair.second->GetCameraProxy();
+               auto sceneView = sceneViewPair.second;
+               auto cameraProxy = sceneView->GetCameraProxy();
+
+               sceneView->DoVisibilityTest();
 
                glEnable(GL_DEPTH_TEST);
 
-               DepthPass(nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
+               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
 
-               const glm::mat4& viewMatrix = cameraProxy->GetViewMatrix();
-
-               DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, viewMatrix);
+               DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
 
                DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies);
 
                if (forwardRenderingProxies.size())
                {
-                  ForwardBasePass_RenderThread(forwardRenderingProxies, viewMatrix);
+                  ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);
                }
 
                DebugFramePanelsPass();

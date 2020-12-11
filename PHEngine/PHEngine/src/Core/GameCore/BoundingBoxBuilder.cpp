@@ -20,11 +20,11 @@ namespace Game
       glm::vec3 max = glm::vec3(meshPositions[0], meshPositions[1], meshPositions[2]);
       glm::vec3 min = max;
 
-      for (size_t i = 1; i < countVertices; ++i)
+      for (size_t i = 3; i < countVertices; i += 3)
       {
-         const float vertex_x = meshPositions[0];
-         const float vertex_y = meshPositions[1];
-         const float vertex_z = meshPositions[2];
+         const float vertex_x = meshPositions[i + 0];
+         const float vertex_y = meshPositions[i + 1];
+         const float vertex_z = meshPositions[i + 2];
 
          max.x = std::max(max.x, vertex_x);
          max.y = std::max(max.y, vertex_y);
@@ -35,6 +35,9 @@ namespace Game
          min.z = std::min(min.z, vertex_z);
       }
 
-      return BoundingBox(glm::vec3(0), max - min);
+      glm::vec3 extent = (max - min) / 2.0f;
+      glm::vec3 origin = min + extent;
+
+      return BoundingBox(origin, extent);
    }
 }

@@ -15,7 +15,7 @@ namespace Game
 
       ~BoundingBoxBuilder();
 
-      static BoundingBox Build(const std::vector<float> meshPositions);
+      BoundingBox Build(const std::vector<float> meshPositions);
    };
 
 }

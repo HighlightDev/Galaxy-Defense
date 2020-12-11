@@ -45,10 +45,5 @@ namespace Graphics
          return PrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
-      const BoundingBox& PrimitiveSceneProxy::GetTransformedBoundingBox() const
-      {
-         return mBoundingBox;
-      }
-
    }
 }

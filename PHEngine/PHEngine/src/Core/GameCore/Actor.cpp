@@ -210,9 +210,7 @@ namespace Game
 
       // Update physics
       if (m_physicsComponent)
-      {
          m_physicsComponent->Tick(deltaTime);
-      }
 
 		m_rootComponent->Tick(deltaTime);
 

@@ -100,6 +100,11 @@ namespace Graphics
 				}
 			}
 
+         void InvalidateData()
+         {
+            m_data.clear();
+         }
+
 			virtual size_t GetCountOfIndices() const override
 			{
 				return m_countOfIndices;

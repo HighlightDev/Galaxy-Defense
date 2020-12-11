@@ -180,7 +180,8 @@ namespace Game
       }
    }
 
-   void Scene::UpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
+   void Scene::UpdatePrimitiveComponentTransform_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+      const uint64_t functionId, const glm::mat4& newRelativeMatrix, const BoundingBox& newTransformedBoundingBox)
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -189,7 +190,9 @@ namespace Game
             ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
-               sceneRenderer->SceneProxies[primitiveSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
+               auto& sceneProxy = sceneRenderer->SceneProxies[primitiveSceneProxyIndex];
+               sceneProxy->SetTransformationMatrix(newRelativeMatrix);
+               sceneProxy->SetTransformedBoundingBox(newTransformedBoundingBox);
             }));
          }
       }
@@ -305,7 +308,7 @@ namespace Game
          ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
-            sceneRenderer->SceneViews.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy));
+            sceneRenderer->SceneViews.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->SceneProxies));
          }));
       }
    }

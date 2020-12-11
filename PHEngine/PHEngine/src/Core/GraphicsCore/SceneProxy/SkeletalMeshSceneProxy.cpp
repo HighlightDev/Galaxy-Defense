@@ -76,7 +76,6 @@ namespace Graphics
       {
          if (bIsDirty)
          {
-            TinyLogger::LogProxy::LogMessages(std::string("Update skinning matrices. Src animation time: "), mAnimationPlayer->GetSrcAnimationTime());
             mAnimationPlayer->UpdateAnimationMatrices();
             bIsDirty = false;
          }

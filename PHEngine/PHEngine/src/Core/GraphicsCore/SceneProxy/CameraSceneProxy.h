@@ -21,6 +21,8 @@ namespace Graphics
 
       glm::mat4 mViewMatrix;
 
+      glm::mat4 mProjectionMatrix;
+
    public:
 
       CameraSceneProxy(const class ACamera* camera);
@@ -29,9 +31,19 @@ namespace Graphics
 
       glm::mat4 GetViewMatrix() const;
 
+      glm::mat4 GetProjectionMatrix() const;
+
+      const CameraFrustum& GetCameraFrustum() const;
+
       void UpdateViewMatrix(const glm::mat4& viewMatrix);
 
       void UpdateEyeVector(const glm::vec3& eyeVector);
+
+      void UpdateProjectionMatrix(const glm::mat4& projectionMatrix);
+
+   private:
+
+      void RebuildCameraFrustum();
 
    };
 

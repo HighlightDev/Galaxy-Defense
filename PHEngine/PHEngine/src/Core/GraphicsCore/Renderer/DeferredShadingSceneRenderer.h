@@ -51,7 +51,7 @@ namespace Graphics
 
          InterThreadCommunicationMgr& m_interThreadMgr;
 
-         /* Scene to render */
+         /* G-buffers */
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          // Shaders
@@ -74,9 +74,6 @@ namespace Graphics
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
-      public:
-
-         glm::mat4 ProjectionMatrix;
 
       private:
 
@@ -85,11 +82,12 @@ namespace Graphics
          void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
             const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies);
 
-         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, const glm::mat4& viewMatrix);
+         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies,
+            std::shared_ptr<SceneView> sceneView);
 
-         void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, const glm::mat4& viewMatrix);
+         void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, std::shared_ptr<SceneView> sceneView);
 
-         void DepthPass(std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
+         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
             std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies);
 
       public:

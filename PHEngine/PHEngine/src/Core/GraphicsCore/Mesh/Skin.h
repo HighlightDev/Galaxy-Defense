@@ -4,8 +4,10 @@
 #include <utility>
 
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
+#include "Core/GameCore/BoundingBox.h"
 
 using namespace Graphics::OpenGL;
+using namespace Game;
 
 namespace Graphics
 {
@@ -17,16 +19,17 @@ namespace Graphics
 
          VertexArrayObject m_buffer;
 
+         BoundingBox mBoundingBox;
+
       public:
 
-         Skin(const VertexArrayObject& vao);
+         Skin(const VertexArrayObject& vao, const BoundingBox& boundingBox);
 
          virtual ~Skin();
 
-         inline VertexArrayObject* GetBuffer() {
+         VertexArrayObject* GetBuffer();
 
-            return &m_buffer;
-         }
+         BoundingBox GetBoundingBox() const;
 
          virtual void CleanUp();
       };

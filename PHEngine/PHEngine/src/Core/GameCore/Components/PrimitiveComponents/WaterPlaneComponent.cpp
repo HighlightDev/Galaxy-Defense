@@ -153,9 +153,4 @@ namespace Game
       }
    }
 
-   BoundingBox WaterPlaneComponent::GetBoundingBox() const
-   {
-      return BoundingBox(glm::vec3(), glm::vec3()); // stub todo
-   }
-
 }

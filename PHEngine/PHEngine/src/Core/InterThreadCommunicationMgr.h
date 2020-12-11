@@ -21,10 +21,10 @@ namespace Thread
 {
 
 #define ENQUEUE_RENDER_THREAD_JOB(InterThreadMgrInstance, Policy, JOB) \
-InterThreadMgrInstance.PushRenderThreadJob(Policy, JOB)
+InterThreadMgrInstance.EmplaceRenderThreadJob(Policy, std::move(JOB))
 
 #define ENQUEUE_GAME_THREAD_JOB(InterThreadMgrInstance, Policy, JOB) \
-InterThreadMgrInstance.PushGameThreadJob(Policy, JOB)
+InterThreadMgrInstance.EmplaceGameThreadJob(Policy, std::move(JOB))
 
 #define SPIN_RENDER_THREAD_JOBS(InterThreadMgrInstance) \
 InterThreadMgrInstance.SpinRenderThreadJobs();
@@ -60,9 +60,9 @@ InterThreadMgrInstance.SpinGameThreadJobs();
 
       ~InterThreadCommunicationMgr();
 
-      void PushGameThreadJob(const EnqueueJobPolicy, const Job& job);
+      void EmplaceGameThreadJob(const EnqueueJobPolicy, Job&& job);
 
-      void PushRenderThreadJob(const EnqueueJobPolicy, const Job& job);
+      void EmplaceRenderThreadJob(const EnqueueJobPolicy, Job&& job);
 
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();

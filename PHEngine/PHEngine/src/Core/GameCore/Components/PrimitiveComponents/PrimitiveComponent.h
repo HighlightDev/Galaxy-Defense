@@ -24,6 +24,8 @@ namespace Game
 
 		using Base = SceneComponent;
 
+      BoundingBox mBoundingBox;
+
 	public:
 
       size_t SceneProxyId = 0;
@@ -40,7 +42,9 @@ namespace Game
 
       virtual void OnVisibilityChanged();
 
-      virtual BoundingBox GetBoundingBox() const = 0;
+      BoundingBox GetBoundingBox() const;
+
+      BoundingBox GetTransformedBoundingBox() const;
 
 	};
 

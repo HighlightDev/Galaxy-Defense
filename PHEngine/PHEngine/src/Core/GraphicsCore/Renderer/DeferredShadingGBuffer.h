@@ -84,6 +84,15 @@ public:
       return m_gBufferFBO;
    }
 
+   void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
+      size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit)
+   {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gBufferFBO);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+      glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   }
+
 private:
 
    void InitGBuffer()

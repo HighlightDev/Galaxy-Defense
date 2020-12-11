@@ -1,8 +1,10 @@
 #include "CameraSceneProxy.h"
 
 #include "Core/GameCore/ACamera.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 using namespace Game;
+using namespace EngineMath;
 
 namespace Graphics
 {
@@ -11,16 +13,23 @@ namespace Graphics
       , mEyeVector()
       , mViewMatrix()
    {
+      mProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000); // todo: temp for now
    }
 
    void CameraSceneProxy::UpdateViewMatrix(const glm::mat4& viewMatrix)
    {
       mViewMatrix = viewMatrix;
+      RebuildCameraFrustum();
    }
 
    void CameraSceneProxy::UpdateEyeVector(const glm::vec3& eyeVector)
    {
       mEyeVector = eyeVector;
+   }
+
+   void CameraSceneProxy::UpdateProjectionMatrix(const glm::mat4& projectionMatrix) {
+      mProjectionMatrix = projectionMatrix;
+      RebuildCameraFrustum();
    }
 
    glm::mat4 CameraSceneProxy::GetViewMatrix() const
@@ -31,5 +40,19 @@ namespace Graphics
    glm::vec3 CameraSceneProxy::GetEyeVector() const
    {
       return mEyeVector;
+   }
+
+   glm::mat4 CameraSceneProxy::GetProjectionMatrix() const {
+      return mProjectionMatrix;
+   }
+
+   const CameraFrustum& CameraSceneProxy::GetCameraFrustum() const
+   {
+      return mCameraFrustum;
+   }
+
+   void CameraSceneProxy::RebuildCameraFrustum()
+   {
+      mCameraFrustum.ConstructFromViewProjectionMatrix(mViewMatrix, mProjectionMatrix);
    }
 }

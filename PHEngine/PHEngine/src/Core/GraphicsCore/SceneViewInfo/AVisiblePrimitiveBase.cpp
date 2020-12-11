@@ -8,8 +8,14 @@ namespace Graphics
    {
    }
 
-   const BoundingBox& AVisiblePrimitiveBase::GetBoundingBox() const
+   BoundingBox AVisiblePrimitiveBase::GetTransformedBoundingBox() const
    {
       return mBoundingBox;
    }
+
+   void AVisiblePrimitiveBase::SetTransformedBoundingBox(const BoundingBox& boundingBox) {
+
+      mBoundingBox = boundingBox;
+   }
+
 }

@@ -26,7 +26,7 @@ namespace Game
       // Update primitives proxy transform
       constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
-      m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+      m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
    }
 
    void PrimitiveComponent::OnVisibilityChanged()
@@ -34,5 +34,15 @@ namespace Game
       constexpr uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
 
       m_scene->UpdatePrimitiveComponentVisibility_GameThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
+   }
+
+   BoundingBox PrimitiveComponent::GetBoundingBox() const 
+   {
+      return mBoundingBox;
+   }
+
+   BoundingBox PrimitiveComponent::GetTransformedBoundingBox() const
+   {
+      return mBoundingBox.GetMeTransformed(m_relativeMatrix);
    }
 }

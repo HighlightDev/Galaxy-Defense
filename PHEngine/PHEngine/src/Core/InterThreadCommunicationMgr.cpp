@@ -40,13 +40,13 @@ namespace Thread
       return mScene;
    }
 
-   void InterThreadCommunicationMgr::PushGameThreadJob(const EnqueueJobPolicy policy, const Job& job)
+   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushGameThreadJob(policy, job);
    }
 
-   void InterThreadCommunicationMgr::PushRenderThreadJob(const EnqueueJobPolicy policy, const Job& job)
+   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
       std::lock_guard<std::mutex> lock(m_renderThreadMutex);
       ProcessPushRenderThreadJob(policy, job);
