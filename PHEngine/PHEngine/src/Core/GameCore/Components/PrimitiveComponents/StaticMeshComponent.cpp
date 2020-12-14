@@ -11,7 +11,7 @@ namespace Game
 {
 
    StaticMeshComponent::StaticMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const StaticMeshRenderData& renderData)
-      : PrimitiveComponent(gameObjectName, std::move(translation), std::move(rotation), std::move(scale))
+      : PrimitiveComponent(gameObjectName, std::move(translation), std::move(rotation), std::move(scale), renderData.m_skin->GetBoundingBox())
       , m_renderData(renderData)
    {
 

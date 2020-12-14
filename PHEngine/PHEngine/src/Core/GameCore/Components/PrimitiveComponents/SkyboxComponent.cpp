@@ -11,7 +11,7 @@ namespace Game
 	using namespace EngineUtility;
 
 	SkyboxComponent::SkyboxComponent(const std::string& gameObjectName, const glm::vec3& scale, const SkyboxRenderData& renderData)
-		: PrimitiveComponent(gameObjectName, glm::vec3(), glm::vec3(), scale)
+		: PrimitiveComponent(gameObjectName, glm::vec3(), glm::vec3(), scale, renderData.m_skin->GetBoundingBox())
 		, m_rotateSpeed(2.0f)
       , m_renderData(renderData)
 	{

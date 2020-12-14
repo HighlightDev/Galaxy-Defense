@@ -5,7 +5,7 @@ namespace Game
 {
 
    BillboardComponent::BillboardComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const BillboardRenderData& renderData)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale)
+      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
       , m_renderData(renderData)
    {
    }

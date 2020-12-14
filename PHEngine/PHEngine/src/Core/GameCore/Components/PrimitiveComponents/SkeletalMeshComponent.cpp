@@ -16,7 +16,7 @@ namespace Game
 {
 
    SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptName, const SkeletalMeshRenderData& renderData)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale)
+      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
       , m_renderData(renderData)
       , mLuaScriptAbsPath(EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(LuaScriptName)))
       , mLuaInstance(std::make_unique<LuaWrapper>())

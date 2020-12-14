@@ -1,4 +1,5 @@
 #include "CameraFrustum.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 namespace Graphics
 {
@@ -30,7 +31,11 @@ namespace Graphics
 
       // normalize
       for (int i = 0; i < 6; ++i)
-         mPlanes[i] = glm::normalize(mPlanes[i]);
+      {
+         const glm::vec3& normal = glm::normalize(glm::vec3(mPlanes[i]));
+         mPlanes[i] = glm::vec4(normal, mPlanes[i].w);
+      }
+         
    }
 
    bool CameraFrustum::IsIntersectionWithPointVec3(const glm::vec3& point) const
@@ -45,6 +50,26 @@ namespace Graphics
 
    bool CameraFrustum::IsIntersectionWithBoundingBox(const BoundingBox& boundingBox, const bool doSphereTest) const
    {
-      return true;
+      const auto& boundPoints = boundingBox.GetBoundPositions();
+
+      for (const auto& plane : mPlanes)
+      {
+         bool insideFrustum = true;
+         for (const auto& point : boundPoints)
+         {
+            float distance = EngineMath::GetDistancePlaneToPointVec3(point, plane);
+
+            if (distance < 0.0f)
+            {
+               insideFrustum = false;
+               break;
+            }
+         }
+
+         if (insideFrustum)
+            return true;
+      }
+
+      return false;
    }
 }

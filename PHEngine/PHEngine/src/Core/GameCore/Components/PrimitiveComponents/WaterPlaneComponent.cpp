@@ -12,7 +12,7 @@ namespace Game
 {
 
    WaterPlaneComponent::WaterPlaneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, WaterPlaneRenderData&& renderData, WaterQualityFlag waterQuality)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale)
+      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
       , m_waveSpeed(0.4f)
       , m_moveFactor(0.0f)
       , m_renderData(std::forward<WaterPlaneRenderData>(renderData))

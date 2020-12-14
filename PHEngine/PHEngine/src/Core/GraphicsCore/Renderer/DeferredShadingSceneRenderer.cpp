@@ -366,6 +366,49 @@ namespace Graphics
                glVertex3f(vert2.x, vert2.y, vert2.z);
             }
             glEnd();
+
+
+            for (auto& proxy : SceneProxies)
+            {
+               const auto bb = proxy.second->GetTransformedBoundingBox();
+               const auto& positions = bb.GetBoundPositions();
+
+               std::vector<glm::vec3> points = 
+               { 
+                  positions[0], positions[1], positions[2],
+                  positions[2], positions[0], positions[3],
+
+                  positions[7], positions[6], positions[3],
+                  positions[3], positions[7], positions[4],
+
+                  positions[3], positions[2], positions[6],
+                  positions[6], positions[3], positions[7],
+
+                  positions[0], positions[1], positions[5],
+                  positions[5], positions[0], positions[4],
+
+                  positions[4], positions[0], positions[3],
+                  positions[3], positions[4], positions[7],
+
+                  positions[3], positions[1], positions[2],
+                  positions[2], positions[3], positions[6],
+               };
+
+
+               glBegin(GL_TRIANGLES);
+               for (size_t i = 0; i < points.size() / 3; ++i)
+               {
+                  glm::vec3 vertex1 = points[i];
+                  glm::vec3 vertex2 = points[i + 1];
+                  glm::vec3 vertex3 = points[i+ 2];
+
+                  glColor3f(0, 1, 0);
+                  glVertex3f(vertex1.x, vertex1.y, vertex1.z);
+                  glVertex3f(vertex2.x, vertex2.y, vertex2.z);
+                  glVertex3f(vertex3.x, vertex3.y, vertex3.z);
+               }
+               glEnd();
+            }
          }
       }
 #endif

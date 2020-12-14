@@ -5,8 +5,9 @@
 namespace Game
 {
 
-	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
+	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox)
 		: SceneComponent(gameObjectName, translation, rotation, scale)
+      , mBoundingBox(boundingBox)
 	{
 	}
 

@@ -43,15 +43,25 @@ namespace Game
 
    std::array<glm::vec3, 8> BoundingBox::GetBoundPositions() const
    {
+      /* the sequence is next:
+      1 (-,+,-)
+      2 (-,-,-)
+      3 (+,-,-)
+      4 (+,+,-)
+      5 (-,+,+)
+      6 (-,-,+)
+      7 (+,-,+)
+      8 (+,+,+)
+      */
       return {
-        mOrigin + mExtent,
-        mOrigin - mExtent,
-        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z + mExtent.z),
         glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
-        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
-        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
+        mOrigin - mExtent,
         glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z - mExtent.z),
+        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
+        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z + mExtent.z),
+        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
         glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
+        mOrigin + mExtent,
       };
    }
 

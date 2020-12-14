@@ -1,5 +1,7 @@
 #include "EngineMath.h"
 
+#include <glm/geometric.hpp>
+
 namespace EngineMath
 {
    bool CompareFloats(const float X, const float Y)
@@ -28,6 +30,13 @@ namespace EngineMath
       resultPosition.z = ((position2.z - position1.z) / x_delta) * x_zero_offset + position1.z;
 
       return resultPosition;
+   }
+
+   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane)
+   {
+      const glm::vec3& normal = glm::vec3(plane);
+      const float distance = glm::dot(point, normal) + plane.w;
+      return distance;
    }
 
 }
