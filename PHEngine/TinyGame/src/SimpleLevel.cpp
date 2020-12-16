@@ -108,10 +108,10 @@ namespace Labyrinth
 
       //Camera
       {
-         mScene->RegisterCamera(std::make_shared<ThirdPersonCamera>("MainCamera", mScene, 50, 20, 20));
+         mScene->RegisterCamera(std::make_shared<ThirdPersonCamera>("MainCamera", mScene, 50.0f, 20.0f, 20.0f));
       }
 
-      // Stab
+      // Stub
       bool bDeser = true;
       if (bDeser)
       {

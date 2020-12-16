@@ -67,6 +67,12 @@ namespace Game
          OnVisibilityChanged();
       }
    }
+
+   void SceneComponent::UpdateBoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale)
+   {
+      mBoundingBoxTransform.Translation = translation + mTransform->Translation;
+      mBoundingBoxTransform.Scale = scale * mTransform->Scale;
+   }
  
 	void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
 	{
@@ -163,6 +169,11 @@ namespace Game
    glm::vec3 SceneComponent::GetScale() const
    {
       return mTransform->Scale;
+   }
+
+   BoundingBoxTransform SceneComponent::GetBoundingBoxTransform() const 
+   {
+      return mBoundingBoxTransform;
    }
 
    glm::mat4 SceneComponent::GetRelativeMatrix() const

@@ -28,6 +28,8 @@ namespace Game
 
 		glm::mat4 m_relativeMatrix;
 
+      BoundingBoxTransform mBoundingBoxTransform;
+
       class Scene* m_scene;
 
    public:
@@ -48,6 +50,8 @@ namespace Game
 
 		/* This method works every time when this component has dirty transform */
 		virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix);
+
+      void UpdateBoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
 
       void SetIsVisible(bool isVisible);
 
@@ -78,6 +82,8 @@ namespace Game
       glm::vec3 GetRotationEuler() const;
 
       glm::vec3 GetScale() const;
+
+      BoundingBoxTransform GetBoundingBoxTransform() const;
 
       glm::mat4 GetRelativeMatrix() const;
 

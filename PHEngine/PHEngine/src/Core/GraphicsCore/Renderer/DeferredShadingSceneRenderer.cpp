@@ -367,48 +367,57 @@ namespace Graphics
             }
             glEnd();
 
-
+#if 0
             for (auto& proxy : SceneProxies)
             {
-               const auto bb = proxy.second->GetTransformedBoundingBox();
-               const auto& positions = bb.GetBoundPositions();
-
-               std::vector<glm::vec3> points = 
-               { 
-                  positions[0], positions[1], positions[2],
-                  positions[2], positions[0], positions[3],
-
-                  positions[7], positions[6], positions[3],
-                  positions[3], positions[7], positions[4],
-
-                  positions[3], positions[2], positions[6],
-                  positions[6], positions[3], positions[7],
-
-                  positions[0], positions[1], positions[5],
-                  positions[5], positions[0], positions[4],
-
-                  positions[4], positions[0], positions[3],
-                  positions[3], positions[4], positions[7],
-
-                  positions[3], positions[1], positions[2],
-                  positions[2], positions[3], positions[6],
-               };
-
-
-               glBegin(GL_TRIANGLES);
-               for (size_t i = 0; i < points.size() / 3; ++i)
+               if (proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::STATIC_MESH_PROXY)
                {
-                  glm::vec3 vertex1 = points[i];
-                  glm::vec3 vertex2 = points[i + 1];
-                  glm::vec3 vertex3 = points[i+ 2];
+                  const auto bb = proxy.second->GetTransformedBoundingBox();
+                  const auto& positions = bb.GetBoundPositions();
 
-                  glColor3f(0, 1, 0);
-                  glVertex3f(vertex1.x, vertex1.y, vertex1.z);
-                  glVertex3f(vertex2.x, vertex2.y, vertex2.z);
-                  glVertex3f(vertex3.x, vertex3.y, vertex3.z);
+                  std::vector<glm::vec3> points =
+                  {
+                     // Front
+                     positions[0], positions[1], positions[2],
+                     positions[2], positions[0], positions[3],
+
+                     // Back
+                     positions[4], positions[5], positions[6],
+                     positions[6], positions[7], positions[4],
+
+                     // Right
+                     positions[3], positions[2], positions[6],
+                     positions[6], positions[7], positions[3],
+
+                     // Left
+                     positions[0], positions[1], positions[5],
+                     positions[5], positions[0], positions[4],
+
+                     // Top
+                     positions[4], positions[0], positions[3],
+                     positions[3], positions[7], positions[4],
+
+                     // Bottom
+                     positions[5], positions[1], positions[2],
+                     positions[2], positions[6], positions[5],
+                  };
+
+                  glBegin(GL_TRIANGLES);
+                  for (size_t i = 0; i < points.size(); i += 3)
+                  {
+                     glm::vec3 vertex1 = points[i];
+                     glm::vec3 vertex2 = points[i + 1];
+                     glm::vec3 vertex3 = points[i + 2];
+
+                     glColor3f(0.6f, 0.6f, 0.6f);
+                     glVertex3f(vertex1.x, vertex1.y, vertex1.z);
+                     glVertex3f(vertex2.x, vertex2.y, vertex2.z);
+                     glVertex3f(vertex3.x, vertex3.y, vertex3.z);
+                  }
+                  glEnd();
                }
-               glEnd();
             }
+#endif
          }
       }
 #endif

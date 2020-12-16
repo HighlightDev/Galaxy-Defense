@@ -14,7 +14,7 @@ namespace Graphics
    class CameraFrustum
    {
       std::array<glm::vec4, 6> mPlanes;
-
+      glm::mat4 viewProjectionMatrix;
    public:
 
       CameraFrustum();

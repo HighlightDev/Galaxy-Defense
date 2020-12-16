@@ -35,5 +35,10 @@ namespace Graphics
          return true;
       }
 
+      PrimitiveProxyType StaticMeshSceneProxy::GetPrimitiveProxyType() const
+      {
+         return PrimitiveProxyType::STATIC_MESH_PROXY;
+      }
+
    }
 }

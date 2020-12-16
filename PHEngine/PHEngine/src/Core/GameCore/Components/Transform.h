@@ -6,12 +6,41 @@
 namespace Game
 {
 
-   struct Transform
+   struct TranslationTransform
    {
       glm::vec3 Translation;
-      glm::quat Rotator;
+
+      TranslationTransform(const glm::vec3& translation);
+   };
+
+   struct ScaleTransform
+   {
       glm::vec3 Scale;
 
+      ScaleTransform(const glm::vec3& scale);
+   };
+
+   struct RotatorTransform
+   {
+      glm::quat Rotator;
+
+      RotatorTransform(const glm::quat& rotator);
+   };
+
+   struct BoundingBoxTransform
+      : public TranslationTransform
+      , public ScaleTransform
+   {
+      BoundingBoxTransform();
+
+      BoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
+   };
+
+   struct Transform 
+      : public TranslationTransform
+      , public RotatorTransform
+      , public ScaleTransform
+   {
       Transform();
 
       Transform(const Transform& transform);

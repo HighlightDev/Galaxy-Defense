@@ -1,19 +1,22 @@
 #include "BoundingBox.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <vector>
 
 namespace Game
 {
 
    BoundingBox::BoundingBox()
       : mOrigin()
-      , mExtent()
+      , mHalfExtent()
+      , mRadius(0)
    {
    }
 
-   BoundingBox::BoundingBox(const glm::vec3& origin, const glm::vec3& extent)
+   BoundingBox::BoundingBox(const glm::vec3& origin, const glm::vec3& halfExtent)
       : mOrigin(origin)
-      , mExtent(extent)
+      , mHalfExtent(halfExtent)
+      , mRadius(glm::length(halfExtent))
    {
    }
 
@@ -28,7 +31,7 @@ namespace Game
 
    glm::vec3 BoundingBox::GetTransformedExtent(const glm::vec3& scale) const
    {
-      return mExtent * scale;
+      return mHalfExtent * scale;
    }
 
    glm::vec3 BoundingBox::GetOrigin() const
@@ -36,9 +39,14 @@ namespace Game
       return mOrigin;
    }
 
-   glm::vec3 BoundingBox::GetExtent() const
+   glm::vec3 BoundingBox::GetHalfExtent() const
    {
-      return mExtent;
+      return mHalfExtent;
+   }
+
+   float BoundingBox::GetRadius() const 
+   {
+      return mRadius;
    }
 
    std::array<glm::vec3, 8> BoundingBox::GetBoundPositions() const
@@ -54,26 +62,33 @@ namespace Game
       8 (+,+,+)
       */
       return {
-        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
-        mOrigin - mExtent,
-        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z - mExtent.z),
-        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y + mExtent.y, mOrigin.z - mExtent.z),
-        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y + mExtent.y, mOrigin.z + mExtent.z),
-        glm::vec3(mOrigin.x - mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
-        glm::vec3(mOrigin.x + mExtent.x, mOrigin.y - mExtent.y, mOrigin.z + mExtent.z),
-        mOrigin + mExtent,
+        glm::vec3(mOrigin.x - mHalfExtent.x, mOrigin.y + mHalfExtent.y, mOrigin.z - mHalfExtent.z),
+        mOrigin - mHalfExtent,
+        glm::vec3(mOrigin.x + mHalfExtent.x, mOrigin.y - mHalfExtent.y, mOrigin.z - mHalfExtent.z),
+        glm::vec3(mOrigin.x + mHalfExtent.x, mOrigin.y + mHalfExtent.y, mOrigin.z - mHalfExtent.z),
+        glm::vec3(mOrigin.x - mHalfExtent.x, mOrigin.y + mHalfExtent.y, mOrigin.z + mHalfExtent.z),
+        glm::vec3(mOrigin.x - mHalfExtent.x, mOrigin.y - mHalfExtent.y, mOrigin.z + mHalfExtent.z),
+        glm::vec3(mOrigin.x + mHalfExtent.x, mOrigin.y - mHalfExtent.y, mOrigin.z + mHalfExtent.z),
+        mOrigin + mHalfExtent,
       };
+   }
+
+   BoundingBox BoundingBox::GetMeTransformed(const glm::vec3& translation, const glm::vec3& scale) const
+   {
+      return BoundingBox(mOrigin + translation, mHalfExtent * scale);
    }
 
    BoundingBox BoundingBox::GetMeTransformed(const glm::mat4& transformMatrix) const
    {
       std::array<glm::vec3, 8> bbPoints = GetBoundPositions();
 
-      glm::vec3 maxPoint = *bbPoints.begin(), minPoint = *bbPoints.begin();
-
+      glm::vec4 startPoint = transformMatrix * glm::vec4(*bbPoints.begin(), 1.0f);
+      glm::vec3 maxPoint = startPoint;
+      glm::vec3 minPoint = maxPoint;
+      
       for (auto pointIt = std::next(bbPoints.begin(), 1); pointIt != bbPoints.end(); ++pointIt)
       {
-         const glm::vec3& result = (glm::vec4(*pointIt, 1.0f)) * transformMatrix;
+         const glm::vec4& result = transformMatrix * glm::vec4(*pointIt, 1.0f);
 
          maxPoint.x = glm::max(result.x, maxPoint.x);
          maxPoint.y = glm::max(result.y, maxPoint.y);
@@ -84,9 +99,9 @@ namespace Game
          minPoint.z = glm::min(result.z, minPoint.z);
       }
 
-      const glm::vec3& extent = glm::abs(maxPoint - minPoint) / 2.0f;
-      const glm::vec3& origin = minPoint + extent;
+      const glm::vec3& halfExtent = glm::abs(maxPoint - minPoint) / 2.0f;
+      const glm::vec3& origin = minPoint + halfExtent;
 
-      return BoundingBox(origin, extent);
+      return BoundingBox(origin, halfExtent);
    }
 }

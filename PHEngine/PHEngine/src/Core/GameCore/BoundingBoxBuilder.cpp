@@ -35,9 +35,9 @@ namespace Game
          min.z = std::min(min.z, vertex_z);
       }
 
-      glm::vec3 extent = (max - min) / 2.0f;
-      glm::vec3 origin = min + extent;
+      glm::vec3 halfExtent = (max - min) / 2.0f;
+      glm::vec3 origin = min + halfExtent;
 
-      return BoundingBox(origin, extent);
+      return BoundingBox(origin, halfExtent);
    }
 }

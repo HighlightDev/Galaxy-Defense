@@ -10,13 +10,15 @@ namespace Game
    {
       glm::vec3 mOrigin;
 
-      glm::vec3 mExtent;
+      glm::vec3 mHalfExtent;
+
+      float mRadius;
 
    public:
 
       BoundingBox();
 
-      BoundingBox(const glm::vec3& origin, const glm::vec3& extent);
+      BoundingBox(const glm::vec3& origin, const glm::vec3& halfExtent);
 
       ~BoundingBox();
 
@@ -26,10 +28,14 @@ namespace Game
 
       glm::vec3 GetOrigin() const;
 
-      glm::vec3 GetExtent() const;
+      glm::vec3 GetHalfExtent() const;
+
+      float GetRadius() const;
 
       std::array<glm::vec3, 8> GetBoundPositions() const;
 
       BoundingBox GetMeTransformed(const glm::mat4& transformMatrix) const;
+
+      BoundingBox GetMeTransformed(const glm::vec3& translation, const glm::vec3& scale) const;
    };
 }
