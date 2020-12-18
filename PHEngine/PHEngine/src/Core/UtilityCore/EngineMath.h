@@ -32,6 +32,8 @@ namespace EngineMath
 
    glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3& position1, const glm::vec3& position2);
 
-   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane);
+   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane, float );
+
+   void TestAABBPlane(const glm::vec3& origin, const glm::vec3& extent, const glm::vec4& plane, float& outDistanceOriginToPlane, float& outAbsExtentOnNormalProjected);
 
 }

@@ -58,6 +58,8 @@ namespace Graphics
 
          virtual PrimitiveProxyType GetPrimitiveProxyType() const;
 
+         virtual bool IsFrustumCullTestNeeded() const override;
+
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 
          virtual bool IsDeferred() const = 0;

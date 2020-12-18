@@ -20,6 +20,9 @@ namespace Graphics
       BoundingBox GetTransformedBoundingBox() const;
 
       void SetTransformedBoundingBox(const BoundingBox& boundingBox);
+
+      // Method returns false when no frustum call is needed for primitive
+      virtual bool IsFrustumCullTestNeeded() const = 0;
    };
 
 }

@@ -40,4 +40,31 @@ namespace Game
 
       return BoundingBox(origin, halfExtent);
    }
+
+   BoundingBox BoundingBoxBuilder::GetTransformedBoundingBox(const BoundingBox& localSpaceBb, const glm::mat4& transformMatrix)
+   {
+      std::array<glm::vec3, 8> bbPoints = localSpaceBb.GetBoundPositions();
+
+      glm::vec4 startPoint = transformMatrix * glm::vec4(*bbPoints.begin(), 1.0f);
+      glm::vec3 maxPoint = startPoint;
+      glm::vec3 minPoint = maxPoint;
+
+      for (auto pointIt = std::next(bbPoints.begin(), 1); pointIt != bbPoints.end(); ++pointIt)
+      {
+         const glm::vec4& result = transformMatrix * glm::vec4(*pointIt, 1.0f);
+
+         maxPoint.x = glm::max(result.x, maxPoint.x);
+         maxPoint.y = glm::max(result.y, maxPoint.y);
+         maxPoint.z = glm::max(result.z, maxPoint.z);
+
+         minPoint.x = glm::min(result.x, minPoint.x);
+         minPoint.y = glm::min(result.y, minPoint.y);
+         minPoint.z = glm::min(result.z, minPoint.z);
+      }
+
+      const glm::vec3& halfExtent = glm::abs(maxPoint - minPoint) / 2.0f;
+      const glm::vec3& origin = minPoint + halfExtent;
+
+      return BoundingBox(origin, halfExtent);
+   }
 }

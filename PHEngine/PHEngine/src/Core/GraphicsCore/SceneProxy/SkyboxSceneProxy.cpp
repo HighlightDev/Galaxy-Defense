@@ -50,8 +50,13 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      bool SkyboxSceneProxy::IsDeferred() const {
+      bool SkyboxSceneProxy::IsFrustumCullTestNeeded() const
+      {
+         return false;
+      }
 
+      bool SkyboxSceneProxy::IsDeferred() const 
+      {
          return false;
       }
    }

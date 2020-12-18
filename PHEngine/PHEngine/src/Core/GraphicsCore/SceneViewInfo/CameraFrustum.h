@@ -14,7 +14,7 @@ namespace Graphics
    class CameraFrustum
    {
       std::array<glm::vec4, 6> mPlanes;
-      glm::mat4 viewProjectionMatrix;
+
    public:
 
       CameraFrustum();
@@ -25,9 +25,9 @@ namespace Graphics
 
       bool IsIntersectionWithPointVec3(const glm::vec3& point) const;
 
-      bool IsIntersectionWithSphere(const glm::vec3& origin, const float radius) const;
+      bool IsIntersectionWithBox(const glm::vec3& origin, const glm::vec3& extent) const;
 
-      bool IsIntersectionWithBoundingBox(const BoundingBox& boundingBox, const bool doSphereTest = false) const;
+      bool CollidesWithBoundingBox(const BoundingBox& boundingBox) const;
    };
 
 }

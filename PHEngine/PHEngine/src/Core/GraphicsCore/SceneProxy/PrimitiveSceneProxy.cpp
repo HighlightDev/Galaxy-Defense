@@ -45,5 +45,10 @@ namespace Graphics
          return PrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
+      bool PrimitiveSceneProxy::IsFrustumCullTestNeeded() const
+      {
+         return true;
+      }
+
    }
 }

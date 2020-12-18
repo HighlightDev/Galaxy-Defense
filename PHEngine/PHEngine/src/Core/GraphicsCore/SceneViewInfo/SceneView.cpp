@@ -16,19 +16,31 @@ namespace Graphics
 
    void SceneView::DoVisibilityTest()
    {
-      size_t count = 0;
+      static size_t count = 0;
+      size_t currentCounter = 0;
       for (const auto& primitiveProxyPair : mPrimitiveProxies)
       {
          const size_t primitiveIndex = primitiveProxyPair.first;
          auto proxy = primitiveProxyPair.second;
 
-         const auto& boundingBox = proxy->GetTransformedBoundingBox();
-         mVisibilityMap[primitiveIndex] = mCameraProxy->GetCameraFrustum().IsIntersectionWithBoundingBox(boundingBox, true);
+         bool bProxyVisible = true;
 
-         if (!mVisibilityMap.at(primitiveIndex))
-            count++;
+         if (proxy->IsFrustumCullTestNeeded())
+         {
+             bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
+         }
+
+         mVisibilityMap[primitiveIndex] = bProxyVisible;
+
+         if (!bProxyVisible)
+            currentCounter++;
       }
-      std::cout << "Frustum culled: " << count << std::endl;
+
+      if (currentCounter != count)
+      {
+         std::cout << "Frustum culled: " << currentCounter << std::endl;
+         count = currentCounter;
+      }
    }
 
    std::shared_ptr<CameraSceneProxy> SceneView::GetCameraProxy() const

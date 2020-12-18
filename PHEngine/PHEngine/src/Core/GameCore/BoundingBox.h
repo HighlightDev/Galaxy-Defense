@@ -12,8 +12,6 @@ namespace Game
 
       glm::vec3 mHalfExtent;
 
-      float mRadius;
-
    public:
 
       BoundingBox();
@@ -22,20 +20,10 @@ namespace Game
 
       ~BoundingBox();
 
-      glm::vec3 GetTransformedOrigin(const glm::vec3& translation) const;
-
-      glm::vec3 GetTransformedExtent(const glm::vec3& scale) const;
-
       glm::vec3 GetOrigin() const;
 
       glm::vec3 GetHalfExtent() const;
 
-      float GetRadius() const;
-
       std::array<glm::vec3, 8> GetBoundPositions() const;
-
-      BoundingBox GetMeTransformed(const glm::mat4& transformMatrix) const;
-
-      BoundingBox GetMeTransformed(const glm::vec3& translation, const glm::vec3& scale) const;
    };
 }

@@ -26,6 +26,8 @@ namespace Game
 
       BoundingBox mBoundingBox;
 
+      GenericObjectProperty<bool> mIsVisible;
+
 	public:
 
       size_t SceneProxyId = 0;
@@ -33,6 +35,10 @@ namespace Game
 		PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox);
 
 		virtual ~PrimitiveComponent();
+
+      void SetIsVisible(bool isVisible);
+
+      bool IsVisible() const;
 
       virtual ComponentType GetComponentType() const override;
 

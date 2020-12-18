@@ -38,6 +38,8 @@ namespace Graphics
 
          virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
 
+         virtual bool IsFrustumCullTestNeeded() const override;
+
          virtual bool IsDeferred() const;
       };
 

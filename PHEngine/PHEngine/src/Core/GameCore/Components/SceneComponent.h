@@ -10,25 +10,17 @@ namespace Game
 	class SceneComponent 
       : public Component
 	{
-   public:
+      using Base = Component;
 
-      using wrapped_bool = VariableWrapper<bool>;
-      
    protected:
 
-		using Base = Component;
-
       bool bTransformationDirty;
-
-      GenericObjectProperty<bool> mIsVisible;
 
       std::shared_ptr<Transform> mTransform;
 
       glm::vec3 m_additionalRotationEuler; // TODO: move to quat
 
 		glm::mat4 m_relativeMatrix;
-
-      BoundingBoxTransform mBoundingBoxTransform;
 
       class Scene* m_scene;
 
@@ -50,14 +42,6 @@ namespace Game
 
 		/* This method works every time when this component has dirty transform */
 		virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix);
-
-      void UpdateBoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
-
-      void SetIsVisible(bool isVisible);
-
-      bool IsVisible() const;
-
-      virtual void OnVisibilityChanged();
 
       void SetScene(class Scene* scene);
 
@@ -82,8 +66,6 @@ namespace Game
       glm::vec3 GetRotationEuler() const;
 
       glm::vec3 GetScale() const;
-
-      BoundingBoxTransform GetBoundingBoxTransform() const;
 
       glm::mat4 GetRelativeMatrix() const;
 

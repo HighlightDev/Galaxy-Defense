@@ -32,11 +32,18 @@ namespace EngineMath
       return resultPosition;
    }
 
-   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane)
+   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane, float w)
    {
       const glm::vec3& normal = glm::vec3(plane);
-      const float distance = glm::dot(point, normal) + plane.w;
+      const float distance = glm::dot(point, normal) + w;
       return distance;
    }
 
+   void TestAABBPlane(const glm::vec3& origin, const glm::vec3& extent, const glm::vec4& plane, float& outDistanceOriginToPlane, float& outAbsExtentOnNormalProjected) 
+   {
+      const glm::vec3& planeNormal = glm::vec3(plane);
+      const glm::vec3& absNormal = glm::abs(planeNormal);
+      outAbsExtentOnNormalProjected = glm::abs(glm::dot(extent, absNormal));
+      outDistanceOriginToPlane = glm::dot(planeNormal, origin) + plane.w;
+   }
 }

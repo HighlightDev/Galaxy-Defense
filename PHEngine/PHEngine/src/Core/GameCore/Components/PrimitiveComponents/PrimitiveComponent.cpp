@@ -1,6 +1,7 @@
 #include "PrimitiveComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/BoundingBoxBuilder.h"
 
 namespace Game
 {
@@ -8,7 +9,11 @@ namespace Game
 	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox)
 		: SceneComponent(gameObjectName, translation, rotation, scale)
       , mBoundingBox(boundingBox)
+      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
 	{
+      /******  HOOKS ****/
+      ENGINE_PROPERTY("IsVisible", &mIsVisible);
+      /******  HOOKS ****/
 	}
 
 	PrimitiveComponent::~PrimitiveComponent()
@@ -30,6 +35,20 @@ namespace Game
       m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
    }
 
+   void PrimitiveComponent::SetIsVisible(bool isVisible)
+   {
+      if (isVisible != mIsVisible)
+      {
+         mIsVisible = isVisible;
+         OnVisibilityChanged();
+      }
+   }
+
+   bool PrimitiveComponent::IsVisible() const 
+   {
+      return mIsVisible;
+   }
+
    void PrimitiveComponent::OnVisibilityChanged()
    {
       constexpr uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
@@ -44,6 +63,6 @@ namespace Game
 
    BoundingBox PrimitiveComponent::GetTransformedBoundingBox() const
    {
-      return mBoundingBox.GetMeTransformed(m_relativeMatrix);
+      return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
    }
 }

@@ -12,30 +12,22 @@ namespace Game
    SceneComponent::SceneComponent(const std::string& gameObjectName)
       : Component(gameObjectName)
       , bTransformationDirty(true)
-      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
       , mTransform(std::make_shared<Transform>())
       , m_additionalRotationEuler()
       , m_relativeMatrix(1)
       , m_scene(nullptr)
    {
-      /******  HOOKS ****/
-      ENGINE_PROPERTY("IsVisible", &mIsVisible);
-      /******  HOOKS ****/
    }
 
-	SceneComponent::SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
-		: Component(gameObjectName)
+   SceneComponent::SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
+      : Component(gameObjectName)
       , bTransformationDirty(true)
-      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
       , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
       , m_additionalRotationEuler()
-		, m_relativeMatrix(std::move(glm::mat4(1)))
+      , m_relativeMatrix(std::move(glm::mat4(1)))
       , m_scene(nullptr)
-	{
-      /******  HOOKS ****/
-      ENGINE_PROPERTY("IsVisible", &mIsVisible);
-      /******  HOOKS ****/
-	}
+   {
+   }
 
 	SceneComponent::~SceneComponent()
 	{
@@ -59,29 +51,14 @@ namespace Game
       mTransform->Translation = mTransform->Translation + AXIS_UP * offsetValue;
    }
 
-   void SceneComponent::SetIsVisible(bool isVisible)
+   void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
    {
-      if (isVisible != mIsVisible)
-      {
-         mIsVisible = isVisible;
-         OnVisibilityChanged();
-      }
-   }
-
-   void SceneComponent::UpdateBoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale)
-   {
-      mBoundingBoxTransform.Translation = translation + mTransform->Translation;
-      mBoundingBoxTransform.Scale = scale * mTransform->Scale;
-   }
- 
-	void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
-	{
-		// Update current relative matrix
+      // Update current relative matrix
 
       glm::mat4 identityMatrix(1);
       m_relativeMatrix = identityMatrix;
 
-	   glm::mat4 translationMatrix = glm::translate(identityMatrix, mTransform->Translation);
+      glm::mat4 translationMatrix = glm::translate(identityMatrix, mTransform->Translation);
 
       m_relativeMatrix *= parentRelativeMatrix;
       m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
@@ -90,22 +67,13 @@ namespace Game
       if (bIsRootComponent)
       {
          glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.y), AXIS_UP);
-         m_relativeMatrix *= cameraYawRotation;     
+         m_relativeMatrix *= cameraYawRotation;
       }
 
       glm::mat4 rotationMatrix = glm::toMat4(mTransform->Rotator);
       m_relativeMatrix *= rotationMatrix;
 
-		SetIsTransformationDirty(false);
-	}
-
-   bool SceneComponent::IsVisible() const {
-      return mIsVisible;
-   }
-
-   void SceneComponent::OnVisibilityChanged() 
-   {
-
+      SetIsTransformationDirty(false);
    }
 
    void SceneComponent::SetScene(class Scene* scene)
@@ -169,11 +137,6 @@ namespace Game
    glm::vec3 SceneComponent::GetScale() const
    {
       return mTransform->Scale;
-   }
-
-   BoundingBoxTransform SceneComponent::GetBoundingBoxTransform() const 
-   {
-      return mBoundingBoxTransform;
    }
 
    glm::mat4 SceneComponent::GetRelativeMatrix() const

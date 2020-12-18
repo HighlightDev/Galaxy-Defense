@@ -112,7 +112,6 @@ namespace Game
 		{
 			// Root component and all attached objects to this actor must update their transforms
 
-         glm::vec3 translation(0.0f), scale(1.0f);
 			if (m_rootComponent->GetIsTransformationDirty())
 			{
 				// Update root component with parent transform matrix
@@ -121,18 +120,13 @@ namespace Game
                if (m_parent)
                {
                   parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
-                  translation = m_parent->GetRootComponent()->GetTranslation(); // make better decision
-                  scale = m_parent->GetRootComponent()->GetScale();
                }
                
 					m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
-               m_rootComponent->UpdateBoundingBoxTransform(translation, scale);
 				}
 
 				// Update all components that have transformation
 				glm::mat4 rootRelativeMatrix = m_rootComponent->GetRelativeMatrix();
-            translation = m_rootComponent->GetTranslation();
-            scale = m_rootComponent->GetScale();
 
 				for (auto& component : m_allComponents)
 				{
@@ -140,7 +134,6 @@ namespace Game
 					{
 						SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
                   sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
-                  sceneComp->UpdateBoundingBoxTransform(translation, scale);
 					}
 				}
 			}
@@ -166,7 +159,7 @@ namespace Game
          {
             if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
             {
-               static_cast<PrimitiveComponent*>(component.get())->SetIsVisible(isVisible);
+               std::static_pointer_cast<PrimitiveComponent>(component)->SetIsVisible(isVisible);
             }
          }
 
@@ -182,13 +175,10 @@ namespace Game
 		if (m_allComponents.size() > 0)
 		{
 			glm::mat4 parentRelativeMatrix(1);	// identity matrix
-         glm::vec3 translation(0.0f), scale(1.0f);
 
          if (m_parent)
          {
             parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
-            translation = m_parent->GetRootComponent()->GetTranslation();
-            scale = m_parent->GetRootComponent()->GetScale();
          }
 
 			// Update all components that have transformation
@@ -196,8 +186,6 @@ namespace Game
          if (m_rootComponent)
          {
             parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
-            translation = m_rootComponent->GetTranslation();
-            scale = m_rootComponent->GetScale();
          }
        
 			for (auto& component : m_allComponents)
@@ -208,7 +196,6 @@ namespace Game
 					if (sceneComp->GetIsTransformationDirty())
 					{
 						sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
-                  sceneComp->UpdateBoundingBoxTransform(translation, scale);
 					}
 				}
 			}
