@@ -6,6 +6,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
@@ -74,20 +75,31 @@ namespace Graphics
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
+         std::vector<PrimitiveSceneProxy*> forwardRenderingProxies;
+
+         std::vector<SkeletalMeshSceneProxy*> skeletalProxies;
+
+         std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
+
+         std::vector<DirectionalLightSceneProxy*> dirLightProxies;
+
+         std::vector<PointLightSceneProxy*> pointLightProxies;
 
       private:
+
+         void PrepareSceneProxiesForRender();
 
          void DebugFramePanelsPass();
 
          void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
             const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies);
 
-         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies,
+         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& skeletalMeshProxies,
             std::shared_ptr<SceneView> sceneView);
 
          void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, std::shared_ptr<SceneView> sceneView);
 
-         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
+         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
             std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies);
 
       public:

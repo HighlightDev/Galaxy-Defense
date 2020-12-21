@@ -9,6 +9,7 @@ namespace Game
 	Component::Component(const std::string& gameObjectName)
 		: GameObject(gameObjectName)
       , m_owner(nullptr)
+      , mIsEnabled(true)
 	{
 	}
 
@@ -52,6 +53,21 @@ namespace Game
       auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
       assert(it != dataContainer.Actors.end());
       return *it;
+   }
+
+   Actor* Component::GetOwner() const
+   {
+      return m_owner;
+   }
+
+   bool Component::IsEnabled() const
+   {
+      return mIsEnabled;
+   }
+
+   void Component::SetIsEnabled(const bool bEnabled)
+   {
+      mIsEnabled = bEnabled;
    }
 
 }

@@ -165,6 +165,21 @@ namespace Game
       ENQUEUE_GAME_THREAD_JOB(m_interThreadMgr, policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
+   void Scene::UpdatePrimitiveComponentEnable_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+   {
+      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
+         {
+            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+               Job(creatorObjectId, functionId, [=]()
+            {
+               sceneRenderer->SceneProxies[primitiveSceneProxyIndex]->SetEnabled(bEnabled);
+            }));
+         }
+      }
+   }
+
    void Scene::UpdatePrimitiveComponentVisibility_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
    {
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())

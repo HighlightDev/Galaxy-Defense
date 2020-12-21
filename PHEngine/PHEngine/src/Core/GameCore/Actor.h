@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <glm/mat4x4.hpp>
+#include <type_traits>
 
 #include "GameObject.h"
 #include "Core/GameCore/Components/Component.h"
@@ -21,25 +22,31 @@ namespace Game
 
    class Scene;
 
-	class Actor 
+   class Actor
       : public GameObject
       , public ITickable
       , public ISerializable
-	{
-	private:
+   {
+   private:
 
-		std::shared_ptr<SceneComponent> m_rootComponent;
+      std::shared_ptr<SceneComponent> m_rootComponent;
 
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
-	protected:
+   protected:
 
       // Makes all primitive components visible or not
       bool mIsVisible;
 
+      /* If Actor is disabled 
+       - turn off all calculations for him and physics simulation
+       also it won't be visible
+       */
+      bool mIsEnabled;
+
       std::vector<std::shared_ptr<Actor>> m_children;
 
-		Actor* m_parent;
+      Actor* m_parent;
 
       std::shared_ptr<InputComponent> m_inputComponent;
 
@@ -49,18 +56,18 @@ namespace Game
 
       std::weak_ptr<Scene> mSceneOwner;
 
-	public:
+   public:
 
       std::vector<std::shared_ptr<Game::Component>> m_allComponents;
 
-		Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent);
+      Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent);
 
-		virtual ~Actor();
+      virtual ~Actor();
 
       void PostPhysicsInitialize();
 
-		// Tick is executed on game thread
-		virtual void Tick(const float deltaTime) override;
+      // Tick is executed on game thread
+      virtual void Tick(const float deltaTime) override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
@@ -70,7 +77,7 @@ namespace Game
 
       void AddComponent(std::shared_ptr<Component> component);
 
-		void RemoveComponent(std::shared_ptr<Game::Component> component);
+      void RemoveComponent(std::shared_ptr<Game::Component> component);
 
       void RemoveMovementComponent();
 
@@ -78,11 +85,13 @@ namespace Game
 
       void SetIsVisible(bool isVisible);
 
-      inline bool IsVisible() const {
-         return mIsVisible;
-      }
+      void SetIsEnabled(bool isEnabled);
 
-		void SetParent(Actor* actor);
+      bool IsVisible() const;
+
+      bool IsEnabled() const;
+
+      void SetParent(Actor* actor);
 
       void SetScene(std::weak_ptr<Scene> sceneOwner);
 
@@ -92,48 +101,35 @@ namespace Game
 
       std::weak_ptr<Scene> GetSceneOwner() const;
 
-		void AttachActor(std::shared_ptr<Actor> actor);
+      void AttachActor(std::shared_ptr<Actor> actor);
 
-		void DetachActor(std::shared_ptr<Actor> actor);
+      void DetachActor(std::shared_ptr<Actor> actor);
 
       void AttachStateMachine(std::shared_ptr<StateMachine> fsm);
 
       std::shared_ptr<StateMachine> GetStateMachine() const;
 
-		inline std::shared_ptr<Game::SceneComponent> GetRootComponent() const {
-
-			return m_rootComponent;
-		}
+      std::shared_ptr<Game::SceneComponent> GetRootComponent() const;
 
       std::shared_ptr<Game::SceneComponent> GetBaseRootComponent() const;
 
-      inline std::shared_ptr<InputComponent> GetInputComponent() const
-      {
-         return m_inputComponent;
-      }
+      std::shared_ptr<InputComponent> GetInputComponent() const;
 
-      inline std::shared_ptr<CharacterMovementComponent> GetMovementComponent() const
-      {
-         return m_movementComponent;
-      }
+      std::shared_ptr<CharacterMovementComponent> GetMovementComponent() const;
 
-      inline std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const {
+      std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const;
 
-         return m_physicsComponent;
-      }
+      // If root component has dirty transformation -> update it and all attached actors + children components
+      void UpdateRootComponentTransform();
 
-		// If root component has dirty transformation -> update it and all attached actors + children components
-		void UpdateRootComponentTransform();
+      // If components from list is scene component -> check if it has dity transformation, and if it does -> update it
+      void UpdateComponentsTransform();
 
-		// If components from list is scene component -> check if it has dity transformation, and if it does -> update it
-		void UpdateComponentsTransform();
-     
       template <typename ComponentT>
-      std::shared_ptr<ComponentT> GetComponent()
+      typename std::enable_if<std::is_base_of<Component, typename ComponentT>::value,
+         std::vector<std::shared_ptr<ComponentT>>>::type GetComponents()
       {
-         std::shared_ptr<ComponentT> result(nullptr);
-
-         assert(m_allComponents.size());
+         std::vector<std::shared_ptr<ComponentT>> result;
 
          for (const auto& comp : m_allComponents)
          {
@@ -141,14 +137,13 @@ namespace Game
 
             if (seekComp != nullptr)
             {
-               result = seekComp;
-               break;
+               result.push_back(seekComp);
             }
          }
 
          return result;
       }
-	};
+   };
 
 }
 

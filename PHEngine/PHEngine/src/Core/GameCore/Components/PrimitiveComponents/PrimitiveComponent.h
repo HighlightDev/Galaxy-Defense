@@ -40,6 +40,8 @@ namespace Game
 
       bool IsVisible() const;
 
+      virtual void SetIsEnabled(const bool bEnabled) override;
+
       virtual ComponentType GetComponentType() const override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;

@@ -23,6 +23,10 @@ namespace Game
 	{
 		Actor* m_owner;
 
+   protected:
+
+      bool mIsEnabled;
+
 	public:
 
       Component(const std::string& gameObjectName);
@@ -35,9 +39,13 @@ namespace Game
 
       void RemoveOwner();
 
-      inline Actor* GetOwner() const;
+      Actor* GetOwner() const;
 
       Actor* GetBaseOwner() const;
+
+      bool IsEnabled() const;
+
+      virtual void SetIsEnabled(const bool bEnabled);
 
       virtual void PostLevelInit();
 
@@ -47,11 +55,6 @@ namespace Game
 
       SerializeDataActor& GetSerializeDataActor(SerializeDataContainer& dataContainer);
 	};
-
-   inline Actor* Component::GetOwner() const
-   {
-      return m_owner;
-   }
 
 }
 

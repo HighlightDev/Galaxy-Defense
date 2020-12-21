@@ -15,6 +15,7 @@ namespace Game
       , m_rootComponent(rootComponent)
       , m_physicsComponent(nullptr)
       , mIsVisible(true)
+      , mIsEnabled(true)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
       , mStateMachine(nullptr)
@@ -330,6 +331,35 @@ namespace Game
       return mStateMachine;
    }
 
+   void Actor::SetIsEnabled(bool isEnabled)
+   {
+      assert(("Actor must have components.", m_allComponents.size() > 0));
+
+      if (isEnabled != mIsEnabled)
+      {
+         mIsEnabled = isEnabled;
+
+         for (std::shared_ptr<Component> component : m_allComponents)
+         {
+            component->SetIsEnabled(isEnabled);
+         }
+         for (const auto& childActor : m_children)
+         {
+            childActor->SetIsEnabled(isEnabled);
+         }
+      }
+   }
+
+   bool Actor::IsVisible() const 
+   {
+      return mIsVisible;
+   }
+
+   bool Actor::IsEnabled() const 
+   {
+      return mIsEnabled;
+   }
+
    std::shared_ptr<SceneComponent> Actor::GetBaseRootComponent() const
    {
       std::shared_ptr<SceneComponent> rootComponent;
@@ -346,6 +376,26 @@ namespace Game
 
    std::string Actor::GetName() const {
       return GameObjectName;
+   }
+
+   std::shared_ptr<Game::SceneComponent> Actor::GetRootComponent() const 
+   {
+      return m_rootComponent;
+   }
+
+   std::shared_ptr<InputComponent> Actor::GetInputComponent() const
+   {
+      return m_inputComponent;
+   }
+
+   std::shared_ptr<CharacterMovementComponent> Actor::GetMovementComponent() const
+   {
+      return m_movementComponent;
+   }
+
+   std::shared_ptr<PhysicsComponent> Actor::GetPhysicsComponent() const 
+   {
+      return m_physicsComponent;
    }
 
 }

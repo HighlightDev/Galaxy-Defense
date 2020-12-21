@@ -96,15 +96,6 @@ namespace Game
 
             if (component)
                actor->AddComponent(component);
-
-            if (actor->GetName() == "SkeletBuddy")
-            {
-               auto meshComp = actor->GetComponent<SkeletalMeshComponent>();
-               if (meshComp)
-               {
-                  actor->GetRootComponent()->AddOffsetUp(3);
-               }
-            }
          }
 
          mScene->AddActor(actor);

@@ -35,6 +35,15 @@ namespace Game
       m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
    }
 
+   void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
+   {
+      SceneComponent::SetIsEnabled(bEnabled);
+
+      // Update primitives proxy enabled
+      constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
+      m_scene->UpdatePrimitiveComponentEnable_GameThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+   }
+
    void PrimitiveComponent::SetIsVisible(bool isVisible)
    {
       if (isVisible != mIsVisible)

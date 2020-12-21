@@ -35,6 +35,8 @@ namespace Game
 
 	void SceneComponent::Tick(const float deltaTime)
 	{
+      if (!mIsEnabled)
+         return;
 	}
 
    void SceneComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
@@ -53,6 +55,9 @@ namespace Game
 
    void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
    {
+      if (!mIsEnabled)
+         return;
+
       // Update current relative matrix
 
       glm::mat4 identityMatrix(1);

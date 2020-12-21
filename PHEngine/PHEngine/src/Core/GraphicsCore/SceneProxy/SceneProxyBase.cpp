@@ -25,8 +25,18 @@ namespace Graphics
       return mIsVisible;
    }
 
+   bool SceneProxyBase::IsEnabled() const 
+   {
+      return mIsEnabled;
+   }
+
    void SceneProxyBase::SetVisibility(const bool visibility)
    {
       mIsVisible = visibility;
+   }
+
+   void SceneProxyBase::SetEnabled(const bool bEnabled)
+   {
+      mIsEnabled = bEnabled;
    }
 }

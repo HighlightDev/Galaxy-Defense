@@ -12,6 +12,8 @@ namespace Graphics {
 
       bool mIsVisible;
 
+      bool mIsEnabled;
+
    public:
 
       SceneProxyBase();
@@ -22,7 +24,11 @@ namespace Graphics {
 
       void SetVisibility(const bool visibility);
 
+      void SetEnabled(const bool bEnabled);
+
       bool IsVisible() const;
+
+      bool IsEnabled() const;
 
    };
 }

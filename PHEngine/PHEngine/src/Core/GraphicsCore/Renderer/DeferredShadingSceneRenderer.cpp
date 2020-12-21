@@ -20,7 +20,7 @@
 #include <limits>
 
 using namespace Resources;
-using namespace Common; 
+using namespace Common;
 using namespace Graphics;
 using namespace Graphics::Renderer;
 using namespace Graphics::Proxy;
@@ -91,7 +91,7 @@ namespace Graphics
       }
 
       void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
-         std::vector<PrimitiveSceneProxy*>& shadowSkeletalMeshProxies,
+         std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
          std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies)
       {
          std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
@@ -102,58 +102,59 @@ namespace Graphics
          {
             DirectionalLightSceneProxy* lightPtr = dirLightProxy;
 
-            ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
-            if (shadowInfo && shadowInfo->IsShadowMapDirty())
+            if (lightPtr->IsEnabled())
             {
-               shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastDirLightFramebufferDesc);
-               lastDirLightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
-
-               DirectionalLightSceneProxy* dirLightPtr = lightPtr;
-
-               if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+               ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
+               if (shadowInfo && shadowInfo->IsShadowMapDirty())
                {
-                  m_depthShaderNonSkeletal->ExecuteShader();
-                  for (auto& proxy : shadowNonSkeletalMeshProxies)
+                  shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastDirLightFramebufferDesc);
+                  lastDirLightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
+
+                  DirectionalLightSceneProxy* dirLightPtr = lightPtr;
+
+                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                   {
-                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                     m_depthShaderNonSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowNonSkeletalMeshProxies)
                      {
-                        const auto& worldMatrix = proxy->GetMatrix();
-                        const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                        const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           const auto& worldMatrix = proxy->GetMatrix();
+                           const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                           const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
 
-                        m_depthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                           m_depthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
 
-                        proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
                      }
+                     m_depthShaderNonSkeletal->StopShader();
                   }
-                  m_depthShaderNonSkeletal->StopShader();
-               }
 
-               if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
-               {
-                  m_depthShaderSkeletal->ExecuteShader();
-                  for (auto& proxy : shadowSkeletalMeshProxies)
+                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                   {
-                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                     m_depthShaderSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowSkeletalMeshProxies)
                      {
-                        SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           const auto& worldMatrix = proxy->GetMatrix();
+                           const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                           const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                           m_depthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                           m_depthShaderSkeletal->SetSkinningMatrices(proxy->GetSkinningMatrices());
 
-                        const auto& worldMatrix = proxy->GetMatrix();
-                        const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                        const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
-                        m_depthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
-                        m_depthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
-
-                        proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
                      }
+                     m_depthShaderSkeletal->StopShader();
                   }
-                  m_depthShaderSkeletal->StopShader();
+
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+                  // Next frame shadow map will not be updated unless position of objects in the level are changed
+                  shadowInfo->SetIsShadowMapDirty(false);
                }
-
-               glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-               // Next frame shadow map will not be updated unless position of objects in the level are changed
-               shadowInfo->SetIsShadowMapDirty(false);
             }
          }
 
@@ -161,61 +162,64 @@ namespace Graphics
          {
             PointLightSceneProxy* pointLightPtr = pointLightProxy;
 
-            const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
-            if (shadowInfo)
+            if (pointLightProxy->IsEnabled())
             {
-               shadowInfo->BindShadowFramebuffer(true); // every point light has it's own texture atlas 
-               
-               if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+               const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
+               if (shadowInfo)
                {
-                  m_depthCubemapShaderNonSkeletal->ExecuteShader();
-                  for (auto& proxy : shadowNonSkeletalMeshProxies)
+                  shadowInfo->BindShadowFramebuffer(true); // every point light has it's own texture atlas 
+
+                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                   {
-                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                     m_depthCubemapShaderNonSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowNonSkeletalMeshProxies)
                      {
-                        const auto& worldMatrix = proxy->GetMatrix();
-                        const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                        const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                        if (proxy->IsEnabled()  && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           const auto& worldMatrix = proxy->GetMatrix();
+                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                        m_depthCubemapShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                        m_depthCubemapShaderNonSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
-                        m_depthCubemapShaderNonSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
+                           m_depthCubemapShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                           m_depthCubemapShaderNonSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
+                           m_depthCubemapShaderNonSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
 
-                        proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
                      }
+                     m_depthCubemapShaderNonSkeletal->StopShader();
                   }
-                  m_depthCubemapShaderNonSkeletal->StopShader();
-               }
-               if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
-               {
-                  m_depthCubemapShaderSkeletal->ExecuteShader();
-                  for (auto& proxy : shadowSkeletalMeshProxies)
+                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                   {
-                     if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                     m_depthCubemapShaderSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowSkeletalMeshProxies)
                      {
-                        SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
 
-                        const auto& worldMatrix = skeletalProxy->GetMatrix();
-                        const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                        const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                           const auto& worldMatrix = skeletalProxy->GetMatrix();
+                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                        m_depthCubemapShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                        m_depthCubemapShaderSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
-                        m_depthCubemapShaderSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
-                        m_depthCubemapShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
+                           m_depthCubemapShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                           m_depthCubemapShaderSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
+                           m_depthCubemapShaderSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
+                           m_depthCubemapShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
-                        skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                           skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
                      }
+                     m_depthCubemapShaderSkeletal->StopShader();
                   }
-                  m_depthCubemapShaderSkeletal->StopShader();
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
                }
-               glBindFramebuffer(GL_FRAMEBUFFER, 0);
             }
          }
       }
 
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies,
-         std::vector<PrimitiveSceneProxy*>& skeletalMeshProxies, std::shared_ptr<SceneView> sceneView)
+         std::vector<SkeletalMeshSceneProxy*>& skeletalMeshProxies, std::shared_ptr<SceneView> sceneView)
       {
          auto cameraProxy = sceneView->GetCameraProxy();
 
@@ -226,7 +230,7 @@ namespace Graphics
          {
             for (auto& proxy : skeletalMeshProxies)
             {
-               if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
@@ -235,7 +239,7 @@ namespace Graphics
          {
             for (auto& proxy : nonSkeletalMeshProxies)
             {
-               if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
@@ -256,30 +260,36 @@ namespace Graphics
             size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
             for (auto& dirLightProxy : dirLightSourcesProxies)
             {
-               ProjectedDirShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
-               if (shadowInfo)
+               if (dirLightProxy->IsEnabled())
                {
-                  shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                  m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetPosOffsetShadowMapAtlas());
-                  m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
+                  ProjectedDirShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
+                  if (shadowInfo)
+                  {
+                     shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                     m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetPosOffsetShadowMapAtlas());
+                     m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
 
-                  dirShadowMapCount++;
-                  dirLightIndex++;
-                  shadowMapSlot++;
+                     dirShadowMapCount++;
+                     dirLightIndex++;
+                     shadowMapSlot++;
+                  }
                }
             }
 
             for (auto& pointLightProxy : pointLightSourcesProxies)
             {
-               ProjectedPointShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
-               if (shadowInfo)
+               if (pointLightProxy->IsEnabled())
                {
-                  shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                  m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
-                  m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, std::sqrtf(pointLightProxy->GetRadianceSqrRadius()));
-                  shadowMapSlot++;
-                  pointShadowMapCount++;
-                  pointLightIndex++;
+                  ProjectedPointShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
+                  if (shadowInfo)
+                  {
+                     shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                     m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
+                     m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, std::sqrtf(pointLightProxy->GetRadianceSqrRadius()));
+                     shadowMapSlot++;
+                     pointShadowMapCount++;
+                     pointLightIndex++;
+                  }
                }
             }
 
@@ -307,7 +317,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies,
          std::shared_ptr<SceneView> sceneView)
-      { 
+      {
          // Resolve depth buffer from gBuffer to default frame buffer
 
          int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
@@ -321,7 +331,7 @@ namespace Graphics
          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
          for (auto& proxy : forwardedProxies)
          {
-            if (proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+            if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
          }
          glDisable(GL_BLEND);
@@ -339,7 +349,7 @@ namespace Graphics
          if (physicsRenderData.size())
          {
             float viewMatVec[16]{ 0.0f };
-            const float *pSource = (const float*) glm::value_ptr(viewMatrix);
+            const float *pSource = (const float*)glm::value_ptr(viewMatrix);
             for (int i = 0; i < 16; ++i)
                viewMatVec[i] = pSource[i];
 
@@ -415,74 +425,66 @@ namespace Graphics
                      glVertex3f(vertex3.x, vertex3.y, vertex3.z);
                   }
                   glEnd();
-               }
-            }
-#endif
          }
       }
 #endif
+   }
+}
+#endif
+
+      void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
+      {
+         if (bProxiesDirty)
+         {
+            forwardRenderingProxies.clear();
+            skeletalProxies.clear();
+            nonSkeletalProxies.clear();
+
+            for (auto& proxy : SceneProxies)
+            {
+               PrimitiveSceneProxy* proxyPtr = proxy.second.get();
+
+               if (proxyPtr->IsDeferred())
+               {
+                  if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
+                     skeletalProxies.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
+                  else
+                     nonSkeletalProxies.push_back(proxyPtr);
+               }
+               else
+               {
+                  forwardRenderingProxies.push_back(proxyPtr);
+               }
+            }
+            SetProxiesAreDirty(false);
+         }
+
+         if (bLightProxiesDirty)
+         {
+            dirLightProxies.clear();
+            pointLightProxies.clear();
+
+            for (auto& proxy : LightProxies)
+            {
+               LightSceneProxy* proxyPtr = proxy.second.get();
+
+               if (proxyPtr->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
+               {
+                  dirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
+               }
+               else if (proxyPtr->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
+               {
+                  pointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
+               }
+            }
+         }
+      }
 
       void DeferredShadingSceneRenderer::RenderScene_RenderThread()
       {
          if (std::shared_ptr<Scene> scene = m_interThreadMgr.TryGetSceneWP().lock())
          {
-            static std::vector<PrimitiveSceneProxy*> forwardRenderingProxies;
-            static std::vector<PrimitiveSceneProxy*> skeletalProxies;
-            static std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
-
-            static std::vector<DirectionalLightSceneProxy*> dirLightProxies;
-            static std::vector<PointLightSceneProxy*> pointLightProxies;
-
-            /* Prepare proxies block */
-            if (bProxiesDirty)
-            {
-               forwardRenderingProxies.clear();
-               skeletalProxies.clear();
-               nonSkeletalProxies.clear();
-
-               for (auto& proxy : SceneProxies)
-               {
-                  PrimitiveSceneProxy* proxyPtr = proxy.second.get();
-
-                  if (proxyPtr->IsDeferred())
-                  {
-                     if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     {
-                        skeletalProxies.push_back(proxyPtr);
-                     }
-                     else
-                     {
-                        nonSkeletalProxies.push_back(proxyPtr);
-                     }
-                  }
-                  else
-                  {
-                     forwardRenderingProxies.push_back(proxyPtr);
-                  }
-               }
-               SetProxiesAreDirty(false);
-            }
-
-            if (bLightProxiesDirty)
-            {
-               dirLightProxies.clear();
-               pointLightProxies.clear();
-
-               for (auto& proxy : LightProxies)
-               {
-                  LightSceneProxy* proxyPtr = proxy.second.get();
-
-                  if (proxyPtr->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
-                  {
-                     dirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
-                  }
-                  else if (proxyPtr->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
-                  {
-                     pointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
-                  }
-               }
-            }
-            /* Prepare proxies block */
+            PrepareSceneProxiesForRender();
 
             for (auto sceneViewPair : SceneViews)
             {
@@ -500,9 +502,7 @@ namespace Graphics
                DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies);
 
                if (forwardRenderingProxies.size())
-               {
                   ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);
-               }
 
                DebugFramePanelsPass();
             }
@@ -536,5 +536,5 @@ namespace Graphics
       {
          m_textureRenderer.PushDebugRenderTarget();
       }
-	}
+   }
 }

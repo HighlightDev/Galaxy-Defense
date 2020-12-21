@@ -18,9 +18,9 @@ namespace Graphics
    {
       static size_t count = 0;
       size_t currentCounter = 0;
+
       for (const auto& primitiveProxyPair : mPrimitiveProxies)
       {
-         const size_t primitiveIndex = primitiveProxyPair.first;
          auto proxy = primitiveProxyPair.second;
 
          bool bProxyVisible = true;
@@ -30,7 +30,7 @@ namespace Graphics
              bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
          }
 
-         mVisibilityMap[primitiveIndex] = bProxyVisible;
+         mVisibilityMap[primitiveProxyPair.first] = bProxyVisible;
 
          if (!bProxyVisible)
             currentCounter++;
@@ -38,6 +38,7 @@ namespace Graphics
 
       if (currentCounter != count)
       {
+         // todo: temp
          std::cout << "Frustum culled: " << currentCounter << std::endl;
          count = currentCounter;
       }
