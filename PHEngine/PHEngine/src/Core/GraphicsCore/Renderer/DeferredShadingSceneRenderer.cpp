@@ -327,15 +327,17 @@ namespace Graphics
 
          m_gbuffer->CopyFramebufferData(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_DEPTH_BUFFER_BIT);
 
-         glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
+            std::make_shared<BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>());
+
+       /*  glEnable(GL_BLEND);
+         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
          for (auto& proxy : forwardedProxies)
          {
             if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
          }
          glDisable(GL_BLEND);
-
 
          DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
       }

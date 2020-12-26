@@ -385,9 +385,11 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Renderer\RenderState.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\Octree.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\SceneView.h" />
     <ClInclude Include="src\Core\GameCore\BoundingBoxBuilder.h" />
     <ClInclude Include="src\Core\GameCore\BoundingBox.h" />
@@ -857,9 +859,11 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Renderer\RenderState.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\Octree.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\SceneView.cpp" />
     <ClCompile Include="src\Core\GameCore\BoundingBoxBuilder.cpp" />
     <ClCompile Include="src\Core\GameCore\BoundingBox.cpp" />

@@ -12,6 +12,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
+#include "Core/GraphicsCore/Renderer/RenderState.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthShader.h"
