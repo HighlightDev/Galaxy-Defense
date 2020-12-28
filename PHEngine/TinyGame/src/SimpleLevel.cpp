@@ -1,7 +1,8 @@
 #include "SimpleLevel.h"
 
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/MainThirdPersonCamera.h"
+#include "Core/GameCore/GlobalInputController.h"
 
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
@@ -108,7 +109,12 @@ namespace Labyrinth
 
       //Camera
       {
-         mScene->RegisterCamera(std::make_shared<ThirdPersonCamera>("MainCamera", mScene, 50.0f, 20.0f, 20.0f));
+         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
+         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
+
+         ViewPortInfo viewPort{ 0 , 0, windowWidth, windowHeight };
+
+         mScene->RegisterCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
       }
 
       // Stub

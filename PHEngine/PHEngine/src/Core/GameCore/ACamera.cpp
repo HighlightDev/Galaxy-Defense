@@ -9,11 +9,12 @@ using namespace EngineMath;
 namespace Game
 {
 
-   ACamera::ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg)
+   ACamera::ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)
       : GameObject(cameraName)
       , mScene(scene)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
+      , mViewPort(viewPort)
       , m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
       , m_localSpaceUpVector(std::move(glm::vec3(0, 1, 0)))
       , m_localSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
@@ -147,5 +148,10 @@ namespace Game
 
    float ACamera::GetRotationPitch() const {
       return mPitch;
+   }
+
+   ViewPortInfo ACamera::GetViewPort() const
+   {
+      return mViewPort;
    }
 }

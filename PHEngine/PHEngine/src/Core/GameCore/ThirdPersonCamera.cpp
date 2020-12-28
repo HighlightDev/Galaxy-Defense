@@ -9,8 +9,9 @@
 namespace Game
 {
 
-   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene ,const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
-      : ACamera(cameraName, scene, initPitchDeg, initYawDeg)
+   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
+      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
+      : ACamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);

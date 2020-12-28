@@ -10,6 +10,7 @@
 #include "Core/GameCore/GameObject.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 using namespace Graphics;
 
@@ -39,20 +40,29 @@ namespace Game
       std::string mCameraName;
 
    protected:
+      
+      ViewPortInfo mViewPort;
 
       glm::vec3 m_localSpaceRightVector;
+
       glm::vec3 m_localSpaceUpVector;
+
       glm::vec3 m_localSpaceForwardVector;
+
       glm::vec3 m_eyeSpaceRightVector;
+
       glm::vec3 m_eyeSpaceForwardVector;
+
       glm::mat3 m_rotationMatrix;
 
       const glm::vec2 mPitchClampValue_min_max;
 
       float mYaw;
+
       float mPitch;
 
       bool bTransformationDirty = false;
+
       CameraType m_cameraType;
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
@@ -63,7 +73,7 @@ namespace Game
 
       float CameraCollisionSphereRadius = 8.0f;
 
-      ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg);
+      ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
 
       virtual ~ACamera();
 
@@ -107,14 +117,9 @@ namespace Game
 
       float GetRotationPitch() const;
 
+      ViewPortInfo GetViewPort() const;
+
       void Rotate();
-
-      /* FSphere GetCameraCollisionSphere()
-      {
-         return new FSphere(GetEyeVector(), CameraCollisionSphereRadius);
-      }*/
-
-      //void SetCollisionHeadUnit(CollisionHeadUnit collisionHeadUnit);
    };
 
 }

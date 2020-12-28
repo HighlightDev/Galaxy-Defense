@@ -4,8 +4,8 @@
 namespace Game
 {
 
-   FirstPersonCamera::FirstPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
-      : ACamera(cameraName,scene, initPitchDeg, initYawDeg)
+   FirstPersonCamera::FirstPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
+      : ACamera(cameraName,scene, viewPort, initPitchDeg, initYawDeg)
       , m_firstPersonCameraPosition(camPos)
       , m_cameraMoveSpeed(0.1f)
    {

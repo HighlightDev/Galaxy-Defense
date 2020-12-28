@@ -14,6 +14,8 @@ namespace Game
       , public PlayerMovedEvent
    {
 
+   protected:
+
       float m_distanceFromTargetToCamera;
 
       std::shared_ptr<Actor> m_thirdPersonTarget;
@@ -30,7 +32,7 @@ namespace Game
 
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
+      ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
 
       virtual ~ThirdPersonCamera();
 

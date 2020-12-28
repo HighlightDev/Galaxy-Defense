@@ -10,6 +10,7 @@ namespace Graphics
 {
    CameraSceneProxy::CameraSceneProxy(const ACamera* camera)
       : SceneProxyBase()
+      , mViewPort(camera->GetViewPort())
       , mEyeVector()
       , mViewMatrix()
    {
@@ -54,5 +55,15 @@ namespace Graphics
    void CameraSceneProxy::RebuildCameraFrustum()
    {
       mCameraFrustum.ConstructFromViewProjectionMatrix(mViewMatrix, mProjectionMatrix);
+   }
+
+   ViewPortInfo CameraSceneProxy::GetViewPort() const
+   {
+      return mViewPort;
+   }
+
+   eCameraSceneProxyType CameraSceneProxy::GetCameraSceneType() const
+   {
+      return eCameraSceneProxyType::SECONDARY_SCENE_CAMERA;
    }
 }

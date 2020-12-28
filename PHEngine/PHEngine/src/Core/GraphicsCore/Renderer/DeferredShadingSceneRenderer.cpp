@@ -94,6 +94,11 @@ namespace Graphics
          std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
          std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies)
       {
+         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
+            std::make_shared<BlendingState<false>>());
+
+         renderState.BindRenderState();
+
          std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
 
          size_t lastDirLightFramebufferDesc = UINT_MAX;
@@ -319,27 +324,23 @@ namespace Graphics
          std::shared_ptr<SceneView> sceneView)
       {
          // Resolve depth buffer from gBuffer to default frame buffer
-
-         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
-         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
-
          auto cameraProxy = sceneView->GetCameraProxy();
+         auto cameraViewPort = cameraProxy->GetViewPort();
 
-         m_gbuffer->CopyFramebufferData(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight, GL_DEPTH_BUFFER_BIT);
+         m_gbuffer->CopyFramebufferData(cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height,
+            cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
 
          RenderState renderState(std::make_shared<DepthStencilState<true>>(),
             std::make_shared<BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>());
 
-       /*  glEnable(GL_BLEND);
-         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+         renderState.BindRenderState();
+
          for (auto& proxy : forwardedProxies)
          {
             if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
          }
          glDisable(GL_BLEND);
-
-         DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
       }
 
 #if DEBUG
@@ -488,15 +489,14 @@ namespace Graphics
          {
             PrepareSceneProxiesForRender();
 
-            for (auto sceneViewPair : SceneViews)
+            auto sceneView = SceneViews.begin()->second; 
+            auto cameraProxy = sceneView->GetCameraProxy();
+
+            sceneView->DoVisibilityTest();
+
+            // Deferred shading is done with main camera
+            if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               auto sceneView = sceneViewPair.second;
-               auto cameraProxy = sceneView->GetCameraProxy();
-
-               sceneView->DoVisibilityTest();
-
-               glEnable(GL_DEPTH_TEST);
-
                DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
 
                DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
@@ -505,10 +505,20 @@ namespace Graphics
 
                if (forwardRenderingProxies.size())
                   ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);
-
-               DebugFramePanelsPass();
             }
+            else
+            {
+               // TODO: rendering to render texture later....
+            }
+
+#if DEBUG
+            DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+#endif
          }
+
+#if DEBUG
+         DebugFramePanelsPass();
+#endif
       }
 
 #if DEBUG
@@ -530,7 +540,10 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {
-         glDisable(GL_DEPTH_TEST);
+         RenderState renderState(std::make_shared<DepthStencilState<false>>(),
+            std::make_shared<BlendingState<false>>());
+
+         renderState.BindRenderState();
          m_textureRenderer.RenderFrames(m_gbuffer);
       }
 
