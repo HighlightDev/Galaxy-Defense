@@ -862,6 +862,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingGBuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\MainThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\RenderState.cpp" />

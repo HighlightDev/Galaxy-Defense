@@ -38,7 +38,10 @@ namespace Graphics
          , SceneProxies()
          , LightProxies()
          , m_interThreadMgr(interThreadMgr)
-         , m_gbuffer(std::make_unique<DeferredShadingGBuffer>(GlobalInputController::GetInstance()->GetWindowWidth(), GlobalInputController::GetInstance()->GetWindowHeight()))
+         , m_gbuffer(
+            std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
+               GlobalInputController::GetInstance()->GetWindowWidth(),
+               GlobalInputController::GetInstance()->GetWindowHeight())))
       {
          const auto& folderManager = FolderManager::GetInstance();
 
@@ -179,7 +182,7 @@ namespace Graphics
                      m_depthCubemapShaderNonSkeletal->ExecuteShader();
                      for (auto& proxy : shadowNonSkeletalMeshProxies)
                      {
-                        if (proxy->IsEnabled()  && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                         {
                            const auto& worldMatrix = proxy->GetMatrix();
                            const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
@@ -255,69 +258,66 @@ namespace Graphics
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
          const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies)
       {
-         if (std::shared_ptr<Scene> scene = m_interThreadMgr.TryGetSceneWP().lock())
+         // TODO: Make some check if light source (point or spot light) is too far from current view position
+         m_deferredLightShader->ExecuteShader();
+
+#ifndef NO_LIT
+         // ************************** SHADOWS ************************** //
+         size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
+         for (auto& dirLightProxy : dirLightSourcesProxies)
          {
-            // TODO: Make some check if light source (point or spot light) is too far from current view position
-            m_deferredLightShader->ExecuteShader();
-
-#ifndef NO_LIT
-            // ************************** SHADOWS ************************** //
-            size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
-            for (auto& dirLightProxy : dirLightSourcesProxies)
+            if (dirLightProxy->IsEnabled())
             {
-               if (dirLightProxy->IsEnabled())
+               ProjectedDirShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
+               if (shadowInfo)
                {
-                  ProjectedDirShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
-                  if (shadowInfo)
-                  {
-                     shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                     m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetPosOffsetShadowMapAtlas());
-                     m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
+                  shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                  m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetPosOffsetShadowMapAtlas());
+                  m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
 
-                     dirShadowMapCount++;
-                     dirLightIndex++;
-                     shadowMapSlot++;
-                  }
+                  dirShadowMapCount++;
+                  dirLightIndex++;
+                  shadowMapSlot++;
                }
             }
-
-            for (auto& pointLightProxy : pointLightSourcesProxies)
-            {
-               if (pointLightProxy->IsEnabled())
-               {
-                  ProjectedPointShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
-                  if (shadowInfo)
-                  {
-                     shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                     m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
-                     m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, std::sqrtf(pointLightProxy->GetRadianceSqrRadius()));
-                     shadowMapSlot++;
-                     pointShadowMapCount++;
-                     pointLightIndex++;
-                  }
-               }
-            }
-
-            m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
-            m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
-            m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
-            // ************************** SHADOWS ************************** //
-#endif
-
-            m_gbuffer->BindPositionTexture(0);
-            m_gbuffer->BindAlbedoWithSpecularTexture(1);
-            m_gbuffer->BindNormalTexture(2);
-
-            m_deferredLightShader->SetGBufferPosition(0);
-            m_deferredLightShader->SetGBufferAlbedoNSpecular(1);
-            m_deferredLightShader->SetGBufferNormal(2);
-
-#ifndef NO_LIT
-            m_deferredLightShader->SetLightsInfo(LightProxies);
-#endif
-            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-            m_deferredLightShader->StopShader();
          }
+
+         for (auto& pointLightProxy : pointLightSourcesProxies)
+         {
+            if (pointLightProxy->IsEnabled())
+            {
+               ProjectedPointShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
+               if (shadowInfo)
+               {
+                  shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                  m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
+                  m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, std::sqrtf(pointLightProxy->GetRadianceSqrRadius()));
+                  shadowMapSlot++;
+                  pointShadowMapCount++;
+                  pointLightIndex++;
+               }
+            }
+         }
+
+         m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
+         m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
+         m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
+         // ************************** SHADOWS ************************** //
+#endif
+
+         m_gbuffer->BindPositionTexture(0);
+         m_gbuffer->BindAlbedoWithSpecularTexture(1);
+         m_gbuffer->BindNormalTexture(2);
+
+         m_deferredLightShader->SetGBufferPosition(0);
+         m_deferredLightShader->SetGBufferAlbedoNSpecular(1);
+         m_deferredLightShader->SetGBufferNormal(2);
+
+#ifndef NO_LIT
+         m_deferredLightShader->SetLightsInfo(LightProxies);
+#endif
+         ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+         m_deferredLightShader->StopShader();
       }
 
       void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies,
@@ -343,7 +343,121 @@ namespace Graphics
          glDisable(GL_BLEND);
       }
 
+      void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
+      {
+         if (bProxiesDirty)
+         {
+            forwardRenderingProxies.clear();
+            skeletalProxies.clear();
+            nonSkeletalProxies.clear();
+
+            for (auto& proxy : SceneProxies)
+            {
+               PrimitiveSceneProxy* proxyPtr = proxy.second.get();
+
+               if (proxyPtr->IsDeferred())
+               {
+                  if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
+                     skeletalProxies.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
+                  else
+                     nonSkeletalProxies.push_back(proxyPtr);
+               }
+               else
+               {
+                  forwardRenderingProxies.push_back(proxyPtr);
+               }
+            }
+            SetProxiesAreDirty(false);
+         }
+
+         if (bLightProxiesDirty)
+         {
+            dirLightProxies.clear();
+            pointLightProxies.clear();
+
+            for (auto& proxy : LightProxies)
+            {
+               LightSceneProxy* proxyPtr = proxy.second.get();
+
+               if (proxyPtr->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
+               {
+                  dirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
+               }
+               else if (proxyPtr->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
+               {
+                  pointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
+               }
+            }
+         }
+      }
+
+      void DeferredShadingSceneRenderer::RenderScene_RenderThread()
+      {
+         PrepareSceneProxiesForRender();
+
+         for (const auto& sceneViewPair : SceneViews)
+         {
+            auto sceneView = sceneViewPair.second;
+            auto cameraProxy = sceneView->GetCameraProxy();
+
+            sceneView->DoVisibilityTest();
+
+            // Deferred shading is done with main camera
+            if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
+            {
+               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
+
+               DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
+
+               DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies);
+
+               if (forwardRenderingProxies.size())
+                  ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);
+            }
+            else
+            {
+               // TODO: rendering to render texture later....
+            }
+
 #if DEBUG
+            DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+         }
+
+         DebugFramePanelsPass();
+#endif
+      }
+
+      void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
+      {
+         bProxiesDirty = bDirty;
+      }
+
+      void DeferredShadingSceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
+      {
+         bLightProxiesDirty = bDirty;
+      }
+
+      void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
+      {
+         m_textureRenderer.PushDebugRenderTarget();
+      }
+
+#if DEBUG
+
+      void DeferredShadingSceneRenderer::DebugFramePanelsPass()
+      {
+         RenderState renderState(std::make_shared<DepthStencilState<false>>(),
+            std::make_shared<BlendingState<false>>());
+
+         renderState.BindRenderState();
+         m_textureRenderer.RenderFrames(m_gbuffer);
+      }
+
+      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData)
+      {
+         mDebugPhysicsRenderData = debugPhysicsRenderData;
+      }
+
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          // todo: delete this crap and use buffers =\
@@ -428,128 +542,12 @@ namespace Graphics
                      glVertex3f(vertex3.x, vertex3.y, vertex3.z);
                   }
                   glEnd();
+               }
+            }
+#endif
          }
       }
 #endif
-   }
-}
-#endif
 
-      void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
-      {
-         if (bProxiesDirty)
-         {
-            forwardRenderingProxies.clear();
-            skeletalProxies.clear();
-            nonSkeletalProxies.clear();
-
-            for (auto& proxy : SceneProxies)
-            {
-               PrimitiveSceneProxy* proxyPtr = proxy.second.get();
-
-               if (proxyPtr->IsDeferred())
-               {
-                  if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     skeletalProxies.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
-                  else
-                     nonSkeletalProxies.push_back(proxyPtr);
-               }
-               else
-               {
-                  forwardRenderingProxies.push_back(proxyPtr);
-               }
-            }
-            SetProxiesAreDirty(false);
-         }
-
-         if (bLightProxiesDirty)
-         {
-            dirLightProxies.clear();
-            pointLightProxies.clear();
-
-            for (auto& proxy : LightProxies)
-            {
-               LightSceneProxy* proxyPtr = proxy.second.get();
-
-               if (proxyPtr->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
-               {
-                  dirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
-               }
-               else if (proxyPtr->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
-               {
-                  pointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
-               }
-            }
-         }
-      }
-
-      void DeferredShadingSceneRenderer::RenderScene_RenderThread()
-      {
-         if (std::shared_ptr<Scene> scene = m_interThreadMgr.TryGetSceneWP().lock())
-         {
-            PrepareSceneProxiesForRender();
-
-            auto sceneView = SceneViews.begin()->second; 
-            auto cameraProxy = sceneView->GetCameraProxy();
-
-            sceneView->DoVisibilityTest();
-
-            // Deferred shading is done with main camera
-            if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
-            {
-               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
-
-               DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
-
-               DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies);
-
-               if (forwardRenderingProxies.size())
-                  ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);
-            }
-            else
-            {
-               // TODO: rendering to render texture later....
-            }
-
-#if DEBUG
-            DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
-#endif
-         }
-
-#if DEBUG
-         DebugFramePanelsPass();
-#endif
-      }
-
-#if DEBUG
-      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData)
-      {
-         mDebugPhysicsRenderData = debugPhysicsRenderData;
-      }
-#endif
-
-      void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
-      {
-         bProxiesDirty = bDirty;
-      }
-
-      void DeferredShadingSceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
-      {
-         bLightProxiesDirty = bDirty;
-      }
-
-      void DeferredShadingSceneRenderer::DebugFramePanelsPass()
-      {
-         RenderState renderState(std::make_shared<DepthStencilState<false>>(),
-            std::make_shared<BlendingState<false>>());
-
-         renderState.BindRenderState();
-         m_textureRenderer.RenderFrames(m_gbuffer);
-      }
-
-      void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
-      {
-         m_textureRenderer.PushDebugRenderTarget();
-      }
    }
 }

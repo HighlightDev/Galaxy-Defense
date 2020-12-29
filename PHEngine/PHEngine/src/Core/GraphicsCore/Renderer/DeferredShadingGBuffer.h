@@ -1,154 +1,63 @@
 #pragma once
-#include <memory>
-#include <iostream>
-
-#include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/Framebuffer.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 using namespace Graphics::Texture;
 using namespace Resources;
 
-class DeferredShadingGBuffer
+namespace Graphics
 {
-   using RenderTarget = std::shared_ptr<ITexture>;
 
-   int32_t m_windowWidth;
-   int32_t m_windowHeight;
-
-   uint32_t m_gBufferFBO;
-
-   RenderTarget m_depthBuffer;
-   RenderTarget m_positionBuffer;
-   RenderTarget m_normalBuffer;
-   RenderTarget m_albedoWithSpecularBuffer;
-
-public:
-   
-   // Buffer should be recreated when window size was changed
-   DeferredShadingGBuffer(int32_t windowWidth, int32_t windowHeight)
-      : m_windowWidth(windowWidth)
-      , m_windowHeight(windowHeight)
-      , m_gBufferFBO(0)
+   class DeferredShadingGBuffer
+      : public Framebuffer
    {
-      InitGBuffer();
-   }
+      using RenderTarget = std::shared_ptr<ITexture>;
 
-   ~DeferredShadingGBuffer() 
-   {
-      DestroyGBuffer();
-   }
+      const ViewPortInfo mViewPortInfo;
 
-   void BindDeferredGBuffer()
-   {
-      glBindFramebuffer(GL_FRAMEBUFFER, m_gBufferFBO);
-      uint32_t attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-      glDrawBuffers(3, attachments);
+      uint32_t m_gBufferFBO;
 
-      glViewport(0, 0, m_windowWidth, m_windowHeight);
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-   }
+      RenderTarget m_depthBuffer;
+      RenderTarget m_positionBuffer;
+      RenderTarget m_normalBuffer;
+      RenderTarget m_albedoWithSpecularBuffer;
 
-   void UnbindDeferredGBuffer() {
+   public:
 
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      uint32_t attachment = GL_COLOR_ATTACHMENT0;
-      glDrawBuffers(1, &attachment);
-   }
+      // Buffer should be recreated when window size was changed
+      DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo);
 
-   void BindDepthTexture(int32_t slot) {
+      virtual ~DeferredShadingGBuffer();
 
-      m_depthBuffer->BindTexture(slot);
-   }
+      virtual void SetTextures() override;
 
-   void BindPositionTexture(int32_t slot) {
+      virtual void SetFramebuffers() override;
 
-      m_positionBuffer->BindTexture(slot);
-   }
+      virtual void SetRenderbuffers() override;
 
-   void BindNormalTexture(int32_t slot) {
+      virtual void CleanUp() override;
 
-      m_normalBuffer->BindTexture(slot);
-   }
+      void BindDeferredGBuffer();
 
-   void BindAlbedoWithSpecularTexture(int32_t slot) {
+      void UnbindDeferredGBuffer();
 
-      m_albedoWithSpecularBuffer->BindTexture(slot);
-   }
+      void BindDepthTexture(int32_t slot);
 
-   inline int32_t GetFramebufferDesc() const
-   {
-      return m_gBufferFBO;
-   }
+      void BindPositionTexture(int32_t slot);
 
-   void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
-      size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit)
-   {
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, m_gBufferFBO);
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-      glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   }
+      void BindNormalTexture(int32_t slot);
 
-private:
+      void BindAlbedoWithSpecularTexture(int32_t slot);
 
-   void InitGBuffer()
-   {
-      // Create all empty textures and attach them to gBuffer Framebuffer Object
+      int32_t GetFramebufferDesc() const;
 
-      glGenFramebuffers(1, &m_gBufferFBO);
-      glBindFramebuffer(GL_FRAMEBUFFER, m_gBufferFBO);
+      void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
+         size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit);
 
-      // Depth texture
-      {
-         TexParams depthParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT, true);
-         m_depthBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(depthParams);
-      }
-  
-      // Position texture
-      {
-         TexParams positionParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB16F, GL_RGB, GL_FLOAT, GL_REPEAT, true);
-         m_positionBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(positionParams);
-      }
-      
-      // Normal texture
-      {
-         TexParams normalParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB16F, GL_RGB, GL_FLOAT, GL_REPEAT, true);
-         m_normalBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(normalParams);
-      }
+   private:
 
-      // Albedo + Specular component texture
-      {
-         TexParams aldbedoSpecParams(m_windowWidth, m_windowHeight, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_REPEAT, true);
-         m_albedoWithSpecularBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(aldbedoSpecParams);
-      }
-
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_depthBuffer->GetTextureDescriptor(), 0);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_positionBuffer->GetTextureDescriptor(), 0);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, m_normalBuffer->GetTextureDescriptor(), 0);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, m_albedoWithSpecularBuffer->GetTextureDescriptor(), 0);
-
-      if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-         std::cout << "Framebuffer is not complete!" << std::endl;
-
-      uint32_t attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-      glDrawBuffers(3, attachments);
-
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
-   }
-
-   void DestroyGBuffer()
-   {
-      UnbindDeferredGBuffer();
-      glDeleteFramebuffers(1, &m_gBufferFBO);
-      RenderTargetPool::GetInstance()->TryToFreeMemory(m_depthBuffer);
-      RenderTargetPool::GetInstance()->TryToFreeMemory(m_positionBuffer);
-      RenderTargetPool::GetInstance()->TryToFreeMemory(m_normalBuffer);
-      RenderTargetPool::GetInstance()->TryToFreeMemory(m_albedoWithSpecularBuffer);
-   }
-
-};
+      void DestroyGBuffer();
+   };
+}
 

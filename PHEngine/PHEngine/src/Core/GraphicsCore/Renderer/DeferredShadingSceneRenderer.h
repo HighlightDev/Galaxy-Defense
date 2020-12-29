@@ -90,8 +90,6 @@ namespace Graphics
 
          void PrepareSceneProxiesForRender();
 
-         void DebugFramePanelsPass();
-
          void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
             const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies);
 
@@ -121,11 +119,12 @@ namespace Graphics
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
-#endif
 
          private:
-#if DEBUG
+
          void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+
+         void DebugFramePanelsPass();
 #endif
 		};
 
