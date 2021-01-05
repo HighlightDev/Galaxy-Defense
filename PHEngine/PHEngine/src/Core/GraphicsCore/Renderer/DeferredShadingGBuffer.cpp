@@ -6,7 +6,6 @@ namespace Graphics
    DeferredShadingGBuffer::DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo)
       : Framebuffer()
       , mViewPortInfo(viewPortInfo)
-      , m_gBufferFBO(0)
    {
       Init();
    }
@@ -117,11 +116,6 @@ namespace Graphics
    void DeferredShadingGBuffer::BindAlbedoWithSpecularTexture(int32_t slot) {
 
       m_albedoWithSpecularBuffer->BindTexture(slot);
-   }
-
-   int32_t DeferredShadingGBuffer::GetFramebufferDesc() const
-   {
-      return m_gBufferFBO;
    }
 
    void DeferredShadingGBuffer::CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,

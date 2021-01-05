@@ -16,8 +16,6 @@ namespace Graphics
 
       const ViewPortInfo mViewPortInfo;
 
-      uint32_t m_gBufferFBO;
-
       RenderTarget m_depthBuffer;
       RenderTarget m_positionBuffer;
       RenderTarget m_normalBuffer;
@@ -49,8 +47,6 @@ namespace Graphics
       void BindNormalTexture(int32_t slot);
 
       void BindAlbedoWithSpecularTexture(int32_t slot);
-
-      int32_t GetFramebufferDesc() const;
 
       void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
          size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit);
