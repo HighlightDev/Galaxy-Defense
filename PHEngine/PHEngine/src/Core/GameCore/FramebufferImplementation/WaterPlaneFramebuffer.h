@@ -29,6 +29,8 @@ namespace Game
 
          virtual void SetRenderbuffers() override;
 
+         virtual void BindTextureToRenderAttachment() override;
+
          virtual void CleanUp() override;
       };
    }

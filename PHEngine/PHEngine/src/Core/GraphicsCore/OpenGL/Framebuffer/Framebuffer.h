@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 #include <glm/vec4.hpp>
 #include <gl/glew.h>
 
@@ -13,14 +14,31 @@ namespace Graphics
 {
    class Framebuffer
    {
+      struct RenderAttachmentToTextureBinding
+      {
+      private:
+
+         using RenderAttachmentToTexture_t = std::unordered_map<int32_t, std::shared_ptr<ITexture>>;
+
+         std::unordered_map<uint32_t, RenderAttachmentToTexture_t> mRenderAttachmentToTextureMap;
+
+      public:
+         
+         void AddBinding(uint32_t framebufferIndex, int32_t framebufferAttachment, std::shared_ptr<ITexture> texture);
+
+         std::shared_ptr<ITexture> GetTextureByRenderAttachment(uint32_t framebufferIndex, int32_t framebufferAttachement) const;
+      };
+
    protected:
 
       std::vector<uint32_t> m_framebufferID;
       std::vector<uint32_t> m_renderbufferID;
-
+      RenderAttachmentToTextureBinding mBindings;
+      
       virtual void SetTextures() = 0;
       virtual void SetFramebuffers() = 0;
       virtual void SetRenderbuffers() = 0;
+      virtual void BindTextureToRenderAttachment() = 0;
 
       void GenFramebuffers(size_t countFramebuffers);
       void GenRenderbuffers(size_t countRenderbuffers);

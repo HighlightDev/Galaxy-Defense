@@ -1,6 +1,6 @@
 #version 400
 
-#define NO_LIT
+#define SHADING_MODEL_PBR
 #define MAX_DIR_LIGHT_COUNT 5
 #define MAX_POINT_LIGHT_COUNT 50
 #define SHADOWMAP_BIAS_DIR_LIGHT 0.005

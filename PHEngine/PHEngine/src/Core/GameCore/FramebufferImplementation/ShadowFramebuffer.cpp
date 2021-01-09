@@ -22,22 +22,27 @@ namespace Game
 
       void ShadowFramebuffer::SetFramebuffers()
       {
-         Base::GenFramebuffers(1);
-         Base::BindFramebuffer(1);
+         GenFramebuffers(1);
+         BindFramebuffer(1);
 
          const auto textureType = m_shadowmapTextureResource->GetTextureType();
 
          if (TextureType::TEXTURE_CUBE == textureType)
          {
-            Base::AttachCubeTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
+            AttachCubeTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
          }
          else if (TextureType::TEXTURE_2D == textureType)
          {
-            Base::Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
+            Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
          }
 
          glDrawBuffer(GL_NONE);
          glReadBuffer(GL_NONE);
+      }
+
+      void ShadowFramebuffer::BindTextureToRenderAttachment()
+      {
+         mBindings.AddBinding(1, GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
       }
 
       void ShadowFramebuffer::SetRenderbuffers()

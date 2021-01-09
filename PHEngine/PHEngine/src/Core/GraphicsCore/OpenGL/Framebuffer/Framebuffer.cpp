@@ -1,7 +1,25 @@
 #include "Framebuffer.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Graphics
 {
+
+   void Framebuffer::RenderAttachmentToTextureBinding::AddBinding(uint32_t framebufferIndex, int32_t framebufferAttachment, std::shared_ptr<ITexture> texture)
+   {
+      assert(mRenderAttachmentToTextureMap.count(framebufferIndex) == 0 || mRenderAttachmentToTextureMap.at(framebufferIndex).count(framebufferAttachment) == 0);
+
+      mRenderAttachmentToTextureMap[framebufferIndex].emplace(framebufferAttachment, texture);
+   }
+
+   std::shared_ptr<ITexture> Framebuffer::RenderAttachmentToTextureBinding::GetTextureByRenderAttachment(uint32_t framebufferIndex, int32_t framebufferAttachement) const
+   {
+      std::shared_ptr<ITexture> resultTexture;
+
+      if (mRenderAttachmentToTextureMap.count(framebufferIndex) && mRenderAttachmentToTextureMap.at(framebufferIndex).count(framebufferAttachement))
+         resultTexture = mRenderAttachmentToTextureMap.at(framebufferIndex).at(framebufferAttachement);
+
+      return resultTexture;
+   }
 
    Framebuffer::Framebuffer()
    {
@@ -92,6 +110,7 @@ namespace Graphics
    {
       SetTextures();
       SetFramebuffers();
+      BindTextureToRenderAttachment();
       SetRenderbuffers();
    }
 

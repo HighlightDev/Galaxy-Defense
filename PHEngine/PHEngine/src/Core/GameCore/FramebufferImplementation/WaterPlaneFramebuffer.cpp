@@ -41,6 +41,13 @@ namespace Game
          Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, DepthTexture->GetTextureDescriptor());
       }
 
+      void WaterPlaneFramebuffer::BindTextureToRenderAttachment()
+      {
+         mBindings.AddBinding(1, GL_COLOR_ATTACHMENT0, ReflectionTexture);
+         mBindings.AddBinding(2, GL_COLOR_ATTACHMENT0, RefractionTexture);
+         mBindings.AddBinding(2, GL_DEPTH_ATTACHMENT, DepthTexture);
+      }
+
       void WaterPlaneFramebuffer::SetRenderbuffers()
       {
          /*Attach 1 depthbuffer*/

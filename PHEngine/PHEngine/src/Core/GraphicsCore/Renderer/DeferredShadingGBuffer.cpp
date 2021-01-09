@@ -64,6 +64,14 @@ namespace Graphics
 
    }
 
+   void DeferredShadingGBuffer::BindTextureToRenderAttachment()
+   {
+      mBindings.AddBinding(1, GL_DEPTH_ATTACHMENT, m_depthBuffer);
+      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT0, m_positionBuffer);
+      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT1, m_normalBuffer);
+      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT2, m_albedoWithSpecularBuffer);
+   }
+
    void DeferredShadingGBuffer::CleanUp()
    {
       Framebuffer::CleanUp();
