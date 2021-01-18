@@ -3,8 +3,8 @@
 namespace Graphics
 {
 
-   ProjectedShadowInfo::ProjectedShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource)
-      : m_shadowAtlasCellResource(shadowAtlasCellResource)
+   ProjectedShadowInfo::ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest)
+      : mShadowmapAtlasRequest(shadowmapAtlasRequest)
       , m_shadowFramebuffer(nullptr)
       , m_shadowBiasMatrix(
          0.5f, 0, 0, 0,
@@ -13,13 +13,14 @@ namespace Graphics
          0.5f, 0.5f, 0.5f, 1)
       , mPlayerPositionOffset(0)
       , bShadowmapDirty(true)
+      , mShadowmapHandler(nullptr)
    {
    }
 
    ProjectedShadowInfo::~ProjectedShadowInfo()
    {
       DeallocateFramebuffer();
-      m_shadowAtlasCellResource.DeallocateTextureAtlasByRequestId();
+      TextureAtlasFactory::GetInstance()->DeallocateTextureAtlasByRequestId(mShadowmapAtlasRequest.MyRequestId);
    }
 
    void ProjectedShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const
@@ -29,9 +30,9 @@ namespace Graphics
 
    void ProjectedShadowInfo::AllocateFramebuffer() const
    {
-      if (!m_shadowFramebuffer)
+      if (!m_shadowFramebuffer && mShadowmapHandler)
       {
-         m_shadowFramebuffer = std::make_shared<ShadowFramebuffer>(m_shadowAtlasCellResource.GetTextureAtlasCellResource()->GetAtlasResource());
+         m_shadowFramebuffer = std::make_shared<ShadowFramebuffer>(mShadowmapHandler->GetAtlasResource());
          m_shadowFramebuffer->UnbindFramebuffer();
       }
    }
@@ -44,10 +45,10 @@ namespace Graphics
    std::shared_ptr<ITexture> ProjectedShadowInfo::GetAtlasResource() const {
 
       std::shared_ptr<ITexture> result;
-      auto resourceObtainer = m_shadowAtlasCellResource.GetTextureAtlasCellResource();
-      if (resourceObtainer)
+     
+      if (mShadowmapHandler)
       {
-         result = resourceObtainer->GetAtlasResource();
+         result = mShadowmapHandler->GetAtlasResource();
       }
       return result;
    }

@@ -207,7 +207,8 @@ namespace Game {
             {
                const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
 
-               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize));
+               auto rezolution = glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize);
+               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
                dirShadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
             }
 

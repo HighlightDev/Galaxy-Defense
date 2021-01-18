@@ -1,4 +1,5 @@
 #include "CubemapSceneProxy.h"
+#include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
 
 namespace Graphics
 {
@@ -23,7 +24,7 @@ namespace Graphics
 
       void CubemapSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         std::shared_ptr<TextureAtlasHandler> texHandler = m_textureObtainer.GetTextureAtlasCellResource();
+         std::shared_ptr<TextureAtlasHandler> texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
          if (texHandler && texHandler->GetTextureType() == TextureType::TEXTURE_CUBE)
          {
             std::shared_ptr<ITexture> texture = texHandler->GetAtlasResource();

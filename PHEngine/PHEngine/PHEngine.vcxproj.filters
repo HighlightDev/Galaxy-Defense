@@ -1525,9 +1525,6 @@
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1951,6 +1948,12 @@
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2146,9 +2149,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp">
@@ -2401,6 +2401,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

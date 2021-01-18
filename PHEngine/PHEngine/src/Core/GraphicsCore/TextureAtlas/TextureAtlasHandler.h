@@ -5,12 +5,19 @@
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlas.h"
 
 #include <memory>
+#include <glm/vec4.hpp>
 
 using namespace Graphics::Texture;
 
 namespace Graphics
 {
+   struct ITextureAtlasBuildedNotify
+   {
+      virtual void NotifyTextureAtlasBuilded() = 0;
+   };
+
    struct TextureAtlasHandler
+      : public ITextureAtlasBuildedNotify
    {
    protected:
 
@@ -43,6 +50,8 @@ namespace Graphics
 
       TextureAtlasCell m_atlasCell;
 
+      glm::vec4 mTextureAtlasOffset;
+
    public:
 
       Texture2dAtlasHandler(const std::shared_ptr<ITexture>& resource, const TextureAtlasCell& cell)
@@ -56,6 +65,38 @@ namespace Graphics
       {
          return m_atlasCell;
       }
+
+      glm::vec4 GetTextureAtlasOffset() const {
+
+         return mTextureAtlasOffset;
+      }
+
+      virtual void NotifyTextureAtlasBuilded() override
+      {
+         CalculatePosOffsetShadowMapAtlas();
+      }
+
+   private:
+
+      void CalculatePosOffsetShadowMapAtlas() {
+
+         auto texAtlasCell = GetAtlasCell();
+
+         float x = static_cast<float>(texAtlasCell.X);
+         float y = static_cast<float>(texAtlasCell.Y);
+         float width = static_cast<float>(texAtlasCell.Width);
+         float height = static_cast<float>(texAtlasCell.Height);
+
+         float invShadowMapWidth = 1.0f / static_cast<float>(texAtlasCell.TotalShadowMapWidth);
+         float invShadowMapHeight = 1.0f / static_cast<float>(texAtlasCell.TotalShadowMapHeight);
+
+         float x_start = x * invShadowMapWidth;
+         float y_start = y * invShadowMapHeight;
+         float x_offset = width * invShadowMapWidth;
+         float y_offset = height * invShadowMapHeight;
+
+         mTextureAtlasOffset = glm::vec4(x_start, y_start, x_offset, y_offset);
+      }
    };
 
    struct TextureCubeAtlasHandler : public TextureAtlasHandler
@@ -65,5 +106,10 @@ namespace Graphics
       {
          m_texType = TextureType::TEXTURE_CUBE;
       }
+
+      virtual void NotifyTextureAtlasBuilded() override
+      {
+      }
+
    };
 }

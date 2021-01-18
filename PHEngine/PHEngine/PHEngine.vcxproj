@@ -385,6 +385,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\MainThirdPersonCamera.h" />
@@ -512,7 +513,7 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h" />
-    <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.h" />
+    <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasCell.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasHandler.h" />
@@ -936,7 +937,7 @@
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\LazyTextureAtlasObtainer.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />

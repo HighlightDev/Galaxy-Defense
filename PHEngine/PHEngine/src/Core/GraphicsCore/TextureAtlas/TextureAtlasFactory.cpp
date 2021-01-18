@@ -1,6 +1,7 @@
 #include "TextureAtlasFactory.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
-#include "LazyTextureAtlasObtainer.h"
+#include "TextureAtlasSpaceRequest.h"
+#include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
 
 #include <algorithm>
 #include <GL/glew.h>
@@ -20,12 +21,12 @@ namespace Graphics
    {
    }
 
-   void TextureAtlasFactory::AddTextureCubeAtlasReservation(size_t requestId, glm::ivec2 size)
+   void TextureAtlasFactory::AddTextureCubeAtlasReservation(size_t requestId, const glm::ivec2& size)
    {
       CubemapReservations.emplace_back(std::make_pair(requestId, size));
    }
 
-   void TextureAtlasFactory::AddTextureAtlasReservation(size_t requestId, glm::ivec2 size)
+   void TextureAtlasFactory::AddTextureAtlasReservation(size_t requestId, const glm::ivec2& size)
    {
       if (Reservations.size() == 0)
       {
@@ -56,16 +57,16 @@ namespace Graphics
       }
    }
 
-   LazyTextureAtlasObtainer TextureAtlasFactory::AddTextureAtlasRequest(glm::ivec2 size)
+   TextureAtlasSpaceRequest TextureAtlasFactory::AddTextureAtlasRequest(const glm::ivec2& size)
    {
-      LazyTextureAtlasObtainer obtainer;
+      TextureAtlasSpaceRequest obtainer;
       AddTextureAtlasReservation(obtainer.MyRequestId, size);
       return obtainer;
    }
 
-   LazyTextureAtlasObtainer TextureAtlasFactory::AddTextureCubeAtlasRequest(glm::ivec2 size)
+   TextureAtlasSpaceRequest TextureAtlasFactory::AddTextureCubeAtlasRequest(const glm::ivec2& size)
    {
-      LazyTextureAtlasObtainer obtainer;
+      TextureAtlasSpaceRequest obtainer;
       AddTextureCubeAtlasReservation(obtainer.MyRequestId, size);
       return obtainer;
    }
@@ -119,7 +120,15 @@ namespace Graphics
          {
             atlas.ShrinkReservedMemory();
             atlas.AllocateReservedMemory();
-            m_textureAtlases.push_back(std::make_shared<TextureAtlas2D>(atlas));
+            auto texAtlas = std::make_shared<TextureAtlas2D>(atlas);
+            m_textureAtlases.push_back(texAtlas);
+
+            auto texAtlas2D = std::static_pointer_cast<TextureAtlas2D>(texAtlas);
+            for (auto cellPair : texAtlas2D->Cells)
+            {
+               mTextureAtlasHandlers[cellPair.first] = std::make_shared<Texture2dAtlasHandler>(texAtlas2D->m_atlasTexture, cellPair.second);
+            }
+
          }
       }
 
@@ -135,7 +144,11 @@ namespace Graphics
       { 
          TextureAtlasCube atlas(it->first, std::make_tuple(it->second, it->second, it->second, it->second, it->second, it->second));
          atlas.AllocateReservedMemory();
-         m_textureAtlases.push_back(std::make_shared<TextureAtlasCube>(atlas));
+         auto texAtlas = std::make_shared<TextureAtlasCube>(atlas);
+         m_textureAtlases.push_back(texAtlas);
+
+         mTextureAtlasHandlers[texAtlas->m_sizes.first] = std::make_shared<TextureCubeAtlasHandler>(texAtlas->m_atlasTexture);
+
       }
    }
 
@@ -143,36 +156,18 @@ namespace Graphics
    {
       AllocateTexture2dAtlasSpace();
       AllocateTextureCubeSpace();
+
+      std::for_each(mTextureAtlasHandlers.begin(), mTextureAtlasHandlers.end(), [](const auto& texAtlasHandlerPair) { texAtlasHandlerPair.second->NotifyTextureAtlasBuilded(); });
+
+      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, TextureType::TEXTURE_2D);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, TextureType::TEXTURE_CUBE);
+
    }
 
    std::shared_ptr<TextureAtlasHandler> TextureAtlasFactory::GetTextureAtlasCellByRequestId(size_t requestId) const
    {
-      std::shared_ptr<TextureAtlasHandler> result;
-
-      for (auto& atlas : m_textureAtlases)
-      {
-         if (atlas->GetType() == TextureType::TEXTURE_2D)
-         {
-            TextureAtlas2D* ptr = static_cast<TextureAtlas2D*>(atlas.get());
-            std::map<size_t, TextureAtlasCell>::const_iterator it = ptr->Cells.find(requestId);
-            if (it != ptr->Cells.end())
-            {
-               result = std::make_shared<Texture2dAtlasHandler>(atlas->m_atlasTexture, it->second);
-               break;
-            }
-         }
-         else if (atlas->GetType() == TextureType::TEXTURE_CUBE)
-         {
-            TextureAtlasCube* ptr = static_cast<TextureAtlasCube*>(atlas.get());
-            if (ptr->m_sizes.first == requestId)
-            {
-               result = std::make_shared<TextureCubeAtlasHandler>(std::move(atlas->m_atlasTexture));
-               break;
-            }
-         }
-      }
-
-      return result;
+      assert(mTextureAtlasHandlers.count(requestId));
+      return mTextureAtlasHandlers.at(requestId);
    }
 
    void TextureAtlasFactory::DeallocateTextureAtlasByRequestId(size_t requestId)

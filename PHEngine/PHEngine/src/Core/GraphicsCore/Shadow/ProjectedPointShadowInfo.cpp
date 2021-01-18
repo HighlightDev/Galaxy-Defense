@@ -2,35 +2,37 @@
 
 namespace Graphics
 {
-   ProjectedPointShadowInfo::ProjectedPointShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource)
+   ProjectedPointShadowInfo::ProjectedPointShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource)
       : ProjectedShadowInfo(shadowAtlasCellResource)
    {
       m_lightType = LightType::POINT_LIGHT;
+      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
    ProjectedPointShadowInfo::~ProjectedPointShadowInfo()
    {
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
    }
 
    std::shared_ptr<TextureCubeAtlasHandler> ProjectedPointShadowInfo::GetTextureCubeHandler() const
    {
-      std::shared_ptr<TextureCubeAtlasHandler> result;
+      return  std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
+   }
 
-      auto resourceObtainer = m_shadowAtlasCellResource.GetTextureAtlasCellResource();
-      if (resourceObtainer && resourceObtainer->GetTextureType() == TextureType::TEXTURE_CUBE)
+   void ProjectedPointShadowInfo::ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   {
+      if (TextureType::TEXTURE_CUBE == std::get<0>(data))
       {
-         result = std::static_pointer_cast<TextureCubeAtlasHandler>(resourceObtainer);
+         mShadowmapHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
+         Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
       }
-
-      return result;
    }
 
    void ProjectedPointShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const 
    {
       ProjectedShadowInfo::BindShadowFramebuffer(clearDepthBuffer);
 
-      auto texAtlas = GetTextureCubeHandler();
-      auto rezolution = texAtlas->GetAtlasResource()->GetTextureRezolution();
+      auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureRezolution();
       const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
       m_shadowFramebuffer->RenderToFBO(1, 0, 0, rezolution.x, rezolution.y, clearDepthFlag);
    }

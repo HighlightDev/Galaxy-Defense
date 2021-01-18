@@ -11,7 +11,7 @@ namespace Game
    struct CubemapComponentData : public ComponentData
    {
       CubemapComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
-         std::string&& vsPath, std::string&& fsPath, const LazyTextureAtlasObtainer& textureObtainer)
+         std::string&& vsPath, std::string&& fsPath, const TextureAtlasSpaceRequest& textureObtainer)
 
          : ComponentData(gameObjectName)
          , m_translation(std::move(translation))
@@ -28,7 +28,7 @@ namespace Game
       glm::vec3 m_scale;
       std::string m_vsShaderPath;
       std::string m_fsShaderPath;
-      LazyTextureAtlasObtainer m_textureObtainer;
+      TextureAtlasSpaceRequest m_textureObtainer;
    };
 
 }

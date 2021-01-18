@@ -4,29 +4,35 @@
 namespace Graphics
 {
 
-   ProjectedDirShadowInfo::ProjectedDirShadowInfo(const LazyTextureAtlasObtainer& shadowAtlasCellResource,
+   ProjectedDirShadowInfo::ProjectedDirShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest,
       const float shadowOrthoHalfExtent)
-      : ProjectedShadowInfo(shadowAtlasCellResource)
+      : ProjectedShadowInfo(shadowmapAtlasRequest)
       , mShadowOrthoHalfExtent(shadowOrthoHalfExtent)
    {    
       m_lightType = LightType::DIRECTIONAL_LIGHT;
+      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
    ProjectedDirShadowInfo::~ProjectedDirShadowInfo()
    {
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
    }
 
    std::shared_ptr<Texture2dAtlasHandler> ProjectedDirShadowInfo::GetTexture2dHandler() const
    {
-      std::shared_ptr<Texture2dAtlasHandler> result;
+      return std::static_pointer_cast<Texture2dAtlasHandler>(mShadowmapHandler);
+   }
 
-      auto resourceObtainer = m_shadowAtlasCellResource.GetTextureAtlasCellResource();
-      if (resourceObtainer && resourceObtainer->GetTextureType() == TextureType::TEXTURE_2D)
+   void ProjectedDirShadowInfo::ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   {
+      if (TextureType::TEXTURE_2D == std::get<0>(data))
       {
-         result = std::static_pointer_cast<Texture2dAtlasHandler>(resourceObtainer);
+         mShadowmapHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
+
+         Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
       }
 
-      return result;
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
    }
 
    glm::mat4 ProjectedDirShadowInfo::GetShadowViewMatrix() const
@@ -69,30 +75,15 @@ namespace Graphics
       glDrawBuffer(GL_NONE);
    }
 
-   glm::vec4 ProjectedDirShadowInfo::GetPosOffsetShadowMapAtlas() const
+   glm::vec4 ProjectedDirShadowInfo::GetTextureAtlasOffset() const
    {
-      glm::vec4 resultOffset;
-     
-      auto texAtlas = GetTexture2dHandler();
+      glm::vec4 result;
 
-      if (texAtlas)
+      if (mShadowmapHandler)
       {
-         float x = static_cast<float>(texAtlas->GetAtlasCell().X);
-         float y = static_cast<float>(texAtlas->GetAtlasCell().Y);
-         float width = static_cast<float>(texAtlas->GetAtlasCell().Width);
-         float height = static_cast<float>(texAtlas->GetAtlasCell().Height);
-
-         float invShadowMapWidth = 1.0f / static_cast<float>(texAtlas->GetAtlasCell().TotalShadowMapWidth);
-         float invShadowMapHeight = 1.0f / static_cast<float>(texAtlas->GetAtlasCell().TotalShadowMapHeight);
-
-         float x_start = x * invShadowMapWidth;
-         float y_start = y * invShadowMapHeight;
-         float x_offset = width * invShadowMapWidth;
-         float y_offset = height * invShadowMapHeight;
-
-         resultOffset = glm::vec4(x_start, y_start, x_offset, y_offset);
+         result = GetTexture2dHandler()->GetTextureAtlasOffset();
       }
 
-      return resultOffset;
+      return result;
    }
 }

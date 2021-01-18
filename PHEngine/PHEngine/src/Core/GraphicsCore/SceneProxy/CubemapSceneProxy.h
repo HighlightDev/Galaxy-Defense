@@ -17,7 +17,7 @@ namespace Graphics
 
          std::shared_ptr<CubemapShader> m_shaderCubemap;
 
-         LazyTextureAtlasObtainer m_textureObtainer;
+         TextureAtlasSpaceRequest m_textureObtainer;
 
       protected:
 

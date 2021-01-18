@@ -1,11 +1,11 @@
 #pragma once
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GraphicsCore/TextureAtlas/TextureAtlasHandler.h"
+#include "Core/GraphicsCore/TextureAtlas/TextureAtlasSpaceRequest.h"
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlas.h"
 
 #include <memory>
-#include <map>
+#include <unordered_map>
 #include <stdint.h>
 #include <glm/vec2.hpp>
 #include <vector>
@@ -14,15 +14,15 @@ using namespace Graphics::Texture;
 
 namespace Graphics
 {
-   class LazyTextureAtlasObtainer;
+   class TextureAtlasSpaceRequest;
 
    class TextureAtlasFactory
    {
-      friend class LazyTextureAtlasObtainer;
-
       static std::unique_ptr<TextureAtlasFactory> m_instance;
 
       std::vector<std::shared_ptr<TextureAtlas>> m_textureAtlases;
+
+      std::unordered_map<size_t /*request id*/, std::shared_ptr<TextureAtlasHandler>> mTextureAtlasHandlers;
 
       std::vector<std::pair<size_t, glm::ivec2>> Reservations;
       
@@ -46,9 +46,13 @@ namespace Graphics
 
       void AllocateAtlasSpace();
 
-      LazyTextureAtlasObtainer AddTextureAtlasRequest(glm::ivec2 size);
+      TextureAtlasSpaceRequest AddTextureAtlasRequest(const glm::ivec2& size);
 
-      LazyTextureAtlasObtainer AddTextureCubeAtlasRequest(glm::ivec2 size);
+      TextureAtlasSpaceRequest AddTextureCubeAtlasRequest(const glm::ivec2& size);
+
+      std::shared_ptr<TextureAtlasHandler> GetTextureAtlasCellByRequestId(size_t requestId) const;
+
+      void DeallocateTextureAtlasByRequestId(size_t requestId);
 
    private:
 
@@ -56,13 +60,9 @@ namespace Graphics
 
       void AllocateTextureCubeSpace();
 
-      std::shared_ptr<TextureAtlasHandler> GetTextureAtlasCellByRequestId(size_t requestId) const;
+      void AddTextureAtlasReservation(size_t requestId, const glm::ivec2& size);
 
-      void DeallocateTextureAtlasByRequestId(size_t requestId);
-
-      void AddTextureAtlasReservation(size_t requestId, glm::ivec2 size);
-
-      void AddTextureCubeAtlasReservation(size_t requestId, glm::ivec2 size);
+      void AddTextureCubeAtlasReservation(size_t requestId, const glm::ivec2& size);
 
       void SplitChunk(std::vector<TextureAtlasCell>& emptyChunks, std::vector<TextureAtlasCell>::const_iterator splittingEmptyChunkIt, TextureAtlasCell& splitCenterCell);
    };

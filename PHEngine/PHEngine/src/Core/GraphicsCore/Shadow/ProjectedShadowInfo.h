@@ -4,7 +4,7 @@
 #include <glm/mat4x4.hpp>
 
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
-#include "Core/GraphicsCore/TextureAtlas/LazyTextureAtlasObtainer.h"
+#include "Core/GraphicsCore/TextureAtlas/TextureAtlasSpaceRequest.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/FramebufferImplementation/ShadowFramebuffer.h"
 
@@ -28,7 +28,7 @@ namespace Graphics
 
       LightType m_lightType;
 
-      LazyTextureAtlasObtainer m_shadowAtlasCellResource;
+      TextureAtlasSpaceRequest mShadowmapAtlasRequest;
 
       mutable std::shared_ptr<ShadowFramebuffer> m_shadowFramebuffer;
 
@@ -38,9 +38,11 @@ namespace Graphics
 
       glm::vec3 mPlayerPositionOffset;
 
+      std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
+
    public:
 
-      ProjectedShadowInfo(const LazyTextureAtlasObtainer & shadowAtlasCellResource);
+      ProjectedShadowInfo(const TextureAtlasSpaceRequest & shadowmapAtlasRequest);
 
       virtual ~ProjectedShadowInfo();
 

@@ -272,7 +272,7 @@ namespace Graphics
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                  m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetPosOffsetShadowMapAtlas());
+                  m_deferredLightShader->SetDirectionalLightShadowMapSlot(dirLightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
                   m_deferredLightShader->SetDirectionalLightShadowMatrix(dirLightIndex, shadowInfo->GetShadowMatrix());
 
                   dirShadowMapCount++;
