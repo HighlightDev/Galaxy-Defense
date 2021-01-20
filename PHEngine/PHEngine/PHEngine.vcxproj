@@ -385,6 +385,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.h" />
     <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
@@ -529,7 +530,7 @@
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SkeletalMeshRenderData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\RenderTargetPool.h" />
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\Framebuffer.h" />
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.h" />
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\WaterPlaneRenderData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h" />
@@ -864,6 +865,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingGBuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.cpp" />
@@ -946,7 +948,7 @@
     <ClCompile Include="src\Core\GameCore\Components\InputComponent.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\RenderTargetPool.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\Framebuffer.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.cpp" />
     <ClCompile Include="src\Core\InterThreadCommunicationMgr.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.cpp" />
     <ClCompile Include="src\Core\GameCore\PlayerController.cpp" />

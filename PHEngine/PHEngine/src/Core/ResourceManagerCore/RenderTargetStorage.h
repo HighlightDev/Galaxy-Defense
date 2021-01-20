@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "Core/GraphicsCore/OpenGL/Framebuffer/Framebuffer.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferBundle.h"
 
 using namespace Graphics;
 
@@ -15,7 +15,7 @@ namespace Resources
 
       ~RenderTargetStorage();
 
-      void AddRenderTarget(std::shared_ptr<Framebuffer> frambuffer);
+      void AddRenderTarget(std::shared_ptr<FramebufferBundle> frambuffer);
    };
 }
 

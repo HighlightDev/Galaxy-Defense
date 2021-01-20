@@ -1,7 +1,8 @@
 #pragma once
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
-#include "Core/GraphicsCore/OpenGL/Framebuffer/Framebuffer.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferBundle.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferObject.h"
 
 using namespace Graphics::Texture;
 using namespace Resources;
@@ -10,7 +11,7 @@ namespace Graphics
 {
 
    class DeferredShadingGBuffer
-      : public Framebuffer
+      : public FramebufferBundle
    {
       using RenderTarget = std::shared_ptr<ITexture>;
 
@@ -20,6 +21,8 @@ namespace Graphics
       RenderTarget m_positionBuffer;
       RenderTarget m_normalBuffer;
       RenderTarget m_albedoWithSpecularBuffer;
+
+      FramebufferObject mFramebuffer;
 
    public:
 
@@ -33,8 +36,6 @@ namespace Graphics
       virtual void SetFramebuffers() override;
 
       virtual void SetRenderbuffers() override;
-
-      virtual void BindTextureToRenderAttachment() override;
 
       virtual void CleanUp() override;
 

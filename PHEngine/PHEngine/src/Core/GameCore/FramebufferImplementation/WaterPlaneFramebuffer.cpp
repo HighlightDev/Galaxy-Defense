@@ -23,47 +23,36 @@ namespace Game
          TexParams reflectionTexParams(500, 500, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT);
          TexParams refractionTexParams(reflectionTexParams);
          TexParams depthTexParams(500, 500, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_DEPTH24_STENCIL8, GL_DEPTH_COMPONENT, GL_FLOAT, GL_REPEAT);
-         ReflectionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(reflectionTexParams);
-         RefractionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(refractionTexParams);
-         DepthTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(depthTexParams);
+
+         mReflectionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(reflectionTexParams);
+         mRefractionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(refractionTexParams);
+         mDepthTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(depthTexParams);
+         mReflectionFBO.AddRenderTexture(GL_COLOR_ATTACHMENT0, mReflectionTexture);
+         mRefractionFBO.AddRenderTexture(GL_COLOR_ATTACHMENT0, mRefractionTexture);
+         mRefractionFBO.AddRenderTexture(GL_DEPTH_ATTACHMENT, mDepthTexture);
       }
 
       void WaterPlaneFramebuffer::SetFramebuffers()
       {
-         /*Create 2 framebuffers :
-            1 - for reflection
-            2 - for refraction*/
-         GenFramebuffers(2);
-         BindFramebuffer(1);
-         Attach2DTextureToFramebuffer(GL_COLOR_ATTACHMENT0, ReflectionTexture->GetTextureDescriptor());
-         BindFramebuffer(2);
-         Attach2DTextureToFramebuffer(GL_COLOR_ATTACHMENT0, RefractionTexture->GetTextureDescriptor());
-         Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, DepthTexture->GetTextureDescriptor());
-      }
-
-      void WaterPlaneFramebuffer::BindTextureToRenderAttachment()
-      {
-         mBindings.AddBinding(1, GL_COLOR_ATTACHMENT0, ReflectionTexture);
-         mBindings.AddBinding(2, GL_COLOR_ATTACHMENT0, RefractionTexture);
-         mBindings.AddBinding(2, GL_DEPTH_ATTACHMENT, DepthTexture);
+         mReflectionFBO.CreateFramebuffer();
+         mRefractionFBO.CreateFramebuffer();
       }
 
       void WaterPlaneFramebuffer::SetRenderbuffers()
       {
-         /*Attach 1 depthbuffer*/
-         GenRenderbuffers(1);
-         BindFramebuffer(1);
-         BindRenderBuffer(1);
-         SetRenderbufferStorage(GL_DEPTH24_STENCIL8, ReflectionTexture->GetTextureRezolution());
-         AttachRenderbufferToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT);
+         mReflectionFBO.BindFramebuffer(false);
+         mReflectionFBO.CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, mReflectionTexture->GetTextureRezolution());
       }
 
       void WaterPlaneFramebuffer::CleanUp()
       {
-         RenderTargetPool::GetInstance()->TryToFreeMemory(ReflectionTexture);
-         RenderTargetPool::GetInstance()->TryToFreeMemory(RefractionTexture);
-         RenderTargetPool::GetInstance()->TryToFreeMemory(DepthTexture);
-         Framebuffer::CleanUp();          
+         mReflectionFBO.UnbindFramebuffer();
+         mReflectionFBO.CleanUp();
+         mRefractionFBO.UnbindFramebuffer();
+         mRefractionFBO.CleanUp();
+         RenderTargetPool::GetInstance()->TryToFreeMemory(mReflectionTexture);
+         RenderTargetPool::GetInstance()->TryToFreeMemory(mRefractionTexture);
+         RenderTargetPool::GetInstance()->TryToFreeMemory(mDepthTexture);
       }
 
    }

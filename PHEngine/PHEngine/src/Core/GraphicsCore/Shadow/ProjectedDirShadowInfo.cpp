@@ -71,8 +71,7 @@ namespace Graphics
       auto texAtlas = GetTexture2dHandler();
       auto atlas_cell = texAtlas->GetAtlasCell();
       const GLbitfield clearDepthFlag = clearDepthBuffer ? GL_DEPTH_BUFFER_BIT : 0;
-      m_shadowFramebuffer->RenderToFBO(1, atlas_cell.X, atlas_cell.Y, atlas_cell.Width, atlas_cell.Height, clearDepthFlag);
-      glDrawBuffer(GL_NONE);
+      m_shadowFramebuffer->RenderToTexture(atlas_cell.X, atlas_cell.Y, atlas_cell.Width, atlas_cell.Height, clearDepthFlag);
    }
 
    glm::vec4 ProjectedDirShadowInfo::GetTextureAtlasOffset() const

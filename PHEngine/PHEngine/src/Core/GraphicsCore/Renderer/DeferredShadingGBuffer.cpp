@@ -4,7 +4,7 @@ namespace Graphics
 {
    // Buffer should be recreated when window size was changed
    DeferredShadingGBuffer::DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo)
-      : Framebuffer()
+      : FramebufferBundle()
       , mViewPortInfo(viewPortInfo)
    {
       Init();
@@ -17,7 +17,7 @@ namespace Graphics
 
    void DeferredShadingGBuffer::SetTextures()
    {
-      // Create all empty textures and attach them to gBuffer Framebuffer Object
+      // Create all empty textures and attach them to gBuffer FramebufferBundle Object
 
       // Depth texture
       {
@@ -42,44 +42,31 @@ namespace Graphics
          TexParams aldbedoSpecParams(mViewPortInfo.Width, mViewPortInfo.Height, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_REPEAT, true);
          m_albedoWithSpecularBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(aldbedoSpecParams);
       }
+   
+      mFramebuffer.AddRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
+      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
+      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
+      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoWithSpecularBuffer);
    }
 
    void DeferredShadingGBuffer::SetFramebuffers()
    {
-      GenFramebuffers(1);
-      BindFramebuffer(1);
-      Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_depthBuffer);
-      Attach2DTextureToFramebuffer(GL_COLOR_ATTACHMENT0, m_positionBuffer);
-      Attach2DTextureToFramebuffer(GL_COLOR_ATTACHMENT1, m_normalBuffer);
-      Attach2DTextureToFramebuffer(GL_COLOR_ATTACHMENT2, m_albedoWithSpecularBuffer);
-
-      uint32_t attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-      glDrawBuffers(3, attachments);
-
-      UnbindFramebuffer();
+      mFramebuffer.CreateFramebuffer();
    }
 
    void DeferredShadingGBuffer::SetRenderbuffers()
    {
-
-   }
-
-   void DeferredShadingGBuffer::BindTextureToRenderAttachment()
-   {
-      mBindings.AddBinding(1, GL_DEPTH_ATTACHMENT, m_depthBuffer);
-      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT0, m_positionBuffer);
-      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT1, m_normalBuffer);
-      mBindings.AddBinding(1, GL_COLOR_ATTACHMENT2, m_albedoWithSpecularBuffer);
    }
 
    void DeferredShadingGBuffer::CleanUp()
    {
-      Framebuffer::CleanUp();
       DestroyGBuffer();
    }
 
    void DeferredShadingGBuffer::DestroyGBuffer()
    {
+      mFramebuffer.UnbindFramebuffer();
+      mFramebuffer.CleanUp();
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_depthBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_positionBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_normalBuffer);
@@ -88,22 +75,12 @@ namespace Graphics
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
    {
-      BindFramebuffer(1);
-      uint32_t attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-      glDrawBuffers(3, attachments);
-
-      glViewport(mViewPortInfo.OriginX, mViewPortInfo.OriginY, mViewPortInfo.Width, mViewPortInfo.Height);
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      RenderToFBO(mFramebuffer, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::UnbindDeferredGBuffer() {
 
       UnbindFramebuffer();
-      glClearColor(0, 0, 0, 0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      uint32_t attachment = GL_COLOR_ATTACHMENT0;
-      glDrawBuffers(1, &attachment);
    }
 
    void DeferredShadingGBuffer::BindDepthTexture(int32_t slot) {
@@ -129,7 +106,8 @@ namespace Graphics
    void DeferredShadingGBuffer::CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
       size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit)
    {
-      BindFramebuffer(1);
+      mFramebuffer.BindFramebuffer(false);
+
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
       glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);

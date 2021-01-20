@@ -5,9 +5,9 @@ namespace Game
    namespace FramebufferImpl
    {
 
-      ShadowFramebuffer::ShadowFramebuffer(sharedTexture_t shadowmapTextureResource)
-         : Framebuffer()
-         , m_shadowmapTextureResource(shadowmapTextureResource)
+      ShadowFramebuffer::ShadowFramebuffer(std::shared_ptr<ITexture> shadowMapTexture)
+         : FramebufferBundle()
+         , mShadowMapTexture(shadowMapTexture)
       {
          Init();
       }
@@ -18,31 +18,12 @@ namespace Game
 
       void ShadowFramebuffer::SetTextures()
       {
+         mFramebuffer.AddRenderTexture(GL_DEPTH_ATTACHMENT, mShadowMapTexture);
       }
 
       void ShadowFramebuffer::SetFramebuffers()
       {
-         GenFramebuffers(1);
-         BindFramebuffer(1);
-
-         const auto textureType = m_shadowmapTextureResource->GetTextureType();
-
-         if (TextureType::TEXTURE_CUBE == textureType)
-         {
-            AttachCubeTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
-         }
-         else if (TextureType::TEXTURE_2D == textureType)
-         {
-            Attach2DTextureToFramebuffer(GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
-         }
-
-         glDrawBuffer(GL_NONE);
-         glReadBuffer(GL_NONE);
-      }
-
-      void ShadowFramebuffer::BindTextureToRenderAttachment()
-      {
-         mBindings.AddBinding(1, GL_DEPTH_ATTACHMENT, m_shadowmapTextureResource);
+         mFramebuffer.CreateFramebuffer();
       }
 
       void ShadowFramebuffer::SetRenderbuffers()
@@ -51,8 +32,11 @@ namespace Game
 
       void ShadowFramebuffer::CleanUp()
       {
-         Base::CleanUp();
       }
 
+      void ShadowFramebuffer::RenderToTexture(const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag)
+      {
+         RenderToFBO(mFramebuffer, viewportX, viewportY, viewportWidth, viewportHeight, clearFlag);
+      }
    }
 }

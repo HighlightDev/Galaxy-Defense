@@ -1453,9 +1453,6 @@
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\Framebuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1954,6 +1951,12 @@
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2095,9 +2098,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\InterThreadCommunicationMgr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\Framebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.cpp">
@@ -2404,6 +2404,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

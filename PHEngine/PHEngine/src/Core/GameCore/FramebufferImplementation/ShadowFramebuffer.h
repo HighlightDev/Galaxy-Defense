@@ -1,5 +1,6 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Framebuffer/Framebuffer.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferBundle.h"
+#include "Core/GraphicsCore/OpenGL/Framebuffer/FramebufferObject.h"
 
 using namespace Graphics;
 
@@ -9,24 +10,27 @@ namespace Game
    {
 
       class ShadowFramebuffer :
-         public Framebuffer
+         public FramebufferBundle
       {
-         using sharedTexture_t = std::shared_ptr<ITexture>;
-         using Base = Framebuffer;
+         using Base = FramebufferBundle;
 
-         sharedTexture_t m_shadowmapTextureResource;
+         std::shared_ptr<ITexture> mShadowMapTexture;
+
+         FramebufferObject mFramebuffer;
 
       public:
 
-         ShadowFramebuffer(sharedTexture_t shadowmapTextureResource);
+         ShadowFramebuffer(std::shared_ptr<ITexture> shadowMapTexture);
 
          virtual ~ShadowFramebuffer();
 
          virtual void SetTextures() override;
          virtual void SetFramebuffers()  override;
          virtual void SetRenderbuffers() override;
-         virtual void BindTextureToRenderAttachment() override;
          virtual void CleanUp() override;
+
+
+         void RenderToTexture(const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag);
       };
    }
 }

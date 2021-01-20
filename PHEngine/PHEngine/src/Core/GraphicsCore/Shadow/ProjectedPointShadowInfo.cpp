@@ -34,7 +34,7 @@ namespace Graphics
 
       auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureRezolution();
       const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
-      m_shadowFramebuffer->RenderToFBO(1, 0, 0, rezolution.x, rezolution.y, clearDepthFlag);
+      m_shadowFramebuffer->RenderToTexture(0, 0, rezolution.x, rezolution.y, clearDepthFlag);
    }
 
    ProjectedPointShadowInfo::six_mat4x4 ProjectedPointShadowInfo::GetShadowViewMatrices() const
