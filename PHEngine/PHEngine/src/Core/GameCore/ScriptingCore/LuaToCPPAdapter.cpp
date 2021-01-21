@@ -16,6 +16,12 @@
 namespace Game
 {
 
+   ComponentData* LuaToCPPAdapter::CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
+      const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceSqrRadius, ProjectedShadowInfo* shadowInfo)
+   {
+      return new PointLightComponentData(gameObjectName, translation, attenutation, radianceSqrRadius, ambient, diffuse, specular, shadowInfo);
+   }
+
    ComponentData* LuaToCPPAdapter::CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo)
    {
@@ -37,7 +43,11 @@ namespace Game
    {
       std::shared_ptr<Component> result;
 
-      if ("DirLightComponent" == componentType)
+      if ("PointLightComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::PointLight, PointLightComponent>(*componentData);
+      }
+      else if ("DirLightComponent" == componentType)
       {
          result = scene->CreateComponent_GameThread<Game::ComponentMetaType::DirectionalLight, DirectionalLightComponent>(*componentData);
       }

@@ -15,23 +15,39 @@ function CreateTestLevel(host)
 		local direction = { x = -0.5, y = -0.5, z = 0 }
 		local ambient = { x = 0.2, y = 0.2, z = 0.2}
 		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
-		local specular = { x = 0.7, y = 0.7, z = 0.7}
+		local specular = { x = 0.7, y = 0.7, z = 0.7 }
 
-		local shadowInfo = _CreateDirLightProjectedShadowInfo(host, 512)
+		local attenuation = { x = 0, y = 0, z = 0 }
+		local pointLTranslation = {x = 0 , y = 2, z = 0}
 
-		local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp", rotation.x, rotation.y, rotation.z,
+		local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
+		local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
+
+		local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
+			rotation.x, rotation.y, rotation.z,
 			direction.x, direction.y, direction.z,
 			ambient.x, ambient.y, ambient.z,
 			diffuse.x, diffuse.y, diffuse.z,
 			specular.x, specular.y, specular.z,
-			shadowInfo
+			dirShadowInfo
 			)
 
-		local dirLightComponent = _CreateComponent(host, "DirLightComponent", dirLightComponentData)
+		local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
+			pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
+			ambient.x, ambient.y, ambient.z,
+			diffuse.x, diffuse.y, diffuse.z,
+			specular.x, specular.y, specular.z,
+			attenuation.x, attenuation.y, attenuation.z,
+			49.0,
+			pointShadowInfo
+			)
 
-		_AttachComponentToActor(host, lightActor, dirLightComponent)
+		-- local dirLightComponent = _CreateComponent(host, "DirLightComponent", dirLightComponentData)
+		local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
+
+		-- _AttachComponentToActor(host, lightActor, dirLightComponent)
+		_AttachComponentToActor(host, lightActor, pointLightComponent)
 	end
-
 
 	-- ****************************BIG GROUND***************************** --
 	local material = _CreateMaterial(host, "Pbs.m")

@@ -1,6 +1,7 @@
 #include "LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedPointShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
@@ -35,8 +36,9 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor*)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
-      LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t)>::Register(mLuaInstance, "_CreateDirLightProjectedShadowInfo");
+      LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t, std::string)>::Register(mLuaInstance, "_CreateLightProjectionShadowInfo");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreatePointLightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
@@ -148,6 +150,16 @@ namespace Game
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData), std::get<6>(dirLightComponentData));
    }
 
+   /* -------------------  Create point light component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*>& pointLightComponentData)
+   {
+      return LuaToCPPAdapter::CreatePointLightComponentData(
+         std::get<0>(pointLightComponentData), std::get<1>(pointLightComponentData),
+         std::get<2>(pointLightComponentData), std::get<3>(pointLightComponentData),
+         std::get<4>(pointLightComponentData), std::get<5>(pointLightComponentData),
+         std::get<6>(pointLightComponentData), std::get<7>(pointLightComponentData));
+   }
+
    /* -------------------  Create physics component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData)
    {
@@ -178,16 +190,27 @@ namespace Game
       return LuaToCPPAdapter::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
    }
 
-   /* -------------------  Create dir light projection shadow info --------------------*/
-   ProjectedShadowInfo* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData)
+   /* -------------------  Create light projection shadow info --------------------*/
+   ProjectedShadowInfo* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<int32_t, std::string>& lightProjectionData)
    {
-      const int32_t shadowAtlasSize = std::get<0>(dirLightProjectionData);
-      const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+      ProjectedShadowInfo* shadowProjInfo = nullptr;
 
-      auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
-      ProjectedShadowInfo* dirShadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
+      const int32_t shadowAtlasSize = std::get<0>(lightProjectionData);
+      const std::string& lightType = std::get<1>(lightProjectionData);
 
-      return dirShadowProjInfo;
+      if (lightType == "point_light")
+      {
+         auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
+         shadowProjInfo = new ProjectedPointShadowInfo(directionalLightTextureAtlasRequest);
+      }
+      else if (lightType == "direct_light")
+      {
+         auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
+         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+         shadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
+      }
+
+      return shadowProjInfo;
    }
 
    /* -------------------  Create material --------------------*/

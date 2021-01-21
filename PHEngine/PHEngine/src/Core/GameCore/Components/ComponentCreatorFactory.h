@@ -209,7 +209,7 @@ namespace Game
          {
             const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
             PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(mData.GameObjectName, mData.Translation, mData.Rotation, renderData);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.Translation, renderData);
          }
       };
 

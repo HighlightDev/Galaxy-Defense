@@ -118,7 +118,7 @@ namespace Labyrinth
       }
 
       // Stub
-      bool bDeser = true;
+      bool bDeser = false;
       if (bDeser)
       {
          DeserializeLevel("test_serialize.xml");

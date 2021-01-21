@@ -49,6 +49,10 @@ namespace Game
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
 
+      /* -------------------  Create point light component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3,
+         glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*>& pointLightComponentData);
+
       /* -------------------  Create input component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData);
 
@@ -64,8 +68,8 @@ namespace Game
       /* -------------------  Create skybox component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, IMaterial*>& skyboxComponentData);
 
-      /* -------------------  Create dir light projection shadow info --------------------*/
-      ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t>& dirLightProjectionData);
+      /* -------------------  Create light projection shadow info --------------------*/
+      ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t, std::string>& dirLightProjectionData);
 
       /* -------------------  Create material --------------------*/
       IMaterial* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder>& buildMaterial);
