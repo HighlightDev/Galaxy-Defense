@@ -5,7 +5,7 @@
 namespace Graphics
 {
 
-   class ProjectedDirShadowInfo 
+   class ProjectedDirectionalLightShadowInfo 
       : public ProjectedShadowInfo
       , public Event::TextureAtlasGeneratedEvent
    {
@@ -21,9 +21,9 @@ namespace Graphics
 
    public:      
 
-      ProjectedDirShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
+      ProjectedDirectionalLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
 
-      virtual ~ProjectedDirShadowInfo();
+      virtual ~ProjectedDirectionalLightShadowInfo();
 
       virtual void BindShadowFramebuffer(bool clearDepthBuffer) const override;
 

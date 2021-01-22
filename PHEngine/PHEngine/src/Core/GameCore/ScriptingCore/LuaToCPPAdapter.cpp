@@ -47,7 +47,7 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::PointLight, PointLightComponent>(*componentData);
       }
-      else if ("DirLightComponent" == componentType)
+      else if ("DirectionalLightComponent" == componentType)
       {
          result = scene->CreateComponent_GameThread<Game::ComponentMetaType::DirectionalLight, DirectionalLightComponent>(*componentData);
       }

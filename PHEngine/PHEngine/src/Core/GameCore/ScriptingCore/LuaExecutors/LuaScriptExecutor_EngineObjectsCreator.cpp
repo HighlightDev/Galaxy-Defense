@@ -1,7 +1,7 @@
 #include "LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
-#include "Core/GraphicsCore/Shadow/ProjectedPointShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
@@ -201,13 +201,13 @@ namespace Game
       if (lightType == "point_light")
       {
          auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
-         shadowProjInfo = new ProjectedPointShadowInfo(directionalLightTextureAtlasRequest);
+         shadowProjInfo = new ProjectedPointLightShadowInfo(directionalLightTextureAtlasRequest);
       }
       else if (lightType == "direct_light")
       {
          auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
          const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
-         shadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
+         shadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
       }
 
       return shadowProjInfo;

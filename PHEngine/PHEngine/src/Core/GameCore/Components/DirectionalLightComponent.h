@@ -1,7 +1,6 @@
 #pragma once
 
 #include "LightComponent.h"
-#include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
 #include "Core/GraphicsCore/RenderData/DirectionalLightRenderData.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"

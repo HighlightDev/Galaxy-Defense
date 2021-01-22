@@ -42,7 +42,7 @@ function CreateTestLevel(host)
 			pointShadowInfo
 			)
 
-		-- local dirLightComponent = _CreateComponent(host, "DirLightComponent", dirLightComponentData)
+		-- local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
 		local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
 
 		-- _AttachComponentToActor(host, lightActor, dirLightComponent)

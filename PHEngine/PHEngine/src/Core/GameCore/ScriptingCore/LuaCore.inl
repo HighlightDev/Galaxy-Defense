@@ -636,4 +636,37 @@ namespace Game
          return LuaInnerCore::LuaCallbackReturnValue<ILuaExecutor, args_t, RetType>::PushToLua(state, instance, parameterPackInstance);
       }
    };
+
+
+   template <typename ILuaExecutor, typename FunctorType>
+   struct LuaRegisterCallbackA;
+
+   template <typename ILuaExecutor, typename RetType, typename... Args>
+   struct LuaRegisterCallbackA<ILuaExecutor, RetType(Args...)>
+   {
+      using type = LuaRegisterCallback<ILuaExecutor, RetType(Args...)>;
+      using args_t = std::tuple<Args...>;
+
+      static void Register(const LuaWrapper& instanceWrapper, const std::string& functionName)
+      {
+         lua_register(instanceWrapper.GetState(), functionName.c_str(), type::Wrapper);
+      }
+
+   private:
+      static int Wrapper(lua_State* state)
+      {
+         static constexpr size_t argsCount = sizeof...(Args);
+         assert((lua_gettop(state) != 0, "Missing host data"));
+
+         ILuaExecutor* instance = static_cast<ILuaExecutor*>(lua_touserdata(state, 1));
+         assert(instance);
+
+         int32_t stackIndex = LuaInnerCore::CollectLuaArgsCount_Inner<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
+
+         args_t parameterPackInstance;
+         LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance, stackIndex);
+
+         return LuaInnerCore::LuaCallbackReturnValue<ILuaExecutor, args_t, RetType>::PushToLua(state, instance, parameterPackInstance);
+      }
+   };
 }

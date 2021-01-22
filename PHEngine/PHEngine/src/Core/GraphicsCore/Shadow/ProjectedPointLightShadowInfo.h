@@ -7,7 +7,7 @@
 namespace Graphics
 {
 
-   class ProjectedPointShadowInfo
+   class ProjectedPointLightShadowInfo
       : public ProjectedShadowInfo
       , public Event::TextureAtlasGeneratedEvent
    {
@@ -27,9 +27,9 @@ namespace Graphics
 
    public:
 
-      ProjectedPointShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource);
+      ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource);
 
-      virtual ~ProjectedPointShadowInfo();
+      virtual ~ProjectedPointLightShadowInfo();
 
       virtual void BindShadowFramebuffer(bool clearDepthBuffer) const override;
 

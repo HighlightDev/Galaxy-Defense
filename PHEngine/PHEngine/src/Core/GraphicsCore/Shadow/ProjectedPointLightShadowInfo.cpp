@@ -1,25 +1,25 @@
-#include "ProjectedPointShadowInfo.h"
+#include "ProjectedPointLightShadowInfo.h"
 
 namespace Graphics
 {
-   ProjectedPointShadowInfo::ProjectedPointShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource)
+   ProjectedPointLightShadowInfo::ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource)
       : ProjectedShadowInfo(shadowAtlasCellResource)
    {
       m_lightType = LightType::POINT_LIGHT;
       Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
-   ProjectedPointShadowInfo::~ProjectedPointShadowInfo()
+   ProjectedPointLightShadowInfo::~ProjectedPointLightShadowInfo()
    {
       Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
    }
 
-   std::shared_ptr<TextureCubeAtlasHandler> ProjectedPointShadowInfo::GetTextureCubeHandler() const
+   std::shared_ptr<TextureCubeAtlasHandler> ProjectedPointLightShadowInfo::GetTextureCubeHandler() const
    {
       return  std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedPointShadowInfo::ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   void ProjectedPointLightShadowInfo::ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data)
    {
       if (TextureType::TEXTURE_CUBE == std::get<0>(data))
       {
@@ -28,7 +28,7 @@ namespace Graphics
       }
    }
 
-   void ProjectedPointShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const 
+   void ProjectedPointLightShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const 
    {
       ProjectedShadowInfo::BindShadowFramebuffer(clearDepthBuffer);
 
@@ -37,29 +37,29 @@ namespace Graphics
       m_shadowFramebuffer->RenderToTexture(0, 0, rezolution.x, rezolution.y, clearDepthFlag);
    }
 
-   ProjectedPointShadowInfo::six_mat4x4 ProjectedPointShadowInfo::GetShadowViewMatrices() const
+   ProjectedPointLightShadowInfo::six_mat4x4 ProjectedPointLightShadowInfo::GetShadowViewMatrices() const
    {
       return m_shadowViewMatrix;
    }
 
-   ProjectedPointShadowInfo::six_mat4x4 ProjectedPointShadowInfo::GetShadowProjectionMatrices() const
+   ProjectedPointLightShadowInfo::six_mat4x4 ProjectedPointLightShadowInfo::GetShadowProjectionMatrices() const
    {
       return m_shadowProjectionMatrix;
    }
 
-   void ProjectedPointShadowInfo::SetShadowViewMatrices(const six_mat4x4& shadowViewMatrices)
+   void ProjectedPointLightShadowInfo::SetShadowViewMatrices(const six_mat4x4& shadowViewMatrices)
    {
       m_shadowViewMatrix = shadowViewMatrices;
    }
 
-   void ProjectedPointShadowInfo::SetShadowProjectionMatrix(const six_mat4x4& shadowProjectionMatrices)
+   void ProjectedPointLightShadowInfo::SetShadowProjectionMatrix(const six_mat4x4& shadowProjectionMatrices)
    {
       m_shadowProjectionMatrix = shadowProjectionMatrices;
    }
 
-   ProjectedPointShadowInfo::six_mat4x4 ProjectedPointShadowInfo::GetShadowMatrix() const
+   ProjectedPointLightShadowInfo::six_mat4x4 ProjectedPointLightShadowInfo::GetShadowMatrix() const
    {
-      ProjectedPointShadowInfo::six_mat4x4 result;
+      ProjectedPointLightShadowInfo::six_mat4x4 result;
 
       // 0
       glm::mat4 shadowMatrix(1);

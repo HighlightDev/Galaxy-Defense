@@ -1,51 +1,46 @@
-#include "PointLightComponent.h"
-#include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "SpotlightComponent.h"
+#include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 namespace Game
 {
 
-   PointLightComponent::PointLightComponent(const std::string& gameObjectName, glm::vec3 translation, const PointLightRenderData& renderData)
-      : LightComponent(gameObjectName, translation, glm::vec3(0), glm::vec3(1))
+   SpotlightComponent::SpotlightComponent(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const SpotlightRenderData& renderData)
+      : PointLightComponent(gameObjectName, translation, renderData)
       , m_renderData(renderData)
    {
-
+      mTransform->Rotator = glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z)));
    }
 
-   PointLightComponent::~PointLightComponent()
+   SpotlightComponent::~SpotlightComponent()
    {
-
    }
 
-   std::shared_ptr<LightSceneProxy> PointLightComponent::CreateSceneProxy() const
+   std::shared_ptr<LightSceneProxy> SpotlightComponent::CreateSceneProxy() const
    {
-      return std::make_shared<PointLightSceneProxy>(this);
+      return std::make_shared<SpotlightSceneProxy>(this);
    }
 
-   ComponentType PointLightComponent::GetComponentType() const
-   {
-      return LIGHT_COMPONENT;
-   }
-
-   void PointLightComponent::Tick(const float deltaTime)
+   void SpotlightComponent::Tick(const float deltaTime)
    {
       Base::Tick(deltaTime);
-    
    }
 
-   void PointLightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void SpotlightComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
 
-      auto lightCompData = std::make_shared<SerializeDataPointLightComponent>();
+      auto lightCompData = std::make_shared<SerializeDataSpotlightComponent>();
 
       lightCompData->ComponentName = GameObjectName;
       lightCompData->AmbientLight = m_renderData.Ambient;
       lightCompData->DiffuseLight = m_renderData.Diffuse;
       lightCompData->SpecularLight = m_renderData.Specular;
       lightCompData->Translation = GetTranslation();
+      lightCompData->Rotation = GetRotationEuler();
       lightCompData->Attenuation = m_renderData.Attenuation;
       lightCompData->RadianceSqrRadius = m_renderData.RadianceSqrRadius;
+      lightCompData->Cutoff = m_renderData.Cutoff;
 
       const bool bHasShadowMap = !!m_renderData.ShadowInfo;
 

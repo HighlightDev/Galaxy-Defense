@@ -25,38 +25,44 @@
 				<value5 size="dynamic">
 					<value0>
 						<polymorphic_id>2147483649</polymorphic_id>
-						<polymorphic_name>SerializeDataDirLightComponent</polymorphic_name>
+						<polymorphic_name>SerializeDataPointLightComponent</polymorphic_name>
 						<ptr_wrapper>
 							<id>2147483649</id>
 							<data>
-								<value0>MainLightComp</value0>
+								<value0>SecondaryLightComp</value0>
 								<value1>
-									<value0>-0.5</value0>
-									<value1>-0.5</value1>
+									<value0>0</value0>
+									<value1>2</value1>
 									<value2>0</value2>
 								</value1>
 								<value2>
-									<value0>-180.00006103515625</value0>
-									<value1>-31.853948593139648</value1>
-									<value2>-180.00009155273438</value2>
+									<value0>0</value0>
+									<value1>-0</value1>
+									<value2>0</value2>
 								</value2>
 								<value3>
+									<value0>0</value0>
+									<value1>0</value1>
+									<value2>0</value2>
+								</value3>
+								<value4>49</value4>
+								<value5>
 									<value0>0.20000000298023224</value0>
 									<value1>0.20000000298023224</value1>
 									<value2>0.20000000298023224</value2>
-								</value3>
-								<value4>
+								</value5>
+								<value6>
 									<value0>1.6799999475479126</value0>
 									<value1>1.5</value1>
 									<value2>1.5</value2>
-								</value4>
-								<value5>
+								</value6>
+								<value7>
 									<value0>0.69999998807907104</value0>
 									<value1>0.69999998807907104</value1>
 									<value2>0.69999998807907104</value2>
-								</value5>
-								<value6>true</value6>
-								<value7>512</value7>
+								</value7>
+								<value8>true</value8>
+								<value9>256</value9>
 							</data>
 						</ptr_wrapper>
 					</value0>
@@ -112,20 +118,35 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>texture</value0>
-											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
-										</value0>
-										<value1>
 											<value0>float</value0>
 											<value1>uvScale</value1>
 											<value2>10.000000</value2>
+										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
 										</value2>
+										<value3>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2></value2>
+										</value3>
+										<value4>
+											<value0>texture</value0>
+											<value1>roughnessMap</value1>
+											<value2></value2>
+										</value4>
+										<value5>
+											<value0>texture</value0>
+											<value1>ambientOcclusionMap</value1>
+											<value2></value2>
+										</value5>
 									</value2>
 								</value6>
 							</data>
@@ -145,9 +166,9 @@
 										<id>2147483652</id>
 										<data>
 											<value0>
-												<value0>49.759994506835938</value0>
-												<value1>0.75999987125396729</value1>
-												<value2>49.759994506835938</value2>
+												<value0>49.959999084472656</value0>
+												<value1>0.95999997854232788</value1>
+												<value2>49.959999084472656</value2>
 											</value0>
 										</data>
 									</ptr_wrapper>
@@ -172,8 +193,8 @@
 			<value2>
 				<value0>SmallGround</value0>
 				<value1>
-					<value0>6.7417793273925781</value0>
-					<value1>38.130420684814453</value1>
+					<value0>9.3031024932861328</value0>
+					<value1>9.9930572509765625</value1>
 					<value2>0</value2>
 				</value1>
 				<value2>
@@ -218,20 +239,35 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>texture</value0>
-											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
-										</value0>
-										<value1>
 											<value0>float</value0>
 											<value1>uvScale</value1>
 											<value2>1.000000</value2>
+										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
 										</value2>
+										<value3>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2></value2>
+										</value3>
+										<value4>
+											<value0>texture</value0>
+											<value1>roughnessMap</value1>
+											<value2></value2>
+										</value4>
+										<value5>
+											<value0>texture</value0>
+											<value1>ambientOcclusionMap</value1>
+											<value2></value2>
+										</value5>
 									</value2>
 								</value6>
 							</data>
@@ -260,9 +296,9 @@
 										<id>2147483656</id>
 										<data>
 											<value0>
-												<value0>7.7600002288818359</value0>
-												<value1>0.75999987125396729</value1>
-												<value2>7.7600002288818359</value2>
+												<value0>7.9600000381469727</value0>
+												<value1>0.95999997854232788</value1>
+												<value2>7.9600000381469727</value2>
 											</value0>
 										</data>
 									</ptr_wrapper>
@@ -287,14 +323,14 @@
 			<value3>
 				<value0>House</value0>
 				<value1>
-					<value0>9.9576139450073242</value0>
-					<value1>2.0924563407897949</value1>
-					<value2>0.019082095474004745</value2>
+					<value0>9.3031044006347656</value0>
+					<value1>12.49305534362793</value1>
+					<value2>-0.00016363312897738069</value2>
 				</value1>
 				<value2>
-					<value0>-0.00010930122516583651</value0>
-					<value1>0.18576079607009888</value1>
-					<value2>-0.00041424282244406641</value2>
+					<value0>-1.4544679061145871e-06</value0>
+					<value1>0.0007684579468332231</value1>
+					<value2>-2.1408470274764113e-05</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -333,14 +369,14 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>texture</value0>
-											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\city_house_2_Col.png</value2>
-										</value0>
-										<value1>
 											<value0>float</value0>
 											<value1>uvScale</value1>
 											<value2>1.000000</value2>
+										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\albedo\city_house_2_Col.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
@@ -352,6 +388,16 @@
 											<value1>metallicMap</value1>
 											<value2>..\..\PHEngine\res\texture\specularmap\city_house_2_Spec.png</value2>
 										</value3>
+										<value4>
+											<value0>texture</value0>
+											<value1>roughnessMap</value1>
+											<value2></value2>
+										</value4>
+										<value5>
+											<value0>texture</value0>
+											<value1>ambientOcclusionMap</value1>
+											<value2></value2>
+										</value5>
 									</value2>
 								</value6>
 							</data>
@@ -369,9 +415,9 @@
 										<id>2147483659</id>
 										<data>
 											<value0>
-												<value0>0.75999987125396729</value0>
-												<value1>1.2600002288818359</value1>
-												<value2>0.75999987125396729</value2>
+												<value0>0.95999997854232788</value0>
+												<value1>1.4600000381469727</value1>
+												<value2>0.95999997854232788</value2>
 											</value0>
 										</data>
 									</ptr_wrapper>
@@ -435,6 +481,11 @@
 											<value1>dayTexture</value1>
 											<value2>..\..\PHEngine\res\texture\cubemap\dayRight.png,..\..\PHEngine\res\texture\cubemap\dayLeft.png,..\..\PHEngine\res\texture\cubemap\dayTop.png,..\..\PHEngine\res\texture\cubemap\dayBottom.png,..\..\PHEngine\res\texture\cubemap\dayBack.png,..\..\PHEngine\res\texture\cubemap\dayFront.png</value2>
 										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>nightTexure</value1>
+											<value2></value2>
+										</value1>
 									</value2>
 								</value2>
 							</data>
@@ -445,9 +496,9 @@
 			<value5>
 				<value0>SkeletBuddy</value0>
 				<value1>
-					<value0>9.3422451019287109</value0>
-					<value1>41.677745819091797</value1>
-					<value2>5.1320185661315918</value2>
+					<value0>10</value0>
+					<value1>3.8332324028015137</value1>
+					<value2>10</value2>
 				</value1>
 				<value2>
 					<value0>0</value0>
@@ -505,20 +556,35 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>texture</value0>
-											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
-										</value0>
-										<value1>
 											<value0>float</value0>
 											<value1>uvScale</value1>
 											<value2>1.000000</value2>
+										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
 										</value2>
+										<value3>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2></value2>
+										</value3>
+										<value4>
+											<value0>texture</value0>
+											<value1>roughnessMap</value1>
+											<value2></value2>
+										</value4>
+										<value5>
+											<value0>texture</value0>
+											<value1>ambientOcclusionMap</value1>
+											<value2></value2>
+										</value5>
 									</value2>
 								</value6>
 							</data>
@@ -556,9 +622,9 @@
 							<data>
 								<value0>charMovementCompData</value0>
 								<value1>
-									<value0>0.48799684643745422</value0>
-									<value1>-0.2378554493188858</value1>
-									<value2>0.83981174230575562</value2>
+									<value0>-0.77653306722640991</value0>
+									<value1>-0.27026429772377014</value1>
+									<value2>-0.56916916370391846</value2>
 								</value1>
 								<value2>MainCamera</value2>
 							</data>

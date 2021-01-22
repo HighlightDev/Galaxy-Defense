@@ -2,7 +2,7 @@
 
 #include "LightSceneProxy.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 
 using namespace Game;
 
@@ -29,7 +29,7 @@ namespace Graphics
 
          virtual void PostLevelInit() override;
 
-         ProjectedDirShadowInfo* GetProjectedDirShadowInfo();
+         ProjectedDirectionalLightShadowInfo* GetProjectedDirShadowInfo();
 
          virtual LightSceneProxyType GetLightProxyType() const override;
 

@@ -385,8 +385,13 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h" />
+    <ClInclude Include="src\Core\GameCore\Components\SpotlightComponent.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedSpotlightShadowInfo.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\SpotlightComponentData.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.h" />
     <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h" />
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\SpotlightRenderData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\MainThirdPersonCamera.h" />
@@ -507,8 +512,8 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CubemapDepthShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderParams.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\BillboardRenderData.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedPointShadowInfo.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedDirShadowInfo.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedPointLightShadowInfo.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedDirectionalLightShadowInfo.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.h" />
     <ClInclude Include="src\Core\DebugCore\TextureRenderer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShader.h" />
@@ -865,6 +870,9 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\SpotlightComponent.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedSpotlightShadowInfo.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingGBuffer.cpp" />
@@ -932,8 +940,8 @@
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\BillboardComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CubemapDepthShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderParams.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedPointShadowInfo.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedDirShadowInfo.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedPointLightShadowInfo.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedDirectionalLightShadowInfo.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.cpp" />
     <ClCompile Include="src\Core\DebugCore\TextureRenderer.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthShader.cpp" />

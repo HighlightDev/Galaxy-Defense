@@ -268,7 +268,7 @@ namespace Graphics
          {
             if (dirLightProxy->IsEnabled())
             {
-               ProjectedDirShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
+               ProjectedDirectionalLightShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -286,7 +286,7 @@ namespace Graphics
          {
             if (pointLightProxy->IsEnabled())
             {
-               ProjectedPointShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
+               ProjectedPointLightShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);

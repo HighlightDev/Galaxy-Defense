@@ -25,7 +25,7 @@ namespace Graphics
 
       void DirectionalLightSceneProxy::PostLevelInit()
       {
-         auto shadowInfo = static_cast<ProjectedDirShadowInfo*>(m_shadowInfo);
+         auto shadowInfo = static_cast<ProjectedDirectionalLightShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
             const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
@@ -33,9 +33,9 @@ namespace Graphics
          }
       }
 
-      ProjectedDirShadowInfo* DirectionalLightSceneProxy::GetProjectedDirShadowInfo()
+      ProjectedDirectionalLightShadowInfo* DirectionalLightSceneProxy::GetProjectedDirShadowInfo()
       {
-         auto result = static_cast<ProjectedDirShadowInfo*>(GetShadowInfo());
+         auto result = static_cast<ProjectedDirectionalLightShadowInfo*>(GetShadowInfo());
          return result;
       }
 
@@ -46,7 +46,7 @@ namespace Graphics
 
       ProjectedShadowInfo* DirectionalLightSceneProxy::GetShadowInfo()
       {
-         auto shadowInfo = static_cast<ProjectedDirShadowInfo*>(m_shadowInfo);
+         auto shadowInfo = static_cast<ProjectedDirectionalLightShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
             if (IsTransformationDirty())

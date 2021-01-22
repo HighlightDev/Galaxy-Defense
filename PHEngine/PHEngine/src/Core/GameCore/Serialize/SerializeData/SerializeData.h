@@ -29,6 +29,7 @@ struct SerializeDataBase
       Material,
       DirectionalLight,
       PointLight,
+      Spotlight,
       CharacterMovement,
       Movement,
       Input,
@@ -168,7 +169,6 @@ struct SerializeDataPointLightComponent
    : public SerializeDataComponent
 {
    glm::vec3 Translation;
-   glm::vec3 Rotation;
 
    glm::vec3 Attenuation;
    float RadianceSqrRadius;
@@ -185,12 +185,33 @@ struct SerializeDataPointLightComponent
    {
       SerializeDataComponent::serialize(archive);
 
-      archive(Translation, Rotation, Attenuation, RadianceSqrRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
+      archive(Translation, Attenuation, RadianceSqrRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::PointLight;
+   }
+};
+
+struct SerializeDataSpotlightComponent
+   : public SerializeDataPointLightComponent
+{
+   glm::vec3 Rotation;
+
+   float Cutoff;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataPointLightComponent::serialize(archive);
+
+      archive(Rotation, Cutoff);
+   }
+
+   virtual SerializeDataType GetSerializeDataType() const override
+   {
+      return SerializeDataBase::SerializeDataType::Spotlight;
    }
 };
 
@@ -457,6 +478,7 @@ CEREAL_REGISTER_TYPE(SerializeDataStaticMesh);
 CEREAL_REGISTER_TYPE(SerializeDataSkeletalMesh);
 CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPointLightComponent);
+CEREAL_REGISTER_TYPE(SerializeDataSpotlightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataMaterial);
 CEREAL_REGISTER_TYPE(SerializeDataMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
@@ -471,6 +493,7 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataStaticMesh)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSkeletalMesh)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataDirLightComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPointLightComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSpotlightComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterMovementComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementComponent)

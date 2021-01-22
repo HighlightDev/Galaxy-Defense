@@ -12,7 +12,8 @@
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalSettings.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -209,7 +210,7 @@ namespace Game {
 
                auto rezolution = glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize);
                auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
-               dirShadowProjInfo = new ProjectedDirShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
+               dirShadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
             }
 
                auto dirLightCompData = LuaToCPPAdapter::CreateDirLightComponentData(dirLightSerData->ComponentName,
@@ -219,12 +220,33 @@ namespace Game {
                   dirLightSerData->SpecularLight, dirShadowProjInfo);
             
 
-               result = LuaToCPPAdapter::CreateComponentByString("DirLightComponent", dirLightCompData, scene);
+               result = LuaToCPPAdapter::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::PointLight:
          {
             logCompType = "PointLight";
+            SerializeDataPointLightComponent* pointLightSerData = static_cast<SerializeDataPointLightComponent*>(data.get());
+
+            ProjectedShadowInfo* pointLightShadowProjInfo = nullptr;
+            if (pointLightSerData->bHasShadowMap)
+            {
+               auto rezolution = glm::ivec2(pointLightSerData->ShadowMapSize, pointLightSerData->ShadowMapSize);
+               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(rezolution);
+               pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(directionalLightTextureAtlasRequest);
+            }
+
+            auto pointLightCompData = LuaToCPPAdapter::CreatePointLightComponentData(pointLightSerData->ComponentName,
+               pointLightSerData->Translation,
+               pointLightSerData->AmbientLight,
+               pointLightSerData->DiffuseLight,
+               pointLightSerData->SpecularLight,
+               pointLightSerData->Attenuation,
+               pointLightSerData->RadianceSqrRadius,
+               pointLightShadowProjInfo);
+
+
+            result = LuaToCPPAdapter::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Input:
