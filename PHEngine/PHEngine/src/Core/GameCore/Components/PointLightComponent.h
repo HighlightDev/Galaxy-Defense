@@ -2,14 +2,18 @@
 
 #include "LightComponent.h"
 #include "Core/GraphicsCore/RenderData/PointLightRenderData.h"
+#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
 
+using namespace Event;
+
 namespace Game
 {
-   class PointLightComponent :
-      public LightComponent
+   class PointLightComponent
+      : public LightComponent
+      , public PhysicsSimulationUpdatedEvent
    {
       using Base = LightComponent;
 
@@ -35,6 +39,10 @@ namespace Game
 
          return m_renderData;
       }
+
+   protected:
+
+      virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
    };
 }
 

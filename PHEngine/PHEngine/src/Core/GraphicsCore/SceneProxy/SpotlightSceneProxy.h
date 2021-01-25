@@ -26,11 +26,9 @@ namespace Graphics
 
          glm::vec3 GetPosition() const;
 
-         glm::vec3 GetAttenuation() const;
+         glm::vec3 GetTransformedDirectionVector(const glm::vec4& initialDirection) const;
 
-         float GetRadianceSqrRadius() const;
-
-         float GetCutoof() const;
+         float GetCutoff() const;
 
          virtual LightSceneProxyType GetLightProxyType() const override;
 

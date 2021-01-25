@@ -1,6 +1,11 @@
 #include "PointLightComponent.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+
+using namespace Graphics;
 
 namespace Game
 {
@@ -9,12 +14,18 @@ namespace Game
       : LightComponent(gameObjectName, translation, glm::vec3(0), glm::vec3(1))
       , m_renderData(renderData)
    {
-
+      if (renderData.ShadowInfo)
+      {
+         PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+      }
    }
 
    PointLightComponent::~PointLightComponent()
    {
-
+      if (m_renderData.ShadowInfo)
+      {
+         PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+      }
    }
 
    std::shared_ptr<LightSceneProxy> PointLightComponent::CreateSceneProxy() const
@@ -61,6 +72,24 @@ namespace Game
       lightCompData->bHasShadowMap = bHasShadowMap;
 
       actorData.ComponentsData.emplace_back(lightCompData);
+   }
+
+   void PointLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
+   {
+      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      {
+         constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+         {
+            auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+            ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+            if (shadowInfo)
+            {
+               shadowInfo->SetIsShadowMapDirty(true);
+            }
+         });
+      }
    }
 
 }

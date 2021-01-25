@@ -1972,6 +1972,9 @@
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShaderCommon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

@@ -38,7 +38,7 @@ function CreateTestLevel(host)
 			diffuse.x, diffuse.y, diffuse.z,
 			specular.x, specular.y, specular.z,
 			attenuation.x, attenuation.y, attenuation.z,
-			49.0,
+			1000.0,
 			pointShadowInfo
 			)
 

@@ -27,7 +27,7 @@ namespace Graphics
          {
             const float aspectRatio = shadowInfo->GetAtlasResource()->GetTextureAspectRatio();
             const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, std::sqrtf(m_radianceSqrRadius));
-          
+
             shadowInfo->SetShadowProjectionMatrix(shadowProjectionMatrix);
          }
       }
@@ -48,9 +48,14 @@ namespace Graphics
          return result;
       }
 
-      float SpotlightSceneProxy::GetCutoof() const
+      float SpotlightSceneProxy::GetCutoff() const
       {
          return mCutoff;
+      }
+
+      glm::vec3 SpotlightSceneProxy::GetTransformedDirectionVector(const glm::vec4& initialDirection) const
+      {
+         return m_relativeMatrix * initialDirection;
       }
 
       ProjectedShadowInfo* SpotlightSceneProxy::GetShadowInfo()
@@ -60,17 +65,14 @@ namespace Graphics
          {
             if (IsTransformationDirty())
             {
-               //glm::vec3 lightPosition = GetPosition();
-               //ProjectedPointLightShadowInfo::six_mat4x4 matrices;
-               //matrices[0] = glm::lookAt(lightPosition, lightPosition + glm::vec3(1.0, 0.0, 0.0), -AXIS_UP);
-               //matrices[1] = glm::lookAt(lightPosition, lightPosition + glm::vec3(-1.0, 0.0, 0.0), -AXIS_UP);
-               //matrices[2] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 1.0, 0.0), AXIS_FORWARD);
-               //matrices[3] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, -1.0, 0.0), -AXIS_FORWARD);
-               //matrices[4] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, 1.0), -AXIS_UP);
-               //matrices[5] = glm::lookAt(lightPosition, lightPosition + glm::vec3(0.0, 0.0, -1.0), -AXIS_UP);
+               const glm::vec4 lightDefaultDirection(1.0f, 0.0f, 0.0f, 0.0f);
+               glm::vec3 direction = GetTransformedDirectionVector(lightDefaultDirection);
+               direction = glm::normalize(direction);
+               const glm::vec3& origin = GetPosition();
 
-               //shadowInfo->SetShadowViewMatrices(matrices);
-               //SetIsTransformationDirty(false);
+               const glm::mat4& shadowViewMatrix = glm::lookAt(origin, origin + direction, -AXIS_UP);
+               shadowInfo->SetShadowViewMatrix(shadowViewMatrix);
+               SetIsTransformationDirty(false);
             }
          }
 

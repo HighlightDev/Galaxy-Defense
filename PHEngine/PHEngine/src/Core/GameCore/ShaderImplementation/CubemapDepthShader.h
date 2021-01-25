@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
+#include "DepthShaderCommon.h"
 
 #include <array>
 
@@ -40,11 +41,11 @@ namespace Game
 
       };
 
-      template <bool IsSkeletalMesh>
+      template <eShaderMeshType meshType>
       class CubemapDepthShader;
 
       template <>
-      class CubemapDepthShader<false>
+      class CubemapDepthShader<eShaderMeshType::NON_SKELETAL>
          : public CubemapDepthShaderBase
       {
       public:
@@ -55,7 +56,7 @@ namespace Game
       };
 
       template <>
-      class CubemapDepthShader<true>
+      class CubemapDepthShader<eShaderMeshType::SKELETAL>
          : public CubemapDepthShaderBase
       {
          UniformArray u_boneMatrices;

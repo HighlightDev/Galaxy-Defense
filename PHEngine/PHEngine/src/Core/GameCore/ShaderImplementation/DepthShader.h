@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
+#include "DepthShaderCommon.h"
 
 #include <string>
 
@@ -29,12 +30,12 @@ namespace Game
          void SetTransformationMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
       };
 
-      template <bool IsSkeletalMesh>
+      template <eShaderMeshType type>
       class DepthShader;
 
       template <>
-      class DepthShader<false> :
-         public DepthShaderBase
+      class DepthShader<eShaderMeshType::NON_SKELETAL>
+         : public DepthShaderBase
       {
          using Base = ShaderBase;
 
@@ -49,8 +50,8 @@ namespace Game
       };
 
       template <>
-      class DepthShader<true> :
-         public DepthShaderBase
+      class DepthShader<eShaderMeshType::SKELETAL>
+         : public DepthShaderBase
       {
          using Base = ShaderBase;
 

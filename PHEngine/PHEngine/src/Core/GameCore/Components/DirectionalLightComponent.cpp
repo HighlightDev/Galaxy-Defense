@@ -18,14 +18,20 @@ namespace Game
       : LightComponent(gameObjectName, glm::vec3(0), rotation, glm::vec3(1))
       , m_renderData(renderData)
    {
-      PlayerMovedEvent::GetInstance()->AddListener(this);
-      PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+      if (renderData.ShadowInfo)
+      {
+         PlayerMovedEvent::GetInstance()->AddListener(this);
+         PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+      }
    }
 
    DirectionalLightComponent::~DirectionalLightComponent()
    {
-      PlayerMovedEvent::GetInstance()->RemoveListener(this);
-      PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+      if (m_renderData.ShadowInfo)
+      {
+         PlayerMovedEvent::GetInstance()->RemoveListener(this);
+         PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+      }
    }
 
    std::shared_ptr<LightSceneProxy> DirectionalLightComponent::CreateSceneProxy() const

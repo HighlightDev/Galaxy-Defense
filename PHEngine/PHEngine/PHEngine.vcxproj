@@ -385,6 +385,7 @@
     <None Include="res\shaders\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShaderCommon.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\SpotlightComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedSpotlightShadowInfo.h" />

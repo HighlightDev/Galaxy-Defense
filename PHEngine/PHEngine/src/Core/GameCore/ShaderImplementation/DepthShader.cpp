@@ -25,13 +25,13 @@ namespace Game
          u_shadowProjectionMatrix.LoadUniform(shadowProjectionMatrix);
       }
 
-      DepthShader<false>::DepthShader(const ShaderParams& params)
+      DepthShader<eShaderMeshType::NON_SKELETAL>::DepthShader(const ShaderParams& params)
          : DepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void DepthShader<false>::SetShaderPredefine() 
+      void DepthShader<eShaderMeshType::NON_SKELETAL>::SetShaderPredefine() 
       {
       }
 
@@ -40,19 +40,19 @@ namespace Game
 #define MaxWeights 4
 #define MaxBones 155
 
-      DepthShader<true>::DepthShader(const ShaderParams& params)
+      DepthShader<eShaderMeshType::SKELETAL>::DepthShader(const ShaderParams& params)
          : DepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void DepthShader<true>::AccessAllUniformLocations(uint32_t shaderProgramId)
+      void DepthShader<eShaderMeshType::SKELETAL>::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          DepthShaderBase::AccessAllUniformLocations(shaderProgramId);
          u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramId);
       }
 
-      void DepthShader<true>::SetShaderPredefine() 
+      void DepthShader<eShaderMeshType::SKELETAL>::SetShaderPredefine() 
       {
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxWeights", MaxWeights);
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxBones", MaxBones);
@@ -61,7 +61,7 @@ namespace Game
 #undef MaxWeights
 #undef MaxBones
 
-      void DepthShader<true>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
+      void DepthShader<eShaderMeshType::SKELETAL>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
       {
          for (size_t index = 0; index < skinningMatrices.size(); index++)
             u_boneMatrices.LoadUniform(index, skinningMatrices[index]);

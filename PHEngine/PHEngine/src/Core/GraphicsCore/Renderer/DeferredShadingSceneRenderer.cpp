@@ -52,10 +52,10 @@ namespace Graphics
          ShaderParams shaderParams7("CubemapDepthNonSkeletal Shader", folderManager->GetShadersPath() + "cubemapShadowNonSkeletalVS.glsl", folderManager->GetShadersPath() + "cubemapShadowFS.glsl", folderManager->GetShadersPath() + "cubemapShadowGS.glsl", "", "", "");
 
          m_deferredLightShader = std::static_pointer_cast<DeferredLightShader>(ShaderPool::GetInstance()-> template GetOrAllocateResource<DeferredLightShader>(shaderParams3));
-         m_depthShaderSkeletal = std::static_pointer_cast<DepthShader<true>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<true>>(shaderParams4));
-         m_depthShaderNonSkeletal = std::static_pointer_cast<DepthShader<false>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<false>>(shaderParams5));
-         m_depthCubemapShaderSkeletal = std::static_pointer_cast<CubemapDepthShader<true>>(ShaderPool::GetInstance()->template GetOrAllocateResource< CubemapDepthShader<true>>(shaderParams6));
-         m_depthCubemapShaderNonSkeletal = std::static_pointer_cast<CubemapDepthShader<false>>(ShaderPool::GetInstance()->template GetOrAllocateResource< CubemapDepthShader<true>>(shaderParams7));
+         m_depthShaderSkeletal = std::static_pointer_cast<DepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<eShaderMeshType::SKELETAL>>(shaderParams4));
+         m_depthShaderNonSkeletal = std::static_pointer_cast<DepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams5));
+         m_depthCubemapShaderSkeletal = std::static_pointer_cast<CubemapDepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapDepthShader<eShaderMeshType::SKELETAL>>(shaderParams6));
+         m_depthCubemapShaderNonSkeletal = std::static_pointer_cast<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams7));
 
          mCompareShadowMapDescriptors = std::bind([](DirectionalLightSceneProxy* firstProxy,
             DirectionalLightSceneProxy* secondProxy) -> bool {
@@ -93,9 +93,10 @@ namespace Graphics
          }));
       }
 
-      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
-         std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
-         std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies)
+      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
+         DirectionalLightProxiesPtrVector& dirLightProxies,
+         PointLightProxiesPtrVector& pointLightProxies,
+         SpotlightProxiesPtrVector& spotlightProxies)
       {
          RenderState renderState(std::make_shared<DepthStencilState<true>>(),
             std::make_shared<BlendingState<false>>());
@@ -173,7 +174,7 @@ namespace Graphics
             if (pointLightProxy->IsEnabled())
             {
                const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
-               if (shadowInfo)
+               if (shadowInfo && shadowInfo->IsShadowMapDirty())
                {
                   shadowInfo->BindShadowFramebuffer(true); // every point light has it's own texture atlas 
 
@@ -221,6 +222,73 @@ namespace Graphics
                      m_depthCubemapShaderSkeletal->StopShader();
                   }
                   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+                  // Next frame shadow map will not be updated unless position of objects in the level are changed
+                  shadowInfo->SetIsShadowMapDirty(false);
+               }
+            }
+         }
+
+         // TODO:
+         for (auto& spotLightProxy : spotlightProxies)
+         {
+            break;
+            SpotlightSceneProxy* spotlightPtr = spotLightProxy;
+
+            if (spotlightPtr->IsEnabled())
+            {
+               const auto& shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
+               if (shadowInfo && shadowInfo->IsShadowMapDirty())
+               {
+                  shadowInfo->BindShadowFramebuffer(true);
+
+                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+                  {
+                     //m_depthCubemapShaderNonSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowNonSkeletalMeshProxies)
+                     {
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           const auto& worldMatrix = proxy->GetMatrix();
+                           const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
+                           const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
+
+                         /*  m_depthCubemapShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                           m_depthCubemapShaderNonSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           m_depthCubemapShaderNonSkeletal->SetPointLightPosition(spotlightPtr->GetPosition());*/
+
+                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
+                     }
+                     //m_depthCubemapShaderNonSkeletal->StopShader();
+                  }
+                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
+                  {
+                     //m_depthCubemapShaderSkeletal->ExecuteShader();
+                     for (auto& proxy : shadowSkeletalMeshProxies)
+                     {
+                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        {
+                           SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+
+                           const auto& worldMatrix = skeletalProxy->GetMatrix();
+                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
+                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
+
+                          /* m_depthCubemapShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                           m_depthCubemapShaderSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           m_depthCubemapShaderSkeletal->SetPointLightPosition(spotlightPtr->GetPosition());
+                           m_depthCubemapShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());*/
+
+                           skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                        }
+                     }
+                     //m_depthCubemapShaderSkeletal->StopShader();
+                  }
+                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+                  // Next frame shadow map will not be updated unless position of objects in the level are changed
+                  shadowInfo->SetIsShadowMapDirty(false);
                }
             }
          }
@@ -256,7 +324,9 @@ namespace Graphics
       }
 
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
-         const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies)
+         const DirectionalLightProxiesPtrVector& dirLightProxies,
+         const PointLightProxiesPtrVector& pointLightProxies,
+         const SpotlightProxiesPtrVector& spotlightProxies)
       {
          // TODO: Make some check if light source (point or spot light) is too far from current view position
          m_deferredLightShader->ExecuteShader();
@@ -264,7 +334,7 @@ namespace Graphics
 #ifndef NO_LIT
          // ************************** SHADOWS ************************** //
          size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
-         for (auto& dirLightProxy : dirLightSourcesProxies)
+         for (auto& dirLightProxy : dirLightProxies)
          {
             if (dirLightProxy->IsEnabled())
             {
@@ -282,7 +352,7 @@ namespace Graphics
             }
          }
 
-         for (auto& pointLightProxy : pointLightSourcesProxies)
+         for (auto& pointLightProxy : pointLightProxies)
          {
             if (pointLightProxy->IsEnabled())
             {
@@ -297,6 +367,12 @@ namespace Graphics
                   pointLightIndex++;
                }
             }
+         }
+
+         // TODO:
+         for (auto& spotLightProxy : spotlightProxies)
+         {
+
          }
 
          m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
@@ -374,20 +450,28 @@ namespace Graphics
          {
             dirLightProxies.clear();
             pointLightProxies.clear();
+            spotlightProxies.clear();
 
             for (auto& proxy : LightProxies)
             {
                LightSceneProxy* proxyPtr = proxy.second.get();
+               const LightSceneProxyType& lightType = proxyPtr->GetLightProxyType();
 
-               if (proxyPtr->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
+               if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
                   dirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
                }
-               else if (proxyPtr->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
+               else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
                   pointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
                }
+               else if (lightType == LightSceneProxyType::SPOT_LIGHT)
+               {
+                  spotlightProxies.push_back(static_cast<SpotlightSceneProxy*>(proxyPtr));
+               }
             }
+
+            SetLightProxiesAreDirty(false);
          }
       }
 
@@ -405,11 +489,11 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies);
+               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies, spotlightProxies);
 
                DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
 
-               DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies);
+               DeferredLightPass_RenderThread(cameraProxy, dirLightProxies, pointLightProxies, spotlightProxies);
 
                if (forwardRenderingProxies.size())
                   ForwardBasePass_RenderThread(forwardRenderingProxies, sceneView);

@@ -6,6 +6,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
@@ -41,6 +42,10 @@ namespace Graphics
 		class DeferredShadingSceneRenderer
 		{
 
+         using PointLightProxiesPtrVector = std::vector<PointLightSceneProxy*>;
+         using DirectionalLightProxiesPtrVector = std::vector<DirectionalLightSceneProxy*>;
+         using SpotlightProxiesPtrVector = std::vector<SpotlightSceneProxy*>;
+
       public:
 
          std::unordered_map<size_t /*camera proxy id*/, std::shared_ptr<SceneView>> SceneViews;
@@ -58,10 +63,10 @@ namespace Graphics
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
-         std::shared_ptr<DepthShader<true>> m_depthShaderSkeletal;
-         std::shared_ptr<DepthShader<false>> m_depthShaderNonSkeletal;
-         std::shared_ptr<CubemapDepthShader<true>> m_depthCubemapShaderSkeletal;
-         std::shared_ptr<CubemapDepthShader<false>> m_depthCubemapShaderNonSkeletal;
+         std::shared_ptr<DepthShader<eShaderMeshType::SKELETAL>> m_depthShaderSkeletal;
+         std::shared_ptr<DepthShader<eShaderMeshType::NON_SKELETAL>> m_depthShaderNonSkeletal;
+         std::shared_ptr<CubemapDepthShader<eShaderMeshType::SKELETAL>> m_depthCubemapShaderSkeletal;
+         std::shared_ptr<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>> m_depthCubemapShaderNonSkeletal;
 
          // Texture renderer
          TextureRenderer m_textureRenderer;
@@ -82,16 +87,20 @@ namespace Graphics
 
          std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
 
-         std::vector<DirectionalLightSceneProxy*> dirLightProxies;
+         DirectionalLightProxiesPtrVector dirLightProxies;
 
-         std::vector<PointLightSceneProxy*> pointLightProxies;
+         PointLightProxiesPtrVector pointLightProxies;
+
+         SpotlightProxiesPtrVector spotlightProxies;
 
       private:
 
          void PrepareSceneProxiesForRender();
 
          void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
-            const std::vector<DirectionalLightSceneProxy*>& dirLightSourcesProxies, const std::vector<PointLightSceneProxy*>& pointLightSourcesProxies);
+            const DirectionalLightProxiesPtrVector& dirLightProxies,
+            const PointLightProxiesPtrVector& pointLightProxies, 
+            const SpotlightProxiesPtrVector& spotlightProxies);
 
          void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& skeletalMeshProxies,
             std::shared_ptr<SceneView> sceneView);
@@ -99,7 +108,9 @@ namespace Graphics
          void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, std::shared_ptr<SceneView> sceneView);
 
          void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
-            std::vector<DirectionalLightSceneProxy*>& dirLightProxies, std::vector<PointLightSceneProxy*>& pointLightProxies);
+            DirectionalLightProxiesPtrVector& dirLightProxies,
+            PointLightProxiesPtrVector& pointLightProxies,
+            SpotlightProxiesPtrVector& spotlightProxies);
 
       public:
 

@@ -48,25 +48,25 @@ namespace Game
       }
 
       // *************************  CubemapDepthShader (Non Skeletal)  *************************  //
-      CubemapDepthShader<false>::CubemapDepthShader(const ShaderParams& params)
+      CubemapDepthShader<eShaderMeshType::NON_SKELETAL>::CubemapDepthShader(const ShaderParams& params)
          : CubemapDepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void CubemapDepthShader<false>::SetShaderPredefine() 
+      void CubemapDepthShader<eShaderMeshType::NON_SKELETAL>::SetShaderPredefine() 
       {
          DefineConstant<int32_t>(ShaderType::GeometryShader, "CubemapFaces", 6);
       }
 
       // *************************  CubemapDepthShader (Skeletal)  *************************  //
-      CubemapDepthShader<true>::CubemapDepthShader(const ShaderParams& params)
+      CubemapDepthShader<eShaderMeshType::SKELETAL>::CubemapDepthShader(const ShaderParams& params)
          : CubemapDepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void CubemapDepthShader<true>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
+      void CubemapDepthShader<eShaderMeshType::SKELETAL>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
       {
          for (size_t index = 0; index < skinningMatrices.size(); index++)
             u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
@@ -75,13 +75,13 @@ namespace Game
 #define MaxWeights 4
 #define MaxBones 155
 
-      void CubemapDepthShader<true>::AccessAllUniformLocations(uint32_t shaderProgramId)
+      void CubemapDepthShader<eShaderMeshType::SKELETAL>::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          CubemapDepthShaderBase::AccessAllUniformLocations(shaderProgramId);
          u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramId);
       }
 
-      void CubemapDepthShader<true>::SetShaderPredefine()
+      void CubemapDepthShader<eShaderMeshType::SKELETAL>::SetShaderPredefine()
       {
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxWeights", MaxWeights);
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxBones", MaxBones);
