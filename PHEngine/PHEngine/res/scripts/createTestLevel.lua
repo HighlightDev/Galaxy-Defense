@@ -17,11 +17,11 @@ function CreateTestLevel(host)
 		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
 		local specular = { x = 0.7, y = 0.7, z = 0.7 }
 
-		local attenuation = { x = 0, y = 0, z = 0 }
-		local pointLTranslation = {x = 0 , y = 2, z = 0}
+		-- local attenuation = { x = 0, y = 0, z = 0 }
+		-- local pointLTranslation = {x = 0 , y = 5, z = 0}
 
 		local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
-		local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
+		--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
 
 		local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
 			rotation.x, rotation.y, rotation.z,
@@ -32,21 +32,21 @@ function CreateTestLevel(host)
 			dirShadowInfo
 			)
 
-		local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
-			pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
-			ambient.x, ambient.y, ambient.z,
-			diffuse.x, diffuse.y, diffuse.z,
-			specular.x, specular.y, specular.z,
-			attenuation.x, attenuation.y, attenuation.z,
-			1000.0,
-			pointShadowInfo
-			)
+		--local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
+		--	pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
+		--	ambient.x, ambient.y, ambient.z,
+		--	diffuse.x, diffuse.y, diffuse.z,
+		--	specular.x, specular.y, specular.z,
+		--	attenuation.x, attenuation.y, attenuation.z,
+		--	10000.0,
+		--	pointShadowInfo
+		--	)
 
-		-- local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
-		local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
+		 local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
+		-- local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
 
-		-- _AttachComponentToActor(host, lightActor, dirLightComponent)
-		_AttachComponentToActor(host, lightActor, pointLightComponent)
+		 _AttachComponentToActor(host, lightActor, dirLightComponent)
+		-- _AttachComponentToActor(host, lightActor, pointLightComponent)
 	end
 
 	-- ****************************BIG GROUND***************************** --
@@ -99,7 +99,7 @@ function CreateTestLevel(host)
 	-- ***************************HOUSE******************** --
 
 	local house = _CreateActor(host,"House", 
-	0, 25, 0,
+	0, 5, 0,
 	0, 0, 0,
 	1, 1, 1)
 

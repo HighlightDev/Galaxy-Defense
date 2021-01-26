@@ -16,8 +16,8 @@
 #include "Core/GraphicsCore/Renderer/RenderState.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
-#include "Core/GameCore/ShaderImplementation/DepthShader.h"
-#include "Core/GameCore/ShaderImplementation/CubemapDepthShader.h"
+#include "Core/GameCore/ShaderImplementation/DirectionalLightDepthShader.h"
+#include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
@@ -63,10 +63,10 @@ namespace Graphics
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
-         std::shared_ptr<DepthShader<eShaderMeshType::SKELETAL>> m_depthShaderSkeletal;
-         std::shared_ptr<DepthShader<eShaderMeshType::NON_SKELETAL>> m_depthShaderNonSkeletal;
-         std::shared_ptr<CubemapDepthShader<eShaderMeshType::SKELETAL>> m_depthCubemapShaderSkeletal;
-         std::shared_ptr<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>> m_depthCubemapShaderNonSkeletal;
+         std::shared_ptr<DirectionalLightDepthShader<eShaderMeshType::SKELETAL>> m_depthShaderSkeletal;
+         std::shared_ptr<DirectionalLightDepthShader<eShaderMeshType::NON_SKELETAL>> m_depthShaderNonSkeletal;
+         std::shared_ptr<PointLightDepthShader<eShaderMeshType::SKELETAL>> m_depthCubemapShaderSkeletal;
+         std::shared_ptr<PointLightDepthShader<eShaderMeshType::NON_SKELETAL>> m_depthCubemapShaderNonSkeletal;
 
          // Texture renderer
          TextureRenderer m_textureRenderer;

@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
-#include "Core/GameCore/ShaderImplementation/ResolveTextureShader.h"
 
 using namespace Graphics::OpenGL;
-using namespace Game::ShaderImpl;
 
 namespace Graphics
 {
@@ -13,8 +11,6 @@ namespace Graphics
 	{
 
 		static ScreenQuad* m_instance;
-
-      std::shared_ptr<ResolveTextureShader> m_resolveTexShader;
 
 		VertexArrayObject* m_vao;
 
@@ -34,16 +30,7 @@ namespace Graphics
 			return m_instance;
 		}
 
-		inline VertexArrayObject* GetBuffer() const
-		{
-			return m_vao;
-		}
-
-      inline std::shared_ptr<ResolveTextureShader> GetResolveTexShader() const
-      {
-         return m_resolveTexShader;
-      }
-
+      VertexArrayObject* GetBuffer() const;
 	};
 
 }

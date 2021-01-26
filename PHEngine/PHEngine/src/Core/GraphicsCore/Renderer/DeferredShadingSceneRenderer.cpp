@@ -46,16 +46,16 @@ namespace Graphics
          const auto& folderManager = FolderManager::GetInstance();
 
          ShaderParams shaderParams3("DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl", "", "", "", "");
-         ShaderParams shaderParams4("DepthSkeletal Shader", folderManager->GetShadersPath() + "basicShadowSkeletalVS.glsl", folderManager->GetShadersPath() + "basicShadowFS.glsl", "", "", "", "");
-         ShaderParams shaderParams5("DepthNonSkeletal Shader", folderManager->GetShadersPath() + "basicShadowNonSkeletalVS.glsl", folderManager->GetShadersPath() + "basicShadowFS.glsl", "", "", "", "");
-         ShaderParams shaderParams6("CubemapDepthSkeletal Shader", folderManager->GetShadersPath() + "cubemapShadowSkeletalVS.glsl", folderManager->GetShadersPath() + "cubemapShadowFS.glsl", folderManager->GetShadersPath() + "cubemapShadowGS.glsl", "", "", "");
-         ShaderParams shaderParams7("CubemapDepthNonSkeletal Shader", folderManager->GetShadersPath() + "cubemapShadowNonSkeletalVS.glsl", folderManager->GetShadersPath() + "cubemapShadowFS.glsl", folderManager->GetShadersPath() + "cubemapShadowGS.glsl", "", "", "");
+         ShaderParams shaderParams4("DepthSkeletal Shader", folderManager->GetShadersPath() + "directLightDepthCollectSkeletalVS.glsl", folderManager->GetShadersPath() + "directLightDepthCollectFS.glsl", "", "", "", "");
+         ShaderParams shaderParams5("DepthNonSkeletal Shader", folderManager->GetShadersPath() + "directLightDepthCollectNonSkeletalVS.glsl", folderManager->GetShadersPath() + "directLightDepthCollectFS.glsl", "", "", "", "");
+         ShaderParams shaderParams6("CubemapDepthSkeletal Shader", folderManager->GetShadersPath() + "pointLightDepthCollectSkeletalVS.glsl", folderManager->GetShadersPath() + "pointLightDepthCollectFS.glsl", folderManager->GetShadersPath() + "pointLightDepthCollectGS.glsl", "", "", "");
+         ShaderParams shaderParams7("CubemapDepthNonSkeletal Shader", folderManager->GetShadersPath() + "pointLightDepthCollectNonSkeletalVS.glsl", folderManager->GetShadersPath() + "pointLightDepthCollectFS.glsl", folderManager->GetShadersPath() + "pointLightDepthCollectGS.glsl", "", "", "");
 
          m_deferredLightShader = std::static_pointer_cast<DeferredLightShader>(ShaderPool::GetInstance()-> template GetOrAllocateResource<DeferredLightShader>(shaderParams3));
-         m_depthShaderSkeletal = std::static_pointer_cast<DepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<eShaderMeshType::SKELETAL>>(shaderParams4));
-         m_depthShaderNonSkeletal = std::static_pointer_cast<DepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams5));
-         m_depthCubemapShaderSkeletal = std::static_pointer_cast<CubemapDepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapDepthShader<eShaderMeshType::SKELETAL>>(shaderParams6));
-         m_depthCubemapShaderNonSkeletal = std::static_pointer_cast<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams7));
+         m_depthShaderSkeletal = std::static_pointer_cast<DirectionalLightDepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DirectionalLightDepthShader<eShaderMeshType::SKELETAL>>(shaderParams4));
+         m_depthShaderNonSkeletal = std::static_pointer_cast<DirectionalLightDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<DirectionalLightDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams5));
+         m_depthCubemapShaderSkeletal = std::static_pointer_cast<PointLightDepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<PointLightDepthShader<eShaderMeshType::SKELETAL>>(shaderParams6));
+         m_depthCubemapShaderNonSkeletal = std::static_pointer_cast<PointLightDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<PointLightDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams7));
 
          mCompareShadowMapDescriptors = std::bind([](DirectionalLightSceneProxy* firstProxy,
             DirectionalLightSceneProxy* secondProxy) -> bool {

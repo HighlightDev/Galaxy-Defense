@@ -52,7 +52,6 @@ vec2 GetShadowTexCoords(in vec2 texCoords, in vec4 atlasOffset)
 	return texCoordsInAtlas;
 }
 
-
 float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord, in float shadowTransitionValue)
 {
 	float resultLit = 0.0;
@@ -85,6 +84,35 @@ float CalcLitFactorTexture2D(in sampler2D shadowmap, in vec2 shadowmapSize, in v
 	return resultLit;
 }
 
+float CalcLitFactorCubemap(in samplerCube shadowmap, in vec3 worldPos, in vec3 pointLightWorldPos, in float shadowmapProjectionfarPlane)
+{
+	float resultLit = 0.0f;
+
+	vec3 LightToFragVec = worldPos - pointLightWorldPos;
+	float actualDepth = length(LightToFragVec);
+
+	float shadow  = 0.0;
+	const float offset  = 0.1;
+	const float offsetStep = offset / (PCF_SAMPLES_POINT_LIGHT * 0.5);
+
+	for (float x = -offset; x < offset; x += offsetStep)
+	{
+		for (float y = -offset; y < offset; y += offsetStep)
+		{
+			for (float z = -offset; z < offset; z += offsetStep)
+			{
+				float shadowmapDepth = texture(shadowmap, LightToFragVec + vec3(x, y, z)).r; // depth is in range [0 ; 1]
+				shadowmapDepth *= shadowmapProjectionfarPlane; // now depth is linear in world space in range [0 ; Far Plane]
+				shadow += actualDepth - SHADOWMAP_BIAS_POINT_LIGHT > shadowmapDepth ? 1.0f : 0.0f;
+			}
+		}
+	}
+
+	shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
+	resultLit = 1 - shadow;
+	return resultLit;
+}
+
 float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSize)
 {
 	float aspectRatioWidthToHeight = shadowmapAtlasSize.x / shadowmapAtlasSize.y;
@@ -94,8 +122,8 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 #ifdef SHADING_MODEL_PBR
 
-	const float Metallic = 0.3;
-	const float Roughness = 0.6;
+	const float Metallic = 0.1;
+	const float Roughness = 0.9;
 	const float Epsilon = 0.00001;
 	uniform float ao;
 
@@ -130,7 +158,38 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 		return F0 + (vec3(1.0) - F0) * pow(1.0 - cosTheta, 5.0);
 	}
 
-	vec3 GetPBRColor(in vec3 worldPos, in vec3 nWorldNormal, in vec3 albedoColor)
+	vec3 GetPBRContribution(in vec3 nWorldNormal, in vec3 albedoColor, in vec3 F0, in float cosLo, in vec3 Li, in vec3 Lo, in vec3 lightRadiance)
+	{
+		// Half-vector between Li and Lo.
+		vec3 Lh = normalize(Li + Lo);
+
+		// Calculate angles between surface normal and various light vectors.
+		float cosLi = max(0.0, dot(nWorldNormal, Li));
+		float cosLh = max(0.0, dot(nWorldNormal, Lh));
+
+		// Calculate Fresnel term for direct lighting.
+		vec3 F  = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));
+		// Calculate normal distribution for specular BRDF.
+		float D = ndfGGX(cosLh, Roughness);
+		// Calculate geometric attenuation for specular BRDF.
+		float G = gaSchlickGGX(cosLi, cosLo, Roughness);
+
+		// Diffuse scattering happens due to light being refracted multiple times by a dielectric medium.
+		// Metals on the other hand either reflect or absorb energy, so diffuse contribution is always zero.
+		// To be energy conserving we must scale diffuse BRDF contribution based on Fresnel factor & metalness.
+		vec3 kd = mix(vec3(1.0) - F, vec3(0.0), Metallic);
+
+		// Lambert diffuse BRDF.
+		vec3 diffuseBRDF = kd * albedoColor;
+
+		// Cook-Torrance specular microfacet BRDF.
+		vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
+
+		// Total contribution for this light.
+		return (diffuseBRDF + specularBRDF) * lightRadiance * cosLi;
+	}
+
+	vec3 GetPBRLightColor(in vec3 worldPos, in vec3 nWorldNormal, in vec3 albedoColor)
 	{
 		// General data
 		vec3 F0 = mix(vec3(0.04), albedoColor, Metallic);
@@ -145,42 +204,26 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 			for (int pointLightIndex = 0; pointLightIndex < PointLightCount; ++pointLightIndex)
 			{
 				// calculate per-light radiance
-				vec3 Li = normalize(PointLightPositionWorld[pointLightIndex] - worldPos);
+				vec3 toLVec = PointLightPositionWorld[pointLightIndex] - worldPos;
+				float lSrcDstSquared = dot(toLVec, toLVec);
+				float lSrcDist = sqrt(lSrcDstSquared);
+				vec3 Li = toLVec / lSrcDist;
 
-				// temporary
-				float attenuation = 1; // for now
-				vec3 lightRadiance = vec3(1); // for now
-				// temprorary
+				float attenuation = 1.0; // for now
+				// (lSrcDstSquared);
 
-				vec3 Lradiance = lightRadiance * attenuation;
+				vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
 
-				// Half-vector between Li and Lo.
-				vec3 Lh = normalize(Li + Lo);
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance);
 
-				// Calculate angles between surface normal and various light vectors.
-				float cosLi = max(0.0, dot(nWorldNormal, Li));
-				float cosLh = max(0.0, dot(nWorldNormal, Lh));
+				float litFactor = 1.0;
+				// Calculating shadow
+				if (PointLightShadowMapCount > pointLightIndex)
+				{
+					litFactor = CalcLitFactorCubemap(PointLightShadowMaps[pointLightIndex], worldPos, PointLightPositionWorld[pointLightIndex], PointLightShadowProjectionFarPlane[pointLightIndex]);
+				}
 
-				// Calculate Fresnel term for direct lighting.
-				vec3 F  = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));
-				// Calculate normal distribution for specular BRDF.
-				float D = ndfGGX(cosLh, Roughness);
-				// Calculate geometric attenuation for specular BRDF.
-				float G = gaSchlickGGX(cosLi, cosLo, Roughness);
-
-				// Diffuse scattering happens due to light being refracted multiple times by a dielectric medium.
-				// Metals on the other hand either reflect or absorb energy, so diffuse contribution is always zero.
-				// To be energy conserving we must scale diffuse BRDF contribution based on Fresnel factor & metalness.
-				vec3 kd = mix(vec3(1.0) - F, vec3(0.0), Metallic);
-
-				// Lambert diffuse BRDF.
-				vec3 diffuseBRDF = kd * albedoColor;
-
-				// Cook-Torrance specular microfacet BRDF.
-				vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
-
-				// Total contribution for this light.
-				pointLighting += (diffuseBRDF + specularBRDF) * Lradiance * cosLi;
+				pointLighting += pbrRadiance * litFactor;
 			}
 		}
 
@@ -191,45 +234,18 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 				// calculate per-light radiance
 				vec3 Li = -normalize(DirLightDirection[directLightIndex]);
 
-				// temporary
 				vec3 lightRadiance = DirLightDiffuseColor[directLightIndex]; // for now
-				// temprorary
 
-				vec3 Lradiance = lightRadiance;
+				vec3 LRadiance = lightRadiance;
 
-				// Half-vector between Li and Lo.
-				vec3 Lh = normalize(Li + Lo);
-
-				// Calculate angles between surface normal and various light vectors.
-				float cosLi = max(0.0, dot(nWorldNormal, Li));
-				float cosLh = max(0.0, dot(nWorldNormal, Lh));
-
-				// Calculate Fresnel term for direct lighting.
-				vec3 F  = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));
-				// Calculate normal distribution for specular BRDF.
-				float D = ndfGGX(cosLh, Roughness);
-				// Calculate geometric attenuation for specular BRDF.
-				float G = gaSchlickGGX(cosLi, cosLo, Roughness);
-
-				// Diffuse scattering happens due to light being refracted multiple times by a dielectric medium.
-				// Metals on the other hand either reflect or absorb energy, so diffuse contribution is always zero.
-				// To be energy conserving we must scale diffuse BRDF contribution based on Fresnel factor & metalness.
-				vec3 kd = mix(vec3(1.0) - F, vec3(0.0), Metallic);
-
-				// Lambert diffuse BRDF.
-				vec3 diffuseBRDF = kd * albedoColor;
-
-				// Cook-Torrance specular microfacet BRDF.
-				vec3 specularBRDF = (F * D * G) / max(Epsilon, 4.0 * cosLi * cosLo);
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance);
 
 				// Calculating shadow
 				float litFactor = 1.0f;
 				if (DirLightShadowMapCount > directLightIndex)
 				{
-					// Common
 					vec4 atlasOffset = DirLightShadowAtlasOffset[directLightIndex];
 					mat4 shadowMatrix = DirLightShadowMatrices[directLightIndex];
-					//
 
 					vec4 shadowProjectedPosition = (shadowMatrix * vec4(worldPos, 1.0));
 					vec3 shadowFragCoords = shadowProjectedPosition.xyz / shadowProjectedPosition.w;
@@ -245,7 +261,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 				}
 
 				// Total contribution for this light.
-				directLighting += (diffuseBRDF + specularBRDF) * litFactor * Lradiance * cosLi;
+				directLighting += pbrRadiance * litFactor;
 			}
 		}
 
@@ -253,35 +269,6 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 	}
 
 #endif
-
-float CalcLitFactorCubemap(in samplerCube shadowmap, in vec3 worldPos, in vec3 pointLightWorldPos, in float shadowmapProjectionfarPlane)
-{
-	float resultLit = 0.0f;
-
-	vec3 LightToFragVec = worldPos - pointLightWorldPos;
-	float actualDepth = length(LightToFragVec);
-
-	float shadow  = 0.0;
-	const float offset  = 0.1;
-	const float offsetStep = offset / (PCF_SAMPLES_POINT_LIGHT * 0.5);
-
-	for (float x = -offset; x < offset; x += offsetStep)
-	{
-		for (float y = -offset; y < offset; y += offsetStep)
-		{
-			for (float z = -offset; z < offset; z += offsetStep)
-			{
-				float shadowmapDepth = texture(shadowmap, LightToFragVec + vec3(x, y, z)).r; // depth is in range [0 ; 1]
-				shadowmapDepth *= shadowmapProjectionfarPlane; // now depth is linear in world space in range [0 ; Far Plane]
-				shadow += actualDepth - SHADOWMAP_BIAS_POINT_LIGHT > shadowmapDepth ? 1.0f : 0.0f;
-			}
-		}
-	}
-
-	shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
-	resultLit = 1 - shadow;
-	return resultLit;
-}
 
 #ifndef SHADING_MODEL_PBR
 
@@ -359,7 +346,7 @@ void main()
 
 	// Lighting
 	#ifdef SHADING_MODEL_PBR
-		vec4 totalColor = vec4(GetPBRColor(worldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0);
+		vec4 totalColor = vec4(GetPBRLightColor(worldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0);
 	#else
 		#ifdef NO_LIT
 			vec4 totalColor = albedoAndSpecular;

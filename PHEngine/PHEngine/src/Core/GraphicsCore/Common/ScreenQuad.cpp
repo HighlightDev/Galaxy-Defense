@@ -26,15 +26,17 @@ namespace Graphics
 
 	ScreenQuad::~ScreenQuad()
 	{
-      ShaderPool::GetInstance()->TryToFreeMemory(m_resolveTexShader);
       delete m_vao;
 	}
+
+   VertexArrayObject* ScreenQuad::GetBuffer() const
+   {
+      return m_vao;
+   }
 
 	void ScreenQuad::Init()
 	{
       const auto folderManager = IO::FolderManager::GetInstance();
-      ShaderParams shaderParams("ScreenQuad Shader", folderManager->GetShadersPath() + "resolveTextureVS.glsl", folderManager->GetShadersPath() + "resolveTextureFS.glsl", "", "", "", "");
-      m_resolveTexShader = std::static_pointer_cast<ResolveTextureShader>(ShaderPool::GetInstance()->GetOrAllocateResource<ResolveTextureShader>(shaderParams));
 
 		/*Screen fill quad*/
 		std::vector<float> vertices = { -1.0f, -1.0f, 0.0f ,

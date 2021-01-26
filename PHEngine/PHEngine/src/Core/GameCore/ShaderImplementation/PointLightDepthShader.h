@@ -12,7 +12,7 @@ namespace Game
    namespace ShaderImpl
    {
 
-      class CubemapDepthShaderBase :
+      class PointLightDepthShaderBase :
          public ShaderBase
       {
       public:
@@ -31,7 +31,7 @@ namespace Game
 
       public:
 
-         CubemapDepthShaderBase(const ShaderParams& params);
+         PointLightDepthShaderBase(const ShaderParams& params);
 
          void SetTransformationMatrices(const glm::mat4& worldMatrix, const six_mat4x4& viewMatrices, const six_mat4x4& projectionMatrices);
 
@@ -42,28 +42,28 @@ namespace Game
       };
 
       template <eShaderMeshType meshType>
-      class CubemapDepthShader;
+      class PointLightDepthShader;
 
       template <>
-      class CubemapDepthShader<eShaderMeshType::NON_SKELETAL>
-         : public CubemapDepthShaderBase
+      class PointLightDepthShader<eShaderMeshType::NON_SKELETAL>
+         : public PointLightDepthShaderBase
       {
       public:
 
-         CubemapDepthShader(const ShaderParams& params);
+         PointLightDepthShader(const ShaderParams& params);
 
          virtual void SetShaderPredefine() override;
       };
 
       template <>
-      class CubemapDepthShader<eShaderMeshType::SKELETAL>
-         : public CubemapDepthShaderBase
+      class PointLightDepthShader<eShaderMeshType::SKELETAL>
+         : public PointLightDepthShaderBase
       {
          UniformArray u_boneMatrices;
 
       public:
 
-         CubemapDepthShader(const ShaderParams& params);
+         PointLightDepthShader(const ShaderParams& params);
 
          void SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices);
 

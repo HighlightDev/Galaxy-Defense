@@ -46,6 +46,7 @@ namespace Game
 
          DefineConstant<float>(ShaderType::FragmentShader, "zNearPlane", 1.0f);
          DefineConstant<float>(ShaderType::FragmentShader, "zFarPlane", 100.0f);
+         Define(ShaderType::FragmentShader, "COLOR");
       }
 
    }

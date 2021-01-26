@@ -1,5 +1,6 @@
 #version 400
 
+#define COLOR
 #define zNearPlane 1
 #define zFarPlane 100
 layout (location = 0) out vec4 FragColor;
@@ -18,18 +19,13 @@ float ToLinearDepth(float nonLinearDepth)
 
 void main(void){
 
-    vec4 color = texture(uiTexture, texCoords);
-
-   if (false)
-   {
+#ifdef COLOR
+      vec4 color = texture(uiTexture, texCoords);
+#elif DEPTH
        float depth = (2.0 * color.r) - 1.0;
        float linearDepth = ToLinearDepth(depth);
-       color = vec4(linearDepth, linearDepth, linearDepth, 1);
-   }
-   else if (bSeparated && texCoords.x < 0.5)
-   {
-		discard;
-   }
+       vec4 color = vec4(linearDepth, linearDepth, linearDepth, 1);
+#endif
 
 	FragColor = color;
 }

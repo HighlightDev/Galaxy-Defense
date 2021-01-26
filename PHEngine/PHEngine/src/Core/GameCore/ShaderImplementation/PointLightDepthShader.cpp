@@ -1,16 +1,15 @@
-#include "CubemapDepthShader.h"
-
+#include "PointLightDepthShader.h"
 
 namespace Game
 {
    namespace ShaderImpl
    {
-      CubemapDepthShaderBase::CubemapDepthShaderBase(const ShaderParams& params)
+      PointLightDepthShaderBase::PointLightDepthShaderBase(const ShaderParams& params)
          : ShaderBase(params)
       {
       }
 
-      void CubemapDepthShaderBase::AccessAllUniformLocations(uint32_t shaderProgramId)
+      void PointLightDepthShaderBase::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          ShaderBase::AccessAllUniformLocations(shaderProgramId);
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramId);
@@ -20,7 +19,7 @@ namespace Game
          u_farPlane = GetUniform("farPlane", shaderProgramId);
       }
 
-      void CubemapDepthShaderBase::SetTransformationMatrices(const glm::mat4& worldMatrix, const six_mat4x4& viewMatrices, const six_mat4x4& projectionMatrices)
+      void PointLightDepthShaderBase::SetTransformationMatrices(const glm::mat4& worldMatrix, const six_mat4x4& viewMatrices, const six_mat4x4& projectionMatrices)
       {
          u_worldMatrix.LoadUniform(worldMatrix);
 
@@ -37,36 +36,36 @@ namespace Game
          }
       }
 
-      void CubemapDepthShaderBase::SetPointLightPosition(const glm::vec3& position)
+      void PointLightDepthShaderBase::SetPointLightPosition(const glm::vec3& position)
       {
          u_pointLightPos.LoadUniform(position);
       }
 
-      void CubemapDepthShaderBase::SetFarPlane(const float distance)
+      void PointLightDepthShaderBase::SetFarPlane(const float distance)
       {
          u_farPlane.LoadUniform(distance);
       }
 
-      // *************************  CubemapDepthShader (Non Skeletal)  *************************  //
-      CubemapDepthShader<eShaderMeshType::NON_SKELETAL>::CubemapDepthShader(const ShaderParams& params)
-         : CubemapDepthShaderBase(params)
+      // *************************  PointLightDepthShader (Non Skeletal)  *************************  //
+      PointLightDepthShader<eShaderMeshType::NON_SKELETAL>::PointLightDepthShader(const ShaderParams& params)
+         : PointLightDepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void CubemapDepthShader<eShaderMeshType::NON_SKELETAL>::SetShaderPredefine() 
+      void PointLightDepthShader<eShaderMeshType::NON_SKELETAL>::SetShaderPredefine() 
       {
          DefineConstant<int32_t>(ShaderType::GeometryShader, "CubemapFaces", 6);
       }
 
-      // *************************  CubemapDepthShader (Skeletal)  *************************  //
-      CubemapDepthShader<eShaderMeshType::SKELETAL>::CubemapDepthShader(const ShaderParams& params)
-         : CubemapDepthShaderBase(params)
+      // *************************  PointLightDepthShader (Skeletal)  *************************  //
+      PointLightDepthShader<eShaderMeshType::SKELETAL>::PointLightDepthShader(const ShaderParams& params)
+         : PointLightDepthShaderBase(params)
       {
          ShaderInit();
       }
 
-      void CubemapDepthShader<eShaderMeshType::SKELETAL>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
+      void PointLightDepthShader<eShaderMeshType::SKELETAL>::SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices)
       {
          for (size_t index = 0; index < skinningMatrices.size(); index++)
             u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
@@ -75,13 +74,13 @@ namespace Game
 #define MaxWeights 4
 #define MaxBones 155
 
-      void CubemapDepthShader<eShaderMeshType::SKELETAL>::AccessAllUniformLocations(uint32_t shaderProgramId)
+      void PointLightDepthShader<eShaderMeshType::SKELETAL>::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
-         CubemapDepthShaderBase::AccessAllUniformLocations(shaderProgramId);
+         PointLightDepthShaderBase::AccessAllUniformLocations(shaderProgramId);
          u_boneMatrices = GetUniformArray("bonesMatrices", MaxBones, shaderProgramId);
       }
 
-      void CubemapDepthShader<eShaderMeshType::SKELETAL>::SetShaderPredefine()
+      void PointLightDepthShader<eShaderMeshType::SKELETAL>::SetShaderPredefine()
       {
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxWeights", MaxWeights);
          DefineConstant<int32_t>(ShaderType::VertexShader, "MaxBones", MaxBones);

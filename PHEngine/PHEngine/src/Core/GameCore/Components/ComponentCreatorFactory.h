@@ -102,7 +102,7 @@ namespace Game
 
             const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
-               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredFS.glsl");
 
             TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
             CompositeShaderPool::sharedValue_t staticMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
@@ -123,7 +123,7 @@ namespace Game
 
             const ShaderParams shaderParams("DeferredNonSkeletalBase Shader",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
-               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredCollectFS.glsl");
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredFS.glsl");
 
             TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, mData.m_material);
 

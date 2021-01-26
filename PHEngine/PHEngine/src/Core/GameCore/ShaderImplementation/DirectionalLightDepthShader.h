@@ -12,7 +12,7 @@ namespace Game
    namespace ShaderImpl
    {
 
-      class DepthShaderBase
+      class DirectionalLightDepthShaderBase
          : public ShaderBase
       {
       protected:
@@ -25,23 +25,23 @@ namespace Game
 
       public:
          
-         DepthShaderBase(const ShaderParams& params);
+         DirectionalLightDepthShaderBase(const ShaderParams& params);
 
          void SetTransformationMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
       };
 
       template <eShaderMeshType type>
-      class DepthShader;
+      class DirectionalLightDepthShader;
 
       template <>
-      class DepthShader<eShaderMeshType::NON_SKELETAL>
-         : public DepthShaderBase
+      class DirectionalLightDepthShader<eShaderMeshType::NON_SKELETAL>
+         : public DirectionalLightDepthShaderBase
       {
          using Base = ShaderBase;
 
       public:
 
-         DepthShader(const ShaderParams& params);
+         DirectionalLightDepthShader(const ShaderParams& params);
 
       protected:
 
@@ -50,8 +50,8 @@ namespace Game
       };
 
       template <>
-      class DepthShader<eShaderMeshType::SKELETAL>
-         : public DepthShaderBase
+      class DirectionalLightDepthShader<eShaderMeshType::SKELETAL>
+         : public DirectionalLightDepthShaderBase
       {
          using Base = ShaderBase;
 
@@ -59,7 +59,7 @@ namespace Game
 
       public:
 
-         DepthShader(const ShaderParams& params);
+         DirectionalLightDepthShader(const ShaderParams& params);
 
          void SetSkinningMatrices(const std::vector<glm::mat4>& skinningMatrices);
 
