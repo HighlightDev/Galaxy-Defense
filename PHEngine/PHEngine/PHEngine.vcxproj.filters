@@ -1928,6 +1928,9 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\PointLightDepthShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2387,6 +2390,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\PointLightDepthShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
