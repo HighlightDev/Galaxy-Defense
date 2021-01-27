@@ -474,6 +474,9 @@
     <None Include="res\shaders\obsolete\waterRefractionEntityFS.glsl" />
     <None Include="res\shaders\obsolete\waterRefractionEntityVS.glsl" />
     <None Include="res\shaders\obsolete\waterVS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectNonSkeletalVS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectSkeletalVS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectFS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">

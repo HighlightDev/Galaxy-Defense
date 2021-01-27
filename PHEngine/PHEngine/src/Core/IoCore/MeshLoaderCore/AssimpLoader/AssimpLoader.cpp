@@ -19,7 +19,8 @@ namespace MeshLoader
             aiProcess_CalcTangentSpace | 
             aiProcess_LimitBoneWeights);
 
-         const aiScene* scene = importer_t.ReadFile(modelFilePath, LOAD_FLAGS);
+         importer_t importer;
+         const aiScene* scene = importer.ReadFile(modelFilePath, LOAD_FLAGS);
 
          assert((scene));
          LoadMeshAndAnimations(scene);

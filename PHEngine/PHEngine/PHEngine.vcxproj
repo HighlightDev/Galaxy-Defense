@@ -328,6 +328,9 @@
     <None Include="res\shaders\obsolete\stencilPassVS.glsl" />
     <None Include="res\shaders\obsolete\sunFS.glsl" />
     <None Include="res\shaders\obsolete\sunVS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectFS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectNonSkeletalVS.glsl" />
+    <None Include="res\shaders\spotlightDepthCollectSkeletalVS.glsl" />
     <None Include="res\shaders\uiFS.glsl" />
     <None Include="res\shaders\uiVS.glsl" />
     <None Include="res\shaders\vertex_factory\SkeletalMeshVertexFactory.glsl" />

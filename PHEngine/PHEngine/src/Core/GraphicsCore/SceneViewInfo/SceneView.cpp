@@ -16,9 +16,6 @@ namespace Graphics
 
    void SceneView::DoVisibilityTest()
    {
-      static size_t count = 0;
-      size_t currentCounter = 0;
-
       for (const auto& primitiveProxyPair : mPrimitiveProxies)
       {
          auto proxy = primitiveProxyPair.second;
@@ -31,16 +28,6 @@ namespace Graphics
          }
 
          mVisibilityMap[primitiveProxyPair.first] = bProxyVisible;
-
-         if (!bProxyVisible)
-            currentCounter++;
-      }
-
-      if (currentCounter != count)
-      {
-         // todo: temp
-         std::cout << "Frustum culled: " << currentCounter << std::endl;
-         count = currentCounter;
       }
    }
 

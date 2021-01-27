@@ -181,7 +181,6 @@ namespace Game
 
    void StateMachine::SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState)
    {
-      std::cout << "TRANSITION FINISHED, new STATE : " + newCurrentState->GetStateName() << std::endl;
       mTransitionParameter = 1.0f;
       mTransitionTime = 0.0f;
       mCurrentStateNode = newCurrentState;

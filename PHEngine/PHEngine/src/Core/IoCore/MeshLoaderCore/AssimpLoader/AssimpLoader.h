@@ -14,7 +14,7 @@ namespace MeshLoader
    {
       class AssimpLoader
       {
-         typename ::Assimp::Importer importer_t;
+         using importer_t = ::Assimp::Importer;
 
          AnimatedMeshData* m_animatedMeshData;
 
