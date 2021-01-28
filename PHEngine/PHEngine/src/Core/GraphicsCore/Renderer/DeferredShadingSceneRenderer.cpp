@@ -234,10 +234,9 @@ namespace Graphics
             }
          }
 
-         // TODO:
          for (auto& spotLightProxy : spotlightProxies)
          {
-            break;
+            break; // TODO: temporary
             SpotlightSceneProxy* spotlightPtr = spotLightProxy;
 
             if (spotlightPtr->IsEnabled())
@@ -249,7 +248,7 @@ namespace Graphics
 
                   if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                   {
-                     //mPLDepthShaderNonSkeletal->ExecuteShader();
+                     mSLDepthShaderNonSkeletal->ExecuteShader();
                      for (auto& proxy : shadowNonSkeletalMeshProxies)
                      {
                         if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
@@ -258,18 +257,19 @@ namespace Graphics
                            const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
                            const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
 
-                         /*  mPLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
-                           mPLDepthShaderNonSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
-                           mPLDepthShaderNonSkeletal->SetPointLightPosition(spotlightPtr->GetPosition());*/
+                           mSLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                           mSLDepthShaderNonSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           mSLDepthShaderNonSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
+                           mSLDepthShaderNonSkeletal->SetSpotlightCutoff(spotlightPtr->GetCutoff());
 
                            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                         }
                      }
-                     //mPLDepthShaderNonSkeletal->StopShader();
+                     mSLDepthShaderNonSkeletal->StopShader();
                   }
                   if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                   {
-                     //mPLDepthShaderSkeletal->ExecuteShader();
+                     mSLDepthShaderSkeletal->ExecuteShader();
                      for (auto& proxy : shadowSkeletalMeshProxies)
                      {
                         if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
@@ -280,15 +280,16 @@ namespace Graphics
                            const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
                            const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
 
-                          /* mPLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mPLDepthShaderSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
-                           mPLDepthShaderSkeletal->SetPointLightPosition(spotlightPtr->GetPosition());
-                           mPLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());*/
+                           mSLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                           mSLDepthShaderSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           mSLDepthShaderSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
+                           mSLDepthShaderSkeletal->SetSpotlightCutoff(spotlightPtr->GetCutoff());
+                           mSLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
                            skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                         }
                      }
-                     //mPLDepthShaderSkeletal->StopShader();
+                     mSLDepthShaderSkeletal->StopShader();
                   }
                   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
