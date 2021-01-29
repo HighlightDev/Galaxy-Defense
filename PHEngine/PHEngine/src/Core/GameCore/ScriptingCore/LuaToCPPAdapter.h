@@ -26,7 +26,7 @@ namespace Game
       static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
 
       static ComponentData* CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
-         const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceSqrRadius, ProjectedShadowInfo* shadowInfo);
+         const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, ProjectedShadowInfo* shadowInfo);
       static ComponentData* CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
          const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo);
       static ComponentData* CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,

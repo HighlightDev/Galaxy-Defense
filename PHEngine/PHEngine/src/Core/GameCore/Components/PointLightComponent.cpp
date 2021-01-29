@@ -56,7 +56,7 @@ namespace Game
       lightCompData->SpecularLight = m_renderData.Specular;
       lightCompData->Translation = GetTranslation();
       lightCompData->Attenuation = m_renderData.Attenuation;
-      lightCompData->RadianceSqrRadius = m_renderData.RadianceSqrRadius;
+      lightCompData->RadianceRadius = m_renderData.RadianceRadius;
 
       const bool bHasShadowMap = !!m_renderData.ShadowInfo;
 

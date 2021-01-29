@@ -171,7 +171,7 @@ struct SerializeDataPointLightComponent
    glm::vec3 Translation;
 
    glm::vec3 Attenuation;
-   float RadianceSqrRadius;
+   float RadianceRadius;
 
    glm::vec3 AmbientLight;
    glm::vec3 DiffuseLight;
@@ -185,7 +185,7 @@ struct SerializeDataPointLightComponent
    {
       SerializeDataComponent::serialize(archive);
 
-      archive(Translation, Attenuation, RadianceSqrRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
+      archive(Translation, Attenuation, RadianceRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override

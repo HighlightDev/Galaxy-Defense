@@ -1,6 +1,7 @@
 #include "DeferredLightShader.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
 #include "Core/GameCore/GlobalSettings.h"
 
 namespace Game
@@ -12,6 +13,7 @@ namespace Game
          : ShaderBase(params)
          , MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount())
          , MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount())
+         , MAX_SPOTLIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxSpotlightCount())
       {   
          ShaderInit();
       }
@@ -38,9 +40,9 @@ namespace Game
 
          u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", MAX_POINT_LIGHT_COUNT, shaderProgramId);
+         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightShadowMapCount = GetUniform("PointLightShadowMapCount", shaderProgramId);
          u_PointLightCount = GetUniform("PointLightCount", shaderProgramId);
-         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", MAX_POINT_LIGHT_COUNT, shaderProgramId);
 
          u_DirLightAmbientColor = GetUniformArray("DirLightAmbientColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
          u_DirLightDiffuseColor = GetUniformArray("DirLightDiffuseColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
@@ -52,6 +54,18 @@ namespace Game
          u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", MAX_DIR_LIGHT_COUNT, shaderProgramId);
          u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
          u_DirectionalLightCount = GetUniform("DirLightCount", shaderProgramId);
+
+         u_SpotlightAmbientColor = GetUniformArray("SpotlightAmbientColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightDiffuseColor = GetUniformArray("SpotlightDiffuseColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightSpecularColor = GetUniformArray("SpotlightSpecularColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightDirection = GetUniformArray("SpotlightDirection", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightPosition = GetUniformArray("SpotlightPosition", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+
+         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
+         u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif
 
 #ifdef SHADING_MODEL_PBR
@@ -62,14 +76,18 @@ namespace Game
 
       void DeferredLightShader::SetShaderPredefine()
       {
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT",  (int32_t)MAX_DIR_LIGHT_COUNT);
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", (int32_t) MAX_POINT_LIGHT_COUNT);
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxSpotlightCount());
          DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasDirLight());
          DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasPointLight());
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_SPOTLIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasSpotlight());
          DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", GlobalSettings::GetInstance()->GetDirLightPCFSamplesCount());
          DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_SPOTLIGHT", GlobalSettings::GetInstance()->GetSpotlightPCFSamplesCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
+         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount());
 #ifdef NO_LIT
          Define(FragmentShader, "NO_LIT");
 #else
@@ -141,6 +159,21 @@ namespace Game
          u_PointLightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
       }
 
+      void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot)
+      {
+         u_SpotlightShadowMaps.LoadUniform(index, slot);
+      }
+
+      void DeferredLightShader::SetSpotlightShadowMapCount(int32_t count)
+      {
+         u_SpotlightShadowMapCount.LoadUniform(count);
+      }
+
+      void DeferredLightShader::SetSpotlightShadowProjectionFarPlane(size_t index, float FarPlane)
+      {
+         u_SpotlightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
+      }
+
       void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies)
       {
          // Directional lights
@@ -159,7 +192,6 @@ namespace Game
                dirLightProxyIndex++;
             }
          }
-
          u_DirectionalLightCount.LoadUniform(dirLightProxyIndex);
 
          // Point lights
@@ -167,7 +199,7 @@ namespace Game
          for (const auto& lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && dirLightProxyIndex < MAX_POINT_LIGHT_COUNT)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && pointLightProxyIndex < MAX_POINT_LIGHT_COUNT)
             {
                PointLightSceneProxy* pointLProxyPtr = static_cast<PointLightSceneProxy*>(lightProxy.get());
                u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->DiffuseColor);
@@ -178,8 +210,28 @@ namespace Game
                pointLightProxyIndex++;
             }
          }
-
          u_PointLightCount.LoadUniform(pointLightProxyIndex);
+
+         // Spotlights
+         int32_t spotlightProxyIndex = 0;
+         for (const auto& lightProxyPair : lightsProxies)
+         {
+            auto lightProxy = lightProxyPair.second;
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < MAX_SPOTLIGHT_COUNT)
+            {
+               SpotlightSceneProxy* spotlightProxyPtr = static_cast<SpotlightSceneProxy*>(lightProxy.get());
+               u_SpotlightAmbientColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->AmbientColor);
+               u_SpotlightDiffuseColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->DiffuseColor);
+               u_SpotlightSpecularColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->SpecularColor);
+               u_SpotlightPosition.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetPosition());
+               u_SpotlightDirection.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetDirection());
+               u_SpotlightCutoff.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetCutoff());
+               // todo: u_SpotlightAttenuation.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetAttenuation());
+
+               spotlightProxyIndex++;
+            }
+         }
+         u_SpotlightCount.LoadUniform(spotlightProxyIndex);
       }
 
 #endif

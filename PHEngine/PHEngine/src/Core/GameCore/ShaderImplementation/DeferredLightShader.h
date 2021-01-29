@@ -42,6 +42,18 @@ namespace Game
          UniformArray u_PointLightShadowProjectionFarPlane;
          Uniform u_PointLightShadowMapCount;
          Uniform u_PointLightCount;
+
+         UniformArray u_SpotlightAmbientColor;
+         UniformArray u_SpotlightDiffuseColor;
+         UniformArray u_SpotlightSpecularColor;
+         UniformArray u_SpotlightDirection;
+         UniformArray u_SpotlightPosition;
+         UniformArray u_SpotlightCutoff;
+
+         UniformArray u_SpotlightShadowMaps;
+         UniformArray u_SpotlightShadowProjectionFarPlane;
+         Uniform u_SpotlightShadowMapCount;
+         Uniform u_SpotlightCount;
 #endif
 
          Uniform u_gBuffer_Position;
@@ -55,6 +67,7 @@ namespace Game
 
          const int32_t MAX_POINT_LIGHT_COUNT;
          const int32_t MAX_DIR_LIGHT_COUNT;
+         const int32_t MAX_SPOTLIGHT_COUNT;
 
       public:
 
@@ -79,6 +92,10 @@ namespace Game
          void SetPointLightShadowMapSlot(size_t index, int32_t slot);
          void SetPointLightShadowMapCount(int32_t count);
          void SetPointLightShadowProjectionFarPlane(size_t index, float FarPlane);
+
+         void SetSpotlightShadowMapSlot(size_t index, int32_t slot);
+         void SetSpotlightShadowMapCount(int32_t count);
+         void SetSpotlightShadowProjectionFarPlane(size_t index, float FarPlane);
 #endif
 
 #ifdef SHADING_MODEL_PBR

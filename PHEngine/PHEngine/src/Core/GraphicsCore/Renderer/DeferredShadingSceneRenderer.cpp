@@ -195,7 +195,7 @@ namespace Graphics
                            const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
                            mPLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mPLDepthShaderNonSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
+                           mPLDepthShaderNonSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
                            mPLDepthShaderNonSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
 
                            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
@@ -217,7 +217,7 @@ namespace Graphics
                            const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
                            mPLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mPLDepthShaderSkeletal->SetFarPlane(std::sqrtf(pointLightPtr->GetRadianceSqrRadius()));
+                           mPLDepthShaderSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
                            mPLDepthShaderSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
                            mPLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
@@ -236,7 +236,6 @@ namespace Graphics
 
          for (auto& spotLightProxy : spotlightProxies)
          {
-            break; // TODO: temporary
             SpotlightSceneProxy* spotlightPtr = spotLightProxy;
 
             if (spotlightPtr->IsEnabled())
@@ -258,9 +257,8 @@ namespace Graphics
                            const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
 
                            mSLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
-                           mSLDepthShaderNonSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           mSLDepthShaderNonSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
                            mSLDepthShaderNonSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
-                           mSLDepthShaderNonSkeletal->SetSpotlightCutoff(spotlightPtr->GetCutoff());
 
                            proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
                         }
@@ -281,9 +279,8 @@ namespace Graphics
                            const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
 
                            mSLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mSLDepthShaderSkeletal->SetFarPlane(std::sqrtf(spotlightPtr->GetRadianceSqrRadius()));
+                           mSLDepthShaderSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
                            mSLDepthShaderSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
-                           mSLDepthShaderSkeletal->SetSpotlightCutoff(spotlightPtr->GetCutoff());
                            mSLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
                            skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
@@ -339,7 +336,8 @@ namespace Graphics
 
 #ifndef NO_LIT
          // ************************** SHADOWS ************************** //
-         size_t pointLightIndex = 0, dirLightIndex = 0, shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0;
+         size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
+         size_t shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
          for (auto& dirLightProxy : dirLightProxies)
          {
             if (dirLightProxy->IsEnabled())
@@ -367,7 +365,7 @@ namespace Graphics
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
                   m_deferredLightShader->SetPointLightShadowMapSlot(pointLightIndex, shadowMapSlot);
-                  m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, std::sqrtf(pointLightProxy->GetRadianceSqrRadius()));
+                  m_deferredLightShader->SetPointLightShadowProjectionFarPlane(pointLightIndex, pointLightProxy->GetRadianceRadius());
                   shadowMapSlot++;
                   pointShadowMapCount++;
                   pointLightIndex++;
@@ -375,15 +373,27 @@ namespace Graphics
             }
          }
 
-         // TODO:
          for (auto& spotLightProxy : spotlightProxies)
          {
-
+            if (spotLightProxy->IsEnabled())
+            {
+               ProjectedSpotlightShadowInfo* shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
+               if (shadowInfo)
+               {
+                  shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
+                  m_deferredLightShader->SetSpotlightShadowMapSlot(spotlightIndex, shadowMapSlot);
+                  m_deferredLightShader->SetSpotlightShadowProjectionFarPlane(spotlightIndex, spotLightProxy->GetRadianceRadius());
+                  shadowMapSlot++;
+                  spotlightShadowMapCount++;
+                  spotlightIndex++;
+               }
+            }
          }
 
          m_deferredLightShader->SetCameraWorldPosition(cameraProxy->GetEyeVector());
          m_deferredLightShader->SetDirectionalLightShadowMapCount(dirShadowMapCount);
          m_deferredLightShader->SetPointLightShadowMapCount(pointShadowMapCount);
+         m_deferredLightShader->SetSpotlightShadowMapCount(spotlightShadowMapCount);
          // ************************** SHADOWS ************************** //
 #endif
 

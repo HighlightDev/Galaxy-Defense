@@ -42,9 +42,10 @@ namespace Graphics
          return static_cast<ProjectedSpotlightShadowInfo*>(GetShadowInfo());
       }
 
-      glm::vec3 SpotlightSceneProxy::GetPosition() const
+      glm::vec3 SpotlightSceneProxy::GetDirection() const
       {
-         glm::vec3 result = m_relativeMatrix * glm::vec4(0, 0, 0, 1.0f);
+         static const glm::vec4 spotlightDefaultDirection { 1.0f, 0.0f, 0.0f, 0.0f };
+         glm::vec3 result = m_relativeMatrix * spotlightDefaultDirection;
          return result;
       }
 
@@ -65,8 +66,8 @@ namespace Graphics
          {
             if (IsTransformationDirty())
             {
-               const glm::vec4 lightDefaultDirection(1.0f, 0.0f, 0.0f, 0.0f);
-               glm::vec3 direction = GetTransformedDirectionVector(lightDefaultDirection);
+
+               glm::vec3 direction = GetDirection();
                direction = glm::normalize(direction);
                const glm::vec3& origin = GetPosition();
 

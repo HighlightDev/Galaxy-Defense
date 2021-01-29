@@ -24,7 +24,7 @@ namespace Graphics
 
          virtual void PostLevelInit() override;
 
-         glm::vec3 GetPosition() const;
+         glm::vec3 GetDirection() const;
 
          glm::vec3 GetTransformedDirectionVector(const glm::vec4& initialDirection) const;
 

@@ -18,7 +18,7 @@ namespace Graphics
             component->GetRenderData().Specular,
             component->GetRenderData().ShadowInfo)
          , m_attenuation(component->GetRenderData().Attenuation)
-         , m_radianceSqrRadius(component->GetRenderData().RadianceSqrRadius)
+         , m_radianceRadius(component->GetRenderData().RadianceRadius)
       {
       }
 
@@ -32,7 +32,7 @@ namespace Graphics
          if (shadowInfo)
          {
             const float aspectRatio = shadowInfo->GetAtlasResource()->GetTextureAspectRatio();
-            const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, std::sqrtf(m_radianceSqrRadius));
+            const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, m_radianceRadius);
 
             ProjectedPointLightShadowInfo::six_mat4x4 matrices;
             matrices[0] = shadowProjectionMatrix;

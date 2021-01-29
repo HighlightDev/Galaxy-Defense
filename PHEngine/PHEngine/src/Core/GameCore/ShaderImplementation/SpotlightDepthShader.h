@@ -19,7 +19,7 @@ namespace Game
 
          Uniform u_worldMatrix, u_shadowViewMatrix, u_shadowProjectionMatrix;
          
-         Uniform u_spotlightPos, u_farPlane, u_spotlightCutoff;
+         Uniform u_spotlightPos, u_farPlane;
 
       protected:
 
@@ -35,7 +35,6 @@ namespace Game
 
          void SetFarPlane(const float distance);
 
-         void SetSpotlightCutoff(const float cutoff);
       };
 
       template <eShaderMeshType meshType>

@@ -18,7 +18,7 @@ namespace Graphics
 
          glm::vec3 m_attenuation;
 
-         float m_radianceSqrRadius;
+         float m_radianceRadius;
 
       public:
          
@@ -32,7 +32,7 @@ namespace Graphics
 
          glm::vec3 GetAttenuation() const;
 
-         float GetRadianceSqrRadius() const;
+         float GetRadianceRadius() const;
 
          virtual LightSceneProxyType GetLightProxyType() const override;
 

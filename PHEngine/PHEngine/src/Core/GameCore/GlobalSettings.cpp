@@ -11,10 +11,14 @@ namespace Game
       , mMaxDirLightShadowMapCount(4)
       , mMaxPointLightCount(50)
       , mMaxPointLightShadowMapCount(4)
+      , mMaxSpotlightCount(50)
+      , mMaxSpotlightShadowMapCount(4)
       , mShadowMapBiasDirLight(0.005f)
       , mShadowMapBiasPointLight(0.05f)
+      , mShadowMapBiasSpotlight(0.05f)
       , mDirLightPCFSamplesCount(2)
       , mPointLightPCFSamplesCount(4)
+      , mSpotlightPCFSamplesCount(4)
    {
    }
 

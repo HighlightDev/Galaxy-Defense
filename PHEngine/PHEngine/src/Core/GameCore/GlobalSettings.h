@@ -16,10 +16,14 @@ namespace Game
       const int32_t mMaxDirLightShadowMapCount;
       const int32_t mMaxPointLightCount;
       const int32_t mMaxPointLightShadowMapCount;
+      const int32_t mMaxSpotlightCount;
+      const int32_t mMaxSpotlightShadowMapCount;
       const float   mShadowMapBiasDirLight;
       const float   mShadowMapBiasPointLight;
+      const float   mShadowMapBiasSpotlight;
       const int32_t mDirLightPCFSamplesCount;
       const int32_t mPointLightPCFSamplesCount;
+      const int32_t mSpotlightPCFSamplesCount;
       static constexpr int32_t CountBonesPerVertexForAnimation = 4;
 
       GlobalSettings();
@@ -58,6 +62,14 @@ namespace Game
          return mMaxPointLightShadowMapCount;
       }
 
+      inline int32_t GetMaxSpotlightCount() const {
+         return mMaxSpotlightCount;
+      }
+
+      inline int32_t GetMaxSpotlightShadowMapCount() const {
+         return mMaxSpotlightShadowMapCount;
+      }
+
       inline float GetShadowMapBiasDirLight() const {
          return mShadowMapBiasDirLight;
       }
@@ -66,12 +78,20 @@ namespace Game
          return mShadowMapBiasPointLight;
       }
 
+      inline float GetShadowMapBiasSpotlight() const {
+         return mShadowMapBiasSpotlight;
+      }
+
       inline int32_t GetDirLightPCFSamplesCount() const {
          return mDirLightPCFSamplesCount;
       }
 
       inline int32_t GetPointLightPCFSamplesCount() const {
          return mPointLightPCFSamplesCount;
+      }
+
+      inline int32_t GetSpotlightPCFSamplesCount() const {
+         return mSpotlightPCFSamplesCount;
       }
 
       static constexpr int32_t GetCountBonesPerVertexForAnimation() {

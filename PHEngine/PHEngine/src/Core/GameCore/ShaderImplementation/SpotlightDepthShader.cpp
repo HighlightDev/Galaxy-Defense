@@ -17,7 +17,6 @@ namespace Game
          u_shadowProjectionMatrix = GetUniform("shadowProjectionMatrix", shaderProgramId);
          u_spotlightPos = GetUniform("spotlightPos", shaderProgramId);
          u_farPlane = GetUniform("farPlane", shaderProgramId);
-         u_spotlightCutoff = GetUniform("spotlightCutoff", shaderProgramId);
       }
 
       void SpotlightDepthShaderBase::SetTransformationMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
@@ -30,11 +29,6 @@ namespace Game
       void SpotlightDepthShaderBase::SetSpotlightPosition(const glm::vec3& position)
       {
          u_spotlightPos.LoadUniform(position);
-      }
-
-      void SpotlightDepthShaderBase::SetSpotlightCutoff(const float cutoff)
-      {
-         u_spotlightCutoff.LoadUniform(cutoff);
       }
 
       void SpotlightDepthShaderBase::SetFarPlane(const float distance)
