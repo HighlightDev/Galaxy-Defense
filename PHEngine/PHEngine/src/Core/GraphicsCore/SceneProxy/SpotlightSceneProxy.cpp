@@ -26,7 +26,7 @@ namespace Graphics
          if (shadowInfo)
          {
             const float aspectRatio = shadowInfo->GetAtlasResource()->GetTextureAspectRatio();
-            const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, std::sqrtf(m_radianceSqrRadius));
+            const auto shadowProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(90.0f), aspectRatio, 1.0f, m_radianceRadius);
 
             shadowInfo->SetShadowProjectionMatrix(shadowProjectionMatrix);
          }
@@ -44,7 +44,7 @@ namespace Graphics
 
       glm::vec3 SpotlightSceneProxy::GetDirection() const
       {
-         static const glm::vec4 spotlightDefaultDirection { 1.0f, 0.0f, 0.0f, 0.0f };
+         static const glm::vec4 spotlightDefaultDirection{ 1.0f, 0.0f, 0.0f, 0.0f };
          glm::vec3 result = m_relativeMatrix * spotlightDefaultDirection;
          return result;
       }

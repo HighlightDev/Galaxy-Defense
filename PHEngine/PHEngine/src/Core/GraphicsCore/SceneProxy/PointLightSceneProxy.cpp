@@ -67,9 +67,9 @@ namespace Graphics
          return m_attenuation;
       }
 
-      float PointLightSceneProxy::GetRadianceSqrRadius() const 
+      float PointLightSceneProxy::GetRadianceRadius() const 
       {
-         return m_radianceSqrRadius;
+         return m_radianceRadius;
       }
 
       ProjectedShadowInfo* PointLightSceneProxy::GetShadowInfo()

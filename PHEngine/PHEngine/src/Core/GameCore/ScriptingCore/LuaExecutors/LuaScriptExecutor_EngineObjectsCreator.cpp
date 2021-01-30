@@ -39,6 +39,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t, std::string)>::Register(mLuaInstance, "_CreateLightProjectionShadowInfo");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreatePointLightComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateSpotlightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
@@ -158,6 +159,18 @@ namespace Game
          std::get<2>(pointLightComponentData), std::get<3>(pointLightComponentData),
          std::get<4>(pointLightComponentData), std::get<5>(pointLightComponentData),
          std::get<6>(pointLightComponentData), std::get<7>(pointLightComponentData));
+   }
+
+   /* -------------------  Create spotlight component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3,
+      glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*>& spotlightComponentData)
+   {
+      return LuaToCPPAdapter::CreateSpotlightComponentData(
+         std::get<0>(spotlightComponentData), std::get<1>(spotlightComponentData),
+         std::get<2>(spotlightComponentData), std::get<3>(spotlightComponentData),
+         std::get<4>(spotlightComponentData), std::get<5>(spotlightComponentData),
+         std::get<6>(spotlightComponentData), std::get<7>(spotlightComponentData),
+         std::get<8>(spotlightComponentData), std::get<9>(spotlightComponentData));
    }
 
    /* -------------------  Create physics component data ----------------------------*/

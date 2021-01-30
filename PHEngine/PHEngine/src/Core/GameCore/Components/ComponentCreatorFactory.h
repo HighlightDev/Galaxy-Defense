@@ -7,6 +7,7 @@
 
 #include "DirectionalLightComponent.h"
 #include "PointLightComponent.h"
+#include "SpotlightComponent.h"
 
 #include "PrimitiveComponents/SkyboxComponent.h"
 #include "PrimitiveComponents/StaticMeshComponent.h"
@@ -20,6 +21,7 @@
 #include "ComponentData/MeshComponentData.h"
 #include "ComponentData/DirectionalLightComponentData.h"
 #include "ComponentData/PointLightComponentData.h"
+#include "ComponentData/SpotlightComponentData.h"
 #include "ComponentData/CubemapComponentData.h"
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/MovementComponentData.h"
@@ -52,6 +54,7 @@ namespace Game
    {
       DirectionalLight,
       PointLight,
+      Spotlight,
       Skybox,
       StaticMesh,
       WaterPlane,
@@ -208,8 +211,18 @@ namespace Game
          std::shared_ptr<Component> CreateComponent(const ComponentData& data)
          {
             const PointLightComponentData& mData = static_cast<const PointLightComponentData&>(data);
-            PointLightRenderData renderData(mData.Attenuation, mData.RadianceSqrRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
+            PointLightRenderData renderData(mData.Attenuation, mData.RadianceRadius, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
             return std::make_shared<ComponentType>(mData.GameObjectName, mData.Translation, renderData);
+         }
+      };
+
+      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Spotlight, ConstructType>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data)
+         {
+            const SpotlightComponentData& mData = static_cast<const SpotlightComponentData&>(data);
+            SpotlightRenderData renderData(mData.Attenuation, mData.RadianceRadius, mData.Cutoff, mData.Ambient, mData.Diffuse, mData.Specular, mData.ShadowInfo);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.Translation, mData.Rotation, renderData);
          }
       };
 

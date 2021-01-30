@@ -96,6 +96,27 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, smallGroundActor, phyComponent1)
 
 
+	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
+		local smallGroundActor1 = _CreateActor(host, "SmallGround1",
+	0, 1, 0,
+	90, 0, 0,
+	1, 1, 1)
+
+	local material2 = _CreateMaterial(host, "Pbs.m")
+	_SetTextureToMaterial(host, material2, "brick_mid.png", "albedo")
+	_SetTextureToMaterial(host, material2, "brick_nm_mid.png", "normalMap")
+	_SetFloatToMaterial(host, material2, 1, "uvScale")
+
+	local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
+	local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
+	_AttachComponentToActor(host, smallGroundActor1, floorComponent1)
+
+	local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
+	local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
+	local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
+	local phyComponent2 = _CreateComponent(host, "PhysicsComponent", physData2)
+	_AttachComponentToActor(host, smallGroundActor1, phyComponent2)
+
 	-- ***************************HOUSE******************** --
 
 	local house = _CreateActor(host,"House", 

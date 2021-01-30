@@ -39,7 +39,7 @@ namespace Game
       lightCompData->Translation = GetTranslation();
       lightCompData->Rotation = GetRotationEuler();
       lightCompData->Attenuation = m_renderData.Attenuation;
-      lightCompData->RadianceSqrRadius = m_renderData.RadianceSqrRadius;
+      lightCompData->RadianceRadius = m_renderData.RadianceRadius;
       lightCompData->Cutoff = m_renderData.Cutoff;
 
       const bool bHasShadowMap = !!m_renderData.ShadowInfo;

@@ -3,6 +3,8 @@
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
+#include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
+#include "Core/GameCore/Components/SpotlightComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
@@ -15,6 +17,12 @@
 
 namespace Game
 {
+
+   ComponentData* LuaToCPPAdapter::CreateSpotlightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation,
+      const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, float cutoff, ProjectedShadowInfo* shadowInfo)
+   {
+      return new SpotlightComponentData(gameObjectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
+   }
 
    ComponentData* LuaToCPPAdapter::CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, ProjectedShadowInfo* shadowInfo)
@@ -50,6 +58,10 @@ namespace Game
       else if ("DirectionalLightComponent" == componentType)
       {
          result = scene->CreateComponent_GameThread<Game::ComponentMetaType::DirectionalLight, DirectionalLightComponent>(*componentData);
+      }
+      else if ("SpotlightComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<Game::ComponentMetaType::Spotlight, SpotlightComponent>(*componentData);
       }
       else if ("StaticMeshComponent" == componentType)
       {

@@ -53,6 +53,10 @@ namespace Game
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3,
          glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*>& pointLightComponentData);
 
+      /* -------------------  Create spotlight component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3,
+         glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*>& pointLightComponentData);
+
       /* -------------------  Create input component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData);
 

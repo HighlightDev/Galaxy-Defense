@@ -232,8 +232,8 @@ namespace Game {
             if (pointLightSerData->bHasShadowMap)
             {
                auto rezolution = glm::ivec2(pointLightSerData->ShadowMapSize, pointLightSerData->ShadowMapSize);
-               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(rezolution);
-               pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(directionalLightTextureAtlasRequest);
+               auto pointLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(rezolution);
+               pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTextureAtlasRequest);
             }
 
             auto pointLightCompData = LuaToCPPAdapter::CreatePointLightComponentData(pointLightSerData->ComponentName,
@@ -242,11 +242,39 @@ namespace Game {
                pointLightSerData->DiffuseLight,
                pointLightSerData->SpecularLight,
                pointLightSerData->Attenuation,
-               pointLightSerData->RadianceSqrRadius,
+               pointLightSerData->RadianceRadius,
                pointLightShadowProjInfo);
 
 
             result = LuaToCPPAdapter::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
+            break;
+         }
+         case SerializeDataBase::SerializeDataType::Spotlight:
+         {
+            logCompType = "Spotlight";
+            SerializeDataSpotlightComponent* spotlightSerData = static_cast<SerializeDataSpotlightComponent*>(data.get());
+
+            ProjectedShadowInfo* spotlightShadowProjInfo = nullptr;
+            if (spotlightSerData->bHasShadowMap)
+            {
+               auto rezolution = glm::ivec2(spotlightSerData->ShadowMapSize, spotlightSerData->ShadowMapSize);
+               auto spotlightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
+               spotlightShadowProjInfo = new ProjectedPointLightShadowInfo(spotlightTextureAtlasRequest);
+            }
+
+            auto spotlightCompData = LuaToCPPAdapter::CreateSpotlightComponentData(spotlightSerData->ComponentName,
+               spotlightSerData->Translation,
+               spotlightSerData->Rotation,
+               spotlightSerData->AmbientLight,
+               spotlightSerData->DiffuseLight,
+               spotlightSerData->SpecularLight,
+               spotlightSerData->Attenuation,
+               spotlightSerData->RadianceRadius,
+               spotlightSerData->Cutoff,
+               spotlightShadowProjInfo);
+
+
+            result = LuaToCPPAdapter::CreateComponentByString("SpotlightComponent", spotlightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Input:

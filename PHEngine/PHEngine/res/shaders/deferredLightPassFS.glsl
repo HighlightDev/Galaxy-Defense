@@ -1,14 +1,17 @@
 #version 400
 
-#define SHADING_MODEL_PBR
 #define MAX_DIR_LIGHT_COUNT 5
 #define MAX_POINT_LIGHT_COUNT 50
+#define MAX_SPOTLIGHT_COUNT 50
 #define SHADOWMAP_BIAS_DIR_LIGHT 0.005
 #define SHADOWMAP_BIAS_POINT_LIGHT 0.05
+#define SHADOWMAP_BIAS_SPOTLIGHT 0.05
 #define PCF_SAMPLES_DIR_LIGHT 2
 #define PCF_SAMPLES_POINT_LIGHT 4
-#define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
+#define PCF_SAMPLES_SPOTLIGHT 4
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
+#define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
+#define MAX_SPOTLIGHT_SHADOW_MAP_COUNT 4
 
 const float INV_COUNT_PCF_DIR_LIGHT_SAMPLES = 1.0 / (((PCF_SAMPLES_DIR_LIGHT * 2) + 1) * ((PCF_SAMPLES_DIR_LIGHT * 2) + 1));
 const float INV_COUNT_PCF_POINT_LIGHT_SAMPLES = 1.0 / (PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT * PCF_SAMPLES_POINT_LIGHT);
@@ -22,6 +25,7 @@ uniform sampler2D gBuffer_Normal;
 uniform sampler2D gBuffer_AlbedoNSpecular;
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
+uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 
 uniform vec3 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
 uniform vec3 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
@@ -39,6 +43,16 @@ uniform vec3 PointLightSpecularColor[MAX_POINT_LIGHT_COUNT];
 uniform vec3 PointLightAttenuation[MAX_POINT_LIGHT_COUNT];
 uniform float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_COUNT];
 uniform vec3 PointLightPositionWorld[MAX_POINT_LIGHT_COUNT];
+
+uniform vec3 SpotlightAmbientColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform vec3 SpotlightDiffuseColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform vec3 SpotlightSpecularColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform vec3 SpotlightDirection[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform vec3 SpotlightPosition[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform float SpotlightCutoff[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform float SpotlightShadowProjectionFarPlane[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform int SpotlightShadowMapCount;
+uniform int SpotlightCount;
 
 in VS_OUT
 {
@@ -325,8 +339,16 @@ vec3 GetDiffuseColor(in vec3 worldPos, in vec3 nWorldNormal)
 
 		resultDiffuseColor += DirLightDiffuseColor[dirLightIndex] * diffuseFactor * litFactor;
 	}
+
 	/* SPOT LIGHTS */
-	// TODO: SPOT LIGHTS
+	for (int spotlightIndex = 0; spotlightIndex < SpotlightCount; ++spotlightIndex)
+	{
+		vec3 nDirection = normalize(SpotlightDirection[spotlightIndex]);
+		float nDotDir = dot(nDirection, nWorldNormal);
+		float diffuseFactor = max(nDotDir, 0.0);
+		diffuseFactor *= step(SpotlightCutoff[spotlightIndex], diffuseFactor);
+		resultDiffuseColor += SpotlightDiffuseColor[spotlightIndex] * diffuseFactor;
+	}
 
 	return resultDiffuseColor;
 }
@@ -350,12 +372,8 @@ void main()
 	#else
 		#ifdef NO_LIT
 			vec4 totalColor = albedoAndSpecular;
-		#endif
-	#endif
-
-	#ifndef SHADING_MODEL_PBR
-		#ifndef NO_LIT
-		vec3 diffuseColor = GetDiffuseColor(worldPos, worldNormal, shadowTransitionValue);
+		#else
+		vec3 diffuseColor = GetDiffuseColor(worldPos.xyz, worldNormal);
 		vec3 ambientColor = GetAmbientColor();
 		vec4 totalColor = vec4(albedoAndSpecular.rgb * (diffuseColor + ambientColor), 1);
 		#endif

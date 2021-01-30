@@ -11,8 +11,8 @@ namespace Game
       public PointLightComponentData
    {
 
-      SpotlightComponentData(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 attenuation, float radianceSqrRadius, float cutoff, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-         : PointLightComponentData(gameObjectName, translation, attenuation,radianceSqrRadius, ambient, diffuse, specular, shadowInfo)
+      SpotlightComponentData(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 attenuation, float radianceRadius, float cutoff, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
+         : PointLightComponentData(gameObjectName, translation, attenuation, radianceRadius, ambient, diffuse, specular, shadowInfo)
          , Cutoff(cutoff)
          , Rotation(rotation)
       {
