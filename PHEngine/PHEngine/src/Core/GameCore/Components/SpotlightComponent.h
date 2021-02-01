@@ -9,8 +9,8 @@ using namespace Graphics::Data;
 
 namespace Game
 {
-   class SpotlightComponent :
-      public PointLightComponent
+   class SpotlightComponent
+      : public PointLightComponent
    {
       using Base = PointLightComponent;
 

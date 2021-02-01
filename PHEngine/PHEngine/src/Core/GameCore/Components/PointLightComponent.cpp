@@ -17,6 +17,7 @@ namespace Game
       if (renderData.ShadowInfo)
       {
          PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+         KinematicBodyMovedEvent::GetInstance()->AddListener(this);
       }
    }
 
@@ -25,6 +26,7 @@ namespace Game
       if (m_renderData.ShadowInfo)
       {
          PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+         KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
       }
    }
 
@@ -76,10 +78,22 @@ namespace Game
 
    void PointLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
    {
+      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+      NotifySceneProxyThatShadowmapIsDirty(functionId);
+   }
+
+   void PointLightComponent::ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data)
+   {
+      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+      NotifySceneProxyThatShadowmapIsDirty(functionId);
+   }
+
+   void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t& functionId)
+   {
       if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
-
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
          {
             auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];

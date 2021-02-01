@@ -3,6 +3,7 @@
 #include "LightComponent.h"
 #include "Core/GraphicsCore/RenderData/PointLightRenderData.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
@@ -14,6 +15,7 @@ namespace Game
    class PointLightComponent
       : public LightComponent
       , public PhysicsSimulationUpdatedEvent
+      , public KinematicBodyMovedEvent
    {
       using Base = LightComponent;
 
@@ -43,6 +45,11 @@ namespace Game
    protected:
 
       virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data) override;
+
+   private:
+
+      void NotifySceneProxyThatShadowmapIsDirty(const uint64_t& functionId);
    };
 }
 

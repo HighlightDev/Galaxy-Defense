@@ -71,7 +71,7 @@ namespace Graphics
                direction = glm::normalize(direction);
                const glm::vec3& origin = GetPosition();
 
-               const glm::mat4& shadowViewMatrix = glm::lookAt(origin, origin + direction, -AXIS_UP);
+               const glm::mat4& shadowViewMatrix = glm::lookAt(origin, origin + direction, AXIS_UP);
                shadowInfo->SetShadowViewMatrix(shadowViewMatrix);
                SetIsTransformationDirty(false);
             }
