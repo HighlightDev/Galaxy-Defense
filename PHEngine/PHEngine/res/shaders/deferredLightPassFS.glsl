@@ -344,9 +344,13 @@ vec3 GetDiffuseColor(in vec3 worldPos, in vec3 nWorldNormal)
 	for (int spotlightIndex = 0; spotlightIndex < SpotlightCount; ++spotlightIndex)
 	{
 		vec3 nDirection = normalize(SpotlightDirection[spotlightIndex]);
-		float nDotDir = dot(nDirection, nWorldNormal);
-		float diffuseFactor = max(nDotDir, 0.0);
-		diffuseFactor *= step(SpotlightCutoff[spotlightIndex], diffuseFactor);
+		vec3 nLtoPixel = normalize(worldPos - SpotlightPosition[spotlightIndex]);
+		float lPosDotDir = dot(nDirection, nLtoPixel);
+		float spotlightFactor = max(lPosDotDir, 0.0);
+		//float bSpotlightCutoffItersects = step(SpotlightCutoff[spotlightIndex], spotlightFactor);
+		
+		float diffuseFactor = max(dot(-nDirection, nWorldNormal), 0.0);
+		diffuseFactor *= smoothstep(SpotlightCutoff[spotlightIndex], 1.0, spotlightFactor);
 		resultDiffuseColor += SpotlightDiffuseColor[spotlightIndex] * diffuseFactor;
 	}
 

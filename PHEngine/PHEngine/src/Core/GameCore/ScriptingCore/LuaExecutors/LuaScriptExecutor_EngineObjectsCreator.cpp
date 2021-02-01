@@ -1,8 +1,5 @@
 #include "LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
-#include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
-#include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/StateMachine/FSMParser.h"
@@ -128,6 +125,7 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          std::shared_ptr<Component> component = LuaToCPPAdapter::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
+         assert(component);
 
          mActiveComponents[component->GetObjectId()] = component;
          createdComponent = component.get();
@@ -211,17 +209,7 @@ namespace Game
       const int32_t shadowAtlasSize = std::get<0>(lightProjectionData);
       const std::string& lightType = std::get<1>(lightProjectionData);
 
-      if (lightType == "point_light")
-      {
-         auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
-         shadowProjInfo = new ProjectedPointLightShadowInfo(directionalLightTextureAtlasRequest);
-      }
-      else if (lightType == "direct_light")
-      {
-         auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize, shadowAtlasSize));
-         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
-         shadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
-      }
+      shadowProjInfo = LuaToCPPAdapter::CreateProjectedShadowInfo(lightType, glm::ivec2(shadowAtlasSize, shadowAtlasSize));
 
       return shadowProjInfo;
    }

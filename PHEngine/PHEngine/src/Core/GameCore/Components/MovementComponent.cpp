@@ -92,8 +92,6 @@ namespace Game
 
    void MovementComponent::Tick(const float deltaTime)
    {
-      if (auto physCompSP = GetOwner()->GetPhysicsComponent())
-      {
          if (mDestinationPoint != "NO")
          {
             Move(deltaTime);
@@ -102,7 +100,11 @@ namespace Game
 
             Transform t;
             t.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
-            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), std::move(t));
+
+            if (auto physCompSP = GetOwner()->GetPhysicsComponent())
+            {
+               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), std::move(t));
+            }
          }
          else
          {
@@ -116,7 +118,6 @@ namespace Game
                mBehaviorVisitor->CommitDestinationPointReached();
             }
          }
-      }
    }
 
    void MovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) 

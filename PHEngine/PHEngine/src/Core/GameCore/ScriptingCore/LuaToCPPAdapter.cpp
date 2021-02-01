@@ -1,5 +1,6 @@
 #include "LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
@@ -14,6 +15,9 @@
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
+#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
+#include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
 
 namespace Game
 {
@@ -49,6 +53,8 @@ namespace Game
 
    std::shared_ptr<Component> LuaToCPPAdapter::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
    {
+      assert(componentData && scene);
+
       std::shared_ptr<Component> result;
 
       if ("PointLightComponent" == componentType)
@@ -95,11 +101,41 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(*componentData);
       }
-      else assert((false, "Unknown component type."));
+      else
+      {
+         assert(false);
+      }
 
       delete componentData;
 
       return result;
+   }
+
+   ProjectedShadowInfo* LuaToCPPAdapter::CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize)
+   {
+      ProjectedShadowInfo* shadowProjInfo = nullptr;
+      if (lightType == "point_light")
+      {
+         auto pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(shadowAtlasSize);
+         shadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTAR);
+      }
+      else if (lightType == "direct_light")
+      {
+         auto directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
+         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+         shadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTAR, orthoHalfExtent);
+      }
+      else if (lightType == "spotlight")
+      {
+         auto spotlightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
+         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+         shadowProjInfo = new ProjectedSpotlightShadowInfo(spotlightTAR);
+      }
+      else
+      {
+         assert(false);
+      }
+      return shadowProjInfo;
    }
 
    PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsBoxShape(const glm::vec3& halfExtent)

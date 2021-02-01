@@ -38,9 +38,9 @@ namespace Game
          u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", MAX_POINT_LIGHT_COUNT, shaderProgramId);
 
-         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", MAX_POINT_LIGHT_COUNT, shaderProgramId);
+         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
          u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", MAX_POINT_LIGHT_COUNT, shaderProgramId);
+         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
          u_PointLightShadowMapCount = GetUniform("PointLightShadowMapCount", shaderProgramId);
          u_PointLightCount = GetUniform("PointLightCount", shaderProgramId);
 
@@ -49,9 +49,9 @@ namespace Game
          u_DirLightSpecularColor = GetUniformArray("DirLightSpecularColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
          u_DirLightDirection = GetUniformArray("DirLightDirection", MAX_DIR_LIGHT_COUNT, shaderProgramId);
 
-         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", MAX_DIR_LIGHT_COUNT, shaderProgramId);
-         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", MAX_DIR_LIGHT_COUNT, shaderProgramId);
-         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", MAX_DIR_LIGHT_COUNT, shaderProgramId);
+         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
+         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
+         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
          u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
          u_DirectionalLightCount = GetUniform("DirLightCount", shaderProgramId);
 
@@ -62,8 +62,8 @@ namespace Game
          u_SpotlightPosition = GetUniformArray("SpotlightPosition", MAX_SPOTLIGHT_COUNT, shaderProgramId);
          u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", MAX_SPOTLIGHT_COUNT, shaderProgramId);
 
-         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
+         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
          u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
          u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif
