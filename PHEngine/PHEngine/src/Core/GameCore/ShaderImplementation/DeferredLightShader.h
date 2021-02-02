@@ -52,6 +52,8 @@ namespace Game
 
          UniformArray u_SpotlightShadowMaps;
          UniformArray u_SpotlightShadowProjectionFarPlane;
+         UniformArray u_SpotlightShadowMatrices;
+         UniformArray u_SpotlightAtlasOffset;
          Uniform u_SpotlightShadowMapCount;
          Uniform u_SpotlightCount;
 #endif
@@ -93,9 +95,10 @@ namespace Game
          void SetPointLightShadowMapCount(int32_t count);
          void SetPointLightShadowProjectionFarPlane(size_t index, float FarPlane);
 
-         void SetSpotlightShadowMapSlot(size_t index, int32_t slot);
+         void SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset);
          void SetSpotlightShadowMapCount(int32_t count);
          void SetSpotlightShadowProjectionFarPlane(size_t index, float FarPlane);
+         void SetSpotlightShadowMatrix(size_t index, const glm::mat4& shadowMatrix);
 #endif
 
 #ifdef SHADING_MODEL_PBR

@@ -8,7 +8,7 @@
 #define SHADOWMAP_BIAS_SPOTLIGHT 0.05
 #define PCF_SAMPLES_DIR_LIGHT 2
 #define PCF_SAMPLES_POINT_LIGHT 4
-#define PCF_SAMPLES_SPOTLIGHT 4
+#define PCF_SAMPLES_SPOTLIGHT 3
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
 #define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
 #define MAX_SPOTLIGHT_SHADOW_MAP_COUNT 4
@@ -31,8 +31,8 @@ uniform vec3 DirLightAmbientColor[MAX_DIR_LIGHT_COUNT];
 uniform vec3 DirLightDiffuseColor[MAX_DIR_LIGHT_COUNT];
 uniform vec3 DirLightSpecularColor[MAX_DIR_LIGHT_COUNT];
 uniform vec3 DirLightDirection[MAX_DIR_LIGHT_COUNT];
-uniform mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_COUNT];
-uniform vec4 DirLightShadowAtlasOffset[MAX_DIR_LIGHT_COUNT];
+uniform mat4 DirLightShadowMatrices[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
+uniform vec4 DirLightShadowAtlasOffset[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 uniform int DirLightCount;
 uniform int DirLightShadowMapCount;
 
@@ -41,7 +41,7 @@ uniform int PointLightShadowMapCount;
 uniform vec3 PointLightDiffuseColor[MAX_POINT_LIGHT_COUNT];
 uniform vec3 PointLightSpecularColor[MAX_POINT_LIGHT_COUNT];
 uniform vec3 PointLightAttenuation[MAX_POINT_LIGHT_COUNT];
-uniform float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_COUNT];
+uniform float PointLightShadowProjectionFarPlane[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform vec3 PointLightPositionWorld[MAX_POINT_LIGHT_COUNT];
 
 uniform vec3 SpotlightAmbientColor[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
@@ -51,6 +51,8 @@ uniform vec3 SpotlightDirection[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform vec3 SpotlightPosition[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform float SpotlightCutoff[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform float SpotlightShadowProjectionFarPlane[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform mat4 SpotlightShadowMatrices[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
+uniform vec4 SpotlightShadowAtlasOffset[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 uniform int SpotlightShadowMapCount;
 uniform int SpotlightCount;
 
@@ -100,8 +102,6 @@ float CalcLitFactorDirectionalLight(in sampler2D shadowmap, in vec2 shadowmapSiz
 
 float CalcLitFactorPointLight(in samplerCube shadowmap, in vec3 pixelWorldPos, in vec3 pointLightWorldPos, in float shadowmapProjectionFarPlane)
 {
-	float resultLit = 0.0f;
-
 	vec3 LightToFragVec = pixelWorldPos - pointLightWorldPos;
 	float actualDepth = length(LightToFragVec);
 
@@ -123,34 +123,29 @@ float CalcLitFactorPointLight(in samplerCube shadowmap, in vec3 pixelWorldPos, i
 	}
 
 	shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
-	resultLit = 1 - shadow;
-	return resultLit;
+	return 1 - shadow;
 }
 
-float CalcLitFactorSpotlight(in sampler2D shadowmap, in vec3 pixelWorldPos, in vec3 spotlightWorldPos, in float shadowmapProjectionFarPlane)
+float CalcLitFactorSpotlight(in sampler2D shadowmap, in vec2 shadowMapTexCoords, in vec2 shadowmapSize, in vec3 pixelWorldPos, in vec3 spotlightWorldPos, in float shadowmapProjectionFarPlane)
 {
-	float resultLit = 0.0f;
+	float actualDepth = length(pixelWorldPos - spotlightWorldPos);
 
-	vec3 LightToFragVec = pixelWorldPos - spotlightWorldPos;
-	float actualDepth = length(LightToFragVec);
+	float shadow = 0;
+	vec2 texelSize = 1.0 / shadowmapSize;
 
-	float shadow  = 0.0;
-	const float offset  = 0.1;
-	const float offsetStep = offset / (PCF_SAMPLES_POINT_LIGHT * 0.5);
-
-	for (float x = -offset; x < offset; x += offsetStep)
+	for (float x = -PCF_SAMPLES_SPOTLIGHT; x < PCF_SAMPLES_SPOTLIGHT; ++x)
 	{
-		for (float y = -offset; y < offset; y += offsetStep)
+		for (float y = -PCF_SAMPLES_SPOTLIGHT; y < PCF_SAMPLES_SPOTLIGHT; ++y)
 		{
-//			float shadowmapDepth = texture(shadowmap, LightToFragVec + vec3(x, y, z)).r; // depth is in range [0 ; 1]
-//			shadowmapDepth *= shadowmapProjectionFarPlane; // now depth is linear in world space in range [0 ; Far Plane]
-//			shadow += actualDepth - SHADOWMAP_BIAS_POINT_LIGHT > shadowmapDepth ? 1.0f : 0.0f;
+			vec2 offset = vec2(float(x) * texelSize.x, float(y) * texelSize.y);
+			float shadowmapDepth = texture(shadowmap, shadowMapTexCoords + offset).r; // depth is in range [0 ; 1]
+			shadowmapDepth *= shadowmapProjectionFarPlane; // now depth is linear in world space in range [0 ; Far Plane]
+			shadow += step(shadowmapDepth, actualDepth - SHADOWMAP_BIAS_SPOTLIGHT);
 		}
 	}
 
 	shadow *= INV_COUNT_PCF_POINT_LIGHT_SAMPLES;
-	resultLit = 1 - shadow;
-	return resultLit;
+	return 1 - shadow;
 }
 
 float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSize)
@@ -375,7 +370,24 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
 		float spotlightFactor = max(dot(nDirection, nLtoPixel), 0.0);
 
 		diffuseFactor *= smoothstep(SpotlightCutoff[spotlightIndex], 1.0, spotlightFactor);
-		resultDiffuseColor += SpotlightDiffuseColor[spotlightIndex] * diffuseFactor;
+
+		float litFactor = 1.0f;
+		if (SpotlightShadowMapCount > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex])
+		{
+			vec4 atlasOffset = SpotlightShadowAtlasOffset[spotlightIndex];
+			mat4 shadowMatrix = SpotlightShadowMatrices[spotlightIndex];
+
+			vec4 shadowProjectedPosition = (shadowMatrix * vec4(pixelWorldPos, 1.0));
+			vec2 shadowFragCoords = shadowProjectedPosition.xy / shadowProjectedPosition.w;
+
+			vec2 shadowmapAtlasSize = textureSize(SpotlightShadowMaps[spotlightIndex], 0);
+			vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords, atlasOffset);
+
+			litFactor = CalcLitFactorSpotlight(SpotlightShadowMaps[spotlightIndex], shadowCoordinates, shadowmapAtlasSize, pixelWorldPos, SpotlightPosition[spotlightIndex],
+				SpotlightShadowProjectionFarPlane[spotlightIndex]);
+		}
+
+		resultDiffuseColor += SpotlightDiffuseColor[spotlightIndex] * diffuseFactor * litFactor;
 	}
 
 	return resultDiffuseColor;

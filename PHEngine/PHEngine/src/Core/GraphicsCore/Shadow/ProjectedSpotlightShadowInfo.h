@@ -38,5 +38,7 @@ namespace Graphics
 
       glm::mat4x4 GetShadowMatrix() const;
 
+      glm::vec4 GetTextureAtlasOffset() const;
+
    };
 }

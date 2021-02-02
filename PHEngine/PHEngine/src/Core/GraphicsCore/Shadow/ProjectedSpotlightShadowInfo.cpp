@@ -65,4 +65,16 @@ namespace Graphics
       shadowMatrix *= mShadowViewMatrix;
       return shadowMatrix;
    }
+
+   glm::vec4 ProjectedSpotlightShadowInfo::GetTextureAtlasOffset() const
+   {
+      glm::vec4 result;
+
+      if (mShadowmapHandler)
+      {
+         result = GetTexture2dHandler()->GetTextureAtlasOffset();
+      }
+
+      return result;
+   }
 }

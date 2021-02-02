@@ -64,6 +64,8 @@ namespace Game
 
          u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
          u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
+         u_SpotlightShadowMatrices = GetUniformArray("SpotlightShadowMatrices", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
+         u_SpotlightAtlasOffset = GetUniformArray("SpotlightShadowAtlasOffset", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
          u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
          u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif
@@ -159,9 +161,10 @@ namespace Game
          u_PointLightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
       }
 
-      void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot)
+      void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
       {
          u_SpotlightShadowMaps.LoadUniform(index, slot);
+         u_SpotlightAtlasOffset.LoadUniform(index, atlasOffset);
       }
 
       void DeferredLightShader::SetSpotlightShadowMapCount(int32_t count)
@@ -172,6 +175,11 @@ namespace Game
       void DeferredLightShader::SetSpotlightShadowProjectionFarPlane(size_t index, float FarPlane)
       {
          u_SpotlightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
+      }
+
+      void DeferredLightShader::SetSpotlightShadowMatrix(size_t index, const glm::mat4& shadowMatrix)
+      {
+         u_SpotlightShadowMatrices.LoadUniform(index, shadowMatrix);
       }
 
       void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies)

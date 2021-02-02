@@ -17,8 +17,8 @@ namespace Game
       , mShadowMapBiasPointLight(0.05f)
       , mShadowMapBiasSpotlight(0.05f)
       , mDirLightPCFSamplesCount(2)
-      , mPointLightPCFSamplesCount(4)
-      , mSpotlightPCFSamplesCount(4)
+      , mPointLightPCFSamplesCount(3)
+      , mSpotlightPCFSamplesCount(3)
    {
    }
 

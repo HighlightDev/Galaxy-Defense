@@ -381,8 +381,9 @@ namespace Graphics
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
-                  m_deferredLightShader->SetSpotlightShadowMapSlot(spotlightIndex, shadowMapSlot);
+                  m_deferredLightShader->SetSpotlightShadowMapSlot(spotlightIndex, shadowMapSlot, shadowInfo->GetTextureAtlasOffset());
                   m_deferredLightShader->SetSpotlightShadowProjectionFarPlane(spotlightIndex, spotLightProxy->GetRadianceRadius());
+                  m_deferredLightShader->SetSpotlightShadowMatrix(spotlightIndex, shadowInfo->GetShadowMatrix());
                   shadowMapSlot++;
                   spotlightShadowMapCount++;
                   spotlightIndex++;
