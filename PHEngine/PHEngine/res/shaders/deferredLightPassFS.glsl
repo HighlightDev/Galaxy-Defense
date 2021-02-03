@@ -1,5 +1,6 @@
 #version 400
 
+#define SHADING_MODEL_PBR
 #define MAX_DIR_LIGHT_COUNT 5
 #define MAX_POINT_LIGHT_COUNT 50
 #define MAX_SPOTLIGHT_COUNT 50
@@ -7,7 +8,7 @@
 #define SHADOWMAP_BIAS_POINT_LIGHT 0.05
 #define SHADOWMAP_BIAS_SPOTLIGHT 0.05
 #define PCF_SAMPLES_DIR_LIGHT 2
-#define PCF_SAMPLES_POINT_LIGHT 4
+#define PCF_SAMPLES_POINT_LIGHT 3
 #define PCF_SAMPLES_SPOTLIGHT 3
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
 #define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
@@ -157,8 +158,8 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 #ifdef SHADING_MODEL_PBR
 
-	const float Metallic = 0.1;
-	const float Roughness = 0.9;
+	const float Metallic = 0.5;
+	const float Roughness = 0.5;
 	const float Epsilon = 0.00001;
 	uniform float ao;
 
@@ -300,7 +301,46 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 			}
 		}
 
-		return pointLighting + directLighting;
+		vec3 spotlightColor = vec3(0);
+		{
+			for (int spotlightIndex = 0; spotlightIndex < SpotlightCount; ++spotlightIndex)
+			{
+				// calculate per-light radiance
+				vec3 Li = normalize(SpotlightDirection[spotlightIndex]);
+
+				vec3 nLtoPixel = normalize(pixelWorldPos - SpotlightPosition[spotlightIndex]);
+				float spotlightFactor = max(dot(Li, nLtoPixel), 0.0);
+
+				vec3 lightRadiance = SpotlightDiffuseColor[spotlightIndex]; // for now
+
+				vec3 LRadiance = lightRadiance;
+
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, -Li, Lo, LRadiance);
+				pbrRadiance *= smoothstep(SpotlightCutoff[spotlightIndex], 1.0, spotlightFactor);
+
+				// Calculating shadow
+				float litFactor = 1.0f;
+				if (SpotlightShadowMapCount > spotlightIndex && spotlightFactor > SpotlightCutoff[spotlightIndex])
+				{
+					vec4 atlasOffset = SpotlightShadowAtlasOffset[spotlightIndex];
+					mat4 shadowMatrix = SpotlightShadowMatrices[spotlightIndex];
+
+					vec4 shadowProjectedPosition = (shadowMatrix * vec4(pixelWorldPos, 1.0));
+					vec2 shadowFragCoords = shadowProjectedPosition.xy / shadowProjectedPosition.w;
+
+					vec2 shadowmapAtlasSize = textureSize(SpotlightShadowMaps[spotlightIndex], 0);
+					vec2 shadowCoordinates = GetShadowTexCoords(shadowFragCoords, atlasOffset);
+
+					litFactor = CalcLitFactorSpotlight(SpotlightShadowMaps[spotlightIndex], shadowCoordinates, shadowmapAtlasSize, pixelWorldPos, SpotlightPosition[spotlightIndex],
+					SpotlightShadowProjectionFarPlane[spotlightIndex]);
+				}
+
+				// Total contribution for this light.
+				spotlightColor += pbrRadiance * litFactor;
+			}
+		}
+
+		return pointLighting + directLighting + spotlightColor;
 	}
 
 #endif

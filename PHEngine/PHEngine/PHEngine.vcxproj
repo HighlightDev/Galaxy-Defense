@@ -90,9 +90,9 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)External\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)External\Assimp\project\include;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <UndefinePreprocessorDefinitions>NO_LIT;SHADING_MODEL_PBR;</UndefinePreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>NO_LIT;</UndefinePreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
