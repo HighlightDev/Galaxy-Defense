@@ -64,9 +64,7 @@ in VS_OUT
 
 vec2 GetShadowTexCoords(in vec2 texCoords, in vec4 atlasOffset)
 {
-	vec2 texCoordsInAtlas;
-	texCoordsInAtlas = (texCoords * atlasOffset.zw) + atlasOffset.xy;
-	return texCoordsInAtlas;
+	return (texCoords * atlasOffset.zw) + atlasOffset.xy;
 }
 
 float CalcLitFactorDirectionalLight(in sampler2D shadowmap, in vec2 shadowmapSize, in vec3 shadowTexCoord, in float shadowTransitionValue)

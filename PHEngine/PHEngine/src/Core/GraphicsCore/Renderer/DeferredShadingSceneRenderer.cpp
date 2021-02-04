@@ -110,7 +110,7 @@ namespace Graphics
 
          std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
 
-         size_t lastDirLightFramebufferDesc = UINT_MAX;
+         size_t lastDirLightFramebufferDesc = UINT_MAX, lastSpotlightFramebufferDesc = UINT_MAX;
 
          for (auto& dirLightProxy : dirLightProxies)
          {
@@ -243,7 +243,8 @@ namespace Graphics
                const auto& shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
                if (shadowInfo && shadowInfo->IsShadowMapDirty())
                {
-                  shadowInfo->BindShadowFramebuffer(true);
+                  shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastSpotlightFramebufferDesc);
+                  lastSpotlightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
 
                   if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                   {

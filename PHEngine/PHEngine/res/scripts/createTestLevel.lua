@@ -21,10 +21,9 @@ function CreateTestLevel(host)
 		 local pointLTranslation = {x = 0 , y = 5, z = 0}
 
 		--local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
+		--local dirShadowInfo1= _CreateLightProjectionShadowInfo(host, 512, "direct_light")
 		local spotlightShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "spotlight")
-		--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
-
-		local spotlightCD = _CreateSpotlightComponentData(host, 
+			local spotlightCD = _CreateSpotlightComponentData(host, 
 			"spotlightComp",
 			-10, 2, 0,
 			rotation.x, 0, rotation.z,
@@ -33,11 +32,10 @@ function CreateTestLevel(host)
 			specular.x, specular.y, specular.z,
 			attenuation.x, attenuation.y, attenuation.z,
 			100.0,
-			0.2,
+			0.88,
 			spotlightShadowInfo)
-
 		local spotlightComponent = _CreateComponent(host, "SpotlightComponent", spotlightCD)
-		 _AttachComponentToActor(host, lightActor, spotlightComponent)
+		_AttachComponentToActor(host, lightActor, spotlightComponent)
 
 		--local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
 		--	rotation.x, rotation.y, rotation.z,
@@ -47,7 +45,18 @@ function CreateTestLevel(host)
 		--	specular.x, specular.y, specular.z,
 		--	dirShadowInfo
 		--	)
+		--
+		--			local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
+		--	rotation.x, rotation.y, rotation.z,
+		--	-direction.x, direction.y, direction.z,
+		--	ambient.x, ambient.y, ambient.z,
+		--	diffuse.x, diffuse.y, diffuse.z,
+		--	specular.x, specular.y, specular.z,
+		--	dirShadowInfo1
+		--	)
 
+
+		--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
 		--local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
 		--	pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
 		--	ambient.x, ambient.y, ambient.z,
@@ -59,9 +68,11 @@ function CreateTestLevel(host)
 		--	)
 
 		 --local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
+		 --local dirLightComponent1 = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData1)
 		-- local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
 
 		-- _AttachComponentToActor(host, lightActor, dirLightComponent)
+		-- _AttachComponentToActor(host, lightActor, dirLightComponent1)
 		-- _AttachComponentToActor(host, lightActor, pointLightComponent)
 	end
 

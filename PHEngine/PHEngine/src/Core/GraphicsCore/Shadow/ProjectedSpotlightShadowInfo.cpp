@@ -32,9 +32,10 @@ namespace Graphics
    {
       ProjectedShadowInfo::BindShadowFramebuffer(clearDepthBuffer);
 
-      auto rezolution = mShadowmapHandler->GetAtlasResource()->GetTextureRezolution();
-      const GLbitfield clearDepthFlag = GL_DEPTH_BUFFER_BIT;
-      m_shadowFramebuffer->RenderToTexture(0, 0, rezolution.x, rezolution.y, clearDepthFlag);
+      auto texAtlas = GetTexture2dHandler();
+      auto atlas_cell = texAtlas->GetAtlasCell();
+      const GLbitfield clearDepthFlag = clearDepthBuffer ? GL_DEPTH_BUFFER_BIT : 0;
+      m_shadowFramebuffer->RenderToTexture(atlas_cell.X, atlas_cell.Y, atlas_cell.Width, atlas_cell.Height, clearDepthFlag);
    }
 
    glm::mat4x4 ProjectedSpotlightShadowInfo::GetShadowViewMatrix() const

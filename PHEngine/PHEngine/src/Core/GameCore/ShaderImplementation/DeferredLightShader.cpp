@@ -228,13 +228,13 @@ namespace Game
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < MAX_SPOTLIGHT_COUNT)
             {
                SpotlightSceneProxy* spotlightProxyPtr = static_cast<SpotlightSceneProxy*>(lightProxy.get());
-               u_SpotlightAmbientColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->AmbientColor);
-               u_SpotlightDiffuseColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->DiffuseColor);
-               u_SpotlightSpecularColor.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->SpecularColor);
-               u_SpotlightPosition.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetPosition());
-               u_SpotlightDirection.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetDirection());
-               u_SpotlightCutoff.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetCutoff());
-               // todo: u_SpotlightAttenuation.LoadUniform(pointLightProxyIndex, spotlightProxyPtr->GetAttenuation());
+               u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->AmbientColor);
+               u_SpotlightDiffuseColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->DiffuseColor);
+               u_SpotlightSpecularColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->SpecularColor);
+               u_SpotlightPosition.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetPosition());
+               u_SpotlightDirection.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetDirection());
+               u_SpotlightCutoff.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetCutoff());
+               // todo: u_SpotlightAttenuation.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetAttenuation());
 
                spotlightProxyIndex++;
             }
