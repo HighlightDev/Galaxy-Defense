@@ -1,6 +1,7 @@
 #include "EngineMath.h"
 
 #include <glm/geometric.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace EngineMath
 {
@@ -32,6 +33,11 @@ namespace EngineMath
       return resultPosition;
    }
 
+   glm::quat SLerpQuat(float t, const glm::quat& src, const glm::quat& dst)
+   {
+      return glm::lerp(src, dst, t);
+   }
+
    float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane, float w)
    {
       const glm::vec3& normal = glm::vec3(plane);
@@ -45,5 +51,10 @@ namespace EngineMath
       const glm::vec3& absNormal = glm::abs(planeNormal);
       outAbsExtentOnNormalProjected = glm::abs(glm::dot(extent, absNormal));
       outDistanceOriginToPlane = glm::dot(planeNormal, origin) + plane.w;
+   }
+
+   glm::quat EulerAnglesToQuat(const glm::vec3& eulerAngles)
+   {
+      return glm::quat(glm::vec3(DEG_TO_RAD(eulerAngles.x), DEG_TO_RAD(eulerAngles.y), DEG_TO_RAD(eulerAngles.z)));
    }
 }

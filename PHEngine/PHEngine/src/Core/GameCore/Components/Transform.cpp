@@ -14,6 +14,11 @@ namespace Game
    {
    }
 
+   EulerRotationTransform::EulerRotationTransform(const glm::vec3& eulerRotationAngles)
+      : RotationEulerAngles(eulerRotationAngles)
+   {
+   }
+
    ScaleTransform::ScaleTransform(const glm::vec3& scale)
       : Scale(scale)
    {
@@ -31,6 +36,37 @@ namespace Game
    {
    }
 
+   EulerAnglesTransform::EulerAnglesTransform()
+      : TranslationTransform(glm::vec3())
+      , EulerRotationTransform(glm::vec3())
+      , ScaleTransform(glm::vec3(1))
+   {
+   }
+
+   EulerAnglesTransform::EulerAnglesTransform(const EulerAnglesTransform& transform)
+      : TranslationTransform(transform.Translation)
+      , EulerRotationTransform(transform.RotationEulerAngles)
+      , ScaleTransform(transform.Scale)
+   {
+
+   }
+
+   EulerAnglesTransform::EulerAnglesTransform(const glm::vec3& translation, const glm::vec3& eulerAngles, const glm::vec3& scale)
+      : TranslationTransform(translation)
+      , EulerRotationTransform(eulerAngles)
+      , ScaleTransform(scale)
+   {
+
+   }
+
+   EulerAnglesTransform& EulerAnglesTransform::operator=(const EulerAnglesTransform& t)
+   {
+      Translation = t.Translation;
+      RotationEulerAngles = t.RotationEulerAngles;
+      Scale = t.Scale;
+      return *this;
+   }
+
    Transform::Transform()
       : TranslationTransform(glm::vec3())
       , RotatorTransform(glm::quat())
@@ -45,17 +81,18 @@ namespace Game
    {
    }
 
-   Transform::Transform(Transform&& transform)
-      : TranslationTransform(std::move(transform.Translation))
-      , RotatorTransform(std::move(transform.Rotator))
-      , ScaleTransform(std::move(transform.Scale))
-   {
-   }
-
    Transform::Transform(const glm::vec3& translation, const glm::quat& rotator, const glm::vec3& scale)
       : TranslationTransform(translation)
       , RotatorTransform(rotator)
       , ScaleTransform(scale)
    {
+   }
+
+   Transform& Transform::operator=(const Transform& t)
+   {
+      Translation = t.Translation;
+      Rotator = t.Rotator;
+      Scale = t.Scale;
+      return *this;
    }
 }

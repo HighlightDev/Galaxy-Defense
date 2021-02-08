@@ -49,22 +49,24 @@ namespace Game
       return MOVEMENT_COMPONENT;
    }   
 
-   const std::unordered_map<std::string, std::tuple<Transform, float>>&  MovementComponent::GetMovementPoints() const
+   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>&  MovementComponent::GetMovementPoints() const
    {
       return mMovementPoints;
    }
 
-   void MovementComponent::AddMovementPoint(const std::string& pointName, const Transform& t, const float transitionTime)
+   void MovementComponent::AddMovementPoint(const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime)
    {
       assert(!mMovementPoints.count(pointName));
 
-      mMovementPoints.emplace(pointName, std::make_tuple(std::move(t), transitionTime));
+      mMovementPoints.emplace(pointName, std::make_tuple(t, transitionTime));
    }
 
    void MovementComponent::SetDestinationPoint(const std::string& pointName)
    {
       mDestinationPoint = pointName;
       mLastDestinationPoint = pointName;
+      const EulerAnglesTransform& transform = std::get<0>(mMovementPoints[mDestinationPoint]);
+      mBehaviorVisitor->CommitMovementStarted(transform);
    }
 
    std::string MovementComponent::GetDestinationPoint() const
@@ -76,10 +78,9 @@ namespace Game
    {
       mTime += deltaTime;
 
-      const glm::vec3& finalTargetVector = std::get<0>(mMovementPoints[mDestinationPoint]).Translation;
       const float transitionTime = std::get<1>(mMovementPoints[mDestinationPoint]);
 
-      mBehaviorVisitor->LerpTranslation(mTime, transitionTime, finalTargetVector);
+      mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
 
       // If camera is at final position  
       if (EngineMath::CompareFloats(mTime, transitionTime))
@@ -98,12 +99,12 @@ namespace Game
             
             mBehaviorVisitor->CommitMove();
 
-            Transform t;
-            t.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
+            EulerAnglesTransform transform;
+            transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
 
             if (auto physCompSP = GetOwner()->GetPhysicsComponent())
             {
-               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), std::move(t));
+               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), transform);
             }
          }
          else
@@ -114,8 +115,8 @@ namespace Game
                if (itNext == mMovementPoints.end())
                   itNext = mMovementPoints.begin();
 
+               mBehaviorVisitor->CommitMovementFinished();
                SetDestinationPoint(itNext->first);
-               mBehaviorVisitor->CommitDestinationPointReached();
             }
          }
    }

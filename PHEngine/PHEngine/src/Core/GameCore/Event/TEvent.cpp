@@ -17,7 +17,7 @@ namespace Event
    template class TEvent<AtomicEventPolicy<std::string>>;
    template class TEvent<AtomicEventPolicy<Game::ACamera*>>;
    template class TEvent<AtomicEventPolicy<KeyboardEventData>>;
-   template class TEvent<AtomicEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::Transform>>;
+   template class TEvent<AtomicEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>;
    template class TEvent<MultipleEventPolicy<TextureType>>;
 
    template class TEvent<MultipleEventPolicy<size_t>>;

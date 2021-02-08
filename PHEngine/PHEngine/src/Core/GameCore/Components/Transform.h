@@ -27,6 +27,13 @@ namespace Game
       RotatorTransform(const glm::quat& rotator);
    };
 
+   struct EulerRotationTransform
+   {
+      glm::vec3 RotationEulerAngles;
+
+      EulerRotationTransform(const glm::vec3& eulerRotationAngles);
+   };
+
    struct BoundingBoxTransform
       : public TranslationTransform
       , public ScaleTransform
@@ -34,6 +41,21 @@ namespace Game
       BoundingBoxTransform();
 
       BoundingBoxTransform(const glm::vec3& translation, const glm::vec3& scale);
+   };
+
+   struct EulerAnglesTransform
+      : public TranslationTransform
+      , public EulerRotationTransform
+      , public ScaleTransform
+   {
+
+      EulerAnglesTransform();
+
+      EulerAnglesTransform(const EulerAnglesTransform& transform);
+
+      EulerAnglesTransform(const glm::vec3& translation, const glm::vec3& eulerAngles, const glm::vec3& scale);
+
+      EulerAnglesTransform& operator=(const EulerAnglesTransform& t);
    };
 
    struct Transform 
@@ -45,17 +67,9 @@ namespace Game
 
       Transform(const Transform& transform);
 
-      Transform(Transform&& transform);
-
       Transform(const glm::vec3& translation, const glm::quat& rotator, const glm::vec3& scale);
 
-      Transform& operator=(const Transform& t)
-      {
-         Translation = t.Translation;
-         Rotator = t.Rotator;
-         Scale = t.Scale;
-         return *this;
-      }
+      Transform& operator=(const Transform& t);
    };
 
 }

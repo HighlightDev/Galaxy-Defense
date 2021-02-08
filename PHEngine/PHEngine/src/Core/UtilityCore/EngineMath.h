@@ -4,6 +4,7 @@
 #include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/ext/quaternion_float.hpp>
 
 namespace EngineMath
 {
@@ -32,8 +33,12 @@ namespace EngineMath
 
    glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3& position1, const glm::vec3& position2);
 
+   glm::quat SLerpQuat(float t, const glm::quat& src, const glm::quat& dst);
+
    float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane, float );
 
    void TestAABBPlane(const glm::vec3& origin, const glm::vec3& extent, const glm::vec4& plane, float& outDistanceOriginToPlane, float& outAbsExtentOnNormalProjected);
+
+   glm::quat EulerAnglesToQuat(const glm::vec3& eulerAngles);
 
 }

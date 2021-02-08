@@ -29,6 +29,6 @@ namespace Game
       void RunScript();
 
       // Add route point
-      void ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::quat, glm::vec3, float>& data);
+      void ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float>& data);
    };
 }

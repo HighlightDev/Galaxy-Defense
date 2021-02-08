@@ -9,12 +9,10 @@ set(SOURCE
   Job.cpp
 )
 
-add_subdirectory(CommonCore)
-
-set(APPEND ENGINE_COMMON_CORE_MODULE EngineCommonCoreModule)
+#add_subdirectory(Core)
 
 add_library(EngineCoreModule STATIC ${HEADERS} ${SOURCE})
 
 target_include_directories(EngineCoreModule INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
 
-target_link_libraries(EngineCoreModule ${ENGINE_COMMON_CORE_MODULE})
+#target_link_libraries(PHEngine ${CORE_MODULE})

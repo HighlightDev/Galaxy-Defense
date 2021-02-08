@@ -90,7 +90,7 @@ namespace EnginePhysics
 
    void PhysicsComponent::SetWorldRotator(const glm::quat& rotator) const
    {
-
+      mDescriptor->SetRotator(Converter::glmToBullet(rotator));
    }
 
    ComponentType PhysicsComponent::GetComponentType() const

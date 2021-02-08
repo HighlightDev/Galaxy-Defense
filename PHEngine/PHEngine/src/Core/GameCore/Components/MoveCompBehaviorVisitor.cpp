@@ -18,17 +18,23 @@ namespace Game
       if (auto rootCompSP = mOwnerRootComp.lock())
       {
          mWorldTranslation = rootCompSP->GetTranslation();
-         mWorldRotator = rootCompSP->GetRotator();
          mStartTranslation = mWorldTranslation;
          mWorldTranslationDelta = glm::vec3(0);
+
+         mWorldRotator = rootCompSP->GetRotator();
+         mStartRotator = mWorldRotator;
       }
    }
 
-   void MoveCompBehaviorVisitorBase::LerpTranslation(const float time, const float transitionTime, const glm::vec3& finalTargetVector)
+   void MoveCompBehaviorVisitorBase::LerpTransformation(const float time, const float transitionTime)
    {
+      const float currentTransitionTime = glm::clamp(time, 0.0f, transitionTime);
+
       const auto prevPosition = mWorldTranslation;
-      mWorldTranslation = EngineMath::LerpVec3(time, 0.0f, transitionTime, mStartTranslation, finalTargetVector);
+      mWorldTranslation = EngineMath::LerpVec3(currentTransitionTime, 0.0f, transitionTime, mStartTranslation, mEndTranslation);
       mWorldTranslationDelta = mWorldTranslation - prevPosition;
+
+      mWorldRotator = EngineMath::SLerpQuat(currentTransitionTime / transitionTime, mStartRotator, mEndRotator);
    }
 
    glm::vec3 MoveCompBehaviorVisitorBase::GetWorldTranslation() const {
@@ -61,9 +67,16 @@ namespace Game
    {
    }
 
-   void MoveCompBehaviorVisitorBase::CommitDestinationPointReached()
+   void MoveCompBehaviorVisitorBase::CommitMovementStarted(const EulerAnglesTransform& targetTransform)
+   {
+      mEndTranslation = mStartTranslation + targetTransform.Translation;
+      mEndRotator = mStartRotator * EngineMath::EulerAnglesToQuat(targetTransform.RotationEulerAngles);
+   }
+
+   void MoveCompBehaviorVisitorBase::CommitMovementFinished()
    {
       mStartTranslation = mWorldTranslation;
+      mStartRotator = mWorldRotator;
    }
 
    void MoveCompBehaviorVisitorNoPhys::CommitMove()
@@ -71,6 +84,7 @@ namespace Game
       if (auto rootCompSP = mOwnerRootComp.lock())
       {
          rootCompSP->SetTranslation(mWorldTranslation);
+         rootCompSP->SetRotator(mWorldRotator);
       }
    }
    
@@ -85,10 +99,12 @@ namespace Game
       if (auto rootCompSP = mOwnerRootComp.lock())
       {
          rootCompSP->SetTranslation(mWorldTranslation);
+         rootCompSP->SetRotator(mWorldRotator);
 
          if (auto physCompSP = mOwnerPhysComp.lock())
          {
             physCompSP->SetWorldTranslation(mWorldTranslation);
+            physCompSP->SetWorldRotator(mWorldRotator);
          }
       }
    }

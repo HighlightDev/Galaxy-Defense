@@ -3,6 +3,7 @@
 #include <memory>
 #include <glm/vec3.hpp>
 #include <glm/ext/quaternion_float.hpp>
+#include "Core/GameCore/Components/Transform.h"
 
 namespace EnginePhysics
 {
@@ -26,6 +27,9 @@ namespace Game
       glm::vec3 mStartTranslation;
       glm::quat mStartRotator;
 
+      glm::vec3 mEndTranslation;
+      glm::quat mEndRotator;
+
       std::weak_ptr<SceneComponent> mOwnerRootComp;
 
    public:
@@ -34,7 +38,7 @@ namespace Game
 
       void Init();
 
-      void LerpTranslation(const float time, const float transitionTime, const glm::vec3& finalTargetVector);
+      void LerpTransformation(const float time, const float transitionTime);
 
       glm::vec3 GetWorldTranslation() const;
       glm::vec3 GetWorldTranslationDelta() const;
@@ -44,7 +48,8 @@ namespace Game
       glm::quat GetWorldRotatorDelta() const;
       glm::quat GetStartWorldRotator() const;
 
-      void CommitDestinationPointReached();
+      void CommitMovementStarted(const EulerAnglesTransform& targetTransform);
+      void CommitMovementFinished();
 
       virtual void CommitMove() = 0;
    };
