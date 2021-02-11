@@ -30,7 +30,7 @@ namespace Game
          virtual void CleanUp() override;
 
 
-         void RenderToTexture(const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag);
+         void RenderToTexture(bool bBindFramebuffer, const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag);
       };
    }
 }

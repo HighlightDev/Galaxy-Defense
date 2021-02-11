@@ -85,9 +85,12 @@ namespace Graphics
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
    }
 
-   void FramebufferObject::BindFramebuffer(bool enableAttachmentDrawBuffers) const
+   void FramebufferObject::BindFramebuffer(bool bBindFramebuffer, bool enableAttachmentDrawBuffers) const
    {
-      glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+      if (bBindFramebuffer)
+      {
+         glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+      }
 
       if (enableAttachmentDrawBuffers)
       {

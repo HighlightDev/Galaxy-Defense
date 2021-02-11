@@ -39,7 +39,7 @@ namespace Graphics
       void CreateRenderBuffer(const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment,
          const glm::ivec2& screenResolution);
 
-      void BindFramebuffer(bool enableAttachmentDrawBuffers = true) const;
+      void BindFramebuffer(bool bBindFramebuffer, bool enableAttachmentDrawBuffers = true) const;
 
       void UnbindFramebuffer();
 

@@ -31,7 +31,7 @@ namespace Graphics
 
       virtual ~ProjectedPointLightShadowInfo();
 
-      virtual void BindShadowFramebuffer(bool clearDepthBuffer) const override;
+      virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
       virtual void ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
 

@@ -23,7 +23,7 @@ namespace Graphics
       TextureAtlasFactory::GetInstance()->DeallocateTextureAtlasByRequestId(mShadowmapAtlasRequest.MyRequestId);
    }
 
-   void ProjectedShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const
+   void ProjectedShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const
    {
       AllocateFramebuffer();
    }

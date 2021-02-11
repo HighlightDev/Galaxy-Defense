@@ -24,18 +24,17 @@ namespace Graphics
       if (TextureType::TEXTURE_2D == std::get<0>(data))
       {
          mShadowmapHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
-         Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
       }
    }
 
-   void ProjectedSpotlightShadowInfo::BindShadowFramebuffer(bool clearDepthBuffer) const
+   void ProjectedSpotlightShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const
    {
-      ProjectedShadowInfo::BindShadowFramebuffer(clearDepthBuffer);
+      ProjectedShadowInfo::BindShadowFramebuffer(bBindFramebuffer, clearDepthBuffer);
 
       auto texAtlas = GetTexture2dHandler();
       auto atlas_cell = texAtlas->GetAtlasCell();
       const GLbitfield clearDepthFlag = clearDepthBuffer ? GL_DEPTH_BUFFER_BIT : 0;
-      m_shadowFramebuffer->RenderToTexture(atlas_cell.X, atlas_cell.Y, atlas_cell.Width, atlas_cell.Height, clearDepthFlag);
+      m_shadowFramebuffer->RenderToTexture(bBindFramebuffer, atlas_cell.X, atlas_cell.Y, atlas_cell.Width, atlas_cell.Height, clearDepthFlag);
    }
 
    glm::mat4x4 ProjectedSpotlightShadowInfo::GetShadowViewMatrix() const

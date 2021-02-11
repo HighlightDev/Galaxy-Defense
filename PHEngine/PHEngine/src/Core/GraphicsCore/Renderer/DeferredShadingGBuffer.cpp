@@ -75,7 +75,7 @@ namespace Graphics
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
    {
-      RenderToFBO(mFramebuffer, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      RenderToFBO(mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::UnbindDeferredGBuffer() {
@@ -106,7 +106,7 @@ namespace Graphics
    void DeferredShadingGBuffer::CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
       size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit)
    {
-      mFramebuffer.BindFramebuffer(false);
+      mFramebuffer.BindFramebuffer(true, false);
 
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
       glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);

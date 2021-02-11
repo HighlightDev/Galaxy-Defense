@@ -34,9 +34,9 @@ namespace Game
       {
       }
 
-      void ShadowFramebuffer::RenderToTexture(const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag)
+      void ShadowFramebuffer::RenderToTexture(bool bBindFramebuffer, const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag)
       {
-         RenderToFBO(mFramebuffer, viewportX, viewportY, viewportWidth, viewportHeight, clearFlag);
+         RenderToFBO(mFramebuffer, bBindFramebuffer, viewportX, viewportY, viewportWidth, viewportHeight, clearFlag);
       }
    }
 }

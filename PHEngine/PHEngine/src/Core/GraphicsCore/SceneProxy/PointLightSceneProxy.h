@@ -38,9 +38,8 @@ namespace Graphics
 
          ProjectedPointLightShadowInfo* GetProjectedPointShadowInfo();
 
-      private:
-
          virtual ProjectedShadowInfo* GetShadowInfo() override;
+       
       };
 
    }

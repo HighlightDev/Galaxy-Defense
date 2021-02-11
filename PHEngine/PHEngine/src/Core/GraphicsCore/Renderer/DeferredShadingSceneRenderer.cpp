@@ -61,25 +61,6 @@ namespace Graphics
          mPLDepthShaderNonSkeletal = std::static_pointer_cast<PointLightDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<PointLightDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams7));
          mSLDepthShaderSkeletal = std::static_pointer_cast<SpotlightDepthShader<eShaderMeshType::SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<SpotlightDepthShader<eShaderMeshType::SKELETAL>>(shaderParams8));
          mSLDepthShaderNonSkeletal = std::static_pointer_cast<SpotlightDepthShader<eShaderMeshType::NON_SKELETAL>>(ShaderPool::GetInstance()->template GetOrAllocateResource<SpotlightDepthShader<eShaderMeshType::NON_SKELETAL>>(shaderParams9));
-
-         mCompareShadowMapDescriptors = std::bind([](DirectionalLightSceneProxy* firstProxy,
-            DirectionalLightSceneProxy* secondProxy) -> bool {
-            bool result = false;
-            const auto& shadowInfo1 = firstProxy->GetProjectedDirShadowInfo();
-            const auto& shadowInfo2 = secondProxy->GetProjectedDirShadowInfo();
-            if (shadowInfo1 && shadowInfo2)
-            {
-               const uint32_t desc1 = shadowInfo1->GetAtlasResource()->GetTextureDescriptor();
-               const uint32_t desc2 = shadowInfo2->GetAtlasResource()->GetTextureDescriptor();
-               result = desc1 > desc2;
-            }
-            else if (shadowInfo1 && !shadowInfo2)
-            {
-               result = true;
-            }
-
-            return result;
-         }, std::placeholders::_1, std::placeholders::_2);
       }
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
@@ -98,202 +79,201 @@ namespace Graphics
          }));
       }
 
-      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
-         DirectionalLightProxiesPtrVector& dirLightProxies,
-         PointLightProxiesPtrVector& pointLightProxies,
-         SpotlightProxiesPtrVector& spotlightProxies)
+      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
+         std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies)
       {
          RenderState renderState(std::make_shared<DepthStencilState<true>>(),
             std::make_shared<BlendingState<false>>());
-
          renderState.BindRenderState();
 
-         std::sort(dirLightProxies.begin(), dirLightProxies.end(), mCompareShadowMapDescriptors);
-
-         size_t lastDirLightFramebufferDesc = UINT_MAX, lastSpotlightFramebufferDesc = UINT_MAX;
-
-         for (auto& dirLightProxy : dirLightProxies)
+         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights)
          {
-            DirectionalLightSceneProxy* lightPtr = dirLightProxy;
+            bool bNewDepthShadowAtlas = true;
 
-            if (lightPtr->IsEnabled())
+            for (auto& lightProxyPtr : atlasLightGroup.second)
             {
-               ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
-               if (shadowInfo && shadowInfo->IsShadowMapDirty())
+               auto lightProxyType = lightProxyPtr->GetLightProxyType();
+
+               if (lightProxyType == LightSceneProxyType::DIR_LIGHT)
                {
-                  shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastDirLightFramebufferDesc);
-                  lastDirLightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
+                  DirectionalLightSceneProxy* lightPtr = static_cast<DirectionalLightSceneProxy*>(lightProxyPtr);
 
-                  DirectionalLightSceneProxy* dirLightPtr = lightPtr;
-
-                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+                  if (lightPtr->IsEnabled())
                   {
-                     mDLDepthShaderNonSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowNonSkeletalMeshProxies)
+                     ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
+                     if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
+
+                        DirectionalLightSceneProxy* dirLightPtr = lightPtr;
+
+                        if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                         {
-                           const auto& worldMatrix = proxy->GetMatrix();
-                           const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                           const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                           mDLDepthShaderNonSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowNonSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 const auto& worldMatrix = proxy->GetMatrix();
+                                 const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                                 const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
 
-                           mDLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                                 mDLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
 
-                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mDLDepthShaderNonSkeletal->StopShader();
                         }
-                     }
-                     mDLDepthShaderNonSkeletal->StopShader();
-                  }
 
-                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
-                  {
-                     mDLDepthShaderSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowSkeletalMeshProxies)
-                     {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                         {
-                           const auto& worldMatrix = proxy->GetMatrix();
-                           const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                           const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
-                           mDLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
-                           mDLDepthShaderSkeletal->SetSkinningMatrices(proxy->GetSkinningMatrices());
+                           mDLDepthShaderSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 const auto& worldMatrix = proxy->GetMatrix();
+                                 const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                                 const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                                 mDLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                                 mDLDepthShaderSkeletal->SetSkinningMatrices(proxy->GetSkinningMatrices());
 
-                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mDLDepthShaderSkeletal->StopShader();
                         }
+
+                        // Next frame shadow map will not be updated unless position of objects in the level are changed
+                        shadowInfo->SetIsShadowMapDirty(false);
                      }
-                     mDLDepthShaderSkeletal->StopShader();
                   }
-
-                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-                  // Next frame shadow map will not be updated unless position of objects in the level are changed
-                  shadowInfo->SetIsShadowMapDirty(false);
                }
-            }
-         }
-
-         for (auto& pointLightProxy : pointLightProxies)
-         {
-            PointLightSceneProxy* pointLightPtr = pointLightProxy;
-
-            if (pointLightProxy->IsEnabled())
-            {
-               const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
-               if (shadowInfo && shadowInfo->IsShadowMapDirty())
+               else if (lightProxyType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  shadowInfo->BindShadowFramebuffer(true); // every point light has it's own texture atlas 
+                  SpotlightSceneProxy* spotlightPtr = static_cast<SpotlightSceneProxy*>(lightProxyPtr);
 
-                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+                  if (spotlightPtr->IsEnabled())
                   {
-                     mPLDepthShaderNonSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowNonSkeletalMeshProxies)
+                     const auto& shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
+                     if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
+
+                        if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                         {
-                           const auto& worldMatrix = proxy->GetMatrix();
-                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                           mSLDepthShaderNonSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowNonSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 const auto& worldMatrix = proxy->GetMatrix();
+                                 const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
+                                 const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
 
-                           mPLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mPLDepthShaderNonSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
-                           mPLDepthShaderNonSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
+                                 mSLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
+                                 mSLDepthShaderNonSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
+                                 mSLDepthShaderNonSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
 
-                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mSLDepthShaderNonSkeletal->StopShader();
                         }
-                     }
-                     mPLDepthShaderNonSkeletal->StopShader();
-                  }
-                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
-                  {
-                     mPLDepthShaderSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowSkeletalMeshProxies)
-                     {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                         {
-                           SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                           mSLDepthShaderSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
 
-                           const auto& worldMatrix = skeletalProxy->GetMatrix();
-                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                                 const auto& worldMatrix = skeletalProxy->GetMatrix();
+                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
+                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
 
-                           mPLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mPLDepthShaderSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
-                           mPLDepthShaderSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
-                           mPLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
+                                 mSLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                                 mSLDepthShaderSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
+                                 mSLDepthShaderSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
+                                 mSLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
-                           skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mSLDepthShaderSkeletal->StopShader();
                         }
-                     }
-                     mPLDepthShaderSkeletal->StopShader();
-                  }
-                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-                  // Next frame shadow map will not be updated unless position of objects in the level are changed
-                  shadowInfo->SetIsShadowMapDirty(false);
+                        // Next frame shadow map will not be updated unless position of objects in the level are changed
+                        shadowInfo->SetIsShadowMapDirty(false);
+                     }
+                  }
                }
-            }
-         }
-
-         for (auto& spotLightProxy : spotlightProxies)
-         {
-            SpotlightSceneProxy* spotlightPtr = spotLightProxy;
-
-            if (spotlightPtr->IsEnabled())
-            {
-               const auto& shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
-               if (shadowInfo && shadowInfo->IsShadowMapDirty())
+               else if (lightProxyType == LightSceneProxyType::POINT_LIGHT)
                {
-                  shadowInfo->BindShadowFramebuffer(shadowInfo->GetAtlasResource()->GetTextureDescriptor() != lastSpotlightFramebufferDesc);
-                  lastSpotlightFramebufferDesc = shadowInfo->GetAtlasResource()->GetTextureDescriptor();
+                  PointLightSceneProxy* pointLightPtr = static_cast<PointLightSceneProxy*>(lightProxyPtr);
 
-                  if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
+                  if (pointLightPtr->IsEnabled())
                   {
-                     mSLDepthShaderNonSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowNonSkeletalMeshProxies)
+                     const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
+                     if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own texture atlas 
+
+                        if (shadowNonSkeletalMeshProxies.size() > 0) // Non - skeletal proxies
                         {
-                           const auto& worldMatrix = proxy->GetMatrix();
-                           const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
-                           const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
+                           mPLDepthShaderNonSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowNonSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 const auto& worldMatrix = proxy->GetMatrix();
+                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                           mSLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrix, projectionMatrix);
-                           mSLDepthShaderNonSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
-                           mSLDepthShaderNonSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
+                                 mPLDepthShaderNonSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                                 mPLDepthShaderNonSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
+                                 mPLDepthShaderNonSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
 
-                           proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mPLDepthShaderNonSkeletal->StopShader();
                         }
-                     }
-                     mSLDepthShaderNonSkeletal->StopShader();
-                  }
-                  if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
-                  {
-                     mSLDepthShaderSkeletal->ExecuteShader();
-                     for (auto& proxy : shadowSkeletalMeshProxies)
-                     {
-                        if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                        if (shadowSkeletalMeshProxies.size() > 0) // Skeletal proxies
                         {
-                           SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                           mPLDepthShaderSkeletal->ExecuteShader();
+                           for (auto& proxy : shadowSkeletalMeshProxies)
+                           {
+                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              {
+                                 SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
 
-                           const auto& worldMatrix = skeletalProxy->GetMatrix();
-                           const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
-                           const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
+                                 const auto& worldMatrix = skeletalProxy->GetMatrix();
+                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
-                           mSLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
-                           mSLDepthShaderSkeletal->SetFarPlane(spotlightPtr->GetRadianceRadius());
-                           mSLDepthShaderSkeletal->SetSpotlightPosition(spotlightPtr->GetPosition());
-                           mSLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
+                                 mPLDepthShaderSkeletal->SetTransformationMatrices(worldMatrix, viewMatrices, projectionMatrices);
+                                 mPLDepthShaderSkeletal->SetFarPlane(pointLightPtr->GetRadianceRadius());
+                                 mPLDepthShaderSkeletal->SetPointLightPosition(pointLightPtr->GetPosition());
+                                 mPLDepthShaderSkeletal->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
 
-                           skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                                 skeletalProxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                              }
+                           }
+                           mPLDepthShaderSkeletal->StopShader();
                         }
-                     }
-                     mSLDepthShaderSkeletal->StopShader();
-                  }
-                  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-                  // Next frame shadow map will not be updated unless position of objects in the level are changed
-                  shadowInfo->SetIsShadowMapDirty(false);
+                        // Next frame shadow map will not be updated unless position of objects in the level are changed
+                        shadowInfo->SetIsShadowMapDirty(false);
+                     }
+                  }
                }
+
+               bNewDepthShadowAtlas = false;
             }
          }
       }
@@ -489,7 +469,38 @@ namespace Graphics
                }
             }
 
+            GroupLightsByShadowMap();
+
             SetLightProxiesAreDirty(false);
+         }
+      }
+
+      void DeferredShadingSceneRenderer::GroupLightsByShadowMap()
+      {
+         mGroupedByShadowAtlasLights.clear();
+         for (auto& lProxy : LightProxies)
+         {
+            if (auto shadowInfo = lProxy.second->GetShadowInfo())
+            {
+               if (auto atlasResource = shadowInfo->GetAtlasResource())
+               {
+                  auto lastDesc = atlasResource->GetTextureDescriptor();
+                  if (mGroupedByShadowAtlasLights.count(lastDesc) == 0)
+                  {
+                     std::vector<LightSceneProxy*> result;
+
+                     for (const auto& seekLProxy : LightProxies)
+                     {
+                        if (seekLProxy.second->GetShadowInfo() && seekLProxy.second->GetShadowInfo()->GetAtlasResource())
+                        {
+                           if (seekLProxy.second->GetShadowInfo()->GetAtlasResource()->GetTextureDescriptor() == lastDesc)
+                              result.emplace_back(seekLProxy.second.get());
+                        }
+                     }
+                     mGroupedByShadowAtlasLights[lastDesc] = result;
+                  }
+               }
+            }
          }
       }
 
@@ -507,7 +518,7 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies, dirLightProxies, pointLightProxies, spotlightProxies);
+               DepthPass(sceneView, nonSkeletalProxies, skeletalProxies);
 
                DeferredBasePass_RenderThread(nonSkeletalProxies, skeletalProxies, sceneView);
 
@@ -645,11 +656,11 @@ namespace Graphics
                   }
                   glEnd();
                }
-            }
-#endif
          }
+#endif
       }
+   }
 #endif
 
-   }
 }
+   }

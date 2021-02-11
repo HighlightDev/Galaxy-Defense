@@ -46,7 +46,7 @@ namespace Graphics
 
       virtual ~ProjectedShadowInfo();
 
-      virtual void BindShadowFramebuffer(bool clearDepthBuffer) const;
+      virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const;
 
       void SetIsShadowMapDirty(const bool bDirty);
 

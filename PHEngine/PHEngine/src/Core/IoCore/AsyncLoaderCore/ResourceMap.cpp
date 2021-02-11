@@ -72,19 +72,25 @@ namespace IO {
 
    void ResourceMap::WaitUntilResourcesLoad()
    {
-      while (true)
+      try
       {
-         bool bResourcesLoaded = true;
-         for (auto& resource : mAsyncDataProxy->ResourcesMap)
+         while (true)
          {
-            resource.second.wait();
-            ReadyToReadResources[resource.first] = resource.second.get();
-         }
+            bool bResourcesLoaded = true;
+            for (auto& resource : mAsyncDataProxy->ResourcesMap)
+            {
+               ReadyToReadResources[resource.first] = resource.second.get();
+            }
 
-         if (bResourcesLoaded)
-         {
-            return;
+            if (bResourcesLoaded)
+            {
+               return;
+            }
          }
+      }
+      catch (const std::exception& e)
+      {
+         throw e.what();
       }
    }
 }

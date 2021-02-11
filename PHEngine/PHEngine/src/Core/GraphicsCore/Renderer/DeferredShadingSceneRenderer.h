@@ -74,8 +74,6 @@ namespace Graphics
          // Texture renderer
          TextureRenderer m_textureRenderer;
 
-         std::function<bool(DirectionalLightSceneProxy*, DirectionalLightSceneProxy*)> mCompareShadowMapDescriptors;
-
          bool bProxiesDirty;
 
          bool bLightProxiesDirty;
@@ -96,9 +94,13 @@ namespace Graphics
 
          SpotlightProxiesPtrVector spotlightProxies;
 
+         std::unordered_map<uint32_t, std::vector<LightSceneProxy*>> mGroupedByShadowAtlasLights;
+
       private:
 
          void PrepareSceneProxiesForRender();
+
+         void GroupLightsByShadowMap();
 
          void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
             const DirectionalLightProxiesPtrVector& dirLightProxies,
@@ -110,10 +112,8 @@ namespace Graphics
 
          void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, std::shared_ptr<SceneView> sceneView);
 
-         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies,
-            DirectionalLightProxiesPtrVector& dirLightProxies,
-            PointLightProxiesPtrVector& pointLightProxies,
-            SpotlightProxiesPtrVector& spotlightProxies);
+         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
+            std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies);
 
       public:
 

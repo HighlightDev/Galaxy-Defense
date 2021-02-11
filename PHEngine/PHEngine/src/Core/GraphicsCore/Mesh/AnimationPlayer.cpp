@@ -1,15 +1,9 @@
 #include "AnimationPlayer.h"
 
-// todo: remove this part later
-#include <chrono>
-#include <iostream>
-
 namespace Graphics
 {
    namespace Mesh
    {
-      using Clock_t = std::chrono::high_resolution_clock;
-
       AnimationPlayer::AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData)
          : m_animatedMeshData(animatedData)
          , mSrcAnimationTime(0.0f)
@@ -114,14 +108,8 @@ namespace Graphics
          UpdateAnimationMatrices_Inner();
       }
 
-      // todo: remove this part later
-      double longestTime = 0.0;
-
       void AnimationPlayer::UpdateAnimationMatrices_Inner()
       {
-         Clock_t::time_point time1;
-
-         time1 = Clock_t::now();
          if (bTransitionEnabled)
          {
             auto blendedBoneData = m_animatedMeshData->GetBoneMappingForBlendedAnimation(mSrcAnimationName, mDstAnimationName,
@@ -132,16 +120,6 @@ namespace Graphics
          {
             mCachedAnimatedMatrices = m_animatedMeshData->GetAnimatedMatrices(mSrcAnimationName, mSrcAnimationTime);
          }
-
-         Clock_t::duration deltaTime = Clock_t::now() - time1;
-
-         const double invFromNanoToSec = 0.000000001;
-
-         auto time = static_cast<double>(deltaTime.count()) * invFromNanoToSec;
-         if (time > longestTime)
-            longestTime = time;
-
-         //std::cout << "Time For Blending : " << longestTime << std::endl;
       }
 
       const std::vector<glm::mat4>& AnimationPlayer::GetAnimatedMatrices() const
