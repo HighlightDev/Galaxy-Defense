@@ -4,18 +4,75 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/Batcher/BatchJobMaster.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Components/Component.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentCreatorFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/CharacterMovementComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentType.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/DirectionalLightComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/InputComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/LightComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/MoveCompBehaviorVisitor.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/MovementComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/SceneComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/SpotlightComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/Transform.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/ComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/BillboardComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/CubemapComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/DirectionalLightComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/InputComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/LightComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/MeshComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/MovementComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/PhysicsComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/PointLightComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/SkyboxComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/SpotlightComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/ComponentData/WaterPlaneComponentData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PhysicsComponents/CharacterPhysicsComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PhysicsComponents/PhysicsComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/BillboardComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/CubemapComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/PrimitiveComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/SkeletalMeshComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/SkyboxComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/StaticMeshComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/WaterPlaneComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/CameraTransformChangedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/EventDispatcher.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/KeyboardInputEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/KinematicBodyMovedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/PhysicsDescriptorRemovedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/PhysicsSimulationUpdatedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/PlayerMovedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/TEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/TextureAtlasGeneratedEvent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/Policy/Policies.h
 )
 
 set(SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/Batcher/Batch.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Batcher/BatchJobMaster.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Components/Component.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/CharacterMovementComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/DirectionalLightComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/InputComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/LightComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/MoveCompBehaviorVisitor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/MovementComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/SceneComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/SpotlightComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/Transform.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PhysicsComponents/CharacterPhysicsComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PhysicsComponents/PhysicsComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/BillboardComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/CubemapComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/PrimitiveComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/SkeletalMeshComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/SkyboxComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/StaticMeshComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/WaterPlaneComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Event/TEvent.cpp
 )
-
-#add_subdirectory(Core)
 
 add_library(EngineGameCoreModule STATIC ${HEADERS} ${SOURCE})
 
 target_include_directories(EngineGameCoreModule INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
-
-#target_link_libraries(PHEngine ${CORE_MODULE})

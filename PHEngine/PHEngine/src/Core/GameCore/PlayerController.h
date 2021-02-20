@@ -3,7 +3,7 @@
 #include "Actor.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
-#include "Core/GameCore/Event/KeyboradInputEvent.h"
+#include "Core/GameCore/Event/KeyboardInputEvent.h"
 
 using namespace Event;
 using namespace EnginePhysics;

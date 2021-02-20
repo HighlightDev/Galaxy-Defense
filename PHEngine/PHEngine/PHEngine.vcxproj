@@ -383,7 +383,7 @@
     <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
-    <ClInclude Include="src\Core\GameCore\Event\KeyboradInputEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\KeyboardInputEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaCore.inl" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h" />

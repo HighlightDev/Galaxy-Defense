@@ -1,5 +1,5 @@
 #include "KeyboardBindings.h"
-#include "Core/GameCore/Event/KeyboradInputEvent.h"
+#include "Core/GameCore/Event/KeyboardInputEvent.h"
 
 #include <algorithm>
 

@@ -15,4 +15,6 @@ add_library(PHEngine STATIC ${HEADERS} ${SOURCE})
 
 target_include_directories(PHEngine INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
 
-target_link_libraries(PHEngine ${ENGINE_CORE_MODULE})
+link_directories(${CMAKE_BINARY_DIR}/Dependencies/Assimp/lib/Debug/)
+
+target_link_libraries(PHEngine ${ENGINE_CORE_MODULE} assimp-vc141-mtd)

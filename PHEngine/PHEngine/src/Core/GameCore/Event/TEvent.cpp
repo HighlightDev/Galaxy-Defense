@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Components/Transform.h"
-#include "Core/GameCore/Event/KeyboradInputEvent.h"
+#include "Core/GameCore/Event/KeyboardInputEvent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
