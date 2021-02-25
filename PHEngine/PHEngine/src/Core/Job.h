@@ -16,7 +16,7 @@ namespace Thread
 
    public:
 
-      Job(const uint64_t creatorObjectId, const uint64_t functionId, const callback_t& callback);
+      Job(const uint64_t creatorObjectId, const uint64_t functionId, callback_t callback);
 
       ~Job();
 

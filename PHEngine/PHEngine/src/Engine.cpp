@@ -78,7 +78,7 @@ void Engine::GameThreadPulse()
          ProcessEvents(Event::ExecutionOrder::PRE_EXECUTION);
 
          /* Work Jobs */
-         SPIN_GAME_THREAD_JOBS(m_interThreadMgr);
+         m_interThreadMgr.SpinGameThreadJobs();
 
          if (mGameThreadSumDeltaTimeSec >= InvLimitFPS) // 1 / 60 of a second
          {
@@ -113,7 +113,8 @@ void Engine::RenderThreadPulse()
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
       
       // This should be executed on render thread
-      SPIN_RENDER_THREAD_JOBS(m_interThreadMgr);
+      m_interThreadMgr.SpinRenderThreadJobs();
+
       m_sceneRenderer->RenderScene_RenderThread();
       mLastRenderThreadPulseTime = Clock_t::now();
    }

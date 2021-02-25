@@ -44,7 +44,7 @@ namespace Game
 
       auto cameraProxyPtr = camera->CreateSceneProxy();
       camera->SceneProxyId = cameraProxyPtr->GetSceneProxyId();
-      CameraSceneProxyAdded(cameraProxyPtr);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+      CameraSceneProxyAdded(cameraProxyPtr);
    }
 
    std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
@@ -82,7 +82,7 @@ namespace Game
 
       const std::vector<std::shared_ptr<Actor>>::const_iterator it = std::find(mActors.begin(), mActors.end(), actor);
       if (it != mActors.end())
-         mActors.erase(it); 
+         mActors.erase(it);
    }
 
    GameObject* Scene::GetGameObjectByName(const std::string& name) const
@@ -116,7 +116,7 @@ namespace Game
       {
          PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(component.get());
          const size_t removeProxyIndex = componentPtr->SceneProxyId;
-    
+
          // delete light proxy from render thread
          PrimitiveSceneProxyDeleted(removeProxyIndex);
       }
@@ -155,14 +155,14 @@ namespace Game
       }
    }
 
-   void Scene::ExecuteOnRenderThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& gameThreadJobCallback) const
+   void Scene::ExecuteOnRenderThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const
    {
-      ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
+      m_interThreadMgr.EmplaceRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
    }
 
-   void Scene::ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, const std::function<void(void)>& renderThreadJobCallback) const
+   void Scene::ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const
    {
-      ENQUEUE_GAME_THREAD_JOB(m_interThreadMgr, policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
+      m_interThreadMgr.EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
    void Scene::UpdatePrimitiveComponentEnable_GameThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
@@ -171,7 +171,7 @@ namespace Game
       {
          assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
                sceneRenderer->SceneProxies[primitiveSceneProxyIndex]->SetEnabled(bEnabled);
@@ -186,7 +186,7 @@ namespace Game
       {
          assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
                sceneRenderer->SceneProxies[primitiveSceneProxyIndex]->SetVisibility(visibility);
@@ -202,7 +202,7 @@ namespace Game
       {
          assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
                auto& sceneProxy = sceneRenderer->SceneProxies[primitiveSceneProxyIndex];
@@ -219,7 +219,7 @@ namespace Game
       {
          assert(sceneRenderer->SceneViews.count(sceneProxyId));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
                auto sceneView = sceneRenderer->SceneViews[sceneProxyId];
@@ -236,7 +236,7 @@ namespace Game
       {
          assert(sceneRenderer->LightProxies.count(lightSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                Job(creatorObjectId, functionId, [=]()
             {
                sceneRenderer->LightProxies[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
@@ -254,7 +254,7 @@ namespace Game
       {
          assert(sceneRenderer->SceneProxies.count(primitiveSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()
             {
                sceneRenderer->SceneProxies.erase(primitiveSceneProxyIndex);
@@ -271,7 +271,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->SetProxiesAreDirty(true);
@@ -288,7 +288,7 @@ namespace Game
       {
          assert(sceneRenderer->LightProxies.count(lightSceneProxyIndex));
          {
-            ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+            m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
                Job(creatorObjectId, functionId, [=]()
             {
                sceneRenderer->LightProxies.erase(lightSceneProxyIndex);
@@ -305,7 +305,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->SetLightProxiesAreDirty(true);
@@ -320,7 +320,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->SceneViews.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->SceneProxies));
@@ -335,7 +335,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->SceneProxies[primitiveSceneProxyIndex] = primitiveSceneProxy;
@@ -351,7 +351,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::PUSH_ANYWAY,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->LightProxies[primitiveSceneProxyIndex] = lightSceneProxy;
@@ -368,7 +368,7 @@ namespace Game
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         ENQUEUE_RENDER_THREAD_JOB(m_interThreadMgr, EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->SetDebugPhysicsRenderData(physRenderData);

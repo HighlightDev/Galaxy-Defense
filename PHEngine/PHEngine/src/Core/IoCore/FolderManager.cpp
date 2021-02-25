@@ -44,7 +44,7 @@ namespace IO
 			countChangeDirectoryBack = item == '\\' ? ++countChangeDirectoryBack : countChangeDirectoryBack;
 		}
 
-		m_rootFolder = std::move(ConcatDirectoryBack(countChangeDirectoryBack));
+		m_rootFolder = ConcatDirectoryBack(countChangeDirectoryBack);
 #endif
 	}
 

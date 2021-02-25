@@ -88,6 +88,6 @@ namespace EngineUtility
 
 		absolutePath += relativeTrimmedGoBack;
 
-		return std::move(absolutePath);
+		return absolutePath;
 	}
 }

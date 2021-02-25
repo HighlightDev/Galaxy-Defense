@@ -13,8 +13,6 @@ namespace Thread
 
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
    {
-      m_gameThreadJobs.reserve(JobPoolCapacity);
-      m_renderThreadJobs.reserve(JobPoolCapacity);
    }
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()
@@ -40,29 +38,29 @@ namespace Thread
       return mScene;
    }
 
-   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job job)
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushGameThreadJob(policy, job);
    }
 
-   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
       std::lock_guard<std::mutex> lock(m_renderThreadMutex);
       ProcessPushRenderThreadJob(policy, job);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, const Job& job)
+   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
       ProcessPushJob(policy, job, m_renderThreadJobs);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, const Job& job)
+   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job)
    {
       ProcessPushJob(policy, job, m_gameThreadJobs);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, const Job& job, std::vector<Job>& jobs)
+   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job job, std::deque<Job>& jobs)
    {
       switch (policy)
       {
@@ -110,32 +108,46 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SpinGameThreadJobs()
    {
-      using Clock_t = std::chrono::high_resolution_clock;
+      //using Clock_t = std::chrono::high_resolution_clock;
 
-      typename Clock_t::time_point start_time = Clock_t::now();
+      //typename Clock_t::time_point start_time = Clock_t::now();
 
+      auto countGameThreadJobs = m_gameThreadJobs.size();
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       while (AreGameJobsAwaiting())
       {
          auto jobIt = m_gameThreadJobs.begin();
          (*jobIt)();
-         m_gameThreadJobs.erase(jobIt);
+         m_gameThreadJobs.pop_front();
       }
    }
 
    void InterThreadCommunicationMgr::SpinRenderThreadJobs()
    {
-      using Clock_t = std::chrono::high_resolution_clock;
+      //using Clock_t = std::chrono::high_resolution_clock;
 
-      typename Clock_t::time_point start_time = Clock_t::now();
-
-      std::lock_guard<std::mutex> lock(m_renderThreadMutex);
-
-      while (AreRenderJobsAwaiting())
+      //typename Clock_t::time_point start_time = Clock_t::now();
       {
-         auto jobIt = m_renderThreadJobs.begin();
-         (*jobIt)();
-         m_renderThreadJobs.erase(jobIt);
+
+         auto countRenderThreadJobs = m_renderThreadJobs.size();
+         std::lock_guard<std::mutex> lock(m_renderThreadMutex);
+         while (countRenderThreadJobs)
+         {
+            auto jobIt = m_renderThreadJobs.begin();
+            (*jobIt)();
+            m_renderThreadJobs.pop_front();
+            --countRenderThreadJobs;
+         }
       }
+   }
+
+   bool InterThreadCommunicationMgr::AreGameJobsAwaiting() const {
+
+      return m_gameThreadJobs.size() > 0;
+   }
+
+   bool InterThreadCommunicationMgr::AreRenderJobsAwaiting() const {
+
+      return m_renderThreadJobs.size() > 0;
    }
 }
