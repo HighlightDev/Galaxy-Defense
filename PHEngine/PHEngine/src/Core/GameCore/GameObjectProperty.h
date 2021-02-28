@@ -27,6 +27,10 @@ struct GenericObjectProperty : public GameObjectProperty
       return &Value;
    }
 
+   Type GetValue() const {
+      return Value;
+   }
+
    void operator=(const Type& value)
    {
       Value = value;

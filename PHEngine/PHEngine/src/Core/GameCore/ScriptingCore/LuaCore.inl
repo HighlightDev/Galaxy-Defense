@@ -29,6 +29,7 @@ namespace Game
    {
    };
 
+   template <typename = void>
    struct LuaArgDummyPlaceholder
    {
 
@@ -173,26 +174,26 @@ namespace Game
          }
       };
 
-      template <>
-      struct GetValue<LuaArgDummyPlaceholder>
+      template <typename U>
+      struct GetValue<LuaArgDummyPlaceholder<U>>
       {
       public:
 
-         static LuaArgDummyPlaceholder Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         static LuaArgDummyPlaceholder<U> Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
          {
             return Inner_Value(instanceWrapper.GetState(), stackIndex);
          }
 
-         static LuaArgDummyPlaceholder Value(lua_State* state, int32_t& stackIndex)
+         static LuaArgDummyPlaceholder<U> Value(lua_State* state, int32_t& stackIndex)
          {
             return Inner_Value(state, stackIndex);
          }
 
       private:
 
-         static LuaArgDummyPlaceholder Inner_Value(lua_State* state, int32_t& stackIndex)
+         static LuaArgDummyPlaceholder<U> Inner_Value(lua_State* state, int32_t& stackIndex)
          {
-            return LuaArgDummyPlaceholder();
+            return LuaArgDummyPlaceholder<U>();
          }
       };
 
@@ -476,8 +477,8 @@ namespace Game
          };
       };
 
-      template <>
-      struct LuaArgsCountForType<LuaArgDummyPlaceholder>
+      template <typename U>
+      struct LuaArgsCountForType<LuaArgDummyPlaceholder<U>>
       {
          enum
          {

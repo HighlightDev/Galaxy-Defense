@@ -1,6 +1,7 @@
 #pragma once
 #include <tuple>
 #include <memory>
+#include <type_traits>
 
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
@@ -26,7 +27,10 @@ namespace Game
 
       virtual void RegisterCallbacks();
 
-      GameObject* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder, LuaArgDummyPlaceholder>& gameObjectName);
+      GameObject* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>, LuaArgDummyPlaceholder<>>& gameObjectName);
+
+      float ExecuteLuaCallback(const std::tuple<GameObject*, std::string, LuaArgDummyPlaceholder<float>>& data);
+      int32_t ExecuteLuaCallback(const std::tuple<GameObject*, std::string, LuaArgDummyPlaceholder<int32_t>>& data);
 
       std::string GetScriptRelPath() const;
 

@@ -76,7 +76,7 @@ namespace Game
       ProjectedShadowInfo* ExecuteLuaCallback(const std::tuple<int32_t, std::string>& dirLightProjectionData);
 
       /* -------------------  Create material --------------------*/
-      IMaterial* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder>& buildMaterial);
+      IMaterial* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>>& buildMaterial);
 
       /* -------------------  Set texture --------------------*/
       void ExecuteLuaCallback(const std::tuple<IMaterial*, /* texture name*/std::string, /*property name*/std::string>& setTextureToMaterial);
