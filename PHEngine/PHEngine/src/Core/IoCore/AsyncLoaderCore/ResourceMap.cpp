@@ -74,18 +74,9 @@ namespace IO {
    {
       try
       {
-         while (true)
+         for (auto& resource : mAsyncDataProxy->ResourcesMap)
          {
-            bool bResourcesLoaded = true;
-            for (auto& resource : mAsyncDataProxy->ResourcesMap)
-            {
-               ReadyToReadResources[resource.first] = resource.second.get();
-            }
-
-            if (bResourcesLoaded)
-            {
-               return;
-            }
+            ReadyToReadResources[resource.first] = resource.second.get();
          }
       }
       catch (const std::exception& e)

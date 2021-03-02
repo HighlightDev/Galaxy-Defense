@@ -10,7 +10,6 @@ namespace Game
    LuaScriptExecutor_MovementComponent::LuaScriptExecutor_MovementComponent(MovementComponent* owner, const std::string& scriptName)
       : LuaScriptExecutor_EngineBase(scriptName)
       , mOwnerComponent(owner)
-      , mScriptName(scriptName)
    {
 
    }
@@ -23,6 +22,8 @@ namespace Game
    // Add route point
    void LuaScriptExecutor_MovementComponent::RegisterCallbacks()
    {
+      LuaScriptExecutor_EngineBase::RegisterCallbacks();
+
       using LuaExecutor_t = LuaScriptExecutor_MovementComponent;
 
       LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Register(mLuaInstance, "_AddRoutePoint");
@@ -30,12 +31,7 @@ namespace Game
 
    void LuaScriptExecutor_MovementComponent::RunScript()
    {
-      const auto& folderManager = FolderManager::GetInstance();
-      const bool bScriptExecuted = mLuaInstance.ExecuteScript(EngineUtility::ConvertFromRelativeToAbsolutePath(folderManager->GetScriptPath() + mScriptName));
-
-      assert(bScriptExecuted);
-
-      LuaFunction<void(void*)>::Call(mLuaInstance, "InitRoutes", (void*)this);
+      LuaScriptExecutor_EngineBase::RunScript();
 
       mOwnerComponent->SetDestinationPoint(LuaGetGlobal<std::string>::Value(mLuaInstance, "StartRoute", -1));
    }

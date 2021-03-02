@@ -59,11 +59,7 @@ namespace Game
 
    void LuaScriptExecutor_EngineObjectsCreator::RunScript()
    {
-      const auto folderManager = IO::FolderManager::GetInstance();
-
-      const bool bScriptExecuted = mLuaInstance.ExecuteScript(EngineUtility::ConvertFromRelativeToAbsolutePath(folderManager->GetScriptPath() + mScriptName));
-
-      assert(bScriptExecuted);
+      LuaScriptExecutor_EngineBase::RunScript();
 
       LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
    }

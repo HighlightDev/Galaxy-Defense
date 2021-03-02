@@ -22,8 +22,8 @@ namespace Game
    {
       for (auto& actor : mActors)
       {
-         actor->PostLevelInit();
          actor->SetScene(thisWeakPtr);
+         actor->PostLevelInit();
       }
    }
 

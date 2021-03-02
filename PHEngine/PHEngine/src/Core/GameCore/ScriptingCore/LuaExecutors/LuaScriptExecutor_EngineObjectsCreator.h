@@ -26,7 +26,7 @@ namespace Game
 
       virtual void RegisterCallbacks() override;
 
-      void RunScript();
+      virtual void RunScript() override;
 
       // Common callbacks
       /* -------------------  Create Actor ----------------------------*/

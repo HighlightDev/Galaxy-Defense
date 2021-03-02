@@ -12,11 +12,7 @@ namespace Game
       : public LuaScriptExecutor_EngineBase
    {
 
-      LuaWrapper mLuaInstance;
-
       MovementComponent* mOwnerComponent;
-
-      std::string mScriptName;
 
    public:
 
@@ -26,7 +22,7 @@ namespace Game
 
       void RegisterCallbacks();
 
-      void RunScript();
+      virtual void RunScript() override;
 
       // Add route point
       void ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float>& data);

@@ -19,7 +19,7 @@ namespace Graphics
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, float value);
    };
 
-   class IMaterial
+   class IMaterial// rename on material proxy and this part will always be on RT, but material as opposed to proxy will be on GT
    {
    protected:
 

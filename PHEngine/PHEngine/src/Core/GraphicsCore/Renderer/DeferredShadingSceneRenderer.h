@@ -82,17 +82,17 @@ namespace Graphics
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
-         std::vector<PrimitiveSceneProxy*> forwardRenderingProxies;
+         std::vector<PrimitiveSceneProxy*> mForwardRenderingProxies;
 
-         std::vector<SkeletalMeshSceneProxy*> skeletalProxies;
+         std::vector<SkeletalMeshSceneProxy*> mSkeletalProxies;
 
-         std::vector<PrimitiveSceneProxy*> nonSkeletalProxies;
+         std::vector<PrimitiveSceneProxy*> mNonSkeletalProxies;
 
-         DirectionalLightProxiesPtrVector dirLightProxies;
+         DirectionalLightProxiesPtrVector mDirLightProxies;
 
-         PointLightProxiesPtrVector pointLightProxies;
+         PointLightProxiesPtrVector mPointLightProxies;
 
-         SpotlightProxiesPtrVector spotlightProxies;
+         SpotlightProxiesPtrVector mSpotlightProxies;
 
          std::unordered_map<uint32_t, std::vector<LightSceneProxy*>> mGroupedByShadowAtlasLights;
 
@@ -102,18 +102,13 @@ namespace Graphics
 
          void GroupLightsByShadowMap();
 
-         void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy,
-            const DirectionalLightProxiesPtrVector& dirLightProxies,
-            const PointLightProxiesPtrVector& pointLightProxies, 
-            const SpotlightProxiesPtrVector& spotlightProxies);
+         void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy);
 
-         void DeferredBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& nonSkeletalMeshProxies, std::vector<SkeletalMeshSceneProxy*>& skeletalMeshProxies,
-            std::shared_ptr<SceneView> sceneView);
+         void DeferredBasePass_RenderThread(std::shared_ptr<SceneView> sceneView);
 
-         void ForwardBasePass_RenderThread(std::vector<PrimitiveSceneProxy*>& forwardedProxies, std::shared_ptr<SceneView> sceneView);
+         void ForwardBasePass_RenderThread(std::shared_ptr<SceneView> sceneView);
 
-         void DepthPass(std::shared_ptr<SceneView> sceneView, std::vector<PrimitiveSceneProxy*>& shadowNonSkeletalMeshProxies,
-            std::vector<SkeletalMeshSceneProxy*>& shadowSkeletalMeshProxies);
+         void DepthPass(std::shared_ptr<SceneView> sceneView);
 
       public:
 
