@@ -18,6 +18,9 @@ namespace Game
       // To make sure that shared ptr on component will live while raw pointers on that components are used only within Lua code
       std::unordered_map<uint64_t, std::shared_ptr<Component>> mActiveComponents;
 
+      // To avoid memory leaks
+      std::vector<ComponentData*> mAllocatedComponentData;
+
    public:
 
       LuaScriptExecutor_EngineObjectsCreator(const std::string& scriptName);

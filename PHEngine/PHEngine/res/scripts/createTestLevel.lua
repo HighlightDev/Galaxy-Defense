@@ -225,14 +225,14 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, buddy, skeletMovementComponent)
 
 	local buddyAnimationStateMachine = _CreateStateMachine(host, buddy, "playerAnimation.fsm")
-	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "animationBinding", "")
-
-	local animTime =  _GetGOPropertyValFloat(host, _GetGameObject(host, "buddyMeshComp"), "SrcAnimTime");
-	print(animTime)
-	
+	_SetFSMBinding(host, buddyAnimationStateMachine, "buddyMeshComp", "animationBinding", "")	
 
 	_AttachPlayerControllerToActor(host, buddy)
 
+end
+
+function OnStart(host)
+	CreateTestLevel(host)
 end
 
 HasOnStart = (_G["OnStart"] ~= nil and 1 or 0)

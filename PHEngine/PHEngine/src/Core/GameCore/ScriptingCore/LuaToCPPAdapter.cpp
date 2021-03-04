@@ -106,8 +106,6 @@ namespace Game
          assert(false);
       }
 
-      delete componentData;
-
       return result;
    }
 

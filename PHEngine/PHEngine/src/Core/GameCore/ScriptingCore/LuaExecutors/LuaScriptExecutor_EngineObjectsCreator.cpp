@@ -15,11 +15,16 @@ namespace Game
    LuaScriptExecutor_EngineObjectsCreator::LuaScriptExecutor_EngineObjectsCreator(const std::string& scriptName)
       : LuaScriptExecutor_EngineBase(scriptName)
       , mActiveComponents()
+      , mAllocatedComponentData()
    {
    }
 
    LuaScriptExecutor_EngineObjectsCreator::~LuaScriptExecutor_EngineObjectsCreator()
    {
+      for (auto dataPtr : mAllocatedComponentData)
+      {
+         delete dataPtr;
+      }
    }
 
    void LuaScriptExecutor_EngineObjectsCreator::RegisterCallbacks()
@@ -61,7 +66,6 @@ namespace Game
    {
       LuaScriptExecutor_EngineBase::RunScript();
 
-      LuaFunction<void(void*)>::Call(mLuaInstance, "CreateTestLevel", (void*)this);
    }
 
    /* -------------------  Create Actor ----------------------------*/
@@ -133,68 +137,90 @@ namespace Game
    /* -------------------  Create mesh component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
    {
-      return LuaToCPPAdapter::CreateMeshComponentData(std::get<0>(meshComponentData), 
-         IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)) , std::get<2>(meshComponentData),
+      auto dataPtr = LuaToCPPAdapter::CreateMeshComponentData(std::get<0>(meshComponentData),
+         IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)), std::get<2>(meshComponentData),
          std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create dir light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
    {
-      return LuaToCPPAdapter::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
+      auto dataPtr = LuaToCPPAdapter::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData), std::get<6>(dirLightComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create point light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*>& pointLightComponentData)
    {
-      return LuaToCPPAdapter::CreatePointLightComponentData(
+      auto dataPtr = LuaToCPPAdapter::CreatePointLightComponentData(
          std::get<0>(pointLightComponentData), std::get<1>(pointLightComponentData),
          std::get<2>(pointLightComponentData), std::get<3>(pointLightComponentData),
          std::get<4>(pointLightComponentData), std::get<5>(pointLightComponentData),
          std::get<6>(pointLightComponentData), std::get<7>(pointLightComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create spotlight component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3,
       glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*>& spotlightComponentData)
    {
-      return LuaToCPPAdapter::CreateSpotlightComponentData(
+      auto dataPtr = LuaToCPPAdapter::CreateSpotlightComponentData(
          std::get<0>(spotlightComponentData), std::get<1>(spotlightComponentData),
          std::get<2>(spotlightComponentData), std::get<3>(spotlightComponentData),
          std::get<4>(spotlightComponentData), std::get<5>(spotlightComponentData),
          std::get<6>(spotlightComponentData), std::get<7>(spotlightComponentData),
          std::get<8>(spotlightComponentData), std::get<9>(spotlightComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create physics component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData)
    {
-      return LuaToCPPAdapter::CreatePhysicsComponentData(std::get<0>(phyComponentData), std::get<1>(phyComponentData));
+      auto dataPtr = LuaToCPPAdapter::CreatePhysicsComponentData(std::get<0>(phyComponentData), std::get<1>(phyComponentData));
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create input component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData)
    {
-      return LuaToCPPAdapter::CreateInputComponentData(std::get<0>(inputComponentData));
+      auto dataPtr = LuaToCPPAdapter::CreateInputComponentData(std::get<0>(inputComponentData));
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create character movement component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData)
    {
-      return LuaToCPPAdapter::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
+      auto dataPtr = LuaToCPPAdapter::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create movement component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData)
    {
-      return LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
+      auto dataPtr = LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create skybox component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, IMaterial*>& skyboxComponentData)
    {
-      return LuaToCPPAdapter::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
+      auto dataPtr = LuaToCPPAdapter::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
    }
 
    /* -------------------  Create light projection shadow info --------------------*/
