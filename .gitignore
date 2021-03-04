@@ -6,3 +6,10 @@ PHEngine/binaries/*
 *.exe
 *.pdb
 PHEngine/obj/*
+PHEngine/PHEngine/Debug/
+PHEngine/PHEngine/Release/
+PHEngine/Debug/
+PHEngine/Release/
+PHEngine/PHEngine/x64/
+PHEngine/STB/
+PHEngine/TinyGame/Debug/
