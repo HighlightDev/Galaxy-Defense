@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Core/GraphicsCore/Material/MaterialProperty.h"
+#include "MaterialProperty.h"
+#include "MaterialProxy.h"
 
 #include <string>
-#include <set>
 #include <tuple>
 #include <unordered_map>
 
@@ -11,19 +11,9 @@ using namespace Graphics::Texture;
 
 namespace Graphics
 {
-
-   struct MaterialPropertySetter
-   {
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, ITexture* texture);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, float value);
-   };
-
-   class IMaterial// rename on material proxy and this part will always be on RT, but material as opposed to proxy will be on GT
+   class IMaterial
    {
    protected:
-
-      using genericMaterialPropertyPair_t = std::pair<std::string, std::shared_ptr<MaterialProperty>>;
 
       std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
 
@@ -44,6 +34,8 @@ namespace Graphics
       void PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue);
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
+
+      virtual std::shared_ptr<MaterialProxy> GetMaterialProxy() const;
    };
 
 }

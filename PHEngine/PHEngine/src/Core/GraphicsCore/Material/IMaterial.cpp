@@ -1,44 +1,9 @@
 #include "IMaterial.h"
 #include "Core/IoCore/FolderManager.h"
+#include "MaterialPropertySetter.h"
 
 namespace Graphics
 {
-
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, ITexture* texture)
-   {
-      assert(materialInstance);
-
-      auto property = materialInstance->GetMaterialPropertyByName(propertyName);
-      auto texProperty = std::static_pointer_cast<TextureMaterialProperty>(property);
-
-      assert(texProperty);
-
-      texProperty->SetValue(texture);
-   }
-
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture)
-   {
-      assert(materialInstance);
-
-      auto property = materialInstance->GetMaterialPropertyByName(propertyName);
-      auto texProperty = std::static_pointer_cast<TextureMaterialProperty>(property);
-
-      assert(texProperty);
-
-      texProperty->SetValue(texture);
-   }
-
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, float value)
-   {
-      assert(materialInstance);
-
-      auto property = materialInstance->GetMaterialPropertyByName(propertyName);
-      auto floatProperty = std::static_pointer_cast<FloatMaterialProperty>(property);
-
-      assert(floatProperty);
-
-      floatProperty->SetValue(value);
-   }
 
    IMaterial::IMaterial(const std::string& materialName, const std::string& materialShaderName)
       : MaterialName(materialName)
@@ -65,5 +30,10 @@ namespace Graphics
    const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& IMaterial::GetProperties() const
    {
       return mProperties;
+   }
+
+   std::shared_ptr<MaterialProxy> IMaterial::GetMaterialProxy() const
+   {
+      return std::make_shared<MaterialProxy>(this);
    }
 }

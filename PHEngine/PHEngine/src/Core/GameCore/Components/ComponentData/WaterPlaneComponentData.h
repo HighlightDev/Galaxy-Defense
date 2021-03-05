@@ -16,7 +16,7 @@ namespace Game
 			, m_translation(std::move(translation))
 			, m_eulerRotationDegrees(std::move(rotation))
 			, m_scale(std::move(scale))
-         , m_materialInstance(materialInstance)
+         , m_material(materialInstance)
 		{
 		}
 
@@ -24,7 +24,7 @@ namespace Game
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
    
-      std::shared_ptr<IMaterial> m_materialInstance;
+      std::shared_ptr<IMaterial> m_material;
 	};
 
 }

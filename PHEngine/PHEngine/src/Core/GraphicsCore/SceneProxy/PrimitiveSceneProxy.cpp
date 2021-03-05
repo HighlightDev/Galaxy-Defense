@@ -1,19 +1,18 @@
 #include "PrimitiveSceneProxy.h"
 
-
 namespace Graphics
 {
    namespace Proxy
    {
 
       PrimitiveSceneProxy::PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> materialShader,
-         std::shared_ptr<IMaterial> materialInstance)
+         std::shared_ptr<MaterialProxy> materialProxy)
          : SceneProxyBase()
          , AVisiblePrimitiveBase()
          , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)
          , m_shader(materialShader)
-         , mMaterialInstance(materialInstance)
+         , mMaterialProxy(materialProxy)
       {
       }
 

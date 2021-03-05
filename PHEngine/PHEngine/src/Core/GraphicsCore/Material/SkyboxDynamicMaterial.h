@@ -12,6 +12,8 @@ namespace Graphics
    public:
 
       SkyboxDynamicMaterial(ITextureShared dayTexture, ITextureShared nightTexure);
+
+      virtual void Tick(const float deltaTime) override;
    };
 }
 

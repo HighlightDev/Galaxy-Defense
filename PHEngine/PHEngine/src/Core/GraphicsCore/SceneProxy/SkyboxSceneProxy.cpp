@@ -7,7 +7,7 @@ namespace Graphics
 
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
          : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin,
-            component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
+            component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
       {
       }
 
@@ -43,7 +43,7 @@ namespace Graphics
 
          shaderPtr->ExecuteShader();
          shaderPtr->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrixNoTranslation, projectionMatrix);
-         shaderPtr->GetMaterialShader()->SetUniformValues(mMaterialInstance);
+         shaderPtr->GetMaterialShader()->SetUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shaderPtr->StopShader();
 

@@ -14,7 +14,7 @@ namespace Graphics
          : PrimitiveSceneProxy(component->GetRelativeMatrix()
             , component->GetRenderData().m_skin
             , component->GetRenderData().m_materialShader
-            , component->GetRenderData().mMaterialInstance)
+            , component->GetRenderData().mMaterialProxy)
          , mAnimationPlayer(nullptr)
       {
          std::shared_ptr<AnimatedSkin> spt_AnimatedSkin = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
@@ -33,7 +33,7 @@ namespace Graphics
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
-         GetShader()->GetMaterialShader()->SetUniformValues(mMaterialInstance);
+         GetShader()->GetMaterialShader()->SetUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          GetShader()->StopShader();
       }

@@ -4,13 +4,13 @@
 
 namespace Graphics
 {
-   // stub
-   struct MaterialProxy {};
-
    class DynamicMaterial 
       : public IMaterial
       , public ITickable
    {
+   protected:
+
+      using genericMaterialPropertyPair_t = std::pair<std::string, std::shared_ptr<MaterialProperty>>;
 
    public:
 
@@ -19,8 +19,6 @@ namespace Graphics
       virtual ~DynamicMaterial();
 
       virtual void Tick(const float deltaTime) = 0;
-
-      virtual std::shared_ptr<MaterialProxy> GetMaterialProxy() const = 0;
    };
 
 }

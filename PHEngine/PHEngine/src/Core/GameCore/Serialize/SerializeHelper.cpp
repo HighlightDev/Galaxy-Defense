@@ -1,6 +1,7 @@
 #include "SerializeHelper.h"
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
@@ -128,7 +129,7 @@ namespace Game {
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = ""; // TODO: for now
 
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetRenderData().mMaterialInstance);
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
 
       meshData->MeshMaterial = material;
 
@@ -145,7 +146,7 @@ namespace Game {
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = component->LuaScriptName;
 
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetRenderData().mMaterialInstance);
+      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
 
       meshData->MeshMaterial = material;
 

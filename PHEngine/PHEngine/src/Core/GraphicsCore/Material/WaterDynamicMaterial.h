@@ -19,6 +19,8 @@ namespace Graphics
       void SetMoveFactor(const float moveFactor);
 
       void SetMoveStrengthFactor(const float strengthFactor);
+
+      virtual void Tick(const float deltaTime) override;
    };
 
 }

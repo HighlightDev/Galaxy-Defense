@@ -25,4 +25,9 @@ namespace Graphics
    {
       strFactorPropertyRef->SetValue(strengthFactor);
    }
+
+   void WaterDynamicMaterial::Tick(const float deltaTime)
+   {
+
+   }
 }

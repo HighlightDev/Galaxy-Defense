@@ -9,4 +9,9 @@ namespace Graphics
       PushMaterialProperty("dayTexture", std::make_shared<TextureMaterialProperty>(dayTexture));
       PushMaterialProperty("nightTexure", std::make_shared<TextureMaterialProperty>(nightTexure));
    }
+
+   void SkyboxDynamicMaterial::Tick(const float deltaTime) 
+   {
+
+   }
 }

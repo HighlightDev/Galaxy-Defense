@@ -53,6 +53,13 @@ namespace Game
       }
    }
 
+   std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
+   {
+      // get from scene corresponding to material proxy material instance
+      assert(false);
+      return std::shared_ptr<IMaterial>(nullptr);
+   }
+
    ComponentType SkeletalMeshComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;

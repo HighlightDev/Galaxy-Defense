@@ -8,7 +8,7 @@ namespace Graphics
    {
 
       WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialInstance)
+         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
          , m_moveFactor(component->GetMoveFactor())
          , m_waveStrength(component->GetWaveStrength())
          , m_transparencyDepth(component->GetTransparencyDepth())
@@ -35,13 +35,11 @@ namespace Graphics
       void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor) 
       {
          m_moveFactor = moveFactor;
-         std::static_pointer_cast<WaterPlaneSceneProxy::MaterialType>(mMaterialInstance)->SetMoveFactor(moveFactor);
       }
 
       void WaterPlaneSceneProxy::SetWaveStrength(float waveStr)
       {
          m_waveStrength = waveStr;
-         std::static_pointer_cast<WaterPlaneSceneProxy::MaterialType>(mMaterialInstance)->SetMoveStrengthFactor(waveStr);
       }
 
       void WaterPlaneSceneProxy::SetTransparencyDepth(float transparencyDepth)
@@ -76,7 +74,7 @@ namespace Graphics
          const auto& shader = GetShader();
 
          shader->ExecuteShader();
-         shader->GetMaterialShader()->SetUniformValues(mMaterialInstance);
+         shader->GetMaterialShader()->SetUniformValues(mMaterialProxy);
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();

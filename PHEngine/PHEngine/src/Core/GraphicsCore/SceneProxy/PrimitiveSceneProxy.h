@@ -7,7 +7,7 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/GameCore/GameObject.h"
-#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/AVisiblePrimitiveBase.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
@@ -40,11 +40,11 @@ namespace Graphics
 
          std::shared_ptr<ICompositeShader> m_shader;
 
-         std::shared_ptr<IMaterial> mMaterialInstance;
+         std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
 
-         PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<IMaterial> materialInstance);
+         PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<MaterialProxy> materialProxy);
 
          virtual ~PrimitiveSceneProxy();
 

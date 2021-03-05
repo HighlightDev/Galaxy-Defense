@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/IShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderPredefineUtility.h"
 
@@ -18,11 +18,11 @@ namespace Graphics
 
       protected:
 
-         std::shared_ptr<IMaterial> mMaterialInstance;
+         std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
 
-         IMaterialShader(std::shared_ptr<IMaterial> materialInstance);
+         IMaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
 
          virtual ~IMaterialShader();
 
@@ -39,7 +39,7 @@ namespace Graphics
 
          void Undefine(const std::string& name);
 
-         virtual void SetUniformValues(std::shared_ptr<IMaterial> materialInstance) = 0;
+         virtual void SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy) = 0;
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
@@ -58,9 +58,9 @@ namespace Graphics
       public :
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void SetUniformValues(std::shared_ptr<IMaterial> materialInstance) override;
+         virtual void SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy) override;
 
-         MaterialShaderImp(std::shared_ptr<IMaterial> materialInstance);
+         MaterialShaderImp(std::shared_ptr<MaterialProxy> materialProxy);
       };
    }
 }

@@ -2,7 +2,7 @@
 
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProxy.h"
 
 #include <memory>
 
@@ -15,14 +15,14 @@ namespace Graphics
 
          std::shared_ptr<ShaderBase> mShader;
          std::string mShaderName;
-         std::shared_ptr<IMaterial> mMaterial;
+         std::shared_ptr<MaterialProxy> mMaterialProxy;
 
          const uint64_t HASH;
 
-         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<ShaderBase>& shader, std::shared_ptr<IMaterial> materialInstance)
+         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<ShaderBase>& shader, std::shared_ptr<MaterialProxy> materialProxy)
             : mShader(shader)
             , mShaderName(shaderName)
-            , mMaterial(materialInstance)
+            , mMaterialProxy(materialProxy)
             , HASH(hash)
          {
          }
@@ -42,12 +42,12 @@ namespace Graphics
          : public CompositeShaderParams
       {
 
-         TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<IMaterial> materialInstance)
+         TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
             : CompositeShaderParams(
                Game::Hash(uniqueName),
                uniqueName,
                std::make_shared<typename CompositeShaderType::shader_t>(shaderParams),
-               materialInstance)
+               materialProxy)
          {
 
          }

@@ -38,7 +38,7 @@ namespace Game
 
       skyboxCompData->ComponentName = GameObjectName;
       skyboxCompData->Scale = GetScale();
-      skyboxCompData->Material = SerializeHelper::GetSerializeDataMaterial(m_renderData.mMaterialInstance);
+      skyboxCompData->Material = SerializeHelper::GetSerializeDataMaterial(GetMaterial());
       actorData.ComponentsData.emplace_back(skyboxCompData);
    }
 
@@ -50,5 +50,27 @@ namespace Game
    ComponentType SkyboxComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
+   }
+
+   void SkyboxComponent::SetRotateSpeed(float rotateSpeed)
+   {
+      m_rotateSpeed = rotateSpeed;
+   }
+
+   float SkyboxComponent::GetRotateSpeed() const
+   {
+      return m_rotateSpeed;
+   }
+
+   const SkyboxRenderData& SkyboxComponent::GetRenderData() const {
+
+      return m_renderData;
+   }
+
+   std::shared_ptr<IMaterial> SkyboxComponent::GetMaterial() const
+   {
+      // get from scene corresponding to material proxy material instance
+      assert(false);
+      return std::shared_ptr<IMaterial>(nullptr);
    }
 }

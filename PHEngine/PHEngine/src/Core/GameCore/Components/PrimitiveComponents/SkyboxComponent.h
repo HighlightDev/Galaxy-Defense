@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "Core/GraphicsCore/RenderData/SkyboxRenderData.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
 
 #include <memory>
 #include <glm/mat4x4.hpp>
@@ -10,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace Graphics::Data;
+using namespace Graphics;
 
 namespace Game
 {
@@ -41,20 +43,13 @@ namespace Game
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-		inline void SetRotateSpeed(float rotateSpeed)
-		{
-			m_rotateSpeed = rotateSpeed;
-		}
+      void SetRotateSpeed(float rotateSpeed);
 
-		inline float GetRotateSpeed() const
-		{
-			return m_rotateSpeed;
-		}
+      float GetRotateSpeed() const;
 
-      inline const SkyboxRenderData& GetRenderData() const {
+      const SkyboxRenderData& GetRenderData() const;
 
-         return m_renderData;
-      }
+      std::shared_ptr<IMaterial> GetMaterial() const;
 	};
 
 }

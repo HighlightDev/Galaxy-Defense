@@ -27,6 +27,13 @@ namespace Game
       Base::Tick(deltaTime);
    }
 
+   std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
+   {
+      // get from scene corresponding to material proxy material instance
+      assert(false);
+      return std::shared_ptr<IMaterial>(nullptr);
+   }
+
    void StaticMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
       auto& actorData = GetSerializeDataActor(dataContainer);

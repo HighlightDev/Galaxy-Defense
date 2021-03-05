@@ -2,7 +2,9 @@
 
 #include "PrimitiveComponent.h"
 #include "Core/GraphicsCore/RenderData/SkeletalMeshRenderData.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
 
+using namespace Graphics;
 using namespace Graphics::Data;
 
 namespace Game
@@ -70,6 +72,8 @@ namespace Game
 
          return m_renderData;
       }
+
+      std::shared_ptr<IMaterial> GetMaterial() const;
 
    protected:
 

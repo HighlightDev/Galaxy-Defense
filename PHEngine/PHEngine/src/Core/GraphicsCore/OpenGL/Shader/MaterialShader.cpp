@@ -12,11 +12,11 @@ namespace Graphics
       /************************************************************************/
       /*                                 IMaterialShader                      */
       /************************************************************************/
-      IMaterialShader::IMaterialShader(std::shared_ptr<IMaterial> materialInstance)
-         : IShader(materialInstance->MaterialName)
-         , mMaterialInstance(materialInstance)
+      IMaterialShader::IMaterialShader(std::shared_ptr<MaterialProxy> materialProxy)
+         : IShader(materialProxy->MaterialName)
+         , mMaterialProxy(materialProxy)
       {
-         InitMaterialShader(materialInstance->MaterialShaderRelativePath);
+         InitMaterialShader(materialProxy->MaterialShaderRelativePath);
       }
 
       IMaterialShader::~IMaterialShader()
@@ -60,24 +60,24 @@ namespace Graphics
 
       void MaterialShaderImp::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
-         for (auto namePlusPropPair : mMaterialInstance->GetProperties())
+         for (auto namePlusPropPair : mMaterialProxy->GetProperties())
          {
             UniformsMap[namePlusPropPair.first] = GetUniform(namePlusPropPair.first, shaderProgramID);
          }
       }
 
-      void MaterialShaderImp::SetUniformValues(std::shared_ptr<IMaterial> materialInstance)
+      void MaterialShaderImp::SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
       {
          int32_t index = 0;
-         for (auto namePlusPropPair : materialInstance->GetProperties())
+         for (auto namePlusPropPair : materialProxy->GetProperties())
          {
             namePlusPropPair.second->SetValueToUniform(UniformsMap[namePlusPropPair.first], index);
             ++index;
          }
       }
 
-      MaterialShaderImp::MaterialShaderImp(std::shared_ptr<IMaterial> materialInstance)
-         : IMaterialShader(materialInstance)
+      MaterialShaderImp::MaterialShaderImp(std::shared_ptr<MaterialProxy> materialProxy)
+         : IMaterialShader(materialProxy)
       {
       }
    }

@@ -1,7 +1,7 @@
 #pragma once
 #include "Shader.h"
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 
@@ -22,13 +22,11 @@ namespace Graphics
          {
          }
 
-
       protected:
 
          std::shared_ptr<IShader> mShader;
          std::shared_ptr<VertexFactoryShader> mVertexFactoryShader;
          std::shared_ptr<IMaterialShader> mMaterialShader;
-
        
          ICompositeShader(std::shared_ptr<IShader> shader, std::shared_ptr<VertexFactoryShader> vertexFactoryShader, std::shared_ptr<IMaterialShader> materialShader)
             : mShader(shader)
@@ -69,9 +67,9 @@ namespace Graphics
       public:
 
          template <typename UShader>
-         CompositeShader(const std::string& compositeShaderName, const UShader& shader, std::shared_ptr<IMaterial> materialInstance)
+         CompositeShader(const std::string& compositeShaderName, const UShader& shader, std::shared_ptr<MaterialProxy> materialProxy)
             : IShader(compositeShaderName)
-            , ICompositeShader(std::static_pointer_cast<ShaderType>(shader), std::make_shared<vertexFactoryShader_t>(), std::make_shared<MaterialShaderImp>(materialInstance))
+            , ICompositeShader(std::static_pointer_cast<ShaderType>(shader), std::make_shared<vertexFactoryShader_t>(), std::make_shared<MaterialShaderImp>(materialProxy))
          {
             Init();
          }

@@ -22,7 +22,6 @@ namespace Graphics
          public PrimitiveSceneProxy
       {
          using ShaderType = CompositeShader<StaticMeshVertexFactory, SimpleShader>;
-         using MaterialType = WaterDynamicMaterial;
 
          std::unique_ptr<WaterPlaneFramebuffer> m_waterPlaneFramebuffer;
 

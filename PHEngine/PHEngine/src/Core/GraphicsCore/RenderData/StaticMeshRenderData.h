@@ -20,15 +20,15 @@ namespace Graphics
       {
          std::shared_ptr<Skin> m_skin;
          std::shared_ptr<ICompositeShader> m_materialShader;
-         std::shared_ptr<IMaterial> mMaterialInstance;
+         std::shared_ptr<MaterialProxy> mMaterialProxy;
 
          StaticMeshRenderData(
             std::shared_ptr<Skin> staticMesh,
             std::shared_ptr<IShader> materialShader,
-            std::shared_ptr<IMaterial> materialInstance)
+            std::shared_ptr<MaterialProxy> materialProxy)
             : m_skin(staticMesh)
             , m_materialShader(std::dynamic_pointer_cast<ICompositeShader>(materialShader))
-            , mMaterialInstance(materialInstance)
+            , mMaterialProxy(materialProxy)
          {
          }
 

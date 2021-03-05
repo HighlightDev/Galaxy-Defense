@@ -6,6 +6,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
+#include "Core/GraphicsCore/Material/MaterialPropertySetter.h"
 
 using namespace Graphics;
 

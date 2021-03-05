@@ -110,7 +110,7 @@ namespace Game
       template <ComponentMetaType metaType, typename ComponentT>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
-         auto component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData);
+         const auto& component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData, this);
          ComponentType type = component->GetComponentType();
          if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
          {

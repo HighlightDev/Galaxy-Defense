@@ -344,6 +344,8 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShaderCommon.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h" />
@@ -830,6 +832,8 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\SpotlightComponent.cpp" />
