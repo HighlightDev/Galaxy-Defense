@@ -2,6 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
+
 #include <iostream>
 #include <algorithm>
 
@@ -40,23 +41,23 @@ namespace Thread
 
    void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job job)
    {
-      std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushGameThreadJob(policy, job);
    }
 
    void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
-      std::lock_guard<std::mutex> lock(m_renderThreadMutex);
       ProcessPushRenderThreadJob(policy, job);
    }
 
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
-      ProcessPushJob(policy, job, m_renderThreadJobs);
+      std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTWrite)]);
+      ProcessPushJob(policy, job, mRenderThreadSwapChain[uint8_t(mRTWrite)]);
    }
 
    void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job)
    {
+      std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushJob(policy, job, m_gameThreadJobs);
    }
 
@@ -128,17 +129,27 @@ namespace Thread
 
       //typename Clock_t::time_point start_time = Clock_t::now();
       {
-
-         auto countRenderThreadJobs = m_renderThreadJobs.size();
-         std::lock_guard<std::mutex> lock(m_renderThreadMutex);
+         std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTRead)]);
+         auto& renderThreadChain = mRenderThreadSwapChain[uint8_t(mRTRead)];
+         auto countRenderThreadJobs = renderThreadChain.size();
+         //std::lock_guard<std::mutex> lock(m_renderThreadMutex);
          while (countRenderThreadJobs)
          {
-            auto jobIt = m_renderThreadJobs.begin();
+            auto jobIt = renderThreadChain.begin();
             (*jobIt)();
-            m_renderThreadJobs.pop_front();
+            renderThreadChain.pop_front();
             --countRenderThreadJobs;
          }
       }
+
+      SwapRenderThreadChain();
+   }
+
+   void InterThreadCommunicationMgr::SwapRenderThreadChain()
+   {
+      std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTWrite)]);
+      mRTRead = mRTRead == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
+      mRTWrite = mRTWrite == eWriteChainType::WRITE_1 ? eWriteChainType::WRITE_1 : eWriteChainType::WRITE_1;
    }
 
    bool InterThreadCommunicationMgr::AreGameJobsAwaiting() const {

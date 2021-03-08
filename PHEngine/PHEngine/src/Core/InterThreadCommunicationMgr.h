@@ -3,6 +3,7 @@
 #include <vector>
 #include <deque>
 #include <mutex>
+#include <array>
 
 #include "Job.h"
 
@@ -28,6 +29,16 @@ namespace Thread
       PUSH_ANYWAY
    };
 
+   enum class eReadChainType : uint8_t {
+      READ_1 = 0,
+      READ_2 = 1
+   };
+
+   enum class eWriteChainType : uint8_t {
+      WRITE_1 = 0,
+      WRITE_2 = 1
+   };
+
    class InterThreadCommunicationMgr
    {
       std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
@@ -38,10 +49,18 @@ namespace Thread
       std::mutex m_gameThreadMutex;
 
       std::mutex m_renderThreadMutex;
+      std::array<std::mutex, 2> mRTMutex;
 
       std::deque<Job> m_gameThreadJobs;
 
       std::deque<Job> m_renderThreadJobs;
+
+      // try this:
+
+      eReadChainType mRTRead = eReadChainType::READ_1;
+      eWriteChainType mRTWrite = eWriteChainType::WRITE_2;
+
+      std::array<std::deque<Job>, 2> mRenderThreadSwapChain;
 
    public:
 
@@ -70,12 +89,16 @@ namespace Thread
    private:
 
       void ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job);
+
       void ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job);
+
       void ProcessPushJob(const EnqueueJobPolicy policy, Job job, std::deque<Job>& jobs);
 
       bool AreGameJobsAwaiting() const;
 
       bool AreRenderJobsAwaiting() const;
+
+      void SwapRenderThreadChain();
    };
 
 }
