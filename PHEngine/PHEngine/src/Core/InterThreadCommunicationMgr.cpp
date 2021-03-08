@@ -1,7 +1,7 @@
 #include "InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
-
+#include "Core/CommonCore/Assertion.h"
 
 #include <iostream>
 #include <algorithm>
@@ -51,7 +51,7 @@ namespace Thread
 
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
-      std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTWrite)]);
+      std::lock_guard<std::mutex> lock(mRTStoreMutex);
       ProcessPushJob(policy, job, mRenderThreadSwapChain[uint8_t(mRTWrite)]);
    }
 
@@ -129,10 +129,8 @@ namespace Thread
 
       //typename Clock_t::time_point start_time = Clock_t::now();
       {
-         std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTRead)]);
          auto& renderThreadChain = mRenderThreadSwapChain[uint8_t(mRTRead)];
          auto countRenderThreadJobs = renderThreadChain.size();
-         //std::lock_guard<std::mutex> lock(m_renderThreadMutex);
          while (countRenderThreadJobs)
          {
             auto jobIt = renderThreadChain.begin();
@@ -147,9 +145,10 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SwapRenderThreadChain()
    {
-      std::lock_guard<std::mutex> lock(mRTMutex[uint8_t(mRTWrite)]);
+      std::lock_guard<std::mutex> lock(mRTStoreMutex);
+      assert(mRTRead == eReadChainType::READ_1 && mRTWrite == eWriteChainType::WRITE_2 || mRTRead == eReadChainType::READ_2 && mRTWrite == eWriteChainType::WRITE_1);
       mRTRead = mRTRead == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
-      mRTWrite = mRTWrite == eWriteChainType::WRITE_1 ? eWriteChainType::WRITE_1 : eWriteChainType::WRITE_1;
+      mRTWrite = mRTRead == eReadChainType::READ_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
    }
 
    bool InterThreadCommunicationMgr::AreGameJobsAwaiting() const {

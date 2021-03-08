@@ -21,22 +21,11 @@ namespace Game
 
 namespace Thread
 {
-
    enum class EnqueueJobPolicy
    {
       IF_DUPLICATE_NO_PUSH,
       IF_DUPLICATE_REPLACE_AND_PUSH,
       PUSH_ANYWAY
-   };
-
-   enum class eReadChainType : uint8_t {
-      READ_1 = 0,
-      READ_2 = 1
-   };
-
-   enum class eWriteChainType : uint8_t {
-      WRITE_1 = 0,
-      WRITE_2 = 1
    };
 
    class InterThreadCommunicationMgr
@@ -48,18 +37,25 @@ namespace Thread
 
       std::mutex m_gameThreadMutex;
 
-      std::mutex m_renderThreadMutex;
-      std::array<std::mutex, 2> mRTMutex;
-
       std::deque<Job> m_gameThreadJobs;
 
       std::deque<Job> m_renderThreadJobs;
 
-      // try this:
+      // todo: test this
 
+      enum class eReadChainType : uint8_t {
+         READ_1 = 0,
+         READ_2 = 1
+      };
+
+      enum class eWriteChainType : uint8_t {
+         WRITE_1 = 0,
+         WRITE_2 = 1
+      };
+
+      std::mutex mRTStoreMutex;
       eReadChainType mRTRead = eReadChainType::READ_1;
       eWriteChainType mRTWrite = eWriteChainType::WRITE_2;
-
       std::array<std::deque<Job>, 2> mRenderThreadSwapChain;
 
    public:
