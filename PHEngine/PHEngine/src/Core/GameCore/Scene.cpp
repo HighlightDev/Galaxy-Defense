@@ -379,7 +379,7 @@ namespace Game
 
    void Scene::Tick_GameThread(float delta)
    {
-      constexpr float physTickStep = 1.0f / 200.0f;
+      constexpr float physTickStep = 1.0f / 150.0f;
 
       mPhysicsWorld->Tick(physTickStep);
 

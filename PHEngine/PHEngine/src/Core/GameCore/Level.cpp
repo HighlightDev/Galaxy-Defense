@@ -150,16 +150,19 @@ namespace Game
 
    std::shared_ptr<ACamera> Level::GetCamera() const
    {
+      // todo: temp solution
       return mScene->GetCamera("MainCamera");
    }
 
    void Level::CameraRotate()
    {
+      // todo: temp solution
       mScene->GetCamera("MainCamera")->Rotate();
    }
 
    void Level::CameraMove()
    {
+      // todo: temp solution
       if (auto camera = mScene->GetCamera("MainCamera"); camera->GetCameraType() == ACamera::CameraType::FIRST_PERSON)
       {
          (std::static_pointer_cast<FirstPersonCamera>(camera))->MoveCamera(0);

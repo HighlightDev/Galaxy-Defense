@@ -30,18 +30,7 @@ namespace Thread
 
    class InterThreadCommunicationMgr
    {
-      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
-      std::weak_ptr<Game::Scene> mScene;
-
-      const size_t JobPoolCapacity = 80;
-
-      std::mutex m_gameThreadMutex;
-
-      std::deque<Job> m_gameThreadJobs;
-
-      std::deque<Job> m_renderThreadJobs;
-
-      // todo: test this
+   private:
 
       enum class eReadChainType : uint8_t {
          READ_1 = 0,
@@ -53,10 +42,27 @@ namespace Thread
          WRITE_2 = 1
       };
 
-      std::mutex mRTStoreMutex;
-      eReadChainType mRTRead = eReadChainType::READ_1;
-      eWriteChainType mRTWrite = eWriteChainType::WRITE_2;
-      std::array<std::deque<Job>, 2> mRenderThreadSwapChain;
+      struct TasksSwapChain
+      {
+         eReadChainType ReadChainType = eReadChainType::READ_1;
+         eWriteChainType WriteChainType = eWriteChainType::WRITE_2;
+
+         std::mutex StoreOpMutex;
+
+         std::array<std::deque<Job>, 2> Tasks;
+      };
+
+   private:
+      
+      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
+
+      std::weak_ptr<Game::Scene> mScene;
+
+      std::mutex m_gameThreadMutex;
+
+      std::deque<Job> m_gameThreadJobs;
+
+      TasksSwapChain mRenderThreadSwapChain;
 
    public:
 
@@ -89,10 +95,6 @@ namespace Thread
       void ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job);
 
       void ProcessPushJob(const EnqueueJobPolicy policy, Job job, std::deque<Job>& jobs);
-
-      bool AreGameJobsAwaiting() const;
-
-      bool AreRenderJobsAwaiting() const;
 
       void SwapRenderThreadChain();
    };

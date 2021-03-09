@@ -13,6 +13,7 @@ namespace Thread
 {
 
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
+      : mRenderThreadSwapChain()
    {
    }
 
@@ -51,8 +52,8 @@ namespace Thread
 
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job)
    {
-      std::lock_guard<std::mutex> lock(mRTStoreMutex);
-      ProcessPushJob(policy, job, mRenderThreadSwapChain[uint8_t(mRTWrite)]);
+      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOpMutex);
+      ProcessPushJob(policy, job, mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.WriteChainType)]);
    }
 
    void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job)
@@ -109,55 +110,38 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SpinGameThreadJobs()
    {
-      //using Clock_t = std::chrono::high_resolution_clock;
-
-      //typename Clock_t::time_point start_time = Clock_t::now();
-
-      auto countGameThreadJobs = m_gameThreadJobs.size();
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-      while (AreGameJobsAwaiting())
+      auto countGameThreadJobs = m_gameThreadJobs.size();
+      while (countGameThreadJobs)
       {
          auto jobIt = m_gameThreadJobs.begin();
          (*jobIt)();
          m_gameThreadJobs.pop_front();
+         --countGameThreadJobs;
       }
    }
 
    void InterThreadCommunicationMgr::SpinRenderThreadJobs()
    {
-      //using Clock_t = std::chrono::high_resolution_clock;
-
-      //typename Clock_t::time_point start_time = Clock_t::now();
+      auto& renderThreadChain = mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.ReadChainType)];
+      auto countRenderThreadJobs = renderThreadChain.size();
+      while (countRenderThreadJobs)
       {
-         auto& renderThreadChain = mRenderThreadSwapChain[uint8_t(mRTRead)];
-         auto countRenderThreadJobs = renderThreadChain.size();
-         while (countRenderThreadJobs)
-         {
-            auto jobIt = renderThreadChain.begin();
-            (*jobIt)();
-            renderThreadChain.pop_front();
-            --countRenderThreadJobs;
-         }
+         auto jobIt = renderThreadChain.begin();
+         (*jobIt)();
+         renderThreadChain.pop_front();
+         --countRenderThreadJobs;
       }
-
       SwapRenderThreadChain();
    }
 
    void InterThreadCommunicationMgr::SwapRenderThreadChain()
    {
-      std::lock_guard<std::mutex> lock(mRTStoreMutex);
-      assert(mRTRead == eReadChainType::READ_1 && mRTWrite == eWriteChainType::WRITE_2 || mRTRead == eReadChainType::READ_2 && mRTWrite == eWriteChainType::WRITE_1);
-      mRTRead = mRTRead == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
-      mRTWrite = mRTRead == eReadChainType::READ_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
-   }
+      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOpMutex);
+      assert(mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 && mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_2 
+         || mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_2 && mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_1);
 
-   bool InterThreadCommunicationMgr::AreGameJobsAwaiting() const {
-
-      return m_gameThreadJobs.size() > 0;
-   }
-
-   bool InterThreadCommunicationMgr::AreRenderJobsAwaiting() const {
-
-      return m_renderThreadJobs.size() > 0;
+      mRenderThreadSwapChain.ReadChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
+      mRenderThreadSwapChain.WriteChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
    }
 }
