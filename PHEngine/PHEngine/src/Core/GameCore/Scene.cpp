@@ -355,7 +355,7 @@ namespace Game
             Job(creatorObjectId, functionId, [=]()
          {
             sceneRenderer->LightProxies[primitiveSceneProxyIndex] = lightSceneProxy;
-            sceneRenderer->SetProxiesAreDirty(true);
+            sceneRenderer->SetLightProxiesAreDirty(true);
          }));
       }
    }

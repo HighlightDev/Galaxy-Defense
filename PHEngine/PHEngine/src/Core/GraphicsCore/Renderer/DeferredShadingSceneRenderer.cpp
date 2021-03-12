@@ -35,6 +35,8 @@ namespace Graphics
 
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
          : SceneViews()
+         , bLightProxiesDirty(false)
+         , bProxiesDirty(false)
          , SceneProxies()
          , LightProxies()
          , m_interThreadMgr(interThreadMgr)
@@ -425,6 +427,10 @@ namespace Graphics
                Init();
             }
 
+            ~PlanarFBO() {
+               assert(false);
+            }
+
             virtual void CleanUp() override 
             {
                mReflectionFBO.UnbindFramebuffer();
@@ -598,6 +604,11 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
+               if (SceneViews.size())
+               {
+                  PlanarReflectionPass(SceneViews.begin()->second, glm::mat4());
+               }
+
                DepthPass(sceneView);
 
                DeferredBasePass_RenderThread(sceneView);
@@ -614,10 +625,6 @@ namespace Graphics
 
 #if DEBUG
             DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
-            if (SceneViews.size())
-            {
-               PlanarReflectionPass(SceneViews.begin()->second, glm::mat4());
-            }
          }
 
          DebugFramePanelsPass();

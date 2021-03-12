@@ -42,10 +42,40 @@ namespace Graphics
          }
       }
 
+      assert(GetFramebufferErrorCode() == GL_FRAMEBUFFER_COMPLETE);
+
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
       CollectAttachments();
    }
+
+   GLenum FramebufferObject::GetFramebufferErrorCode() const
+   {
+      GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      return result;
+   }
+
+   std::string FramebufferObject::GetFramebufferLog() const
+   {
+      GLenum errorCode = GetFramebufferErrorCode();
+      switch (errorCode)
+      {
+         case GL_FRAMEBUFFER_COMPLETE: { return "Framebuffer : complete."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: { return "Framebuffer : Not all framebuffer attachment points are framebuffer attachment complete."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT: { return "Framebuffer : Not all attached images have the same width and height."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: { return "Framebuffer : Each draw buffer must specify color attachment points that have images attached or must be GL_NONE."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT: { return "Framebuffer : Incomplete formats"; }
+         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_COUNT_EXT: { return "Framebuffer : Incomplete layer count"; }
+         case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS: { return "Framebuffer : All attachments must be layered attachments."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: { return "Framebuffer : No images are attached to the framebuffer."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: { return "Framebuffer : All images must have the same number of multisample samples."; }
+         case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: { return "Framebuffer : ReadBuffer must specify an attachment point that has an image attached. "; }
+         case GL_FRAMEBUFFER_UNDEFINED: { return "Framebuffer : FBO object number 0 is bound"; }
+         case GL_FRAMEBUFFER_UNSUPPORTED: { return "Framebuffer : The combination of internal formats of the attached images violates an implementation-dependent set of restrictions."; }
+         default: return "Framebuffer : Undefined error.";
+      }
+   }
+
 
    void FramebufferObject::CollectAttachments()
    {

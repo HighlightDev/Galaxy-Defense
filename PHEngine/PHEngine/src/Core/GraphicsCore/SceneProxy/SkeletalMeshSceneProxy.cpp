@@ -31,11 +31,6 @@ namespace Graphics
 
       void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         static glm::vec3 normal(0, 1, 0);
-         static glm::vec3 posOnPlane(0, 0, 0);
-         static float d = -glm::dot(normal, posOnPlane);
-         static glm::vec4 plane = glm::vec4(normal, d);
-
          GetShader()->ExecuteShader();
          GetShader()->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          GetShader()->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());

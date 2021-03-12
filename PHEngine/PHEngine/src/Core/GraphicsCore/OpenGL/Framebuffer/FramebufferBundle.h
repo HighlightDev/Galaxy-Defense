@@ -26,10 +26,6 @@ namespace Graphics
 
       void UnbindFramebuffer() const;
 
-      std::string GetFramebufferLog() const;
-
-      GLenum GetFramebufferErrorCode() const;
-
    protected:
 
       virtual void SetTextures() = 0;

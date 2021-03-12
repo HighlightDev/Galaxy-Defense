@@ -27,6 +27,10 @@ namespace Graphics
 
       ~FramebufferObject();
 
+      GLenum GetFramebufferErrorCode() const;
+
+      std::string GetFramebufferLog() const;
+
       void AddRenderTexture(uint32_t framebufferAttachement, std::shared_ptr<ITexture> renderTexture);
 
       // should be called after all render textures are added
