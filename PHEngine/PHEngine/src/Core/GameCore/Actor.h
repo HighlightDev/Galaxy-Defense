@@ -33,10 +33,10 @@ namespace Game
 
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
-   protected:
-
       // Makes all primitive components visible or not
-      bool mIsVisible;
+      EngineGOProperty<bool> mIsVisible;
+
+   protected:
 
       /* If Actor is disabled 
        - turn off all calculations for him and physics simulation
@@ -83,11 +83,11 @@ namespace Game
 
       void RemoveInputComponent();
 
-      void SetIsVisible(bool isVisible);
-
       void SetIsEnabled(bool isEnabled);
 
-      bool IsVisible() const;
+      void SetIsVisible(bool isVisible);
+
+      bool GetIsVisible() const;
 
       bool IsEnabled() const;
 
@@ -143,6 +143,10 @@ namespace Game
 
          return result;
       }
+
+      private:
+
+         void SyncComponentsVisibility(bool isVisible);
    };
 
 }

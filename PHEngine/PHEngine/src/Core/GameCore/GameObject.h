@@ -16,7 +16,7 @@ namespace Game
 
       uint64_t mObjectId;
 
-      std::unordered_map<std::string, GameObjectProperty*> mEngineProperties;
+      std::unordered_map<std::string, EngineGOPropertyBase*> mEngineProperties;
 
       std::string GameObjectName;
 
@@ -26,9 +26,9 @@ namespace Game
 
       uint64_t GetObjectId() const;
 
-      GameObjectProperty* GetEnginePropertyByName(const std::string& key) const;
+      EngineGOPropertyBase* GetEnginePropertyByName(const std::string& key) const;
 
-      void AddEngineProperty(const std::string& key, GameObjectProperty* goPtr);
+      void AddEngineProperty(const std::string& key, EngineGOPropertyBase* goPtr);
 
       std::string GetGameObjectName() const;
 

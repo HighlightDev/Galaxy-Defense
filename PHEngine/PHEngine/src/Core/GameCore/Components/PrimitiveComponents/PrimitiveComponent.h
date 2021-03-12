@@ -26,7 +26,7 @@ namespace Game
 
       BoundingBox mBoundingBox;
 
-      GenericObjectProperty<bool> mIsVisible;
+      EngineGOProperty<bool> mIsVisible;
 
 	public:
 

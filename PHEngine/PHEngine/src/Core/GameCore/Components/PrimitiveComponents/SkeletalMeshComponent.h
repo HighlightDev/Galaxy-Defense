@@ -37,20 +37,20 @@ namespace Game
       std::string LuaScriptName;
 
       /* src is the main animation time counter*/
-      GenericObjectProperty<float> SrcAnimationTime;
+      EngineGOProperty<float> SrcAnimationTime;
 
       /* dst time is used when blending of animations is being calculated*/
-      GenericObjectProperty<float> DstAnimationTime;
+      EngineGOProperty<float> DstAnimationTime;
 
       /* src is the main animation name*/
-      GenericObjectProperty<std::string> SrcAnimationName;
+      EngineGOProperty<std::string> SrcAnimationName;
 
       /* dst animation name is used when blending of animations is being occurred*/
-      GenericObjectProperty<std::string> DstAnimationName;
+      EngineGOProperty<std::string> DstAnimationName;
 
-      GenericObjectProperty<bool> bTransitionEnabled;
+      EngineGOProperty<bool> bTransitionEnabled;
 
-      GenericObjectProperty<float> TransitionValue;
+      EngineGOProperty<float> TransitionValue;
 
    public:
 

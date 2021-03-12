@@ -6,6 +6,7 @@
 #include "Core/GameCore/Scene.h"
 
 #include <glm/gtc/quaternion.hpp>
+#include <functional>
 
 namespace Game
 {
@@ -14,7 +15,7 @@ namespace Game
       : GameObject(gameObjectName)
       , m_rootComponent(rootComponent)
       , m_physicsComponent(nullptr)
-      , mIsVisible(true)
+      , mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool& visibility) { SyncComponentsVisibility(visibility); })))
       , mIsEnabled(true)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
@@ -22,6 +23,8 @@ namespace Game
       , m_parent(nullptr)
    {
       assert(m_rootComponent);
+
+      AddEngineProperty(mIsVisible.Key, &mIsVisible);
 
       m_rootComponent->bIsRootComponent = true;
    }
@@ -151,23 +154,24 @@ namespace Game
 
    void Actor::SetIsVisible(bool isVisible)
    {
+      mIsVisible.SetValue(isVisible);
+   }
+
+   void Actor::SyncComponentsVisibility(bool isVisible)
+   {
       assert(("Actor must have components.", m_allComponents.size() > 0));
 
-      if (isVisible != mIsVisible)
+      for (std::shared_ptr<Component> component : m_allComponents)
       {
-         mIsVisible = isVisible;
-         for (std::shared_ptr<Component> component : m_allComponents)
+         if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
          {
-            if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
-            {
-               std::static_pointer_cast<PrimitiveComponent>(component)->SetIsVisible(isVisible);
-            }
+            std::static_pointer_cast<PrimitiveComponent>(component)->SetIsVisible(isVisible);
          }
+      }
 
-         for (const auto& childActor : m_children)
-         {
-            childActor->SetIsVisible(isVisible);
-         }
+      for (const auto& childActor : m_children)
+      {
+         childActor->SetIsVisible(isVisible);
       }
    }
 
@@ -350,7 +354,7 @@ namespace Game
       }
    }
 
-   bool Actor::IsVisible() const 
+   bool Actor::GetIsVisible() const
    {
       return mIsVisible;
    }

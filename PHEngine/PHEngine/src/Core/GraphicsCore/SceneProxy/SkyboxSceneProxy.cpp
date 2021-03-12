@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin,
+         : PrimitiveSceneProxy(component->IsVisible(), component->GetRelativeMatrix(), component->GetRenderData().m_skin,
             component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
       {
       }

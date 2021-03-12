@@ -9,7 +9,7 @@ namespace Game
 	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox)
 		: SceneComponent(gameObjectName, translation, rotation, scale)
       , mBoundingBox(boundingBox)
-      , mIsVisible(GenericObjectProperty<bool>(true, "IsVisible"))
+      , mIsVisible(EngineGOProperty<bool>(true, "IsVisible"))
 	{
       /******  HOOKS ****/
       ENGINE_PROPERTY("IsVisible", &mIsVisible);
@@ -48,7 +48,7 @@ namespace Game
    {
       if (isVisible != mIsVisible)
       {
-         mIsVisible = isVisible;
+         mIsVisible.SetValue(isVisible);
          OnVisibilityChanged();
       }
    }

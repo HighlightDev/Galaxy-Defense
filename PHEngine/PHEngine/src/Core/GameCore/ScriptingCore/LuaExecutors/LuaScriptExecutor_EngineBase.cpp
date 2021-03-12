@@ -21,6 +21,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, int32_t(GameObject*, std::string, LuaArgDummyPlaceholder<int32_t>)>::Register(mLuaInstance, "_GetGOPropertyValInteger");
 
       LuaRegisterCallback<LuaExecutor_t, void(GameObject*, std::string, glm::vec3)>::Register(mLuaInstance, "_SetGOPropertyValVec3");
+      LuaRegisterCallback<LuaExecutor_t, void(GameObject*, std::string, int32_t)>::Register(mLuaInstance, "_SetGOPropertyValBool");
    }
 
    void LuaScriptExecutor_EngineBase::RunScript()
@@ -56,8 +57,9 @@ namespace Game
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      const auto& doubleProperty = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
-      return doubleProperty->GetValue();
+      const auto& property = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      assert(property);
+      return property->GetValue();
    }
 
    /*_GetGOPropertyValInteger*/
@@ -65,7 +67,8 @@ namespace Game
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      const auto& property = static_cast<GenericObjectProperty<int32_t>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      const auto& property = static_cast<EngineGOProperty<int32_t>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      assert(property);
       return property->GetValue();
    }
 
@@ -74,8 +77,19 @@ namespace Game
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      auto property = static_cast<GenericObjectProperty<glm::vec3>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
-      property->Value = std::get<2>(data);
+      auto property = static_cast<EngineGOProperty<glm::vec3>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      assert(property);
+      property->SetValue(std::get<2>(data));
+   }
+
+   /*_SetGOPropertyValBool*/
+   void LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<GameObject*, std::string, int32_t>& data)
+   {
+      GameObject* gameObject = std::get<0>(data);
+      assert(gameObject != nullptr);
+      auto property = static_cast<EngineGOProperty<bool>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      assert(property);
+      property->SetValue(static_cast<bool>(std::get<2>(data)));
    }
 
    std::string LuaScriptExecutor_EngineBase::GetScriptRelPath() const

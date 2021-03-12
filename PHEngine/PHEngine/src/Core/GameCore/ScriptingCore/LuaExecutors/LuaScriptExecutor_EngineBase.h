@@ -47,6 +47,8 @@ namespace Game
 
       void ExecuteLuaCallback(const std::tuple<GameObject*, std::string, glm::vec3>& data);
 
+      void ExecuteLuaCallback(const std::tuple<GameObject*, std::string, int32_t>& data);
+
       std::string GetScriptRelPath() const;
 
       void PostInit(std::weak_ptr<Scene> scene);

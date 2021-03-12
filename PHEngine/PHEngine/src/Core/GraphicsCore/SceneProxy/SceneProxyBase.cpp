@@ -4,9 +4,9 @@ namespace Graphics
 {
    size_t SceneProxyBase::SceneProxyIdCounter = 0;
 
-   SceneProxyBase::SceneProxyBase()
+   SceneProxyBase::SceneProxyBase(bool bVisible)
       : mSceneProxyId(SceneProxyIdCounter)
-      , mIsVisible(true)
+      , mIsVisible(bVisible)
    {
       SceneProxyIdCounter++;
    }

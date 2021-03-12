@@ -1,25 +1,37 @@
 #pragma once
 #include <string>
+#include <functional>
 
-struct GameObjectProperty
+struct EngineGOPropertyBase
 {
    std::string Key;
 
-   GameObjectProperty(const std::string& key)
+public:
+
+   EngineGOPropertyBase(const std::string& key)
       : Key(key)
    {
-
    }
 };
 
 template <typename Type>
-struct GenericObjectProperty : public GameObjectProperty
+struct EngineGOProperty : public EngineGOPropertyBase
 {
+  
+   using Action_t = std::function<void(const Type&)>;
+
+protected:
+
+   std::unique_ptr<Action_t> Action;
+
    Type Value;
-   
-   GenericObjectProperty(const Type& value, const std::string& key)
-      : GameObjectProperty(key)
+
+public:
+
+   EngineGOProperty(const Type& value, const std::string& key, std::unique_ptr<Action_t> action = std::unique_ptr<Action_t>(nullptr))
+      : EngineGOPropertyBase(key)
       , Value(value)
+      , Action(std::move(action))
    {
    }
 
@@ -31,9 +43,14 @@ struct GenericObjectProperty : public GameObjectProperty
       return Value;
    }
 
-   void operator=(const Type& value)
+   void SetValue(const Type& value)
    {
       Value = value;
+
+      if (Action)
+      {
+         (*(Action.get()))(Value);
+      }
    }
 
    operator Type() const

@@ -24,12 +24,12 @@ namespace Game
       , update_data_reset_time(0.015f)
       , mTimeIncreaseMultiply(1.0f)
       , LuaScriptName(LuaScriptName)
-      , SrcAnimationTime(GenericObjectProperty<float>(0.0f, "SrcAnimTime"))
-      , DstAnimationTime(GenericObjectProperty<float>(0.0f, "DstAnimTime"))
-      , SrcAnimationName(GenericObjectProperty<std::string>("", "SrcAnimName"))
-      , DstAnimationName(GenericObjectProperty<std::string>("", "DstAnimName"))
-      , TransitionValue(GenericObjectProperty<float>(0.0f, "AnimTransitionValue"))
-      , bTransitionEnabled(GenericObjectProperty<bool>(false, "bAnimTransitionEnabled"))
+      , SrcAnimationTime(EngineGOProperty<float>(0.0f, "SrcAnimTime"))
+      , DstAnimationTime(EngineGOProperty<float>(0.0f, "DstAnimTime"))
+      , SrcAnimationName(EngineGOProperty<std::string>("", "SrcAnimName"))
+      , DstAnimationName(EngineGOProperty<std::string>("", "DstAnimName"))
+      , TransitionValue(EngineGOProperty<float>(0.0f, "AnimTransitionValue"))
+      , bTransitionEnabled(EngineGOProperty<bool>(false, "bAnimTransitionEnabled"))
    {
       /* Meta table */
       ENGINE_PROPERTY("SrcAnimTime", &SrcAnimationTime);
@@ -93,7 +93,7 @@ namespace Game
       static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
       if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {
-         SrcAnimationTime = fmod(SrcAnimationTime, 100000.0f);
+         SrcAnimationTime.SetValue(fmod(SrcAnimationTime, 100000.0f));
          m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
             SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());

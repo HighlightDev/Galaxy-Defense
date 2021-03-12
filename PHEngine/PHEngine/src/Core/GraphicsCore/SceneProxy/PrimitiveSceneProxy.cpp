@@ -5,9 +5,9 @@ namespace Graphics
    namespace Proxy
    {
 
-      PrimitiveSceneProxy::PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> materialShader,
+      PrimitiveSceneProxy::PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> materialShader,
          std::shared_ptr<MaterialProxy> materialProxy)
-         : SceneProxyBase()
+         : SceneProxyBase(isVisible)
          , AVisiblePrimitiveBase()
          , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)

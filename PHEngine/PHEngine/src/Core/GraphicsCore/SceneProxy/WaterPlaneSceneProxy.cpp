@@ -8,7 +8,7 @@ namespace Graphics
    {
 
       WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
+         : PrimitiveSceneProxy(component->IsVisible(), component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
          , m_moveFactor(component->GetMoveFactor())
          , m_waveStrength(component->GetWaveStrength())
          , m_transparencyDepth(component->GetTransparencyDepth())

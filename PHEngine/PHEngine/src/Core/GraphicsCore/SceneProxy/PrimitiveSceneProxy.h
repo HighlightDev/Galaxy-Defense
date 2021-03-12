@@ -44,7 +44,7 @@ namespace Graphics
 
       public:
 
-         PrimitiveSceneProxy(glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<MaterialProxy> materialProxy);
+         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<MaterialProxy> materialProxy);
 
          virtual ~PrimitiveSceneProxy();
 

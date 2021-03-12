@@ -16,7 +16,7 @@ namespace Graphics {
 
    public:
 
-      SceneProxyBase();
+      SceneProxyBase(bool bVisible);
 
       virtual ~SceneProxyBase();
 

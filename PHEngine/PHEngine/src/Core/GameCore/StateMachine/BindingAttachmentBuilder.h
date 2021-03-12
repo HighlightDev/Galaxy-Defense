@@ -18,12 +18,12 @@ namespace Game
             case BindingType::ANIMATION:
             {
                AnimationPropertyBinding* animationBinding = static_cast<AnimationPropertyBinding*>(binding);
-               GenericObjectProperty<float>* propSrcTime = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
-               GenericObjectProperty<float>* propDstTime = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName("DstAnimTime"));
-               GenericObjectProperty<float>* propTransitionValue = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName("AnimTransitionValue"));
-               GenericObjectProperty<bool>* propIsTransition = static_cast<GenericObjectProperty<bool>*>(gameObject->GetEnginePropertyByName("bAnimTransitionEnabled"));
-               GenericObjectProperty<std::string>* propSrcName = static_cast<GenericObjectProperty<std::string>*>(gameObject->GetEnginePropertyByName("SrcAnimName"));
-               GenericObjectProperty<std::string>* propDstName = static_cast<GenericObjectProperty<std::string>*>(gameObject->GetEnginePropertyByName("DstAnimName"));
+               EngineGOProperty<float>* propSrcTime = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
+               EngineGOProperty<float>* propDstTime = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName("DstAnimTime"));
+               EngineGOProperty<float>* propTransitionValue = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName("AnimTransitionValue"));
+               EngineGOProperty<bool>* propIsTransition = static_cast<EngineGOProperty<bool>*>(gameObject->GetEnginePropertyByName("bAnimTransitionEnabled"));
+               EngineGOProperty<std::string>* propSrcName = static_cast<EngineGOProperty<std::string>*>(gameObject->GetEnginePropertyByName("SrcAnimName"));
+               EngineGOProperty<std::string>* propDstName = static_cast<EngineGOProperty<std::string>*>(gameObject->GetEnginePropertyByName("DstAnimName"));
                animationBinding->SetBindingProperties(propSrcName->GetValuePtr(), propDstName->GetValuePtr(), propSrcTime->GetValuePtr(),
                   propDstTime->GetValuePtr(), propIsTransition->GetValuePtr(), propTransitionValue->GetValuePtr());
                break;
@@ -31,7 +31,7 @@ namespace Game
             case BindingType::FLOAT:
             {
                FloatPropertyBinding* floatBinding = static_cast<FloatPropertyBinding*>(binding);
-               GenericObjectProperty<float>* propValue = static_cast<GenericObjectProperty<float>*>(gameObject->GetEnginePropertyByName(propertyName));
+               EngineGOProperty<float>* propValue = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName(propertyName));
                floatBinding->SetBindingProperty(propValue->GetValuePtr());
                break;
             }

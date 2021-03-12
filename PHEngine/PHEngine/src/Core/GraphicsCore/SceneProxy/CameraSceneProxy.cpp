@@ -9,7 +9,7 @@ using namespace EngineMath;
 namespace Graphics
 {
    CameraSceneProxy::CameraSceneProxy(const ACamera* camera)
-      : SceneProxyBase()
+      : SceneProxyBase(true)
       , mViewPort(camera->GetViewPort())
       , mEyeVector()
       , mViewMatrix()

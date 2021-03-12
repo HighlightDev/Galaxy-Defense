@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent* component)
-         : PrimitiveSceneProxy(component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
+         : PrimitiveSceneProxy(component->IsVisible(), component->GetRelativeMatrix(), component->GetRenderData().m_skin, component->GetRenderData().m_materialShader, component->GetRenderData().mMaterialProxy)
       {
       }
 

@@ -20,12 +20,12 @@ namespace Game
       return mObjectId;
    }
 
-   void GameObject::AddEngineProperty(const std::string& key, GameObjectProperty* goPtr) {
+   void GameObject::AddEngineProperty(const std::string& key, EngineGOPropertyBase* goPtr) {
       assert((!mEngineProperties.count(key)));
       mEngineProperties[key] = goPtr;
    }
 
-   GameObjectProperty* GameObject::GetEnginePropertyByName(const std::string& key) const
+   EngineGOPropertyBase* GameObject::GetEnginePropertyByName(const std::string& key) const
    {
       assert((mEngineProperties.count(key)));
       return mEngineProperties.at(key);
