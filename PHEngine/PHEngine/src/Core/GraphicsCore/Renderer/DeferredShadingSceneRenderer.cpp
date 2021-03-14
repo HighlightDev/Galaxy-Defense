@@ -428,7 +428,6 @@ namespace Graphics
             }
 
             ~PlanarFBO() {
-               assert(false);
             }
 
             virtual void CleanUp() override 
@@ -467,27 +466,30 @@ namespace Graphics
          static PlanarFBO fbo;
 
          glm::vec3 normal(0, -1, 0);
-         glm::vec3 posOnPlane(0, 10, 0);
+         glm::vec3 posOnPlane(0, 5, 0);
          float d = -glm::dot(normal, posOnPlane);
          glm::vec4 plane = glm::vec4(normal, d);
 
-         auto mirrorMatrix = glm::mat4(
+        /* auto mirrorMatrix = glm::mat4(
             glm::vec4(-2.f*plane.x*plane.x + 1.f, -2.f*plane.y*plane.x, -2.f*plane.z*plane.x, 0.f),
             glm::vec4(-2.f*plane.x*plane.y, -2.f*plane.y*plane.y + 1.f, -2.f*plane.z*plane.y, 0.f),
             glm::vec4(-2.f*plane.x*plane.z, -2.f*plane.y*plane.z, -2.f*plane.z*plane.z + 1.f, 0.f),
             glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
-
+*/
 
          auto cameraProxy = recordSceneView->GetCameraProxy();
 
          fbo.RenderToTexture();
+
+         const auto& viewMatrix = cameraProxy->GetViewMatrix();
+         const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
          if (mSkeletalProxies.size() > 0)
          {
             for (auto& proxy : mSkeletalProxies)
             {
                if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->Render(cameraProxy->GetViewMatrix() * mirrorMatrix, cameraProxy->GetProjectionMatrix());
+                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
             }
          }
 
@@ -496,7 +498,16 @@ namespace Graphics
             for (auto& proxy : mNonSkeletalProxies)
             {
                if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->Render(cameraProxy->GetViewMatrix() * mirrorMatrix, cameraProxy->GetProjectionMatrix());
+                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
+            }
+         }
+
+         if (mForwardRenderingProxies.size() > 0)
+         {
+            for (auto& proxy : mForwardRenderingProxies)
+            {
+               if (proxy->IsEnabled() && proxy->IsVisible())
+                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
             }
          }
 

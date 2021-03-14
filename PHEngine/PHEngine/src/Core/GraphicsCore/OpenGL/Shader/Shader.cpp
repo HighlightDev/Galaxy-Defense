@@ -27,8 +27,6 @@ namespace Graphics
          std::string fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile);
          std::string gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile);
 
-         SetIsShaderSourceFileChanged(m_shaderParams.VertexShaderFile, m_shaderParams.GeometryShaderFile, m_shaderParams.FragmentShaderFile);
-
 			SetShaderPredefine(); // start precompile shader customization
          ProcessAllPredefines();
 
@@ -57,9 +55,9 @@ namespace Graphics
          auto fsSource = LoadShaderSource(fsSourcePath);
          auto gsSource = LoadShaderSource(gsSourcePath);
 
-         if (bUpdateVS) ProcessShaderIncludes(vsSource);
-         if (bUpdateGS) ProcessShaderIncludes(gsSource);
-         if (bUpdateFS) ProcessShaderIncludes(fsSource);
+         ProcessShaderIncludes(vsSource);
+         ProcessShaderIncludes(gsSource);
+         ProcessShaderIncludes(fsSource);
 
          return SendToGpuShadersSources(vsSource, gsSource, fsSource);
       }
@@ -104,7 +102,7 @@ namespace Graphics
             }
          }
 
-			if (vertexConstantPredefine.size() > 0 || vertexPredefine.size() > 0 && bUpdateVS)
+			if (vertexConstantPredefine.size() > 0 || vertexPredefine.size() > 0)
 			{
 				if (m_shaderParams.VertexShaderFile != "")
 				{
@@ -112,7 +110,7 @@ namespace Graphics
                ProcessPredefineToFile(vsSourcePath, vertexConstantPredefine, vertexPredefine);
 				}
 			}
-			if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0 && bUpdateFS)
+			if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0)
 			{
 				if (m_shaderParams.FragmentShaderFile != "")
 				{
@@ -120,7 +118,7 @@ namespace Graphics
                ProcessPredefineToFile(fsSourcePath, fragmentConstantPredefine, fragmentPredefine);
 				}
 			}
-			if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0 && bUpdateGS)
+			if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0)
 			{
 				if (m_shaderParams.GeometryShaderFile != "")
 				{

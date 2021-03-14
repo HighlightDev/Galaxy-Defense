@@ -3,13 +3,11 @@
 #include "IShader.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/IoCore/FileFacade.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <fstream>
 #include <algorithm>
 #include <set>
-
-#include <filesystem>
-#include <chrono>
 
 namespace Graphics
 {
@@ -56,77 +54,6 @@ namespace Graphics
 
             throw std::invalid_argument(EngineUtility::StringStreamWrapper::FlushString());
          }
-      }
-
-      template <typename TP>
-      std::time_t to_time_t(TP tp)
-      {
-         using namespace std::chrono;
-         auto sctp = time_point_cast<system_clock::duration>(tp - TP::clock::now()
-            + system_clock::now());
-         return system_clock::to_time_t(sctp);
-      }
-
-      bool IShader::IsShaderSourceFileChanged(const std::string& shaderPath) const
-      {
-         bool bResult = false;
-
-         std::string pathToPersistency = EngineUtility::ConvertFromRelativeToAbsolutePath(
-            IO::FolderManager::GetInstance()->GetPersistencyPath() + "shader_persistency");
-
-         std::string pathToShader = EngineUtility::ConvertFromRelativeToAbsolutePath(shaderPath);
-
-         std::filesystem::file_time_type fTimeType = std::filesystem::last_write_time(pathToShader);
-         std::time_t cftime = to_time_t(fTimeType);
-
-#undef _CRT_SECURE_NO_WARNINGS
-
-         std::string timeFileWasChanged = EngineUtility::TrimEnd(std::asctime(std::localtime(&cftime)));
-
-         FileFacade fileFacade = FileFacade(pathToPersistency);
-
-         const auto& fileSrcList = fileFacade.GetFileSrc();
-
-         bool bShaderExistsInPersistency = false;
-
-         size_t index = 0;
-         for (auto it = fileSrcList.begin(); it != fileSrcList.end(); ++it, ++index)
-         {
-            if (EngineUtility::StartsWith(*it, shaderPath))
-            {
-               bShaderExistsInPersistency = true;
-               break;
-            }
-         }
-
-         if (!bShaderExistsInPersistency)
-         {
-            // if this shader doesn't exist in persistency 
-            // then write it to persistency and mark that shader was changed
-            std::string resultString = shaderPath + " " + timeFileWasChanged;
-            fileFacade.AppendToTheSrcEnd(resultString);
-            fileFacade.WriteToFile();
-            bResult = true;
-         }
-         else
-         {
-            auto separateTimeFunctor = std::function<std::string(const std::string&, const std::string&)>(([](const std::string& lookupString, const std::string& separateBy)
-            {
-               return lookupString.substr(EngineUtility::IndexOf(lookupString, separateBy) + 1);
-            }));
-
-            std::string timeFromPersistancy = fileFacade.SeparateByFunctor(index, separateTimeFunctor, " ");
-
-            if (timeFromPersistancy != timeFileWasChanged)
-            {
-               std::string replaceShaderPersistance = shaderPath + " " + timeFileWasChanged;
-               fileFacade.ReplaceSourceLineAt(index, replaceShaderPersistance);
-               fileFacade.WriteToFile();
-               bResult = true;
-            }
-         }
-
-         return bResult;
       }
 
       std::vector<std::string> IShader::LoadShaderSrcVector(const std::string& pathToShader) const
@@ -239,16 +166,6 @@ namespace Graphics
          }
 
          return result;
-      }
-
-      void IShader::SetIsShaderSourceFileChanged(const std::string& vsPath, const std::string& gsPath, const std::string& fsPath)
-      {
-         if ("" != vsPath)
-            bUpdateVS = IsShaderSourceFileChanged(vsPath);
-         if ("" != gsPath)
-            bUpdateGS = IsShaderSourceFileChanged(gsPath);
-         if ("" != fsPath)
-            bUpdateFS = IsShaderSourceFileChanged(fsPath);
       }
 
       bool IShader::SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource)

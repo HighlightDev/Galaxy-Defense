@@ -29,7 +29,7 @@ namespace Game
 
    std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
    {
-      // get from scene corresponding to material proxy material instance
+      // get from Scene.h corresponding to material proxy material instance
       assert(false);
       return std::shared_ptr<IMaterial>(nullptr);
    }

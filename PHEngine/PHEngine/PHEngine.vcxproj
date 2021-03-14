@@ -289,6 +289,7 @@
     <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\scripts\platformMovementComponentAction.lua" />
     <None Include="res\scripts\skeletComponentAction.lua" />
+    <None Include="res\shaders\composite_shaders\planarReflectionVS.glsl" />
     <None Include="res\shaders\directLightDepthCollectFS.glsl" />
     <None Include="res\shaders\directLightDepthCollectNonSkeletalVS.glsl" />
     <None Include="res\shaders\directLightDepthCollectSkeletalVS.glsl" />
@@ -347,7 +348,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthShaderCommon.h" />
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\ShaderCommon.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\SpotlightComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedSpotlightShadowInfo.h" />
@@ -480,7 +481,7 @@
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.h" />
     <ClInclude Include="src\Core\DebugCore\TextureRenderer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DirectionalLightDepthShader.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.h" />
+    <ClInclude Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.h" />
@@ -910,7 +911,7 @@
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.cpp" />
     <ClCompile Include="src\Core\DebugCore\TextureRenderer.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DirectionalLightDepthShader.cpp" />
-    <ClCompile Include="src\Core\GameCore\ShaderImplementation\SkeletalMeshShader.cpp" />
+    <ClCompile Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />

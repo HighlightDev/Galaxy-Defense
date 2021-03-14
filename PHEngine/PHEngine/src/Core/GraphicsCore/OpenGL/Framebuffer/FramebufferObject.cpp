@@ -110,7 +110,7 @@ namespace Graphics
       assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
 
       glGenRenderbuffers(1, &mRenderBufferId);
-      glBindRenderbuffer(GL_FRAMEBUFFER, mRenderBufferId);
+      glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
       glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
    }

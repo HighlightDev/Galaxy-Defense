@@ -40,11 +40,14 @@ namespace Graphics
 
          std::shared_ptr<ICompositeShader> m_shader;
 
+         std::shared_ptr<ICompositeShader> m_planarReflectionShader;
+
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
 
-         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<MaterialProxy> materialProxy);
+         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<ICompositeShader> planarReflectionShader,
+            std::shared_ptr<MaterialProxy> materialProxy);
 
          virtual ~PrimitiveSceneProxy();
 
@@ -61,6 +64,8 @@ namespace Graphics
          virtual bool IsFrustumCullTestNeeded() const override;
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
+
+         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) { }
 
          virtual bool IsDeferred() const = 0;
 

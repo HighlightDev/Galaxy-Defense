@@ -26,8 +26,6 @@ namespace Graphics
 
          std::string mShaderName;
 
-         bool bUpdateVS = true, bUpdateFS = true, bUpdateGS = true;
-
       public:
 
          IShader(const std::string& shaderName);
@@ -70,13 +68,6 @@ namespace Graphics
 
          std::vector<std::string> LoadShaderSrcVector(const std::string& pathToShader) const;
          std::string LoadShaderSource(const std::string& pathToShader) const;
-
-         // store persistance for all shaders
-         // when shader is being loaded it checks if file was updated, if no - don't append new defines and etc
-         // just download sorce and load it to shader
-
-         bool IsShaderSourceFileChanged(const std::string& shaderSource) const;
-         void SetIsShaderSourceFileChanged(const std::string& vsPath, const std::string& gsPath, const std::string& fsPath);
 
       private:
 

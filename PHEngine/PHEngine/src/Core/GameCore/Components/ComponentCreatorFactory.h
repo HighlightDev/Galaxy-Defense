@@ -37,9 +37,9 @@
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 
-#include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
@@ -67,6 +67,14 @@ namespace Game
       Physics,
    };
 
+
+   template <typename VertexFactoryType, typename BaseShaderType>
+   typename CompositeShaderPool::sharedValue_t CreateMaterialShader(const std::string& compositeShaderName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
+   {
+      TemplatedCompositeShaderParams<CompositeShader<VertexFactoryType, BaseShaderType>> compositeParams(compositeShaderName, shaderParams, materialProxy);
+      return CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<VertexFactoryType, BaseShaderType>>(compositeParams);
+   }
+
    template <ComponentMetaType metaType, typename ComponentType>
    struct ComponentCreatorFactory
    {
@@ -85,14 +93,21 @@ namespace Game
 
             std::shared_ptr<MaterialProxy> materialProxy = mData.m_material->GetMaterialProxy();
 
-            const ShaderParams shaderParams("Skybox ForwardShader",
+            const ShaderParams shaderParams("SkyboxForwardShader",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
 
-            TemplatedCompositeShaderParams<CompositeShader<SkyboxVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
-            CompositeShaderPool::sharedValue_t skyboxMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkyboxVertexFactory, SimpleShader>>(compositeParams);
+            typename CompositeShaderPool::sharedValue_t skyboxMeshShader = 
+               CreateMaterialShader<SkyboxVertexFactory, SimpleShader>(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
 
-            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, materialProxy));
+            const ShaderParams planarReflectionParams("PlanarReflectionShader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "planarReflectionVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
+
+            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
+               CreateMaterialShader<SkyboxVertexFactory, CapturePlanarReflectionShader>(COMPOSITE_SHADER_TO_STR(SkyboxVertexFactory, CapturePlanarReflectionShader, mData.m_material->MaterialName), planarReflectionParams, materialProxy);
+
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_scale, SkyboxRenderData(skin, skyboxMeshShader, planarReflectionShader, materialProxy));
          }
       };
 
@@ -110,10 +125,17 @@ namespace Game
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredFS.glsl");
 
-            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
-            CompositeShaderPool::sharedValue_t staticMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
+            typename CompositeShaderPool::sharedValue_t staticMeshShader =
+               CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
 
-            StaticMeshRenderData renderData(skin, staticMeshShader, materialProxy);
+            const ShaderParams planarReflectionParams("PlanarReflectionShader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "planarReflectionVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
+
+            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
+               CreateMaterialShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, CapturePlanarReflectionShader, mData.m_material->MaterialName), planarReflectionParams, materialProxy);
+
+            StaticMeshRenderData renderData(skin, staticMeshShader, planarReflectionShader, materialProxy);
 
             return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale, renderData);
          }
@@ -133,11 +155,17 @@ namespace Game
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "deferredFS.glsl");
 
-            TemplatedCompositeShaderParams<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
+            typename CompositeShaderPool::sharedValue_t skeletalMeshShader =
+               CreateMaterialShader<SkeletalMeshVertexFactory<4>, SimpleShader>(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
 
-            CompositeShaderPool::sharedValue_t skeletalMeshShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>>(compositeParams);
+            const ShaderParams planarReflectionParams("PlanarReflectionShader",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "planarReflectionVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
 
-            SkeletalMeshRenderData renderData(skin, skeletalMeshShader, materialProxy);
+            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
+               CreateMaterialShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader, mData.m_material->MaterialName), planarReflectionParams, materialProxy);
+
+            SkeletalMeshRenderData renderData(skin, skeletalMeshShader, planarReflectionShader, materialProxy);
 
             return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
                mData.m_luaScriptPath, renderData);
@@ -160,8 +188,8 @@ namespace Game
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "simpleVS.glsl",
                FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "forwardFS.glsl");
 
-            TemplatedCompositeShaderParams<CompositeShader<StaticMeshVertexFactory, SimpleShader>> compositeParams(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
-            CompositeShaderPool::sharedValue_t waterPlaneShader = CompositeShaderPool::GetInstance()->template GetOrAllocateResource<CompositeShader<StaticMeshVertexFactory, SimpleShader>>(compositeParams);
+            typename CompositeShaderPool::sharedValue_t waterPlaneShader =
+               CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, SimpleShader, mData.m_material->MaterialName), shaderParams, materialProxy);
 
             return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation,
                mData.m_eulerRotationDegrees, mData.m_scale, WaterPlaneRenderData(skin, waterPlaneShader, materialProxy));

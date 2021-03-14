@@ -4,10 +4,10 @@
 
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/ShaderImplementation/SkeletalMeshShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
+#include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
 
 using namespace Game::ShaderImpl;
@@ -21,6 +21,7 @@ namespace Graphics
          public PrimitiveSceneProxy
       {
          using ShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
+         using PlanarReflectionShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
          using Base = PrimitiveSceneProxy;
 
          std::shared_ptr<AnimationPlayer> mAnimationPlayer;
@@ -31,12 +32,16 @@ namespace Graphics
 
          std::shared_ptr<ShaderType> GetShader() const;
 
+         std::shared_ptr<PlanarReflectionShaderType> GetPlanarReflectionShader() const;
+
       public:
          SkeletalMeshSceneProxy(const SkeletalMeshComponent* component);
 
          virtual ~SkeletalMeshSceneProxy();
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+
+         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          void UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
             const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName);

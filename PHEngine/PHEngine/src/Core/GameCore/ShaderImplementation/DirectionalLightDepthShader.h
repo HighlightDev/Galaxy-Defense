@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
-#include "DepthShaderCommon.h"
+#include "ShaderCommon.h"
 
 #include <string>
 
