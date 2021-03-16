@@ -83,6 +83,9 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView)
       {
+         glEnable(GL_CULL_FACE);
+         glFrontFace(GL_CCW);
+         glCullFace(GL_BACK);
          RenderState renderState(std::make_shared<DepthStencilState<true>>(),
             std::make_shared<BlendingState<false>>());
          renderState.BindRenderState();
@@ -277,11 +280,17 @@ namespace Graphics
                bNewDepthShadowAtlas = false;
             }
          }
+
+         glDisable(GL_CULL_FACE);
       }
 
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::shared_ptr<SceneView> sceneView)
       {
          auto cameraProxy = sceneView->GetCameraProxy();
+
+         glEnable(GL_CULL_FACE);
+         glFrontFace(GL_CCW);
+         glCullFace(GL_BACK);
 
          // Deferred shading collect info
          m_gbuffer->BindDeferredGBuffer();
@@ -389,10 +398,16 @@ namespace Graphics
 #endif
          ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
          m_deferredLightShader->StopShader();
+
+         glDisable(GL_CULL_FACE);
       }
 
       void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::shared_ptr<SceneView> sceneView)
       {
+         glEnable(GL_CULL_FACE);
+         glFrontFace(GL_CCW);
+         glCullFace(GL_BACK);
+
          // Resolve depth buffer from gBuffer to default frame buffer
          auto cameraProxy = sceneView->GetCameraProxy();
          auto cameraViewPort = cameraProxy->GetViewPort();
@@ -410,7 +425,9 @@ namespace Graphics
             if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
          }
+
          glDisable(GL_BLEND);
+         glDisable(GL_CULL_FACE);
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass(std::shared_ptr<SceneView> recordSceneView, const glm::mat4& reflectMatrix /*redo this shit on PlanarReflectionSceneProxy with reflect matrix inside*/)
@@ -439,7 +456,7 @@ namespace Graphics
 
             virtual void SetTextures() override 
             {
-               TexParams reflectionTexParams(500, 500, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT);
+               TexParams reflectionTexParams(1000, 1000, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT);
                TexParams refractionTexParams(reflectionTexParams);
 
                mReflectionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(reflectionTexParams);
@@ -458,14 +475,14 @@ namespace Graphics
 
             void RenderToTexture()
             {
-               RenderToFBO(mReflectionFBO, true, ViewPortInfo(0, 0, 500, 500), GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+               RenderToFBO(mReflectionFBO, true, ViewPortInfo(0, 0, mReflectionTexture->GetTextureRezolution()), GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
             }
          };
 
 
          static PlanarFBO fbo;
 
-         glm::vec3 normal(0, -1, 0);
+         glm::vec3 normal(0, 1, 0);
          glm::vec3 posOnPlane(0, 5, 0);
          float d = -glm::dot(normal, posOnPlane);
          glm::vec4 plane = glm::vec4(normal, d);
@@ -477,12 +494,30 @@ namespace Graphics
             glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
 */
 
+         glEnable(GL_CULL_FACE);
+         glFrontFace(GL_CCW);
+         glCullFace(GL_BACK);
+
          auto cameraProxy = recordSceneView->GetCameraProxy();
+
+         // todo: REMOVE DYNAMIC ALLOCATION of RENDER STATE!!!!!
+         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
+            std::make_shared<BlendingState<false>>());
+         renderState.BindRenderState();
 
          fbo.RenderToTexture();
 
          const auto& viewMatrix = cameraProxy->GetViewMatrix();
          const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
+
+         if (mForwardRenderingProxies.size() > 0)
+         {
+            for (auto& proxy : mForwardRenderingProxies)
+            {
+               if (proxy->IsEnabled() && proxy->IsVisible())
+                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
+            }
+         }
 
          if (mSkeletalProxies.size() > 0)
          {
@@ -502,16 +537,9 @@ namespace Graphics
             }
          }
 
-         if (mForwardRenderingProxies.size() > 0)
-         {
-            for (auto& proxy : mForwardRenderingProxies)
-            {
-               if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
-            }
-         }
-
          fbo.UnbindFramebuffer();
+
+         glDisable(GL_CULL_FACE);
       }
 
       void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()

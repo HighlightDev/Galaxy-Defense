@@ -127,7 +127,7 @@ function CreateTestLevel(host)
 
 	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
 		local smallGroundActor1 = _CreateActor(host, "SmallGround1",
-	5, 3, 0,
+	5, 8, 0,
 	0, 0, 90,
 	1, 1, 1)
 

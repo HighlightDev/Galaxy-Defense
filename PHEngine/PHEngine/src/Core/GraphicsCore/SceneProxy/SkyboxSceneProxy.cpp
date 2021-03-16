@@ -54,15 +54,12 @@ namespace Graphics
          shaderPtr->GetMaterialShader()->SetUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shaderPtr->StopShader();
-
-         glDisable(GL_CULL_FACE);
       }
 
       void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          glEnable(GL_CULL_FACE);
-         glCullFace(GL_FRONT);
-
+         glCullFace(GL_BACK);
          const auto& planarReflectionShader = GetPlanarReflectionShader();
 
          const glm::mat4& mirrorMatrix = glm::mat4(
@@ -80,8 +77,6 @@ namespace Graphics
          planarReflectionShader->GetMaterialShader()->SetUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          planarReflectionShader->StopShader();
-
-         glDisable(GL_CULL_FACE);
       }
 
       bool SkyboxSceneProxy::IsFrustumCullTestNeeded() const
