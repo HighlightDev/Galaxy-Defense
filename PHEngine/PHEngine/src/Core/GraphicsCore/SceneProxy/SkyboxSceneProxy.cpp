@@ -40,7 +40,6 @@ namespace Graphics
 
       void SkyboxSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         glDisable(GL_CLIP_DISTANCE0);
          glEnable(GL_CULL_FACE);
          glCullFace(GL_FRONT);
 

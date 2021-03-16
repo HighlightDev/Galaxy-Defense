@@ -483,7 +483,7 @@ namespace Graphics
          static PlanarFBO fbo;
 
          glm::vec3 normal(0, 1, 0);
-         glm::vec3 posOnPlane(0, 5, 0);
+         glm::vec3 posOnPlane(0, 0, 0);
          float d = -glm::dot(normal, posOnPlane);
          glm::vec4 plane = glm::vec4(normal, d);
 
@@ -497,6 +497,11 @@ namespace Graphics
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
+
+         // todo: set clip distance N equal to index of current planar reflection scene proxy
+         // in shader also!
+
+         glEnable(GL_CLIP_DISTANCE0);
 
          auto cameraProxy = recordSceneView->GetCameraProxy();
 
@@ -540,6 +545,7 @@ namespace Graphics
          fbo.UnbindFramebuffer();
 
          glDisable(GL_CULL_FACE);
+         glDisable(GL_CLIP_DISTANCE0);
       }
 
       void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()

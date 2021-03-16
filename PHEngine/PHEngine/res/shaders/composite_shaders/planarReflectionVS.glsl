@@ -10,6 +10,6 @@ void main(void)
 {
 	VsOutput = VertexFactoryGetMaterialOutput();
 
-	gl_ClipDistance[0] = dot(clipPlane, vec4(VsOutput.WorldCoordinates, 1.0));
+	gl_ClipDistance[0] = dot(vec4(-clipPlane.xyz, clipPlane.w), vec4(VsOutput.WorldCoordinates, 1.0));
 	gl_Position = VsOutput.ClippedCoordinates;
 }
