@@ -833,6 +833,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.cpp" />

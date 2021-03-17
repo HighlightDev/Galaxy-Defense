@@ -29,23 +29,11 @@ namespace Game
       return PRIMITIVE_COMPONENT;
    }
 
-   int sign = 1;
-
    void WaterPlaneComponent::Tick(const float deltaTime)
    {
       Base::Tick(deltaTime);
 
-      m_moveFactor += sign * m_waveSpeed * deltaTime;
-
-      if (m_moveFactor > 1.0f)
-      {
-         //m_moveFactor -= 1.0f;
-         sign = -1;
-      }
-      else if (m_moveFactor < 0.0f)
-      {
-         sign = 1;
-      }
+      m_moveFactor += m_waveSpeed * deltaTime;
 
       if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
       {

@@ -17,7 +17,9 @@ using namespace Thread;
 
 class Graphics::Proxy::LightSceneProxy;
 class Graphics::Proxy::PrimitiveSceneProxy;
+class Graphics::MaterialProxy;
 class EnginePhysics::PhysicsWorld;
+class Graphics::IMaterial;
 
 namespace Game
 {
@@ -39,6 +41,8 @@ namespace Game
 
       std::shared_ptr<PlayerController> mPlayerController;
 
+      std::vector<std::shared_ptr<IMaterial>> mMaterials;
+
    public:
 
       Scene(InterThreadCommunicationMgr& interThreadMgr);
@@ -49,18 +53,19 @@ namespace Game
 
       std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
 
-      inline InterThreadCommunicationMgr& GetThreadManager()
-      {
-         return m_interThreadMgr;
-      }
+      const InterThreadCommunicationMgr& GetThreadManager() const;
 
       void RegisterCamera(std::shared_ptr<ACamera> camera);
+
+      std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<IMaterial> material);
 
       GameObject* GetGameObjectByName(const std::string& name) const;
 
       std::shared_ptr<PlayerController> GetPlayerController() const;
 
       const std::vector<std::shared_ptr<Actor>>& GetActors() const;
+
+      std::shared_ptr<IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
       void SetPlayerController(std::shared_ptr<PlayerController> playerController);
 
@@ -100,6 +105,8 @@ namespace Game
       void LightSceneProxyAdded(size_t primitiveSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy);
 
       void LightSceneProxiesUpdated();
+
+      void MaterialProxyAdded(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy);
 
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);

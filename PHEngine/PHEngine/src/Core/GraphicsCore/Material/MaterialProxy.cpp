@@ -25,6 +25,11 @@ namespace Graphics
       return mProperties;
    }
 
+   size_t MaterialProxy::GetMaterialProxyId() const {
+
+      return mMaterialProxyId;
+   }
+
    void MaterialProxy::UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property)
    {
       assert(mProperties.count(propertyName));

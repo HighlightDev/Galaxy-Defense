@@ -34,6 +34,8 @@ namespace Graphics
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
+      size_t GetMaterialProxyId() const;
+
    private:
 
       void UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property);

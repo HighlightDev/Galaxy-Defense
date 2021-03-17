@@ -19,6 +19,8 @@ namespace Graphics
 
    public :
 
+      size_t MaterialProxyId;
+
       const std::string MaterialName;
       const std::string MaterialShaderName;
       const std::string MaterialShaderRelativePath;
@@ -35,7 +37,7 @@ namespace Graphics
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
-      virtual std::shared_ptr<MaterialProxy> GetMaterialProxy() const;
+      virtual std::shared_ptr<MaterialProxy> CreateMaterialProxy() const;
    };
 
 }

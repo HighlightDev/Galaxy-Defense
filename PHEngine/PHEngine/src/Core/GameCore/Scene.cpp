@@ -4,6 +4,7 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
 
 using namespace Graphics;
 
@@ -47,6 +48,22 @@ namespace Game
       CameraSceneProxyAdded(cameraProxyPtr);
    }
 
+   std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
+   {
+      mMaterials.push_back(material);
+      const auto& materialProxy = material->CreateMaterialProxy();
+      material->MaterialProxyId = materialProxy->GetMaterialProxyId();
+
+      MaterialProxyAdded(materialProxy->GetMaterialProxyId(), materialProxy);
+
+      return materialProxy;
+   }
+
+   const InterThreadCommunicationMgr& Scene::GetThreadManager() const
+   {
+      return m_interThreadMgr;
+   }
+
    std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
    {
       auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto& cameraPtr) { return cameraPtr->GetGameObjectName() == cameraName; });
@@ -62,6 +79,12 @@ namespace Game
    const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const
    {
       return mActors;
+   }
+
+   std::shared_ptr<IMaterial> Scene::GetMaterialByProxyId(const size_t proxyId) const
+   {
+      const auto materialIt = std::find_if(mMaterials.begin(), mMaterials.end(), [=](const auto& material) { return material->MaterialProxyId == proxyId; });
+      return materialIt != mMaterials.end() ? *materialIt : nullptr;
    }
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
@@ -356,6 +379,21 @@ namespace Game
          {
             sceneRenderer->LightProxies[primitiveSceneProxyIndex] = lightSceneProxy;
             sceneRenderer->SetLightProxiesAreDirty(true);
+         }));
+      }
+   }
+
+   void Scene::MaterialProxyAdded(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
+   {
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash("Scene::MaterialProxyAdded");
+
+      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
+            Job(creatorObjectId, functionId, [=]()
+         {
+            sceneRenderer->MaterialProxies[materialProxyIndex] = materialProxy;
          }));
       }
    }

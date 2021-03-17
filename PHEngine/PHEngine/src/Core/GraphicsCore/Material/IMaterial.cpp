@@ -6,7 +6,8 @@ namespace Graphics
 {
 
    IMaterial::IMaterial(const std::string& materialName, const std::string& materialShaderName)
-      : MaterialName(materialName)
+      : MaterialProxyId(0)
+      , MaterialName(materialName)
       , MaterialShaderName(materialShaderName)
       , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\" + materialShaderName)
    {
@@ -32,7 +33,7 @@ namespace Graphics
       return mProperties;
    }
 
-   std::shared_ptr<MaterialProxy> IMaterial::GetMaterialProxy() const
+   std::shared_ptr<MaterialProxy> IMaterial::CreateMaterialProxy() const
    {
       return std::make_shared<MaterialProxy>(this);
    }

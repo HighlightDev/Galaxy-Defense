@@ -29,7 +29,7 @@ namespace Game
 		glm::vec3 m_scale;
       std::string m_luaScriptPath;
 
-      std::shared_ptr<Graphics::IMaterial> m_material;
+      Graphics::IMaterial* m_material;
 	};
 
 }

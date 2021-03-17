@@ -2411,5 +2411,8 @@
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

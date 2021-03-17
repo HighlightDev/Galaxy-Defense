@@ -2,6 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/GameCore/Scene.h"
 
 #include <glm/vec3.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -70,7 +71,8 @@ namespace Game
    std::shared_ptr<IMaterial> SkyboxComponent::GetMaterial() const
    {
       // get from scene corresponding to material proxy material instance
-      assert(false);
-      return std::shared_ptr<IMaterial>(nullptr);
+      const auto materialPtr = m_scene->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetMaterialProxyId());
+      assert(materialPtr != nullptr);
+      return materialPtr;
    }
 }

@@ -55,6 +55,8 @@ namespace Graphics
 
          std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> LightProxies;
 
+         std::unordered_map<size_t /*material proxy id*/, std::shared_ptr<MaterialProxy>> MaterialProxies;
+
       private:
 
          InterThreadCommunicationMgr& m_interThreadMgr;

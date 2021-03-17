@@ -10,7 +10,7 @@ namespace Game
 {
 	struct WaterPlaneComponentData : public ComponentData
 	{
-      WaterPlaneComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale, std::shared_ptr<IMaterial> materialInstance)
+      WaterPlaneComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale, Graphics::IMaterial* materialInstance)
 
 			: ComponentData(gameObjectName)
 			, m_translation(std::move(translation))
@@ -24,7 +24,7 @@ namespace Game
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;
    
-      std::shared_ptr<IMaterial> m_material;
+      Graphics::IMaterial* m_material;
 	};
 
 }

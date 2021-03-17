@@ -18,7 +18,7 @@ namespace Game
 
       glm::vec3 m_scale;
 
-      std::shared_ptr<IMaterial> m_material;
+      Graphics::IMaterial* m_material;
 	};
 
 }
