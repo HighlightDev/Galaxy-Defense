@@ -4,23 +4,21 @@
 
 #include <string>
 #include <glm/vec3.hpp>
-#include <gl/glew.h>
 
 namespace Game
 {
    struct BillboardComponentData : public ComponentData
    {
-      BillboardComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
-         std::string&& vsPath, std::string&& fsPath, std::string&& gsPath, std::string&& pathToTexture)
-
+      BillboardComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale,
+         const std::string& vsPath, const std::string& fsPath, const std::string& gsPath, const std::string&& pathToTexture)
          : ComponentData(gameObjectName)
-         , m_translation(std::move(translation))
-         , m_eulerRotationDegrees(std::move(rotation))
-         , m_scale(std::move(scale))
-         , m_pathToTexture(std::move(pathToTexture))
-         , m_vsShaderPath(std::move(vsPath))
-         , m_fsShaderPath(std::move(fsPath))
-         , m_gsShaderPath(std::move(gsPath))
+         , m_translation(translation)
+         , m_eulerRotationDegrees(rotation)
+         , m_scale(scale)
+         , m_pathToTexture(pathToTexture)
+         , m_vsShaderPath(vsPath)
+         , m_fsShaderPath(fsPath)
+         , m_gsShaderPath(gsPath)
       {
       }
 

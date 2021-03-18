@@ -71,7 +71,7 @@ namespace Game
    std::shared_ptr<IMaterial> SkyboxComponent::GetMaterial() const
    {
       // get from scene corresponding to material proxy material instance
-      const auto materialPtr = m_scene->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetMaterialProxyId());
+      const auto materialPtr = m_scene->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
       assert(materialPtr != nullptr);
       return materialPtr;
    }

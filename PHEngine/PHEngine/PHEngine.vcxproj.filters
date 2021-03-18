@@ -1944,6 +1944,9 @@
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

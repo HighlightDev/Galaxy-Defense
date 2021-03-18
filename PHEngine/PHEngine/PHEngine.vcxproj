@@ -345,6 +345,7 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
