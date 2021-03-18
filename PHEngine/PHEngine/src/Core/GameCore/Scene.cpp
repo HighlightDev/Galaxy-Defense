@@ -52,9 +52,9 @@ namespace Game
    {
       mMaterials.push_back(material);
       const auto& materialProxy = material->CreateMaterialProxy();
-      material->MaterialProxyId = materialProxy->GetMaterialProxyId();
+      material->MaterialProxyId = materialProxy->GetSceneProxyId();
 
-      MaterialProxyAdded(materialProxy->GetMaterialProxyId(), materialProxy);
+      MaterialProxyAdded(materialProxy->GetSceneProxyId(), materialProxy);
 
       return materialProxy;
    }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GraphicsCore/Material/MaterialProperty.h"
+#include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 #include <string>
 #include <unordered_map>
@@ -11,9 +12,8 @@ namespace Graphics
 {
 
    class MaterialProxy
+      : public SceneProxyBase
    {
-      static size_t MaterialProxyIdCounter;
-
    public:
 
       const std::string MaterialName;
@@ -21,8 +21,6 @@ namespace Graphics
       const std::string MaterialShaderRelativePath;
 
    protected:
-
-      size_t mMaterialProxyId;
 
       std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
 
@@ -33,8 +31,6 @@ namespace Graphics
       ~MaterialProxy();
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
-
-      size_t GetMaterialProxyId() const;
 
    private:
 

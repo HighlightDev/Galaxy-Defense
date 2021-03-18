@@ -117,19 +117,15 @@ namespace Labyrinth
          mScene->RegisterCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
       }
 
-      // Stub
-      bool bDeser = false;
-      if (bDeser)
-      {
+      // todo: only test
+#if true
          DeserializeLevel("test_serialize.xml");
-      }
-      else
-      {
+#else
          RunLuaBuildLevelScript();
-      }
+#endif
 
 
-#if 0
+#if false
       // Water
       {
          auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("water_normal.png");

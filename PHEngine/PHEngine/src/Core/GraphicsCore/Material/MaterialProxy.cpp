@@ -4,16 +4,13 @@
 
 namespace Graphics
 {
-   size_t MaterialProxy::MaterialProxyIdCounter = 0;
-
    MaterialProxy::MaterialProxy(const IMaterial* material)
-      : MaterialName(material->MaterialName)
+      : SceneProxyBase(true)
+      , MaterialName(material->MaterialName)
       , MaterialShaderName(material->MaterialShaderName)
       , MaterialShaderRelativePath(material->MaterialShaderRelativePath)
-      , mMaterialProxyId(MaterialProxyIdCounter)
       , mProperties(material->GetProperties())
    {
-      ++MaterialProxyIdCounter;
    }
 
    MaterialProxy::~MaterialProxy()
@@ -23,11 +20,6 @@ namespace Graphics
    const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& MaterialProxy::GetProperties() const
    {
       return mProperties;
-   }
-
-   size_t MaterialProxy::GetMaterialProxyId() const {
-
-      return mMaterialProxyId;
    }
 
    void MaterialProxy::UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property)
