@@ -15,7 +15,7 @@ namespace Game
       , mTransform(std::make_shared<Transform>())
       , m_additionalRotationEuler()
       , m_relativeMatrix(1)
-      , m_scene(nullptr)
+      , m_sceneWP()
    {
    }
 
@@ -24,8 +24,8 @@ namespace Game
       , bTransformationDirty(true)
       , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
       , m_additionalRotationEuler()
-      , m_relativeMatrix(std::move(glm::mat4(1)))
-      , m_scene(nullptr)
+      , m_relativeMatrix(1)
+      , m_sceneWP()
    {
    }
 
@@ -53,7 +53,7 @@ namespace Game
       mTransform->Translation = mTransform->Translation + AXIS_UP * offsetValue;
    }
 
-   void SceneComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
+   void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
    {
       if (!mIsEnabled)
          return;
@@ -81,9 +81,9 @@ namespace Game
       SetIsTransformationDirty(false);
    }
 
-   void SceneComponent::SetScene(class Scene* scene)
+   void SceneComponent::SetScene(std::weak_ptr<Scene> scene)
    {
-      m_scene = scene;
+      m_sceneWP = scene;
    }
 
    void SceneComponent::SetIsTransformationDirty(const bool isDirty)

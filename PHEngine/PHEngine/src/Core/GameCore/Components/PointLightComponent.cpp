@@ -92,17 +92,20 @@ namespace Game
 
    void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t& functionId)
    {
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
-            ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
-            if (shadowInfo)
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
             {
-               shadowInfo->SetIsShadowMapDirty(true);
-            }
-         });
+               auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+               if (shadowInfo)
+               {
+                  shadowInfo->SetIsShadowMapDirty(true);
+               }
+            });
+         }
       }
    }
 

@@ -2,7 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/GlobalInputController.h"
 #include "Core/GameCore/Scene.h"
-#include <iostream>
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
 using namespace EngineMath;
 
@@ -14,13 +14,14 @@ namespace Game
       , mScene(scene)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
+      , mPlanarReflectionComponent(nullptr)
       , mViewPort(viewPort)
-      , m_localSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
-      , m_localSpaceUpVector(std::move(glm::vec3(0, 1, 0)))
-      , m_localSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
-      , m_eyeSpaceRightVector(std::move(glm::vec3(1, 0, 0)))
-      , m_eyeSpaceForwardVector(std::move(glm::vec3(0, 0, 1)))
-      , mPitchClampValue_min_max(glm::vec2(-80, 80))
+      , m_localSpaceRightVector(1, 0, 0)
+      , m_localSpaceUpVector(0, 1, 0)
+      , m_localSpaceForwardVector(0, 0, 1)
+      , m_eyeSpaceRightVector(1, 0, 0)
+      , m_eyeSpaceForwardVector(0, 0, 1)
+      , mPitchClampValue_min_max(-80, 80)
       , mYaw(initYawDeg)
       , mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y))
       , m_cameraType(CameraType::UNINITIALIZED)
@@ -39,7 +40,7 @@ namespace Game
       UpdateRotationMatrix(-x, -y);
    }
 
-   void ACamera::Tick(const float DeltaTime)
+   void ACamera::UpdateCameraProxyData(const float DeltaTime)
    {
       static constexpr uint64_t functionId = Hash("ACamera: Update camera proxy data.");
 
@@ -50,6 +51,14 @@ namespace Game
             sceneSp->UpdateCameraSceneProxyData_GameThread(SceneProxyId, GetObjectId(), functionId, this);
          }
       }
+   }
+
+   void ACamera::Tick(const float DeltaTime)
+   {
+      if (mPlanarReflectionComponent)
+         mPlanarReflectionComponent->Tick(DeltaTime);
+
+      UpdateCameraProxyData(DeltaTime);
    }
 
    void ACamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
@@ -153,5 +162,14 @@ namespace Game
    ViewPortInfo ACamera::GetViewPort() const
    {
       return mViewPort;
+   }
+
+   void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent) {
+      assert(!mPlanarReflectionComponent);
+      mPlanarReflectionComponent = planarReflectionComponent;
+   }
+
+   std::shared_ptr<PlanarReflectionComponent> ACamera::GetPlanarReflectionComponent() const {
+      return mPlanarReflectionComponent;
    }
 }

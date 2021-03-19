@@ -30,9 +30,13 @@ namespace Game
 
    std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
    {
-      const auto materialPtr = m_scene->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
-      assert(materialPtr != nullptr);
-      return materialPtr;
+      std::shared_ptr<IMaterial> materialResult = nullptr;
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
+      }
+      assert(materialResult != nullptr);
+      return materialResult;
    }
 
    void StaticMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)

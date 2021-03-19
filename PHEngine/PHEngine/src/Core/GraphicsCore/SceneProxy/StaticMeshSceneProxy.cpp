@@ -34,7 +34,7 @@ namespace Graphics
          const auto& shader = GetShader();
 
          shader->ExecuteShader();
-         shader->GetMaterialShader()->SetUniformValues(mMaterialProxy);
+         shader->GetMaterialShader()->LoadUniformValues();
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();
@@ -52,7 +52,7 @@ namespace Graphics
 
          planarReflectionShader->ExecuteShader();
          planarReflectionShader->GetShader()->SetClipPlane(plane);
-         planarReflectionShader->GetMaterialShader()->SetUniformValues(mMaterialProxy);
+         planarReflectionShader->GetMaterialShader()->LoadUniformValues();
          planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          planarReflectionShader->StopShader();

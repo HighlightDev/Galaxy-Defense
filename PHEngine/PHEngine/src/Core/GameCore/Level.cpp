@@ -16,6 +16,7 @@ namespace Game
    Level::Level(InterThreadCommunicationMgr& interThreadMgr)
       : mScene(std::make_shared<Scene>(interThreadMgr))
    {
+      mScene->SetMeSharedPtr(mScene);
    }
 
    Level::~Level()
@@ -28,7 +29,7 @@ namespace Game
 
    void Level::PostLevelInit()
    {
-      mScene->PostLevelInit(mScene);
+      mScene->PostLevelInit();
    }
 
    void Level::PostPhysicsInitialize()

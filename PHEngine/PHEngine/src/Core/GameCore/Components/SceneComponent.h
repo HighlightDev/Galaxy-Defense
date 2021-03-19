@@ -7,6 +7,8 @@
 
 namespace Game
 {
+   class Scene;
+
 	class SceneComponent 
       : public Component
 	{
@@ -22,7 +24,7 @@ namespace Game
 
 		glm::mat4 m_relativeMatrix;
 
-      class Scene* m_scene;
+      std::weak_ptr<Scene> m_sceneWP;
 
    public:
 
@@ -41,9 +43,9 @@ namespace Game
       virtual ComponentType GetComponentType() const override;
 
 		/* This method works every time when this component has dirty transform */
-		virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix);
+		virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix);
 
-      void SetScene(class Scene* scene);
+      void SetScene(std::weak_ptr<Scene> scene);
 
       void SetIsTransformationDirty(const bool isDirty);
 

@@ -14,7 +14,7 @@ namespace Game
 
    struct PlanarReflectionComponentData : public ComponentData
    {
-      PlanarReflectionComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale, std::shared_ptr<ACamera> ownerCamera,
+      PlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
          const ::Graphics::ViewPortInfo& fboViewPortInfo)
          : ComponentData(gameObjectName)
          , m_translation(translation)
@@ -28,7 +28,7 @@ namespace Game
       glm::vec3 m_translation;
       glm::vec3 m_eulerRotationDegrees;
       glm::vec3 m_scale;
-      std::shared_ptr<ACamera> m_ownerCamera;
+      ACamera* m_ownerCamera;
       ::Graphics::ViewPortInfo m_fboViewPortInfo;
    };
 

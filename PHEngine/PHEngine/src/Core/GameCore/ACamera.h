@@ -17,6 +17,7 @@ using namespace Graphics;
 namespace Game
 {
    class Scene;
+   class PlanarReflectionComponent;
 
    class ACamera
       : public GameObject
@@ -40,7 +41,9 @@ namespace Game
       std::string mCameraName;
 
    protected:
-      
+
+      std::shared_ptr<PlanarReflectionComponent> mPlanarReflectionComponent;
+
       ViewPortInfo mViewPort;
 
       glm::vec3 m_localSpaceRightVector;
@@ -65,13 +68,13 @@ namespace Game
 
       CameraType m_cameraType;
 
-      virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
-
    public:
 
       size_t SceneProxyId = 0;
 
       float CameraCollisionSphereRadius = 8.0f;
+
+   public:
 
       ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
 
@@ -85,11 +88,15 @@ namespace Game
 
       virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
 
+      std::shared_ptr<PlanarReflectionComponent> GetPlanarReflectionComponent() const;
+
       virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const = 0;
 
       std::string GetCameraName() const;
 
       CameraType GetCameraType() const;
+
+      void SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent);
 
       void SetLocalSpaceUpVector(glm::vec3& upVector);
 
@@ -120,6 +127,14 @@ namespace Game
       ViewPortInfo GetViewPort() const;
 
       void Rotate();
+
+   protected:
+
+      virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
+
+   private:
+
+      void UpdateCameraProxyData(const float DeltaTime);
    };
 
 }

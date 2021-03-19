@@ -57,9 +57,13 @@ namespace Game
    std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
    {
       // get from scene corresponding to material proxy material instance
-      const auto materialPtr = m_scene->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
-      assert(materialPtr != nullptr);
-      return materialPtr;
+      std::shared_ptr<IMaterial> materialResult = nullptr;
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
+      }
+      assert(materialResult != nullptr);
+      return materialResult;
    }
 
    ComponentType SkeletalMeshComponent::GetComponentType() const
@@ -93,14 +97,17 @@ namespace Game
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
       static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         SrcAnimationTime.SetValue(fmod(SrcAnimationTime, 100000.0f));
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            SrcAnimationTime.SetValue(fmod(SrcAnimationTime, 100000.0f));
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-            SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->UpdateAnimationData(bTransitionEnabled, TransitionValue, SrcAnimationTime, DstAnimationTime, SrcAnimationName, DstAnimationName);
-         });
+               SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->UpdateAnimationData(bTransitionEnabled, TransitionValue, SrcAnimationTime, DstAnimationTime, SrcAnimationName, DstAnimationName);
+            });
+         }
       }
    }
 

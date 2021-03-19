@@ -19,13 +19,16 @@ namespace Game
       return LIGHT_COMPONENT;
    }
 
-   void LightComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
+   void LightComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
       // Update light proxy transform
       constexpr uint64_t functionId = Hash("LightComponent: UpdateLightComponentTransform_GameThread");
 
-      m_scene->UpdateLightComponentTransform_GameThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         sceneSP->UpdateLightComponentTransform_GameThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+      }
    }
 
 }

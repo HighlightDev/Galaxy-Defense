@@ -35,15 +35,18 @@ namespace Game
 
       m_moveFactor += m_waveSpeed * deltaTime;
 
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
-
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() 
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->SetMoveFactor(m_moveFactor);
-         });
+            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
+
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            {
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->SetMoveFactor(m_moveFactor);
+            });
+         }
       }
    }
 
@@ -66,15 +69,18 @@ namespace Game
    {
       m_waveStrength = waveStr;
 
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
 
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-            WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->SetWaveStrength(m_waveStrength);
-         });
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->SetWaveStrength(m_waveStrength);
+            });
+         }
       }
    }
 
@@ -82,15 +88,18 @@ namespace Game
    {
       m_transparencyDepth = transparencyDepth;
 
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
 
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-            WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->SetTransparencyDepth(m_transparencyDepth);
-         });
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->SetTransparencyDepth(m_transparencyDepth);
+            });
+         }
       }
    }
 
@@ -113,15 +122,18 @@ namespace Game
    {
       m_nearClipPlane = nearClipPlane;
 
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
 
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 
-            WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->SetNearClipPlane(m_nearClipPlane);
-         });
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->SetNearClipPlane(m_nearClipPlane);
+            });
+         }
       }
    }
 
@@ -129,15 +141,18 @@ namespace Game
    {
       m_farClipPlane = farClipPlane;
 
-      if (const auto& sceneRenderer = m_scene->GetThreadManager().TryGetSceneRendererWP().lock())
+      if (const auto& sceneSP = m_sceneWP.lock())
       {
-         constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
 
-         m_scene->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 
-            WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
-            proxyPtr->SetFarClipPlane(m_farClipPlane);
-         });
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               proxyPtr->SetFarClipPlane(m_farClipPlane);
+            });
+         }
       }
    }
 

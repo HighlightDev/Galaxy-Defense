@@ -8,6 +8,8 @@
 #include "DirectionalLightComponent.h"
 #include "PointLightComponent.h"
 #include "SpotlightComponent.h"
+#include "PlanarReflectionComponent.h"
+#include "Core/GameCore/ACamera.h"
 
 #include "PrimitiveComponents/SkyboxComponent.h"
 #include "PrimitiveComponents/StaticMeshComponent.h"
@@ -27,6 +29,7 @@
 #include "ComponentData/MovementComponentData.h"
 #include "ComponentData/BillboardComponentData.h"
 #include "ComponentData/PhysicsComponentData.h"
+#include "ComponentData/PlanarReflectionComponentData.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
@@ -65,8 +68,8 @@ namespace Game
       CharacterMovement,
       Movement,
       Physics,
+      PlanarReflection
    };
-
 
    template <typename VertexFactoryType, typename BaseShaderType>
    typename CompositeShaderPool::sharedValue_t CreateMaterialShader(const std::string& compositeShaderName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
@@ -82,9 +85,10 @@ namespace Game
    {
    private:
 
-      template <ComponentMetaType metaType, typename ConstructType> struct CreatorFromMetaType { };
+      template <ComponentMetaType metaType> struct CreatorFromMetaType { };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Skybox, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Skybox>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -113,7 +117,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::StaticMesh, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::StaticMesh>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -143,7 +148,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::SkeletalMesh, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::SkeletalMesh>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -174,7 +180,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::WaterPlane, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::WaterPlane>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -198,7 +205,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Billboard, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Billboard>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -216,7 +224,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Cubemap, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Cubemap>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -234,7 +243,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::DirectionalLight, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::DirectionalLight>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -244,7 +254,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::PointLight, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::PointLight>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -254,7 +265,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Spotlight, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Spotlight>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -264,7 +276,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::CharacterMovement, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::CharacterMovement>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -273,7 +286,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Movement, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Movement>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -282,7 +296,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Input, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Input>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -290,7 +305,8 @@ namespace Game
          }
       };
 
-      template <typename ConstructType> struct CreatorFromMetaType<ComponentMetaType::Physics, ConstructType>
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::Physics>
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
@@ -299,11 +315,22 @@ namespace Game
          }
       };
 
+      template <>
+      struct CreatorFromMetaType<ComponentMetaType::PlanarReflection>
+      {
+         std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
+         {
+            const PlanarReflectionComponentData& mData = static_cast<const PlanarReflectionComponentData&>(data);
+            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
+               mData.m_ownerCamera, mData.m_fboViewPortInfo);
+         }
+      };
+
    public:
 
       static std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
       {
-         CreatorFromMetaType<metaType, ComponentType> creator;
+         CreatorFromMetaType<metaType> creator;
          return creator.CreateComponent(data, scene);
       }
    };

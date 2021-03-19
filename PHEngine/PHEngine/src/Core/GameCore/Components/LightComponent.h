@@ -22,7 +22,7 @@ namespace Game
 
       virtual ComponentType GetComponentType() const override;
 
-      virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix) override;
+      virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 

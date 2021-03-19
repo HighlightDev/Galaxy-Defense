@@ -23,7 +23,7 @@ class Graphics::IMaterial;
 
 namespace Game
 {
-   class Scene 
+   class Scene : public std::enable_shared_from_this<Scene>
    {
    public:
 
@@ -43,11 +43,17 @@ namespace Game
 
       std::vector<std::shared_ptr<IMaterial>> mMaterials;
 
+      std::shared_ptr<Scene> mMeSharedPtr;
+
    public:
 
       Scene(InterThreadCommunicationMgr& interThreadMgr);
 
-      void PostLevelInit(std::weak_ptr<Scene> thisWeakPtr);
+      std::shared_ptr<Scene> GetSharedFromMe();
+
+      void SetMeSharedPtr(std::shared_ptr<Scene> meSharedPtr);
+
+      void PostLevelInit();
 
       void PostPhysicsInitialize();
 
@@ -122,11 +128,11 @@ namespace Game
          if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
          {
             SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
-            sceneComponentPtr->SetScene(this);
+            sceneComponentPtr->SetScene(mMeSharedPtr);
             if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
             {
                PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
-               
+
                auto sceneProxyShared = componentPtr->CreateSceneProxy();
                componentPtr->SceneProxyId = sceneProxyShared->GetSceneProxyId();
                PrimitiveSceneProxyAdded(componentPtr->SceneProxyId, sceneProxyShared);
@@ -137,6 +143,13 @@ namespace Game
                auto lightProxyShared = componentPtr->CreateSceneProxy();
                componentPtr->LightSceneProxyId = lightProxyShared->GetSceneProxyId();
                LightSceneProxyAdded(componentPtr->LightSceneProxyId, lightProxyShared);
+            }
+            else if ((type & ComponentType::PLANAR_REFLECTION_COMPONENT) == ComponentType::PLANAR_REFLECTION_COMPONENT)
+            {
+               PlanarReflectionComponent* componentPtr = static_cast<PlanarReflectionComponent*>(sceneComponentPtr);
+            /*   auto planarReflectionSceneProxy = componentPtr->CreatePlanarReflectionProxy();
+               componentPtr->ProxyId = planarReflectionSceneProxy->GetSceneProxyId();
+               PlanarReflectionSceneProxyAdded(componentPtr->ProxyId, planarReflectionSceneProxy);*/
             }
          }
 

@@ -66,10 +66,10 @@ namespace Graphics
          }
       }
 
-      void MaterialShaderImp::SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
+      void MaterialShaderImp::LoadUniformValues()
       {
          int32_t index = 0;
-         for (auto namePlusPropPair : materialProxy->GetProperties())
+         for (auto namePlusPropPair : mMaterialProxy->GetProperties())
          {
             namePlusPropPair.second->SetValueToUniform(UniformsMap[namePlusPropPair.first], index);
             ++index;

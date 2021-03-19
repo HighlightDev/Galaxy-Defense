@@ -7,6 +7,8 @@
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
@@ -14,7 +16,7 @@
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
-#include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
@@ -118,12 +120,22 @@ namespace Labyrinth
       }
 
       // todo: only test
-#if true
+#if false
          DeserializeLevel("test_serialize.xml");
 #else
          RunLuaBuildLevelScript();
 #endif
 
+         {
+            int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
+            int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
+
+            auto cameraPtr = mScene->GetCamera("MainCamera").get();
+            PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), cameraPtr,
+            ViewPortInfo(0,0,windowWidth, windowHeight) };
+            auto planarReflectionComp = std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
+            cameraPtr->SetPlanarReflectionComponent(planarReflectionComp);
+         }
 
 #if false
       // Water

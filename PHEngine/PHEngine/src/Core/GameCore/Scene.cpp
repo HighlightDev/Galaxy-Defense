@@ -19,11 +19,11 @@ namespace Game
       mPhysicsWorld->InitPhysicsWorld();
    }
 
-   void Scene::PostLevelInit(std::weak_ptr<Scene> thisWeakPtr)
+   void Scene::PostLevelInit()
    {
       for (auto& actor : mActors)
       {
-         actor->SetScene(thisWeakPtr);
+         actor->SetScene(mMeSharedPtr);
          actor->PostLevelInit();
       }
    }
@@ -34,6 +34,16 @@ namespace Game
       {
          actor->PostPhysicsInitialize();
       }
+   }
+
+   void Scene::SetMeSharedPtr(std::shared_ptr<Scene> meSharedPtr)
+   {
+      mMeSharedPtr = meSharedPtr;
+   }
+
+   std::shared_ptr<Scene> Scene::GetSharedFromMe()
+   {
+      return shared_from_this();
    }
 
    void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)

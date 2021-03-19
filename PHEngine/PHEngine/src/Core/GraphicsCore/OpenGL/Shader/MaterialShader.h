@@ -39,7 +39,7 @@ namespace Graphics
 
          void Undefine(const std::string& name);
 
-         virtual void SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy) = 0;
+         virtual void LoadUniformValues() = 0;
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
@@ -58,7 +58,7 @@ namespace Graphics
       public :
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void SetUniformValues(std::shared_ptr<MaterialProxy> materialProxy) override;
+         virtual void LoadUniformValues() override;
 
          MaterialShaderImp(std::shared_ptr<MaterialProxy> materialProxy);
       };

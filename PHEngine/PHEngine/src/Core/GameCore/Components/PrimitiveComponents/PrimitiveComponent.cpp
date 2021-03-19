@@ -25,14 +25,17 @@ namespace Game
       return PRIMITIVE_COMPONENT;
    }
 
-   void PrimitiveComponent::UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix)
+   void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
       // Update primitives proxy transform
       constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
-      m_scene->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         sceneSP->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+      }
    }
 
    void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
@@ -41,7 +44,10 @@ namespace Game
 
       // Update primitives proxy enabled
       constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
-      m_scene->UpdatePrimitiveComponentEnable_GameThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         sceneSP->UpdatePrimitiveComponentEnable_GameThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+      }
    }
 
    void PrimitiveComponent::SetIsVisible(bool isVisible)
@@ -62,7 +68,10 @@ namespace Game
    {
       constexpr uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
 
-      m_scene->UpdatePrimitiveComponentVisibility_GameThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         sceneSP->UpdatePrimitiveComponentVisibility_GameThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
+      }
    }
 
    BoundingBox PrimitiveComponent::GetBoundingBox() const 

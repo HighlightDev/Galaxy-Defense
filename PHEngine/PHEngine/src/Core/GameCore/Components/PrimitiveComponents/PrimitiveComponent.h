@@ -46,7 +46,7 @@ namespace Game
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
-      virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix) override;
+      virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
       virtual void OnVisibilityChanged();
 

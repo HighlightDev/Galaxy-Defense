@@ -41,7 +41,7 @@ namespace Game
          return m_renderData;
       }
 
-      virtual void UpdateRelativeMatrix(glm::mat4& parentRelativeMatrix) override;
+      virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
       virtual void Tick(const float deltaTime) override;
 
