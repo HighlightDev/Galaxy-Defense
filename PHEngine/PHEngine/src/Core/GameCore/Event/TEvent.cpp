@@ -5,6 +5,7 @@
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "Core/GameCore/Input/KeyboardBindings.h"
 
 #include <utility>
 #include <string>
@@ -13,14 +14,14 @@ using namespace Graphics::Texture;
 
 namespace Event
 {
-   template class TEvent<AtomicEventPolicy<std::weak_ptr<Game::Transform>>>;
-   template class TEvent<AtomicEventPolicy<std::string>>;
-   template class TEvent<AtomicEventPolicy<Game::ACamera*>>;
-   template class TEvent<AtomicEventPolicy<KeyboardEventData>>;
-   template class TEvent<AtomicEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>;
-   template class TEvent<MultipleEventPolicy<TextureType>>;
+   template class TEvent<SingleDataEventPolicy<std::weak_ptr<Game::Transform>>>;
+   template class TEvent<SingleDataEventPolicy<std::string>>;
+   template class TEvent<SingleDataEventPolicy<Game::ACamera*>>;
+   template class TEvent<SingleDataEventPolicy<KeyboardData>>;
+   template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>;
+   template class TEvent<MultipleDataEventPolicy<TextureType>>;
 
-   template class TEvent<MultipleEventPolicy<size_t>>;
+   template class TEvent<MultipleDataEventPolicy<size_t>>;
 
    template <typename PolicyT>
    typename TEvent<PolicyT>::Event_t* TEvent<PolicyT>::m_instance = nullptr;

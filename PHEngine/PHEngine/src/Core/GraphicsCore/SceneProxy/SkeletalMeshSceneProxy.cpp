@@ -47,7 +47,7 @@ namespace Graphics
          shader->ExecuteShader();
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          shader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
-         shader->GetMaterialShader()->LoadUniformValues();
+         shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();
       }
@@ -66,7 +66,7 @@ namespace Graphics
          planarReflectionShader->GetShader()->SetClipPlane(plane);
          planarReflectionShader->GetVertexFactoryShader()->SetMatrices(mirrorMatrix * m_relativeMatrix, viewMatrix, projectionMatrix);
          planarReflectionShader->GetVertexFactoryShader()->SetSkinningMatrices(GetSkinningMatrices());
-         planarReflectionShader->GetMaterialShader()->LoadUniformValues();
+         planarReflectionShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          planarReflectionShader->StopShader();
       }

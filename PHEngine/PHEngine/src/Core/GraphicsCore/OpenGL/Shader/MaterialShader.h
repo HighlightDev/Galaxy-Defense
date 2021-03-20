@@ -4,6 +4,8 @@
 #include "Core/GraphicsCore/OpenGL/Shader/IShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderPredefineUtility.h"
 
+#include <vector>
+
 namespace Graphics
 {
    namespace OpenGL
@@ -18,11 +20,11 @@ namespace Graphics
 
       protected:
 
-         std::shared_ptr<MaterialProxy> mMaterialProxy;
+         std::vector<std::string> mUniformNames;
 
       public:
 
-         IMaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
+         IMaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
 
          virtual ~IMaterialShader();
 
@@ -39,7 +41,7 @@ namespace Graphics
 
          void Undefine(const std::string& name);
 
-         virtual void LoadUniformValues() = 0;
+         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy) = 0;
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
@@ -58,9 +60,9 @@ namespace Graphics
       public :
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void LoadUniformValues() override;
+         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy) override;
 
-         MaterialShaderImp(std::shared_ptr<MaterialProxy> materialProxy);
+         MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
       };
    }
 }

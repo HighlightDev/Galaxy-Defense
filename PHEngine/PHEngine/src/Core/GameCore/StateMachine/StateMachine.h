@@ -13,14 +13,16 @@ namespace Game
       : public ITickable
       , public ISerializable
    {
+      std::vector<std::shared_ptr<State>> mMyAllStates;
+
       class Actor* mParent = nullptr;
 
       std::string mRelPathFSM;
 
       /* At beginning we are here */
-      std::weak_ptr<State> mStateNodeInitRoot;
+      std::shared_ptr<State> mStateNodeInitRoot;
 
-      std::weak_ptr<State> mCurrentStateNode;
+      std::shared_ptr<State> mCurrentStateNode;
 
       const StateTransition* mCurrentActiveStateTransition = nullptr;
 
@@ -36,7 +38,7 @@ namespace Game
 
    public:
 
-      StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode);
+      StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates);
 
       ~StateMachine();
 

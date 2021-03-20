@@ -1,11 +1,12 @@
 #include "InputComponent.h"
-#include "Core/GameCore/KeyboardInputManager.h"
+#include "Core/GameCore/Input/InputManager.h"
 
 namespace Game
 {
 
    InputComponent::InputComponent(const std::string& gameObjectName)
       : Component(gameObjectName)
+      , m_keyboardBindings(std::make_shared<DefaultKeyboardBindings>())
    {
    }
 
@@ -18,9 +19,22 @@ namespace Game
       return INPUT_COMPONENT;
    }
 
-   const KeyboardBindings& InputComponent::GetKeyboardBindings() const
+   std::vector<eKeyActionType> InputComponent::GetReleasedKeyActions()
    {
-      return m_keyboardBindings;
+      std::vector<eKeyActionType> result;
+      std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
+      const std::vector<Keys>& releasedKeys = m_keyboardBindings.GetReleasedKeysOnCurrentTickAndInvalidateVector();
+      std::for_each(releasedKeys.begin(), releasedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
+      return result;
+   }
+
+   std::vector<eKeyActionType> InputComponent::GetPressedKeyActions()
+   {
+      std::vector<eKeyActionType> result;
+      std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
+      const std::vector<Keys>& pressedKeys = m_keyboardBindings.GetPressedKeysOnCurrentTickAndInvalidateVector();
+      std::for_each(pressedKeys.begin(), pressedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
+      return result;
    }
 
    void InputComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
@@ -31,27 +45,9 @@ namespace Game
       dataActor.ComponentsData.emplace_back(inputComp);
    }
 
-   // Game thread tick
-   void InputComponent::Tick(const float deltaTime)
-   {
-      if (KeyboardInputManager::GetInstance()->HasKeyEvents())
-      {
-         KeyboardInputManager::queue_t& keyEventsQueue = KeyboardInputManager::GetInstance()->GetKeyboardKeyEvents();
-
-         while (keyEventsQueue.size() > 0)
-         {
-            std::pair<Keys, size_t>& pair = keyEventsQueue.front();
-            keyEventsQueue.pop();
-            if (pair.second == KEY_PRESSED)
-            {
-               m_keyboardBindings.KeyPress(pair.first);
-            }
-            else
-            {
-               m_keyboardBindings.KeyRelease(pair.first);
-            }
-         }
-      }
+   const KeyboardBindings& InputComponent::GetKeyboardBindings() const {
+      return m_keyboardBindings;
    }
 
+   void InputComponent::Tick(const float deltaTime) { }
 }

@@ -11,12 +11,18 @@ Engine::Engine(InterThreadCommunicationMgr& interThreadMgr)
    , mLastGameThreadPulseTime(Clock_t::now())
    , mGameThreadDeltaTimeSeconds()
    , mGameThreadSumDeltaTimeSec()
+   , mInputManager(std::make_shared<InputManager>())
 {
 }
 
 Engine::~Engine()
 {
    m_gameThread.join();
+}
+
+std::shared_ptr<InputManager> Engine::GetInputManager() const 
+{
+   return mInputManager;
 }
 
 void Engine::StopGameThreadExecution()

@@ -347,6 +347,8 @@
   <ItemGroup>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\MouseMovedEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Input\KeyboardData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.h" />
@@ -494,7 +496,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h" />
-    <ClInclude Include="src\Core\GameCore\KeyboardInputManager.h" />
+    <ClInclude Include="src\Core\GameCore\Input\InputManager.h" />
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h" />
     <ClInclude Include="src\Core\GameCore\Components\InputComponent.h" />
     <ClInclude Include="src\Core\GameCore\Input\Keys.h" />
@@ -921,7 +923,7 @@
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlas.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsWorld.cpp" />
-    <ClCompile Include="src\Core\GameCore\KeyboardInputManager.cpp" />
+    <ClCompile Include="src\Core\GameCore\Input\InputManager.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\KeyboardBindings.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\InputComponent.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.cpp" />

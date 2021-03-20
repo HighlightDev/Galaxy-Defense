@@ -2,6 +2,8 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/CommonCore/Assertion.h"
 
+#include <algorithm>
+
 namespace Graphics
 {
    MaterialProxy::MaterialProxy(const IMaterial* material)
@@ -20,6 +22,13 @@ namespace Graphics
    const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& MaterialProxy::GetProperties() const
    {
       return mProperties;
+   }
+
+   std::vector<std::string> MaterialProxy::GetUniformNames() const
+   {
+      std::vector<std::string> result;
+      std::for_each(mProperties.begin(), mProperties.end(), [&](const auto& propPair) { result.push_back(propPair.first); });
+      return result;
    }
 
    void MaterialProxy::UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property)

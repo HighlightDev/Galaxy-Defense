@@ -10,10 +10,10 @@ namespace Event
 {
 
    class CameraTransformChangedEvent
-      : public TEvent<AtomicEventPolicy<ACamera*>>
+      : public TEvent<SingleDataEventPolicy<ACamera*>>
    {
    public:
-      using Event_t = TEvent<AtomicEventPolicy<ACamera*>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<ACamera*>>::Event_t;
    };
 
 }

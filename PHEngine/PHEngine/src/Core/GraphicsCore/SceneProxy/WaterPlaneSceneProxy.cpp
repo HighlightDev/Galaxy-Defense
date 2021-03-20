@@ -79,7 +79,7 @@ namespace Graphics
          const auto& shader = GetShader();
 
          shader->ExecuteShader();
-         shader->GetMaterialShader()->LoadUniformValues();
+         shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(GL_TRIANGLES);
          shader->StopShader();

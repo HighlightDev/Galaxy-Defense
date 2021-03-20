@@ -8,10 +8,10 @@ namespace Event
 {
 
    class PlayerMovedEvent
-      : public TEvent<AtomicEventPolicy<std::weak_ptr<Game::Transform>>>
+      : public TEvent<SingleDataEventPolicy<std::weak_ptr<Game::Transform>>>
    {
    public:
-      using Event_t = TEvent<AtomicEventPolicy<std::weak_ptr<Game::Transform>>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<std::weak_ptr<Game::Transform>>>::Event_t;
    };
 
 }

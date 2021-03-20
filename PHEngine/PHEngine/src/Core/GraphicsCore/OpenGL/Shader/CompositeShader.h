@@ -69,7 +69,10 @@ namespace Graphics
          template <typename UShader>
          CompositeShader(const std::string& compositeShaderName, const UShader& shader, std::shared_ptr<MaterialProxy> materialProxy)
             : IShader(compositeShaderName)
-            , ICompositeShader(std::static_pointer_cast<ShaderType>(shader), std::make_shared<vertexFactoryShader_t>(), std::make_shared<MaterialShaderImp>(materialProxy))
+            , ICompositeShader(
+               std::static_pointer_cast<ShaderType>(shader),
+               std::make_shared<vertexFactoryShader_t>(),
+               std::make_shared<MaterialShaderImp>(materialProxy->MaterialName, materialProxy->MaterialShaderRelativePath, materialProxy->GetUniformNames()))
          {
             Init();
          }

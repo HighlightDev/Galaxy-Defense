@@ -12,11 +12,11 @@ namespace Graphics
       /************************************************************************/
       /*                                 IMaterialShader                      */
       /************************************************************************/
-      IMaterialShader::IMaterialShader(std::shared_ptr<MaterialProxy> materialProxy)
-         : IShader(materialProxy->MaterialName)
-         , mMaterialProxy(materialProxy)
+      IMaterialShader::IMaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
+         : IShader(materialName)
+         , mUniformNames(uniformNames)
       {
-         InitMaterialShader(materialProxy->MaterialShaderRelativePath);
+         InitMaterialShader(materialShaderRelativePath);
       }
 
       IMaterialShader::~IMaterialShader()
@@ -60,24 +60,24 @@ namespace Graphics
 
       void MaterialShaderImp::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
-         for (auto namePlusPropPair : mMaterialProxy->GetProperties())
+         for (const auto& name : mUniformNames)
          {
-            UniformsMap[namePlusPropPair.first] = GetUniform(namePlusPropPair.first, shaderProgramID);
+            UniformsMap[name] = GetUniform(name, shaderProgramID);
          }
       }
 
-      void MaterialShaderImp::LoadUniformValues()
+      void MaterialShaderImp::LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
       {
          int32_t index = 0;
-         for (auto namePlusPropPair : mMaterialProxy->GetProperties())
+         for (auto namePlusPropPair : materialProxy->GetProperties())
          {
             namePlusPropPair.second->SetValueToUniform(UniformsMap[namePlusPropPair.first], index);
             ++index;
          }
       }
 
-      MaterialShaderImp::MaterialShaderImp(std::shared_ptr<MaterialProxy> materialProxy)
-         : IMaterialShader(materialProxy)
+      MaterialShaderImp::MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
+         : IMaterialShader(materialName, materialShaderRelativePath, uniformNames)
       {
       }
    }

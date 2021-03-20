@@ -24,6 +24,10 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
+      std::vector<eKeyActionType> GetReleasedKeyActions();
+
+      std::vector<eKeyActionType> GetPressedKeyActions();
+
       const KeyboardBindings& GetKeyboardBindings() const;
    };
 

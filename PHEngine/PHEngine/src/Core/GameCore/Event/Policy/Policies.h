@@ -6,7 +6,7 @@ namespace Event
 {
 
    template <typename... Args>
-   struct AtomicEventPolicy
+   struct SingleDataEventPolicy
    {
       using TupleData_t = std::tuple<Args...>;
 
@@ -36,7 +36,7 @@ namespace Event
    };
 
    template <typename... Args>
-   struct MultipleEventPolicy
+   struct MultipleDataEventPolicy
    {
       using TupleData_t = std::tuple<Args...>;
 

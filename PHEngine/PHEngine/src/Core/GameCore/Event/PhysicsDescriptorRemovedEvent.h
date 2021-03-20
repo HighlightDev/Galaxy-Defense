@@ -6,10 +6,10 @@ namespace Event
 {
 
    struct PhysicsDescriptorRemovedEvent
-      : public TEvent<MultipleEventPolicy<size_t>>
+      : public TEvent<MultipleDataEventPolicy<size_t>>
    {
    public:
-      using Event_t = TEvent<MultipleEventPolicy<size_t>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<size_t>>::Event_t;
    };
 
 }

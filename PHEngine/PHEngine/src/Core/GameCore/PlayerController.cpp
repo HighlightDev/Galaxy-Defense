@@ -5,8 +5,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/CommonCore/Assertion.h"
 
-#include <tuple>
-
 namespace Game
 {
 
@@ -15,14 +13,13 @@ namespace Game
       , m_playerActor(playerActor)
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
-      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
+
       SetPlayerActor(m_playerActor);
    }
 
    PlayerController::~PlayerController()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
-      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
    }
 
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
@@ -59,24 +56,6 @@ namespace Game
       return m_playerActor;
    }
 
-   void PlayerController::ProcessEvent(const KeyboardButtonDownEvent::EventData_t& eventData)
-   {
-      assert(m_playerActor);
-      const auto& data = std::get<0>(eventData);
-
-      if (data.Key == Keys::W)
-      {
-         if (data.State == KeyState::PRESSED)
-         {
-            m_playerActor->ChangeState("Walking");
-         }
-         else
-         {
-            m_playerActor->ChangeState("Idle");
-         }
-      }
-   }
-
    void PlayerController::Tick(float deltaTime)
    {
       assert(m_playerActor);
@@ -92,27 +71,44 @@ namespace Game
 
       if (m_playerActor->GetInputComponent())
       {
-         const auto& bindings = m_playerActor->GetInputComponent()->GetKeyboardBindings();
+         const auto& inputComponent = m_playerActor->GetInputComponent();
+         const std::vector<eKeyActionType>& currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
+         const std::vector<eKeyActionType>& currentFramePressedKeys = inputComponent->GetPressedKeyActions();
 
+         const auto& bindings = inputComponent->GetKeyboardBindings();
          if (bindings.HasPressedKeys())
          {
-            if (KeyState::PRESSED == bindings.GetKeyState(Keys::W))
+            if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
                m_playerPhysicsComponent->SetWalkVelocity(movementComponent->GetVelocity());
             }
-            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::A))
-            {
-            }
-            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::D))
-            {
-            }
-            else if (KeyState::PRESSED == bindings.GetKeyState(Keys::S))
-            {
-            }
+            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT)) {}
+            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT)) {}
+            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK)) {}
 
-            if (KeyState::PRESSED == bindings.GetKeyState(Keys::Space))
+            if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
                m_playerPhysicsComponent->SetJumpVelocity();
+            }
+         }
+
+         // Buttons which have been released 
+         if (currentFrameReleasedKeys.size())
+         {
+            auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
+            if (moveForwardIt != currentFrameReleasedKeys.end())
+            {
+               m_playerActor->ChangeState("Idle");
+            }
+         }
+
+         // Buttons which have been pressed 
+         if (currentFramePressedKeys.size())
+         {
+            auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
+            if (moveForwardIt != currentFramePressedKeys.end())
+            {
+               m_playerActor->ChangeState("Walking");
             }
          }
       }

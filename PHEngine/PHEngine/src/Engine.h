@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Level.h"
 #include "Core/GameCore/LevelFactory.h"
+#include "Core/GameCore/Input/InputManager.h"
 
 #include <thread>
 #include <chrono>
@@ -23,6 +24,8 @@ private:
    static constexpr double InvLimitFPS = 1.0 / 60.0;
 
    InterThreadCommunicationMgr& m_interThreadMgr;
+
+   std::shared_ptr<InputManager> mInputManager;
 
    std::shared_ptr<Level> m_level;
 
@@ -65,6 +68,8 @@ public:
 	void TickWindow();
 
 	void MouseMove();
+
+   std::shared_ptr<InputManager> GetInputManager() const;
 
    double GetRenderThreadDeltaTime() const;
 

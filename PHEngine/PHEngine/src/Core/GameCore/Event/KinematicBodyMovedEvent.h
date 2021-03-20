@@ -9,10 +9,10 @@ namespace Event
 {
 
    class KinematicBodyMovedEvent
-      : public TEvent<AtomicEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>
+      : public TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>
    {
    public:
-      using Event_t = TEvent<AtomicEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>::Event_t;
    };
 
 }
