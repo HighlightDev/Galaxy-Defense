@@ -9,15 +9,23 @@ namespace Game
       const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
       : ThirdPersonCamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget)
    {
+      MouseMovedEvent::GetInstance()->AddListener(this);
    }
 
    MainThirdPersonCamera::~MainThirdPersonCamera()
    {
+      MouseMovedEvent::GetInstance()->RemoveListener(this);
    }
 
    std::shared_ptr<CameraSceneProxy> MainThirdPersonCamera::CreateSceneProxy() const
    {
       return std::make_shared<MainCameraSceneProxy>(this);
+   }
+
+   void MainThirdPersonCamera::ProcessEvent(const typename MouseMovedEvent::EventData_t& data)
+   {
+      const auto& mouseData = std::get<0>(data);
+      SetRotation(mouseData.z, mouseData.w); // Rotate the camera
    }
 
 }

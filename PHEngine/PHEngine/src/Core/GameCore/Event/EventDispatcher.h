@@ -6,8 +6,7 @@
 #include "KeyboardInputEvent.h"
 #include "KinematicBodyMovedEvent.h"
 #include "TextureAtlasGeneratedEvent.h"
-
-#include <tuple>
+#include "MouseMovedEvent.h"
 
 namespace Event {
 
@@ -51,7 +50,8 @@ namespace Event {
       PhysicsSimulationUpdatedEvent,
       KeyboardButtonDownEvent,
       KinematicBodyMovedEvent,
-      TextureAtlasGeneratedEvent
+      TextureAtlasGeneratedEvent,
+      MouseMovedEvent
    >;
 
 }

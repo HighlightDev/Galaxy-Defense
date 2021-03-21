@@ -32,12 +32,9 @@ namespace Game
    {
    }
 
-   void ACamera::Rotate()
+   void ACamera::SetRotation(const int32_t deltaX, const int32_t deltaY)
    {
-      const int32_t x = GlobalInputController::GetInstance()->GetMouseDeltaX();
-      const int32_t y = GlobalInputController::GetInstance()->GetMouseDeltaY();
-
-      UpdateRotationMatrix(-x, -y);
+      UpdateRotationMatrix(-deltaX, -deltaY);
    }
 
    void ACamera::UpdateCameraProxyData(const float DeltaTime)

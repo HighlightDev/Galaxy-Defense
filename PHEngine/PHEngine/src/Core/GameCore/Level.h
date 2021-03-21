@@ -29,11 +29,6 @@ namespace Game
 
       std::weak_ptr<Scene> GetSceneWP() const;
 
-      // TODO: this is a temporary solution
-      void CameraMove();
-
-      void CameraRotate();
-
       virtual void PreLevelInit();
 
       virtual void PostLevelInit();

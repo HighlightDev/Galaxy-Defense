@@ -126,9 +126,9 @@ namespace Game
 
       ViewPortInfo GetViewPort() const;
 
-      void Rotate();
-
    protected:
+
+      void SetRotation(const int32_t deltaX, const int32_t deltaY);
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
 

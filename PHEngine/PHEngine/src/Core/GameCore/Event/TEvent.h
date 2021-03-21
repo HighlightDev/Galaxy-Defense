@@ -25,8 +25,6 @@ namespace Event
 
    private:
 
-      static Event_t* m_instance;
-
       typename EventHandlePolicy mPolicy[2];
 
       std::vector<TEvent<EventHandlePolicy_t>*> m_listeners;
@@ -42,11 +40,9 @@ namespace Event
       }
 
       static Event_t* GetInstance() {
+         static Event_t m_instance = Event_t();
 
-         if (!m_instance)
-            m_instance = new Event_t();
-
-         return m_instance;
+         return &m_instance;
       }
 
       template <typename... DataTypesT>

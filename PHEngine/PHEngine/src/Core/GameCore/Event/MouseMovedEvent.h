@@ -2,13 +2,15 @@
 
 #include "Core/GameCore/Event/TEvent.h"
 
+#include <glm/vec4.hpp>
+
 namespace Event
 {
    struct MouseMovedEvent
-      : public TEvent<SingleDataEventPolicy<int>> // for now
+      : public TEvent<SingleDataEventPolicy<glm::ivec4/*X, Y, deltaX, deltaY*/>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<int>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<glm::ivec4>>::Event_t;
    };
 
 }

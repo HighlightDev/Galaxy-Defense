@@ -64,7 +64,7 @@ namespace Game
          actor->CollectDataForSerialization(container);
       }
 
-      container.PlayerControllerData = 
+      container.PlayerControllerData =
          std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
 
       oarchive(container);
@@ -106,7 +106,7 @@ namespace Game
          {
             mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
 
-            // stab for now!
+            // stub for now!
 
             if (auto thirdPersonCamera = std::static_pointer_cast<ThirdPersonCamera>(mScene->GetCamera("MainCamera")))
             {
@@ -154,21 +154,6 @@ namespace Game
    {
       // todo: temp solution
       return mScene->GetCamera("MainCamera");
-   }
-
-   void Level::CameraRotate()
-   {
-      // todo: temp solution
-      mScene->GetCamera("MainCamera")->Rotate();
-   }
-
-   void Level::CameraMove()
-   {
-      // todo: temp solution
-      if (auto camera = mScene->GetCamera("MainCamera"); camera->GetCameraType() == ACamera::CameraType::FIRST_PERSON)
-      {
-         (std::static_pointer_cast<FirstPersonCamera>(camera))->MoveCamera(0);
-      }
    }
 }
 

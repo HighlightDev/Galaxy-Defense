@@ -2,10 +2,14 @@
 
 #include "Core/GameCore/Input/Keys.h"
 
+#include <stdint.h>
+
 namespace Game
 {
    class InputManager
    {
+
+      int32_t mMouseX = 0, mMouseY = 0;
 
    public:
 
@@ -19,7 +23,7 @@ namespace Game
       void TriggerOnKeyUp(Keys key);
 
       /*MOUSE*/
-      void TriggerOnMouseMove();
+      void TriggerOnMouseMove(const int32_t x, const int32_t y);
 
    };
 

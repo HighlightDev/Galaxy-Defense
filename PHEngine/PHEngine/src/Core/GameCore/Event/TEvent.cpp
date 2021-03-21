@@ -7,9 +7,6 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 
-#include <utility>
-#include <string>
-
 using namespace Graphics::Texture;
 
 namespace Event
@@ -18,11 +15,10 @@ namespace Event
    template class TEvent<SingleDataEventPolicy<std::string>>;
    template class TEvent<SingleDataEventPolicy<Game::ACamera*>>;
    template class TEvent<SingleDataEventPolicy<KeyboardData>>;
+   template class TEvent<SingleDataEventPolicy<glm::ivec4>>;
    template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>;
-   template class TEvent<MultipleDataEventPolicy<TextureType>>;
 
+   template class TEvent<MultipleDataEventPolicy<TextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
-   template <typename PolicyT>
-   typename TEvent<PolicyT>::Event_t* TEvent<PolicyT>::m_instance = nullptr;
 }

@@ -131,11 +131,6 @@ void Engine::TickWindow()
    RenderThreadPulse();
 }
 
-void Engine::MouseMove()
-{
-   m_level->CameraRotate();
-}
-
 double Engine::GetRenderThreadDeltaSeconds() const
 {
    Clock_t::duration deltaTime = Clock_t::now() - mLastRenderThreadPulseTime;

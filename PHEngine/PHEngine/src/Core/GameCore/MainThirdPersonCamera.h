@@ -1,5 +1,8 @@
 #pragma once
 #include "ThirdPersonCamera.h"
+#include "Core/GameCore/Event/MouseMovedEvent.h"
+
+using namespace Event;
 
 namespace Game
 {
@@ -7,6 +10,7 @@ namespace Game
 
    class MainThirdPersonCamera
       : public ThirdPersonCamera
+      , public MouseMovedEvent
    {
    public:
 
@@ -16,6 +20,8 @@ namespace Game
       ~MainThirdPersonCamera();
 
       virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
+
+      virtual void ProcessEvent(const typename MouseMovedEvent::EventData_t& data) override;
    };
 }
 

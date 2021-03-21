@@ -67,8 +67,6 @@ public:
 
 	void TickWindow();
 
-	void MouseMove();
-
    std::shared_ptr<InputManager> GetInputManager() const;
 
    double GetRenderThreadDeltaTime() const;
