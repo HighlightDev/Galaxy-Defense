@@ -116,7 +116,7 @@ namespace Labyrinth
 
          ViewPortInfo viewPort{ 0 , 0, windowWidth, windowHeight };
 
-         mScene->RegisterCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
+         mScene->RegisterMainCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
       }
 
       // todo: only test
@@ -130,7 +130,7 @@ namespace Labyrinth
             int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
             int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
-            auto cameraPtr = mScene->GetCamera("MainCamera").get();
+            auto cameraPtr = mScene->GetMainCamera().get();
             PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), cameraPtr,
             ViewPortInfo(0,0,windowWidth, windowHeight) };
             auto planarReflectionComp = std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));

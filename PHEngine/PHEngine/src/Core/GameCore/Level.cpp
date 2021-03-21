@@ -108,7 +108,7 @@ namespace Game
 
             // stub for now!
 
-            if (auto thirdPersonCamera = std::static_pointer_cast<ThirdPersonCamera>(mScene->GetCamera("MainCamera")))
+            if (auto thirdPersonCamera = std::static_pointer_cast<ThirdPersonCamera>(mScene->GetMainCamera()))
             {
                thirdPersonCamera->SetThirdPersonTarget(actor);
             }
@@ -148,12 +148,6 @@ namespace Game
    void Level::TickLevel(const float deltaTime)
    {
       mScene->Tick_GameThread(deltaTime);
-   }
-
-   std::shared_ptr<ACamera> Level::GetCamera() const
-   {
-      // todo: temp solution
-      return mScene->GetCamera("MainCamera");
    }
 }
 

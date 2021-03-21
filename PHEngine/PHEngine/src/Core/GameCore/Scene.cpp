@@ -46,6 +46,13 @@ namespace Game
       return shared_from_this();
    }
 
+   void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
+   {
+      assert(!mMainCamera);
+      mMainCamera = camera;
+      RegisterCamera(camera);
+   }
+
    void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
    {
       mActiveCameras.emplace_back(camera);
@@ -84,6 +91,12 @@ namespace Game
       }
 
       return nullptr;
+   }
+
+   std::shared_ptr<ACamera> Scene::GetMainCamera() const
+   {
+      assert(mMainCamera);
+      return mMainCamera;
    }
 
    const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const

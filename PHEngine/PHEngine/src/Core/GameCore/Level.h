@@ -25,8 +25,6 @@ namespace Game
 
       void InitLevel();
 
-      std::shared_ptr<ACamera> GetCamera() const;
-
       std::weak_ptr<Scene> GetSceneWP() const;
 
       virtual void PreLevelInit();

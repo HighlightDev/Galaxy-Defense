@@ -37,6 +37,8 @@ namespace Game
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
+      std::shared_ptr<ACamera> mMainCamera;
+
       std::vector<std::shared_ptr<ACamera>> mActiveCameras;
 
       std::shared_ptr<PlayerController> mPlayerController;
@@ -59,9 +61,13 @@ namespace Game
 
       std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
 
+      std::shared_ptr<ACamera> GetMainCamera() const;
+
       const InterThreadCommunicationMgr& GetThreadManager() const;
 
       void RegisterCamera(std::shared_ptr<ACamera> camera);
+
+      void RegisterMainCamera(std::shared_ptr<ACamera> camera);
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<IMaterial> material);
 
@@ -147,9 +153,9 @@ namespace Game
             else if ((type & ComponentType::PLANAR_REFLECTION_COMPONENT) == ComponentType::PLANAR_REFLECTION_COMPONENT)
             {
                PlanarReflectionComponent* componentPtr = static_cast<PlanarReflectionComponent*>(sceneComponentPtr);
-            /*   auto planarReflectionSceneProxy = componentPtr->CreatePlanarReflectionProxy();
-               componentPtr->ProxyId = planarReflectionSceneProxy->GetSceneProxyId();
-               PlanarReflectionSceneProxyAdded(componentPtr->ProxyId, planarReflectionSceneProxy);*/
+               /*   auto planarReflectionSceneProxy = componentPtr->CreatePlanarReflectionProxy();
+                  componentPtr->ProxyId = planarReflectionSceneProxy->GetSceneProxyId();
+                  PlanarReflectionSceneProxyAdded(componentPtr->ProxyId, planarReflectionSceneProxy);*/
             }
          }
 
