@@ -345,6 +345,7 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseMovedEvent.h" />
@@ -366,7 +367,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Renderer\RenderState.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.h" />
-    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\Octree.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\SceneView.h" />
     <ClInclude Include="src\Core\GameCore\BoundingBoxBuilder.h" />
@@ -837,6 +838,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlanarReflectionComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.cpp" />
@@ -853,7 +855,7 @@
     <ClCompile Include="src\Core\GraphicsCore\Renderer\RenderState.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\Octree.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\SceneView.cpp" />
     <ClCompile Include="src\Core\GameCore\BoundingBoxBuilder.cpp" />

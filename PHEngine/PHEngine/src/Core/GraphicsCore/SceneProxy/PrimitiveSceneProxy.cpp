@@ -9,8 +9,8 @@ namespace Graphics
          std::shared_ptr<ICompositeShader> materialShader,
          std::shared_ptr<ICompositeShader> planarReflectionShader,
          std::shared_ptr<MaterialProxy> materialProxy)
-         : SceneProxyBase(isVisible)
-         , AVisiblePrimitiveBase()
+         : SceneProxyBase()
+         , AProxyVisibilityController(isVisible)
          , m_relativeMatrix(relativeMatrix)
          , m_skin(skin)
          , m_shader(materialShader)

@@ -2,13 +2,21 @@
 #include "SceneComponent.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
+namespace Graphics{
+
+   class PlanarReflectionProxy;
+}
+
 namespace Game {
 
    class ACamera;
+
+   using Graphics::PlanarReflectionProxy;
    
    class PlanarReflectionComponent :
       public SceneComponent
    {
+
       std::shared_ptr<ACamera> mOwnerCamera;
 
       ::Graphics::ViewPortInfo mFboViewPortInfo;
@@ -20,7 +28,6 @@ namespace Game {
 
       virtual ~PlanarReflectionComponent();
 
-      class PlanarReflectionProxy;
       std::shared_ptr<PlanarReflectionProxy> CreatePlanarReflectionProxy();
 
       virtual void Tick(const float deltaTime) override;

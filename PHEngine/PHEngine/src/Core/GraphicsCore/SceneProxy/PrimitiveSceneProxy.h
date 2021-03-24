@@ -9,7 +9,7 @@
 #include "Core/GameCore/GameObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
-#include "Core/GraphicsCore/SceneViewInfo/AVisiblePrimitiveBase.h"
+#include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 using namespace Graphics::OpenGL;
@@ -30,7 +30,7 @@ namespace Graphics
 
       class PrimitiveSceneProxy
          : public SceneProxyBase
-         , public AVisiblePrimitiveBase
+         , public AProxyVisibilityController
       {
       protected:
 

@@ -10,23 +10,17 @@ namespace Graphics {
 
       size_t mSceneProxyId;
 
-      bool mIsVisible;
-
       bool mIsEnabled;
 
    public:
 
-      SceneProxyBase(bool bVisible);
+      SceneProxyBase();
 
       virtual ~SceneProxyBase();
 
       size_t GetSceneProxyId() const;
 
-      void SetVisibility(const bool visibility);
-
-      void SetEnabled(const bool bEnabled);
-
-      bool IsVisible() const;
+      void SetEnabled(const bool bEnabled); //todo: make set enabled not only for primitive components but also for other components (cameras, planar refl component)
 
       bool IsEnabled() const;
 

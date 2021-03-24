@@ -4,9 +4,8 @@ namespace Graphics
 {
    size_t SceneProxyBase::SceneProxyIdCounter = 0;
 
-   SceneProxyBase::SceneProxyBase(bool bVisible)
+   SceneProxyBase::SceneProxyBase()
       : mSceneProxyId(SceneProxyIdCounter)
-      , mIsVisible(bVisible)
    {
       SceneProxyIdCounter++;
    }
@@ -20,19 +19,9 @@ namespace Graphics
       return mSceneProxyId;
    }
 
-   bool SceneProxyBase::IsVisible() const
-   {
-      return mIsVisible;
-   }
-
    bool SceneProxyBase::IsEnabled() const 
    {
       return mIsEnabled;
-   }
-
-   void SceneProxyBase::SetVisibility(const bool visibility)
-   {
-      mIsVisible = visibility;
    }
 
    void SceneProxyBase::SetEnabled(const bool bEnabled)

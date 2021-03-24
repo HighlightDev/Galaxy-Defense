@@ -7,15 +7,17 @@ using namespace Game;
 namespace Graphics
 {
 
-   class AVisiblePrimitiveBase
+   class AProxyVisibilityController
    {
    protected:
 
       BoundingBox mBoundingBox;
 
+      bool mIsVisible;
+
    public:
 
-      AVisiblePrimitiveBase();
+      AProxyVisibilityController(const bool bVisible);
 
       BoundingBox GetTransformedBoundingBox() const;
 
@@ -23,6 +25,11 @@ namespace Graphics
 
       // Method returns false when no frustum call is needed for primitive
       virtual bool IsFrustumCullTestNeeded() const = 0;
+
+      void SetVisibility(const bool visibility);
+
+      bool IsVisible() const;
+
    };
 
 }

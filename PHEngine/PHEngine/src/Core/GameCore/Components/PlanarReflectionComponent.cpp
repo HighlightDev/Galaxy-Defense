@@ -1,5 +1,8 @@
 #include "PlanarReflectionComponent.h"
 #include "Core/GameCore/ACamera.h"
+#include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
+
+using namespace Graphics;
 
 namespace Game {
 
@@ -13,6 +16,11 @@ namespace Game {
 
    PlanarReflectionComponent::~PlanarReflectionComponent()
    {
+   }
+
+   std::shared_ptr<PlanarReflectionProxy> PlanarReflectionComponent::CreatePlanarReflectionProxy()
+   {
+      return std::make_shared<PlanarReflectionProxy>(this);
    }
 
    void PlanarReflectionComponent::Tick(const float deltaTime)

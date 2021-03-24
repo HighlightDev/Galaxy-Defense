@@ -6,7 +6,7 @@ namespace Graphics
    {
 
       LightSceneProxy::LightSceneProxy(glm::mat4 relativeMatrix, glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, ProjectedShadowInfo* shadowInfo)
-         : SceneProxyBase(true)
+         : SceneProxyBase()
          , m_relativeMatrix(relativeMatrix)
          , m_shadowInfo(shadowInfo)
          , AmbientColor(ambientColor)

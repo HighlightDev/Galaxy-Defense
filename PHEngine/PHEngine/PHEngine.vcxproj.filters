@@ -1854,9 +1854,6 @@
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\CameraFrustum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1951,6 +1948,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Input\KeyboardData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2351,9 +2354,6 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AVisiblePrimitiveBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\CameraFrustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2427,6 +2427,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Input\InputManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
