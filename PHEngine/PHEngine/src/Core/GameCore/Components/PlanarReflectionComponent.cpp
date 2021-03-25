@@ -7,15 +7,20 @@ using namespace Graphics;
 namespace Game {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation,
-      glm::vec3 rotation, glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo)
+      glm::vec3 rotation, glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
       : SceneComponent(gameObjectName, translation, rotation, scale)
       , mOwnerCamera(ownerCamera)
-      , mFboViewPortInfo(fboViewPortInfo)
+      , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
    {
    }
 
    PlanarReflectionComponent::~PlanarReflectionComponent()
    {
+   }
+
+   ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const {
+
+      return mRenderTargetViewPortInfo;
    }
 
    std::shared_ptr<PlanarReflectionProxy> PlanarReflectionComponent::CreatePlanarReflectionProxy()
@@ -29,7 +34,7 @@ namespace Game {
       {
          if (bTransformationDirty)
          {
-            UpdateRelativeMatrix(glm::mat4(1));
+            UpdateRelativeMatrix();
          }
       }
    }

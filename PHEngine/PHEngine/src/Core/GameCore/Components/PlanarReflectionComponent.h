@@ -16,10 +16,9 @@ namespace Game {
    class PlanarReflectionComponent :
       public SceneComponent
    {
+      ACamera* mOwnerCamera;
 
-      std::shared_ptr<ACamera> mOwnerCamera;
-
-      ::Graphics::ViewPortInfo mFboViewPortInfo;
+      ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
    public:
 
@@ -32,6 +31,7 @@ namespace Game {
 
       virtual void Tick(const float deltaTime) override;
 
+      ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
    };
 }
 

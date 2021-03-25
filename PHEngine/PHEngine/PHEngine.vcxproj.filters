@@ -1956,6 +1956,9 @@
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2433,6 +2436,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\AProxyVisibilityController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

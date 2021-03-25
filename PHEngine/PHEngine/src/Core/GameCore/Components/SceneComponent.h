@@ -43,7 +43,7 @@ namespace Game
       virtual ComponentType GetComponentType() const override;
 
 		/* This method works every time when this component has dirty transform */
-		virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix);
+		virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix = glm::mat4(1));
 
       void SetScene(std::weak_ptr<Scene> scene);
 

@@ -133,8 +133,11 @@ namespace Labyrinth
             auto cameraPtr = mScene->GetMainCamera().get();
             PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), cameraPtr,
             ViewPortInfo(0,0,windowWidth, windowHeight) };
-            auto planarReflectionComp = std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
+            auto planarReflectionComp = 
+               std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
             cameraPtr->SetPlanarReflectionComponent(planarReflectionComp);
+            auto reflProxy = planarReflectionComp->CreatePlanarReflectionProxy();
+
          }
 
 #if false
