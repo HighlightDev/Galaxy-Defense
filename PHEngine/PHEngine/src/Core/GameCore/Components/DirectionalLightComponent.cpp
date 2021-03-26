@@ -96,7 +96,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
             {
-               auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
                ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
                if (shadowInfo)
                {
@@ -123,7 +123,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
             {
-               auto proxy = sceneRenderer->LightProxies[LightSceneProxyId];
+               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
                ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
                if (shadowInfo)
                {

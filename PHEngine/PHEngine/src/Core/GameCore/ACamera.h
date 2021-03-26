@@ -56,8 +56,6 @@ namespace Game
 
       glm::vec3 m_eyeSpaceForwardVector;
 
-      glm::mat3 m_rotationMatrix;
-
       const glm::vec2 mPitchClampValue_min_max;
 
       float mYaw;
@@ -117,8 +115,6 @@ namespace Game
       glm::vec3 GetEyeSpaceRightVector() const;
 
       glm::mat4 GetViewMatrix() const;
-
-      glm::mat3 GetRotationMatrix() const;
 
       float GetRotationYaw() const;
 

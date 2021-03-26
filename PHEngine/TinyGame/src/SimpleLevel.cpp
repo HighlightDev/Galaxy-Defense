@@ -121,24 +121,20 @@ namespace Labyrinth
 
       // todo: only test
 #if false
-         DeserializeLevel("test_serialize.xml");
+      DeserializeLevel("test_serialize.xml");
 #else
-         RunLuaBuildLevelScript();
+      RunLuaBuildLevelScript();
 #endif
 
-         {
-            int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
-            int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
+      int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
+      int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
-            auto cameraPtr = mScene->GetMainCamera().get();
-            PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), cameraPtr,
-            ViewPortInfo(0,0,windowWidth, windowHeight) };
-            auto planarReflectionComp = 
-               std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
-            cameraPtr->SetPlanarReflectionComponent(planarReflectionComp);
-            auto reflProxy = planarReflectionComp->CreatePlanarReflectionProxy();
+      auto cameraPtr = mScene->GetMainCamera().get();
+      PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), cameraPtr,
+      ViewPortInfo(0,0,windowWidth, windowHeight) };
+      volatile auto planarReflectionComp =
+         std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
 
-         }
 
 #if false
       // Water
@@ -153,8 +149,8 @@ namespace Labyrinth
          waterActor->AddComponent(waterComp);
 
          mScene->AllActors.push_back(waterActor);
-   }
+      }
 #endif
-}
+   }
 #undef GET_REL_PATH_TO_FILE
 }

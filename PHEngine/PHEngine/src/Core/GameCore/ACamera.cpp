@@ -143,11 +143,6 @@ namespace Game
       return glm::lookAt(GetEyeVector(), GetTargetVector(), GetLocalSpaceUpVector());
    }
 
-   glm::mat3 ACamera::ACamera::GetRotationMatrix() const
-   {
-      return m_rotationMatrix;
-   }
-
    float ACamera::GetRotationYaw() const {
       return mYaw;
    }

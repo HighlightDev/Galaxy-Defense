@@ -34,11 +34,12 @@ namespace Graphics
    {
 
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
-         : SceneViews()
+         : SceneViewsMap()
          , bLightProxiesDirty(false)
          , bProxiesDirty(false)
-         , SceneProxies()
-         , LightProxies()
+         , bPlanarReflectionProxiesDirty(false)
+         , SceneProxiesMap()
+         , LightProxiesMap()
          , m_interThreadMgr(interThreadMgr)
          , m_gbuffer(
             std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
@@ -74,7 +75,7 @@ namespace Graphics
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
             Job(0, 0, [=]()
          {
-            for (auto& lightProxy : LightProxies)
+            for (auto& lightProxy : LightProxiesMap)
             {
                lightProxy.second->PostLevelInit();
             }
@@ -111,10 +112,10 @@ namespace Graphics
 
                         DirectionalLightSceneProxy* dirLightPtr = lightPtr;
 
-                        if (mNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                        if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mDLDepthShaderNonSkeletal->ExecuteShader();
-                           for (auto& proxy : mNonSkeletalProxies)
+                           for (auto& proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -130,10 +131,10 @@ namespace Graphics
                            mDLDepthShaderNonSkeletal->StopShader();
                         }
 
-                        if (mSkeletalProxies.size() > 0) // Skeletal proxies
+                        if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
                         {
                            mDLDepthShaderSkeletal->ExecuteShader();
-                           for (auto& proxy : mSkeletalProxies)
+                           for (auto& proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -165,10 +166,10 @@ namespace Graphics
                      {
                         shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                        if (mNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                        if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mSLDepthShaderNonSkeletal->ExecuteShader();
-                           for (auto& proxy : mNonSkeletalProxies)
+                           for (auto& proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -185,10 +186,10 @@ namespace Graphics
                            }
                            mSLDepthShaderNonSkeletal->StopShader();
                         }
-                        if (mSkeletalProxies.size() > 0) // Skeletal proxies
+                        if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
                         {
                            mSLDepthShaderSkeletal->ExecuteShader();
-                           for (auto& proxy : mSkeletalProxies)
+                           for (auto& proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -226,10 +227,10 @@ namespace Graphics
                      {
                         shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own texture atlas 
 
-                        if (mNonSkeletalProxies.size() > 0) // Non - skeletal proxies
+                        if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mPLDepthShaderNonSkeletal->ExecuteShader();
-                           for (auto& proxy : mNonSkeletalProxies)
+                           for (auto& proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -246,10 +247,10 @@ namespace Graphics
                            }
                            mPLDepthShaderNonSkeletal->StopShader();
                         }
-                        if (mSkeletalProxies.size() > 0) // Skeletal proxies
+                        if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
                         {
                            mPLDepthShaderSkeletal->ExecuteShader();
-                           for (auto& proxy : mSkeletalProxies)
+                           for (auto& proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
@@ -295,18 +296,18 @@ namespace Graphics
          // Deferred shading collect info
          m_gbuffer->BindDeferredGBuffer();
 
-         if (mSkeletalProxies.size() > 0)
+         if (mSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mSkeletalProxies)
+            for (auto& proxy : mSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
 
-         if (mNonSkeletalProxies.size() > 0)
+         if (mNonSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mNonSkeletalProxies)
+            for (auto& proxy : mNonSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
@@ -325,7 +326,7 @@ namespace Graphics
          // ************************** SHADOWS ************************** //
          size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
          size_t shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
-         for (auto& dirLightProxy : mDirLightProxies)
+         for (auto& dirLightProxy : mDirLightProxiesVec)
          {
             if (dirLightProxy->IsEnabled())
             {
@@ -343,7 +344,7 @@ namespace Graphics
             }
          }
 
-         for (auto& pointLightProxy : mPointLightProxies)
+         for (auto& pointLightProxy : mPointLightProxiesVec)
          {
             if (pointLightProxy->IsEnabled())
             {
@@ -360,7 +361,7 @@ namespace Graphics
             }
          }
 
-         for (const auto& spotLightProxy : mSpotlightProxies)
+         for (const auto& spotLightProxy : mSpotlightProxiesVec)
          {
             if (spotLightProxy->IsEnabled())
             {
@@ -394,7 +395,7 @@ namespace Graphics
          m_deferredLightShader->SetGBufferNormal(2);
 
 #ifndef NO_LIT
-         m_deferredLightShader->SetLightsInfo(LightProxies);
+         m_deferredLightShader->SetLightsInfo(LightProxiesMap);
 #endif
          ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
          m_deferredLightShader->StopShader();
@@ -420,7 +421,7 @@ namespace Graphics
 
          renderState.BindRenderState();
 
-         for (const auto& proxy : mForwardRenderingProxies)
+         for (const auto& proxy : mForwardRenderingProxiesVec)
          {
             if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
@@ -447,14 +448,14 @@ namespace Graphics
             ~PlanarFBO() {
             }
 
-            virtual void CleanUp() override 
+            virtual void CleanUp() override
             {
                mReflectionFBO.UnbindFramebuffer();
                mReflectionFBO.CleanUp();
                RenderTargetPool::GetInstance()->TryToFreeMemory(mReflectionTexture);
             }
 
-            virtual void SetTextures() override 
+            virtual void SetTextures() override
             {
                TexParams reflectionTexParams(1000, 1000, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT);
                TexParams refractionTexParams(reflectionTexParams);
@@ -463,7 +464,7 @@ namespace Graphics
                mReflectionFBO.AddRenderTexture(GL_COLOR_ATTACHMENT0, mReflectionTexture);
             }
 
-            virtual void SetFramebuffers() override 
+            virtual void SetFramebuffers() override
             {
                mReflectionFBO.CreateFramebuffer();
             }
@@ -487,12 +488,12 @@ namespace Graphics
          float d = -glm::dot(normal, posOnPlane);
          glm::vec4 plane = glm::vec4(normal, d);
 
-        /* auto mirrorMatrix = glm::mat4(
-            glm::vec4(-2.f*plane.x*plane.x + 1.f, -2.f*plane.y*plane.x, -2.f*plane.z*plane.x, 0.f),
-            glm::vec4(-2.f*plane.x*plane.y, -2.f*plane.y*plane.y + 1.f, -2.f*plane.z*plane.y, 0.f),
-            glm::vec4(-2.f*plane.x*plane.z, -2.f*plane.y*plane.z, -2.f*plane.z*plane.z + 1.f, 0.f),
-            glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
-*/
+         /* auto mirrorMatrix = glm::mat4(
+             glm::vec4(-2.f*plane.x*plane.x + 1.f, -2.f*plane.y*plane.x, -2.f*plane.z*plane.x, 0.f),
+             glm::vec4(-2.f*plane.x*plane.y, -2.f*plane.y*plane.y + 1.f, -2.f*plane.z*plane.y, 0.f),
+             glm::vec4(-2.f*plane.x*plane.z, -2.f*plane.y*plane.z, -2.f*plane.z*plane.z + 1.f, 0.f),
+             glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
+ */
 
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
@@ -515,27 +516,27 @@ namespace Graphics
          const auto& viewMatrix = cameraProxy->GetViewMatrix();
          const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
 
-         if (mForwardRenderingProxies.size() > 0)
+         if (mForwardRenderingProxiesVec.size() > 0)
          {
-            for (auto& proxy : mForwardRenderingProxies)
+            for (auto& proxy : mForwardRenderingProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible())
                   proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
             }
          }
 
-         if (mSkeletalProxies.size() > 0)
+         if (mSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mSkeletalProxies)
+            for (auto& proxy : mSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible())
                   proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
             }
          }
 
-         if (mNonSkeletalProxies.size() > 0)
+         if (mNonSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mNonSkeletalProxies)
+            for (auto& proxy : mNonSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible())
                   proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
@@ -552,24 +553,24 @@ namespace Graphics
       {
          if (bProxiesDirty)
          {
-            mForwardRenderingProxies.clear();
-            mSkeletalProxies.clear();
-            mNonSkeletalProxies.clear();
+            mForwardRenderingProxiesVec.clear();
+            mSkeletalProxiesVec.clear();
+            mNonSkeletalProxiesVec.clear();
 
-            for (auto& proxy : SceneProxies)
+            for (auto& proxy : SceneProxiesMap)
             {
                PrimitiveSceneProxy* proxyPtr = proxy.second.get();
 
                if (proxyPtr->IsDeferred())
                {
                   if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     mSkeletalProxies.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
+                     mSkeletalProxiesVec.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
                   else
-                     mNonSkeletalProxies.push_back(proxyPtr);
+                     mNonSkeletalProxiesVec.push_back(proxyPtr);
                }
                else
                {
-                  mForwardRenderingProxies.push_back(proxyPtr);
+                  mForwardRenderingProxiesVec.push_back(proxyPtr);
                }
             }
             SetProxiesAreDirty(false);
@@ -577,26 +578,27 @@ namespace Graphics
 
          if (bLightProxiesDirty)
          {
-            mDirLightProxies.clear();
-            mPointLightProxies.clear();
-            mSpotlightProxies.clear();
+            mDirLightProxiesVec.clear();
+            mPointLightProxiesVec.clear();
+            mSpotlightProxiesVec.clear();
 
-            for (auto& proxy : LightProxies)
+            for (auto& proxy : LightProxiesMap)
             {
                LightSceneProxy* proxyPtr = proxy.second.get();
+
                const LightSceneProxyType& lightType = proxyPtr->GetLightProxyType();
 
                if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
-                  mDirLightProxies.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
+                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
                }
                else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
-                  mPointLightProxies.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
+                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
                }
                else if (lightType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  mSpotlightProxies.push_back(static_cast<SpotlightSceneProxy*>(proxyPtr));
+                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy*>(proxyPtr));
                }
             }
 
@@ -604,12 +606,28 @@ namespace Graphics
 
             SetLightProxiesAreDirty(false);
          }
+
+         if (bPlanarReflectionProxiesDirty)
+         {
+            for (auto& proxy : PlanarReflectionProxiesMap)
+            {
+               PlanarReflectionProxy* proxyPtr = proxy.second.get();
+               auto findIt = std::find_if(mPlanarReflectionProxiesVec.begin(), mPlanarReflectionProxiesVec.end(),
+                  [=](const auto& existingProxy) { return proxyPtr->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
+
+               if (mPlanarReflectionProxiesVec.end() == findIt) {
+                  mPlanarReflectionProxiesVec.push_back(proxyPtr);
+               }
+            }
+
+            SetPlanarReflectionProxiesAreDirty(false);
+         }
       }
 
       void DeferredShadingSceneRenderer::GroupLightsByShadowMap()
       {
          mGroupedByShadowAtlasLights.clear();
-         for (auto& lProxy : LightProxies)
+         for (auto& lProxy : LightProxiesMap)
          {
             if (auto shadowInfo = lProxy.second->GetShadowInfo())
             {
@@ -620,7 +638,7 @@ namespace Graphics
                   {
                      std::vector<LightSceneProxy*> result;
 
-                     for (const auto& seekLProxy : LightProxies)
+                     for (const auto& seekLProxy : LightProxiesMap)
                      {
                         if (seekLProxy.second->GetShadowInfo() && seekLProxy.second->GetShadowInfo()->GetAtlasResource())
                         {
@@ -639,7 +657,7 @@ namespace Graphics
       {
          PrepareSceneProxiesForRender();
 
-         for (const auto& sceneViewPair : SceneViews)
+         for (const auto& sceneViewPair : SceneViewsMap)
          {
             auto sceneView = sceneViewPair.second;
             auto cameraProxy = sceneView->GetCameraProxy();
@@ -649,9 +667,9 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               if (SceneViews.size())
+               if (SceneViewsMap.size())
                {
-                  PlanarReflectionPass(SceneViews.begin()->second, glm::mat4());
+                  PlanarReflectionPass(SceneViewsMap.begin()->second, glm::mat4());
                }
 
                DepthPass(sceneView);
@@ -660,7 +678,7 @@ namespace Graphics
 
                DeferredLightPass_RenderThread(cameraProxy);
 
-               if (mForwardRenderingProxies.size())
+               if (mForwardRenderingProxiesVec.size())
                   ForwardBasePass_RenderThread(sceneView);
             }
             else
@@ -674,7 +692,7 @@ namespace Graphics
 
          DebugFramePanelsPass();
 
-         
+
 #endif
       }
 
@@ -686,6 +704,11 @@ namespace Graphics
       void DeferredShadingSceneRenderer::SetLightProxiesAreDirty(const bool bDirty)
       {
          bLightProxiesDirty = bDirty;
+      }
+
+      void DeferredShadingSceneRenderer::SetPlanarReflectionProxiesAreDirty(const bool bDirty)
+      {
+         bPlanarReflectionProxiesDirty = bDirty;
       }
 
       void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
@@ -746,7 +769,7 @@ namespace Graphics
             glEnd();
 
 #if 0
-            for (auto& proxy : SceneProxies)
+            for (auto& proxy : SceneProxiesMap)
             {
                if (proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::STATIC_MESH_PROXY)
                {

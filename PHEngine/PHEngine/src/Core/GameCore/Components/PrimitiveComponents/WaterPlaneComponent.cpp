@@ -43,7 +43,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
             {
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetMoveFactor(m_moveFactor);
             });
          }
@@ -77,7 +77,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetWaveStrength(m_waveStrength);
             });
          }
@@ -96,7 +96,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetTransparencyDepth(m_transparencyDepth);
             });
          }
@@ -130,7 +130,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetNearClipPlane(m_nearClipPlane);
             });
          }
@@ -149,7 +149,7 @@ namespace Game
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxies[SceneProxyId].get());
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetFarClipPlane(m_farClipPlane);
             });
          }

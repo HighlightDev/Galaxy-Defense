@@ -18,6 +18,7 @@ using namespace Thread;
 class Graphics::Proxy::LightSceneProxy;
 class Graphics::Proxy::PrimitiveSceneProxy;
 class Graphics::MaterialProxy;
+class Graphics::PlanarReflectionProxy;
 class EnginePhysics::PhysicsWorld;
 class Graphics::IMaterial;
 
@@ -51,6 +52,18 @@ namespace Game
 
       Scene(InterThreadCommunicationMgr& interThreadMgr);
 
+      ~Scene();
+
+      template <ComponentMetaType metaType, typename ComponentT>
+      std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
+      {
+         const auto& component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData, this);
+         RegisterComponentSceneProxy(component);
+         RegisterGameObject(component.get());
+
+         return component;
+      }
+
       std::shared_ptr<Scene> GetSharedFromMe();
 
       void SetMeSharedPtr(std::shared_ptr<Scene> meSharedPtr);
@@ -58,12 +71,6 @@ namespace Game
       void PostLevelInit();
 
       void PostPhysicsInitialize();
-
-      std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
-
-      std::shared_ptr<ACamera> GetMainCamera() const;
-
-      const InterThreadCommunicationMgr& GetThreadManager() const;
 
       void RegisterCamera(std::shared_ptr<ACamera> camera);
 
@@ -78,6 +85,12 @@ namespace Game
       const std::vector<std::shared_ptr<Actor>>& GetActors() const;
 
       std::shared_ptr<IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
+
+      std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
+
+      std::shared_ptr<ACamera> GetMainCamera() const;
+
+      const InterThreadCommunicationMgr& GetThreadManager() const;
 
       void SetPlayerController(std::shared_ptr<PlayerController> playerController);
 
@@ -120,53 +133,21 @@ namespace Game
 
       void MaterialProxyAdded(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy);
 
+      void PlanarReflectionSceneProxyAdded(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy);
+
+      void BindPlanarReflectionSceneProxyToSceneView(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera* cameraOwner);
+
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);
 #endif
 
-      ~Scene();
+      private:
 
-      template <ComponentMetaType metaType, typename ComponentT>
-      std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
-      {
-         const auto& component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData, this);
-         ComponentType type = component->GetComponentType();
-         if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
-         {
-            SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
-            sceneComponentPtr->SetScene(mMeSharedPtr);
-            if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
-            {
-               PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
+         void RegisterComponentSceneProxy(std::shared_ptr<Component> component);
 
-               auto sceneProxyShared = componentPtr->CreateSceneProxy();
-               componentPtr->SceneProxyId = sceneProxyShared->GetSceneProxyId();
-               PrimitiveSceneProxyAdded(componentPtr->SceneProxyId, sceneProxyShared);
-            }
-            else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
-            {
-               LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
-               auto lightProxyShared = componentPtr->CreateSceneProxy();
-               componentPtr->LightSceneProxyId = lightProxyShared->GetSceneProxyId();
-               LightSceneProxyAdded(componentPtr->LightSceneProxyId, lightProxyShared);
-            }
-            else if ((type & ComponentType::PLANAR_REFLECTION_COMPONENT) == ComponentType::PLANAR_REFLECTION_COMPONENT)
-            {
-               PlanarReflectionComponent* componentPtr = static_cast<PlanarReflectionComponent*>(sceneComponentPtr);
-               /*   auto planarReflectionSceneProxy = componentPtr->CreatePlanarReflectionProxy();
-                  componentPtr->ProxyId = planarReflectionSceneProxy->GetSceneProxyId();
-                  PlanarReflectionSceneProxyAdded(componentPtr->ProxyId, planarReflectionSceneProxy);*/
-            }
-         }
+         bool RegisterGameObject(GameObject* const gameObjectPtr);
 
-         const std::string& goName = component->GetGameObjectName();
-
-         // Add game object
-         assert(!GameObjects.count(goName));
-         GameObjects[goName] = component.get();
-
-         return component;
-      }
+         bool RemoveGameObject(GameObject* const gameObjectPtr);
    };
 
 }

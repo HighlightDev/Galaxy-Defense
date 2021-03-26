@@ -39,4 +39,23 @@ namespace Game {
       }
    }
 
+   ACamera* PlanarReflectionComponent::GetOwnerCamera() const
+   {
+      return mOwnerCamera;
+   }
+
+   size_t PlanarReflectionComponent::GetSceneProxyId() const
+   {
+      return mPlanarReflectionSceneProxyId;
+   }
+
+   void PlanarReflectionComponent::SetSceneProxyId(const size_t sceneProxyId)
+   {
+      mPlanarReflectionSceneProxyId = sceneProxyId;
+   }
+
+   ComponentType PlanarReflectionComponent::GetComponentType() const {
+      return PLANAR_REFLECTION_COMPONENT;
+   }
+
 }

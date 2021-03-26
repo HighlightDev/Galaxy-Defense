@@ -96,7 +96,7 @@ namespace Game
 
             int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
             auto skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
-          
+
             const auto& materialProxy = RegisterMaterialOnScene(scene, mData.m_material);
 
             const ShaderParams shaderParams("SkyboxForwardShader",
@@ -321,8 +321,12 @@ namespace Game
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
             const PlanarReflectionComponentData& mData = static_cast<const PlanarReflectionComponentData&>(data);
-            return std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation, mData.m_eulerRotationDegrees, mData.m_scale,
-               mData.m_ownerCamera, mData.m_fboViewPortInfo);
+            assert(mData.m_ownerCamera);
+            const auto& component = std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation,
+               mData.m_eulerRotationDegrees, mData.m_scale, mData.m_ownerCamera, mData.m_fboViewPortInfo);
+
+            mData.m_ownerCamera->SetPlanarReflectionComponent(component);
+            return component;
          }
       };
 

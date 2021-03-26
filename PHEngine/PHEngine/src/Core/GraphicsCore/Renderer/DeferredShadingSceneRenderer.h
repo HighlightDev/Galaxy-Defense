@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
+#include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
@@ -49,13 +50,15 @@ namespace Graphics
 
       public:
 
-         std::unordered_map<size_t /*camera proxy id*/, std::shared_ptr<SceneView>> SceneViews;
+         std::unordered_map<size_t /*camera proxy id*/, std::shared_ptr<SceneView>> SceneViewsMap;
 
-         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<PrimitiveSceneProxy>> SceneProxies;
+         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<PrimitiveSceneProxy>> SceneProxiesMap;
 
-         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> LightProxies;
+         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> LightProxiesMap;
 
-         std::unordered_map<size_t /*material proxy id*/, std::shared_ptr<MaterialProxy>> MaterialProxies;
+         std::unordered_map<size_t /*material proxy id*/, std::shared_ptr<MaterialProxy>> MaterialProxiesMap;
+
+         std::unordered_map<size_t /*planar reflection proxy id*/, std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesMap;
 
       private:
 
@@ -80,21 +83,25 @@ namespace Graphics
 
          bool bLightProxiesDirty;
 
+         bool bPlanarReflectionProxiesDirty;
+
 #if DEBUG
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
-         std::vector<PrimitiveSceneProxy*> mForwardRenderingProxies;
+         std::vector<PrimitiveSceneProxy*> mForwardRenderingProxiesVec;
 
-         std::vector<SkeletalMeshSceneProxy*> mSkeletalProxies;
+         std::vector<SkeletalMeshSceneProxy*> mSkeletalProxiesVec;
 
-         std::vector<PrimitiveSceneProxy*> mNonSkeletalProxies;
+         std::vector<PrimitiveSceneProxy*> mNonSkeletalProxiesVec;
 
-         DirectionalLightProxiesPtrVector mDirLightProxies;
+         DirectionalLightProxiesPtrVector mDirLightProxiesVec;
 
-         PointLightProxiesPtrVector mPointLightProxies;
+         PointLightProxiesPtrVector mPointLightProxiesVec;
 
-         SpotlightProxiesPtrVector mSpotlightProxies;
+         SpotlightProxiesPtrVector mSpotlightProxiesVec;
+
+         std::vector<PlanarReflectionProxy*> mPlanarReflectionProxiesVec;
 
          std::unordered_map<uint32_t, std::vector<LightSceneProxy*>> mGroupedByShadowAtlasLights;
 
@@ -129,6 +136,8 @@ namespace Graphics
          void SetProxiesAreDirty(const bool bDirty);
 
          void SetLightProxiesAreDirty(const bool bDirty);
+
+         void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);

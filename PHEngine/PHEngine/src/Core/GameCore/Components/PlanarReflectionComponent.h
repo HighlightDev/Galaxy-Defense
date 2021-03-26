@@ -20,6 +20,8 @@ namespace Game {
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
+      size_t mPlanarReflectionSceneProxyId = -1;
+
    public:
 
       PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation,
@@ -32,6 +34,14 @@ namespace Game {
       virtual void Tick(const float deltaTime) override;
 
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
+
+      ACamera* GetOwnerCamera() const;
+
+      size_t GetSceneProxyId() const;
+
+      void SetSceneProxyId(const size_t sceneProxyId);
+
+      virtual ComponentType GetComponentType() const override;
    };
 }
 
