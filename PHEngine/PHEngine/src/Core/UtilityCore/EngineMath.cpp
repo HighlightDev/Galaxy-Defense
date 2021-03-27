@@ -57,4 +57,14 @@ namespace EngineMath
    {
       return glm::quat(glm::vec3(DEG_TO_RAD(eulerAngles.x), DEG_TO_RAD(eulerAngles.y), DEG_TO_RAD(eulerAngles.z)));
    }
+
+   glm::mat4 BuildMirrorMatrix(const glm::vec4& mirrorPlane) {
+      const glm::mat4 mirrorMatrix(
+         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.x + 1.f, -2.f*mirrorPlane.y*mirrorPlane.x, -2.f*mirrorPlane.z*mirrorPlane.x, 0.f),
+         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.y, -2.f*mirrorPlane.y*mirrorPlane.y + 1.f, -2.f*mirrorPlane.z*mirrorPlane.y, 0.f),
+         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.z, -2.f*mirrorPlane.y*mirrorPlane.z, -2.f*mirrorPlane.z*mirrorPlane.z + 1.f, 0.f),
+         glm::vec4(2.f*mirrorPlane.x*mirrorPlane.w, 2.f*mirrorPlane.y*mirrorPlane.w, 2.f*mirrorPlane.z*mirrorPlane.w, 1.f));
+
+      return mirrorMatrix;
+   }
 }

@@ -21,7 +21,11 @@ namespace Graphics
 
       ViewPortInfo mRenderTargetViewPortInfo;
 
+      glm::vec4 mReflectionPlane;
+
       std::unique_ptr<PlanarReflectionFramebuffer> mPlanarReflectionFBO;
+      
+      glm::mat4 mMirrorMatrix;
 
    public:
 
@@ -30,6 +34,19 @@ namespace Graphics
       ~PlanarReflectionProxy();
 
       void SetSceneViewWeakPtr(std::weak_ptr<SceneView> captureSceneView);
+
+      std::weak_ptr<SceneView> GetSceneViewWeakPtr() const;
+
+      void RenderToPlanarReflectionFBO();
+
+      void StopRenderingToPlanarReflectionFBO();
+
+      void SetReflectionPlane(const glm::vec4& reflectionPlane);
+
+      glm::vec4 GetReflectionPlane() const;
+
+      glm::mat4 GetMirrorMatrix() const;
+
    };
 }
 

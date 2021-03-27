@@ -65,7 +65,7 @@ namespace Graphics
 
          virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
 
-         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) { }
+         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) { }
 
          virtual bool IsDeferred() const = 0;
 

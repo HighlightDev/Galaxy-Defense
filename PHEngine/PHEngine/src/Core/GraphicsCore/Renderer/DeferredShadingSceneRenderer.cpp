@@ -431,70 +431,8 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionPass(std::shared_ptr<SceneView> recordSceneView, const glm::mat4& reflectMatrix /*redo this shit on PlanarReflectionSceneProxy with reflect matrix inside*/)
+      void DeferredShadingSceneRenderer::PlanarReflectionPass()
       {
-         // todo: create planar reflection components with scene proxies
-         struct PlanarFBO : public FramebufferBundle {
-
-            std::shared_ptr<ITexture> mReflectionTexture;
-            FramebufferObject mReflectionFBO;
-
-            PlanarFBO()
-               : FramebufferBundle()
-            {
-               Init();
-            }
-
-            ~PlanarFBO() {
-            }
-
-            virtual void CleanUp() override
-            {
-               mReflectionFBO.UnbindFramebuffer();
-               mReflectionFBO.CleanUp();
-               RenderTargetPool::GetInstance()->TryToFreeMemory(mReflectionTexture);
-            }
-
-            virtual void SetTextures() override
-            {
-               TexParams reflectionTexParams(1000, 1000, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT);
-               TexParams refractionTexParams(reflectionTexParams);
-
-               mReflectionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(reflectionTexParams);
-               mReflectionFBO.AddRenderTexture(GL_COLOR_ATTACHMENT0, mReflectionTexture);
-            }
-
-            virtual void SetFramebuffers() override
-            {
-               mReflectionFBO.CreateFramebuffer();
-            }
-            virtual void SetRenderbuffers() override
-            {
-               mReflectionFBO.BindFramebuffer(true);
-               mReflectionFBO.CreateRenderBuffer(GL_DEPTH_COMPONENT24, GL_DEPTH_ATTACHMENT, mReflectionTexture->GetTextureRezolution());
-            }
-
-            void RenderToTexture()
-            {
-               RenderToFBO(mReflectionFBO, true, ViewPortInfo(0, 0, mReflectionTexture->GetTextureRezolution()), GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-            }
-         };
-
-
-         static PlanarFBO fbo;
-
-         glm::vec3 normal(0, 1, 0);
-         glm::vec3 posOnPlane(0, 0, 0);
-         float d = -glm::dot(normal, posOnPlane);
-         glm::vec4 plane = glm::vec4(normal, d);
-
-         /* auto mirrorMatrix = glm::mat4(
-             glm::vec4(-2.f*plane.x*plane.x + 1.f, -2.f*plane.y*plane.x, -2.f*plane.z*plane.x, 0.f),
-             glm::vec4(-2.f*plane.x*plane.y, -2.f*plane.y*plane.y + 1.f, -2.f*plane.z*plane.y, 0.f),
-             glm::vec4(-2.f*plane.x*plane.z, -2.f*plane.y*plane.z, -2.f*plane.z*plane.z + 1.f, 0.f),
-             glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
- */
-
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
@@ -504,46 +442,53 @@ namespace Graphics
 
          glEnable(GL_CLIP_DISTANCE0);
 
-         auto cameraProxy = recordSceneView->GetCameraProxy();
-
-         // todo: REMOVE DYNAMIC ALLOCATION of RENDER STATE!!!!!
+         //// todo: REMOVE DYNAMIC ALLOCATION of RENDER STATE!!!!!
          RenderState renderState(std::make_shared<DepthStencilState<true>>(),
             std::make_shared<BlendingState<false>>());
          renderState.BindRenderState();
 
-         fbo.RenderToTexture();
-
-         const auto& viewMatrix = cameraProxy->GetViewMatrix();
-         const auto& projectionMatrix = cameraProxy->GetProjectionMatrix();
-
-         if (mForwardRenderingProxiesVec.size() > 0)
+         for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec) 
          {
-            for (auto& proxy : mForwardRenderingProxiesVec)
+            auto wp =  planarReflectionProxy->GetSceneViewWeakPtr();
+            if (auto scenViewSp = wp.lock()) 
             {
-               if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
+               const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
+               const auto& projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
+               const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
+               const glm::vec4& mirrorPlane = planarReflectionProxy->GetReflectionPlane();
+               planarReflectionProxy->RenderToPlanarReflectionFBO();
+
+               if (mForwardRenderingProxiesVec.size() > 0)
+               {
+                  for (auto& proxy : mForwardRenderingProxiesVec)
+                  {
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                  }
+               }
+
+               if (mSkeletalProxiesVec.size() > 0)
+               {
+                  for (auto& proxy : mSkeletalProxiesVec)
+                  {
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                  }
+               }
+
+               if (mNonSkeletalProxiesVec.size() > 0)
+               {
+                  for (auto& proxy : mNonSkeletalProxiesVec)
+                  {
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                  }
+               }
+
+               planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
             }
          }
 
-         if (mSkeletalProxiesVec.size() > 0)
-         {
-            for (auto& proxy : mSkeletalProxiesVec)
-            {
-               if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
-            }
-         }
-
-         if (mNonSkeletalProxiesVec.size() > 0)
-         {
-            for (auto& proxy : mNonSkeletalProxiesVec)
-            {
-               if (proxy->IsEnabled() && proxy->IsVisible())
-                  proxy->RenderPlanarReflection(plane, viewMatrix, projectionMatrix);
-            }
-         }
-
-         fbo.UnbindFramebuffer();
 
          glDisable(GL_CULL_FACE);
          glDisable(GL_CLIP_DISTANCE0);
@@ -667,10 +612,7 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               if (SceneViewsMap.size())
-               {
-                  PlanarReflectionPass(SceneViewsMap.begin()->second, glm::mat4());
-               }
+               PlanarReflectionPass();
 
                DepthPass(sceneView);
 

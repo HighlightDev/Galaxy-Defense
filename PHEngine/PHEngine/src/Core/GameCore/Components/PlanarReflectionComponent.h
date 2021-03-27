@@ -16,16 +16,18 @@ namespace Game {
    class PlanarReflectionComponent :
       public SceneComponent
    {
+      size_t mPlanarReflectionSceneProxyId = -1;
+
+      glm::vec4 mReflectionPlane;
+
       ACamera* mOwnerCamera;
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
-      size_t mPlanarReflectionSceneProxyId = -1;
-
    public:
 
       PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation,
-         glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo);
+         glm::vec3 scale, const glm::vec4& reflectionPlane, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo);
 
       virtual ~PlanarReflectionComponent();
 
@@ -38,6 +40,8 @@ namespace Game {
       ACamera* GetOwnerCamera() const;
 
       size_t GetSceneProxyId() const;
+
+      glm::vec4 GetReflectionPlane() const;
 
       void SetSceneProxyId(const size_t sceneProxyId);
 

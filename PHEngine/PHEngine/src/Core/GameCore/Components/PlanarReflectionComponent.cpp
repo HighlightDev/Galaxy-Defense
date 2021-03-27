@@ -7,8 +7,9 @@ using namespace Graphics;
 namespace Game {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation,
-      glm::vec3 rotation, glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
+      glm::vec3 rotation, glm::vec3 scale, const glm::vec4& reflectionPlane, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
       : SceneComponent(gameObjectName, translation, rotation, scale)
+      , mReflectionPlane(reflectionPlane)
       , mOwnerCamera(ownerCamera)
       , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
    {
@@ -47,6 +48,11 @@ namespace Game {
    size_t PlanarReflectionComponent::GetSceneProxyId() const
    {
       return mPlanarReflectionSceneProxyId;
+   }
+
+   glm::vec4 PlanarReflectionComponent::GetReflectionPlane() const
+   {
+      return mReflectionPlane;
    }
 
    void PlanarReflectionComponent::SetSceneProxyId(const size_t sceneProxyId)

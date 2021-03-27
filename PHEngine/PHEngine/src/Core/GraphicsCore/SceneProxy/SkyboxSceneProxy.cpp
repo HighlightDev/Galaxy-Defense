@@ -56,17 +56,11 @@ namespace Graphics
          shaderPtr->StopShader();
       }
 
-      void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
          glEnable(GL_CULL_FACE);
          glCullFace(GL_BACK);
          const auto& planarReflectionShader = GetPlanarReflectionShader();
-
-         const glm::mat4& mirrorMatrix = glm::mat4(
-            glm::vec4(-2.f*plane.x*plane.x + 1.f, -2.f*plane.y*plane.x, -2.f*plane.z*plane.x, 0.f),
-            glm::vec4(-2.f*plane.x*plane.y, -2.f*plane.y*plane.y + 1.f, -2.f*plane.z*plane.y, 0.f),
-            glm::vec4(-2.f*plane.x*plane.z, -2.f*plane.y*plane.z, -2.f*plane.z*plane.z + 1.f, 0.f),
-            glm::vec4(2.f*plane.x*plane.w, 2.f*plane.y*plane.w, 2.f*plane.z*plane.w, 1.f));
 
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
