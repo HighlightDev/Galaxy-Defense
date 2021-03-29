@@ -129,13 +129,8 @@ namespace Labyrinth
       int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
       int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
-      glm::vec3 normal(0, 1, 0);
-      glm::vec3 posOnPlane(0, 20, 0);
-      float d = -glm::dot(normal, posOnPlane);
-      glm::vec4 plane = glm::vec4(normal, d);
-
       auto cameraPtr = mScene->GetMainCamera().get();
-      PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(), glm::vec3(), glm::vec3(1), plane, cameraPtr,
+      PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(0, 20, 0), glm::vec3(), glm::vec3(1), cameraPtr,
       ViewPortInfo(0,0,windowWidth, windowHeight) };
       volatile auto planarReflectionComp =
          std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));

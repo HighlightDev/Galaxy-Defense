@@ -1,6 +1,11 @@
 #pragma once
 #include "SceneComponent.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceController.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
+
+using namespace Resources;
+using namespace Graphics::Texture;
 
 namespace Graphics{
 
@@ -13,8 +18,8 @@ namespace Game {
 
    using Graphics::PlanarReflectionProxy;
    
-   class PlanarReflectionComponent :
-      public SceneComponent
+   class PlanarReflectionComponent 
+      : public SceneComponent
    {
       size_t mPlanarReflectionSceneProxyId = -1;
 
@@ -24,10 +29,12 @@ namespace Game {
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
+      DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE> mPlanarReflectionDeferredController;
+
    public:
 
       PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation,
-         glm::vec3 scale, const glm::vec4& reflectionPlane, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo);
+         glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo);
 
       virtual ~PlanarReflectionComponent();
 
@@ -46,6 +53,12 @@ namespace Game {
       void SetSceneProxyId(const size_t sceneProxyId);
 
       virtual ComponentType GetComponentType() const override;
+
+      void SyncDataWithRenderThread();
+
+   private:
+
+      void UpdateReflectionPlane();
    };
 }
 

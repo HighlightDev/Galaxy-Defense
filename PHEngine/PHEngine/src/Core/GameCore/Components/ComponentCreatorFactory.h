@@ -323,7 +323,7 @@ namespace Game
             const PlanarReflectionComponentData& mData = static_cast<const PlanarReflectionComponentData&>(data);
             assert(mData.m_ownerCamera);
             const auto& component = std::make_shared<ComponentType>(mData.GameObjectName, mData.m_translation,
-               mData.m_eulerRotationDegrees, mData.m_scale, mData.m_reflectionPlane, mData.m_ownerCamera, mData.m_fboViewPortInfo);
+               mData.m_eulerRotationDegrees, mData.m_scale, mData.m_ownerCamera, mData.m_fboViewPortInfo);
 
             mData.m_ownerCamera->SetPlanarReflectionComponent(component);
             return component;

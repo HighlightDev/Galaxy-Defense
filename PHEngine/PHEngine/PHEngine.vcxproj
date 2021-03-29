@@ -345,6 +345,7 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h" />
@@ -362,6 +363,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.h" />
     <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SpotlightRenderData.h" />
+    <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\MainThirdPersonCamera.h" />
@@ -839,6 +841,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlanarReflectionComponent.cpp" />
@@ -850,6 +853,7 @@
     <ClCompile Include="src\Core\GameCore\Components\SpotlightComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedSpotlightShadowInfo.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferObject.cpp" />
+    <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingGBuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.cpp" />

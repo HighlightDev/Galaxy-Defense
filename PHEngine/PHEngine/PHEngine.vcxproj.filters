@@ -1959,6 +1959,12 @@
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2439,6 +2445,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

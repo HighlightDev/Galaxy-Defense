@@ -42,6 +42,7 @@ namespace Graphics {
 
    void PlanarReflectionProxy::SetReflectionPlane(const glm::vec4& reflectionPlane) {
       mReflectionPlane = reflectionPlane;
+      mMirrorMatrix = EngineMath::BuildMirrorMatrix(mReflectionPlane);
    }
 
    glm::mat4 PlanarReflectionProxy::GetMirrorMatrix() const {

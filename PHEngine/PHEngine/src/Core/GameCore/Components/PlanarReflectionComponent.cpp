@@ -1,22 +1,42 @@
 #include "PlanarReflectionComponent.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "core/GraphicsCore/Texture/Texture2d.h"
 
 using namespace Graphics;
+using namespace EngineMath;
 
 namespace Game {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation,
-      glm::vec3 rotation, glm::vec3 scale, const glm::vec4& reflectionPlane, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
+      glm::vec3 rotation, glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
       : SceneComponent(gameObjectName, translation, rotation, scale)
-      , mReflectionPlane(reflectionPlane)
+      , mReflectionPlane()
       , mOwnerCamera(ownerCamera)
       , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
+      , mPlanarReflectionDeferredController()
    {
+      assert(false); // todo: continue from here
+      auto deferredResource = mPlanarReflectionDeferredController.GetDeferredResource();
+      mPlanarReflectionDeferredController.SetResource(std::make_shared<Texture2d>(0, glm::ivec2(0, 0)));
+      deferredResource->GetResource();
    }
 
    PlanarReflectionComponent::~PlanarReflectionComponent()
    {
+   }
+
+   void PlanarReflectionComponent::UpdateReflectionPlane()
+   {
+      glm::vec4 positionOnPlane = m_relativeMatrix * glm::vec4(0, 0, 0, 1);
+      const glm::vec3 defaultNormal = AXIS_UP;
+      glm::vec4 normal = m_relativeMatrix * glm::vec4(defaultNormal, 0.0f);
+
+      float d = -glm::dot(normal, positionOnPlane);
+      mReflectionPlane = glm::vec4(glm::vec3(normal), d);
    }
 
    ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const {
@@ -36,6 +56,8 @@ namespace Game {
          if (bTransformationDirty)
          {
             UpdateRelativeMatrix();
+            UpdateReflectionPlane();
+            SyncDataWithRenderThread();
          }
       }
    }
@@ -62,6 +84,22 @@ namespace Game {
 
    ComponentType PlanarReflectionComponent::GetComponentType() const {
       return PLANAR_REFLECTION_COMPONENT;
+   }
+
+   void PlanarReflectionComponent::SyncDataWithRenderThread()
+   {
+      static constexpr uint64_t functionId = Hash("PlanarReflectionComponent: SyncDataWithRenderThread");
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+
+               PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
+               proxyPtr->SetReflectionPlane(mReflectionPlane);
+            });
+         }
+      }
    }
 
 }
