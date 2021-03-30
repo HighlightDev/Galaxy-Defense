@@ -1,5 +1,11 @@
 #include "MaterialPropertySetter.h"
 #include "IMaterial.h"
+#include "TextureMaterialProperty.h"
+#include "FloatMaterialProperty.h"
+#include "DeferredTextureMaterialProperty.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
+
+using namespace Resources;
 
 namespace Graphics
 {
@@ -38,5 +44,21 @@ namespace Graphics
       assert(floatProperty);
 
       floatProperty->SetValue(value);
+   }
+
+   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator)
+   {
+      assert(materialInstance);
+
+      auto property = materialInstance->GetMaterialPropertyByName(propertyName);
+
+      if (property->GetMaterialPropertyType() == MaterialProperty::MaterialPropertyType::DEFERRED_TEXTURE_PROPERTY)
+      {
+         auto deferredTextureProperty = std::static_pointer_cast<DeferredTextureMaterialProperty>(property);
+         assert(deferredTextureProperty);
+         auto textureResource = std::static_pointer_cast<IDeferredResource<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>(deferredResourceCreator->GetDeferredResource());
+         assert(textureResource);
+         deferredTextureProperty->SetValue(textureResource);
+      }
    }
 }

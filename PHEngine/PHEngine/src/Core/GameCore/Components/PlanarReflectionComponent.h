@@ -2,6 +2,7 @@
 #include "SceneComponent.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceController.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
 using namespace Resources;
@@ -20,6 +21,7 @@ namespace Game {
    
    class PlanarReflectionComponent 
       : public SceneComponent
+      , public IDeferredResourceCreator
    {
       size_t mPlanarReflectionSceneProxyId = -1;
 
@@ -55,6 +57,8 @@ namespace Game {
       virtual ComponentType GetComponentType() const override;
 
       void SyncDataWithRenderThread();
+
+      virtual std::shared_ptr<IDeferredResourceBase> GetDeferredResource() override;
 
    private:
 

@@ -2,6 +2,8 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/CommonCore/XMLParserHelper.h"
+#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
 
 using namespace Common;
 

@@ -15,6 +15,8 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
+#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
 
 #include <TinyLogger/LogInterface.h>
 

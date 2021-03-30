@@ -1,5 +1,6 @@
 #pragma once
 #include "DynamicMaterial.h"
+#include "FloatMaterialProperty.h"
 
 namespace Graphics
 {

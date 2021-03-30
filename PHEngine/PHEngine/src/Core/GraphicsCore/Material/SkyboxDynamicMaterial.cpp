@@ -1,4 +1,6 @@
 #include "SkyboxDynamicMaterial.h"
+#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
 
 namespace Graphics
 {

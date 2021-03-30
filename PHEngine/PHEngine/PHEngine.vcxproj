@@ -345,6 +345,9 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Material\DeferredTextureMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\FloatMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\TextureMaterialProperty.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h" />
@@ -364,6 +367,7 @@
     <ClInclude Include="src\Core\GameCore\Event\TextureAtlasGeneratedEvent.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SpotlightRenderData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.h" />
+    <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceCreator.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\MainThirdPersonCamera.h" />

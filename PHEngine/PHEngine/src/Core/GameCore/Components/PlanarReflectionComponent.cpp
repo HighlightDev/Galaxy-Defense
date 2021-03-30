@@ -19,10 +19,6 @@ namespace Game {
       , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
       , mPlanarReflectionDeferredController()
    {
-      assert(false); // todo: continue from here
-      auto deferredResource = mPlanarReflectionDeferredController.GetDeferredResource();
-      mPlanarReflectionDeferredController.SetResource(std::make_shared<Texture2d>(0, glm::ivec2(0, 0)));
-      deferredResource->GetResource();
    }
 
    PlanarReflectionComponent::~PlanarReflectionComponent()
@@ -84,6 +80,11 @@ namespace Game {
 
    ComponentType PlanarReflectionComponent::GetComponentType() const {
       return PLANAR_REFLECTION_COMPONENT;
+   }
+
+   std::shared_ptr<IDeferredResourceBase> PlanarReflectionComponent::GetDeferredResource()
+   {
+      return mPlanarReflectionDeferredController.GetDeferredResource();
    }
 
    void PlanarReflectionComponent::SyncDataWithRenderThread()

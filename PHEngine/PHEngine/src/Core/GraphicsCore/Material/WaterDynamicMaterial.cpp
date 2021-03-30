@@ -1,4 +1,5 @@
 #include "WaterDynamicMaterial.h"
+#include "TextureMaterialProperty.h"
 #include "Core/IoCore/FolderManager.h"
 
 namespace Graphics
