@@ -31,7 +31,7 @@ namespace Game {
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
-      DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE> mPlanarReflectionDeferredController;
+      std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>> mPlanarReflectionDeferredController;
 
    public:
 
@@ -43,6 +43,10 @@ namespace Game {
       std::shared_ptr<PlanarReflectionProxy> CreatePlanarReflectionProxy();
 
       virtual void Tick(const float deltaTime) override;
+
+      virtual void OnPostInitialized() override;
+
+      virtual void PostLevelInit() override;
 
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
 

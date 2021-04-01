@@ -40,6 +40,11 @@ namespace Graphics {
       mPlanarReflectionFBO->UnbindFramebuffer();
    }
 
+   void PlanarReflectionProxy::ResolveReflectionRenderTargetSurfaceData() 
+   {
+      mPlanarReflectionFBO->ResolveReflectionRenderTargetSurfaceData();
+   }
+
    void PlanarReflectionProxy::SetReflectionPlane(const glm::vec4& reflectionPlane) {
       mReflectionPlane = reflectionPlane;
       mMirrorMatrix = EngineMath::BuildMirrorMatrix(mReflectionPlane);
@@ -51,6 +56,10 @@ namespace Graphics {
 
    glm::vec4 PlanarReflectionProxy::GetReflectionPlane() const {
       return mReflectionPlane;
+   }
+
+   std::shared_ptr<ITexture> PlanarReflectionProxy::GetPlanarReflectionTexture() const {
+      return mPlanarReflectionFBO->GetReflectionTexture();
    }
 
 }

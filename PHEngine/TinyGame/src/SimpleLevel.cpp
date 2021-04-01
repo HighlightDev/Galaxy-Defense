@@ -100,9 +100,6 @@ namespace Labyrinth
    void SimpleLevel::PostLevelInit()
    {
       Base::PostLevelInit();
-
-      ResourceMap::DeleteInstance();
-      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
    void SimpleLevel::LoadLevel()
@@ -119,12 +116,6 @@ namespace Labyrinth
          mScene->RegisterMainCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
       }
 
-      // todo: only test
-#if false
-      DeserializeLevel("test_serialize.xml");
-#else
-      RunLuaBuildLevelScript();
-#endif
 
       int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
       int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
@@ -135,6 +126,12 @@ namespace Labyrinth
       volatile auto planarReflectionComp =
          std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
 
+      // todo: only test
+#if false
+      DeserializeLevel("test_serialize.xml");
+#else
+      RunLuaBuildLevelScript();
+#endif
 
 #if false
       // Water

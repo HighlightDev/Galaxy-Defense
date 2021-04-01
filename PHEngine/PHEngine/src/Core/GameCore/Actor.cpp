@@ -58,7 +58,6 @@ namespace Game
 
       for (auto& actor : m_children)
       {
-         // tick all attached actors
          actor->PostLevelInit();
       }
 

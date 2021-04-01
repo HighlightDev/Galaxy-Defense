@@ -80,6 +80,7 @@ function CreateTestLevel(host)
 
 	-- ****************************BIG GROUND***************************** --
 	local material = _CreateMaterial(host, "Pbs.m")
+	--_SetDeferredTextureToMaterial(host, material, "PlanarReflectionComp", "albedo")
 	_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
 	_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 	_SetFloatToMaterial(host, material, 10.0, "uvScale")
@@ -102,7 +103,7 @@ function CreateTestLevel(host)
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",
-	0, 15, 0,
+	0, 25, 0,
 	0, 0, 0,
 	1, 1, 1)
 

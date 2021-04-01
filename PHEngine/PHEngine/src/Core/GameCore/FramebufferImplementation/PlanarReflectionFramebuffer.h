@@ -13,9 +13,11 @@ namespace Game {
       {
          ViewPortInfo mReflectionViewPortInfo;
 
+         std::shared_ptr<ITexture> mReflectionSurfaceTarget;
          std::shared_ptr<ITexture> mReflectionTexture;
 
-         FramebufferObject mReflectionFBO;
+         FramebufferObject mReflectionRenderTargetSurface;
+         FramebufferObject mReflectionTextureSurface;
 
       public:
 
@@ -24,6 +26,10 @@ namespace Game {
          virtual ~PlanarReflectionFramebuffer();
 
          void RenderToTexture();
+
+         void ResolveReflectionRenderTargetSurfaceData();
+
+         std::shared_ptr<ITexture> GetReflectionTexture() const;
 
       protected:
 

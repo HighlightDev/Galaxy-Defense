@@ -44,6 +44,10 @@ namespace Game
       return base;
    }
 
+   void Component::OnPostInitialized() {
+
+   }
+
    void Component::PostLevelInit() {
 
    }

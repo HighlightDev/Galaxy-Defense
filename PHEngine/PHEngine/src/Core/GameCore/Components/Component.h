@@ -47,6 +47,8 @@ namespace Game
 
       virtual void SetIsEnabled(const bool bEnabled);
 
+      virtual void OnPostInitialized();
+
       virtual void PostLevelInit();
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;

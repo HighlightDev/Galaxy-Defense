@@ -17,7 +17,7 @@ namespace Game {
       , mReflectionPlane()
       , mOwnerCamera(ownerCamera)
       , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
-      , mPlanarReflectionDeferredController()
+      , mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
    {
    }
 
@@ -43,6 +43,35 @@ namespace Game {
    std::shared_ptr<PlanarReflectionProxy> PlanarReflectionComponent::CreatePlanarReflectionProxy()
    {
       return std::make_shared<PlanarReflectionProxy>(this);
+   }
+
+   void PlanarReflectionComponent::OnPostInitialized()
+   {
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         sceneSP->RegisterDeferredResourceCreator(this, GetGameObjectName());
+      }
+   }
+
+   void PlanarReflectionComponent::PostLevelInit()
+   {
+      static constexpr uint64_t functionId = Hash("PlanarReflectionComponent: PostLevelInit");
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+            {
+               sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+
+                  PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
+                  auto resourceTexture = proxyPtr->GetPlanarReflectionTexture();
+                  mPlanarReflectionDeferredController->GetDeferredResource(); // Just in case deferred resource wasn't initialized
+                  mPlanarReflectionDeferredController->SetResource(resourceTexture);
+               });
+            }
+         }
+      }
    }
 
    void PlanarReflectionComponent::Tick(const float deltaTime)
@@ -84,7 +113,7 @@ namespace Game {
 
    std::shared_ptr<IDeferredResourceBase> PlanarReflectionComponent::GetDeferredResource()
    {
-      return mPlanarReflectionDeferredController.GetDeferredResource();
+      return mPlanarReflectionDeferredController->GetDeferredResource();
    }
 
    void PlanarReflectionComponent::SyncDataWithRenderThread()

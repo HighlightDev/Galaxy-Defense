@@ -80,6 +80,8 @@ namespace Game
 
       virtual void Tick(const float DeltaTime) override;
 
+      virtual void PostLevelInit();
+
       virtual glm::vec3 GetEyeVector() const = 0;
 
       virtual glm::vec3 GetTargetVector() const = 0;

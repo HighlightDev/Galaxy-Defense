@@ -4,6 +4,8 @@
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
+#include "Core/GameCore/GlobalSettings.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -31,6 +33,9 @@ namespace Game
    void Level::PostLevelInit()
    {
       mScene->PostLevelInit();
+
+      ResourceMap::DeleteInstance();
+      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
    void Level::PostPhysicsInitialize()

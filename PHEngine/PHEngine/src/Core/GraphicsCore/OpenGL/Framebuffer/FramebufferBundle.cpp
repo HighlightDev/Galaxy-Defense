@@ -37,19 +37,19 @@ namespace Graphics
 
    void FramebufferBundle::RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, size_t viewportX, size_t viewportY, size_t viewportWidth, size_t viewportHeight, GLbitfield clearFlag) const
    {
-      fbo.BindFramebuffer(bBindFramebuffer, true);
+      fbo.BindFramebuffer(GL_FRAMEBUFFER, bBindFramebuffer, true);
       SetupViewport(viewportX, viewportY, viewportWidth, viewportHeight, clearFlag);
    }
 
    void FramebufferBundle::RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, const glm::ivec4& viewport, GLbitfield clearFlag) const
    {
-      fbo.BindFramebuffer(bBindFramebuffer, true);
+      fbo.BindFramebuffer(GL_FRAMEBUFFER, bBindFramebuffer, true);
       SetupViewport(viewport.x, viewport.y, viewport.z, viewport.w, clearFlag);
    }
 
    void FramebufferBundle::RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, const ViewPortInfo& viewport, GLbitfield clearFlag) const
    {
-      fbo.BindFramebuffer(bBindFramebuffer, true);
+      fbo.BindFramebuffer(GL_FRAMEBUFFER, bBindFramebuffer, true);
       SetupViewport(viewport.OriginX, viewport.OriginY, viewport.Width, viewport.Height, clearFlag);
    }
 }

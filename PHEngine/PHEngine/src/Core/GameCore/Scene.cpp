@@ -27,6 +27,11 @@ namespace Game
          actor->SetScene(mMeSharedPtr);
          actor->PostLevelInit();
       }
+
+      for (auto& camera : mActiveCameras)
+      {
+         camera->PostLevelInit();
+      }
    }
 
    void Scene::PostPhysicsInitialize()
@@ -159,6 +164,18 @@ namespace Game
       }
 
       return go;
+   }
+
+   IDeferredResourceCreator* Scene::GetDeferredResourceCreatorByName(const std::string& name) const
+   {
+      IDeferredResourceCreator* creatorInstance = nullptr;
+
+      if (mDeferredResourceCreators.count(name))
+      {
+         creatorInstance = mDeferredResourceCreators.at(name);
+      }
+
+      return creatorInstance;
    }
 
    std::shared_ptr<PlayerController> Scene::GetPlayerController() const
@@ -520,6 +537,27 @@ namespace Game
             PlanarReflectionSceneProxyAdded(componentPtr->GetSceneProxyId(), sceneProxySp);
          }
       }
+   }
+
+   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string& gameObjectName)
+   {
+      // Add deferred resource creator instance
+      assert(!mDeferredResourceCreators.count(gameObjectName));
+      mDeferredResourceCreators[gameObjectName] = creatorInstance;
+
+      return true;
+   }
+
+   bool Scene::RemoveDeferredResourceCreator(const std::string& gameObjectName) 
+   {
+      // Remove deferred resource creator instance
+      if (mDeferredResourceCreators.count(gameObjectName))
+      {
+         mDeferredResourceCreators.erase(gameObjectName);
+         return true;
+      }
+
+      return false;
    }
 
    bool Scene::RegisterGameObject(GameObject* const gameObjectPtr)

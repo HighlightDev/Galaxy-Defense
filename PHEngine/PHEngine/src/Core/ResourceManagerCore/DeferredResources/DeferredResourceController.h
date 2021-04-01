@@ -44,6 +44,7 @@ namespace Resources
       }
 
       void SetResource(typename TResource const& resource) {
+         assert(mDeferredResource);
          assert(mDeferredResource->GetIsFutureInitialized());
          mPromise.set_value(resource);
          bValueSet = true;

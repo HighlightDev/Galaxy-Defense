@@ -34,6 +34,8 @@ namespace Game
 
    private:
 
+      std::unordered_map<std::string, IDeferredResourceCreator*> mDeferredResourceCreators;
+
       std::vector<std::shared_ptr<Actor>> mActors;
 
       InterThreadCommunicationMgr& m_interThreadMgr;
@@ -60,6 +62,7 @@ namespace Game
          const auto& component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData, this);
          RegisterComponentSceneProxy(component);
          RegisterGameObject(component.get());
+         component->OnPostInitialized();
 
          return component;
       }
@@ -79,6 +82,8 @@ namespace Game
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<IMaterial> material);
 
       GameObject* GetGameObjectByName(const std::string& name) const;
+
+      IDeferredResourceCreator* GetDeferredResourceCreatorByName(const std::string& name) const;
 
       std::shared_ptr<PlayerController> GetPlayerController() const;
 
@@ -136,6 +141,10 @@ namespace Game
       void PlanarReflectionSceneProxyAdded(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy);
 
       void BindPlanarReflectionSceneProxyToSceneView(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera* cameraOwner);
+
+      bool RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string& gameObjectName);
+
+      bool RemoveDeferredResourceCreator(const std::string& gameObjectName);
 
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);

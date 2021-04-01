@@ -4,6 +4,7 @@
 #include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/DeferredTextureMaterialProperty.h"
 
 using namespace Common;
 
@@ -28,6 +29,10 @@ namespace Graphics
       else if ("float" == propertyType)
       {
          resultProperty = std::make_shared<FloatMaterialProperty>();
+      }
+      else if ("deferred_texture" == propertyType)
+      {
+         resultProperty = std::make_shared<DeferredTextureMaterialProperty>();
       }
       else
       {

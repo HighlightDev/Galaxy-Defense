@@ -40,7 +40,7 @@ namespace Game
 
       void WaterPlaneFramebuffer::SetRenderbuffers()
       {
-         mReflectionFBO.BindFramebuffer(false);
+         mReflectionFBO.BindFramebuffer(GL_FRAMEBUFFER, false);
          mReflectionFBO.CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, mReflectionTexture->GetTextureRezolution());
       }
 

@@ -58,6 +58,12 @@ namespace Game
       UpdateCameraProxyData(DeltaTime);
    }
 
+   void ACamera::PostLevelInit()
+   {
+      if (mPlanarReflectionComponent)
+         mPlanarReflectionComponent->PostLevelInit();
+   }
+
    void ACamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
    {
       if (std::abs(deltaY) > 500)

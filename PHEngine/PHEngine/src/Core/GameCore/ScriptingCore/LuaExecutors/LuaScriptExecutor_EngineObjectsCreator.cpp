@@ -53,6 +53,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder<>)>::Register(mLuaInstance, "_CreateMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
+      LuaRegisterCallback<LuaExecutor_t, void(LuaArgDummyPlaceholder<>, IMaterial*, std::string, std::string)>::Register(mLuaInstance, "_SetDeferredTextureToMaterial");
 
       LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
 
@@ -261,10 +262,25 @@ namespace Game
             resultPathToAllTextures += ",";
          }
       }
-      texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
 
       const std::string& propertyName = std::get<2>(setTextureToMaterial);
+      texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
       MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, texture);
+   }
+
+   /* -------------------  Set deferred texture --------------------*/
+   void  LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, IMaterial*, /*deferred resource creator name*/std::string, /*property name*/std::string>& data)
+   {
+      IMaterial* material = std::get<1>(data);
+      const std::string& resourceCreatorName = std::get<2>(data);
+      const std::string& propertyName = std::get<3>(data);
+
+      if (auto scene = mSceneWP.lock())
+      {
+         IDeferredResourceCreator* resourceCreator = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
+         assert(resourceCreator);
+         MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, resourceCreator);
+      }
    }
 
    /* -------------------  Set float --------------------*/

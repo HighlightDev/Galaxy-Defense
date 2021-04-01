@@ -15,7 +15,7 @@ namespace Graphics
    private:
 
       uint32_t mFramebufferId;
-      uint32_t mRenderBufferId;
+      std::vector<uint32_t> mRenderBufferId;
 
       std::unordered_map<uint32_t/*FramebufferBundle attachment*/, std::shared_ptr<ITexture>> mRenderTextures;
 
@@ -43,7 +43,9 @@ namespace Graphics
       void CreateRenderBuffer(const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment,
          const glm::ivec2& screenResolution);
 
-      void BindFramebuffer(bool bBindFramebuffer, bool enableAttachmentDrawBuffers = true) const;
+      void BindFramebuffer(uint32_t framebufferTarget, bool bBindFramebuffer, bool enableAttachmentDrawBuffers = true) const;
+
+      void CheckErrors();
 
       void UnbindFramebuffer();
 

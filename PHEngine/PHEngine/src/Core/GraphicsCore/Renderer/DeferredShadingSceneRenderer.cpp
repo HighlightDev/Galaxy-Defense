@@ -486,6 +486,7 @@ namespace Graphics
                }
 
                planarReflectionProxy->StopRenderingToPlanarReflectionFBO();
+               planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
             }
          }
 

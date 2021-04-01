@@ -41,11 +41,15 @@ namespace Graphics
 
       void StopRenderingToPlanarReflectionFBO();
 
+      void ResolveReflectionRenderTargetSurfaceData();
+
       void SetReflectionPlane(const glm::vec4& reflectionPlane);
 
       glm::vec4 GetReflectionPlane() const;
 
       glm::mat4 GetMirrorMatrix() const;
+
+      std::shared_ptr<ITexture> GetPlanarReflectionTexture() const;
 
    };
 }

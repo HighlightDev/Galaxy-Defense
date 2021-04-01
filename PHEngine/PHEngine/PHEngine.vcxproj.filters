@@ -478,6 +478,7 @@
     <None Include="res\shaders\spotlightDepthCollectSkeletalVS.glsl" />
     <None Include="res\shaders\spotlightDepthCollectFS.glsl" />
     <None Include="res\shaders\composite_shaders\planarReflectionVS.glsl" />
+    <None Include="res\materials\test_material.m" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
