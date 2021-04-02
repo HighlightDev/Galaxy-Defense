@@ -20,6 +20,7 @@ namespace Game
 
    protected:
 
+      // todo: should do something with render data on game thread.....
       SkeletalMeshRenderData m_renderData;
 
       std::string mLuaScriptAbsPath;

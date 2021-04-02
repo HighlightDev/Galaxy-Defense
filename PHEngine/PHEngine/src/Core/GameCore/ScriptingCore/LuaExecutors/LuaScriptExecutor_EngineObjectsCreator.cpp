@@ -40,15 +40,20 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(Actor*)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
       LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t, std::string)>::Register(mLuaInstance, "_CreateLightProjectionShadowInfo");
+
+      /*************************************COMPONENT DATA**************************************/
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreatePointLightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateSpotlightComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateMeshComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(LuaArgDummyPlaceholder<>, std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*)>::Register(mLuaInstance, "_CreateSimpleMeshComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, PhysicsDescriptor*)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateCharacterMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateWaterPlaneComponentData");
+      /*************************************COMPONENT DATA**************************************/
 
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder<>)>::Register(mLuaInstance, "_CreateMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
@@ -142,6 +147,26 @@ namespace Game
       auto dataPtr = LuaToCPPAdapter::CreateMeshComponentData(std::get<0>(meshComponentData),
          IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)), std::get<2>(meshComponentData),
          std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
+   }
+
+   /* -------------------  Create simple mesh component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
+   {
+      auto dataPtr = LuaToCPPAdapter::CreateSimpleMeshComponentData(std::get<1>(meshComponentData), std::get<2>(meshComponentData), std::get<3>(meshComponentData),
+         std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData), std::get<7>(meshComponentData));
+
+      mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
+   }
+
+   /* -------------------  Create water plane component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>&  data)
+   {
+      auto dataPtr = LuaToCPPAdapter::CreateWaterPlaneComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
+         std::get<3>(data), std::get<4>(data));
 
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;

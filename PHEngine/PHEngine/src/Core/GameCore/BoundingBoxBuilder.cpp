@@ -15,12 +15,12 @@ namespace Game
 
    BoundingBox BoundingBoxBuilder::Build(const std::vector<float> meshPositions)
    {
-      const size_t countVertices = meshPositions.size() / 3;
+      const size_t positionsNum = meshPositions.size();
 
       glm::vec3 max = glm::vec3(meshPositions[0], meshPositions[1], meshPositions[2]);
       glm::vec3 min = max;
 
-      for (size_t i = 3; i < countVertices; i += 3)
+      for (size_t i = 3; i < positionsNum; i += 3)
       {
          const float vertex_x = meshPositions[i + 0];
          const float vertex_y = meshPositions[i + 1];

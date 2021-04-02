@@ -46,6 +46,12 @@ namespace Game
          return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
+   ComponentData* LuaToCPPAdapter::CreateSimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
+      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material) 
+   {
+      return new SimpleMeshComponentData(gameObjectName, simpleMeshType, translation, rotation, scale, luaPathToFile, material);
+   }
+
    std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
    {
       return std::make_shared<Actor>(gameObjectName, rootComponent);
@@ -100,6 +106,10 @@ namespace Game
       else if ("SkyboxComponent" == componentType)
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(*componentData);
+      }
+      else if ("WaterPlaneComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::WaterPlane, WaterPlaneComponent>(*componentData);
       }
       else
       {
@@ -196,6 +206,11 @@ namespace Game
    ComponentData* LuaToCPPAdapter::CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material) 
    {
       return new SkyboxComponentData(gameObjectName, scale, material);
+   }
+
+   ComponentData* LuaToCPPAdapter::CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance)
+   {
+      return new WaterPlaneComponentData(gameObjectName, translation, rotation, scale, materialInstance);
    }
 
 }

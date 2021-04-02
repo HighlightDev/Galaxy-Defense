@@ -35,11 +35,14 @@ namespace Game
          const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo);
       static ComponentData* CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
          const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material);
+      static ComponentData* CreateSimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
+         const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material);
       static ComponentData* CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor);
       static ComponentData* CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName);
       static ComponentData* CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName);
       static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
       static ComponentData* CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material);
+      static ComponentData* CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance);
 
       static PhysicsShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhysicsShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);

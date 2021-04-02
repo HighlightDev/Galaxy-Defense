@@ -44,10 +44,14 @@ namespace Game
       /* -------------------  Create component ----------------------------*/
       Component* ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData);
 
-      // Specific callbacks
-
        /* -------------------  Create mesh component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
+
+      /* -------------------  Create simple mesh component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
+
+      /* -------------------  Create water plane component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>&  data);
     
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
@@ -108,10 +112,10 @@ namespace Game
       /*-------------------- Create dynamic character controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);
 
-      /* -------------------  Create State machine ----------------------------*/
+      /* -------------------  Create Finite State machine ----------------------------*/
       StateMachine* ExecuteLuaCallback(const std::tuple<Actor*, std::string>& fsmData);
     
-      /* -------------------  Set bindings ------------------------*/
+      /* -------------------  Set fsm bindings ------------------------*/
       void ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData);
    };
 

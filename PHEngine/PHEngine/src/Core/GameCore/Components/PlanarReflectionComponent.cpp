@@ -28,10 +28,10 @@ namespace Game {
    void PlanarReflectionComponent::UpdateReflectionPlane()
    {
       glm::vec4 positionOnPlane = m_relativeMatrix * glm::vec4(0, 0, 0, 1);
-      const glm::vec3 defaultNormal = AXIS_UP;
+      const glm::vec3 defaultNormal = -AXIS_UP;
       glm::vec4 normal = m_relativeMatrix * glm::vec4(defaultNormal, 0.0f);
 
-      float d = -glm::dot(normal, positionOnPlane);
+      float d = glm::dot(normal, positionOnPlane);
       mReflectionPlane = glm::vec4(glm::vec3(normal), d);
    }
 

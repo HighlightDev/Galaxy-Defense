@@ -4,9 +4,12 @@
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <memory>
 #include <algorithm>
+
+using namespace Graphics;
 
 namespace Game
 {
@@ -26,6 +29,21 @@ namespace Game
    void StaticMeshComponent::Tick(const float deltaTime)
    {
       Base::Tick(deltaTime);
+     /* if (auto scene = m_sceneWP.lock())
+      {
+         if (auto sceneRenderer = scene->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            if (sceneRenderer->SceneProxiesMap.size())
+            {
+               SetIsVisible(false);
+            }
+         }
+      }*/
+   }
+
+   void StaticMeshComponent::PostLevelInit()
+   {
+      
    }
 
    std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const

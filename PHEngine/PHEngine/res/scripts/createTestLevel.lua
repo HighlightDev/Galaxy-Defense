@@ -100,6 +100,21 @@ function CreateTestLevel(host)
 	local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
 	_AttachComponentToActor(host, groundActor, phyComponent)
 
+
+	-- ****************************WATER***************************** --
+	local waterActor = _CreateActor(host, "WaterActor",
+	20, 2, 0,
+	0, 0, 0,
+	1, 1, 1)
+
+	local waterMat = _CreateMaterial(host, "Water.m")
+	_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
+	_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
+	_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
+
+	local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
+	local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
+	_AttachComponentToActor(host, waterActor, waterComponent)
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",

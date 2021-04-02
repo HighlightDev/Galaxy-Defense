@@ -122,9 +122,21 @@ namespace Game
       {
          std::shared_ptr<Component> CreateComponent(const ComponentData& data, class Scene* scene)
          {
-            const MeshComponentData& mData = static_cast<const MeshComponentData&>(data);
+            std::shared_ptr<Skin> skin = nullptr;
 
-            typename MeshPool::sharedValue_t skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
+            const MeshComponentData& mData = static_cast<const MeshComponentData&>(data);
+            if (mData.IsSimpleMesh())
+            {
+               const SimpleMeshComponentData& simpleMeshData = static_cast<const SimpleMeshComponentData&>(mData);
+               if ("PLANE" == simpleMeshData.mSimpleMeshType) {
+                  skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES);
+               }
+               else assert(false); // Not implemented
+            }
+            else
+            {
+               skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
+            }
 
             const auto& materialProxy = RegisterMaterialOnScene(scene, mData.m_material);
 
@@ -232,7 +244,7 @@ namespace Game
 
             const CubemapComponentData& mData = static_cast<const CubemapComponentData&>(data);
 
-            int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
+            const int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
             SimplePrimitivePool::sharedValue_t skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
             ShaderParams shaderParams("Cubemap Shader", mData.m_vsShaderPath, mData.m_fsShaderPath);
             ShaderPool::sharedValue_t shader = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(shaderParams);

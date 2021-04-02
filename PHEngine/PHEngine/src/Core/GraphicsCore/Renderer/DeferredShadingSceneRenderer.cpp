@@ -433,9 +433,9 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
       {
-         glEnable(GL_CULL_FACE);
+         glDisable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
-         glCullFace(GL_BACK);
+         //glCullFace(GL_FRONT);
 
          // todo: set clip distance N equal to index of current planar reflection scene proxy
          // in shader also!

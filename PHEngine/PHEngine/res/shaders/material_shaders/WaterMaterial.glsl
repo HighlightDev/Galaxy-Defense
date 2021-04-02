@@ -13,13 +13,13 @@ uniform float strengthFactor;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-	vec2 texCoords = materialIn.TextureCoordinates.xy;
+    vec3 ndc = materialIn.ClippedCoordinates.xyz / materialIn.ClippedCoordinates.w;
+	vec2 texSpaceCoords = (ndc.xy * 0.5) + 0.5;
 
-	vec2 distortedTexCoords = texture(distortion, vec2(texCoords.x + moveFactor * 0.00001, texCoords.y)).rg * 0.1;
-	distortedTexCoords = texCoords + vec2(distortedTexCoords.x, distortedTexCoords.y + moveFactor * 0.00001);
-	vec2 totalDistortion = (texture(distortion, distortedTexCoords).rg * 2.0 - 1.0);
+	vec3 distortionTexColor = texture(distortion, materialIn.TextureCoordinates.xy).rgb;
+	
 
-	return texture(normalMap, texCoords).rgb;
+	return mix(texture(reflectionTexture, texSpaceCoords).rgb, texture(refractionTexture, materialIn.TextureCoordinates.xy).rgb, pow(distortionTexColor.r, 2));
 }
 
 float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)

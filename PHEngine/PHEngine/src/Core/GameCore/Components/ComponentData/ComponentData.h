@@ -12,6 +12,10 @@ namespace Game
       {
 
       }
+
+      virtual ~ComponentData() {
+
+      }
    };
 
 }

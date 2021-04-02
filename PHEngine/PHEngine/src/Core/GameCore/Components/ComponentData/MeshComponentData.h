@@ -30,6 +30,27 @@ namespace Game
       std::string m_luaScriptPath;
 
       Graphics::IMaterial* m_material;
+
+      virtual ~MeshComponentData() {}
+
+      virtual bool IsSimpleMesh() const { return false; }
 	};
+
+   struct SimpleMeshComponentData
+      : public MeshComponentData
+   {
+      SimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
+         const glm::vec3& rotation, const glm::vec3& scale, const std::string& mLuaScriptRelPath, Graphics::IMaterial* material)
+         : MeshComponentData(gameObjectName, "", translation, rotation, scale, mLuaScriptRelPath, material)
+         , mSimpleMeshType(simpleMeshType)
+      {
+      }
+
+      std::string mSimpleMeshType;
+
+      virtual ~SimpleMeshComponentData() {}
+
+      virtual bool IsSimpleMesh() const { return true; }
+   };
 
 }
