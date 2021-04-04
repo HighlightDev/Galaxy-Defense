@@ -156,7 +156,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 #ifdef SHADING_MODEL_PBR
 
-	const float Metallic = 0.1;
+	const float Metallic = 0.4;
 	const float Roughness = 0.8;
 	const float Epsilon = 0.00001;
 	uniform float ao;
@@ -435,7 +435,7 @@ vec3 GetDiffuseColor(in vec3 pixelWorldPos, in vec3 nWorldNormal)
 
 vec3 GetAmbientColor()
 {
-	return DirLightAmbientColor[0];
+	return vec3(0.1);
 }
 
 void main()
@@ -444,9 +444,10 @@ void main()
 	vec3 worldNormal = texture(gBuffer_Normal, fs_in.tex_coords).xyz;
 	vec4 albedoAndSpecular = texture(gBuffer_AlbedoNSpecular, fs_in.tex_coords);
 
-	// Lighting
 	#ifdef SHADING_MODEL_PBR
-		vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0);
+		vec3 ambientColor = (1.0 - step(1, DirLightCount)) * GetAmbientColor();
+		vec3 ambientAlbedo = albedoAndSpecular.xyz * ambientColor;
+		vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0) + vec4(ambientAlbedo, 1.0);
 	#else
 		#ifdef NO_LIT
 			vec4 totalColor = albedoAndSpecular;

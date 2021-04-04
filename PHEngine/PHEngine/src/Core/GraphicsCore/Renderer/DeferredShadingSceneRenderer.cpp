@@ -431,11 +431,11 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionPass()
+      void DeferredShadingSceneRenderer::PlanarReflectionPass(std::shared_ptr<SceneView> sceneView)
       {
-         glDisable(GL_CULL_FACE);
+         glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
-         //glCullFace(GL_FRONT);
+         glCullFace(GL_BACK);
 
          // todo: set clip distance N equal to index of current planar reflection scene proxy
          // in shader also!
@@ -452,17 +452,21 @@ namespace Graphics
             auto wp =  planarReflectionProxy->GetSceneViewWeakPtr();
             if (auto scenViewSp = wp.lock()) 
             {
+
                const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
                const auto& projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
                const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
                const glm::vec4& mirrorPlane = planarReflectionProxy->GetReflectionPlane();
+
+               auto visibilityMap = sceneView->GetVisibilityForTransformedFrustum(mirrorMatrix);
+
                planarReflectionProxy->RenderToPlanarReflectionFBO();
 
                if (mForwardRenderingProxiesVec.size() > 0)
                {
                   for (auto& proxy : mForwardRenderingProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
                         proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
                   }
                }
@@ -471,7 +475,7 @@ namespace Graphics
                {
                   for (auto& proxy : mSkeletalProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
                         proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
                   }
                }
@@ -480,7 +484,7 @@ namespace Graphics
                {
                   for (auto& proxy : mNonSkeletalProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
                         proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
                   }
                }
@@ -613,7 +617,7 @@ namespace Graphics
             // Deferred shading is done with main camera
             if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
             {
-               PlanarReflectionPass();
+               PlanarReflectionPass(sceneView);
 
                DepthPass(sceneView);
 

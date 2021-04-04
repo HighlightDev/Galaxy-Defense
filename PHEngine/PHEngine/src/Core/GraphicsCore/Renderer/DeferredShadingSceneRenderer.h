@@ -119,7 +119,7 @@ namespace Graphics
 
          void DepthPass(std::shared_ptr<SceneView> sceneView);
 
-         void PlanarReflectionPass();
+         void PlanarReflectionPass(std::shared_ptr<SceneView> sceneView);
 
       public:
 

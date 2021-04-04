@@ -41,4 +41,32 @@ namespace Graphics
       assert(mVisibilityMap.count(proxyId));
       return mVisibilityMap.at(proxyId);
    }
+
+   // todo: create something better
+   std::unordered_map<size_t/*proxy id*/, bool> SceneView::GetVisibilityForTransformedFrustum(const glm::mat4& transformMatrix)
+   {
+      CameraFrustum transformedFrustum;
+      auto viewMat = mCameraProxy->GetViewMatrix();
+      auto projMat = mCameraProxy->GetProjectionMatrix();
+      transformedFrustum.ConstructFromViewProjectionMatrix(viewMat * transformMatrix, projMat);
+
+
+      std::unordered_map<size_t/*proxy id*/, bool> resultMap;
+
+      for (const auto& primitiveProxyPair : mPrimitiveProxies)
+      {
+         auto proxy = primitiveProxyPair.second;
+
+         bool bProxyVisible = true;
+
+         if (proxy->IsFrustumCullTestNeeded())
+         {
+            bProxyVisible = transformedFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
+         }
+
+         resultMap[primitiveProxyPair.first] = bProxyVisible;
+      }
+
+      return resultMap;
+   }
 }

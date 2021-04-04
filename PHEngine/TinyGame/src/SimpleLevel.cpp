@@ -69,6 +69,7 @@ namespace Labyrinth
       folderManager->CreateFilePathMap(folderManager->GetAlbedoTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetNormalMapPath());
       folderManager->CreateFilePathMap(folderManager->GetSpecularMapPath());
+      folderManager->CreateFilePathMap(folderManager->GetDistortionTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetCubemapTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetModelPath());
       folderManager->CreateFilePathMap(folderManager->GetMaterialPath());

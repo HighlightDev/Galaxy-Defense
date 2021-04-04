@@ -1,14 +1,12 @@
 function CreateTestLevel(host)
 	
-	local actorTranslation = { x = 0, y = 0, z = 0 }
-	local actorRotation = { x = 0, y = 0, z = 0 }
-	local actorScale = { x = 1, y = 1, z = 1 }
+	local aTra = { x = 0, y = 0, z = 0 }
+	local aRot = { x = 0, y = 0, z = 0 }
+	local aSca = { x = 1, y = 1, z = 1 }
 
 	-- ****************************LIGHT***************************** --
 
-	local lightActor = _CreateActor(host, "MainLightActor", actorTranslation.x,actorTranslation.y,actorTranslation.z,
-		actorRotation.x,actorRotation.y,actorRotation.z,
-		actorScale.x, actorScale.y, actorScale.z)
+	local lightActor = _CreateActor(host, "MainLightActor", aTra.x,aTra.y,aTra.z, aRot.x,aRot.y,aRot.z,aSca.x, aSca.y, aSca.z)
 
 	if lightActor ~= nil then
 		local rotation = { x = 0, y = 0, z = 0 }
@@ -110,7 +108,9 @@ function CreateTestLevel(host)
 	local waterMat = _CreateMaterial(host, "Water.m")
 	_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
 	_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
+	--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
 	_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
+	
 
 	local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
 	local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
