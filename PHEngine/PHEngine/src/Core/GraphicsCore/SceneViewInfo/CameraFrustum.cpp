@@ -65,4 +65,10 @@ namespace Graphics
    {
       return (IsIntersectionWithBox(boundingBox.GetOrigin(), boundingBox.GetHalfExtent()));
    }
+
+   CameraFrustum  CameraFrustum::GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {
+      CameraFrustum result;
+      result.ConstructFromViewProjectionMatrix(viewMatrix, projectionMatrix);
+      return result;
+   }
 }

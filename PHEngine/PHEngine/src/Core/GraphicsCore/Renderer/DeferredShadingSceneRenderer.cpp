@@ -431,15 +431,11 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionPass(std::shared_ptr<SceneView> sceneView)
+      void DeferredShadingSceneRenderer::PlanarReflectionPass()
       {
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
-
-         // todo: set clip distance N equal to index of current planar reflection scene proxy
-         // in shader also!
-
          glEnable(GL_CLIP_DISTANCE0);
 
          //// todo: REMOVE DYNAMIC ALLOCATION of RENDER STATE!!!!!
@@ -447,18 +443,18 @@ namespace Graphics
             std::make_shared<BlendingState<false>>());
          renderState.BindRenderState();
 
-         for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec) 
+         for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec)
          {
-            auto wp =  planarReflectionProxy->GetSceneViewWeakPtr();
-            if (auto scenViewSp = wp.lock()) 
+            auto wp = planarReflectionProxy->GetSceneViewWeakPtr();
+            if (auto scenViewSp = wp.lock())
             {
-
                const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
                const auto& projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
                const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
                const glm::vec4& mirrorPlane = planarReflectionProxy->GetReflectionPlane();
 
-               auto visibilityMap = sceneView->GetVisibilityForTransformedFrustum(mirrorMatrix);
+               CameraFrustum mirroredCameraFrustum =
+                  CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
 
                planarReflectionProxy->RenderToPlanarReflectionFBO();
 
@@ -466,8 +462,12 @@ namespace Graphics
                {
                   for (auto& proxy : mForwardRenderingProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
-                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     {
+                        bool bDraw = proxy->IsFrustumCullTestNeeded() ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
+                        if (bDraw)
+                           proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     }
                   }
                }
 
@@ -475,8 +475,12 @@ namespace Graphics
                {
                   for (auto& proxy : mSkeletalProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
-                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     {
+                        bool bDraw = proxy->IsFrustumCullTestNeeded() ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
+                        if (bDraw)
+                           proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     }
                   }
                }
 
@@ -484,8 +488,12 @@ namespace Graphics
                {
                   for (auto& proxy : mNonSkeletalProxiesVec)
                   {
-                     if (proxy->IsEnabled() && proxy->IsVisible() && visibilityMap[proxy->GetSceneProxyId()])
-                        proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     {
+                        bool bDraw = proxy->IsFrustumCullTestNeeded() ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
+                        if (bDraw)
+                           proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     }
                   }
                }
 
@@ -493,7 +501,6 @@ namespace Graphics
                planarReflectionProxy->ResolveReflectionRenderTargetSurfaceData();
             }
          }
-
 
          glDisable(GL_CULL_FACE);
          glDisable(GL_CLIP_DISTANCE0);
@@ -615,9 +622,9 @@ namespace Graphics
             sceneView->DoVisibilityTest();
 
             // Deferred shading is done with main camera
-            if (cameraProxy->GetCameraSceneType() == eCameraSceneProxyType::MAIN_SCENE_CAMERA)
+            if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType())
             {
-               PlanarReflectionPass(sceneView);
+               PlanarReflectionPass();
 
                DepthPass(sceneView);
 
@@ -764,11 +771,11 @@ namespace Graphics
                   }
                   glEnd();
                }
-         }
+            }
 #endif
+         }
       }
-   }
 #endif
 
-}
    }
+}

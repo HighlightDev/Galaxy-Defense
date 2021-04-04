@@ -28,6 +28,8 @@ namespace Graphics
       bool IsIntersectionWithBox(const glm::vec3& origin, const glm::vec3& extent) const;
 
       bool CollidesWithBoundingBox(const BoundingBox& boundingBox) const;
+
+      static CameraFrustum GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
    };
 
 }

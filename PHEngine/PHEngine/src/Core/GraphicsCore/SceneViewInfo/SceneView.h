@@ -30,7 +30,5 @@ namespace Graphics
 
       bool IsPrimitiveVisible(const size_t proxyId) const;
 
-      std::unordered_map<size_t/*proxy id*/, bool> GetVisibilityForTransformedFrustum(const glm::mat4& transformMatrix);
-
    };
 }
