@@ -28,7 +28,7 @@ function CreateTestLevel(host)
 			diffuse.x, diffuse.y, diffuse.z,
 			specular.x, specular.y, specular.z,
 			dirShadowInfo
-			)
+		)
 		
 		--	local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
 		--	rotation.x, rotation.y, rotation.z,
@@ -77,26 +77,29 @@ function CreateTestLevel(host)
 	end
 
 	-- ****************************BIG GROUND***************************** --
-	local material = _CreateMaterial(host, "Pbs.m")
-	--_SetDeferredTextureToMaterial(host, material, "PlanarReflectionComp", "albedo")
-	_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
-	_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
-	_SetFloatToMaterial(host, material, 10.0, "uvScale")
-
+	
 	local groundActor = _CreateActor(host, "Ground",
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
+	
+	if groundActor ~= nil then
+		local material = _CreateMaterial(host, "Pbs.m")
+		--_SetDeferredTextureToMaterial(host, material, "PlanarReflectionComp", "albedo")
+		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
+		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
+		_SetFloatToMaterial(host, material, 10.0, "uvScale")
 
-	local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
-	local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
-	_AttachComponentToActor(host, groundActor, floorComponent)
+		local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
+		local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
+		_AttachComponentToActor(host, groundActor, floorComponent)
 
-	local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
-	local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
-	local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
-	local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
-	_AttachComponentToActor(host, groundActor, phyComponent)
+		local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
+		local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
+		local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
+		local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
+		_AttachComponentToActor(host, groundActor, phyComponent)
+	end
 
 
 	-- ****************************WATER***************************** --
@@ -105,16 +108,18 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local waterMat = _CreateMaterial(host, "Water.m")
-	_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
-	_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
-	--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
-	_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
-	
+	if waterActor ~= nil then
+		local waterMat = _CreateMaterial(host, "Water.m")
+		_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
+		_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
+		--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
+		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
+		
 
-	local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
-	local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
-	_AttachComponentToActor(host, waterActor, waterComponent)
+		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
+		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
+		_AttachComponentToActor(host, waterActor, waterComponent)
+	end
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",
@@ -122,45 +127,48 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local material1 = _CreateMaterial(host, "Pbs.m")
-	_SetTextureToMaterial(host, material1, "brick_mid.png", "albedo")
-	_SetTextureToMaterial(host, material1, "brick_nm_mid.png", "normalMap")
-	_SetFloatToMaterial(host, material1, 1, "uvScale")
+	if smallGroundActor ~= nil then 
+		local material1 = _CreateMaterial(host, "Pbs.m")
+		_SetTextureToMaterial(host, material1, "brick_mid.png", "albedo")
+		_SetTextureToMaterial(host, material1, "brick_nm_mid.png", "normalMap")
+		_SetFloatToMaterial(host, material1, 1, "uvScale")
 
-	local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
-	local moveCompData = _CreateMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
-	local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
-	local moveComponent = _CreateComponent(host, "MovementComponent", moveCompData)
-	_AttachComponentToActor(host, smallGroundActor, floorComponent)
-	_AttachComponentToActor(host, smallGroundActor, moveComponent)
+		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
+		local moveCompData = _CreateMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
+		local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
+		local moveComponent = _CreateComponent(host, "MovementComponent", moveCompData)
+		_AttachComponentToActor(host, smallGroundActor, floorComponent)
+		--_AttachComponentToActor(host, smallGroundActor, moveComponent)
 
-	local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
-	local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
-	local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
-	local phyComponent1 = _CreateComponent(host, "PhysicsComponent", physData1)
-	_AttachComponentToActor(host, smallGroundActor, phyComponent1)
-
+		local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
+		local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
+		local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
+		local phyComponent1 = _CreateComponent(host, "PhysicsComponent", physData1)
+		_AttachComponentToActor(host, smallGroundActor, phyComponent1)
+	end
 
 	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
-		local smallGroundActor1 = _CreateActor(host, "SmallGround1",
+	local smallGroundActor1 = _CreateActor(host, "SmallGround1",
 	5, 8, 0,
 	0, 0, 90,
 	1, 1, 1)
 
-	local material2 = _CreateMaterial(host, "Pbs.m")
-	_SetTextureToMaterial(host, material2, "brick_mid.png", "albedo")
-	_SetTextureToMaterial(host, material2, "brick_nm_mid.png", "normalMap")
-	_SetFloatToMaterial(host, material2, 1, "uvScale")
+	if smallGroundActor1 ~= nil then 
+		local material2 = _CreateMaterial(host, "Pbs.m")
+		_SetTextureToMaterial(host, material2, "brick_mid.png", "albedo")
+		_SetTextureToMaterial(host, material2, "brick_nm_mid.png", "normalMap")
+		_SetFloatToMaterial(host, material2, 1, "uvScale")
 
-	local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
-	local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
-	_AttachComponentToActor(host, smallGroundActor1, floorComponent1)
+		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
+		local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
+		_AttachComponentToActor(host, smallGroundActor1, floorComponent1)
 
-	local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
-	local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
-	local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
-	local phyComponent2 = _CreateComponent(host, "PhysicsComponent", physData2)
-	_AttachComponentToActor(host, smallGroundActor1, phyComponent2)
+		local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
+		local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
+		local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
+		local phyComponent2 = _CreateComponent(host, "PhysicsComponent", physData2)
+		_AttachComponentToActor(host, smallGroundActor1, phyComponent2)
+	end
 
 	-- ***************************HOUSE******************** --
 
@@ -169,27 +177,29 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local houseMat = _CreateMaterial(host, "Pbs.m")
-	_SetTextureToMaterial(host, houseMat, "city_house_2_Col.png", "albedo")
-	_SetTextureToMaterial(host, houseMat, "city_house_2_Nor.png", "normalMap")
-	_SetTextureToMaterial(host, houseMat, "city_house_2_Spec.png", "metallicMap")
-	_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
+	if house ~= nil then 
+		local houseMat = _CreateMaterial(host, "Pbs.m")
+		_SetTextureToMaterial(host, houseMat, "city_house_2_Col.png", "albedo")
+		_SetTextureToMaterial(host, houseMat, "city_house_2_Nor.png", "normalMap")
+		_SetTextureToMaterial(host, houseMat, "city_house_2_Spec.png", "metallicMap")
+		_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
-	local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
-	0, -2, 0,
-	0, 0, 0,
-	0.5, 0.5, 0.5, 
-	"",
-	houseMat)
+		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
+		0, -2, 0,
+		0, 0, 0,
+		0.5, 0.5, 0.5, 
+		"",
+		houseMat)
 
-	local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
-	_AttachComponentToActor(host, house, meshComponent)
+		local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
+		_AttachComponentToActor(host, house, meshComponent)
 
-	local houseShape = _CreatePhysicsBoxShape(host, 1, 1.5, 1)
-	local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 125.0)
-	local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
-	local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
-	_AttachComponentToActor(host, house, housePhysComp)
+		local houseShape = _CreatePhysicsBoxShape(host, 1, 1.5, 1)
+		local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 125.0)
+		local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
+		local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
+		_AttachComponentToActor(host, house, housePhysComp)
+	end
 
 	-- ***************************SKYBOX******************** --
 
