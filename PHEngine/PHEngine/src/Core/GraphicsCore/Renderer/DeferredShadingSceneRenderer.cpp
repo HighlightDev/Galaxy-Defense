@@ -87,8 +87,7 @@ namespace Graphics
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
-         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
-            std::make_shared<BlendingState<false>>());
+         RenderState<DepthStencilState<true>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          for (auto& atlasLightGroup : mGroupedByShadowAtlasLights)
@@ -416,9 +415,7 @@ namespace Graphics
          m_gbuffer->CopyFramebufferData(cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height,
             cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
 
-         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
-            std::make_shared<BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>());
-
+         RenderState<DepthStencilState<true>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto& proxy : mForwardRenderingProxiesVec)
@@ -438,9 +435,7 @@ namespace Graphics
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
-         //// todo: REMOVE DYNAMIC ALLOCATION of RENDER STATE!!!!!
-         RenderState renderState(std::make_shared<DepthStencilState<true>>(),
-            std::make_shared<BlendingState<false>>());
+         RenderState<DepthStencilState<true>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec)
@@ -674,10 +669,9 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {
-         RenderState renderState(std::make_shared<DepthStencilState<false>>(),
-            std::make_shared<BlendingState<false>>());
-
+         RenderState<DepthStencilState<false>, BlendingState<false>> renderState;
          renderState.BindRenderState();
+
          m_textureRenderer.RenderFrames(m_gbuffer);
       }
 

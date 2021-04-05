@@ -346,6 +346,7 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\FloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\TextureMaterialProperty.h" />
@@ -846,6 +847,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />

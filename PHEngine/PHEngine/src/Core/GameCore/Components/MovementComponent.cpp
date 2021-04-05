@@ -93,32 +93,34 @@ namespace Game
 
    void MovementComponent::Tick(const float deltaTime)
    {
-         if (mDestinationPoint != "NO")
+      mScriptExecutor.OnUpdate(deltaTime);
+
+      if (mDestinationPoint != "NO")
+      {
+         Move(deltaTime);
+
+         mBehaviorVisitor->CommitMove();
+
+         EulerAnglesTransform transform;
+         transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
+
+         if (auto physCompSP = GetOwner()->GetPhysicsComponent())
          {
-            Move(deltaTime);
-            
-            mBehaviorVisitor->CommitMove();
-
-            EulerAnglesTransform transform;
-            transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
-
-            if (auto physCompSP = GetOwner()->GetPhysicsComponent())
-            {
-               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), transform);
-            }
+            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), transform);
          }
-         else
+      }
+      else
+      {
+         if (mMovementPoints.size())
          {
-            if (mMovementPoints.size())
-            {
-               auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
-               if (itNext == mMovementPoints.end())
-                  itNext = mMovementPoints.begin();
+            auto itNext = (++(mMovementPoints.find(mLastDestinationPoint)));
+            if (itNext == mMovementPoints.end())
+               itNext = mMovementPoints.begin();
 
-               mBehaviorVisitor->CommitMovementFinished();
-               SetDestinationPoint(itNext->first);
-            }
+            mBehaviorVisitor->CommitMovementFinished();
+            SetDestinationPoint(itNext->first);
          }
+      }
    }
 
    void MovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) 

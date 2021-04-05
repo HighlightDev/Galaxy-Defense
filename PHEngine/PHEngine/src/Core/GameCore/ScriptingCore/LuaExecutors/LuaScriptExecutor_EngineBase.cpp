@@ -35,7 +35,15 @@ namespace Game
 
       if (mLuaCoreData.HasOnStart)
       {
-         LuaFunction<void(void*)>::Call(mLuaInstance, "OnStart", (void*)this);
+         LuaFunction<void(void*)>::Call(mLuaInstance, "System_OnStart", (void*)this);
+      }
+   }
+
+   void LuaScriptExecutor_EngineBase::OnUpdate(const float deltaTime)
+   {
+      if (mLuaCoreData.HasOnUpdate)
+      {
+         LuaFunction<void(void*, float)>::Call(mLuaInstance, "System_OnUpdate", (void*)this, deltaTime);
       }
    }
 

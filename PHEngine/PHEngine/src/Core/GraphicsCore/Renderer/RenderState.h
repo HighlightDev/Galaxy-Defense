@@ -2,29 +2,18 @@
 
 #include <stdint.h>
 #include <gl/glew.h>
-#include <memory>
 
 namespace Graphics
 {
-   struct IDepthStencilState
-   {
-      virtual void BindDepthStencilState() = 0;
-   };
-
-   struct IBlendingState
-   {
-      virtual void BindBlendState() = 0;
-   };
-
    template <
       bool depthTestEnabled = true,
       int32_t depthFunc = GL_LEQUAL,
       int32_t stencilFunc = GL_ALWAYS,
       int32_t stencilRef = 0x0,
       int32_t stencilMask = 0x1>
-      struct DepthStencilState : public IDepthStencilState
+      struct DepthStencilState
    {
-      virtual void BindDepthStencilState() override
+      static void BindDepthStencilState()
       {
          glEnable(GL_DEPTH_TEST);
          glDepthFunc(depthFunc);
@@ -37,9 +26,9 @@ namespace Graphics
       int32_t stencilFunc,
       int32_t stencilRef,
       int32_t stencilMask>
-   struct DepthStencilState<false, depthFunc, stencilFunc, stencilRef, stencilMask> : public IDepthStencilState
+   struct DepthStencilState<false, depthFunc, stencilFunc, stencilRef, stencilMask>
    {
-      virtual void BindDepthStencilState() override
+      static void BindDepthStencilState()
       {
          glDisable(GL_DEPTH_TEST);
       }
@@ -48,9 +37,9 @@ namespace Graphics
    template <bool bEnableBlending = true,
       int32_t srcFactor = GL_SRC_ALPHA,
       int32_t dstFactor = GL_ONE_MINUS_SRC_ALPHA>
-   struct BlendingState : public IBlendingState
+   struct BlendingState
    {
-      virtual void BindBlendState() override
+      static void BindBlendState()
       {
          glEnable(GL_BLEND);
          glBlendFunc(srcFactor, dstFactor);
@@ -59,24 +48,27 @@ namespace Graphics
 
    template <int32_t srcFactor,
       int32_t dstFactor>
-      struct BlendingState<false, srcFactor, dstFactor> : public IBlendingState
+      struct BlendingState<false, srcFactor, dstFactor>
    {
-      virtual void BindBlendState() override
+      static void BindBlendState()
       {
          glDisable(GL_BLEND);
       }
    };
 
+   // todo: implement for all cases (depth + stencil + blending)
+   template <typename DepthStencilStateType, typename BlendingStateType>
    class RenderState
    {
-      std::shared_ptr<IDepthStencilState> mDepthState;
-
-      std::shared_ptr<IBlendingState> mBledingState;
+      using depthStencilState_t = DepthStencilStateType;
+      using blendState_t = BlendingStateType;
 
    public:
 
-      RenderState(std::shared_ptr<IDepthStencilState> depthState, std::shared_ptr<IBlendingState> blendState);
-
-      void BindRenderState();
+      void BindRenderState()
+      {
+         depthStencilState_t::BindDepthStencilState();
+         blendState_t::BindBlendState();
+      }
    };
 }

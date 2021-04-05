@@ -247,9 +247,9 @@ function CreateTestLevel(host)
 
 end
 
-function OnStart(host)
+function System_OnStart(host)
 	CreateTestLevel(host)
 end
 
-HasOnStart = (_G["OnStart"] ~= nil and 1 or 0)
-HasOnUpdate = (_G["OnUpdate"] ~= nil and 1 or 0)
+HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
+HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

@@ -39,6 +39,8 @@ namespace Game
 
       virtual void RunScript();
 
+      virtual void OnUpdate(const float deltaTime);
+
       GameObject* ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>, LuaArgDummyPlaceholder<>>& gameObjectName);
 
       float ExecuteLuaCallback(const std::tuple<GameObject*, std::string, LuaArgDummyPlaceholder<float>>& data);
