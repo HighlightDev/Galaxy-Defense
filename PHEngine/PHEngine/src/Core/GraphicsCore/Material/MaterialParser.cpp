@@ -119,6 +119,11 @@ namespace Graphics
       return material;
    }
 
+   IMaterial* MaterialParser::ParseDynamicMaterialDescriptor(const std::string& relPathToMaterial)
+   {
+      return nullptr;
+   }
+
 #undef GENERAL_START_NODE_NAME    
 #undef GENERAL_END_NODE_NAME      
 #undef PROPERTIES_START_NODE_NAME 

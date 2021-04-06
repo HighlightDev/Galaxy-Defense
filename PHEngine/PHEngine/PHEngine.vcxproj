@@ -284,6 +284,7 @@
     <None Include="res\fsm\playerAnimation.fsm">
       <SubType>Designer</SubType>
     </None>
+    <None Include="res\materials\DynamicTestMaterial.m" />
     <None Include="res\materials\Pbs.m" />
     <None Include="res\materials\Skybox.m" />
     <None Include="res\materials\Water.m" />

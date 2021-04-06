@@ -34,13 +34,16 @@ public:
 
    virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
    {
-      std::shared_ptr<ITexture> outResource = nullptr;
-      const bool bHasResource = m_value->TryGetResource(outResource);
-      if (bHasResource)
+      if (m_value)
       {
-         int32_t slot = 10 + propertyIndex;
-         outResource->BindTexture(slot);
-         uniform.LoadUniform(slot);
+         std::shared_ptr<ITexture> outResource = nullptr;
+         const bool bHasResource = m_value->TryGetResource(outResource);
+         if (bHasResource)
+         {
+            int32_t slot = 10 + propertyIndex;
+            outResource->BindTexture(slot);
+            uniform.LoadUniform(slot);
+         }
       }
    }
 
@@ -50,7 +53,10 @@ public:
 
    typename MaterialPropertyValueType::arg_t GetValue() const {
       std::shared_ptr<ITexture> outResource = nullptr;
-      const bool bHasResource = m_value->TryGetResource(outResource);
+      if (m_value)
+      {
+         const bool bHasResource = m_value->TryGetResource(outResource);
+      }
       return outResource;
    }
 };

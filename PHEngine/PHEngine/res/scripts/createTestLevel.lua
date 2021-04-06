@@ -85,7 +85,6 @@ function CreateTestLevel(host)
 	
 	if groundActor ~= nil then
 		local material = _CreateMaterial(host, "Pbs.m")
-		--_SetDeferredTextureToMaterial(host, material, "PlanarReflectionComp", "albedo")
 		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
 		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")

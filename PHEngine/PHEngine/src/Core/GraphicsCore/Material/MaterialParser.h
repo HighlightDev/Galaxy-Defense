@@ -9,5 +9,7 @@ namespace Graphics
    public: 
 
       static IMaterial* ParseMaterialDescriptor(const std::string& relPathToMaterial);
+
+      static IMaterial* ParseDynamicMaterialDescriptor(const std::string& relPathToMaterial);
    };
 }
