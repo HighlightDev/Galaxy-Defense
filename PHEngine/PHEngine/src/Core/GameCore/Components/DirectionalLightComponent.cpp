@@ -78,12 +78,33 @@ namespace Game
       Base::Tick(deltaTime);
 
       SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * 8), AXIS_UP));
-      ProcessEvent(PhysicsSimulationUpdatedEvent::EventData_t());
+      ForceUpdateShadowMap();
    }
 
    ComponentType DirectionalLightComponent::GetComponentType() const
    {
       return ComponentType::LIGHT_COMPONENT;
+   }
+
+   void DirectionalLightComponent::ForceUpdateShadowMap()
+   {
+      if (const auto& sceneSP = m_sceneWP.lock())
+      {
+         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         {
+            constexpr uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
+
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+            {
+               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
+               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+               if (shadowInfo)
+               {
+                  shadowInfo->SetIsShadowMapDirty(true);
+               }
+            });
+         }
+      }
    }
 
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
@@ -115,23 +136,7 @@ namespace Game
 
    void DirectionalLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
    {
-      if (const auto& sceneSP = m_sceneWP.lock())
-      {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
-         {
-            constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->bMustUpdateShadowmap");
-
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-            {
-               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
-               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
-               if (shadowInfo)
-               {
-                  shadowInfo->SetIsShadowMapDirty(true);
-               }
-            });
-         }
-      }
+      ForceUpdateShadowMap();
    }
 
 }

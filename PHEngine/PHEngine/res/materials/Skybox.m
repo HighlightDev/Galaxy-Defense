@@ -1,6 +1,7 @@
 <general>
 	name: "SkyboxDynamicMaterial"
 	shader: "SkyboxDayCycleMaterial.glsl"
+	material_type: "static"
 </general>
 <properties>
 	<property>

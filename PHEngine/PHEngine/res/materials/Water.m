@@ -1,6 +1,7 @@
 <general>
 	name: "Water material"
 	shader: "WaterMaterial.glsl"
+	material_type: "static"
 </general>
 <properties>
 	<property>

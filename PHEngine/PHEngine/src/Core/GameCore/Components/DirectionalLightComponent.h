@@ -49,6 +49,10 @@ namespace Game
 
       virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data) override;
       virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+
+   private:
+
+      void ForceUpdateShadowMap();
    };
 
 }

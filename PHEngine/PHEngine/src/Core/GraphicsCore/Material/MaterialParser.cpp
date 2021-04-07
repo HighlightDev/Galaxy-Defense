@@ -16,6 +16,8 @@ namespace Graphics
 #define PROPERTIES_END_NODE_NAME    "</properties>"
 #define PROPERTY_START_NODE_NAME    "<property>"
 #define PROPERTY_END_NODE_NAME      "</property>"
+#define DYNAMIC_PROPERTY_START_NODE_NAME  "<dynamic_property>"
+#define DYNAMIC_PROPERTY_END_NODE_NAME  "</dynamic_property>"
 
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType)
@@ -82,8 +84,9 @@ namespace Graphics
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();
 
-      std::string materialName;
-      std::string materialShaderName;
+      std::string materialName = "";
+      std::string materialShaderName = "";
+      std::string materialType = "";
 
       auto generalStartNode = XMLParserHelper::GetItByNodeName(fileSource, GENERAL_START_NODE_NAME);
       auto generalEndNode = XMLParserHelper::GetItByNodeName(fileSource, GENERAL_END_NODE_NAME);
@@ -101,12 +104,36 @@ namespace Graphics
          {
             materialShaderName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "shader");
          }
+         else if (EngineUtility::StartsWith(currentNodeStr, "material_type"))
+         {
+            materialType = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "material_type");
+         }
       }
 
-      IMaterial* material = new IMaterial(materialName, materialShaderName);
+      IMaterial* parsedMaterial = nullptr;
 
-      auto propertiesStartNode = XMLParserHelper::GetItByNodeName(fileSource, PROPERTIES_START_NODE_NAME);
-      auto propertiesEndNode = XMLParserHelper::GetItByNodeName(fileSource, PROPERTIES_END_NODE_NAME);
+      if ("dynamic" == materialType)
+      {
+         parsedMaterial = ParseDynamicMaterial(fileSource, materialName, materialShaderName);
+      }
+      else if ("static" == materialType)
+      {
+         parsedMaterial = ParseStaticMaterial(fileSource, materialName, materialShaderName);
+      }
+      else {
+         assert(false);
+      }
+
+      return parsedMaterial;
+   }
+
+
+   IMaterial* MaterialParser::ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath)
+   {
+      IMaterial* material = new IMaterial(materialName, materialShaderPath);
+
+      auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
+      auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
 
       ++propertiesStartNode;
       for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
@@ -119,9 +146,127 @@ namespace Graphics
       return material;
    }
 
-   IMaterial* MaterialParser::ParseDynamicMaterialDescriptor(const std::string& relPathToMaterial)
+#define UNARY_INCR_OP_START "<increment>"
+#define UNARY_INCR_OP_END "</increment>"
+#define BINARY_ADD_OP_START "<add>"
+#define BINARY_ADD_OP_END "</add>"
+#define BINARY_MUL_OP_START "<mul>"
+#define BINARY_MUL_OP_END "</mul>"
+
+#define FLOAT_VALUE_START "<float_value>"
+#define FLOAT_VALUE_END "</float_value>"
+
+   XMLParserHelper::iterator_t GetTagWithName(const std::string& operationName, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
    {
-      return nullptr;
+      return XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, operationName);
+   }
+   template <typename... NamesT>
+   XMLParserHelper::iterator_t GetOneOfTagWithNames(XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, NamesT&&... operationNames)
+   {
+      std::vector<std::string> operationTags = { std::forward<NamesT>(operationNames)... };
+      for (auto tag : operationTags)
+      {
+         auto it = GetTagWithName(tag, propertiesBeginIt, propertiesEndIt);
+         if (it != propertiesEndIt)
+         {
+            return it;
+         }
+      }
+
+      return propertiesEndIt;
+   }
+
+   XMLParserHelper::iterator_t ProcessOperation(const std::list<std::string>& materialSrc, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
+   {
+      XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
+
+      while (lastProcessedIt != propertiesEndIt)
+      {
+         auto next = lastProcessedIt;
+         next++;
+         auto operationIt = GetOneOfTagWithNames(lastProcessedIt, next, UNARY_INCR_OP_START, BINARY_ADD_OP_START, BINARY_MUL_OP_START);
+         auto valueIt = GetOneOfTagWithNames(lastProcessedIt, next, FLOAT_VALUE_START);
+         const bool bOperation = operationIt != next;
+         const bool bValue = valueIt != next;
+
+      
+         if (bOperation)
+         {
+            lastProcessedIt = ++operationIt;
+            lastProcessedIt = ProcessOperation(materialSrc, operationIt, propertiesEndIt);
+         }
+         else if (bValue)
+         {
+            const std::string& currentNodeStr = EngineUtility::TrimStart(*valueIt);
+            lastProcessedIt = ++valueIt;
+            if (EngineUtility::StartsWith(currentNodeStr, "<float_value>"))
+            {
+               const std::string& value = XMLParserHelper::GetPropertyNodeByName(*lastProcessedIt, "value");
+               const float floatValue = std::stof(value);
+
+
+               lastProcessedIt++;
+            }
+            // getvalue
+         }
+         else
+         {
+            ++lastProcessedIt;
+         }
+      }
+
+      return lastProcessedIt;
+   }
+
+   std::shared_ptr<MaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(const std::list<std::string>& materialSrc, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, std::string& outPropertyName)
+   {
+      auto dynamicPropertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
+      auto dynamicPropertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_END_NODE_NAME);
+
+      std::string propertyName, propertyType;
+
+      ++dynamicPropertyStartNode;
+      for (auto it = dynamicPropertyStartNode; it != dynamicPropertyEndNode; ++it)
+      {
+         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+
+         if (EngineUtility::StartsWith(currentNodeStr, "name"))
+         {
+            propertyName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+         }
+         else if (EngineUtility::StartsWith(currentNodeStr, "type"))
+         {
+            propertyType = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+         }
+         else
+         {
+            ProcessOperation(materialSrc, it, dynamicPropertyEndNode);
+         }
+      }
+
+      outPropertyName = propertyName;
+      propertiesBeginIt = dynamicPropertyEndNode;
+
+      return CreatePropertyByType(propertyType);
+   }
+
+
+   IMaterial* MaterialParser::ParseDynamicMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath)
+   {
+      IMaterial* material = new IMaterial(materialName, materialShaderPath);
+
+      auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
+      auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
+
+      ++propertiesStartNode;
+      for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
+      {
+         std::string propertyName;
+         std::shared_ptr<MaterialProperty> materialProperty = GetMaterialDynamicPropertyAndAdvanceIterator(materialSrc, it, propertiesEndNode, propertyName);
+         material->PushMaterialProperty(propertyName, std::move(materialProperty));
+      }
+
+      return material;
    }
 
 #undef GENERAL_START_NODE_NAME    

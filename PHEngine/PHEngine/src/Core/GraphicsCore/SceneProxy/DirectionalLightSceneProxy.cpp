@@ -39,6 +39,22 @@ namespace Graphics
          return result;
       }
 
+      BoundingBox DirectionalLightSceneProxy::GetShadowOrthographicProjectionBound() const
+      {
+         BoundingBox orthoBox;
+
+         auto shadowInfo = static_cast<ProjectedDirectionalLightShadowInfo*>(m_shadowInfo);
+         if (shadowInfo)
+         {
+            // todo: make oriented bb or extend extent =/
+            const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
+            glm::vec3 origin = shadowInfo->GetPlayerPositionOffset();
+            orthoBox = BoundingBox(origin, glm::vec3(halfExtent, halfExtent, halfExtent * 2));
+         }
+
+         return orthoBox;
+      }
+
       LightSceneProxyType DirectionalLightSceneProxy::GetLightProxyType() const {
 
          return LightSceneProxyType::DIR_LIGHT;

@@ -28,7 +28,7 @@
 		name: "reflectionTexture"
 		type: "deferred_texture"
 	</property>
-		<property>
+	<property>
 		name: "distortion"
 		type: "texture"
 	</property>

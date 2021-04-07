@@ -1,6 +1,7 @@
 <general>
 	name: "PBS material"
 	shader: "PBRMaterial.glsl"
+	material_type: "static"
 </general>
 <properties>
 	<property>
