@@ -20,9 +20,15 @@ namespace Game
 
       ~BoundingBox();
 
+      glm::vec3 GetMax() const;
+
+      glm::vec3 GetMin() const;
+
       glm::vec3 GetOrigin() const;
 
       glm::vec3 GetHalfExtent() const;
+
+      bool IsIntersectionWithBox(const BoundingBox& boundingBox) const;
 
       std::array<glm::vec3, 8> GetBoundPositions() const;
    };

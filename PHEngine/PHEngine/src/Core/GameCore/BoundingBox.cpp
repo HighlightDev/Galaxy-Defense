@@ -32,6 +32,29 @@ namespace Game
       return mHalfExtent;
    }
 
+   glm::vec3 BoundingBox::GetMax() const
+   {
+      return mOrigin + mHalfExtent;
+   }
+
+   glm::vec3 BoundingBox::GetMin() const
+   {
+      return mOrigin - mHalfExtent;
+   }
+
+   bool BoundingBox::IsIntersectionWithBox(const BoundingBox& boundingBox) const
+   {
+      const glm::vec3& meMin = GetMin();
+      const glm::vec3& meMax = GetMax();
+
+      const glm::vec3& bbMin = boundingBox.GetMin();
+      const glm::vec3& bbMax = boundingBox.GetMax();
+
+      return (meMin.x <= bbMax.x && meMax.x >= bbMin.x) &&
+         (meMin.y <= bbMax.y && meMax.y >= bbMin.y) &&
+         (meMin.z <= bbMax.z && meMax.z >= bbMin.z);
+   }
+
    std::array<glm::vec3, 8> BoundingBox::GetBoundPositions() const
    {
       /* the sequence is next:

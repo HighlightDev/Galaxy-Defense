@@ -49,7 +49,7 @@ namespace Graphics
             // todo: make oriented bb or extend extent =/
             const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
             glm::vec3 origin = shadowInfo->GetPlayerPositionOffset();
-            orthoBox = BoundingBox(origin, glm::vec3(halfExtent, halfExtent, halfExtent * 2));
+            orthoBox = BoundingBox(origin, glm::vec3(halfExtent * 1.5f, halfExtent * 1.5f, halfExtent * 1.5f));
          }
 
          return orthoBox;

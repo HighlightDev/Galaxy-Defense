@@ -110,13 +110,14 @@ namespace Graphics
                         shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
                         DirectionalLightSceneProxy* dirLightPtr = lightPtr;
+                        const BoundingBox& dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
                         if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mDLDepthShaderNonSkeletal->ExecuteShader();
                            for (auto& proxy : mNonSkeletalProxiesVec)
                            {
-                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              if (proxy->IsEnabled() && proxy->IsVisible() && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox()))
                               {
                                  const auto& worldMatrix = proxy->GetMatrix();
                                  const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
@@ -135,7 +136,7 @@ namespace Graphics
                            mDLDepthShaderSkeletal->ExecuteShader();
                            for (auto& proxy : mSkeletalProxiesVec)
                            {
-                              if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                              if (proxy->IsEnabled() && proxy->IsVisible() && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox()))
                               {
                                  const auto& worldMatrix = proxy->GetMatrix();
                                  const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
@@ -716,6 +717,8 @@ namespace Graphics
             }
             glEnd();
 
+#if 0
+
             for (auto& dirLProxy : this->mDirLightProxiesVec)
             {
                const auto bb = dirLProxy->GetShadowOrthographicProjectionBound();
@@ -763,7 +766,6 @@ namespace Graphics
                glEnd();
             }
 
-#if 0
             for (auto& proxy : SceneProxiesMap)
             {
                if (proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::STATIC_MESH_PROXY)
