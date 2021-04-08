@@ -9,12 +9,24 @@ namespace Graphics
    {
       enum class eMaterialNodeType
       {
+         START,
          VALUE,
          UNARY_OP,
          BINARY_OP,
       };
 
       virtual eMaterialNodeType GetMaterialOperationType() = 0;
+   };
+
+   struct MaterialStartNode
+      : public MaterialNode
+   {
+      virtual eMaterialNodeType GetMaterialOperationType() override
+      {
+         return MaterialNode::eMaterialNodeType::START;
+      }
+
+      MaterialNode* InputOperation;
    };
 
    struct MaterialValueNode
