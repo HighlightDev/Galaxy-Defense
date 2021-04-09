@@ -7,21 +7,23 @@
 	<dynamic_property>
 		name: "distortion"
 		type: "float"
-		<increment>
-			<mul>
-				<float_value>
-					value: "0.5"
-				</float_value>
-				<add>
+		<operation>
+			<increment>
+				<mul>
 					<float_value>
-						value: "0.1"
+						value: "0.5"
 					</float_value>
-					<float_value>
-						value: "123"
-					</float_value>
-				</add>
-			</mul>
-		</increment>
+					<add>
+						<float_value>
+							value: "0.1"
+						</float_value>
+						<float_value>
+							value: "123"
+						</float_value>
+					</add>
+				</mul>
+			</increment>
+		</operation>
 	</dynamic_property>
 
 	<property>

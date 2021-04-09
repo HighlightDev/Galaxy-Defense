@@ -32,6 +32,8 @@ namespace Graphics
    struct MaterialValueNode
       : public MaterialNode
    {
+      float Value;
+
       virtual eMaterialNodeType GetMaterialOperationType() override
       {
          return MaterialNode::eMaterialNodeType::VALUE;

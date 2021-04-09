@@ -19,7 +19,8 @@ namespace Graphics
 #define PROPERTY_END_NODE_NAME      "</property>"
 #define DYNAMIC_PROPERTY_START_NODE_NAME  "<dynamic_property>"
 #define DYNAMIC_PROPERTY_END_NODE_NAME  "</dynamic_property>"
-
+#define DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME "<operation>"
+#define DYNAMIC_PROPERTY_OPERATION_END_NODE_NAME "</operation>"
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType)
    {
@@ -246,42 +247,45 @@ namespace Graphics
          }
          else if (bValue)
          {
+            const std::string& currentNodeStr = EngineUtility::TrimStart(*valueIt);
+            lastProcessedIt = ++valueIt;
+            float floatValue = 0.0f;
+            if (EngineUtility::StartsWith(currentNodeStr, "<float_value>"))
+            {
+               const std::string& value = XMLParserHelper::GetPropertyNodeByName(*lastProcessedIt, "value");
+               floatValue = std::stof(value);
+            }
+
             switch ((*opNode)->GetMaterialOperationType())
             {
                case MaterialNode::eMaterialNodeType::UNARY_OP:
                {
                   MaterialUnaryOperationNode* unaryNode = static_cast<MaterialUnaryOperationNode*>(*opNode);
-                  unaryNode->InputOperation = new MaterialValueNode();
+                  auto valueNode = new MaterialValueNode();
+                  valueNode->Value = floatValue;
+                  unaryNode->InputOperation = valueNode;
                   break;
                }
                case MaterialNode::eMaterialNodeType::BINARY_OP:
                {
                   MaterialBinaryOperationNode* binaryNode = static_cast<MaterialBinaryOperationNode*>(*opNode);
+                  auto valueNode = new MaterialValueNode();
+                  valueNode->Value = floatValue;
+                
                   if (binaryNode->InputOperation1 == nullptr)
                   {
-                     binaryNode->InputOperation1 = new MaterialValueNode();
+                     binaryNode->InputOperation1 = valueNode;
                   }
                   else if (binaryNode->InputOperation2 == nullptr)
                   {
-                     binaryNode->InputOperation2 = new MaterialValueNode();
+                     binaryNode->InputOperation2 = valueNode;
                   }
 
                   break;
                }
             }
 
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*valueIt);
-            lastProcessedIt = ++valueIt;
-            if (EngineUtility::StartsWith(currentNodeStr, "<float_value>"))
-            {
-               const std::string& value = XMLParserHelper::GetPropertyNodeByName(*lastProcessedIt, "value");
-               const float floatValue = std::stof(value);
-
-
-
-               lastProcessedIt++;
-            }
-            // getvalue
+            ++lastProcessedIt;
          }
          else
          {
@@ -302,22 +306,26 @@ namespace Graphics
       ++dynamicPropertyStartNode;
 
       MaterialNode* operation = new MaterialStartNode();
-
-      for (auto it = dynamicPropertyStartNode; it != dynamicPropertyEndNode; ++it)
+      while (dynamicPropertyStartNode != dynamicPropertyEndNode)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string& currentNodeStr = EngineUtility::TrimStart(*dynamicPropertyStartNode);
 
-         if (EngineUtility::StartsWith(currentNodeStr, "name"))
+         if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME))
          {
-            propertyName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
-         }
-         else if (EngineUtility::StartsWith(currentNodeStr, "type"))
-         {
-            propertyType = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+            ProcessOperation(&operation, materialSrc, ++dynamicPropertyStartNode, dynamicPropertyEndNode);
+            dynamicPropertyStartNode = dynamicPropertyEndNode;
          }
          else
          {
-            ProcessOperation(&operation, materialSrc, it, dynamicPropertyEndNode);
+            if (EngineUtility::StartsWith(currentNodeStr, "name"))
+            {
+               propertyName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+            }
+            else if (EngineUtility::StartsWith(currentNodeStr, "type"))
+            {
+               propertyType = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+            }
+            ++dynamicPropertyStartNode;
          }
       }
 
