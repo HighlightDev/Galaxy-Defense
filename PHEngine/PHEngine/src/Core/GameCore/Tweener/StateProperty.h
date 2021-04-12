@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "IStateMachineController.h"
+#include "ITweenController.h"
 
 namespace Game
 {

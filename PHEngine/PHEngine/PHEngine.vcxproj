@@ -281,7 +281,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
-    <None Include="res\fsm\playerAnimation.fsm">
+    <None Include="res\tweeners\playerAnimation.tween">
       <SubType>Designer</SubType>
     </None>
     <None Include="res\materials\DynamicTestMaterial.m" />
@@ -394,11 +394,11 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeDataContainer.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Event\KeyboardInputEvent.h" />
@@ -406,13 +406,13 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\State.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\IStateMachineController.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateMachine.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateProperty.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\StatePropertyBinding.h" />
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateTransition.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\AnimationTweenController.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\State.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\ITweenController.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\Tweener.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\StateProperty.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\StatePropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\StateTransition.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialParser.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.h" />
@@ -881,16 +881,16 @@
     <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\FloatTweenController.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\TweenerParser.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\IStateMachineController.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\StateMachine.cpp" />
-    <ClCompile Include="src\Core\GameCore\StateMachine\StateTransition.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\AnimationTweenController.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\ITweenController.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\Tweener.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\StateTransition.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedMeshData.cpp" />

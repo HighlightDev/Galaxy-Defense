@@ -15,5 +15,7 @@ namespace Graphics
       static IMaterial* ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
 
       static IMaterial* ParseDynamicMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
+
+
    };
 }

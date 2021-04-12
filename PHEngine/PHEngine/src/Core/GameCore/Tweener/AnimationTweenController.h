@@ -1,19 +1,21 @@
 #pragma once
-#include "IStateMachineController.h"
-#include "StatePropertyBinding.h"
-#include "StateProperty.h"
+
+#include "ITweenController.h"
+#include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
+
+using namespace Graphics::Mesh;
 
 namespace Game
 {
 
-   class FloatStateMachineController :
-      public IStateMachineController
+   class AnimationTweenController
+      : public ITweenController
    {
-      using Base = IStateMachineController;
+      using Base = ITweenController;
 
    public:
-      FloatStateMachineController();
-      virtual ~FloatStateMachineController();
+
+      AnimationTweenController();
 
       virtual void OnTransitionStarted(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float duration) override;
 
@@ -25,8 +27,7 @@ namespace Game
 
    private:
 
-      std::shared_ptr<FloatPropertyBinding> GetFloatPropertyBindingSP() const;
+      std::shared_ptr<AnimationPropertyBinding> GetAnimationPropertyBindingSP() const;
    };
 
 }
-

@@ -4,7 +4,7 @@
 
 namespace Game
 {
-   class AnimationStateMachineController;
+   class AnimationTweenController;
 }
 
 namespace Graphics
@@ -14,7 +14,7 @@ namespace Graphics
 
       class AnimationPlayer 
       {
-         friend class Game::AnimationStateMachineController;
+         friend class Game::AnimationTweenController;
 
          std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 

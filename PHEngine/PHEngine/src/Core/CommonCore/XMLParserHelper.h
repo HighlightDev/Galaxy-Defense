@@ -21,7 +21,7 @@ namespace Common
          return std::find_if(beginIt, endIt, [&](const std::string& srcNode) { return EngineUtility::TrimStart(srcNode) == nodeName; });
       }
 
-      static std::string GetPropertyNodeByName(const std::string& trimmedNodeStr, const std::string& propName)
+      static std::string GetPropertyNodeAfterColon(const std::string& trimmedNodeStr)
       {
          std::string result;
 

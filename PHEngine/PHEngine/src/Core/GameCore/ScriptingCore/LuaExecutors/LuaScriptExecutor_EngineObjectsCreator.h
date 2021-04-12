@@ -112,11 +112,11 @@ namespace Game
       /*-------------------- Create dynamic character controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<float, float, float, float> descData);
 
-      /* -------------------  Create Finite State machine ----------------------------*/
-      StateMachine* ExecuteLuaCallback(const std::tuple<Actor*, std::string>& fsmData);
+      /* -------------------  Create Tweener ----------------------------*/
+      Tweener* ExecuteLuaCallback(const std::tuple<Actor*, std::string>& tweenerData);
     
-      /* -------------------  Set fsm bindings ------------------------*/
-      void ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData);
+      /* -------------------  Set tweener bindings ------------------------*/
+      void ExecuteLuaCallback(const std::tuple<Tweener*, std::string, std::string, std::string>& tweenerData);
    };
 
 }

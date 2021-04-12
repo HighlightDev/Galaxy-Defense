@@ -1,20 +1,20 @@
-#include "FloatStateMachineController.h"
+#include "FloatTweenController.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 namespace Game
 {
 
-   FloatStateMachineController::FloatStateMachineController()
-      : IStateMachineController()
+   FloatTweenController::FloatTweenController()
+      : ITweenController()
    {
    }
 
 
-   FloatStateMachineController::~FloatStateMachineController()
+   FloatTweenController::~FloatTweenController()
    {
    }
 
-   std::shared_ptr<FloatPropertyBinding> FloatStateMachineController::GetFloatPropertyBindingSP() const
+   std::shared_ptr<FloatPropertyBinding> FloatTweenController::GetFloatPropertyBindingSP() const
    {
       std::shared_ptr<FloatPropertyBinding> result(nullptr);
 
@@ -26,7 +26,7 @@ namespace Game
       return result;
    }
 
-   void FloatStateMachineController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+   void FloatTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
    {
       Base::OnTransitionUpdate(deltaTime, transitionParameter);
 
@@ -39,7 +39,7 @@ namespace Game
       }
    }
 
-   void FloatStateMachineController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   void FloatTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
    {
       mPropertyBinding = dstStateProperty->PropertyBinding;
       if (auto floatBinding = GetFloatPropertyBindingSP())
@@ -50,7 +50,7 @@ namespace Game
       }
    }
 
-   void FloatStateMachineController::OnTransitionStarted(
+   void FloatTweenController::OnTransitionStarted(
       BaseStateProperty* srcProperty,
       BaseStateProperty* dstProperty,
       const float transitionDuration)
@@ -65,7 +65,7 @@ namespace Game
       }
    }
 
-   void FloatStateMachineController::OnTransitionFinished()
+   void FloatTweenController::OnTransitionFinished()
    {
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {

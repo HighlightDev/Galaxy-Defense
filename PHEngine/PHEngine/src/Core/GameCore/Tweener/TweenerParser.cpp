@@ -1,4 +1,4 @@
-#include "FSMParser.h"
+#include "TweenerParser.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/CommonCore/XMLParserHelper.h"
@@ -9,8 +9,8 @@ using namespace Common;
 
 namespace Game
 {
-#define FSM_START_NODE_NAME                  "<FSM>"
-#define FSM_END_NODE_NAME                    "</FSM>"
+#define TWEENER_START_NODE_NAME              "<tweener>"
+#define TWEENER_END_NODE_NAME                "</tweener>"
 #define STATES_START_NODE_NAME               "<states>"
 #define STATES_END_NODE_NAME                 "</states>"
 #define STATE_START_NODE_NAME                "<state>"
@@ -28,13 +28,13 @@ namespace Game
 #define PROPERTY_START_NODE_NAME             "<property>"
 #define PROPERTY_END_NODE_NAME               "</property>"
 
-   FSMParser::FSMP_Property GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Property GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
    {
       auto propertyStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, PROPERTY_START_NODE_NAME);
       auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertyStartNode, endIt, PROPERTY_END_NODE_NAME);
       ++propertyStartNode;
 
-      FSMParser::FSMP_Property property;
+      TweenerParser::TweenerParser_Property property;
 
       for (auto it = propertyStartNode; it != propertyEndNode; ++it)
       {
@@ -44,23 +44,23 @@ namespace Game
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
-            property.Name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+            property.Name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "binding_name"))
          {
-            property.BindingName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "binding_name");
+            property.BindingName = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "type"))
          {
-            property.Type = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+            property.Type = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "value"))
          {
-            property.Value = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "value");
+            property.Value = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "state"))
          {
-            property.State = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "state");
+            property.State = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
             assert((false, "unknown xml node."));
@@ -70,13 +70,13 @@ namespace Game
       return property;
    }
 
-   FSMParser::FSMP_Binding GetBindingAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Binding GetBindingAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
    {
       auto bindingStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, BINDING_START_NODE_NAME);
       auto bindingEndNode = XMLParserHelper::GetItByNodeName(bindingStartNode, endIt, BINDING_END_NODE_NAME);
       ++bindingStartNode;
 
-      FSMParser::FSMP_Binding binding;
+      TweenerParser::TweenerParser_Binding binding;
 
       for (auto it = bindingStartNode; it != bindingEndNode; ++it)
       {
@@ -86,11 +86,11 @@ namespace Game
 
          if (EngineUtility::StartsWith(currentNodeStr, "binding_name"))
          {
-            binding.BindingName = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "binding_name");
+            binding.BindingName = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "type"))
          {
-            binding.Type = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "type");
+            binding.Type = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
             assert((false, "unknown xml node."));
@@ -100,13 +100,13 @@ namespace Game
       return binding;
    }
 
-   FSMParser::FSMP_Transition GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Transition GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
    {
       auto transitionStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, TRANSITION_START_NODE_NAME);
       auto transitionEndNode = XMLParserHelper::GetItByNodeName(transitionStartNode, endIt, TRANSITION_END_NODE_NAME);
       ++transitionStartNode;
 
-      FSMParser::FSMP_Transition transition;
+      TweenerParser::TweenerParser_Transition transition;
 
       for (auto it = transitionStartNode; it != transitionEndNode; ++it)
       {
@@ -116,19 +116,19 @@ namespace Game
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
-            transition.Name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
+            transition.Name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "from_state"))
          {
-            transition.From = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "from_state");
+            transition.From = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "to_state"))
          {
-            transition.To = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "to_state");
+            transition.To = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, "duration"))
          {
-            transition.Duration = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "duration");
+            transition.Duration = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
             assert((false, "unknown xml node."));
@@ -138,9 +138,9 @@ namespace Game
       return transition;
    }
 
-   std::shared_ptr<StateMachine> FSMParser::ParseFSMDescriptor(const std::string& relPathToFSM)
+   std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& relPathTweener)
    {
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(relPathToFSM);
+      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(relPathTweener);
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
@@ -148,15 +148,15 @@ namespace Game
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();
 
-      // Collect FSM data
+      // Collect tweener data
       {
 
-         auto fsmStartNode = XMLParserHelper::GetItByNodeName(fileSource, FSM_START_NODE_NAME);
-         auto fsmEndNode = XMLParserHelper::GetItByNodeName(fileSource, FSM_END_NODE_NAME);
-         ++fsmStartNode;
+         auto tweenStartNode = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_START_NODE_NAME);
+         auto tweenEndNode = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_END_NODE_NAME);
+         ++tweenStartNode;
 
-         auto statesStartNode = XMLParserHelper::GetItByNodeName(fsmStartNode, fsmEndNode, STATES_START_NODE_NAME);
-         auto statesEndNode = XMLParserHelper::GetItByNodeName(fsmStartNode, fsmEndNode, STATES_END_NODE_NAME);
+         auto statesStartNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_START_NODE_NAME);
+         auto statesEndNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_END_NODE_NAME);
          ++statesStartNode;
 
          for (auto it = statesStartNode; it != statesEndNode; ++it)
@@ -165,13 +165,13 @@ namespace Game
 
             if (EngineUtility::StartsWith(currentNodeStr, "name"))
             {
-               const std::string& name = XMLParserHelper::GetPropertyNodeByName(currentNodeStr, "name");
-               mStates.emplace_back(FSMP_State(name));
+               const std::string& name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+               mStates.emplace_back(TweenerParser_State(name));
             }
          }
 
-         auto transitionsStartNode = XMLParserHelper::GetItByNodeName(statesEndNode, fsmEndNode, TRANSITIONS_START_NODE_NAME);
-         auto transitionsEndNode = XMLParserHelper::GetItByNodeName(transitionsStartNode, fsmEndNode, TRANSITIONS_END_NODE_NAME);
+         auto transitionsStartNode = XMLParserHelper::GetItByNodeName(statesEndNode, tweenEndNode, TRANSITIONS_START_NODE_NAME);
+         auto transitionsEndNode = XMLParserHelper::GetItByNodeName(transitionsStartNode, tweenEndNode, TRANSITIONS_END_NODE_NAME);
          ++transitionsStartNode;
 
          for (auto it = transitionsStartNode; it != transitionsEndNode; ++it)
@@ -179,8 +179,8 @@ namespace Game
             mTransitions.emplace_back(GetTransitionAndAdvanceIt(it, transitionsEndNode));
          }
 
-         auto bindingsStartNode = XMLParserHelper::GetItByNodeName(transitionsEndNode, fsmEndNode, BINDINGS_START_NODE_NAME);
-         auto bindingsEndNode = XMLParserHelper::GetItByNodeName(bindingsStartNode, fsmEndNode, BINDINGS_END_NODE_NAME);
+         auto bindingsStartNode = XMLParserHelper::GetItByNodeName(transitionsEndNode, tweenEndNode, BINDINGS_START_NODE_NAME);
+         auto bindingsEndNode = XMLParserHelper::GetItByNodeName(bindingsStartNode, tweenEndNode, BINDINGS_END_NODE_NAME);
          ++bindingsStartNode;
 
          for (auto it = bindingsStartNode; it != bindingsEndNode; ++it)
@@ -188,8 +188,8 @@ namespace Game
             mBindings.emplace_back(GetBindingAndAdvanceIt(it, bindingsEndNode));
          }
 
-         auto propertiesStartNode = XMLParserHelper::GetItByNodeName(bindingsEndNode, fsmEndNode, PROPERTIES_START_NODE_NAME);
-         auto propertiesEndNode = XMLParserHelper::GetItByNodeName(propertiesStartNode, fsmEndNode, PROPERTIES_END_NODE_NAME);
+         auto propertiesStartNode = XMLParserHelper::GetItByNodeName(bindingsEndNode, tweenEndNode, PROPERTIES_START_NODE_NAME);
+         auto propertiesEndNode = XMLParserHelper::GetItByNodeName(propertiesStartNode, tweenEndNode, PROPERTIES_END_NODE_NAME);
          ++propertiesStartNode;
 
          for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
@@ -198,10 +198,10 @@ namespace Game
          }
       }
 
-      return BuildFSM(relPathToFSM);
+      return BuildTweener(relPathTweener);
    }
 
-   std::shared_ptr<StatePropertyBinding> CreatePropertyBinding(const FSMParser::FSMP_Binding& binding)
+   std::shared_ptr<StatePropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding& binding)
    {
       std::shared_ptr<StatePropertyBinding> result;
 
@@ -219,7 +219,7 @@ namespace Game
       return result;
    }
 
-   BaseStateProperty* CreateProperty(const FSMParser::FSMP_Property& property, const std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>>& bindings)
+   BaseStateProperty* CreateProperty(const TweenerParser::TweenerParser_Property& property, const std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>>& bindings)
    {
       BaseStateProperty* result = nullptr;
 
@@ -242,7 +242,7 @@ namespace Game
       return result;
    }
 
-   std::shared_ptr<StateMachine> FSMParser::BuildFSM(const std::string& relPathFSM)
+   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string& relPathTweener)
    {
       std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::vector<std::shared_ptr<State>> allStates;
@@ -254,7 +254,7 @@ namespace Game
          allStates.push_back(states[item.Name]);
       }
 
-      auto fsm = std::make_shared<StateMachine>(relPathFSM, states[mStates[0].Name], allStates);
+      auto tweener = std::make_shared<Tweener>(relPathTweener, states[mStates[0].Name], allStates);
 
       for (const auto& item : mTransitions)
       {
@@ -266,7 +266,7 @@ namespace Game
       for (const auto& item : mBindings)
       {
          bindings[item.BindingName] = CreatePropertyBinding(item);
-         fsm->AddPropertyBinding(item.BindingName, bindings.at(item.BindingName));
+         tweener->AddPropertyBinding(item.BindingName, bindings.at(item.BindingName));
       }
 
       for (const auto& item : mProperties)
@@ -275,11 +275,11 @@ namespace Game
          states[item.State]->AddStateProperty(property);
       }
 
-      return fsm;
+      return tweener;
    }
 
-#undef FSM_START_NODE_NAME             
-#undef FSM_END_NODE_NAME               
+#undef TWEENER_START_NODE_NAME             
+#undef TWEENER_END_NODE_NAME               
 #undef STATES_START_NODE_NAME          
 #undef STATES_END_NODE_NAME            
 #undef STATE_START_NODE_NAME           

@@ -1,4 +1,4 @@
-<FSM>
+<tweener>
   <states>
     <state>
       name: "Idle"
@@ -43,4 +43,4 @@
       state: "Walking"
     </property>
   </properties>
-</FSM>
+</tweener>

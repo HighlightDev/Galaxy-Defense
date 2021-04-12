@@ -2,10 +2,10 @@
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/StateMachine/FSMParser.h"
+#include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GraphicsCore/Material/MaterialPropertySetter.h"
 
 using namespace Graphics;
@@ -65,8 +65,8 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(PhysicsShapeBase*, std::string, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
       LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
 
-      LuaRegisterCallback<LuaExecutor_t, StateMachine*(Actor*, std::string)>::Register(mLuaInstance, "_CreateStateMachine");
-      LuaRegisterCallback<LuaExecutor_t, void(StateMachine*, std::string, std::string, std::string)>::Register(mLuaInstance, "_SetFSMBinding");
+      LuaRegisterCallback<LuaExecutor_t, Tweener*(Actor*, std::string)>::Register(mLuaInstance, "_CreateTweener");
+      LuaRegisterCallback<LuaExecutor_t, void(Tweener*, std::string, std::string, std::string)>::Register(mLuaInstance, "_SetTweenerBinding");
    }
 
    void LuaScriptExecutor_EngineObjectsCreator::RunScript()
@@ -370,35 +370,35 @@ namespace Game
       return descriptor;
    }
 
-   /* -------------------  Create State machine ----------------------------*/
-   StateMachine* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<Actor*, std::string>& fsmData)
+   /* -------------------  Create Tweener ----------------------------*/
+   Tweener* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<Actor*, std::string>& tweenerData)
    {
-      StateMachine* createdStateMachine = nullptr;
+      Tweener* createdTweener = nullptr;
 
-      FSMParser fsmParser;
-      auto stateMachine = fsmParser.ParseFSMDescriptor(IO::FolderManager::GetInstance()->GetFSMPath() + std::get<1>(fsmData));
-      Actor* actor = std::get<0>(fsmData);
+      TweenerParser fsmParser;
+      auto tweener = fsmParser.ParseTweenerDescriptor(IO::FolderManager::GetInstance()->GetTweenerPath() + std::get<1>(tweenerData));
+      Actor* actor = std::get<0>(tweenerData);
 
-      assert(actor && stateMachine);
+      assert(actor && tweener);
 
-      actor->AttachStateMachine(stateMachine);
+      actor->AttachTweener(tweener);
 
-      createdStateMachine = stateMachine.get();
+      createdTweener = tweener.get();
 
-      return createdStateMachine;
+      return createdTweener;
    }
 
-   /* -------------------  Set fsm bindings ------------------------*/
-   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<StateMachine*, std::string, std::string, std::string>& fsmData)
+   /* -------------------  Set tweener bindings ------------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<Tweener*, std::string, std::string, std::string>& tweenerData)
    {
-      auto stateMachine = std::get<0>(fsmData);
-      assert(stateMachine);
+      auto tweener = std::get<0>(tweenerData);
+      assert(tweener);
 
       if (auto scene = mSceneWP.lock())
       {
-         GameObject* gameObject = scene->GetGameObjectByName(std::get<1>(fsmData));
-         const auto& binding = stateMachine->GetPropertyBindingByName(std::get<2>(fsmData));
-         BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(fsmData));
+         GameObject* gameObject = scene->GetGameObjectByName(std::get<1>(tweenerData));
+         const auto& binding = tweener->GetPropertyBindingByName(std::get<2>(tweenerData));
+         BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
       }
 
    }

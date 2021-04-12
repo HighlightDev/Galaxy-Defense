@@ -8,8 +8,8 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/StateMachine/StateMachine.h"
-#include "Core/GameCore/StateMachine/FSMParser.h"
+#include "Core/GameCore/Tweener/Tweener.h"
+#include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalSettings.h"
@@ -116,9 +116,9 @@ namespace Game {
       return actor;
    }
 
-   std::shared_ptr<StateMachine> SerializeHelper::CreateFsmFromSerializedData(std::shared_ptr<SerializeDataStateMachine> data) {
-      FSMParser fsmParser;
-      return fsmParser.ParseFSMDescriptor(data->FsmRelPath);
+   std::shared_ptr<Tweener> SerializeHelper::CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data) {
+      TweenerParser fsmParser;
+      return fsmParser.ParseTweenerDescriptor(data->TweenerRelPath);
    }
 
    std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)

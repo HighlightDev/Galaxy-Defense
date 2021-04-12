@@ -19,7 +19,7 @@ namespace Game
       , mIsEnabled(true)
       , m_inputComponent(nullptr)
       , m_movementComponent(nullptr)
-      , mStateMachine(nullptr)
+      , mTweener(nullptr)
       , m_parent(nullptr)
    {
       assert(m_rootComponent);
@@ -48,8 +48,8 @@ namespace Game
 
    void Actor::PostLevelInit()
    {
-      if (mStateMachine)
-         mStateMachine->InitRootState();
+      if (mTweener)
+         mTweener->InitRootState();
 
       for (const auto& comp : m_allComponents)
       {
@@ -103,9 +103,9 @@ namespace Game
          m_movementComponent->CollectDataForSerialization(dataContainer);
       }
 
-      if (mStateMachine)
+      if (mTweener)
       {
-         mStateMachine->CollectDataForSerialization(dataContainer);
+         mTweener->CollectDataForSerialization(dataContainer);
       }
    }
   
@@ -208,8 +208,8 @@ namespace Game
 
    void Actor::ChangeState(const std::string& stateName)
    {
-      if (mStateMachine)
-         mStateMachine->ChangeState(stateName);
+      if (mTweener)
+         mTweener->ChangeState(stateName);
    }
 
 	void Actor::Tick(const float deltaTime)
@@ -240,8 +240,8 @@ namespace Game
       if (m_movementComponent)
          m_movementComponent->Tick(deltaTime);
 
-      if (mStateMachine)
-         mStateMachine->Tick(deltaTime);
+      if (mTweener)
+         mTweener->Tick(deltaTime);
 	}
 
 	void Actor::AddComponent(std::shared_ptr<Game::Component> component)
@@ -322,16 +322,16 @@ namespace Game
 		}
 	}
 
-   void Actor::AttachStateMachine(std::shared_ptr<StateMachine> fsm)
+   void Actor::AttachTweener(std::shared_ptr<Tweener> tweener)
    {
-      assert((!mStateMachine, "Current state machine member was already attached."));
-      mStateMachine = fsm;
-      mStateMachine->SetParentActor(this);
+      assert((!mTweener, "Tweener was already attached."));
+      mTweener = tweener;
+      mTweener->SetParentActor(this);
    }
 
-   std::shared_ptr<StateMachine> Actor::GetStateMachine() const
+   std::shared_ptr<Tweener> Actor::GetTweener() const
    {
-      return mStateMachine;
+      return mTweener;
    }
 
    void Actor::SetIsEnabled(bool isEnabled)

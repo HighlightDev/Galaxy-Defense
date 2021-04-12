@@ -17,7 +17,7 @@ namespace Game {
    using EnginePhysics::PhysicsComponent;
 
    class Actor;
-   class StateMachine;
+   class Tweener;
    class Scene;
    class Component;
    class StaticMeshComponent;
@@ -37,7 +37,7 @@ namespace Game {
 
       static std::shared_ptr<Actor> CreateActorFromSerializedData(const SerializeDataActor& data);
 
-      static std::shared_ptr<StateMachine> CreateFsmFromSerializedData(std::shared_ptr<SerializeDataStateMachine> data);
+      static std::shared_ptr<Tweener> CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data);
 
       static std::shared_ptr<Component> CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data);
 

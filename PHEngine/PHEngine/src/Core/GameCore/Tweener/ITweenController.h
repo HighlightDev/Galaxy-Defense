@@ -9,7 +9,7 @@ namespace Game
       DestinationState = 1
    };
 
-   class IStateMachineController
+   class ITweenController
    {
    protected:
 
@@ -19,7 +19,7 @@ namespace Game
 
    public:
 
-      IStateMachineController();
+      ITweenController();
 
       virtual void OnTransitionFinished() = 0;
 

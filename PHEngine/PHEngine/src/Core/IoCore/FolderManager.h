@@ -65,7 +65,7 @@ namespace IO
       const std::string GetPersistencyPath() const;
       const std::string GetScriptPath() const;
       const std::string GetMaterialPath() const;
-      const std::string GetFSMPath() const;
+      const std::string GetTweenerPath() const;
 
       void CreateFilePathMap(const std::string& pathToDir);
       std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;

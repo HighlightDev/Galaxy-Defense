@@ -1,7 +1,7 @@
-#include "StateMachine.h"
+#include "Tweener.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/StateMachine/AnimationStateMachineController.h"
-#include "Core/GameCore/StateMachine/FloatStateMachineController.h"
+#include "Core/GameCore/Tweener/AnimationTweenController.h"
+#include "Core/GameCore/Tweener/FloatTweenController.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Actor.h"
 
@@ -11,7 +11,7 @@
 namespace Game
 {
 
-   StateMachine::StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
+   Tweener::Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
       : mMyAllStates(allStates)
       , mRelPathFSM(relPathFSM)
       , mStateNodeInitRoot(rootNode)
@@ -19,11 +19,11 @@ namespace Game
    {
    }
 
-   StateMachine::~StateMachine()
+   Tweener::~Tweener()
    {
    }
 
-   void StateMachine::InitRootState()
+   void Tweener::InitRootState()
    {
       const std::string& rootStateName = mStateNodeInitRoot->GetStateName();
 
@@ -33,16 +33,16 @@ namespace Game
       {
          std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
 
-         std::shared_ptr<IStateMachineController> propertyController;
+         std::shared_ptr<ITweenController> propertyController;
 
          const auto propertyType = dstProperty->GetStatePropertyType();
          if (StatePropertyType::Animation == propertyType)
          {
-            propertyController = std::make_shared<AnimationStateMachineController>();
+            propertyController = std::make_shared<AnimationTweenController>();
          }
          else if (StatePropertyType::Float == propertyType)
          {
-            propertyController = std::make_shared<FloatStateMachineController>();
+            propertyController = std::make_shared<FloatTweenController>();
          }
 
          if (propertyController)
@@ -52,12 +52,12 @@ namespace Game
       }
    }
 
-   void StateMachine::DoTranstionInstantly(const std::string& dstStateName)
+   void Tweener::DoTranstionInstantly(const std::string& dstStateName)
    {
       if (mCurrentActiveStateTransition)
       {
          // Finish current transition
-         for (std::shared_ptr<IStateMachineController>& controllerSp : CurrentActiveTransitionControllers)
+         for (std::shared_ptr<ITweenController>& controllerSp : CurrentActiveTransitionControllers)
          {
             controllerSp->OnTransitionFinished();
          }
@@ -73,7 +73,7 @@ namespace Game
       }
    }
 
-   void StateMachine::DoTransition(const std::string& dstStateName)
+   void Tweener::DoTransition(const std::string& dstStateName)
    {
       const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
 
@@ -109,16 +109,16 @@ namespace Game
                   std::shared_ptr<BaseStateProperty> srcProperty = srcNameAndPropertyPair.second;
                   std::shared_ptr<BaseStateProperty> dstProperty = dstProperties[name];
 
-                  std::shared_ptr<IStateMachineController> propertyController;
+                  std::shared_ptr<ITweenController> propertyController;
 
                   const auto propertyType = srcProperty->GetStatePropertyType();
                   if (StatePropertyType::Animation == propertyType)
                   {
-                     propertyController = std::make_shared<AnimationStateMachineController>();
+                     propertyController = std::make_shared<AnimationTweenController>();
                   }
                   else if (StatePropertyType::Float == propertyType)
                   {
-                     propertyController = std::make_shared<FloatStateMachineController>();
+                     propertyController = std::make_shared<FloatTweenController>();
                   }
 
                   if (propertyController)
@@ -132,7 +132,7 @@ namespace Game
       }
    }
 
-   void StateMachine::ChangeState(const std::string& dstStateName)
+   void Tweener::ChangeState(const std::string& dstStateName)
    {
       if (bTransitionEnabled)
       {
@@ -145,36 +145,36 @@ namespace Game
       }
    }
 
-   void StateMachine::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void Tweener::CollectDataForSerialization(SerializeDataContainer& dataContainer)
    {
       auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetParentActor()->GetName(); });
       assert(it != dataContainer.Actors.end());
 
-      std::shared_ptr<SerializeDataStateMachine> fsmData = std::make_shared<SerializeDataStateMachine>();
+      std::shared_ptr<SerializeDataTweener> tweenerData = std::make_shared<SerializeDataTweener>();
 
-      fsmData->FsmRelPath = GetRelPathFSM();
+      tweenerData->TweenerRelPath = GetRelPathTweener();
 
       for (const auto& binding : mPropertyBindings)
       {
-         SerializeDataStateMachine::SerializeFSMBinding bindingData;
+         SerializeDataTweener::SerializeTweenerBinding bindingData;
          bindingData.BindingName = binding.second->BindingName;
          bindingData.GameObjectName = binding.second->GameObjectName;
          bindingData.GameObjectPropertyName = binding.second->GameObjectPropertyName;
-         fsmData->Bindings.emplace_back(bindingData);
+         tweenerData->Bindings.emplace_back(bindingData);
       }
       
-      it->StateMachineData = fsmData;
+      it->TweenerData = tweenerData;
    }
 
-   void StateMachine::SetParentActor(Actor* parent) {
+   void Tweener::SetParentActor(Actor* parent) {
       mParent = parent;
    }
 
-   Actor* StateMachine::GetParentActor() const {
+   Actor* Tweener::GetParentActor() const {
       return mParent;
    }
 
-   void StateMachine::SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState)
+   void Tweener::SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState)
    {
       mTransitionParameter = 1.0f;
       mTransitionTime = 0.0f;
@@ -183,19 +183,19 @@ namespace Game
       bTransitionEnabled = false;
    }
 
-   std::shared_ptr<StatePropertyBinding> StateMachine::GetPropertyBindingByName(const std::string& name) const
+   std::shared_ptr<StatePropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
    {
       assert(mPropertyBindings.count(name));
       return mPropertyBindings.at(name);
    }
 
-   void StateMachine::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding)
+   void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding)
    {
       assert(binding);
       mPropertyBindings[propBindingName] = binding;
    }
 
-   void StateMachine::Tick(const float deltaTime)
+   void Tweener::Tick(const float deltaTime)
    {
       // process current transition
       if (bTransitionEnabled && mCurrentActiveStateTransition)
@@ -215,7 +215,7 @@ namespace Game
                mTransitionParameter = mTransitionTime / mTransitionDuration;
             }
 
-            for (std::shared_ptr<IStateMachineController>& controllerSp : CurrentActiveTransitionControllers)
+            for (std::shared_ptr<ITweenController>& controllerSp : CurrentActiveTransitionControllers)
             {
                if (bTransitionEnabled)
                {
@@ -235,22 +235,22 @@ namespace Game
       }
    }
 
-   bool StateMachine::IsTransitionActive() const
+   bool Tweener::IsTransitionActive() const
    {
       return bTransitionEnabled;
    }
 
-   float StateMachine::GetTransitionParameter() const
+   float Tweener::GetTransitionParameter() const
    {
       return mTransitionParameter;
    }
 
-   std::shared_ptr<State> StateMachine::GetCurrentState() const
+   std::shared_ptr<State> Tweener::GetCurrentState() const
    {
       return mCurrentStateNode;
    }
 
-   std::string StateMachine::GetRelPathFSM() const {
+   std::string Tweener::GetRelPathTweener() const {
       return mRelPathFSM;
    }
 }

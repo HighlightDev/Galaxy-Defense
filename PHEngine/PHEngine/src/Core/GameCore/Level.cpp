@@ -3,7 +3,7 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
-#include "Core/GameCore/StateMachine/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
@@ -120,19 +120,19 @@ namespace Game
          }
       }
 
-      // deserialize fsm
+      // deserialize tweener
       for (const auto& actorData : container.Actors)
       {
-         if (actorData.StateMachineData)
+         if (actorData.TweenerData)
          {
-            auto fsmSerializeData = actorData.StateMachineData;
+            auto data = actorData.TweenerData;
 
-            std::shared_ptr<StateMachine> actorFSM = SerializeHelper::CreateFsmFromSerializedData(fsmSerializeData);
+            std::shared_ptr<Tweener> actorTweener = SerializeHelper::CreateTweenerFromSerializedData(data);
 
-            for (const auto& bindingData : fsmSerializeData->Bindings)
+            for (const auto& bindingData : data->Bindings)
             {
                auto gameObject = mScene->GetGameObjectByName(bindingData.GameObjectName);
-               const auto& binding = actorFSM->GetPropertyBindingByName(bindingData.BindingName);
+               const auto& binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
                BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
             }
 
@@ -143,7 +143,7 @@ namespace Game
 
             assert(actorIt != mScene->GetActors().end());
 
-            (*actorIt)->AttachStateMachine(actorFSM);
+            (*actorIt)->AttachTweener(actorTweener);
          }
       }
 

@@ -436,7 +436,6 @@
     <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\skeletComponentAction.lua" />
     <None Include="res\scripts\createTestLevel.lua" />
-    <None Include="res\fsm\playerAnimation.fsm" />
     <None Include="res\scripts\platformMovementComponentAction.lua" />
     <None Include="res\materials\Skybox.m" />
     <None Include="res\shaders\directLightDepthCollectFS.glsl" />
@@ -480,6 +479,7 @@
     <None Include="res\shaders\composite_shaders\planarReflectionVS.glsl" />
     <None Include="res\materials\Water.m" />
     <None Include="res\materials\DynamicTestMaterial.m" />
+    <None Include="res\tweeners\playerAnimation.tween" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -1745,27 +1745,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateMachine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\IStateMachineController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\State.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\StateTransition.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\StatePropertyBinding.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1784,9 +1763,6 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\FSMParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1797,12 +1773,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\BindingAttachmentBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\StateMachine\FloatStateMachineController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h">
@@ -1980,6 +1950,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\State.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\StateProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\StatePropertyBinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\StateTransition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\AnimationTweenController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\ITweenController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Tweener\Tweener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2311,18 +2311,6 @@
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\AnimationStateMachineController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\StateMachine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\StateTransition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\IStateMachineController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2332,16 +2320,10 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\FSMParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\StateMachine\FloatStateMachineController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp">
@@ -2471,6 +2453,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\StateTransition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\AnimationTweenController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\FloatTweenController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\TweenerParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\ITweenController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Tweener\Tweener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

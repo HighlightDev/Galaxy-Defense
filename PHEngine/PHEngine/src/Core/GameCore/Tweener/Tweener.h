@@ -9,7 +9,7 @@
 
 namespace Game
 {
-   class StateMachine 
+   class Tweener 
       : public ITickable
       , public ISerializable
    {
@@ -28,7 +28,7 @@ namespace Game
 
       std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<StatePropertyBinding>> mPropertyBindings;
 
-      std::vector<std::shared_ptr<IStateMachineController>> CurrentActiveTransitionControllers;
+      std::vector<std::shared_ptr<ITweenController>> CurrentActiveTransitionControllers;
 
       bool bTransitionEnabled = false;
       /* this parameter is mapped from 0.0 (start of transition) to 1.0 (end of transition) */
@@ -38,9 +38,9 @@ namespace Game
 
    public:
 
-      StateMachine(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates);
+      Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates);
 
-      ~StateMachine();
+      ~Tweener();
 
       void ChangeState(const std::string& dstStateName);
 
@@ -54,7 +54,7 @@ namespace Game
 
       float GetTransitionParameter() const;
 
-      std::string GetRelPathFSM() const;
+      std::string GetRelPathTweener() const;
 
       void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding);
 

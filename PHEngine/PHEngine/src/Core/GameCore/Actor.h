@@ -12,7 +12,7 @@
 #include "Core/GameCore/Components/CharacterMovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/StateMachine/StateMachine.h"
+#include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 
 using namespace EnginePhysics;
@@ -52,7 +52,7 @@ namespace Game
 
       std::shared_ptr<CharacterMovementComponent> m_movementComponent;
 
-      std::shared_ptr<StateMachine> mStateMachine;
+      std::shared_ptr<Tweener> mTweener;
 
       std::weak_ptr<Scene> mSceneOwner;
 
@@ -105,9 +105,9 @@ namespace Game
 
       void DetachActor(std::shared_ptr<Actor> actor);
 
-      void AttachStateMachine(std::shared_ptr<StateMachine> fsm);
+      void AttachTweener(std::shared_ptr<Tweener> tweener);
 
-      std::shared_ptr<StateMachine> GetStateMachine() const;
+      std::shared_ptr<Tweener> GetTweener() const;
 
       std::shared_ptr<Game::SceneComponent> GetRootComponent() const;
 

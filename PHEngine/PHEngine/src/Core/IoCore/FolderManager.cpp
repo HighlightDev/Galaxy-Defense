@@ -153,11 +153,6 @@ namespace IO
 	{
 		return GetTexturesPath() + "editor\\";
 	}
-	
-   const std::string FolderManager::GetPersistencyPath() const
-   {
-      return GetResPath() + "persistency\\";
-   }
 
    const std::string FolderManager::GetScriptPath() const
    {
@@ -169,8 +164,8 @@ namespace IO
       return GetResPath() + "materials\\";
    }
 
-   const std::string FolderManager::GetFSMPath() const
+   const std::string FolderManager::GetTweenerPath() const
    {
-      return GetResPath() + "fsm\\";
+      return GetResPath() + "tweeners\\";
    }
 }

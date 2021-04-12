@@ -35,7 +35,7 @@ struct SerializeDataBase
       Input,
       Physics,
       CharacterPhysics,
-      FSM,
+      Tweener,
       PlayerController
    };
 
@@ -352,10 +352,10 @@ struct SerializeDataPhysicsComponent
    }
 };
 
-struct SerializeDataStateMachine
+struct SerializeDataTweener
    : public SerializeDataBase
 {
-   struct SerializeFSMBinding
+   struct SerializeTweenerBinding
    {
       std::string GameObjectName;
       std::string BindingName;
@@ -368,19 +368,19 @@ struct SerializeDataStateMachine
       }
    };
 
-   std::string FsmRelPath;
+   std::string TweenerRelPath;
 
-   std::vector<SerializeFSMBinding> Bindings;
+   std::vector<SerializeTweenerBinding> Bindings;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(FsmRelPath, Bindings);
+      archive(TweenerRelPath, Bindings);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
-      return SerializeDataBase::SerializeDataType::FSM;
+      return SerializeDataBase::SerializeDataType::Tweener;
    }
 };
 
@@ -391,13 +391,13 @@ struct SerializeDataActor
    glm::vec3 RootCompTranslation;
    glm::vec3 RootCompRotation;
    glm::vec3 RootCompScale;
-   std::shared_ptr<SerializeDataStateMachine> StateMachineData;
+   std::shared_ptr<SerializeDataTweener> TweenerData;
    std::vector<std::shared_ptr<SerializeDataBase>> ComponentsData;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, StateMachineData, ComponentsData);
+      archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, TweenerData, ComponentsData);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override

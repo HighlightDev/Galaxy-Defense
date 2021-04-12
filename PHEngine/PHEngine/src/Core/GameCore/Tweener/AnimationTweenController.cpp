@@ -1,14 +1,14 @@
-#include "AnimationStateMachineController.h"
+#include "AnimationTweenController.h"
 #include "StateProperty.h"
 
 namespace Game
 {
-   AnimationStateMachineController::AnimationStateMachineController()
-      : IStateMachineController()
+   AnimationTweenController::AnimationTweenController()
+      : ITweenController()
    {
    }
 
-   std::shared_ptr<AnimationPropertyBinding> AnimationStateMachineController::GetAnimationPropertyBindingSP() const
+   std::shared_ptr<AnimationPropertyBinding> AnimationTweenController::GetAnimationPropertyBindingSP() const
    {
       std::shared_ptr<AnimationPropertyBinding> result(nullptr);
 
@@ -19,7 +19,7 @@ namespace Game
       return result;
    }
 
-   void AnimationStateMachineController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
+   void AnimationTweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter)
    {
       Base::OnTransitionUpdate(deltaTime, transitionParameter);
 
@@ -31,7 +31,7 @@ namespace Game
       }
    }
 
-   void AnimationStateMachineController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   void AnimationTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
    {
       mPropertyBinding = dstStateProperty->PropertyBinding;
       if (auto animBinding = GetAnimationPropertyBindingSP())
@@ -47,7 +47,7 @@ namespace Game
       }
    }
 
-   void AnimationStateMachineController::OnTransitionStarted(
+   void AnimationTweenController::OnTransitionStarted(
       BaseStateProperty* srcProperty,
       BaseStateProperty* dstProperty,
       const float transitionDuration)
@@ -69,7 +69,7 @@ namespace Game
       }
    }
 
-   void AnimationStateMachineController::OnTransitionFinished()
+   void AnimationTweenController::OnTransitionFinished()
    {
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
