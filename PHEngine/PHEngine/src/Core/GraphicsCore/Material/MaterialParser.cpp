@@ -5,6 +5,7 @@
 #include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DeferredTextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
 
 using namespace Common;
@@ -139,7 +140,6 @@ namespace Graphics
       return parsedMaterial;
    }
 
-
    IMaterial* MaterialParser::ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath)
    {
       IMaterial* material = new IMaterial(materialName, materialShaderPath);
@@ -157,8 +157,6 @@ namespace Graphics
 
       return material;
    }
-
-
 
    XMLParserHelper::iterator_t GetTagWithName(const std::string& operationName, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
    {
@@ -180,7 +178,7 @@ namespace Graphics
       return propertiesEndIt;
    }
 
-   XMLParserHelper::iterator_t ProcessDynamicProperty(MaterialNode** opNode, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
+   XMLParserHelper::iterator_t ProcessDynamicProperty(const std::string& propertyType, std::shared_ptr<MaterialNode> node, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
    {
       XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
 
@@ -195,26 +193,26 @@ namespace Graphics
 
          if (bOperation)
          {
-            MaterialNode* operationNode = nullptr;
+            std::shared_ptr<MaterialNode> operationNode = nullptr;
             const std::string& currentNodeStr = EngineUtility::TrimStart(*operationIt);
             if (EngineUtility::StartsWith(currentNodeStr, UNARY_INCR_OP_START))
             {
-               operationNode = new MaterialUnaryOperationNode();
+               operationNode = std::make_shared<MaterialUnaryIncrementNode>();
             }
             else if (EngineUtility::StartsWith(currentNodeStr, BINARY_ADD_OP_START))
             {
-               operationNode = new MaterialBinaryOperationNode();
+               operationNode = std::make_shared < MaterialBinaryAddOperationNode>();
             }
             else if (EngineUtility::StartsWith(currentNodeStr, BINARY_MUL_OP_START))
             {
-               operationNode = new MaterialBinaryOperationNode();
+               operationNode = std::make_shared < MaterialBinaryMulOperationNode>();
             }
 
-            switch ((*opNode)->GetMaterialOperationType())
+            switch (node->GetMaterialNodeType())
             {
                case MaterialNode::eMaterialNodeType::START:
                {
-                  MaterialStartNode* startNode = static_cast<MaterialStartNode*>(*opNode);
+                  auto startNode = std::static_pointer_cast<MaterialStartNode>(node);
                   startNode->InputOperation = operationNode;
                   break;
                }
@@ -224,13 +222,13 @@ namespace Graphics
                }
                case MaterialNode::eMaterialNodeType::UNARY_OP:
                {
-                  MaterialUnaryOperationNode* unaryNode = static_cast<MaterialUnaryOperationNode*>(*opNode);
+                  auto unaryNode = std::static_pointer_cast<MaterialUnaryOperationNode>(node);
                   unaryNode->InputOperation = operationNode;
                   break;
                }
                case MaterialNode::eMaterialNodeType::BINARY_OP:
                {
-                  MaterialBinaryOperationNode* binaryNode = static_cast<MaterialBinaryOperationNode*>(*opNode);
+                  auto binaryNode = std::static_pointer_cast<MaterialBinaryOperationNode>(node);
                   if (binaryNode->InputOperation1 == nullptr)
                   {
                      binaryNode->InputOperation1 = operationNode;
@@ -245,7 +243,7 @@ namespace Graphics
             }
 
             lastProcessedIt = ++operationIt;
-            lastProcessedIt = ProcessDynamicProperty(&operationNode, operationIt, propertiesEndIt);
+            lastProcessedIt = ProcessDynamicProperty(propertyType, operationNode, operationIt, propertiesEndIt);
          }
          else if (bValue)
          {
@@ -258,21 +256,19 @@ namespace Graphics
                floatValue = std::stof(value);
             }
 
-            switch ((*opNode)->GetMaterialOperationType())
+            switch (node->GetMaterialNodeType())
             {
                case MaterialNode::eMaterialNodeType::UNARY_OP:
                {
-                  MaterialUnaryOperationNode* unaryNode = static_cast<MaterialUnaryOperationNode*>(*opNode);
-                  auto valueNode = new MaterialValueNode();
-                  valueNode->Value = floatValue;
+                  auto unaryNode = std::static_pointer_cast<MaterialUnaryOperationNode>(node);
+                  auto valueNode = std::make_shared<MaterialValueNode>(floatValue);
                   unaryNode->InputOperation = valueNode;
                   break;
                }
                case MaterialNode::eMaterialNodeType::BINARY_OP:
                {
-                  MaterialBinaryOperationNode* binaryNode = static_cast<MaterialBinaryOperationNode*>(*opNode);
-                  auto valueNode = new MaterialValueNode();
-                  valueNode->Value = floatValue;
+                  auto binaryNode = std::static_pointer_cast<MaterialBinaryOperationNode>(node);
+                  auto valueNode = std::make_shared<MaterialValueNode>(floatValue);
 
                   if (binaryNode->InputOperation1 == nullptr)
                   {
@@ -298,29 +294,29 @@ namespace Graphics
       return lastProcessedIt;
    }
 
-   float getIteratedValue(MaterialNode* node) 
+   float getIteratedValue(std::shared_ptr<MaterialNode> node)
    {
       float result = 0.0f;
-      if (node->GetMaterialOperationType() == MaterialNode::eMaterialNodeType::START)
+      if (node->GetMaterialNodeType() == MaterialNode::eMaterialNodeType::START)
       {
-         auto startNode = static_cast<MaterialStartNode*>(node);
+         auto startNode = std::static_pointer_cast<MaterialStartNode>(node);
          result = getIteratedValue(startNode->InputOperation);
       }
-      else if (node->GetMaterialOperationType() == MaterialNode::eMaterialNodeType::UNARY_OP)
+      else if (node->GetMaterialNodeType() == MaterialNode::eMaterialNodeType::UNARY_OP)
       {
-         auto unaryNode = static_cast<MaterialUnaryOperationNode*>(node);
+         auto unaryNode = std::static_pointer_cast<MaterialUnaryOperationNode>(node);
          result = getIteratedValue(unaryNode->InputOperation);
-         result += 1.0f;
+         result = unaryNode->doOperation(result);
       }
-      else if (node->GetMaterialOperationType() == MaterialNode::eMaterialNodeType::BINARY_OP)
+      else if (node->GetMaterialNodeType() == MaterialNode::eMaterialNodeType::BINARY_OP)
       {
-         auto binaryNode = static_cast<MaterialBinaryOperationNode*>(node);
+         auto binaryNode = std::static_pointer_cast<MaterialBinaryOperationNode>(node);
          result = getIteratedValue(binaryNode->InputOperation1);
-         result = result + getIteratedValue(binaryNode->InputOperation2);
+         result = binaryNode->doOperation(result, getIteratedValue(binaryNode->InputOperation2));
       }
-      else if (node->GetMaterialOperationType() == MaterialNode::eMaterialNodeType::VALUE)
+      else if (node->GetMaterialNodeType() == MaterialNode::eMaterialNodeType::VALUE)
       {
-         auto valueNode = static_cast<MaterialValueNode*>(node);
+         auto valueNode = std::static_pointer_cast<MaterialValueNode>(node);
          result = valueNode->Value;
       }
       else {
@@ -335,18 +331,20 @@ namespace Graphics
       auto dynamicPropertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
       auto dynamicPropertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_END_NODE_NAME);
 
-      std::string propertyName, propertyType;
+      std::string propertyName = "", propertyType = "";
 
       ++dynamicPropertyStartNode;
 
-      MaterialNode* operation = new MaterialStartNode();
+      std::shared_ptr<MaterialStartNode> operation = std::make_shared<MaterialStartNode>();
       while (dynamicPropertyStartNode != dynamicPropertyEndNode)
       {
          const std::string& currentNodeStr = EngineUtility::TrimStart(*dynamicPropertyStartNode);
 
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME))
          {
-            ProcessDynamicProperty(&operation, ++dynamicPropertyStartNode, dynamicPropertyEndNode);
+            assert(propertyName != "" && propertyType != "");
+
+            ProcessDynamicProperty(propertyType, operation, ++dynamicPropertyStartNode, dynamicPropertyEndNode);
             dynamicPropertyStartNode = dynamicPropertyEndNode;
          }
          else
@@ -363,12 +361,10 @@ namespace Graphics
          }
       }
 
-      float resultValue = getIteratedValue(operation);
-
       outPropertyName = propertyName;
       propertiesBeginIt = dynamicPropertyEndNode;
 
-      return CreatePropertyByType(propertyType);
+      return std::make_shared<DynamicFloatMaterialProperty>(operation);
    }
 
 
@@ -384,16 +380,16 @@ namespace Graphics
       {
          const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
 
+         std::string propertyName = "";
+         std::shared_ptr<MaterialProperty> materialProperty;
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_START_NODE_NAME))
          {
-            std::string propertyName;
-            std::shared_ptr<MaterialProperty> materialProperty = GetMaterialDynamicPropertyAndAdvanceIterator(it, propertiesEndNode, propertyName);
+            materialProperty = GetMaterialDynamicPropertyAndAdvanceIterator(it, propertiesEndNode, propertyName);
             material->PushMaterialProperty(propertyName, std::move(materialProperty));
          }
          else
          {
-            std::string propertyName;
-            std::shared_ptr<MaterialProperty> materialProperty = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode, propertyName);
+            materialProperty = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode, propertyName);
             material->PushMaterialProperty(propertyName, std::move(materialProperty));
          }
       }

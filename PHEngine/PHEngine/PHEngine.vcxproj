@@ -347,6 +347,7 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicFloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\FloatMaterialProperty.h" />

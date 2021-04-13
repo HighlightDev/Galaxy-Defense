@@ -1982,6 +1982,9 @@
     <ClInclude Include="src\Core\GameCore\Tweener\Tweener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicFloatMaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

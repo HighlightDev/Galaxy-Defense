@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <type_traits>
 
 #include "Core/CommonCore/Assertion.h"
 
@@ -15,18 +16,38 @@ namespace Graphics
          BINARY_OP,
       };
 
-      virtual eMaterialNodeType GetMaterialOperationType() = 0;
+      enum class eMaterialOperationType {
+         NONE,
+         UNARY_INCREMENT,
+         UNARY_DECREMENT,
+         BINARY_ADD,
+         BINARY_MUL,
+         BINARY_SUB,
+         BINARY_DIV
+      };
+
+      virtual eMaterialNodeType GetMaterialNodeType() = 0;
+      virtual eMaterialOperationType GetMaterialOperationType() = 0;
    };
 
    struct MaterialStartNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialOperationType() override
+      virtual eMaterialNodeType GetMaterialNodeType() override
       {
          return MaterialNode::eMaterialNodeType::START;
       }
 
-      MaterialNode* InputOperation;
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return eMaterialOperationType::NONE;
+      }
+
+      float getIteratedValue(std::shared_ptr<MaterialNode> node);
+
+      float GetValue();
+
+
+      std::shared_ptr<MaterialNode> InputOperation;
    };
 
    struct MaterialValueNode
@@ -34,116 +55,116 @@ namespace Graphics
    {
       float Value;
 
-      virtual eMaterialNodeType GetMaterialOperationType() override
+      explicit MaterialValueNode(const float value) : Value(value) {
+
+      }
+
+      virtual eMaterialNodeType GetMaterialNodeType() override
       {
          return MaterialNode::eMaterialNodeType::VALUE;
+      }
+
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return eMaterialOperationType::NONE;
       }
    };
 
    struct MaterialUnaryOperationNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialOperationType() {
+      virtual eMaterialNodeType GetMaterialNodeType() {
          return MaterialNode::eMaterialNodeType::UNARY_OP;
       }
 
-      MaterialNode* InputOperation;
-      MaterialValueNode* OutputValue;
+      std::shared_ptr<MaterialNode> InputOperation;
+
+      virtual float doOperation(const float& value) = 0;
+   };
+
+   struct MaterialUnaryIncrementNode
+      : public MaterialUnaryOperationNode {
+
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return eMaterialOperationType::UNARY_INCREMENT;
+      }
+
+      virtual float doOperation(const float& value) override {
+         return value + 1;
+      }
+   };
+
+   struct MaterialUnaryDecrementNode
+      : public MaterialUnaryOperationNode {
+
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return eMaterialOperationType::UNARY_DECREMENT;
+      }
+
+      virtual float doOperation(const float& value) {
+         return value - 1;
+      }
    };
 
    struct MaterialBinaryOperationNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialOperationType() {
+      virtual eMaterialNodeType GetMaterialNodeType() {
          return MaterialNode::eMaterialNodeType::BINARY_OP;
       }
 
-      MaterialNode* InputOperation1;
-      MaterialNode* InputOperation2;
-      MaterialValueNode* OutputValue;
+      std::shared_ptr<MaterialNode> InputOperation1;
+      std::shared_ptr<MaterialNode> InputOperation2;
+
+      virtual float doOperation(const float& left, const float& right) = 0;
    };
 
-   /********************/
-
-   struct MaterialOperationProperty
+   struct MaterialBinaryAddOperationNode
+      : public MaterialBinaryOperationNode
    {
-      enum class eMaterialOperationPropertyType {
-         FLOAT_PROPERTY,
-      };
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return MaterialNode::eMaterialOperationType::BINARY_ADD;
+      }
 
-      virtual eMaterialOperationPropertyType GetMaterialOperationPropertyType() = 0;
-   };
-
-   struct MaterialOperationFloatProperty
-      : public MaterialOperationProperty
-   {
-      float Value;
-
-      MaterialOperationFloatProperty(const float value) : Value(value) {}
-
-      virtual eMaterialOperationPropertyType GetMaterialOperationPropertyType()
-      {
-         return MaterialOperationProperty::eMaterialOperationPropertyType::FLOAT_PROPERTY;
+      virtual float doOperation(const float& left, const float& right) override {
+         return left + right;
       }
    };
 
-   class MaterialPropertyInOut
+   struct MaterialBinarySubOperationNode
+      : public MaterialBinaryOperationNode
    {
-   public:
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return MaterialNode::eMaterialOperationType::BINARY_SUB;
+      }
 
-      std::shared_ptr<MaterialOperationProperty> value;
-   };
-
-   class MaterialOperation
-   {
-   public:
-      MaterialOperation();
-      ~MaterialOperation();
-   };
-
-   class UnaryMaterialOperation
-   {
-   public:
-      virtual MaterialPropertyInOut Process(MaterialPropertyInOut src) = 0;
-   };
-
-   class UnaryIncrementOperation
-      : public UnaryMaterialOperation
-   {
-   public:
-      virtual MaterialPropertyInOut Process(MaterialPropertyInOut src) override
-      {
-         MaterialPropertyInOut result;
-
-         if (!src.value)
-            assert(false);
-
-         if (src.value->GetMaterialOperationPropertyType() == MaterialOperationProperty::eMaterialOperationPropertyType::FLOAT_PROPERTY)
-         {
-            auto floatProperty = std::static_pointer_cast<MaterialOperationFloatProperty>(src.value);
-            result.value = std::make_shared<MaterialOperationFloatProperty>(floatProperty->Value + 1.0f);
-         }
-         else
-         {
-            assert(false);
-         }
-
-         return result;
+      virtual float doOperation(const float& left, const float& right) override {
+         return left - right;
       }
    };
 
-   class BinaryMaterialOperation
+   struct MaterialBinaryMulOperationNode
+      : public MaterialBinaryOperationNode
    {
-   public:
-      virtual MaterialPropertyInOut Process(MaterialPropertyInOut src1, MaterialPropertyInOut src2) = 0;
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return MaterialNode::eMaterialOperationType::BINARY_MUL;
+      }
+
+      virtual float doOperation(const float& left, const float& right) override {
+         return left * right;
+      }
    };
 
-   class BinarySumOperation
-      : public BinaryMaterialOperation
+   struct MaterialBinaryDivOperationNode
+      : public MaterialBinaryOperationNode
    {
-   public:
-      virtual MaterialPropertyInOut Process(MaterialPropertyInOut src1, MaterialPropertyInOut src2) override;
-   };
+      virtual eMaterialOperationType GetMaterialOperationType() override {
+         return MaterialNode::eMaterialOperationType::BINARY_DIV;
+      }
 
+      virtual float doOperation(const float& left, const float& right) override {
+         assert(right != 0.0f);
+         return left / right;
+      }
+   };
 }
 

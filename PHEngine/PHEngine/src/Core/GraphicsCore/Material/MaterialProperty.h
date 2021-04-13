@@ -13,6 +13,7 @@ struct MaterialProperty
       FLOAT_PROPERTY,
       TEXTURE_PROPERTY,
       DEFERRED_TEXTURE_PROPERTY,
+      DYNAMIC_FLOAT_PROPERTY
    };
 
 public:

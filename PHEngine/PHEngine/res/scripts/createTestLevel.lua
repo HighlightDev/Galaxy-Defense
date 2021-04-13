@@ -84,8 +84,8 @@ function CreateTestLevel(host)
 	1, 1, 1)
 	
 	if groundActor ~= nil then
-		local material = _CreateMaterial(host, "Pbs.m")
-		--local material = _CreateMaterial(host, "DynamicTestMaterial.m")
+		--local material = _CreateMaterial(host, "Pbs.m")
+		local material = _CreateMaterial(host, "DynamicTestMaterial.m")
 		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
 		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")
