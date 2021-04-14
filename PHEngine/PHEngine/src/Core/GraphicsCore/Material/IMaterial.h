@@ -13,6 +13,13 @@ namespace Graphics
 {
    class IMaterial
    {
+   public:
+
+      enum class eMaterialType {
+         STATIC,
+         DYNAMIC
+      };
+
    protected:
 
       std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
@@ -31,9 +38,11 @@ namespace Graphics
 
       virtual ~IMaterial();
 
+      virtual eMaterialType GetMaterialType() const;
+
       std::shared_ptr<MaterialProperty> GetMaterialPropertyByName(const std::string& propertyName) const;
 
-      void PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue);
+      void PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue);
 
       const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
 

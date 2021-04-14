@@ -84,8 +84,7 @@ function CreateTestLevel(host)
 	1, 1, 1)
 	
 	if groundActor ~= nil then
-		--local material = _CreateMaterial(host, "Pbs.m")
-		local material = _CreateMaterial(host, "DynamicTestMaterial.m")
+		local material = _CreateMaterial(host, "Pbs.m")
 		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
 		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")
@@ -109,12 +108,15 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if waterActor ~= nil then
-		local waterMat = _CreateMaterial(host, "Water.m")
-		_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
-		_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
+		--local waterMat = _CreateMaterial(host, "Water.m")
+		local waterMat = _CreateMaterial(host, "DynamicTestMaterial.m")
+		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "reflectionTexture")
+		_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "refractionTexture")
+		_SetFloatToMaterial(host, waterMat, 0.1, "test_value")
+		--_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
+		--_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
 		--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
-		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
-		
+		--_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
 
 		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)

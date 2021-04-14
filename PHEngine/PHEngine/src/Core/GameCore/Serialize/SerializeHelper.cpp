@@ -80,7 +80,7 @@ namespace Game {
       {
          const std::string& uniformName = propertyItem.first;
          std::shared_ptr<MaterialProperty> prop = propertyItem.second;
-         auto type = prop->GetMaterialPropertyType();
+         auto type = prop->GetPropertyType();
 
          std::string uniformValue, propertyType;
 
@@ -370,7 +370,7 @@ namespace Game {
       {
          if (property.PropertyType == "texture" && property.Value != "")
          {
-            material->PushMaterialProperty(property.UniformName, std::make_shared<TextureMaterialProperty>());
+            material->PushMaterialProperty(std::make_shared<TextureMaterialProperty>(property.UniformName));
             const std::vector<std::string>& pathToTextures = Split(property.Value, ',');
             std::shared_ptr<ITexture> texture;
 
@@ -390,7 +390,7 @@ namespace Game {
          }
          else if (property.PropertyType == "float")
          {
-            material->PushMaterialProperty(property.UniformName, std::make_shared<FloatMaterialProperty>());
+            material->PushMaterialProperty(std::make_shared<FloatMaterialProperty>(property.UniformName));
             MaterialPropertySetter::SetMaterialPropertyValue(material, property.UniformName, std::stof(property.Value));
          }
       }

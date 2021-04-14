@@ -5,7 +5,6 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
-#include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
 
 using namespace Game::ShaderImpl;
 using namespace Game;
@@ -20,7 +19,6 @@ namespace Graphics
       {
          using ShaderType = CompositeShader<SkyboxVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = CompositeShader<SkyboxVertexFactory, CapturePlanarReflectionShader>;
-         using MaterialType = SkyboxDynamicMaterial;
 
       protected:
 

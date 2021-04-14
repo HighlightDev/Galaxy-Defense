@@ -10,28 +10,24 @@
 		<operation>
 			<increment>
 				<mul>
-					<float_value>
+					<float_constant>
 						value: "0.5"
-					</float_value>
+					</float_constant>
 					<add>
-						<float_value>
-							value: "0.1"
-						</float_value>
-						<float_value>
+						<property>
+							name: "test_value"
+							type: "float"
+						</property>
+						<float_constant>
 							value: "123"
-						</float_value>
+						</float_constant>
 					</add>
 				</mul>
 			</increment>
 		</operation>
 	</dynamic_property>
-
 	<property>
 		name: "reflectionTexture"
-		type: "deferred_texture"
-	</property>
-	<property>
-		name: "distortion"
 		type: "texture"
 	</property>
 	<property>

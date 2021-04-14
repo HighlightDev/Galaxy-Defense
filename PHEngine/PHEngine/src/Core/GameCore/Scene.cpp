@@ -5,6 +5,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
 
 using namespace Graphics;
@@ -71,6 +72,10 @@ namespace Game
    std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
    {
       mMaterials.push_back(material);
+
+      if (material->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC) {
+         mDynamicMaterials.push_back(std::static_pointer_cast<DynamicMaterial>(material));
+      }
       const auto& materialProxy = material->CreateMaterialProxy();
       material->MaterialProxyId = materialProxy->GetSceneProxyId();
 
@@ -457,6 +462,10 @@ namespace Game
       for (auto& actor : mActors)
       {
          actor->Tick(delta);
+      }
+
+      for (auto& dynamicMaterial : mDynamicMaterials) {
+         dynamicMaterial->Tick(delta);
       }
 
 #if DEBUG

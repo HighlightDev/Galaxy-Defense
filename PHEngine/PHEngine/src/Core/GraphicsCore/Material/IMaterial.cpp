@@ -24,8 +24,12 @@ namespace Graphics
       return mProperties.at(propertyName);
    }
 
-   void IMaterial::PushMaterialProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty>&& propertyValue) {
-      mProperties.emplace(std::make_pair(propertyName, std::forward<std::shared_ptr<MaterialProperty>>(propertyValue)));
+   IMaterial::eMaterialType IMaterial::GetMaterialType() const {
+      return IMaterial::eMaterialType::STATIC;
+   }
+
+   void IMaterial::PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue) {
+      mProperties.emplace(std::make_pair(propertyValue->GetPropertyName(), std::move(propertyValue)));
    }
 
    const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& IMaterial::GetProperties() const

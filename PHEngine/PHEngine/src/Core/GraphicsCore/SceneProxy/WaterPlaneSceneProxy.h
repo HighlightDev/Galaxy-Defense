@@ -7,7 +7,6 @@
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
-#include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
 
 using namespace Game;
 using namespace Game::FramebufferImpl;

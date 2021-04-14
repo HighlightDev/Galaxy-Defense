@@ -11,8 +11,6 @@
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
 
-#include <type_traits>
-
 using namespace Thread;
 
 class Graphics::Proxy::LightSceneProxy;
@@ -20,7 +18,11 @@ class Graphics::Proxy::PrimitiveSceneProxy;
 class Graphics::MaterialProxy;
 class Graphics::PlanarReflectionProxy;
 class EnginePhysics::PhysicsWorld;
-class Graphics::IMaterial;
+
+namespace Graphics {
+   class IMaterial;
+   class DynamicMaterial;
+}
 
 namespace Game
 {
@@ -46,7 +48,9 @@ namespace Game
 
       std::shared_ptr<PlayerController> mPlayerController;
 
-      std::vector<std::shared_ptr<IMaterial>> mMaterials;
+      std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
+
+      std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
       std::shared_ptr<Scene> mMeSharedPtr;
 
@@ -79,7 +83,7 @@ namespace Game
 
       void RegisterMainCamera(std::shared_ptr<ACamera> camera);
 
-      std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<IMaterial> material);
+      std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 
       GameObject* GetGameObjectByName(const std::string& name) const;
 
@@ -89,7 +93,7 @@ namespace Game
 
       const std::vector<std::shared_ptr<Actor>>& GetActors() const;
 
-      std::shared_ptr<IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
+      std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
       std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
 

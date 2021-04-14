@@ -6,6 +6,8 @@
 
 namespace Graphics
 {
+   struct MaterialProperty;
+
    struct MaterialNode
    {
       enum class eMaterialNodeType
@@ -26,19 +28,26 @@ namespace Graphics
          BINARY_DIV
       };
 
-      virtual eMaterialNodeType GetMaterialNodeType() = 0;
-      virtual eMaterialOperationType GetMaterialOperationType() = 0;
+      template <typename TypeToCastTo>
+      static std::shared_ptr<TypeToCastTo> CastTo(std::shared_ptr<MaterialNode> node)
+      {
+         assert(node);
+         return std::static_pointer_cast<TypeToCastTo>(node);
+      }
+
+      virtual eMaterialNodeType GetMaterialNodeType() const = 0;
+      virtual eMaterialOperationType GetMaterialOperationType() const = 0;
    };
 
    struct MaterialStartNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialNodeType() override
+      virtual eMaterialNodeType GetMaterialNodeType() const override
       {
          return MaterialNode::eMaterialNodeType::START;
       }
 
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return eMaterialOperationType::NONE;
       }
 
@@ -46,33 +55,58 @@ namespace Graphics
 
       float GetValue();
 
-
       std::shared_ptr<MaterialNode> InputOperation;
    };
 
    struct MaterialValueNode
       : public MaterialNode
    {
-      float Value;
+      enum class eValueType
+      {
+         FLOAT_CONSTANT,
+         PROPERTY
+      };
 
-      explicit MaterialValueNode(const float value) : Value(value) {
-
-      }
-
-      virtual eMaterialNodeType GetMaterialNodeType() override
+      virtual eMaterialNodeType GetMaterialNodeType() const override
       {
          return MaterialNode::eMaterialNodeType::VALUE;
       }
 
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return eMaterialOperationType::NONE;
+      }
+
+      virtual eValueType GetValueType() = 0;
+   };
+
+   struct MaterialConstantFloatValueNode
+      : public MaterialValueNode
+   {
+      float Value;
+
+      explicit MaterialConstantFloatValueNode(const float value) : Value(value) {}
+
+      virtual eValueType GetValueType() {
+         return MaterialValueNode::eValueType::FLOAT_CONSTANT;
+      }
+   };
+
+   struct MaterialPropertyValueNode
+      : public MaterialValueNode
+   {
+      std::shared_ptr<MaterialProperty> Value;
+
+      explicit MaterialPropertyValueNode(std::shared_ptr<MaterialProperty> value) : Value(value) {}
+
+      virtual eValueType GetValueType() {
+         return MaterialValueNode::eValueType::PROPERTY;
       }
    };
 
    struct MaterialUnaryOperationNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialNodeType() {
+      virtual eMaterialNodeType GetMaterialNodeType() const {
          return MaterialNode::eMaterialNodeType::UNARY_OP;
       }
 
@@ -84,31 +118,31 @@ namespace Graphics
    struct MaterialUnaryIncrementNode
       : public MaterialUnaryOperationNode {
 
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return eMaterialOperationType::UNARY_INCREMENT;
       }
 
       virtual float doOperation(const float& value) override {
-         return value + 1;
+         return value + 1.0f;
       }
    };
 
    struct MaterialUnaryDecrementNode
       : public MaterialUnaryOperationNode {
 
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return eMaterialOperationType::UNARY_DECREMENT;
       }
 
       virtual float doOperation(const float& value) {
-         return value - 1;
+         return value - 1.0f;
       }
    };
 
    struct MaterialBinaryOperationNode
       : public MaterialNode
    {
-      virtual eMaterialNodeType GetMaterialNodeType() {
+      virtual eMaterialNodeType GetMaterialNodeType()  const {
          return MaterialNode::eMaterialNodeType::BINARY_OP;
       }
 
@@ -121,7 +155,7 @@ namespace Graphics
    struct MaterialBinaryAddOperationNode
       : public MaterialBinaryOperationNode
    {
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return MaterialNode::eMaterialOperationType::BINARY_ADD;
       }
 
@@ -133,7 +167,7 @@ namespace Graphics
    struct MaterialBinarySubOperationNode
       : public MaterialBinaryOperationNode
    {
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return MaterialNode::eMaterialOperationType::BINARY_SUB;
       }
 
@@ -145,7 +179,7 @@ namespace Graphics
    struct MaterialBinaryMulOperationNode
       : public MaterialBinaryOperationNode
    {
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return MaterialNode::eMaterialOperationType::BINARY_MUL;
       }
 
@@ -157,7 +191,7 @@ namespace Graphics
    struct MaterialBinaryDivOperationNode
       : public MaterialBinaryOperationNode
    {
-      virtual eMaterialOperationType GetMaterialOperationType() override {
+      virtual eMaterialOperationType GetMaterialOperationType() const override {
          return MaterialNode::eMaterialOperationType::BINARY_DIV;
       }
 

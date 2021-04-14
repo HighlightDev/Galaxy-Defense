@@ -281,6 +281,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
+    <None Include="res\shaders\material_shaders\Test.glsl" />
     <None Include="res\tweeners\playerAnimation.tween">
       <SubType>Designer</SubType>
     </None>
@@ -444,7 +445,6 @@
     <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PhysicsDescriptorRemovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\Policy\Policies.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.h" />
     <ClInclude Include="src\Core\GameCore\ITickable.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkyboxVertexFactory.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterial.h" />
@@ -846,7 +846,6 @@
     <ClInclude Include="src\Core\GameCore\Event\TEvent.h" />
     <ClInclude Include="src\Core\GameCore\ThirdPersonCamera.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.cpp" />
@@ -907,7 +906,6 @@
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Material\SkyboxDynamicMaterial.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterial.cpp" />
     <ClCompile Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.cpp" />
     <ClCompile Include="src\Core\IoCore\FileFacade.cpp" />
@@ -1010,7 +1008,6 @@
     <ClCompile Include="src\Core\GameCore\Event\TEvent.cpp" />
     <ClCompile Include="src\Core\GameCore\ThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Material\WaterDynamicMaterial.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

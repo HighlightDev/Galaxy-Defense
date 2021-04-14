@@ -21,9 +21,6 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
-#include "Core/GraphicsCore/Material/WaterDynamicMaterial.h"
-#include "Core/GraphicsCore/Material/SkyboxDynamicMaterial.h"
-
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
@@ -117,37 +114,21 @@ namespace Labyrinth
          mScene->RegisterMainCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
       }
 
+      {
+         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
+         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
-      int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
-      int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
+         auto cameraPtr = mScene->GetMainCamera().get();
+         PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(0, 2, 0), glm::vec3(), glm::vec3(1), cameraPtr,
+         ViewPortInfo(0,0,windowWidth, windowHeight) };
+         auto planarReflectionComp =
+            std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
+      }
 
-      auto cameraPtr = mScene->GetMainCamera().get();
-      PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(0, 2, 0), glm::vec3(), glm::vec3(1), cameraPtr,
-      ViewPortInfo(0,0,windowWidth, windowHeight) };
-      volatile auto planarReflectionComp =
-         std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
-
-      // todo: only test
 #if false
       DeserializeLevel("test_serialize.xml");
 #else
       RunLuaBuildLevelScript();
-#endif
-
-#if false
-      // Water
-      {
-         auto normalTex = TexturePool::GetInstance()->GetOrAllocateResource(GET_REL_PATH_TO_FILE("water_normal.png");
-         auto distortionTex = TexturePool::GetInstance()->GetOrAllocateResource(folderManager->GetDistortionTexturePath() + "water_dudv.png");
-         WaterPlaneComponentData mData(glm::vec3(0), glm::vec3(0), glm::vec3(20), std::make_shared<WaterDynamicMaterial>(normalTex, distortionTex));
-
-         std::shared_ptr<Actor> waterActor = std::make_shared<Actor>("Water", std::make_shared<SceneComponent>(std::move(glm::vec3(0)), std::move(glm::vec3(0)), std::move(glm::vec3(1))));
-
-         auto waterComp = mScene->CreateComponent_GameThread<ComponentMetaType::WaterPlane, WaterPlaneComponent>(mData);
-         waterActor->AddComponent(waterComp);
-
-         mScene->AllActors.push_back(waterActor);
-      }
 #endif
    }
 #undef GET_REL_PATH_TO_FILE

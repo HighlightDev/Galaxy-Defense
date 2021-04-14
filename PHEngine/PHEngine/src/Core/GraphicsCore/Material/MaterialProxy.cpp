@@ -37,7 +37,7 @@ namespace Graphics
    {
       assert(mProperties.count(propertyName));
 
-      const auto propType = property->GetMaterialPropertyType();
+      const auto propType = property->GetPropertyType();
       if (propType == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY)
       {
          std::static_pointer_cast<FloatMaterialProperty>(mProperties[propertyName])->SetValue(std::static_pointer_cast<FloatMaterialProperty>(property)->GetValue());

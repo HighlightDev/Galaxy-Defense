@@ -5,58 +5,61 @@
 
 using namespace Resources;
 
-struct DeferredTextureMaterialProperty
-   : public MaterialProperty
-{
-   using MaterialPropertyValueType = IDeferredResource<std::shared_ptr<ITexture>, eResourceType::TEXTURE>;
+namespace Graphics {
 
-private:
-
-   std::shared_ptr<MaterialPropertyValueType> m_value;
-
-public:
-
-   DeferredTextureMaterialProperty(std::shared_ptr<MaterialPropertyValueType> propertyValue)
-      : MaterialProperty()
-      , m_value(propertyValue)
+   struct DeferredTextureMaterialProperty
+      : public MaterialProperty
    {
-   }
+      using MaterialPropertyValueType = IDeferredResource<std::shared_ptr<ITexture>, eResourceType::TEXTURE>;
 
-   DeferredTextureMaterialProperty()
-      : MaterialProperty()
-   {
-   }
+   private:
 
-   virtual MaterialPropertyType GetMaterialPropertyType() const override
-   {
-      return MaterialProperty::MaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
-   }
+      std::shared_ptr<MaterialPropertyValueType> m_value;
 
-   virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-   {
-      if (m_value)
+   public:
+
+      DeferredTextureMaterialProperty(std::shared_ptr<MaterialPropertyValueType> propertyValue, const std::string& propertyName)
+         : MaterialProperty(propertyName)
+         , m_value(propertyValue)
       {
-         std::shared_ptr<ITexture> outResource = nullptr;
-         const bool bHasResource = m_value->TryGetResource(outResource);
-         if (bHasResource)
+      }
+
+      DeferredTextureMaterialProperty(const std::string& propertyName)
+         : MaterialProperty(propertyName)
+      {
+      }
+
+      virtual MaterialPropertyType GetPropertyType() const override
+      {
+         return MaterialProperty::MaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
+      }
+
+      virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+      {
+         if (m_value)
          {
-            int32_t slot = 10 + propertyIndex;
-            outResource->BindTexture(slot);
-            uniform.LoadUniform(slot);
+            std::shared_ptr<ITexture> outResource = nullptr;
+            const bool bHasResource = m_value->TryGetResource(outResource);
+            if (bHasResource)
+            {
+               int32_t slot = 10 + propertyIndex;
+               outResource->BindTexture(slot);
+               uniform.LoadUniform(slot);
+            }
          }
       }
-   }
 
-   void SetValue(std::shared_ptr<MaterialPropertyValueType> value) {
-      m_value = value;
-   }
-
-   typename MaterialPropertyValueType::arg_t GetValue() const {
-      std::shared_ptr<ITexture> outResource = nullptr;
-      if (m_value)
-      {
-         const bool bHasResource = m_value->TryGetResource(outResource);
+      void SetValue(std::shared_ptr<MaterialPropertyValueType> value) {
+         m_value = value;
       }
-      return outResource;
-   }
-};
+
+      typename MaterialPropertyValueType::arg_t GetValue() const {
+         std::shared_ptr<ITexture> outResource = nullptr;
+         if (m_value)
+         {
+            const bool bHasResource = m_value->TryGetResource(outResource);
+         }
+         return outResource;
+      }
+   };
+}

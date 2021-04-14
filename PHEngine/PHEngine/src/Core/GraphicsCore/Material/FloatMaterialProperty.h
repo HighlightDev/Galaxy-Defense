@@ -2,45 +2,48 @@
 
 #include "MaterialProperty.h"
 
-struct FloatMaterialProperty
-   : public MaterialProperty
-{
-   using MaterialPropertyValueType = float;
+namespace Graphics {
 
-private:
-
-   MaterialPropertyValueType m_value;
-
-public:
-
-   FloatMaterialProperty(MaterialPropertyValueType propertyValue)
-      : MaterialProperty()
-      , m_value(propertyValue)
+   struct FloatMaterialProperty
+      : public MaterialProperty
    {
-   }
+      using MaterialPropertyValueType = float;
 
-   FloatMaterialProperty()
-      : MaterialProperty()
-      , m_value(0.0f)
-   {
-   }
+   private:
 
-   virtual MaterialPropertyType GetMaterialPropertyType() const override
-   {
-      return MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY;
-   }
+      MaterialPropertyValueType m_value;
 
-   virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
-   {
-      uniform.LoadUniform(m_value);
-   }
+   public:
 
-   inline void SetValue(MaterialPropertyValueType value) {
-      m_value = value;
-   }
+      FloatMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
+         : MaterialProperty(propertyName)
+         , m_value(propertyValue)
+      {
+      }
 
-   inline float GetValue() const {
-      return m_value;
-   }
+      FloatMaterialProperty(const std::string& propertyName)
+         : MaterialProperty(propertyName)
+         , m_value(0.0f)
+      {
+      }
 
-};
+      virtual MaterialPropertyType GetPropertyType() const override
+      {
+         return MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY;
+      }
+
+      virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+      {
+         uniform.LoadUniform(m_value);
+      }
+
+      inline void SetValue(MaterialPropertyValueType value) {
+         m_value = value;
+      }
+
+      inline float GetValue() const {
+         return m_value;
+      }
+
+   };
+}
