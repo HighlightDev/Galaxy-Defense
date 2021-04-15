@@ -3,7 +3,7 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/TweenBindingAttachmentBuilder.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
@@ -133,7 +133,7 @@ namespace Game
             {
                auto gameObject = mScene->GetGameObjectByName(bindingData.GameObjectName);
                const auto& binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
-               BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
+               TweenBindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
             }
 
             auto actorIt = std::find_if(mScene->GetActors().begin(), mScene->GetActors().end(), [&](const std::shared_ptr<Actor> actor)

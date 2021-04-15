@@ -3,7 +3,7 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/TweenBindingAttachmentBuilder.h"
 
 namespace Game
 {

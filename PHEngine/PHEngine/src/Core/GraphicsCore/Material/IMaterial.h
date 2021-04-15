@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MaterialProperty.h"
+#include "MaterialProperties/MaterialProperty.h"
 #include "MaterialProxy.h"
 
 #include <string>

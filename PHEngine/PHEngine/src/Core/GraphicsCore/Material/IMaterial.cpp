@@ -1,6 +1,6 @@
 #include "IMaterial.h"
 #include "Core/IoCore/FolderManager.h"
-#include "MaterialPropertySetter.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include <algorithm>
 

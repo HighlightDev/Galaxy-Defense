@@ -5,8 +5,8 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
-#include "Core/GraphicsCore/Material/MaterialPropertySetter.h"
+#include "Core/GameCore/Tweener/TweenBindingAttachmentBuilder.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 using namespace Graphics;
 
@@ -398,7 +398,7 @@ namespace Game
       {
          GameObject* gameObject = scene->GetGameObjectByName(std::get<1>(tweenerData));
          const auto& binding = tweener->GetPropertyBindingByName(std::get<2>(tweenerData));
-         BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
+         TweenBindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
       }
 
    }

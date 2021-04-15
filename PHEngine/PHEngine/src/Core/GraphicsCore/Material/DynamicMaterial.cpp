@@ -1,5 +1,5 @@
 #include "DynamicMaterial.h"
-#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/Assertion.h"
 

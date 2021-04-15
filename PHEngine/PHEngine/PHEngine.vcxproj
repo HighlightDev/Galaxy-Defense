@@ -348,11 +348,14 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicFloatMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\DeferredTextureMaterialProperty.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\FloatMaterialProperty.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\TextureMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\FloatMaterialBinding.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\MaterialPropertyBinding.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h" />
@@ -360,7 +363,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Input\KeyboardData.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\ShaderCommon.h" />
@@ -399,7 +402,7 @@
     <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
-    <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\TweenBindingAttachmentBuilder.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
@@ -459,7 +462,7 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\SkeletalMeshVertexFactory.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\StaticMeshVertexFactory.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProcessPolicy.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\CompositeShaderParams.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\IShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\MaterialShader.h" />
@@ -854,7 +857,7 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlanarReflectionComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\SpotlightDepthShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.cpp" />

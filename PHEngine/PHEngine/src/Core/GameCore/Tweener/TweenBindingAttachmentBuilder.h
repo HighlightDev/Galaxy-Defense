@@ -6,7 +6,7 @@
 
 namespace Game
 {
-   struct BindingAttachmentBuilder
+   struct TweenBindingAttachmentBuilder
    {
       static void SetAttachment(GameObject* gameObject, StatePropertyBinding* binding, const std::string& propertyName)
       {

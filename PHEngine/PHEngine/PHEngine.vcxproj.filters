@@ -1542,9 +1542,6 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CompositeDeferredCollectShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProcessPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1893,9 +1890,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1935,19 +1929,7 @@
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\TextureMaterialProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\FloatMaterialProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\DeferredTextureMaterialProperty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Tweener\State.h">
@@ -1977,7 +1959,34 @@
     <ClInclude Include="src\Core\GameCore\Tweener\Tweener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicFloatMaterialProperty.h">
+    <ClInclude Include="src\Core\GameCore\Tweener\TweenBindingAttachmentBuilder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\FloatMaterialBinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\MaterialPropertyBinding.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2414,9 +2423,6 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialPropertySetter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2463,6 +2469,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Tweener\Tweener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

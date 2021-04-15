@@ -15,7 +15,8 @@ namespace Graphics {
          FLOAT_PROPERTY,
          TEXTURE_PROPERTY,
          DEFERRED_TEXTURE_PROPERTY,
-         DYNAMIC_FLOAT_PROPERTY
+         DYNAMIC_FLOAT_PROPERTY,
+         FLOAT_BINDING_PROPERTY,
       };
 
    protected:

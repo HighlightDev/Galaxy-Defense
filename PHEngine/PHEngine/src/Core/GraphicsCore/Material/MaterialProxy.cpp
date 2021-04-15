@@ -1,8 +1,8 @@
 #include "MaterialProxy.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
-#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 
 #include <algorithm>
 

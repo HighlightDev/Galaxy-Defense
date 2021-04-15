@@ -1,7 +1,7 @@
 #pragma once
 #include "IMaterial.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GraphicsCore/Material/DynamicFloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 
 namespace Game {
    class Scene;

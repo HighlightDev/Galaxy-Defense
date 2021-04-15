@@ -1,7 +1,7 @@
 #include "SerializeHelper.h"
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
-#include "Core/GraphicsCore/Material/MaterialPropertySetter.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
@@ -15,8 +15,8 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
-#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
-#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 
 #include <TinyLogger/LogInterface.h>
 

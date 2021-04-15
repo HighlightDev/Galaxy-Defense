@@ -1,10 +1,10 @@
 #include "MaterialPropertySetter.h"
-#include "IMaterial.h"
-#include "DynamicMaterial.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/DynamicMaterial.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "TextureMaterialProperty.h"
 #include "FloatMaterialProperty.h"
 #include "DeferredTextureMaterialProperty.h"
-#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 
 using namespace Resources;
 

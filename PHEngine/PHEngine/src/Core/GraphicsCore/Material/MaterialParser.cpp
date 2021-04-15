@@ -3,10 +3,10 @@
 #include "Core/IoCore/FileFacade.h"
 #include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
-#include "Core/GraphicsCore/Material/TextureMaterialProperty.h"
-#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
-#include "Core/GraphicsCore/Material/DeferredTextureMaterialProperty.h"
-#include "Core/GraphicsCore/Material/DynamicFloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
 
 using namespace Common;
@@ -210,6 +210,7 @@ namespace Graphics
                operationNode = std::make_shared<MaterialBinaryMulOperationNode>();
             }
 
+            // todo: create materia node attach adapter to hide inside it all attachment logic
             switch (node->GetMaterialNodeType())
             {
                case MaterialNode::eMaterialNodeType::START:

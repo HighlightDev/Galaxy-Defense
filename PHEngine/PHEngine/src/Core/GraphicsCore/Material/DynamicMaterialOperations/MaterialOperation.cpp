@@ -1,6 +1,6 @@
 #include "MaterialOperation.h"
 
-#include "Core/GraphicsCore/Material/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 
 namespace Graphics
 {

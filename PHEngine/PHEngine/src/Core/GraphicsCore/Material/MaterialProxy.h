@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/Material/MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialProperty.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 #include <string>
