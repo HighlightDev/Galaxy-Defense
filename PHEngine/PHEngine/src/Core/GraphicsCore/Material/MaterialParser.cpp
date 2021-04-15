@@ -33,6 +33,8 @@ namespace Graphics
 
 #define FLOAT_CONSTANT_START "<float_constant>"
 #define FLOAT_CONSTANT_END "</float_constant>"
+#define PROPERTY_BINDING_START "<binding_property>"
+#define PROPERTY_BINDING_END "</binding_property>"
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType, const std::string& propertyName)
    {
@@ -388,4 +390,6 @@ namespace Graphics
 #undef BINARY_MUL_OP_END
 #undef FLOAT_CONSTANT_START
 #undef FLOAT_CONSTANT_END
+#undef PROPERTY_BINDING_START
+#undef PROPERTY_BINDING_END 
 }

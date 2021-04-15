@@ -18,8 +18,8 @@ namespace Game {
       StatePropertyBinding(const std::string& bindingName)
          : BindingName(bindingName)
          , GameObjectName("")
+         , GameObjectPropertyName("")
       {
-
       }
 
       virtual BindingType GetBindingType() const = 0;
