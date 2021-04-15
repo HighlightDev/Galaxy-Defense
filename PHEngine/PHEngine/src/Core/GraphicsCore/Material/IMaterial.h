@@ -5,7 +5,7 @@
 
 #include <string>
 #include <tuple>
-#include <unordered_map>
+#include <vector>
 
 using namespace Graphics::Texture;
 
@@ -22,7 +22,7 @@ namespace Graphics
 
    protected:
 
-      std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
+      std::vector<std::shared_ptr<MaterialProperty>> mProperties;
 
    public :
 
@@ -44,7 +44,7 @@ namespace Graphics
 
       void PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue);
 
-      const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
+      const std::vector<std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
       virtual std::shared_ptr<MaterialProxy> CreateMaterialProxy() const;
    };

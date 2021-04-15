@@ -6,6 +6,7 @@
 
 namespace Graphics
 {
+   //todo: Refactor this
    struct MaterialProperty;
 
    struct MaterialNode

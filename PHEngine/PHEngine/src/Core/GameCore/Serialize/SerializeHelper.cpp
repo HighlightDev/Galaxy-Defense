@@ -78,8 +78,8 @@ namespace Game {
 
       for (const auto& propertyItem : properties)
       {
-         const std::string& uniformName = propertyItem.first;
-         std::shared_ptr<MaterialProperty> prop = propertyItem.second;
+         const std::string& uniformName = propertyItem->GetPropertyName();
+         std::shared_ptr<MaterialProperty> prop = propertyItem;
          auto type = prop->GetPropertyType();
 
          std::string uniformValue, propertyType;

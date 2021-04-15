@@ -2,6 +2,8 @@
 #include "Core/IoCore/FolderManager.h"
 #include "MaterialPropertySetter.h"
 
+#include <algorithm>
+
 namespace Graphics
 {
 
@@ -19,9 +21,10 @@ namespace Graphics
 
    std::shared_ptr<MaterialProperty> IMaterial::GetMaterialPropertyByName(const std::string& propertyName) const
    {
-      assert(mProperties.count(propertyName));
+      auto propertyIt = std::find_if(mProperties.begin(), mProperties.end(), [&](const auto& property) {return property->GetPropertyName() == propertyName; });
+      assert(propertyIt != mProperties.end());
 
-      return mProperties.at(propertyName);
+      return *propertyIt;
    }
 
    IMaterial::eMaterialType IMaterial::GetMaterialType() const {
@@ -29,10 +32,10 @@ namespace Graphics
    }
 
    void IMaterial::PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue) {
-      mProperties.emplace(std::make_pair(propertyValue->GetPropertyName(), std::move(propertyValue)));
+      mProperties.emplace_back(std::move(propertyValue));
    }
 
-   const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& IMaterial::GetProperties() const
+   const std::vector<std::shared_ptr<MaterialProperty>>& IMaterial::GetProperties() const
    {
       return mProperties;
    }

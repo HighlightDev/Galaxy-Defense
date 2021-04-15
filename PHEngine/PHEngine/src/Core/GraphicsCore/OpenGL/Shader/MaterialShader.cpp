@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <type_traits>
+#include <algorithm>
 
 namespace Graphics
 {
@@ -62,21 +63,24 @@ namespace Graphics
       {
          for (const auto& name : mUniformNames)
          {
-            UniformsMap[name] = GetUniform(name, shaderProgramID);
+            Uniforms.emplace_back(GetUniform(name, shaderProgramID));
          }
       }
 
       void MaterialShaderImp::LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
       {
-         int32_t index = 0;
-         for (auto namePlusPropPair : materialProxy->GetProperties())
+         size_t uIndex = 0;
+         
+         for (const auto& property : materialProxy->GetProperties())
          {
-            namePlusPropPair.second->SetValueToUniform(UniformsMap[namePlusPropPair.first], index);
-            ++index;
+            auto uniformIt = std::find_if(Uniforms.begin(), Uniforms.end(),
+               [&](const auto& uniform) { return uniform.GetUniformName() == property->GetPropertyName(); });
+            property->SetValueToUniform(*uniformIt, uIndex++);
          }
       }
 
-      MaterialShaderImp::MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
+      MaterialShaderImp::MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath,
+         const std::vector<std::string>& uniformNames)
          : IMaterialShader(materialName, materialShaderRelativePath, uniformNames)
       {
       }

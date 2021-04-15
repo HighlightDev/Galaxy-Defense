@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 using namespace Graphics::Texture;
 
@@ -22,7 +22,7 @@ namespace Graphics
 
    protected:
 
-      std::unordered_map<std::string, std::shared_ptr<MaterialProperty>> mProperties;
+      std::vector<std::shared_ptr<MaterialProperty>> mProperties;
 
    public:
 
@@ -30,15 +30,13 @@ namespace Graphics
 
       ~MaterialProxy();
 
-      const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& GetProperties() const;
+      const std::vector<std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
       std::vector<std::string> GetUniformNames() const;
 
-   private:
+      void UpdateProperty(std::shared_ptr<MaterialProperty> property);
 
-      void UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property);
-
-      void UpdateProperties(const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& updatedProperties);
+      void UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties);
    };
 
 }

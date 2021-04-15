@@ -8,22 +8,20 @@
 		name: "distortion"
 		type: "float"
 		<operation>
-			<increment>
-				<mul>
+			<mul>
+				<float_constant>
+					value: "1.0"
+				</float_constant>
+				<add>
+					<property>
+						name: "test_value"
+						type: "float"
+					</property>
 					<float_constant>
-						value: "0.5"
+						value: "0.0"
 					</float_constant>
-					<add>
-						<property>
-							name: "test_value"
-							type: "float"
-						</property>
-						<float_constant>
-							value: "123"
-						</float_constant>
-					</add>
-				</mul>
-			</increment>
+				</add>
+			</mul>
 		</operation>
 	</dynamic_property>
 	<property>

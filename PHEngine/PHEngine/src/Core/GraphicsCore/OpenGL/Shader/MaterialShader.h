@@ -55,7 +55,7 @@ namespace Graphics
          : public IMaterialShader
       {
 
-         std::unordered_map<std::string, Uniform> UniformsMap;
+         std::vector<Uniform> Uniforms;
 
       public :
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;

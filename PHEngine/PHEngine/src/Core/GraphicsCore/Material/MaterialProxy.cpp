@@ -21,7 +21,7 @@ namespace Graphics
    {
    }
 
-   const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& MaterialProxy::GetProperties() const
+   const std::vector<std::shared_ptr<MaterialProperty>>& MaterialProxy::GetProperties() const
    {
       return mProperties;
    }
@@ -29,30 +29,37 @@ namespace Graphics
    std::vector<std::string> MaterialProxy::GetUniformNames() const
    {
       std::vector<std::string> result;
-      std::for_each(mProperties.begin(), mProperties.end(), [&](const auto& propPair) { result.push_back(propPair.first); });
+      std::for_each(mProperties.begin(), mProperties.end(), [&](const auto& property) { result.push_back(property->GetPropertyName()); });
       return result;
    }
 
-   void MaterialProxy::UpdateProperty(const std::string& propertyName, std::shared_ptr<MaterialProperty> property)
+   void MaterialProxy::UpdateProperty(std::shared_ptr<MaterialProperty> property)
    {
-      assert(mProperties.count(propertyName));
+      const std::string& propertyName = property->GetPropertyName();
+      auto propertyIt = std::find_if(mProperties.begin(), mProperties.end(), [&](const auto& property) { return property->GetPropertyName() == propertyName; });
+      assert(propertyIt != mProperties.end());
 
       const auto propType = property->GetPropertyType();
       if (propType == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY)
       {
-         std::static_pointer_cast<FloatMaterialProperty>(mProperties[propertyName])->SetValue(std::static_pointer_cast<FloatMaterialProperty>(property)->GetValue());
+         auto renderThreadProperty = std::static_pointer_cast<FloatMaterialProperty>(*propertyIt);
+         auto gameThreadProperty = std::static_pointer_cast<FloatMaterialProperty>(property);
+         renderThreadProperty->SetValue(gameThreadProperty->GetValue());
       }
       else if (propType == MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY)
       {
-         std::static_pointer_cast<TextureMaterialProperty>(mProperties[propertyName])->SetValue(std::static_pointer_cast<TextureMaterialProperty>(property)->GetValue());
+         auto renderThreadProperty = std::static_pointer_cast<TextureMaterialProperty>(*propertyIt);
+         auto gameThreadProperty = std::static_pointer_cast<TextureMaterialProperty>(property);
+         renderThreadProperty->SetValue(gameThreadProperty->GetValue());
       }
    }
 
-   void MaterialProxy::UpdateProperties(const std::unordered_map<std::string, std::shared_ptr<MaterialProperty>>& updatedProperties)
+   void MaterialProxy::UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties)
    {
-      for (const auto& propPair : updatedProperties)
+      std::vector<std::shared_ptr<MaterialProperty>> properties = updatedProperties;
+      for (const auto& property : properties)
       {
-         UpdateProperty(propPair.first, propPair.second);
+         UpdateProperty(property);
       }
    }
 }

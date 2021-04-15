@@ -14,16 +14,13 @@ namespace Graphics
       /* UNIFORM ARRAY */
 
       UniformArray::UniformArray(int32_t programDescriptor, size_t uniformsCount, const std::string& uniformName)
-      {
-         std::string uniformNamePart = uniformName;
-
 #if DEBUG
-         m_uniformName = uniformName;
+         : m_uniformName(uniformName)
 #endif
-
+      {
          for (size_t i = 0; i < uniformsCount; i++)
          {
-            StringStreamWrapper::ToString(uniformNamePart, "[", i, "]");
+            StringStreamWrapper::ToString(uniformName, "[", i, "]");
             std::string readyUniformPart = StringStreamWrapper::FlushString();
             m_uniformLocations.emplace_back(glGetUniformLocation(programDescriptor, readyUniformPart.c_str()));
          }
@@ -230,9 +227,8 @@ namespace Graphics
 
       /* UNIFORM */
 
-		Uniform::Uniform() {}
-
 		Uniform::Uniform(int32_t programDescriptor, const std::string& uniformName)
+         : mUniformName(uniformName)
 		{
 			uniformLocation = glGetUniformLocation(programDescriptor, uniformName.c_str());
 		/*	if (uniformLocation < 0)
@@ -243,6 +239,9 @@ namespace Graphics
 		{
 		}
 
+      std::string Uniform::GetUniformName() const {
+         return mUniformName;
+      }
 		void Uniform::LoadUniform(bool arg)
 		{
 			if (uniformLocation == -1)

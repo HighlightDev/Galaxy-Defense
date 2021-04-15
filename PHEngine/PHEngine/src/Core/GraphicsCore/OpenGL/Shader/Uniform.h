@@ -64,15 +64,19 @@ namespace Graphics
 		{
 		private:
 
-			int32_t uniformLocation;
+         int32_t uniformLocation = -1;;
+
+         std::string mUniformName = "";
 
 		public:
 
-			Uniform();
+			Uniform() = default;
 
-			explicit Uniform(int32_t programDescriptor, const std::string& uniformName);
+			Uniform(int32_t programDescriptor, const std::string& uniformName);
 
 			~Uniform();
+
+         std::string GetUniformName() const;
 
 			void LoadUniform(bool arg);
 

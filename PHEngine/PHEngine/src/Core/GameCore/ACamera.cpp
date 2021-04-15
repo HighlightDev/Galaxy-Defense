@@ -45,7 +45,7 @@ namespace Game
       {
          if (auto sceneSp = mScene.lock())
          {
-            sceneSp->UpdateCameraSceneProxyData_GameThread(SceneProxyId, GetObjectId(), functionId, this);
+            sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
          }
       }
    }

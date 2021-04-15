@@ -34,7 +34,7 @@ namespace Game
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdatePrimitiveComponentTransform_GameThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+         sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
       }
    }
 
@@ -46,7 +46,7 @@ namespace Game
       constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
       if (const auto& sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdatePrimitiveComponentEnable_GameThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+         sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
       }
    }
 
@@ -70,7 +70,7 @@ namespace Game
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdatePrimitiveComponentVisibility_GameThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
+         sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
       }
    }
 

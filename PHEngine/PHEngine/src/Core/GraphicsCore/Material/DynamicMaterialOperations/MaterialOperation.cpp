@@ -4,6 +4,7 @@
 
 namespace Graphics
 {
+   //todo: Refactor this
    float MaterialStartNode::getIteratedValue(std::shared_ptr<MaterialNode> node)
    {
       float result = 0.0f;

@@ -27,7 +27,7 @@ namespace Game
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdateLightComponentTransform_GameThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+         sceneSP->UpdateLightComponentTransform_OnRenderThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
       }
    }
 

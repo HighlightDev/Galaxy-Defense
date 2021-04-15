@@ -2,6 +2,8 @@
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
 
+#include <list>
+
 namespace Graphics
 {
    class MaterialParser

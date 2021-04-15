@@ -3,6 +3,10 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/Material/DynamicFloatMaterialProperty.h"
 
+namespace Game {
+   class Scene;
+}
+
 namespace Graphics
 {
    class DynamicMaterial 
@@ -11,7 +15,12 @@ namespace Graphics
    {
    protected:
 
-      std::vector<std::shared_ptr<DynamicFloatMaterialProperty>> mDynamicProperties;
+      using DynanamicPropertySP_t = std::shared_ptr<DynamicFloatMaterialProperty>;
+
+      std::vector<DynanamicPropertySP_t> mDynamicProperties;
+      std::vector<std::shared_ptr<MaterialProperty>> mDirtyProperties;
+
+      std::weak_ptr<Game::Scene> mScene;
 
    public:
 
@@ -22,6 +31,10 @@ namespace Graphics
       virtual eMaterialType GetMaterialType() const override;
 
       virtual void Tick(const float deltaTime);
+
+      void SetScene(std::weak_ptr<Game::Scene> scene);
+
+      void SyncDataWithRenderThread();
 
       void PushDynamicProperty(std::shared_ptr<DynamicFloatMaterialProperty> dynamicProperty);
 
