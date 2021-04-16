@@ -1,6 +1,5 @@
 #pragma once
 #include "ITweenController.h"
-#include "StatePropertyBinding.h"
 #include "StateProperty.h"
 
 namespace Game
@@ -15,13 +14,13 @@ namespace Game
       FloatTweenController();
       virtual ~FloatTweenController();
 
-      virtual void OnTransitionStarted(struct BaseStateProperty* srcState, struct BaseStateProperty* dstState, const float duration) override;
+      virtual void OnTransitionStarted(BaseStateProperty* srcState, BaseStateProperty* dstState, const float duration) override;
 
       virtual void OnTransitionFinished() override;
 
       virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
 
-      virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty) override;
+      virtual void InitWithPropsInstant(BaseStateProperty* dstStateProperty) override;
 
    private:
 

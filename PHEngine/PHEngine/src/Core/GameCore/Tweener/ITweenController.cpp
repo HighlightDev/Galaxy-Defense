@@ -12,14 +12,14 @@ namespace Game {
 
    void ITweenController::OnTransitionStarted(BaseStateProperty* srcStateProperty, BaseStateProperty* dstStateProperty, const float transitionDuration)
    {
-      mPropertyBinding = srcStateProperty->PropertyBinding;
+      mPropertyBinding = srcStateProperty->Binding;
       TranstionProperties[(int)StateType::SourceState] = srcStateProperty;
       TranstionProperties[(int)StateType::DestinationState] = dstStateProperty;
    }
 
    void ITweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter) { }
 
-   StatePropertyType ITweenController::GetControllerPropertyType() const
+   eBindingType ITweenController::GetControllerPropertyType() const
    {
       BaseStateProperty* srcProp = TranstionProperties[(int)StateType::SourceState];
 

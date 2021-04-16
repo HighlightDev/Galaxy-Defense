@@ -38,7 +38,7 @@ namespace Game
 
       void AddStateProperty(BaseStateProperty* stateProperty)
       {
-         auto bindingSP = stateProperty->PropertyBinding.lock();
+         auto bindingSP = stateProperty->Binding.lock();
          assert(bindingSP);
          const std::string& name = bindingSP->BindingName;
          assert(mStateProperties.count(name) == 0); // make sure that property doesn't duplicate

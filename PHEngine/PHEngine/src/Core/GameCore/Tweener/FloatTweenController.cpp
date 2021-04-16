@@ -32,21 +32,21 @@ namespace Game
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<StatePropertyType::Float>* srcFloatProperty = static_cast<StateProperty<StatePropertyType::Float>*>(TranstionProperties[(int)StateType::SourceState]);
-         StateProperty<StatePropertyType::Float>* dstFloatProperty = static_cast<StateProperty<StatePropertyType::Float>*>(TranstionProperties[(int)StateType::DestinationState]);
+         StateProperty<eBindingType::FLOAT>* srcFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::SourceState]);
+         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::DestinationState]);
 
-         *floatBinding->Value = EngineMath::LerpFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter);
+         floatBinding->SetValue(EngineMath::LerpFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter));
       }
    }
 
    void FloatTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
    {
-      mPropertyBinding = dstStateProperty->PropertyBinding;
+      mPropertyBinding = dstStateProperty->Binding;
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<StatePropertyType::Float>* dstFloatProperty = static_cast<StateProperty<StatePropertyType::Float>*>(dstStateProperty);
+         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(dstStateProperty);
 
-         *floatBinding->Value = dstFloatProperty->Value;
+         floatBinding->SetValue(dstFloatProperty->Value);
       }
    }
 
@@ -59,9 +59,9 @@ namespace Game
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<StatePropertyType::Float>* srcFloatProperty = static_cast<StateProperty<StatePropertyType::Float>*>(TranstionProperties[(int)StateType::SourceState]);
+         StateProperty<eBindingType::FLOAT>* srcFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::SourceState]);
 
-         *floatBinding->Value = srcFloatProperty->Value;
+         floatBinding->SetValue(srcFloatProperty->Value);
       }
    }
 
@@ -69,9 +69,9 @@ namespace Game
    {
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<StatePropertyType::Float>* dstFloatProperty = static_cast<StateProperty<StatePropertyType::Float>*>(TranstionProperties[(int)StateType::DestinationState]);
+         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::DestinationState]);
 
-         *floatBinding->Value = dstFloatProperty->Value;
+         floatBinding->SetValue(dstFloatProperty->Value);
       }
    }
 

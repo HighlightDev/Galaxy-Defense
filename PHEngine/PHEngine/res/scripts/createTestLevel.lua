@@ -100,28 +100,6 @@ function CreateTestLevel(host)
 		_AttachComponentToActor(host, groundActor, phyComponent)
 	end
 
-
-	-- ****************************WATER***************************** --
-	local waterActor = _CreateActor(host, "WaterActor",
-	20, 2, 0,
-	0, 0, 0,
-	1, 1, 1)
-
-	if waterActor ~= nil then
-		--local waterMat = _CreateMaterial(host, "Water.m")
-		local waterMat = _CreateMaterial(host, "DynamicTestMaterial.m")
-		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "reflectionTexture")
-		_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "refractionTexture")
-		_SetFloatToMaterial(host, waterMat, 0.1, "test_value")
-		--_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
-		--_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
-		--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
-		--_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
-
-		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
-		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
-		_AttachComponentToActor(host, waterActor, waterComponent)
-	end
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",
@@ -256,6 +234,29 @@ function CreateTestLevel(host)
 	_SetTweenerBinding(host, buddyAnimationTweener, "buddyMeshComp", "animationBinding", "")	
 
 	_AttachPlayerControllerToActor(host, buddy)
+
+	-- ****************************WATER***************************** --
+	local waterActor = _CreateActor(host, "WaterActor",
+	20, 2, 0,
+	0, 0, 0,
+	1, 1, 1)
+
+	if waterActor ~= nil then
+		--local waterMat = _CreateMaterial(host, "Water.m")
+		local waterMat = _CreateMaterial(host, "DynamicTestMaterial.m")
+		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "reflectionTexture")
+		_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "refractionTexture")
+		_SetFloatToMaterial(host, waterMat, 0.1, "test_value")
+		_SetBindingToMaterial(host, waterMat, "buddyMeshComp", "SrcAnimTime", "deltaTime")
+		--_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
+		--_SetTextureToMaterial(host, waterMat, "brick_nm_mid.png", "distortion")
+		--_SetTextureToMaterial(host, waterMat, "dudv.jpg", "refractionTexture")
+		--_SetTextureToMaterial(host, waterMat, "brick_mid.png", "refractionTexture")
+
+		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
+		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
+		_AttachComponentToActor(host, waterActor, waterComponent)
+	end
 
 end
 

@@ -9,10 +9,10 @@
 		type: "float"
 		<operation>
 			<mul>
-				<binding_property>
+				<property>
 					name: "deltaTime"
-					type: "float"
-				</binding_property>
+					type: "binding_float"
+				</property>
 				<add>
 					<property>
 						name: "test_value"

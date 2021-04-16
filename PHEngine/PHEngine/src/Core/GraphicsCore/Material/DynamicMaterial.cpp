@@ -43,6 +43,7 @@ namespace Graphics
          auto proxyProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());
          assert(proxyProperty);
 
+         // todo: property could be not only float - need refactoring
          auto floatProperty = std::static_pointer_cast<FloatMaterialProperty>(proxyProperty);
          const float value = dynProp->GetValue();
          floatProperty->SetValue(value);

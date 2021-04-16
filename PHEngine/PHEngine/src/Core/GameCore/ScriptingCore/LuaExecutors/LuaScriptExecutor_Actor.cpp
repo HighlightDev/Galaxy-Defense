@@ -1,9 +1,7 @@
 #include "LuaScriptExecutor_Actor.h"
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Tweener/TweenBindingAttachmentBuilder.h"
 
 namespace Game
 {

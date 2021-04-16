@@ -9,16 +9,15 @@ namespace Game {
 
 namespace Graphics
 {
-   class DynamicMaterial 
+   class DynamicMaterial
       : public IMaterial
       , public ITickable
    {
+      std::vector<std::shared_ptr<MaterialProperty>> mDirtyProperties;
+
    protected:
 
-      using DynanamicPropertySP_t = std::shared_ptr<DynamicFloatMaterialProperty>;
-
-      std::vector<DynanamicPropertySP_t> mDynamicProperties;
-      std::vector<std::shared_ptr<MaterialProperty>> mDirtyProperties;
+      std::vector<std::shared_ptr<DynamicFloatMaterialProperty>> mDynamicProperties;
 
       std::weak_ptr<Game::Scene> mScene;
 
@@ -41,7 +40,7 @@ namespace Graphics
       std::shared_ptr<DynamicFloatMaterialProperty> TryGetDynamicPropertyByName(const std::string& propertyName) const;
 
       std::shared_ptr<MaterialProperty> TryGetAnyMaterialPropertyByName(const std::string& propertyName) const;
-      
+
    };
 
 }

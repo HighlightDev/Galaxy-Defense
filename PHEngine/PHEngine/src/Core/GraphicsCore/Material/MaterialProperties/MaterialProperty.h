@@ -10,7 +10,7 @@ namespace Graphics {
 
    struct MaterialProperty
    {
-      enum class MaterialPropertyType
+      enum class eMaterialPropertyType
       {
          FLOAT_PROPERTY,
          TEXTURE_PROPERTY,
@@ -32,7 +32,7 @@ namespace Graphics {
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const = 0;
 
-      virtual MaterialPropertyType GetPropertyType() const = 0;
+      virtual eMaterialPropertyType GetPropertyType() const = 0;
 
       std::string GetPropertyName() const
       {

@@ -1,6 +1,6 @@
 #pragma once
 #include "MaterialProperty.h"
-#include "DynamicMaterialOperations/MaterialOperation.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
 
 #include <algorithm>
 
@@ -13,37 +13,37 @@ namespace Graphics {
 
    private:
 
-      MaterialPropertyValueType m_value;
+      MaterialPropertyValueType mDynamicOperationStartNode;
 
       std::vector<std::shared_ptr<MaterialProperty>> mInternalDynamicMaterialProperties;
 
    public:
 
-      DynamicFloatMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
+      DynamicFloatMaterialProperty(MaterialPropertyValueType startNode, const std::string& propertyName)
          : MaterialProperty(propertyName)
-         , m_value(propertyValue)
+         , mDynamicOperationStartNode(startNode)
       {
       }
 
       DynamicFloatMaterialProperty(const std::string& propertyName)
          : MaterialProperty(propertyName)
-         , m_value()
+         , mDynamicOperationStartNode()
       {
       }
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
 
-      virtual MaterialPropertyType GetPropertyType() const override
+      virtual eMaterialPropertyType GetPropertyType() const override
       {
-         return MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY;
+         return MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY;
       }
 
-      inline void SetValue(MaterialPropertyValueType value) {
-         m_value = value;
+      void SetValue(MaterialPropertyValueType startNode) {
+         mDynamicOperationStartNode = startNode;
       }
 
       inline float GetValue() const {
-         auto value = m_value->GetValue();
+         auto value = mDynamicOperationStartNode->GetValue();
          return value;
       }
 

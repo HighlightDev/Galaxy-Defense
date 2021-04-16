@@ -3,9 +3,14 @@
 #include <memory>
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "MaterialProperty.h"
 
 namespace Resources {
    struct IDeferredResourceCreator;
+}
+
+namespace Game {
+   class GameObject;
 }
 
 namespace Graphics
@@ -13,8 +18,7 @@ namespace Graphics
    using namespace Texture;
 
    using Resources::IDeferredResourceCreator;
-
-   struct MaterialProperty;
+   using Game::GameObject;
 
    struct MaterialPropertySetter
    {
@@ -22,6 +26,7 @@ namespace Graphics
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const float value);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator);
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const class GameObject* gameObject,const std::string& gamePropertyName, const std::string& bindingName);
 
    private:
       static class DynamicMaterial* TryCastToDynamicMaterial(class IMaterial* materialIsntance);
@@ -32,6 +37,8 @@ namespace Graphics
       static void SetFloatValue(std::shared_ptr<MaterialProperty> materialProperty, const float value);
 
       static void SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator);
+
+      static bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property, MaterialProperty::eMaterialPropertyType& outPropertyType);
    };
 }
 

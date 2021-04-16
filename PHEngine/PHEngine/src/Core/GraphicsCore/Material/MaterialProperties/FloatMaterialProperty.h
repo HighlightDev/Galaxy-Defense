@@ -27,9 +27,9 @@ namespace Graphics {
       {
       }
 
-      virtual MaterialPropertyType GetPropertyType() const override
+      virtual eMaterialPropertyType GetPropertyType() const override
       {
-         return MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY;
+         return MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY;
       }
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override

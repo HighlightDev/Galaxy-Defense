@@ -36,11 +36,11 @@ namespace Game
          std::shared_ptr<ITweenController> propertyController;
 
          const auto propertyType = dstProperty->GetStatePropertyType();
-         if (StatePropertyType::Animation == propertyType)
+         if (eBindingType::ANIMATION == propertyType)
          {
             propertyController = std::make_shared<AnimationTweenController>();
          }
-         else if (StatePropertyType::Float == propertyType)
+         else if (eBindingType::FLOAT == propertyType)
          {
             propertyController = std::make_shared<FloatTweenController>();
          }
@@ -112,11 +112,11 @@ namespace Game
                   std::shared_ptr<ITweenController> propertyController;
 
                   const auto propertyType = srcProperty->GetStatePropertyType();
-                  if (StatePropertyType::Animation == propertyType)
+                  if (eBindingType::ANIMATION == propertyType)
                   {
                      propertyController = std::make_shared<AnimationTweenController>();
                   }
-                  else if (StatePropertyType::Float == propertyType)
+                  else if (eBindingType::FLOAT == propertyType)
                   {
                      propertyController = std::make_shared<FloatTweenController>();
                   }
@@ -183,13 +183,13 @@ namespace Game
       bTransitionEnabled = false;
    }
 
-   std::shared_ptr<StatePropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
+   std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
    {
       assert(mPropertyBindings.count(name));
       return mPropertyBindings.at(name);
    }
 
-   void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding)
+   void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding)
    {
       assert(binding);
       mPropertyBindings[propBindingName] = binding;

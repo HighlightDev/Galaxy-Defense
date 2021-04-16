@@ -1,46 +1,43 @@
 #pragma once
 
-#include "MaterialProperty.h"
-#include "MaterialPropertyBindings/FloatMaterialBinding.h"
+#include "BindingMaterialProperty.h"
+#include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
+
+using namespace Game;
 
 namespace Graphics {
 
    struct FloatBindingMaterialProperty
-      : public MaterialProperty
+      : public BindingMaterialProperty
+
    {
-      using MaterialPropertyValueType = std::shared_ptr<FloatMaterialPropertyBinding>;
-
-   private:
-
-      MaterialPropertyValueType m_value;
+      using MaterialPropertyValueType = std::shared_ptr<FloatPropertyBinding>;
 
    public:
 
       FloatBindingMaterialProperty(MaterialPropertyValueType propertyValue, const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value(propertyValue)
+         : BindingMaterialProperty(propertyValue, propertyName)
       {
       }
 
       FloatBindingMaterialProperty(const std::string& propertyName)
-         : MaterialProperty(propertyName)
-         , m_value()
+         : BindingMaterialProperty(propertyName)
       {
       }
 
-      virtual MaterialPropertyType GetPropertyType() const override
+      virtual eMaterialPropertyType GetPropertyType() const override
       {
-         return MaterialProperty::MaterialPropertyType::FLOAT_BINDING_PROPERTY;
+         return MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY;
       }
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
 
-      inline void SetValue(MaterialPropertyValueType value) {
-         m_value = value;
+      void SetValue(MaterialPropertyValueType value) {
+         mPropertyBinding = value;
       }
 
-      inline float GetValue() const {
-         return *m_value->Value;
+      float GetValue() const {
+         return std::static_pointer_cast<FloatPropertyBinding>(mPropertyBinding)->GetValue();
       }
 
    };

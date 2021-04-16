@@ -5,7 +5,7 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Tweener/TweenBindingAttachmentBuilder.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 using namespace Graphics;
@@ -59,6 +59,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string) >::Register(mLuaInstance, "_SetTextureToMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, float, std::string)>::Register(mLuaInstance, "_SetFloatToMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(LuaArgDummyPlaceholder<>, IMaterial*, std::string, std::string)>::Register(mLuaInstance, "_SetDeferredTextureToMaterial");
+      LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string, std::string)>::Register(mLuaInstance, "_SetBindingToMaterial");
 
       LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
 
@@ -317,6 +318,21 @@ namespace Game
       MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, value);
    }
 
+   /* -------------------  Set binding to material --------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<IMaterial*, std::string, std::string, std::string>& setBindingToMaterial)
+   {
+      if (auto scene = mSceneWP.lock())
+      {
+         IMaterial* material = std::get<0>(setBindingToMaterial);
+         const std::string& gameObjectName = std::get<1>(setBindingToMaterial);
+         const std::string& gamePropertyName = std::get<2>(setBindingToMaterial);
+         const std::string& bindingName = std::get<3>(setBindingToMaterial);
+
+         const GameObject* gameObject = scene->GetGameObjectByName(gameObjectName);
+         MaterialPropertySetter::SetMaterialPropertyValue(material, gameObject, gamePropertyName, bindingName);
+      }
+   }
+
    /*-------------------- Create physics collision sphere shape --------------*/
    PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float>& value)
    {
@@ -398,7 +414,7 @@ namespace Game
       {
          GameObject* gameObject = scene->GetGameObjectByName(std::get<1>(tweenerData));
          const auto& binding = tweener->GetPropertyBindingByName(std::get<2>(tweenerData));
-         TweenBindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
+         BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
       }
 
    }

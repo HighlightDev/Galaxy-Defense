@@ -25,25 +25,25 @@ namespace Game
 
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         *animBinding->DstTime += deltaTime;
-         *animBinding->bTranstitionEnabled = true;
-         *animBinding->TransitionValue = transitionParameter;
+         animBinding->SetDstTime(animBinding->GetDstTime() + deltaTime);
+         animBinding->SetIsTransitionEnabled(true);
+         animBinding->SetTransitionValue(transitionParameter);
       }
    }
 
    void AnimationTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
    {
-      mPropertyBinding = dstStateProperty->PropertyBinding;
+      mPropertyBinding = dstStateProperty->Binding;
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         StateProperty<StatePropertyType::Animation>* dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(dstStateProperty);
+         StateProperty<eBindingType::ANIMATION>* dstAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(dstStateProperty);
 
-         *animBinding->SrcName = dstAnimationProperty->AnimationName;
-         *animBinding->SrcTime = 0.0f;
-         *animBinding->DstTime = 0.0f;
-         *animBinding->DstName = "NoAnimation";
-         *animBinding->bTranstitionEnabled = false;
-         *animBinding->TransitionValue = 0.0f;
+         animBinding->SetSrcName(dstAnimationProperty->AnimationName);
+         animBinding->SetSrcTime(0.0f);
+         animBinding->SetDstTime(0.0f);
+         animBinding->SetDstName("NoAnimation");
+         animBinding->SetIsTransitionEnabled(false);
+         animBinding->SetTransitionValue(0.0f);
       }
    }
 
@@ -54,18 +54,16 @@ namespace Game
    {
       Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
 
-      StateProperty<StatePropertyType::Animation>* srcAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(srcProperty);
-      StateProperty<StatePropertyType::Animation>* dstAnimationProperty = static_cast<StateProperty<StatePropertyType::Animation>*>(dstProperty);
+      StateProperty<eBindingType::ANIMATION>* srcAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(srcProperty);
+      StateProperty<eBindingType::ANIMATION>* dstAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(dstProperty);
 
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         assert(animBinding->SrcName != nullptr);
-
-         *animBinding->SrcName = srcAnimationProperty->AnimationName;
-         *animBinding->DstName = dstAnimationProperty->AnimationName;
-         *animBinding->DstTime = 0.0f;
-         *animBinding->bTranstitionEnabled = true;
-         *animBinding->TransitionValue = 0.0f;
+         animBinding->SetSrcName(srcAnimationProperty->AnimationName);
+         animBinding->SetDstName(dstAnimationProperty->AnimationName);
+         animBinding->SetDstTime(0.0f);
+         animBinding->SetIsTransitionEnabled(true);
+         animBinding->SetTransitionValue(0.0f);
       }
    }
 
@@ -73,12 +71,12 @@ namespace Game
    {
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         *animBinding->SrcName = *animBinding->DstName;
-         *animBinding->SrcTime = *animBinding->DstTime;
-         *animBinding->DstTime = 0.0f;
-         *animBinding->DstName = "NoAnimation";
-         *animBinding->bTranstitionEnabled = false;
-         *animBinding->TransitionValue = 0.0f;
+         animBinding->SetSrcName(animBinding->GetDstName());
+         animBinding->SetSrcTime(animBinding->GetDstTime());
+         animBinding->SetDstTime(0.0f);
+         animBinding->SetDstName("NoAnimation");
+         animBinding->SetIsTransitionEnabled(false);
+         animBinding->SetTransitionValue(0.0f);
       }
    }
 }

@@ -84,13 +84,13 @@ namespace Game {
 
          std::string uniformValue, propertyType;
 
-         if (type == MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY)
+         if (type == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY)
          {
             std::shared_ptr<TextureMaterialProperty> texProp = std::static_pointer_cast<TextureMaterialProperty>(prop);
             propertyType = "texture";
             uniformValue = Resources::TexturePool::GetInstance()->GetKey(texProp->GetValue());
          }
-         else if (type == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY)
+         else if (type == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
          {
             std::shared_ptr<FloatMaterialProperty> floatProp = std::static_pointer_cast<FloatMaterialProperty>(prop);
             propertyType = "float";

@@ -29,9 +29,9 @@ namespace Graphics {
       {
       }
 
-      virtual MaterialPropertyType GetPropertyType() const override
+      virtual eMaterialPropertyType GetPropertyType() const override
       {
-         return MaterialProperty::MaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
+         return MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY;
       }
 
       virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override

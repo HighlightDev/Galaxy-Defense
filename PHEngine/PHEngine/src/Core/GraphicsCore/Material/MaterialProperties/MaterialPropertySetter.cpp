@@ -5,8 +5,12 @@
 #include "TextureMaterialProperty.h"
 #include "FloatMaterialProperty.h"
 #include "DeferredTextureMaterialProperty.h"
+#include "BindingMaterialProperty.h"
+#include "Core/GameCore/GameObject.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 
 using namespace Resources;
+using namespace Game;
 
 namespace Graphics
 {
@@ -22,7 +26,7 @@ namespace Graphics
    void MaterialPropertySetter::SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, ITexture* texture)
    {
       auto propertyType = materialProperty->GetPropertyType();
-      assert(propertyType == MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY);
+      assert(propertyType == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY);
       auto textureProperty = std::static_pointer_cast<TextureMaterialProperty>(materialProperty);
       assert(textureProperty);
       textureProperty->SetValue(texture);
@@ -31,7 +35,7 @@ namespace Graphics
    void MaterialPropertySetter::SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, std::shared_ptr<ITexture> texture)
    {
       auto propertyType = materialProperty->GetPropertyType();
-      assert(propertyType == MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY);
+      assert(propertyType == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY);
       auto textureProperty = std::static_pointer_cast<TextureMaterialProperty>(materialProperty);
       assert(textureProperty);
       textureProperty->SetValue(texture);
@@ -40,7 +44,7 @@ namespace Graphics
    void MaterialPropertySetter::SetFloatValue(std::shared_ptr<MaterialProperty> materialProperty, const float value)
    {
       auto propertyType = materialProperty->GetPropertyType();
-      assert(propertyType == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY);
+      assert(propertyType == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY);
       auto floatProperty = std::static_pointer_cast<FloatMaterialProperty>(materialProperty);
       assert(floatProperty);
       floatProperty->SetValue(value);
@@ -48,7 +52,7 @@ namespace Graphics
 
    void MaterialPropertySetter::SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator)
    {
-      if (materialProperty->GetPropertyType() == MaterialProperty::MaterialPropertyType::DEFERRED_TEXTURE_PROPERTY)
+      if (materialProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY)
       {
          auto deferredTextureProperty = std::static_pointer_cast<DeferredTextureMaterialProperty>(materialProperty);
          assert(deferredTextureProperty);
@@ -122,4 +126,42 @@ namespace Graphics
       else
          SetDeferredResourceValue(materialInstance->GetMaterialPropertyByName(propertyName), deferredResourceCreator);
    }
+
+   bool MaterialPropertySetter::IsPropertyBindingType(std::shared_ptr<MaterialProperty> property, MaterialProperty::eMaterialPropertyType& outPropertyType)
+   {
+      outPropertyType = property->GetPropertyType();
+      switch (outPropertyType)
+      {
+         case MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY:
+            return true;
+         default:
+            return false;
+      }
+   }
+
+   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const GameObject* gameObject,
+      const std::string& gamePropertyName, const std::string& bindingName)
+   {
+      assert(materialInstance);
+
+      // first try to find material property among related to dynamic property
+      if (const DynamicMaterial* dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      {
+         if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(bindingName))
+         {
+            MaterialProperty::eMaterialPropertyType outPropertyType;
+            if (IsPropertyBindingType(property, outPropertyType))
+            {
+               auto bindingProperty = std::static_pointer_cast<BindingMaterialProperty>(property);
+               BindingAttachmentBuilder::SetAttachment(gameObject, bindingProperty->GetMaterialBinding().get(), gamePropertyName);
+            }
+            else
+               assert(false);
+         }
+         else
+            assert(false);
+      }
+      else assert(false);
+   }
+
 }

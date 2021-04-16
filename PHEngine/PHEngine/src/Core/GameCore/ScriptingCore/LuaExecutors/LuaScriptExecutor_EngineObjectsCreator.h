@@ -94,6 +94,9 @@ namespace Game
       /* -------------------  Set deferred texture --------------------*/
       void ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, IMaterial*, /*deferred resource creator name*/std::string, /*property name*/std::string>& setDeferredTextureToMaterial);
 
+      /* -------------------  Set binding to material --------------------*/
+      void ExecuteLuaCallback(const std::tuple<IMaterial*, /*game object name*/std::string, /*gamePropertyName*/std::string, /*bindingName*/std::string>& setBindingToMaterial);
+
       /*-------------------- Create physics collision sphere shape --------------*/
       PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<float>& value);
 

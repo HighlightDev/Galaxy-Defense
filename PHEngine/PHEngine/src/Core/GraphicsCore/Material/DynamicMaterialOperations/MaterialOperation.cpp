@@ -1,10 +1,24 @@
 #include "MaterialOperation.h"
 
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 
 namespace Graphics
 {
    //todo: Refactor this
+
+   bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property, MaterialProperty::eMaterialPropertyType& outPropertyType)
+   {
+      outPropertyType = property->GetPropertyType();
+      switch (outPropertyType)
+      {
+         case MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY:
+            return true;
+         default:
+            return false;
+      }
+   }
+
    float MaterialStartNode::getIteratedValue(std::shared_ptr<MaterialNode> node)
    {
       float result = 0.0f;
@@ -42,12 +56,29 @@ namespace Graphics
             else if (valueNode->GetValueType() == MaterialValueNode::eValueType::PROPERTY)
             {
                const std::shared_ptr<MaterialPropertyValueNode>& propertyNode = MaterialNode::CastTo<MaterialPropertyValueNode>(node);
-               if (propertyNode->Value->GetPropertyType() == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY)
+               if (propertyNode->Value->GetPropertyType() == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
                {
                   const std::shared_ptr<FloatMaterialProperty>& floatPropertyValue = std::static_pointer_cast<FloatMaterialProperty>(propertyNode->Value);
                   result = floatPropertyValue->GetValue();
                }
-               else { assert(false); }
+               else
+               {
+                  MaterialProperty::eMaterialPropertyType outPropertyType;
+                  if (IsPropertyBindingType(propertyNode->Value, outPropertyType))
+                  {
+                     if (MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY == outPropertyType)
+                     {
+                        auto floatBinding = std::static_pointer_cast<FloatBindingMaterialProperty>(propertyNode->Value);
+                        result = floatBinding->GetValue();
+                     }
+                     else {
+                        assert(false);
+                     }
+                  }
+                  else {
+                     assert(false);
+                  }
+               }
             }
             else { assert(false); }
             break;

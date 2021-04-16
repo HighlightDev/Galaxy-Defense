@@ -1,5 +1,5 @@
 #pragma once
-#include "StatePropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
 
 namespace Game
 {
@@ -15,7 +15,7 @@ namespace Game
 
       struct BaseStateProperty* TranstionProperties[2];
 
-      std::weak_ptr<StatePropertyBinding> mPropertyBinding;
+      std::weak_ptr<PropertyBinding> mPropertyBinding;
 
    public:
 
@@ -29,6 +29,6 @@ namespace Game
 
       virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty);
 
-      enum class StatePropertyType GetControllerPropertyType() const;
+      enum class eBindingType GetControllerPropertyType() const;
    };
 }

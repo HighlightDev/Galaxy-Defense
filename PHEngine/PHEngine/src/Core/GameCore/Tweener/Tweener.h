@@ -4,6 +4,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
+#include "Core/GameCore/Tweener/ITweenController.h"
 
 #include <unordered_map>
 
@@ -26,7 +27,7 @@ namespace Game
 
       const StateTransition* mCurrentActiveStateTransition = nullptr;
 
-      std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<StatePropertyBinding>> mPropertyBindings;
+      std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<PropertyBinding>> mPropertyBindings;
 
       std::vector<std::shared_ptr<ITweenController>> CurrentActiveTransitionControllers;
 
@@ -56,9 +57,9 @@ namespace Game
 
       std::string GetRelPathTweener() const;
 
-      void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<StatePropertyBinding> binding);
+      void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding);
 
-      std::shared_ptr<StatePropertyBinding> GetPropertyBindingByName(const std::string& name) const;
+      std::shared_ptr<PropertyBinding> GetPropertyBindingByName(const std::string& name) const;
 
       void InitRootState();
 

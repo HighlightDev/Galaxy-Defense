@@ -201,9 +201,9 @@ namespace Game
       return BuildTweener(relPathTweener);
    }
 
-   std::shared_ptr<StatePropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding& binding)
+   std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding& binding)
    {
-      std::shared_ptr<StatePropertyBinding> result;
+      std::shared_ptr<PropertyBinding> result;
 
       if ("animation" == binding.Type) {
          result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
@@ -219,7 +219,7 @@ namespace Game
       return result;
    }
 
-   BaseStateProperty* CreateProperty(const TweenerParser::TweenerParser_Property& property, const std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>>& bindings)
+   BaseStateProperty* CreateProperty(const TweenerParser::TweenerParser_Property& property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>>& bindings)
    {
       BaseStateProperty* result = nullptr;
 
@@ -227,12 +227,12 @@ namespace Game
 
       if ("animation" == property.Type) 
       {
-         result = new StateProperty<StatePropertyType::Animation>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+         result = new StateProperty<eBindingType::ANIMATION>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("float" == property.Type)
       {
          const float value = std::stof(property.Value);
-         result = new StateProperty<StatePropertyType::Float>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+         result = new StateProperty<eBindingType::FLOAT>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
       }
       else 
       {
@@ -246,7 +246,7 @@ namespace Game
    {
       std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::vector<std::shared_ptr<State>> allStates;
-      std::unordered_map<std::string, std::shared_ptr<StatePropertyBinding>> bindings;
+      std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> bindings;
 
       for (const auto& item : mStates)
       {

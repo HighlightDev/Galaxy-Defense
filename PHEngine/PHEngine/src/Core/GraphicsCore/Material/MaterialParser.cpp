@@ -7,6 +7,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
 
 using namespace Common;
@@ -33,8 +34,6 @@ namespace Graphics
 
 #define FLOAT_CONSTANT_START "<float_constant>"
 #define FLOAT_CONSTANT_END "</float_constant>"
-#define PROPERTY_BINDING_START "<binding_property>"
-#define PROPERTY_BINDING_END "</binding_property>"
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType, const std::string& propertyName)
    {
@@ -51,6 +50,10 @@ namespace Graphics
       else if ("deferred_texture" == propertyType)
       {
          resultProperty = std::make_shared<DeferredTextureMaterialProperty>(propertyName);
+      }
+      else if ("binding_float" == propertyType) 
+      {
+         resultProperty = std::make_shared<FloatBindingMaterialProperty>(std::make_shared<FloatPropertyBinding>(propertyName), propertyName);
       }
       else
       {
@@ -268,6 +271,8 @@ namespace Graphics
                innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
             }
 
+            assert(valueNode);
+
             switch (node->GetMaterialNodeType())
             {
                case MaterialNode::eMaterialNodeType::UNARY_OP:
@@ -391,6 +396,4 @@ namespace Graphics
 #undef BINARY_MUL_OP_END
 #undef FLOAT_CONSTANT_START
 #undef FLOAT_CONSTANT_END
-#undef PROPERTY_BINDING_START
-#undef PROPERTY_BINDING_END 
 }

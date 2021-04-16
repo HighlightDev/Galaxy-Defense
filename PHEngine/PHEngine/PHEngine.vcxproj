@@ -348,13 +348,15 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\AnimationPropertyBinding.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\BindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\FloatMaterialBinding.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialPropertyBindings\MaterialPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\FloatPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\PropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h" />
@@ -402,7 +404,7 @@
     <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.h" />
-    <ClInclude Include="src\Core\GameCore\Tweener\TweenBindingAttachmentBuilder.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h" />
@@ -416,7 +418,6 @@
     <ClInclude Include="src\Core\GameCore\Tweener\ITweenController.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\Tweener.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\StateProperty.h" />
-    <ClInclude Include="src\Core\GameCore\Tweener\StatePropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\StateTransition.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialParser.h" />
     <ClInclude Include="src\Core\GraphicsCore\Mesh\AnimationPlayer.h" />

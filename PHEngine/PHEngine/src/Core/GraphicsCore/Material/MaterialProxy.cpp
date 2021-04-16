@@ -40,13 +40,13 @@ namespace Graphics
       assert(propertyIt != mProperties.end());
 
       const auto propType = property->GetPropertyType();
-      if (propType == MaterialProperty::MaterialPropertyType::FLOAT_PROPERTY)
+      if (propType == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
       {
          auto renderThreadProperty = std::static_pointer_cast<FloatMaterialProperty>(*propertyIt);
          auto gameThreadProperty = std::static_pointer_cast<FloatMaterialProperty>(property);
          renderThreadProperty->SetValue(gameThreadProperty->GetValue());
       }
-      else if (propType == MaterialProperty::MaterialPropertyType::TEXTURE_PROPERTY)
+      else if (propType == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY)
       {
          auto renderThreadProperty = std::static_pointer_cast<TextureMaterialProperty>(*propertyIt);
          auto gameThreadProperty = std::static_pointer_cast<TextureMaterialProperty>(property);

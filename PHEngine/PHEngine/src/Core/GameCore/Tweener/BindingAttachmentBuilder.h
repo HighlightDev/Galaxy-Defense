@@ -1,21 +1,22 @@
 #pragma once
 
-#include "StatePropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace Game
 {
-   struct TweenBindingAttachmentBuilder
+   struct BindingAttachmentBuilder
    {
-      static void SetAttachment(GameObject* gameObject, StatePropertyBinding* binding, const std::string& propertyName)
+      static void SetAttachment(const GameObject* gameObject, PropertyBinding* binding, const std::string& gameObjectPropertyName)
       {
          binding->GameObjectName = gameObject->GetGameObjectName();
-         binding->GameObjectPropertyName = propertyName;
+         binding->GameObjectPropertyName = gameObjectPropertyName;
 
          switch (binding->GetBindingType())
          {
-            case BindingType::ANIMATION:
+            case eBindingType::ANIMATION:
             {
                AnimationPropertyBinding* animationBinding = static_cast<AnimationPropertyBinding*>(binding);
                EngineGOProperty<float>* propSrcTime = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
@@ -28,11 +29,11 @@ namespace Game
                   propDstTime->GetValuePtr(), propIsTransition->GetValuePtr(), propTransitionValue->GetValuePtr());
                break;
             }
-            case BindingType::FLOAT:
+            case eBindingType::FLOAT:
             {
                FloatPropertyBinding* floatBinding = static_cast<FloatPropertyBinding*>(binding);
-               EngineGOProperty<float>* propValue = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName(propertyName));
-               floatBinding->SetBindingProperty(propValue->GetValuePtr());
+               EngineGOProperty<float>* propValue = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+               floatBinding->SetValuePtr(propValue->GetValuePtr());
                break;
             }
             default:

@@ -3,41 +3,35 @@
 #include <memory>
 #include <string>
 
-#include "ITweenController.h"
+#include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
 
 namespace Game
 {
-
-   enum class StatePropertyType
-   {
-      Animation,
-      Float,
-   };
-
    struct BaseStateProperty
    {
-      std::weak_ptr<StatePropertyBinding> PropertyBinding;
+      std::weak_ptr<PropertyBinding> Binding;
 
-      virtual StatePropertyType GetStatePropertyType() = 0;
+      virtual eBindingType GetStatePropertyType() const = 0;
 
-      BaseStateProperty(std::weak_ptr<StatePropertyBinding> propertyBinding) 
-         : PropertyBinding(propertyBinding)
+      BaseStateProperty(std::weak_ptr<PropertyBinding> propertyBinding)
+         : Binding(propertyBinding)
       {
       }
    };
 
-   template <StatePropertyType propType>
+   template <eBindingType bindingType>
    struct StateProperty;
 
    template <>
-   struct StateProperty<StatePropertyType::Animation>
+   struct StateProperty<eBindingType::ANIMATION>
       : public BaseStateProperty
    {
       std::string AnimationName;
 
-      virtual StatePropertyType GetStatePropertyType() override
+      virtual eBindingType GetStatePropertyType() const override
       {
-         return StatePropertyType::Animation;
+         return eBindingType::ANIMATION;
       }
 
       StateProperty(const std::string& animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
@@ -48,14 +42,14 @@ namespace Game
    };
 
    template <>
-   struct StateProperty<StatePropertyType::Float>
+   struct StateProperty<eBindingType::FLOAT>
       : public BaseStateProperty
    {
       float Value;
 
-      virtual StatePropertyType GetStatePropertyType() override
+      virtual eBindingType GetStatePropertyType() const override
       {
-         return StatePropertyType::Float;
+         return eBindingType::FLOAT;
       }
 
       StateProperty(float value, std::shared_ptr<FloatPropertyBinding> animationPropertyBinding)
