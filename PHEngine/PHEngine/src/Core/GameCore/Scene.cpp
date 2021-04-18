@@ -14,11 +14,15 @@ namespace Game
 {
 
    Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
-      : m_interThreadMgr(interThreadMgr)
-      , mActiveCameras()
+      : GameObject("EngineScene")
       , mPhysicsWorld(new PhysicsWorld())
+      , m_interThreadMgr(interThreadMgr)
+      , mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec"))
+      , mActiveCameras()
    {
+      RegisterGameObject(this);
       mPhysicsWorld->InitPhysicsWorld();
+      ENGINE_PROPERTY(&mGameThreadDeltaSec);
    }
 
    void Scene::PostLevelInit()
@@ -73,7 +77,7 @@ namespace Game
    {
       mMaterials.push_back(material);
 
-      if (material->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC) 
+      if (material->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
       {
          auto dynamicMaterial = std::static_pointer_cast<DynamicMaterial>(material);
          dynamicMaterial->SetScene(mMeSharedPtr);
@@ -469,6 +473,8 @@ namespace Game
    {
       constexpr float physTickStep = 1.0f / 150.0f;
 
+      mGameThreadDeltaSec.SetValue(delta);
+
       mPhysicsWorld->Tick(physTickStep);
 
       for (const auto& cameraPtr : mActiveCameras)
@@ -514,7 +520,7 @@ namespace Game
          LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
       }
 
-     
+
       if (Actor* ownerActor = component->GetOwner())
       {
          if ((type & ComponentType::CHARACTER_MOVEMENT_COMPONENT) == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
@@ -576,7 +582,7 @@ namespace Game
       return true;
    }
 
-   bool Scene::RemoveDeferredResourceCreator(const std::string& gameObjectName) 
+   bool Scene::RemoveDeferredResourceCreator(const std::string& gameObjectName)
    {
       // Remove deferred resource creator instance
       if (mDeferredResourceCreators.count(gameObjectName))

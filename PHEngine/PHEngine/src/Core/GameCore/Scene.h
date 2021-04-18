@@ -26,7 +26,9 @@ namespace Graphics {
 
 namespace Game
 {
-   class Scene : public std::enable_shared_from_this<Scene>
+   class Scene :
+      public GameObject, 
+      public std::enable_shared_from_this<Scene>
    {
    public:
 
@@ -36,11 +38,13 @@ namespace Game
 
    private:
 
+      InterThreadCommunicationMgr& m_interThreadMgr;
+
+      EngineGOProperty<float> mGameThreadDeltaSec;
+
       std::unordered_map<std::string, IDeferredResourceCreator*> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
-
-      InterThreadCommunicationMgr& m_interThreadMgr;
 
       std::shared_ptr<ACamera> mMainCamera;
 

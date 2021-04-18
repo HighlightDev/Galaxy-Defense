@@ -7,21 +7,17 @@
 	<dynamic_property>
 		name: "distortion"
 		type: "float"
+		incremental: "true"
+		range: "[0.0 ; 1.0]"
 		<operation>
 			<mul>
 				<property>
 					name: "deltaTime"
 					type: "binding_float"
 				</property>
-				<add>
-					<property>
-						name: "test_value"
-						type: "float"
-					</property>
-					<float_constant>
-						value: "0.0"
-					</float_constant>
-				</add>
+				<float_constant>
+					"1"
+				</float_constant>
 			</mul>
 		</operation>
 	</dynamic_property>

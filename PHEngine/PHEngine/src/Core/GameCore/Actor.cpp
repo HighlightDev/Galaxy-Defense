@@ -24,7 +24,7 @@ namespace Game
    {
       assert(m_rootComponent);
 
-      AddEngineProperty(mIsVisible.Key, &mIsVisible);
+      AddEngineProperty(&mIsVisible);
 
       m_rootComponent->bIsRootComponent = true;
    }

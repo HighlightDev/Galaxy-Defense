@@ -61,7 +61,7 @@ namespace Game
    }
 
    /*_GetGOPropertyValFloat*/
-   float LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<GameObject *, std::string, LuaArgDummyPlaceholder<float>>& data)
+   float LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<GameObject*, std::string, LuaArgDummyPlaceholder<float>>& data)
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
@@ -71,7 +71,7 @@ namespace Game
    }
 
    /*_GetGOPropertyValInteger*/
-   int32_t LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<GameObject *, std::string, LuaArgDummyPlaceholder<int32_t>>& data)
+   int32_t LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<GameObject*, std::string, LuaArgDummyPlaceholder<int32_t>>& data)
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);

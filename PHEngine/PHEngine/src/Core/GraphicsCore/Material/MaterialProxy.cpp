@@ -56,8 +56,7 @@ namespace Graphics
 
    void MaterialProxy::UpdateProperties(std::vector<std::shared_ptr<MaterialProperty>>&& updatedProperties)
    {
-      std::vector<std::shared_ptr<MaterialProperty>> properties = updatedProperties;
-      for (const auto& property : properties)
+      for (const auto& property : updatedProperties)
       {
          UpdateProperty(property);
       }

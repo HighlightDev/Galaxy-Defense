@@ -12,7 +12,7 @@ namespace Game
       , mIsVisible(EngineGOProperty<bool>(true, "IsVisible"))
 	{
       /******  HOOKS ****/
-      ENGINE_PROPERTY("IsVisible", &mIsVisible);
+      ENGINE_PROPERTY(&mIsVisible);
       /******  HOOKS ****/
 	}
 

@@ -10,6 +10,16 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
 
+#include <limits>
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
 using namespace Common;
 
 namespace Graphics
@@ -51,7 +61,7 @@ namespace Graphics
       {
          resultProperty = std::make_shared<DeferredTextureMaterialProperty>(propertyName);
       }
-      else if ("binding_float" == propertyType) 
+      else if ("binding_float" == propertyType)
       {
          resultProperty = std::make_shared<FloatBindingMaterialProperty>(std::make_shared<FloatPropertyBinding>(propertyName), propertyName);
       }
@@ -316,6 +326,9 @@ namespace Graphics
       auto dynamicPropertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_END_NODE_NAME);
 
       std::string propertyName = "", propertyType = "";
+      bool propertyValueIncremental = false;
+
+      glm::vec2 minMaxRange = glm::vec2(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
 
       ++dynamicPropertyStartNode;
 
@@ -327,9 +340,8 @@ namespace Graphics
 
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME))
          {
-            assert(propertyName != "" && propertyType != "");
             dynamicPropertyStartNode = ProcessDynamicProperty(propertyType, operation, ++dynamicPropertyStartNode, dynamicPropertyEndNode, innerDynamicMaterialProperties);
-         }
+         } 
          else
          {
             if (EngineUtility::StartsWith(currentNodeStr, "name"))
@@ -340,13 +352,32 @@ namespace Graphics
             {
                propertyType = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
             }
+            else if (EngineUtility::StartsWith(currentNodeStr, "incremental"))
+            {
+               propertyValueIncremental = "true" == XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+            }
+            else if (EngineUtility::StartsWith(currentNodeStr, "range"))
+            {
+               auto rangeStr = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+               const std::string& range = XMLParserHelper::GetSubstringInsideBrackets(rangeStr);
+               auto rangeValues = EngineUtility::Split(range, ';');
+               assert(rangeValues.size() == 2);
+               const std::string& rangeMinValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[0]));
+               const std::string& rangeMaxValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[1]));
+               minMaxRange.x = std::stof(rangeMinValue);
+               minMaxRange.y = std::stof(rangeMaxValue);
+            }
             ++dynamicPropertyStartNode;
          }
       }
 
       propertiesBeginIt = dynamicPropertyEndNode;
 
+      assert(propertyName != "" && propertyType != "");
+
       auto dynamicMaterialPropery = std::make_shared<DynamicFloatMaterialProperty>(operation, propertyName);
+      dynamicMaterialPropery->SetRange(minMaxRange);
+      dynamicMaterialPropery->SetIsValueIncremental(propertyValueIncremental);
 
       if (innerDynamicMaterialProperties.size())
          dynamicMaterialPropery->SetInternalDynamicMaterialProperties(std::move(innerDynamicMaterialProperties));

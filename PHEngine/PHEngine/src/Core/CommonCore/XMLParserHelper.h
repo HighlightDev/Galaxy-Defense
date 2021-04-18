@@ -31,5 +31,12 @@ namespace Common
 
          return result;
       }
+
+      static std::string GetSubstringInsideBrackets(const std::string& nodeStr) {
+
+         const size_t startBrackets = EngineUtility::IndexOf(nodeStr, "[") + 1;
+         const size_t endBrackets = EngineUtility::IndexOf(nodeStr, "]", startBrackets);
+         return nodeStr.substr(startBrackets, endBrackets - startBrackets);
+      }
    };
 }

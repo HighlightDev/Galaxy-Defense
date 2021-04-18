@@ -134,14 +134,14 @@ void Engine::TickWindow()
 double Engine::GetRenderThreadDeltaSeconds() const
 {
    Clock_t::duration deltaTime = Clock_t::now() - mLastRenderThreadPulseTime;
-   const double invFromNanoToSec = 0.000000001;
+   static constexpr double invFromNanoToSec = 0.000000001;
    return static_cast<double>(deltaTime.count()) * invFromNanoToSec;
 }
 
 double Engine::GetGameThreadDeltaSeconds() const
 {
    Clock_t::duration deltaTime = Clock_t::now() - mLastGameThreadPulseTime;
-   const double invFromNanoToSec = 0.000000001;
+   static constexpr double invFromNanoToSec = 0.000000001;
    return static_cast<double>(deltaTime.count()) * invFromNanoToSec;
 }
 
