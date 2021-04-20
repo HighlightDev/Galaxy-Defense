@@ -3,13 +3,10 @@
 #include "materialCommon.incl"
 
 uniform sampler2D reflectionTexture;
-uniform sampler2D refractionTexture;
-uniform sampler2D distortionTexture;
-uniform sampler2D distortion;
-uniform sampler2D someTexture;
+uniform sampler2D ground;
+uniform sampler2D dudv;
 
-uniform float moveFactor;
-uniform float strengthFactor;
+uniform float distortion;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
@@ -17,10 +14,12 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 	vec2 texSpaceCoords = (ndc.xy * 0.5) + 0.5;
 	vec2 texCoords = materialIn.TextureCoordinates.xy;
 
-	vec3 distortionTexColor = texture(distortion, texCoords).rgb;
+	vec2 distortionVec =  (texture(dudv, texCoords + distortion).rg * 2.0) - 1.0;
+
+	vec3 groundColor = texture(ground, texCoords).rgb;
+	float groundMixPct = pow(groundColor.r, 4);
 	
-	return mix(texture(reflectionTexture, texSpaceCoords).rgb, texture(refractionTexture, texCoords).rgb, pow(distortionTexColor.r, 2));
-	//return texture(refractionTexture, texCoords * 0.8).rgb;
+	return mix(texture(reflectionTexture, clamp(texSpaceCoords + distortionVec * 0.01, 0.0, 1.0)).rgb, groundColor, groundMixPct);
 }
 
 float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)

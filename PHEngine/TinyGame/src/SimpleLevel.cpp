@@ -85,6 +85,7 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBottom.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBack.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayFront.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("water_dudv.png"));
 
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("playerCube.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
@@ -118,6 +119,7 @@ namespace Labyrinth
          int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
          int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
 
+         // todo: add possibility to create planar component from LUA
          auto cameraPtr = mScene->GetMainCamera().get();
          PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(0, 2, 0), glm::vec3(), glm::vec3(1), cameraPtr,
          ViewPortInfo(0,0,windowWidth, windowHeight) };
