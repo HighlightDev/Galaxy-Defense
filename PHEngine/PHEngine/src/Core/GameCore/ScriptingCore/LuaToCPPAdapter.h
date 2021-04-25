@@ -9,6 +9,8 @@
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhysicsShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/GameCore/ACamera.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -43,6 +45,9 @@ namespace Game
       static ComponentData* CreateInputComponentData(const std::string& gameObjectName);
       static ComponentData* CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material);
       static ComponentData* CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance);
+
+      static ComponentData* CreatePlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
+         const ViewPortInfo& fboViewPortInfo);
 
       static PhysicsShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
       static PhysicsShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);

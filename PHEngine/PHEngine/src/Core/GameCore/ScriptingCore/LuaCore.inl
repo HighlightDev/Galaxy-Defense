@@ -56,10 +56,10 @@ namespace Game
       struct PushValue;
 
       template <typename ArgType, bool isPtr>
-      struct PushUnknownValue;
+      struct ConditionalPushValue;
 
       template <typename ArgType>
-      struct PushUnknownValue<ArgType, true>
+      struct ConditionalPushValue<ArgType, true>
       {
          static void Do(lua_State* state, const ArgType& value)
          {
@@ -68,7 +68,7 @@ namespace Game
       };
 
       template <typename ArgType>
-      struct PushUnknownValue<ArgType, false>
+      struct ConditionalPushValue<ArgType, false>
       {
          static void Do(lua_State* state, const ArgType& value)
          {
@@ -363,6 +363,33 @@ namespace Game
          }
       };
 
+      template <> struct GetValue<glm::vec4>
+      {
+      public:
+
+         static glm::vec4 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static glm::vec4 Value(lua_State* state, int32_t& stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static glm::vec4 Inner_Value(lua_State* state, int32_t& stackIndex)
+         {
+            // direction is reversed because stackIndex is decreasing
+            const float w = GetValue<float>::Value(state, stackIndex);
+            const float z = GetValue<float>::Value(state, stackIndex);
+            const float y = GetValue<float>::Value(state, stackIndex);
+            const float x = GetValue<float>::Value(state, stackIndex);
+            return glm::vec4(x, y, z, w);
+         }
+      };
+
       template <>
       struct GetValue<glm::vec3>
       {
@@ -389,7 +416,7 @@ namespace Game
             return glm::vec3(x, y, z);
          }
       };
-      
+
       template <size_t LuaTableParamCount, typename tuple_type, typename LuaTableType>
       struct GetLuaTableValue;
 
@@ -453,7 +480,7 @@ namespace Game
          static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
          {
             auto value = executorInstance->ExecuteLuaCallback(packArgs);
-            LuaInnerCore::PushUnknownValue<ReturnValueType, std::is_pointer<ReturnValueType>::value>::Do(state, value);
+            LuaInnerCore::ConditionalPushValue<ReturnValueType, std::is_pointer<ReturnValueType>::value>::Do(state, value);
             return 1;
          }
       };
@@ -468,41 +495,11 @@ namespace Game
          }
       };
 
-      template <typename T>
-      struct LuaArgsCountForType
-      {
-         enum
-         {
-            value = 1
-         };
-      };
-
-      template <typename U>
-      struct LuaArgsCountForType<LuaArgDummyPlaceholder<U>>
-      {
-         enum
-         {
-            value = 0
-         };
-      };
-
-      template <>
-      struct LuaArgsCountForType<glm::vec3>
-      {
-         enum
-         {
-            value = 3
-         };
-      };
-
-      template <>
-      struct LuaArgsCountForType<glm::quat>
-      {
-         enum
-         {
-            value = 4
-         };
-      };
+      template <typename T> struct LuaArgsCountForType { enum { value = 1 }; };
+      template <typename U> struct LuaArgsCountForType<LuaArgDummyPlaceholder<U>> { enum { value = 0 }; };
+      template <> struct LuaArgsCountForType<glm::vec3> { enum { value = 3 }; };
+      template <> struct LuaArgsCountForType<glm::vec4> { enum { value = 4 }; };
+      template <> struct LuaArgsCountForType<glm::quat> { enum { value = 4 }; };
 
       template <typename tuple_t, int32_t currentIndex>
       struct CollectLuaArgsCount_Inner

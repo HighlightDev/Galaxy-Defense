@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/MainThirdPersonCamera.h"
-#include "Core/GameCore/GlobalInputController.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
@@ -107,24 +107,12 @@ namespace Labyrinth
 
       //Camera
       {
-         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
-         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
+         int32_t windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+         int32_t windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
          ViewPortInfo viewPort{ 0 , 0, windowWidth, windowHeight };
 
          mScene->RegisterMainCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f));
-      }
-
-      {
-         int32_t windowWidth = GlobalInputController::GetInstance()->GetWindowWidth();
-         int32_t windowHeight = GlobalInputController::GetInstance()->GetWindowHeight();
-
-         // todo: add possibility to create planar component from LUA
-         auto cameraPtr = mScene->GetMainCamera().get();
-         PlanarReflectionComponentData data{ "PlanarReflectionComp", glm::vec3(0, 2, 0), glm::vec3(), glm::vec3(1), cameraPtr,
-         ViewPortInfo(0,0,windowWidth, windowHeight) };
-         auto planarReflectionComp =
-            std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(data));
       }
 
 #if false

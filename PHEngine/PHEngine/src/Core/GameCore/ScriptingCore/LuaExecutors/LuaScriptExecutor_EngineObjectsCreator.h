@@ -7,12 +7,13 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ACamera.h"
 #include "LuaScriptExecutor_EngineBase.h"
 
 namespace Game
 {
 
-   class LuaScriptExecutor_EngineObjectsCreator 
+   class LuaScriptExecutor_EngineObjectsCreator
       : public LuaScriptExecutor_EngineBase
    {
       // To make sure that shared ptr on component will live while raw pointers on that components are used only within Lua code
@@ -44,7 +45,7 @@ namespace Game
       /* -------------------  Create component ----------------------------*/
       Component* ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData);
 
-       /* -------------------  Create mesh component data ----------------------------*/
+      /* -------------------  Create mesh component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData);
 
       /* -------------------  Create simple mesh component data ----------------------------*/
@@ -52,7 +53,10 @@ namespace Game
 
       /* -------------------  Create water plane component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>&  data);
-    
+
+      /* -------------------  Create planar reflection component data ----------------------------*/
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::vec4>&  data);
+
       /* -------------------  Create dir light component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData);
 
@@ -72,7 +76,7 @@ namespace Game
 
       /* -------------------  Create movement component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData);
-      
+
       /* -------------------  Create physics component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData);
 
@@ -117,7 +121,7 @@ namespace Game
 
       /* -------------------  Create Tweener ----------------------------*/
       Tweener* ExecuteLuaCallback(const std::tuple<Actor*, std::string>& tweenerData);
-    
+
       /* -------------------  Set tweener bindings ------------------------*/
       void ExecuteLuaCallback(const std::tuple<Tweener*, std::string, std::string, std::string>& tweenerData);
    };

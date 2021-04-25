@@ -4,6 +4,7 @@
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
+#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 #include "Core/GameCore/Components/SpotlightComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
@@ -14,6 +15,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
@@ -110,6 +112,10 @@ namespace Game
       else if ("WaterPlaneComponent" == componentType)
       {
          result = scene->CreateComponent_GameThread<ComponentMetaType::WaterPlane, WaterPlaneComponent>(*componentData);
+      }
+      else if ("PlanarReflectionComponent" == componentType)
+      {
+         result = scene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(*componentData);
       }
       else
       {
@@ -213,4 +219,9 @@ namespace Game
       return new WaterPlaneComponentData(gameObjectName, translation, rotation, scale, materialInstance);
    }
 
+   ComponentData* LuaToCPPAdapter::CreatePlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
+      const ViewPortInfo& fboViewPortInfo)
+   {
+      return new PlanarReflectionComponentData(gameObjectName, translation, rotation, scale, ownerCamera, fboViewPortInfo);
+   }
 }

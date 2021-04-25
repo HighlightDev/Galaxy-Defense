@@ -51,6 +51,12 @@ namespace Game
 
       void ExecuteLuaCallback(const std::tuple<GameObject*, std::string, int32_t>& data);
 
+      /*Get Window height*/
+      int32_t ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<int32_t>>& data);
+
+      /*Get Window width*/
+      int32_t ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<int32_t>, LuaArgDummyPlaceholder<int32_t>>& data);
+
       std::string GetScriptRelPath() const;
 
       void PostInit(std::weak_ptr<Scene> scene);

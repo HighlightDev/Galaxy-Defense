@@ -547,7 +547,7 @@
     <ClInclude Include="src\Core\GameCore\Components\SceneComponent.h" />
     <ClInclude Include="src\Core\GameCore\FirstPersonCamera.h" />
     <ClInclude Include="src\Core\GameCore\ACamera.h" />
-    <ClInclude Include="src\Core\GameCore\GlobalInputController.h" />
+    <ClInclude Include="src\Core\IoCore\DisplayDeviceDataProvider.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\ShaderAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\ShaderPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\ComponentData.h" />
@@ -902,7 +902,7 @@
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\CharacterPhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\Transform.cpp" />
-    <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp" />
+    <ClCompile Include="src\Core\IoCore\DisplayDeviceDataProvider.cpp" />
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />

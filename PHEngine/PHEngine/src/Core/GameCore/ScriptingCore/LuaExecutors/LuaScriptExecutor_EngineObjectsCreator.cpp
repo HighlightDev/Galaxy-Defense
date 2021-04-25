@@ -53,6 +53,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateWaterPlaneComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::vec4)>::Register(mLuaInstance, "_CreatePlanarReflectionComponentData");
       /*************************************COMPONENT DATA**************************************/
 
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder<>)>::Register(mLuaInstance, "_CreateMaterial");
@@ -170,6 +171,23 @@ namespace Game
          std::get<3>(data), std::get<4>(data));
 
       mAllocatedComponentData.push_back(dataPtr);
+      return dataPtr;
+   }
+
+   /* -------------------  Create planar reflection component data ----------------------------*/
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::vec4>&  data)
+   {
+      ComponentData* dataPtr = nullptr;
+      if (auto scene = mSceneWP.lock())
+      {
+         auto camera = scene->GetCamera(std::get<4>(data));
+         const glm::vec4& viewPortInfo = std::get<5>(data);
+
+         dataPtr = LuaToCPPAdapter::CreatePlanarReflectionComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
+            std::get<3>(data), camera.get(), ViewPortInfo(viewPortInfo.x, viewPortInfo.y, viewPortInfo.z, viewPortInfo.w));
+
+         mAllocatedComponentData.push_back(dataPtr);
+      }
       return dataPtr;
    }
 
@@ -361,7 +379,7 @@ namespace Game
    PhysicsDescriptor* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*, std::string, float> descData)
    {
       PhysicsDescriptor* descriptor = nullptr;
-      
+
       if (auto scene = mSceneWP.lock())
       {
          descriptor = LuaToCPPAdapter::CreateRigidBodyController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData), std::get<2>(descData));

@@ -1,7 +1,7 @@
 #include "DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/GlobalInputController.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/SceneProxy/SkeletalMeshSceneProxy.h"
@@ -27,6 +27,7 @@ using namespace Graphics::Proxy;
 using namespace Graphics::OpenGL;
 using namespace EngineUtility;
 using namespace Game;
+using namespace IO;
 
 namespace Graphics
 {
@@ -43,8 +44,8 @@ namespace Graphics
          , m_interThreadMgr(interThreadMgr)
          , m_gbuffer(
             std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
-               GlobalInputController::GetInstance()->GetWindowWidth(),
-               GlobalInputController::GetInstance()->GetWindowHeight())))
+               DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
       {
          const auto& folderManager = FolderManager::GetInstance();
 

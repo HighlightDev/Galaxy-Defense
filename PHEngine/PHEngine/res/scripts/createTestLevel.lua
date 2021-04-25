@@ -4,6 +4,16 @@ function CreateTestLevel(host)
 	local aRot = { x = 0, y = 0, z = 0 }
 	local aSca = { x = 1, y = 1, z = 1 }
 
+	-- ****************************PLANAR REFLECTION***************************** --
+
+	local planarReflectionCD = _CreatePlanarReflectionComponentData(host, "planarReflectionComponent",
+	0, 2, 0,
+	0, 0, 0,
+	1, 1, 1,
+	"MainCamera",
+	0, 0, _GetWindowWidth(host), _GetWindowHeight(host))
+	_CreateComponent(host, "PlanarReflectionComponent", planarReflectionCD)
+
 	-- ****************************LIGHT***************************** --
 
 	local lightActor = _CreateActor(host, "MainLightActor", aTra.x,aTra.y,aTra.z, aRot.x,aRot.y,aRot.z,aSca.x, aSca.y, aSca.z)
@@ -243,7 +253,7 @@ function CreateTestLevel(host)
 
 	if waterActor ~= nil then
 		local waterMat = _CreateMaterial(host, "Water.m")
-		_SetDeferredTextureToMaterial(host, waterMat, "PlanarReflectionComp", "reflectionTexture")
+		_SetDeferredTextureToMaterial(host, waterMat, "planarReflectionComponent", "reflectionTexture")
 		_SetTextureToMaterial(host, waterMat, "water_dudv.png", "dudv")
 		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "ground")
 		_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
@@ -253,7 +263,6 @@ function CreateTestLevel(host)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
 		_AttachComponentToActor(host, waterActor, waterComponent)
 	end
-
 end
 
 function System_OnStart(host)

@@ -1627,9 +1627,6 @@
     <ClInclude Include="src\Core\GameCore\GlobalSettings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\GlobalInputController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\UtilityCore\GlmToBulletConverter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1990,6 +1987,9 @@
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\AnimationPropertyBinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\IoCore\DisplayDeviceDataProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2262,9 +2262,6 @@
     <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\GlobalInputController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\UtilityCore\GlmToBulletConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2473,6 +2470,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\IoCore\DisplayDeviceDataProvider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

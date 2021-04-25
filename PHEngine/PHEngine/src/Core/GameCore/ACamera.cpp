@@ -1,10 +1,11 @@
 #include "ACamera.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/GlobalInputController.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
 using namespace EngineMath;
+using namespace IO;
 
 namespace Game
 {

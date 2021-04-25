@@ -1,5 +1,9 @@
 #include "LuaScriptExecutor_EngineBase.h"
 
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
+
+using namespace IO;
+
 namespace Game
 {
 
@@ -22,6 +26,9 @@ namespace Game
 
       LuaRegisterCallback<LuaExecutor_t, void(GameObject*, std::string, glm::vec3)>::Register(mLuaInstance, "_SetGOPropertyValVec3");
       LuaRegisterCallback<LuaExecutor_t, void(GameObject*, std::string, int32_t)>::Register(mLuaInstance, "_SetGOPropertyValBool");
+
+      LuaRegisterCallback<LuaExecutor_t, int32_t(LuaArgDummyPlaceholder<int32_t>)>::Register(mLuaInstance, "_GetWindowHeight");
+      LuaRegisterCallback<LuaExecutor_t, int32_t(LuaArgDummyPlaceholder<int32_t>, LuaArgDummyPlaceholder<int32_t>)>::Register(mLuaInstance, "_GetWindowWidth");
    }
 
    void LuaScriptExecutor_EngineBase::RunScript()
@@ -98,6 +105,18 @@ namespace Game
       auto property = static_cast<EngineGOProperty<bool>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
       assert(property);
       property->SetValue(static_cast<bool>(std::get<2>(data)));
+   }
+
+   /*Get Window height*/
+   int32_t LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<int32_t>>& data)
+   {
+     return DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+   }
+
+   /*Get Window width*/
+   int32_t LuaScriptExecutor_EngineBase::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<int32_t>, LuaArgDummyPlaceholder<int32_t>>& data)
+   {
+      return DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
    }
 
    std::string LuaScriptExecutor_EngineBase::GetScriptRelPath() const
