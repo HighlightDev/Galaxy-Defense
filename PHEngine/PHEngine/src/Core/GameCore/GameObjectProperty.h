@@ -24,42 +24,45 @@ protected:
 
    std::unique_ptr<Action_t> Action;
 
-   Type Value;
+   std::shared_ptr<Type> ValuePtr;
 
 public:
 
-   EngineGOProperty(const Type& value, const std::string& key, std::unique_ptr<Action_t> action = std::unique_ptr<Action_t>(nullptr))
+   template <typename ValueType>
+   EngineGOProperty(const ValueType& value,
+      const std::string& key,
+      std::unique_ptr<Action_t> action = std::unique_ptr<Action_t>(nullptr))
       : EngineGOPropertyBase(key)
-      , Value(value)
+      , ValuePtr(std::make_shared<Type>(value))
       , Action(std::move(action))
    {
    }
 
-   Type* GetValuePtr() {
-      return &Value;
+   std::shared_ptr<Type> GetValuePtr() {
+      return ValuePtr;
    }
 
    Type GetValue() const {
-      return Value;
+      return *ValuePtr;
    }
 
    void SetValue(const Type& value)
    {
-      Value = value;
+      *ValuePtr = value;
 
       if (Action)
       {
-         (*(Action.get()))(Value);
+         (*(Action.get()))(value);
       }
    }
 
    operator Type() const
    {
-      return Value;
+      return *ValuePtr;
    }
 
    operator Type&()
    {
-      return Value;
+      return *ValuePtr;
    }
 };

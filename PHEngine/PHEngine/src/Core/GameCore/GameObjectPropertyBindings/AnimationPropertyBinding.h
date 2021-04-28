@@ -10,20 +10,19 @@ namespace Game {
    {
    private:
 
-      //todo: refactor raw pointers!!!!!!
-      std::string* SrcName;
-      std::string* DstName;
+      propertyPtr_t<std::string> SrcName;
+      propertyPtr_t<std::string> DstName;
 
-      float* SrcTime;
-      float* DstTime;
+      propertyPtr_t<float> SrcTime;
+      propertyPtr_t<float> DstTime;
 
-      bool* bTranstitionEnabled;
-      float* TransitionValue;
+      propertyPtr_t<bool> bTranstitionEnabled;
+      propertyPtr_t<float> TransitionValue;
 
    public:
 
-      AnimationPropertyBinding(const std::string& bindingName, std::string* srcName, std::string* dstName,
-         float* srcTime, float* dstTime, bool* isTransitionEnabled, float* transitionValue)
+      AnimationPropertyBinding(const std::string& bindingName, propertyPtr_t<std::string> srcName, propertyPtr_t<std::string> dstName,
+         propertyPtr_t<float> srcTime, propertyPtr_t<float> dstTime, propertyPtr_t<bool> isTransitionEnabled, propertyPtr_t<float> transitionValue)
          : PropertyBinding(bindingName)
          , SrcName(srcName)
          , DstName(dstName)
@@ -101,8 +100,13 @@ namespace Game {
          return *TransitionValue;
       }
 
-      void SetBindingProperties(std::string* srcName, std::string* dstName,
-         float* srcTime, float* dstTime, bool* isTransitionEnabled, float* transitionValue)
+      void SetBindingProperties(
+         propertyPtr_t<std::string> srcName,
+         propertyPtr_t<std::string> dstName,
+         propertyPtr_t<float> srcTime,
+         propertyPtr_t<float> dstTime,
+         propertyPtr_t<bool> isTransitionEnabled,
+         propertyPtr_t<float> transitionValue)
       {
          SrcName = srcName;
          DstName = dstName;

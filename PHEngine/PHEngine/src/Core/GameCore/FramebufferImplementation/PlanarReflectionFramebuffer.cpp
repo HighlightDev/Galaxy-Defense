@@ -24,10 +24,10 @@ namespace Game {
       void PlanarReflectionFramebuffer::SetTextures()
       {
          TexParams reflectionTexParams(mReflectionViewPortInfo.Width - mReflectionViewPortInfo.OriginX, mReflectionViewPortInfo.Height - mReflectionViewPortInfo.OriginY,
-            GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, true);
+            GL_TEXTURE_2D, GL_NEAREST, GL_LINEAR, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, true);
 
          TexParams reflectionSurfaceParams(mReflectionViewPortInfo.Width - mReflectionViewPortInfo.OriginX, mReflectionViewPortInfo.Height - mReflectionViewPortInfo.OriginY,
-            GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, true);
+            GL_TEXTURE_2D, GL_NEAREST, GL_LINEAR, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, true);
 
          mReflectionTexture = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(reflectionTexParams);
          mReflectionTextureSurface.AddRenderTexture(GL_COLOR_ATTACHMENT0, mReflectionTexture);
@@ -69,7 +69,7 @@ namespace Game {
          mReflectionRenderTargetSurface.BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
          mReflectionTextureSurface.BindFramebuffer(GL_DRAW_FRAMEBUFFER, true, false);
 
-         glBlitFramebuffer(0, 0, rezolution.x, rezolution.y, 0, 0, rezolution.x, rezolution.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+         glBlitFramebuffer(0, 0, rezolution.x, rezolution.y, 0, 0, rezolution.x, rezolution.y, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
          mReflectionTextureSurface.UnbindFramebuffer();
       }

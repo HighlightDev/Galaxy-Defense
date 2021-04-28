@@ -41,7 +41,7 @@ namespace EnginePhysics
             const Actor* owner = GetOwner();
 
             owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
-            owner->GetBaseRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
+            owner->GetRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
 
             Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, owner->GetName());
          }

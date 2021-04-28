@@ -11,12 +11,12 @@ namespace Game {
       : public PropertyBinding
    {
    private:
-      //todo: refactor raw pointers!!!!!!
-      float* Value;
+      
+      propertyPtr_t<float> Value;
 
    public:
 
-      FloatPropertyBinding(const std::string& bindingName, float* value)
+      FloatPropertyBinding(const std::string& bindingName, propertyPtr_t<float> value)
          : PropertyBinding(bindingName)
          , Value(value)
       {
@@ -28,7 +28,7 @@ namespace Game {
       {
       }
 
-      void SetValuePtr(float* value) 
+      void SetValuePtr(propertyPtr_t<float> value)
       {
          Value = value;
          bValueSet = true;

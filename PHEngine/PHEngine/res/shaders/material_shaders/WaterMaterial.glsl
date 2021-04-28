@@ -12,7 +12,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec3 ndc = materialIn.ClippedCoordinates.xyz / materialIn.ClippedCoordinates.w;
 	vec2 texSpaceCoords = (ndc.xy * 0.5) + 0.5;
-	vec2 texCoords = materialIn.TextureCoordinates.xy;
+	vec2 texCoords = materialIn.TextureCoordinates.xy * 10;
 
 	vec2 distortionVec =  (texture(dudv, texCoords + distortion).rg * 2.0) - 1.0;
 

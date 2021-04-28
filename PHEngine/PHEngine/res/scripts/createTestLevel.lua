@@ -259,7 +259,7 @@ function CreateTestLevel(host)
 		_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 		_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
-		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 10, 1, 10, waterMat)
+		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 40, 1, 40, waterMat)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
 		_AttachComponentToActor(host, waterActor, waterComponent)
 	end
