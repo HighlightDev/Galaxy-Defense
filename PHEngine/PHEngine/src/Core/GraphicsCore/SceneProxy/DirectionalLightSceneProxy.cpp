@@ -46,7 +46,6 @@ namespace Graphics
          auto shadowInfo = static_cast<ProjectedDirectionalLightShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
-            // todo: make oriented bb or extend extent =/
             const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
             glm::vec3 origin = shadowInfo->GetPlayerPositionOffset();
             orthoBox = BoundingBox(origin, glm::vec3(halfExtent * 1.5f, halfExtent * 1.5f, halfExtent * 1.5f));

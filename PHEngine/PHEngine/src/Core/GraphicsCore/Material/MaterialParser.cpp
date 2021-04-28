@@ -1,7 +1,6 @@
 #include "MaterialParser.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/FileFacade.h"
-#include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
@@ -20,8 +19,6 @@
 #undef min
 #endif
 
-using namespace Common;
-
 namespace Graphics
 {
 #define GENERAL_START_NODE_NAME     "<general>"
@@ -34,16 +31,6 @@ namespace Graphics
 #define DYNAMIC_PROPERTY_END_NODE_NAME  "</dynamic_property>"
 #define DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME "<operation>"
 #define DYNAMIC_PROPERTY_OPERATION_END_NODE_NAME "</operation>"
-
-#define UNARY_INCR_OP_START "<increment>"
-#define UNARY_INCR_OP_END "</increment>"
-#define BINARY_ADD_OP_START "<add>"
-#define BINARY_ADD_OP_END "</add>"
-#define BINARY_MUL_OP_START "<mul>"
-#define BINARY_MUL_OP_END "</mul>"
-
-#define FLOAT_CONSTANT_START "<float_constant>"
-#define FLOAT_CONSTANT_END "</float_constant>"
 
    std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType, const std::string& propertyName)
    {
@@ -172,27 +159,7 @@ namespace Graphics
       return material;
    }
 
-   XMLParserHelper::iterator_t GetTagWithName(const std::string& operationName, XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
-   {
-      return XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, operationName);
-   }
-   template <typename... NamesT>
-   XMLParserHelper::iterator_t GetOneOfTagWithNames(XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, NamesT&&... operationNames)
-   {
-      std::vector<std::string> operationTags = { std::forward<NamesT>(operationNames)... };
-      for (auto tag : operationTags)
-      {
-         auto it = GetTagWithName(tag, propertiesBeginIt, propertiesEndIt);
-         if (it != propertiesEndIt)
-         {
-            return it;
-         }
-      }
-
-      return propertiesEndIt;
-   }
-
-   XMLParserHelper::iterator_t ProcessDynamicProperty(const std::string& propertyType, std::shared_ptr<MaterialNode> node,
+   XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string& propertyType, std::shared_ptr<MaterialNode> node,
       XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties)
    {
       XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
@@ -201,113 +168,48 @@ namespace Graphics
       {
          auto next = lastProcessedIt;
          next++;
-         auto operationIt = GetOneOfTagWithNames(lastProcessedIt, next, UNARY_INCR_OP_START, BINARY_ADD_OP_START, BINARY_MUL_OP_START);
-         auto valueIt = GetOneOfTagWithNames(lastProcessedIt, next, FLOAT_CONSTANT_START, PROPERTY_START_NODE_NAME);
-         const bool bOperation = operationIt != next;
-         const bool bValue = valueIt != next;
+
+         bool bOperation = false, bValue = false;
+         auto nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(lastProcessedIt, next, UNARY_INCR_OP_START, BINARY_ADD_OP_START, BINARY_MUL_OP_START);
+         bOperation = nodeIt != next;
+
+         if (!bOperation)
+         {
+            nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(lastProcessedIt, next, FLOAT_CONSTANT_START, PROPERTY_START_NODE_NAME);
+            bValue = nodeIt != next;
+         }
 
          if (bOperation)
          {
-            std::shared_ptr<MaterialNode> operationNode = nullptr;
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*operationIt);
-            if (EngineUtility::StartsWith(currentNodeStr, UNARY_INCR_OP_START))
-            {
-               operationNode = std::make_shared<MaterialUnaryIncrementNode>();
-            }
-            else if (EngineUtility::StartsWith(currentNodeStr, BINARY_ADD_OP_START))
-            {
-               operationNode = std::make_shared<MaterialBinaryAddOperationNode>();
-            }
-            else if (EngineUtility::StartsWith(currentNodeStr, BINARY_MUL_OP_START))
-            {
-               operationNode = std::make_shared<MaterialBinaryMulOperationNode>();
-            }
+            const std::string& currentNodeStr = EngineUtility::TrimStart(*nodeIt);
 
-            // todo: create materia node attach adapter to hide inside it all attachment logic
-            switch (node->GetMaterialNodeType())
-            {
-               case MaterialNode::eMaterialNodeType::START:
-               {
-                  auto startNode = std::static_pointer_cast<MaterialStartNode>(node);
-                  startNode->InputOperation = operationNode;
-                  break;
-               }
-               case MaterialNode::eMaterialNodeType::VALUE:
-               {
-                  break;
-               }
-               case MaterialNode::eMaterialNodeType::UNARY_OP:
-               {
-                  auto unaryNode = std::static_pointer_cast<MaterialUnaryOperationNode>(node);
-                  unaryNode->InputOperation = operationNode;
-                  break;
-               }
-               case MaterialNode::eMaterialNodeType::BINARY_OP:
-               {
-                  auto binaryNode = std::static_pointer_cast<MaterialBinaryOperationNode>(node);
-                  if (binaryNode->InputOperation1 == nullptr)
-                  {
-                     binaryNode->InputOperation1 = operationNode;
-                  }
-                  else if (binaryNode->InputOperation2 == nullptr)
-                  {
-                     binaryNode->InputOperation2 = operationNode;
-                  }
+            std::shared_ptr<MaterialNode> operationNode = mMaterialNodeDecorator.CreateMaterialNode(currentNodeStr);
+            node->AttachInputNode(operationNode);
 
-                  break;
-               }
-            }
-
-            lastProcessedIt = ++operationIt;
-            lastProcessedIt = ProcessDynamicProperty(propertyType, operationNode, operationIt, propertiesEndIt, innerDynamicMaterialProperties);
+            lastProcessedIt = ++nodeIt;
+            lastProcessedIt = ProcessDynamicProperty(propertyType, operationNode, nodeIt, propertiesEndIt, innerDynamicMaterialProperties);
          }
          else if (bValue)
          {
-            std::shared_ptr<MaterialNode> valueNode = nullptr;
+            const std::string& currentNodeStr = EngineUtility::TrimStart(*nodeIt);
+            auto currentNodeIt = nodeIt;
+            lastProcessedIt = ++nodeIt;
 
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*valueIt);
-            auto currentNodeIt = valueIt;
-            lastProcessedIt = ++valueIt;
-            if (EngineUtility::StartsWith(currentNodeStr, FLOAT_CONSTANT_START))
-            {
-               const std::string& value = XMLParserHelper::GetPropertyNodeAfterColon(*lastProcessedIt);
-               float floatValue = std::stof(value);
-               valueNode = std::make_shared<MaterialConstantFloatValueNode>(floatValue);
-            }
-            else if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
+            std::shared_ptr<MaterialNode> valueNode = nullptr;
+           
+            if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
             {
                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt);
                valueNode = std::make_shared<MaterialPropertyValueNode>(materialProperty);
                innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
             }
-
-            assert(valueNode);
-
-            switch (node->GetMaterialNodeType())
+            else 
             {
-               case MaterialNode::eMaterialNodeType::UNARY_OP:
-               {
-                  auto unaryNode = std::static_pointer_cast<MaterialUnaryOperationNode>(node);
-                  unaryNode->InputOperation = valueNode;
-                  break;
-               }
-               case MaterialNode::eMaterialNodeType::BINARY_OP:
-               {
-                  auto binaryNode = std::static_pointer_cast<MaterialBinaryOperationNode>(node);
-
-                  if (binaryNode->InputOperation1 == nullptr)
-                  {
-                     binaryNode->InputOperation1 = valueNode;
-                  }
-                  else if (binaryNode->InputOperation2 == nullptr)
-                  {
-                     binaryNode->InputOperation2 = valueNode;
-                  }
-
-                  break;
-               }
+               valueNode = mMaterialNodeDecorator.CreateValueNode(currentNodeStr, *lastProcessedIt);
             }
 
+            assert(valueNode);
+            node->AttachInputNode(valueNode);
             ++lastProcessedIt;
          }
          else
@@ -319,7 +221,7 @@ namespace Graphics
       return lastProcessedIt;
    }
 
-   std::shared_ptr<DynamicFloatMaterialProperty> GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t& propertiesBeginIt,
+   std::shared_ptr<DynamicFloatMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t& propertiesBeginIt,
       const XMLParserHelper::iterator_t& propertiesEndIt)
    {
       auto dynamicPropertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
@@ -328,7 +230,7 @@ namespace Graphics
       std::string propertyName = "", propertyType = "";
       bool propertyValueIncremental = false;
 
-      glm::vec2 minMaxRange = glm::vec2(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
+      glm::vec2 minMaxRange(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
 
       ++dynamicPropertyStartNode;
 
@@ -358,14 +260,7 @@ namespace Graphics
             }
             else if (EngineUtility::StartsWith(currentNodeStr, "range"))
             {
-               auto rangeStr = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
-               const std::string& range = XMLParserHelper::GetSubstringInsideBrackets(rangeStr);
-               auto rangeValues = EngineUtility::Split(range, ';');
-               assert(rangeValues.size() == 2);
-               const std::string& rangeMinValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[0]));
-               const std::string& rangeMaxValue = EngineUtility::TrimEnd(EngineUtility::TrimStart(rangeValues[1]));
-               minMaxRange.x = std::stof(rangeMinValue);
-               minMaxRange.y = std::stof(rangeMaxValue);
+               minMaxRange = mMaterialNodeDecorator.GetValueRange(currentNodeStr);
             }
             ++dynamicPropertyStartNode;
          }
@@ -419,12 +314,4 @@ namespace Graphics
 #undef PROPERTIES_END_NODE_NAME   
 #undef PROPERTY_START_NODE_NAME   
 #undef PROPERTY_END_NODE_NAME    
-#undef UNARY_INCR_OP_START
-#undef UNARY_INCR_OP_END
-#undef BINARY_ADD_OP_START
-#undef BINARY_ADD_OP_END
-#undef BINARY_MUL_OP_START
-#undef BINARY_MUL_OP_END
-#undef FLOAT_CONSTANT_START
-#undef FLOAT_CONSTANT_END
 }

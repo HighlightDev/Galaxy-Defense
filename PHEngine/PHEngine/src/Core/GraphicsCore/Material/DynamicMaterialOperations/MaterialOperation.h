@@ -38,6 +38,8 @@ namespace Graphics
 
       virtual eMaterialNodeType GetMaterialNodeType() const = 0;
       virtual eMaterialOperationType GetMaterialOperationType() const = 0;
+
+      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) = 0;
    };
 
    struct MaterialStartNode
@@ -50,6 +52,10 @@ namespace Graphics
 
       virtual eMaterialOperationType GetMaterialOperationType() const override {
          return eMaterialOperationType::NONE;
+      }
+
+      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override {
+         InputOperation = inputNode;
       }
 
       float getIteratedValue(std::shared_ptr<MaterialNode> node);
@@ -78,6 +84,8 @@ namespace Graphics
       }
 
       virtual eValueType GetValueType() = 0;
+
+      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override { }
    };
 
    struct MaterialConstantFloatValueNode
@@ -102,6 +110,7 @@ namespace Graphics
       virtual eValueType GetValueType() {
          return MaterialValueNode::eValueType::PROPERTY;
       }
+
    };
 
    struct MaterialUnaryOperationNode
@@ -113,7 +122,11 @@ namespace Graphics
 
       std::shared_ptr<MaterialNode> InputOperation;
 
-      virtual float doOperation(const float& value) = 0;
+      virtual float DoOperation(const float& value) = 0;
+
+      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override {
+         InputOperation = inputNode;
+      }
    };
 
    struct MaterialUnaryIncrementNode
@@ -123,7 +136,7 @@ namespace Graphics
          return eMaterialOperationType::UNARY_INCREMENT;
       }
 
-      virtual float doOperation(const float& value) override {
+      virtual float DoOperation(const float& value) override {
          return value + 1.0f;
       }
    };
@@ -135,7 +148,7 @@ namespace Graphics
          return eMaterialOperationType::UNARY_DECREMENT;
       }
 
-      virtual float doOperation(const float& value) {
+      virtual float DoOperation(const float& value) {
          return value - 1.0f;
       }
    };
@@ -147,10 +160,22 @@ namespace Graphics
          return MaterialNode::eMaterialNodeType::BINARY_OP;
       }
 
-      std::shared_ptr<MaterialNode> InputOperation1;
-      std::shared_ptr<MaterialNode> InputOperation2;
+      std::shared_ptr<MaterialNode> InputOperation1 = nullptr;
+      std::shared_ptr<MaterialNode> InputOperation2 = nullptr;
 
-      virtual float doOperation(const float& left, const float& right) = 0;
+      virtual float DoOperation(const float& left, const float& right) = 0;
+
+      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override 
+      {
+         if (!InputOperation1)
+         {
+            InputOperation1 = inputNode;
+         }
+         else if (!InputOperation2)
+         {
+            InputOperation2 = inputNode;
+         }
+      }
    };
 
    struct MaterialBinaryAddOperationNode
@@ -160,7 +185,7 @@ namespace Graphics
          return MaterialNode::eMaterialOperationType::BINARY_ADD;
       }
 
-      virtual float doOperation(const float& left, const float& right) override {
+      virtual float DoOperation(const float& left, const float& right) override {
          return left + right;
       }
    };
@@ -172,7 +197,7 @@ namespace Graphics
          return MaterialNode::eMaterialOperationType::BINARY_SUB;
       }
 
-      virtual float doOperation(const float& left, const float& right) override {
+      virtual float DoOperation(const float& left, const float& right) override {
          return left - right;
       }
    };
@@ -184,7 +209,7 @@ namespace Graphics
          return MaterialNode::eMaterialOperationType::BINARY_MUL;
       }
 
-      virtual float doOperation(const float& left, const float& right) override {
+      virtual float DoOperation(const float& left, const float& right) override {
          return left * right;
       }
    };
@@ -196,7 +221,7 @@ namespace Graphics
          return MaterialNode::eMaterialOperationType::BINARY_DIV;
       }
 
-      virtual float doOperation(const float& left, const float& right) override {
+      virtual float DoOperation(const float& left, const float& right) override {
          assert(right != 0.0f);
          return left / right;
       }

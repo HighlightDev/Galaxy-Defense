@@ -390,6 +390,33 @@ namespace Game
          }
       };
 
+      template <> struct GetValue<glm::ivec4>
+      {
+      public:
+
+         static glm::ivec4 Value(const LuaWrapper& instanceWrapper, int32_t& stackIndex)
+         {
+            return Inner_Value(instanceWrapper.GetState(), stackIndex);
+         }
+
+         static glm::ivec4 Value(lua_State* state, int32_t& stackIndex)
+         {
+            return Inner_Value(state, stackIndex);
+         }
+
+      private:
+
+         static glm::ivec4 Inner_Value(lua_State* state, int32_t& stackIndex)
+         {
+            // direction is reversed because stackIndex is decreasing
+            const int32_t w = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t z = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t y = GetValue<int32_t>::Value(state, stackIndex);
+            const int32_t x = GetValue<int32_t>::Value(state, stackIndex);
+            return glm::ivec4(x, y, z, w);
+         }
+      };
+
       template <>
       struct GetValue<glm::vec3>
       {
@@ -499,6 +526,7 @@ namespace Game
       template <typename U> struct LuaArgsCountForType<LuaArgDummyPlaceholder<U>> { enum { value = 0 }; };
       template <> struct LuaArgsCountForType<glm::vec3> { enum { value = 3 }; };
       template <> struct LuaArgsCountForType<glm::vec4> { enum { value = 4 }; };
+      template <> struct LuaArgsCountForType<glm::ivec4> { enum { value = 4 }; };
       template <> struct LuaArgsCountForType<glm::quat> { enum { value = 4 }; };
 
       template <typename tuple_t, int32_t currentIndex>

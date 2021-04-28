@@ -53,7 +53,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*)>::Register(mLuaInstance, "_CreateWaterPlaneComponentData");
-      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::vec4)>::Register(mLuaInstance, "_CreatePlanarReflectionComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::ivec4)>::Register(mLuaInstance, "_CreatePlanarReflectionComponentData");
       /*************************************COMPONENT DATA**************************************/
 
       LuaRegisterCallback<LuaExecutor_t, IMaterial*(std::string, LuaArgDummyPlaceholder<>)>::Register(mLuaInstance, "_CreateMaterial");
@@ -175,7 +175,7 @@ namespace Game
    }
 
    /* -------------------  Create planar reflection component data ----------------------------*/
-   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::vec4>&  data)
+   ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string/*Camera name*/, glm::ivec4>& data)
    {
       ComponentData* dataPtr = nullptr;
       if (auto scene = mSceneWP.lock())
@@ -285,7 +285,8 @@ namespace Game
    /* -------------------  Create material --------------------*/
    IMaterial* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>>& buildMaterial)
    {
-      return MaterialParser::ParseMaterialDescriptor(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(buildMaterial)));
+      MaterialParser materialParser;
+      return materialParser.ParseMaterialDescriptor(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(buildMaterial)));
    }
 
    /* -------------------  Set texture --------------------*/

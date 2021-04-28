@@ -35,14 +35,14 @@ namespace Graphics
          {
             auto unaryNode = MaterialNode::CastTo<MaterialUnaryOperationNode>(node);
             result = getIteratedValue(unaryNode->InputOperation);
-            result = unaryNode->doOperation(result);
+            result = unaryNode->DoOperation(result);
             break;
          }
          case MaterialNode::eMaterialNodeType::BINARY_OP:
          {
             auto binaryNode = MaterialNode::CastTo<MaterialBinaryOperationNode>(node);
             result = getIteratedValue(binaryNode->InputOperation1);
-            result = binaryNode->doOperation(result, getIteratedValue(binaryNode->InputOperation2));
+            result = binaryNode->DoOperation(result, getIteratedValue(binaryNode->InputOperation2));
             break;
          }
          case MaterialNode::eMaterialNodeType::VALUE:
