@@ -7,7 +7,8 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
-#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialValuePropertyNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialEnterNode.h"
 
 #include <limits>
 
@@ -200,7 +201,7 @@ namespace Graphics
             if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
             {
                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt);
-               valueNode = std::make_shared<MaterialPropertyValueNode>(materialProperty);
+               valueNode = std::make_shared<MaterialValuePropertyNode>(materialProperty);
                innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
             }
             else 
@@ -234,7 +235,7 @@ namespace Graphics
 
       ++dynamicPropertyStartNode;
 
-      std::shared_ptr<MaterialStartNode> operation = std::make_shared<MaterialStartNode>();
+      std::shared_ptr<MaterialEnterNode> operation = std::make_shared<MaterialEnterNode>();
       std::vector<std::shared_ptr<MaterialProperty>> innerDynamicMaterialProperties;
       while (dynamicPropertyStartNode != dynamicPropertyEndNode)
       {

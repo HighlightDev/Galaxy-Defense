@@ -346,12 +346,24 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryDivOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryAddOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryMulOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinarySubOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryDecrementNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryIncrementNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryOperationNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialValuePropertyNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialValueNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialEnterNode.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialNodeDecorator.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\AnimationPropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\BindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\FloatPropertyBinding.h" />
@@ -851,8 +863,19 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryDivOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryAddOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryMulOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinarySubOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryDecrementNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryIncrementNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryOperationNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialValuePropertyNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialValueNode.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialEnterNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialNodeDecorator.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialOperation.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />

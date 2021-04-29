@@ -1,5 +1,10 @@
 #include "MaterialNodeDecorator.h"
-#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialConstantFloatValueNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinaryAddOperationNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinaryMulOperationNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinaryDivOperationNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinarySubOperationNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialUnaryIncrementNode.h"
 
 namespace Graphics
 {

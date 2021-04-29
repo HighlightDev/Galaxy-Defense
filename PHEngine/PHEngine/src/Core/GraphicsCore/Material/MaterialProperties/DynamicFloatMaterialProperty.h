@@ -1,6 +1,6 @@
 #pragma once
 #include "MaterialProperty.h"
-#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialOperation.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialEnterNode.h"
 
 #include <algorithm>
 #include <limits>
@@ -14,7 +14,7 @@ namespace Graphics {
    struct DynamicFloatMaterialProperty
       : public MaterialProperty
    {
-      using MaterialPropertyValueType = std::shared_ptr<MaterialStartNode>;
+      using MaterialPropertyValueType = std::shared_ptr<MaterialEnterNode>;
 
    private:
 
