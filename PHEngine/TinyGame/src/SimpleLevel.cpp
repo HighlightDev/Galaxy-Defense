@@ -68,6 +68,7 @@ namespace Labyrinth
       folderManager->CreateFilePathMap(folderManager->GetSpecularMapPath());
       folderManager->CreateFilePathMap(folderManager->GetDistortionTexturePath());
       folderManager->CreateFilePathMap(folderManager->GetCubemapTexturePath());
+      folderManager->CreateFilePathMap(folderManager->GetMaterialTexturesPath());
       folderManager->CreateFilePathMap(folderManager->GetModelPath());
       folderManager->CreateFilePathMap(folderManager->GetMaterialPath());
       folderManager->CreateFilePathMap(folderManager->GetScriptPath());
@@ -86,7 +87,12 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBack.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayFront.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("water_dudv.png"));
-
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_albedo.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_normal.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_roughness.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_metallic.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dummy_metallic_roughness.png"));
+      
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("playerCube.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("model.dae"));

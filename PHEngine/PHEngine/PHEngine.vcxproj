@@ -284,9 +284,9 @@
     <None Include="res\tweeners\playerAnimation.tween">
       <SubType>Designer</SubType>
     </None>
-    <None Include="res\materials\Pbs.m" />
-    <None Include="res\materials\Skybox.m" />
-    <None Include="res\materials\Water.m" />
+    <None Include="res\materials\PhysicalBasedMaterial.m" />
+    <None Include="res\materials\SkyboxMaterial.m" />
+    <None Include="res\materials\WaterMaterial.m" />
     <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\scripts\platformMovementComponentAction.lua" />
     <None Include="res\scripts\skeletComponentAction.lua" />

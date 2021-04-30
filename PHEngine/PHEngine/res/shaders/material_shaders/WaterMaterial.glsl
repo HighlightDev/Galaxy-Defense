@@ -32,7 +32,7 @@ float GetMaterialMetallic(in MATERIAL_VS_OUTPUT materialIn)
 	return 0.0;
 }
 
-float GetMaterialAO(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return 0.0;
 }

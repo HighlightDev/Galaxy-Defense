@@ -53,6 +53,7 @@ namespace IO
 		const std::string GetTexturesPath() const;
 		const std::string GetIniPath() const;
 
+      const std::string GetMaterialTexturesPath() const;
 		const std::string GetGrassTexturePath() const;
 		const std::string GetLandscapeTexturePath() const;
 		const std::string GetCubemapTexturePath() const;

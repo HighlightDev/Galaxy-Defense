@@ -60,11 +60,10 @@ namespace Game
 
          Uniform u_gBuffer_Position;
          Uniform u_gBuffer_Normal;
-         Uniform u_gBuffer_AlbedoNSpecular;
+         Uniform u_gBuffer_Albedo;
 
 #ifdef SHADING_MODEL_PBR
-         Uniform u_MaterialMetallic;
-         Uniform u_MaterialRoughness;
+         Uniform u_gBuffer_MetallicRoughness;
 #endif
 
          const int32_t MAX_POINT_LIGHT_COUNT;
@@ -77,11 +76,13 @@ namespace Game
 
          virtual ~DeferredLightShader();
 
-         void SetGBufferAlbedoNSpecular(int32_t slot);
+         void SetGBufferAlbedo(int32_t slot);
 
          void SetGBufferNormal(int32_t slot);
 
          void SetGBufferPosition(int32_t slot);
+
+         void SetGBufferMetallicRoughness(int32_t slot);
 
 #ifndef NO_LIT
          void SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies);
@@ -101,10 +102,6 @@ namespace Game
          void SetSpotlightShadowMatrix(size_t index, const glm::mat4& shadowMatrix);
 #endif
 
-#ifdef SHADING_MODEL_PBR
-         void SetMaterialMetallic(const float metallic);
-         void SetMaterialRoughness(const float roughness);
-#endif
          void SetCameraWorldPosition(const glm::vec3& cameraWorldPosition);
 
       protected:

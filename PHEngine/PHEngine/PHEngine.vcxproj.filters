@@ -433,11 +433,9 @@
     <None Include="res\shaders\material_shaders\WaterMaterial.glsl" />
     <None Include="res\shaders\composite_shaders\forwardFS.glsl" />
     <None Include="res\shaders\material_shaders\SkyboxDayCycleMaterial.glsl" />
-    <None Include="res\materials\Pbs.m" />
     <None Include="res\scripts\skeletComponentAction.lua" />
     <None Include="res\scripts\createTestLevel.lua" />
     <None Include="res\scripts\platformMovementComponentAction.lua" />
-    <None Include="res\materials\Skybox.m" />
     <None Include="res\shaders\directLightDepthCollectFS.glsl" />
     <None Include="res\shaders\directLightDepthCollectNonSkeletalVS.glsl" />
     <None Include="res\shaders\directLightDepthCollectSkeletalVS.glsl" />
@@ -477,8 +475,10 @@
     <None Include="res\shaders\spotlightDepthCollectSkeletalVS.glsl" />
     <None Include="res\shaders\spotlightDepthCollectFS.glsl" />
     <None Include="res\shaders\composite_shaders\planarReflectionVS.glsl" />
-    <None Include="res\materials\Water.m" />
     <None Include="res\tweeners\playerAnimation.tween" />
+    <None Include="res\materials\PhysicalBasedMaterial.m" />
+    <None Include="res\materials\WaterMaterial.m" />
+    <None Include="res\materials\SkyboxMaterial.m" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">

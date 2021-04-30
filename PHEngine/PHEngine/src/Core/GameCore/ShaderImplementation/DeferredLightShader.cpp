@@ -31,7 +31,10 @@ namespace Game
 
          u_gBuffer_Position = GetUniform("gBuffer_Position", shaderProgramId);
          u_gBuffer_Normal = GetUniform("gBuffer_Normal", shaderProgramId);
-         u_gBuffer_AlbedoNSpecular = GetUniform("gBuffer_AlbedoNSpecular", shaderProgramId);
+         u_gBuffer_Albedo = GetUniform("gBuffer_Albedo", shaderProgramId);
+#ifdef SHADING_MODEL_PBR
+         u_gBuffer_MetallicRoughness = GetUniform("gBuffer_MetallicRoughness", shaderProgramId);
+#endif
 
 #ifndef NO_LIT
          u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
@@ -69,11 +72,6 @@ namespace Game
          u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
          u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif
-
-#ifdef SHADING_MODEL_PBR
-         u_MaterialMetallic = GetUniform("Metallic", shaderProgramId);
-         u_MaterialRoughness = GetUniform("Roughness", shaderProgramId);
-#endif
       }
 
       void DeferredLightShader::SetShaderPredefine()
@@ -108,9 +106,9 @@ namespace Game
          u_CameraWorldPosition.LoadUniform(cameraWorldPosition);
       }
 
-      void DeferredLightShader::SetGBufferAlbedoNSpecular(int32_t slot)
+      void DeferredLightShader::SetGBufferAlbedo(int32_t slot)
       {
-         u_gBuffer_AlbedoNSpecular.LoadUniform(slot);
+         u_gBuffer_Albedo.LoadUniform(slot);
       }
 
       void DeferredLightShader::SetGBufferNormal(int32_t slot)
@@ -121,6 +119,11 @@ namespace Game
       void DeferredLightShader::SetGBufferPosition(int32_t slot)
       {
          u_gBuffer_Position.LoadUniform(slot);
+      }
+
+      void DeferredLightShader::SetGBufferMetallicRoughness(int32_t slot)
+      {
+         u_gBuffer_MetallicRoughness.LoadUniform(slot);
       }
 
 #ifndef NO_LIT
@@ -240,20 +243,6 @@ namespace Game
             }
          }
          u_SpotlightCount.LoadUniform(spotlightProxyIndex);
-      }
-
-#endif
-
-#ifdef SHADING_MODEL_PBR
-
-      void DeferredLightShader::SetMaterialMetallic(const float metallic)
-      {
-         u_MaterialMetallic.LoadUniform(metallic);
-      }
-
-      void DeferredLightShader::SetMaterialRoughness(const float roughness)
-      {
-         u_MaterialRoughness.LoadUniform(roughness);
       }
 
 #endif

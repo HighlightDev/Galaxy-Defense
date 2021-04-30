@@ -23,7 +23,9 @@ uniform vec3 CameraWorldPosition;
 
 uniform sampler2D gBuffer_Position;
 uniform sampler2D gBuffer_Normal;
-uniform sampler2D gBuffer_AlbedoNSpecular;
+uniform sampler2D gBuffer_Albedo;
+uniform sampler2D gBuffer_MetallicRoughness;
+
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
@@ -159,7 +161,6 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 	const float Metallic = 0.4;
 	const float Roughness = 0.8;
 	const float Epsilon = 0.00001;
-	uniform float ao;
 
 	const float PI = 3.14159265359;
 
@@ -192,7 +193,8 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 		return F0 + (vec3(1.0) - F0) * pow(1.0 - cosTheta, 5.0);
 	}
 
-	vec3 GetPBRContribution(in vec3 nWorldNormal, in vec3 albedoColor, in vec3 F0, in float cosLo, in vec3 Li, in vec3 Lo, in vec3 lightRadiance)
+	vec3 GetPBRContribution(in vec3 nWorldNormal, in vec3 albedoColor, in vec3 F0, in float cosLo, in vec3 Li, in vec3 Lo,
+		in vec3 lightRadiance, in vec2 metallicRoughness)
 	{
 		// Half-vector between Li and Lo.
 		vec3 Lh = normalize(Li + Lo);
@@ -204,14 +206,14 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 		// Calculate Fresnel term for direct lighting.
 		vec3 F  = fresnelSchlick(F0, max(0.0, dot(Lh, Lo)));
 		// Calculate normal distribution for specular BRDF.
-		float D = ndfGGX(cosLh, Roughness);
+		float D = ndfGGX(cosLh, metallicRoughness.g);
 		// Calculate geometric attenuation for specular BRDF.
-		float G = gaSchlickGGX(cosLi, cosLo, Roughness);
+		float G = gaSchlickGGX(cosLi, cosLo, metallicRoughness.g);
 
 		// Diffuse scattering happens due to light being refracted multiple times by a dielectric medium.
 		// Metals on the other hand either reflect or absorb energy, so diffuse contribution is always zero.
 		// To be energy conserving we must scale diffuse BRDF contribution based on Fresnel factor & metalness.
-		vec3 kd = mix(vec3(1.0) - F, vec3(0.0), Metallic);
+		vec3 kd = mix(vec3(1.0) - F, vec3(0.0), metallicRoughness.r);
 
 		// Lambert diffuse BRDF.
 		vec3 diffuseBRDF = kd * albedoColor;
@@ -223,10 +225,10 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 		return (diffuseBRDF + specularBRDF) * lightRadiance * cosLi;
 	}
 
-	vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albedoColor)
+	vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal, in vec3 albedoColor, in vec2 metallicRoughness)
 	{
 		// General data
-		vec3 F0 = mix(vec3(0.04), albedoColor, Metallic);
+		vec3 F0 = mix(vec3(0.04), albedoColor, metallicRoughness.r);
 		vec3 Lo = normalize(CameraWorldPosition - pixelWorldPos);
 		// Angle between surface normal and camera position.
 		float cosLo = max(0.0, dot(nWorldNormal, Lo));
@@ -248,7 +250,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 				vec3 LRadiance = PointLightDiffuseColor[pointLightIndex] * attenuation;
 
-				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance);
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance, metallicRoughness);
 
 				float litFactor = 1.0;
 				// Calculating shadow
@@ -272,7 +274,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 				vec3 LRadiance = lightRadiance;
 
-				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance);
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo, LRadiance, metallicRoughness);
 
 				// Calculating shadow
 				float litFactor = 1.0f;
@@ -313,7 +315,7 @@ float GetShadowTransitionValue(in vec2 shadowTexCoords, in vec2 shadowmapAtlasSi
 
 				vec3 LRadiance = lightRadiance;
 
-				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, -Li, Lo, LRadiance);
+				vec3 pbrRadiance = GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, -Li, Lo, LRadiance, metallicRoughness);
 				pbrRadiance *= smoothstep(SpotlightCutoff[spotlightIndex], 1.0, spotlightFactor);
 
 				// Calculating shadow
@@ -440,21 +442,22 @@ vec3 GetAmbientColor()
 
 void main()
 {
-	vec4 pixelWorldPos = texture(gBuffer_Position, fs_in.tex_coords);
+	vec3 pixelWorldPos = texture(gBuffer_Position, fs_in.tex_coords).xyz;
 	vec3 worldNormal = texture(gBuffer_Normal, fs_in.tex_coords).xyz;
-	vec4 albedoAndSpecular = texture(gBuffer_AlbedoNSpecular, fs_in.tex_coords);
+	vec3 albedo = texture(gBuffer_Albedo, fs_in.tex_coords).rgb;
+	vec2 metallicRoughness = texture(gBuffer_MetallicRoughness, fs_in.tex_coords).rg;
 
 	#ifdef SHADING_MODEL_PBR
 		vec3 ambientColor = (1.0 - step(1, DirLightCount)) * GetAmbientColor();
-		vec3 ambientAlbedo = albedoAndSpecular.xyz * ambientColor;
-		vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos.xyz, worldNormal, albedoAndSpecular.xyz), 1.0) + vec4(ambientAlbedo, 1.0);
+		vec3 ambientAlbedo = albedo * ambientColor;
+		vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos, worldNormal, albedo, metallicRoughness), 1.0) + vec4(ambientAlbedo, 1.0);
 	#else
 		#ifdef NO_LIT
-			vec4 totalColor = albedoAndSpecular;
+			vec4 totalColor = vec4(albedo, 1.0);
 		#else
-		vec3 diffuseColor = GetDiffuseColor(pixelWorldPos.xyz, worldNormal);
+		vec3 diffuseColor = GetDiffuseColor(pixelWorldPos, worldNormal);
 		vec3 ambientColor = GetAmbientColor();
-		vec4 totalColor = vec4(albedoAndSpecular.rgb * (diffuseColor + ambientColor), 1);
+		vec4 totalColor = vec4(albedo * (diffuseColor + ambientColor), 1.0);
 		#endif
 	#endif
 

@@ -37,16 +37,23 @@ namespace Graphics
          m_normalBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(normalParams);
       }
 
-      // Albedo + Specular component texture
+      // Albedo component texture
       {
-         TexParams aldbedoSpecParams(mViewPortInfo.Width, mViewPortInfo.Height, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, GL_REPEAT, true);
-         m_albedoWithSpecularBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(aldbedoSpecParams);
+         TexParams aldbedoParams(mViewPortInfo.Width, mViewPortInfo.Height, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_REPEAT, true);
+         m_albedoBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(aldbedoParams);
+      }
+
+      // Metallic with roughness component texture
+      {
+         TexParams metalllicRoughnessParams(mViewPortInfo.Width, mViewPortInfo.Height, GL_TEXTURE_2D, GL_NEAREST, GL_NEAREST, 0, GL_RG, GL_RG, GL_UNSIGNED_BYTE, GL_REPEAT, true);
+         m_metallicRoughnessBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(metalllicRoughnessParams);
       }
    
       mFramebuffer.AddRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
       mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
       mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
-      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoWithSpecularBuffer);
+      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
+      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT3, m_metallicRoughnessBuffer);
    }
 
    void DeferredShadingGBuffer::SetFramebuffers()
@@ -70,7 +77,8 @@ namespace Graphics
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_depthBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_positionBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_normalBuffer);
-      RenderTargetPool::GetInstance()->TryToFreeMemory(m_albedoWithSpecularBuffer);
+      RenderTargetPool::GetInstance()->TryToFreeMemory(m_albedoBuffer);
+      RenderTargetPool::GetInstance()->TryToFreeMemory(m_metallicRoughnessBuffer);
    }
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
@@ -98,9 +106,14 @@ namespace Graphics
       m_normalBuffer->BindTexture(slot);
    }
 
-   void DeferredShadingGBuffer::BindAlbedoWithSpecularTexture(int32_t slot) {
+   void DeferredShadingGBuffer::BindAlbedoTexture(int32_t slot) {
 
-      m_albedoWithSpecularBuffer->BindTexture(slot);
+      m_albedoBuffer->BindTexture(slot);
+   }
+
+   void DeferredShadingGBuffer::BindMetallicRoughnessTexture(int32_t slot) 
+   {
+      m_metallicRoughnessBuffer->BindTexture(slot);
    }
 
    void DeferredShadingGBuffer::CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,

@@ -94,9 +94,11 @@ function CreateTestLevel(host)
 	1, 1, 1)
 	
 	if groundActor ~= nil then
-		local material = _CreateMaterial(host, "Pbs.m")
+		local material = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
 		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
+		_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "roughnessMap")
+		_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")
 
 		local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
@@ -118,9 +120,11 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if smallGroundActor ~= nil then 
-		local material1 = _CreateMaterial(host, "Pbs.m")
+		local material1 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, material1, "brick_mid.png", "albedo")
 		_SetTextureToMaterial(host, material1, "brick_nm_mid.png", "normalMap")
+		_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "roughnessMap")
+		_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material1, 1, "uvScale")
 
 		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
@@ -144,9 +148,11 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if smallGroundActor1 ~= nil then 
-		local material2 = _CreateMaterial(host, "Pbs.m")
-		_SetTextureToMaterial(host, material2, "brick_mid.png", "albedo")
-		_SetTextureToMaterial(host, material2, "brick_nm_mid.png", "normalMap")
+		local material2 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_albedo.png", "albedo")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_normal.png", "normalMap")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_roughness.png", "roughnessMap")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_metallic.png", "metallicMap")
 		_SetFloatToMaterial(host, material2, 1, "uvScale")
 
 		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
@@ -168,10 +174,11 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if house ~= nil then 
-		local houseMat = _CreateMaterial(host, "Pbs.m")
+		local houseMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, houseMat, "city_house_2_Col.png", "albedo")
 		_SetTextureToMaterial(host, houseMat, "city_house_2_Nor.png", "normalMap")
-		_SetTextureToMaterial(host, houseMat, "city_house_2_Spec.png", "metallicMap")
+		_SetTextureToMaterial(host, houseMat, "dummy_metallic_roughness.png", "roughnessMap")
+		_SetTextureToMaterial(host, houseMat, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
 		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
@@ -198,7 +205,7 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local skyboxMat = _CreateMaterial(host, "Skybox.m")
+	local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
 	_SetTextureToMaterial(host, skyboxMat, "dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png", "dayTexture")
 
 	local skyboxData = _CreateSkyboxComponentData(host, "SkyboxComp",
@@ -214,9 +221,11 @@ function CreateTestLevel(host)
 	0, 0, 0,
 	1, 1, 1)
 
-	local buddyMat = _CreateMaterial(host, "Pbs.m")
+	local buddyMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 	_SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "albedo")
 	_SetTextureToMaterial(host, buddyMat, "dummy_nm.png", "normalMap")
+	_SetTextureToMaterial(host, buddyMat, "dummy_metallic_roughness.png", "roughnessMap")
+	_SetTextureToMaterial(host, buddyMat, "dummy_metallic_roughness.png", "metallicMap")
 	_SetFloatToMaterial(host, buddyMat, 1.0, "uvScale")
 
 	local skeletDesc = _CreateDynamicCharacterController(host, 1, 2.5, 10, 1.0)
@@ -252,7 +261,7 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if waterActor ~= nil then
-		local waterMat = _CreateMaterial(host, "Water.m")
+		local waterMat = _CreateMaterial(host, "WaterMaterial.m")
 		_SetDeferredTextureToMaterial(host, waterMat, "planarReflectionComponent", "reflectionTexture")
 		_SetTextureToMaterial(host, waterMat, "water_dudv.png", "dudv")
 		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "ground")

@@ -77,7 +77,7 @@ namespace Game
    {
       Base::Tick(deltaTime);
 
-      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * 8), AXIS_UP));
+      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * 100), AXIS_UP));
       ForceUpdateShadowMap();
    }
 

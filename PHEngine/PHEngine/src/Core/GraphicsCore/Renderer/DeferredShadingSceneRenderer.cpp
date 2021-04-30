@@ -326,7 +326,7 @@ namespace Graphics
 #ifndef NO_LIT
          // ************************** SHADOWS ************************** //
          size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
-         size_t shadowMapSlot = 3, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
+         size_t shadowMapSlot = 4, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
          for (auto& dirLightProxy : mDirLightProxiesVec)
          {
             if (dirLightProxy->IsEnabled())
@@ -388,12 +388,14 @@ namespace Graphics
 #endif
 
          m_gbuffer->BindPositionTexture(0);
-         m_gbuffer->BindAlbedoWithSpecularTexture(1);
+         m_gbuffer->BindAlbedoTexture(1);
          m_gbuffer->BindNormalTexture(2);
+         m_gbuffer->BindMetallicRoughnessTexture(3);
 
          m_deferredLightShader->SetGBufferPosition(0);
-         m_deferredLightShader->SetGBufferAlbedoNSpecular(1);
+         m_deferredLightShader->SetGBufferAlbedo(1);
          m_deferredLightShader->SetGBufferNormal(2);
+         m_deferredLightShader->SetGBufferMetallicRoughness(3);
 
 #ifndef NO_LIT
          m_deferredLightShader->SetLightsInfo(LightProxiesMap);

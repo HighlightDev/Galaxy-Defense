@@ -115,8 +115,13 @@ namespace IO
 	}
 
    const std::string FolderManager::GetLandscapeTexturePath() const
+   {
+      return GetTexturesPath() + "landscape\\";
+   }
+
+   const std::string FolderManager::GetMaterialTexturesPath() const
 	{
-		return GetTexturesPath() + "landscape\\";
+		return GetTexturesPath() + "materials\\";
 	}
 
    const std::string FolderManager::GetCubemapTexturePath() const

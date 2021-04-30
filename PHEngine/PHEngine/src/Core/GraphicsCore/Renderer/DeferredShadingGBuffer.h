@@ -20,7 +20,8 @@ namespace Graphics
       RenderTarget m_depthBuffer;
       RenderTarget m_positionBuffer;
       RenderTarget m_normalBuffer;
-      RenderTarget m_albedoWithSpecularBuffer;
+      RenderTarget m_albedoBuffer;
+      RenderTarget m_metallicRoughnessBuffer;
 
       FramebufferObject mFramebuffer;
 
@@ -49,7 +50,9 @@ namespace Graphics
 
       void BindNormalTexture(int32_t slot);
 
-      void BindAlbedoWithSpecularTexture(int32_t slot);
+      void BindAlbedoTexture(int32_t slot);
+
+      void BindMetallicRoughnessTexture(int32_t slot);
 
       void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
          size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit);

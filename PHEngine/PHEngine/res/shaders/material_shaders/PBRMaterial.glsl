@@ -14,17 +14,15 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 	return texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
 }
 
-float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return texture(roughnessMap, materialIn.TextureCoordinates.xy * uvScale).r;
+	float metallic = texture(metallicMap, materialIn.TextureCoordinates.xy * uvScale).r;
+	float roughnes = texture(roughnessMap, materialIn.TextureCoordinates.xy * uvScale).r;
+
+	return vec2(metallic, roughnes);
 }
 
-float GetMaterialMetallic(in MATERIAL_VS_OUTPUT materialIn)
-{
-	return texture(metallicMap, materialIn.TextureCoordinates.xy * uvScale).r;
-}
-
-float GetMaterialAO(in MATERIAL_VS_OUTPUT materialIn)
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return texture(ambientOcclusionMap, materialIn.TextureCoordinates.xy * uvScale).r;
 }
