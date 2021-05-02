@@ -4,10 +4,19 @@
 
 uniform samplerCube dayTexture;
 uniform samplerCube nightTexture;
+uniform float dayTimeElapsed;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return texture(dayTexture, materialIn.TextureCoordinates.xyz).rgb;
+	float nightEnable = round(step(0.5, dayTimeElapsed));
+	float dayEnable = round(1.0 - nightEnable);
+	
+	float mixCoef = ((dayTimeElapsed * 2.0) * dayEnable) + (((1.0 - dayTimeElapsed) * 2.0) * nightEnable);
+
+	vec4 dayColour = texture(dayTexture, materialIn.TextureCoordinates.xyz);
+	vec4 nightColour = texture(nightTexture, materialIn.TextureCoordinates.xyz);
+
+	return mix(nightColour, dayColour, mixCoef);
 }
 
 float GetMaterialRoughness(in MATERIAL_VS_OUTPUT materialIn)

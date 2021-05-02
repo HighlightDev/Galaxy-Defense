@@ -206,7 +206,12 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
-	_SetTextureToMaterial(host, skyboxMat, "dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png", "dayTexture")
+	_SetTextureToMaterial(host, skyboxMat, "dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png","dayTexture")
+
+	_SetTextureToMaterial(host, skyboxMat,"nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png",	"nightTexture")
+
+	_SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTime")
+	_SetFloatToMaterial(host, skyboxMat, 0.1, "mul_coef")
 
 	local skyboxData = _CreateSkyboxComponentData(host, "SkyboxComp",
 	140, 140, 140,
@@ -268,7 +273,7 @@ function CreateTestLevel(host)
 		_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 		_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 
-		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 40, 1, 40, waterMat)
+		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20, waterMat)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
 		_AttachComponentToActor(host, waterActor, waterComponent)
 	end

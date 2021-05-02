@@ -86,6 +86,13 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBottom.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayBack.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dayFront.png"));
+
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightRight.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightLeft.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightTop.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightBottom.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightBack.png"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("nightFront.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("water_dudv.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_albedo.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_normal.png"));
