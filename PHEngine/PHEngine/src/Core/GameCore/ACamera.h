@@ -11,6 +11,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 
 using namespace Graphics;
 
@@ -39,6 +40,8 @@ namespace Game
       float m_rotateSensetivity;
 
       std::string mCameraName;
+
+      ViewPerspectiveInfo mViewPerspectiveInfo;
 
    protected:
 
@@ -69,8 +72,6 @@ namespace Game
    public:
 
       size_t SceneProxyId = 0;
-
-      float CameraCollisionSphereRadius = 8.0f;
 
    public:
 
@@ -123,6 +124,8 @@ namespace Game
       float GetRotationPitch() const;
 
       ViewPortInfo GetViewPort() const;
+
+      ViewPerspectiveInfo GetViewPerspectiveInfo() const;
 
    protected:
 

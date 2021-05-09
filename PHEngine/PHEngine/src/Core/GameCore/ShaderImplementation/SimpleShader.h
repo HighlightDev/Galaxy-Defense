@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
 #include <string>
@@ -11,15 +11,15 @@ namespace Game
    namespace ShaderImpl
    {
       class SimpleShader :
-         public ShaderBase
+         public Shader
       {
 
-         using Base = ShaderBase;
+         using Base = Shader;
 
       public:
 
          SimpleShader(const ShaderParams& params)
-            : ShaderBase(params)
+            : Shader(params)
          {
          }
 

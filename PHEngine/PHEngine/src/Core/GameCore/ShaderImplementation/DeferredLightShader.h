@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
 
@@ -14,10 +14,10 @@ namespace Game
    {
 
       class DeferredLightShader :
-         public ShaderBase
+         public Shader
       {
 
-         using Base = ShaderBase;
+         using Base = Shader;
 
          Uniform u_CameraWorldPosition;
 

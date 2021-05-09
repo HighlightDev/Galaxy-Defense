@@ -1,6 +1,6 @@
 #pragma once
 #include "PrimitiveComponent.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "Core/GraphicsCore/RenderData/SkyboxRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"

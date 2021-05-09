@@ -3,7 +3,7 @@
 #include <string>
 #include <stdint.h>
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "ShaderCommon.h"
 
@@ -14,9 +14,9 @@ namespace Game
    namespace ShaderImpl
    {
       class CapturePlanarReflectionShader :
-         public ShaderBase
+         public Shader
       {
-         using Base = ShaderBase;
+         using Base = Shader;
 
       protected:
 

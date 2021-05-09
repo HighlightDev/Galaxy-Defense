@@ -7,7 +7,7 @@ namespace Game
    {
 
       CubemapShader::CubemapShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
          ShaderInit();
       }
@@ -31,7 +31,7 @@ namespace Game
 
       void CubemapShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
-         ShaderBase::AccessAllUniformLocations(shaderProgramId);
+         Shader::AccessAllUniformLocations(shaderProgramId);
 
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramId);
          u_viewMatrix = GetUniform("viewMatrix", shaderProgramId);

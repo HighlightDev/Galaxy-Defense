@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
 #include <string>
@@ -12,10 +12,10 @@ namespace Game
    {
 
       class TextureRendererShader :
-         public ShaderBase
+         public Shader
       {
 
-         using Base = ShaderBase;
+         using Base = Shader;
 
          Uniform u_uiTexture, u_screenSpaceMatrix, u_bPerspectiveDepthTexture, u_bSeparated;
 

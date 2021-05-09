@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "ShaderCommon.h"
 
@@ -13,7 +13,7 @@ namespace Game
    {
 
       class SpotlightDepthShaderBase :
-         public ShaderBase
+         public Shader
       {
       protected:
 

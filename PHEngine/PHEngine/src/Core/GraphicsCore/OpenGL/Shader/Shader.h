@@ -29,7 +29,9 @@ namespace Graphics
          std::vector<ShaderDefine> m_defines;
 
 		protected:
+
          void LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, int32_t subroutineIndex) const;
+
          int32_t GetSubroutineIndex(ShaderType shaderType, const std::string& subroutineName) const;
 
          template <typename ValueType>
@@ -51,6 +53,7 @@ namespace Graphics
 
          // Init should be called in child constructor!
          virtual void ShaderInit();
+
          virtual void ProcessAllPredefines() override;
 
          ShaderParams GetShaderParams() const;

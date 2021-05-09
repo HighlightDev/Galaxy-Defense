@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
 using namespace Graphics::Mesh;
@@ -18,11 +18,11 @@ namespace Graphics
       struct BillboardRenderData
       {
          std::shared_ptr<Skin> m_skin;
-         std::shared_ptr<ShaderBase> m_shader;
+         std::shared_ptr<Shader> m_shader;
          std::shared_ptr<ITexture> m_texture;
 
          BillboardRenderData(std::shared_ptr<Skin> billboardMesh,
-            std::shared_ptr<ShaderBase> billboardShader, std::shared_ptr<ITexture> texture)
+            std::shared_ptr<Shader> billboardShader, std::shared_ptr<ITexture> texture)
             : m_skin(billboardMesh)
             , m_shader(billboardShader)
             , m_texture(texture)

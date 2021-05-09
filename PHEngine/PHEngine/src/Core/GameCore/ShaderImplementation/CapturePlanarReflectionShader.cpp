@@ -6,7 +6,7 @@ namespace Game
    {
 
       CapturePlanarReflectionShader::CapturePlanarReflectionShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
       }
 
@@ -25,7 +25,7 @@ namespace Game
 
       void CapturePlanarReflectionShader::AccessAllUniformLocations(uint32_t shaderProgramId) {
 
-         ShaderBase::AccessAllUniformLocations(shaderProgramId);
+         Base::AccessAllUniformLocations(shaderProgramId);
          uClipPlane = GetUniform("clipPlane", shaderProgramId);
       }
 

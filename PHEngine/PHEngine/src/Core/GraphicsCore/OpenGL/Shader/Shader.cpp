@@ -106,7 +106,7 @@ namespace Graphics
 			{
 				if (m_shaderParams.VertexShaderFile != "")
 				{
-					std::string vsSourcePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.VertexShaderFile));
+					const std::string& vsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.VertexShaderFile);
                ProcessPredefineToFile(vsSourcePath, vertexConstantPredefine, vertexPredefine);
 				}
 			}
@@ -114,7 +114,7 @@ namespace Graphics
 			{
 				if (m_shaderParams.FragmentShaderFile != "")
 				{
-					std::string fsSourcePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile));
+               const std::string& fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile);
                ProcessPredefineToFile(fsSourcePath, fragmentConstantPredefine, fragmentPredefine);
 				}
 			}
@@ -122,7 +122,7 @@ namespace Graphics
 			{
 				if (m_shaderParams.GeometryShaderFile != "")
 				{
-					std::string gsSourcePath = std::move(EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile));
+               const std::string& gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile);
                ProcessPredefineToFile(gsSourcePath, geometryConstantPredefine, geometryPredefine);
 				}
 			}

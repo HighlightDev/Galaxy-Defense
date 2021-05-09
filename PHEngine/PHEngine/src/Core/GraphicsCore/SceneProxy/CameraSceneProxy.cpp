@@ -14,7 +14,8 @@ namespace Graphics
       , mEyeVector()
       , mViewMatrix()
    {
-      mProjectionMatrix = glm::perspective<float>(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000); // todo: temp for now
+      const auto& perspectiveInfo = camera->GetViewPerspectiveInfo();
+      mProjectionMatrix = glm::perspective<float>(perspectiveInfo.FoV, perspectiveInfo.AspectRatio, perspectiveInfo.NearPlane, perspectiveInfo.FarPlane);
    }
 
    void CameraSceneProxy::UpdateViewMatrix(const glm::mat4& viewMatrix)

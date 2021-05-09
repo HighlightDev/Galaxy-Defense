@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 #include "ShaderCommon.h"
 
@@ -13,7 +13,7 @@ namespace Game
    {
 
       class DirectionalLightDepthShaderBase
-         : public ShaderBase
+         : public Shader
       {
       protected:
 
@@ -37,7 +37,7 @@ namespace Game
       class DirectionalLightDepthShader<eShaderMeshType::NON_SKELETAL>
          : public DirectionalLightDepthShaderBase
       {
-         using Base = ShaderBase;
+         using Base = Shader;
 
       public:
 
@@ -53,7 +53,7 @@ namespace Game
       class DirectionalLightDepthShader<eShaderMeshType::SKELETAL>
          : public DirectionalLightDepthShaderBase
       {
-         using Base = ShaderBase;
+         using Base = Shader;
 
          UniformArray u_boneMatrices;
 

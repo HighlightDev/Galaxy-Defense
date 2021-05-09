@@ -1,7 +1,7 @@
 #pragma once
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
 #include "Core/GameCore/BoundingBox.h"

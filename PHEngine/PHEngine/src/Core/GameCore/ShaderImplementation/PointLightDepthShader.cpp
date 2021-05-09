@@ -5,13 +5,13 @@ namespace Game
    namespace ShaderImpl
    {
       PointLightDepthShaderBase::PointLightDepthShaderBase(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
       }
 
       void PointLightDepthShaderBase::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
-         ShaderBase::AccessAllUniformLocations(shaderProgramId);
+         Shader::AccessAllUniformLocations(shaderProgramId);
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramId);
          u_shadowViewMatrices = GetUniformArray("shadowViewMatrices", 6, shaderProgramId);
          u_shadowProjectionMatrices = GetUniformArray("shadowProjectionMatrices", 6, shaderProgramId);

@@ -10,9 +10,10 @@ namespace Graphics
 {
    namespace OpenGL
    {
-      class IMaterialShader 
+      class MaterialShader
          : public IShader
       {
+
          std::string mShaderSource;
 
          std::vector<ShaderGenericDefineConstant> mConstantDefines;
@@ -22,13 +23,18 @@ namespace Graphics
 
          std::vector<std::string> mUniformNames;
 
-      public:
+         std::vector<Uniform> Uniforms;
 
-         IMaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
+      public :
 
-         virtual ~IMaterialShader();
+         virtual ~MaterialShader();
+
+         MaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
 
          std::string GetShaderSource() const;
+         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);
+
+         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
          template <typename ValueType>
          void DefineConstant(const std::string& name, ValueType&& value)
@@ -41,28 +47,10 @@ namespace Graphics
 
          void Undefine(const std::string& name);
 
-         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy) = 0;
-
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
-
       private:
 
          void InitMaterialShader(const std::string& pathToMaterialShader);
          void LoadMaterialShaderSource(const std::string& relativePathToMaterialShader);
-      };
-
-      class MaterialShaderImp
-         : public IMaterialShader
-      {
-
-         std::vector<Uniform> Uniforms;
-
-      public :
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
-
-         virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy) override;
-
-         MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
       };
    }
 }

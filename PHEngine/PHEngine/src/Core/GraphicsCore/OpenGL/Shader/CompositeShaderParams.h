@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 
@@ -13,13 +13,13 @@ namespace Graphics
       struct CompositeShaderParams
       {
 
-         std::shared_ptr<ShaderBase> mShader;
+         std::shared_ptr<Shader> mShader;
          std::string mShaderName;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
          const uint64_t HASH;
 
-         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<ShaderBase>& shader, std::shared_ptr<MaterialProxy> materialProxy)
+         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader, std::shared_ptr<MaterialProxy> materialProxy)
             : mShader(shader)
             , mShaderName(shaderName)
             , mMaterialProxy(materialProxy)

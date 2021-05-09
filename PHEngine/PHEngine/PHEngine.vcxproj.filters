@@ -1300,9 +1300,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\UtilityCore\EngineMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2029,6 +2026,15 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\ViewPerspectiveInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2101,9 +2107,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\UtilityCore\EngineMath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\MeshPool.cpp">
@@ -2548,6 +2551,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/Components/ComponentType.h"
@@ -38,15 +38,17 @@ namespace Graphics
 
          std::shared_ptr<Skin> m_skin;
 
-         std::shared_ptr<ICompositeShader> m_shader;
+         std::shared_ptr<IShader> m_shader;
 
-         std::shared_ptr<ICompositeShader> m_planarReflectionShader;
+         std::shared_ptr<IShader> m_planarReflectionShader;
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
 
-         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin, std::shared_ptr<ICompositeShader> shader, std::shared_ptr<ICompositeShader> planarReflectionShader,
+         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin,
+            std::shared_ptr<IShader> materialShader,
+            std::shared_ptr<IShader> planarReflectionShader,
             std::shared_ptr<MaterialProxy> materialProxy);
 
          virtual ~PrimitiveSceneProxy();

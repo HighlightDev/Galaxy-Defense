@@ -15,6 +15,7 @@ namespace Game
       , mScene(scene)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
+      , mViewPerspectiveInfo(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000)
       , mPlanarReflectionComponent(nullptr)
       , mViewPort(viewPort)
       , m_localSpaceRightVector(1, 0, 0)
@@ -161,6 +162,11 @@ namespace Game
    ViewPortInfo ACamera::GetViewPort() const
    {
       return mViewPort;
+   }
+
+   ViewPerspectiveInfo ACamera::GetViewPerspectiveInfo() const 
+   {
+      return mViewPerspectiveInfo;
    }
 
    void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent) {

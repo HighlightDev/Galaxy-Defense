@@ -10,7 +10,7 @@ namespace Game
    {
 
       DeferredLightShader::DeferredLightShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
          , MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount())
          , MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount())
          , MAX_SPOTLIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxSpotlightCount())

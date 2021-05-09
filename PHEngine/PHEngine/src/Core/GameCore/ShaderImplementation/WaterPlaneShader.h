@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
 using namespace Graphics::OpenGL;
@@ -12,9 +12,9 @@ namespace Game
    {
 
       class WaterPlaneShader :
-         public ShaderBase
+         public Shader
       {
-         using Base = ShaderBase;
+         using Base = Shader;
 
          Uniform u_modelMatrix, u_viewMatrix, u_projectionMatrix,
             u_reflectionTexture, u_refractionTexture, u_dudvTexture,

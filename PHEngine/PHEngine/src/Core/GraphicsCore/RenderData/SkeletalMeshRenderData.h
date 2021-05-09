@@ -19,15 +19,15 @@ namespace Graphics
       {
          std::shared_ptr<Skin> m_skin;
 
-         std::shared_ptr<ICompositeShader> m_materialShader;
-         std::shared_ptr<ICompositeShader> m_planarReflectionShader;
+         std::shared_ptr<IShader> m_materialShader;
+         std::shared_ptr<IShader> m_planarReflectionShader;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
          SkeletalMeshRenderData(std::shared_ptr<Skin> mesh, std::shared_ptr<IShader> materialShader, std::shared_ptr<IShader> planarReflectionShader,
             std::shared_ptr<MaterialProxy> materialProxy)
             : m_skin(mesh)
-            , m_materialShader(std::dynamic_pointer_cast<ICompositeShader>(materialShader))
-            , m_planarReflectionShader(std::dynamic_pointer_cast<ICompositeShader>(planarReflectionShader))
+            , m_materialShader(materialShader)
+            , m_planarReflectionShader(planarReflectionShader)
             , mMaterialProxy(materialProxy)
          {
          }

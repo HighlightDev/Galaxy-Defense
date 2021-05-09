@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 
 using namespace Graphics::OpenGL;
 
@@ -9,7 +9,8 @@ namespace Game
    namespace ShaderImpl
    {
 
-      class BillboardShader : public ShaderBase
+      class BillboardShader 
+         : public Shader
       {
 
       private:

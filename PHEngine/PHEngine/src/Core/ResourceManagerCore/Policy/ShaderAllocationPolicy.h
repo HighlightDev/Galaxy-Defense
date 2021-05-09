@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
 using namespace Graphics::OpenGL;
@@ -19,12 +19,12 @@ namespace Resources
       using model_t = Model;
 
 		template <typename ShaderT>
-      static std::shared_ptr<ShaderBase> AllocateMemory(Model& arg)
+      static std::shared_ptr<Shader> AllocateMemory(Model& arg)
       {
-         return std::shared_ptr<ShaderBase>(std::make_shared<ShaderT>(arg));
+         return std::shared_ptr<Shader>(std::make_shared<ShaderT>(arg));
       }
 
-		static void DeallocateMemory(std::shared_ptr<ShaderBase> arg)
+		static void DeallocateMemory(std::shared_ptr<Shader> arg)
 		{
 			arg->CleanUp(true);
 		}

@@ -346,6 +346,8 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShader.h" />
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryDivOperationNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryAddOperationNode.h" />
@@ -369,6 +371,7 @@
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\FloatPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\PropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\ViewPerspectiveInfo.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h" />
@@ -568,7 +571,6 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\MeshPool.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.h" />
-    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PrimitiveComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\Component.h" />
     <ClInclude Include="src\Core\GameCore\Actor.h" />
@@ -863,6 +865,8 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShader.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryDivOperationNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialBinaryAddOperationNode.cpp" />
@@ -996,7 +1000,6 @@
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\PrimitiveComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\Component.cpp" />
     <ClCompile Include="src\Core\GameCore\Actor.cpp" />
-    <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Texture\CubemapTexture.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\AnimatedSkin.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Mesh\Skin.cpp" />

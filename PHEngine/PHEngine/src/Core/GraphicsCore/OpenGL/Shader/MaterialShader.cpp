@@ -11,55 +11,46 @@ namespace Graphics
    namespace OpenGL
    {
       /************************************************************************/
-      /*                                 IMaterialShader                      */
+      /*                                 MaterialShader                      */
       /************************************************************************/
-      IMaterialShader::IMaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
+      MaterialShader::MaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
          : IShader(materialName)
          , mUniformNames(uniformNames)
       {
          InitMaterialShader(materialShaderRelativePath);
       }
 
-      IMaterialShader::~IMaterialShader()
+      MaterialShader::~MaterialShader()
       {
       }
 
-      void IMaterialShader::InitMaterialShader(const std::string& relativePathToMaterialShader)
+      void MaterialShader::InitMaterialShader(const std::string& relativePathToMaterialShader)
       {
          LoadMaterialShaderSource(relativePathToMaterialShader);
       }
 
-      void IMaterialShader::LoadMaterialShaderSource(const std::string& relativePathToMaterialShader)
+      void MaterialShader::LoadMaterialShaderSource(const std::string& relativePathToMaterialShader)
       {
          std::string absoluteShaderPath = EngineUtility::ConvertFromRelativeToAbsolutePath(relativePathToMaterialShader);
          mShaderSource = LoadShaderSource(absoluteShaderPath);
       }
 
-      std::string IMaterialShader::GetShaderSource() const
+      std::string MaterialShader::GetShaderSource() const
       {
          return mShaderSource;
       }
 
-      void IMaterialShader::AccessAllUniformLocations(uint32_t shaderProgramID)
-      {
-         // This is an implementation in base class
-      }
-
-      void IMaterialShader::Define(const std::string& name)
+      void MaterialShader::Define(const std::string& name)
       {
          mDefines.emplace_back(name, true);
       }
 
-      void IMaterialShader::Undefine(const std::string& name)
+      void MaterialShader::Undefine(const std::string& name)
       {
          mDefines.emplace_back(name, false);
       }
 
-      /************************************************************************/
-      /*                               MaterialShaderImpl                     */
-      /************************************************************************/
-
-      void MaterialShaderImp::AccessAllUniformLocations(uint32_t shaderProgramID)
+      void MaterialShader::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
          for (const auto& name : mUniformNames)
          {
@@ -67,7 +58,7 @@ namespace Graphics
          }
       }
 
-      void MaterialShaderImp::LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
+      void MaterialShader::LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy)
       {
          size_t uIndex = 0;
          
@@ -77,12 +68,6 @@ namespace Graphics
                [&](const auto& uniform) { return uniform.GetUniformName() == property->GetPropertyName(); });
             property->SetValueToUniform(*uniformIt, uIndex++);
          }
-      }
-
-      MaterialShaderImp::MaterialShaderImp(const std::string& materialName, const std::string& materialShaderRelativePath,
-         const std::vector<std::string>& uniformNames)
-         : IMaterialShader(materialName, materialShaderRelativePath, uniformNames)
-      {
       }
    }
 }

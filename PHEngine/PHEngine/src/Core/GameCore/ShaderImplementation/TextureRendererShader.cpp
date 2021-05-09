@@ -7,7 +7,7 @@ namespace Game
    {
 
       TextureRendererShader::TextureRendererShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
          Base::ShaderInit();
       }

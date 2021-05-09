@@ -7,7 +7,7 @@ namespace Game
    {
 
       BillboardShader::BillboardShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
          ShaderInit();
       }
@@ -31,7 +31,7 @@ namespace Game
 
       void BillboardShader::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
-         ShaderBase::AccessAllUniformLocations(shaderProgramID);
+         Shader::AccessAllUniformLocations(shaderProgramID);
 
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
          u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);

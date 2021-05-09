@@ -6,7 +6,7 @@ namespace Game
    {
 
       WaterPlaneShader::WaterPlaneShader(const ShaderParams& params)
-         : ShaderBase(params)
+         : Shader(params)
       {
          ShaderInit();
       }

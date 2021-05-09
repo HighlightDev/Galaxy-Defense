@@ -1,6 +1,6 @@
 #pragma once
 #include "PoolBase.h"
-#include "Core/GraphicsCore/OpenGL/Shader/ShaderBase.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/ResourceManagerCore/Policy/ShaderAllocationPolicy.h"
 
 #include <string>
@@ -11,13 +11,13 @@ namespace Resources
 {
 
 	class ShaderPool :
-		public PoolBase<ShaderBase, ShaderParams, ShaderAllocationPolicy>
+		public PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>
 	{
 		static std::unique_ptr<ShaderPool> m_instance;
 
 	public:
 
-		using poolType_t = PoolBase<ShaderBase, ShaderParams, ShaderAllocationPolicy>;
+		using poolType_t = PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>;
 
 		static std::unique_ptr<ShaderPool>& GetInstance()
 		{
