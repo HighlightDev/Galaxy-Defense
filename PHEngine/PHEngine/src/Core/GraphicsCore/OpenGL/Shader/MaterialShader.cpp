@@ -13,11 +13,11 @@ namespace Graphics
       /************************************************************************/
       /*                                 MaterialShader                      */
       /************************************************************************/
-      MaterialShader::MaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames)
-         : IShader(materialName)
-         , mUniformNames(uniformNames)
+      MaterialShader::MaterialShader(std::shared_ptr<MaterialProxy> materialProxy)
+         : IShader(materialProxy->MaterialName)
+         , mUniformNames(materialProxy->GetUniformNames())
       {
-         InitMaterialShader(materialShaderRelativePath);
+         InitMaterialShader(materialProxy->MaterialShaderRelativePath);
       }
 
       MaterialShader::~MaterialShader()

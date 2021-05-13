@@ -76,8 +76,8 @@ MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()
 	vec4 view_pos = viewMatrix * world_pos;
 	vec4 clipped_pos = projectionMatrix * view_pos;
 
-	result.WorldCoordinates = world_pos.xyz;
-	result.ViewCoordinates = view_pos.xyz;
+	result.WorldCoordinates = world_pos;
+	result.ViewCoordinates = view_pos;
 	result.ClippedCoordinates = clipped_pos;
 
 	result.WorldNormal = GetLocalToWorldSpaceNormal();

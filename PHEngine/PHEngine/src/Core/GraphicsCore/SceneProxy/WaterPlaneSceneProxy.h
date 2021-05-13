@@ -4,7 +4,7 @@
 #include "Core/GameCore/FramebufferImplementation/WaterPlaneFramebuffer.h"
 #include "Core/GameCore/ShaderImplementation/WaterPlaneShader.h"
 
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 
@@ -20,7 +20,7 @@ namespace Graphics
       class WaterPlaneSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<StaticMeshVertexFactory, SimpleShader>;
+         using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
          std::unique_ptr<WaterPlaneFramebuffer> m_waterPlaneFramebuffer;
 

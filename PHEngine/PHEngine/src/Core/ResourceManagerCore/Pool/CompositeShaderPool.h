@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PoolBase.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/IShader.h"
 #include "Core/ResourceManagerCore/Policy/CompositeShaderAllocationPolicy.h"
 
 using namespace Graphics::OpenGL;

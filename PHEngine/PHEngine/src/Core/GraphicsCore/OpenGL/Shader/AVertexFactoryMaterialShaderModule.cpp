@@ -1,40 +1,40 @@
-#include "AVertexFactoryMaterialShader.h"
+#include "AVertexFactoryMaterialShaderModule.h"
 
 
 namespace Graphics
 {
    namespace OpenGL
    {
-      AVertexFactoryMaterialShader::AVertexFactoryMaterialShader(const std::string& shaderName, std::shared_ptr<Shader> shader,
+      AVertexFactoryMaterialShaderModule::AVertexFactoryMaterialShaderModule(const CompositeShaderParams& shaderParams,
          std::shared_ptr<VertexFactoryShader> vertexFactoryShader,
          std::shared_ptr<MaterialShader> materialShader)
-         : AVertexFactoryShader(shaderName, shader, vertexFactoryShader)
+         : AVertexFactoryShaderModule(shaderParams, vertexFactoryShader)
          , mMaterialShader(std::move(materialShader))
       {
       }
 
-      AVertexFactoryMaterialShader::~AVertexFactoryMaterialShader()
+      AVertexFactoryMaterialShaderModule::~AVertexFactoryMaterialShaderModule()
       {
       }
 
-      std::shared_ptr<MaterialShader> AVertexFactoryMaterialShader::GetMaterialShader() const
+      std::shared_ptr<MaterialShader> AVertexFactoryMaterialShaderModule::GetMaterialShader() const
       {
          return mMaterialShader;
       }
 
-      void AVertexFactoryMaterialShader::AccessAllUniformLocations(uint32_t shaderProgramID)
+      void AVertexFactoryMaterialShaderModule::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
-         AVertexFactoryShader::AccessAllUniformLocations(shaderProgramID);
+         AVertexFactoryShaderModule::AccessAllUniformLocations(shaderProgramID);
          mMaterialShader->AccessAllUniformLocations(shaderProgramID);
       }
 
-      void AVertexFactoryMaterialShader::ProcessAllPredefines()
+      void AVertexFactoryMaterialShaderModule::ProcessAllPredefines()
       {
-         AVertexFactoryShader::ProcessAllPredefines();
+         AVertexFactoryShaderModule::ProcessAllPredefines();
          mMaterialShader->ProcessAllPredefines();
       }
 
-      bool AVertexFactoryMaterialShader::AssembleShaderSource()
+      bool AVertexFactoryMaterialShaderModule::AssembleShaderSource()
       {
          const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
          const std::string materialShaderSource = mMaterialShader->GetShaderSource();

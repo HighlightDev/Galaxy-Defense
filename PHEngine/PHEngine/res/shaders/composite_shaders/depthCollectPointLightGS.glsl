@@ -4,7 +4,6 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 18) out;
 
-
 uniform mat4 shadowViewMatrices[CubemapFaces];
 uniform mat4 shadowProjectionMatrices[CubemapFaces];
 

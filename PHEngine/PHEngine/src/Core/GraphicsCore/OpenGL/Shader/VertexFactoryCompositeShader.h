@@ -1,13 +1,13 @@
 #pragma once
-#include "AVertexFactoryMaterialShader.h"
+#include "AVertexFactoryShaderModule.h"
 
 namespace Graphics
 {
    namespace OpenGL
    {
       template <typename VertexFactoryShaderType, typename ShaderType>
-      class CompositeShader
-         : public AVertexFactoryMaterialShader
+      class VertexFactoryCompositeShader
+         : public AVertexFactoryShaderModule
       {
       public:
 
@@ -16,14 +16,10 @@ namespace Graphics
 
       public:
 
-         CompositeShader(const std::string& compositeShaderName, std::shared_ptr<IShader> shader, std::shared_ptr<MaterialProxy> materialProxy)
-            : AVertexFactoryMaterialShader(
-               compositeShaderName,
-               std::dynamic_pointer_cast<ShaderType>(shader),
-               std::make_shared<vertexFactoryShader_t>(),
-               std::make_shared<MaterialShader>(materialProxy->MaterialName,
-                  materialProxy->MaterialShaderRelativePath,
-                  materialProxy->GetUniformNames()))
+         VertexFactoryCompositeShader(const CompositeShaderParams& shaderParams)
+            : AVertexFactoryShaderModule(
+               shaderParams,
+               std::make_shared<vertexFactoryShader_t>())
          {
             Init();
          }

@@ -15,7 +15,7 @@ namespace Debug
    {
       const auto& folderManager = IO::FolderManager::GetInstance();
       ShaderParams shaderParams("Texture Renderer Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiFS.glsl", "", "", "", "");
-      m_shader = std::static_pointer_cast<TextureRendererShader>(ShaderPool::GetInstance()->template GetOrAllocateResource<TextureRendererShader>(shaderParams));
+      m_shader = ShaderPool::GetInstance()->template GetOrAllocateResource<TextureRendererShader>(shaderParams);
    }
 
    TextureRenderer::~TextureRenderer()

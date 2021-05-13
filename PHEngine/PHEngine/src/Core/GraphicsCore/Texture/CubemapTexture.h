@@ -18,7 +18,7 @@ namespace Graphics
 
 		public:
 
-			CubemapTexture(std::vector<std::string>& pathToTextures);
+			CubemapTexture(const std::vector<std::string>& pathToTextures);
 
          CubemapTexture(TexParams cubemapTexParams);
 
@@ -42,7 +42,7 @@ namespace Graphics
 
 		private:
 
-			uint32_t CreateCubemapTexture(std::vector<std::string>& pathToTextures);
+			uint32_t CreateCubemapTexture(const std::vector<std::string>& pathToTextures);
 
          uint32_t CreateEmptyCubemapTexture();
 		};

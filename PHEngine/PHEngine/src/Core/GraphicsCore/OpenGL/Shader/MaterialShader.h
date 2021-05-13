@@ -29,7 +29,7 @@ namespace Graphics
 
          virtual ~MaterialShader();
 
-         MaterialShader(const std::string& materialName, const std::string& materialShaderRelativePath, const std::vector<std::string>& uniformNames);
+         MaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
 
          std::string GetShaderSource() const;
          virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);

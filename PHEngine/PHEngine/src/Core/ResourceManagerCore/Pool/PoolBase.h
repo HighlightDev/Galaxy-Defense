@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 
 using namespace Common;
 
@@ -30,7 +31,7 @@ namespace Resources
 		template <typename T>
 		struct DoIfHasInnerType
 		{
-			static sharedValue_t Allocation(key_t& key)
+			static sharedValue_t Allocation(const key_t& key)
 			{
 				return policy_t::template AllocateMemory<T>(key);
 			}
@@ -39,7 +40,7 @@ namespace Resources
 		template <>
 		struct DoIfHasInnerType<NullType>
 		{
-			static sharedValue_t Allocation(key_t& key)
+			static sharedValue_t Allocation(const key_t& key)
 			{
 				return policy_t::AllocateMemory(key);
 			}
@@ -54,45 +55,42 @@ namespace Resources
 
 	private:
 
-		void IncreaseRefCounter(key_t& key)
+		void IncreaseRefCounter(const key_t& key)
 		{
-			auto it = referenceMap.find(key);
-			if (it != referenceMap.end())
-			{
-				++it->second;
-			}
+         if (referenceMap.count(key))
+         {
+            ++referenceMap[key];
+         }
 			else
 			{
-				referenceMap.insert(std::make_pair(key, 1));
+            referenceMap[key] = 1;
 			}
 		}
 
-      sharedValue_t GetResource(key_t& key) const
+      sharedValue_t GetResource(const key_t& key) const
       {
          sharedValue_t value;
-         auto it = resourceMap.find(key);
-         if (it != resourceMap.end())
+         if (resourceMap.count(key))
          {
-            value = it->second;
+            value = resourceMap.at(key);
          }
 
          return value;
       }
 
-		void FreeResource(key_t& key)
+		void FreeResource(const key_t& key)
 		{
-			auto it = referenceMap.find(key);
-			if (it != referenceMap.end())
+			if (referenceMap.count(key))
 			{
-				--it->second;
-				if (it->second == 0)
+            auto referenceCount = referenceMap[key];
+				--referenceCount;
+				if (referenceCount == 0)
 				{
 					policy_t::DeallocateMemory(resourceMap[key]);
 					resourceMap.erase(key);
 					referenceMap.erase(key);
 				}
 			}
-
 		}
 
 		void CleanUp()
@@ -108,14 +106,13 @@ namespace Resources
 		}
 
       template <typename InnerAllocationType>
-      sharedValue_t GetOrAllocateResourceBridge(key_t& key)
+      sharedValue_t GetOrAllocateResourceBridge(const key_t& key)
       {
          sharedValue_t resource = GetResource(key);
          if (!resource)
          {
             resource = DoIfHasInnerType<InnerAllocationType>::Allocation(key);
-            std::pair<key_t, sharedValue_t> pair = std::make_pair(key, resource);
-            resourceMap.emplace(std::move(pair));
+            resourceMap.emplace(key, resource);
          }
 
          if (resource)
@@ -135,18 +132,18 @@ namespace Resources
 			CleanUp();
 		}
 
-      template <typename InnerAllocationType = NullType>
-      sharedValue_t GetOrAllocateResource(const key_t& key)
-      {
-         key_t localKey = key;
-         return GetOrAllocateResourceBridge<InnerAllocationType>(localKey);
-      }
 
 		template <typename InnerAllocationType = NullType>
-		sharedValue_t GetOrAllocateResource(key_t& key)
+      typename std::enable_if<!std::is_same<InnerAllocationType, NullType>::value, std::shared_ptr<InnerAllocationType>>::type GetOrAllocateResource(const key_t& key)
 		{
-         return GetOrAllocateResourceBridge<InnerAllocationType>(key);
+         return std::static_pointer_cast<InnerAllocationType>(GetOrAllocateResourceBridge<InnerAllocationType>(key));
 		}
+
+      template <typename InnerAllocationType = NullType>
+      typename std::enable_if<std::is_same<InnerAllocationType, NullType>::value, sharedValue_t>::type GetOrAllocateResource(const key_t& key)
+      {
+         return GetOrAllocateResourceBridge<InnerAllocationType>(key);
+      }
 
       key_t GetKey(sharedValue_t value) const
       {
@@ -163,14 +160,12 @@ namespace Resources
          return key;
       }
 
-		int32_t GetReferenceCount(key_t& key) const
+		int32_t GetReferenceCount(const key_t& key) const
 		{
-			int32_t referenceCount = 0;
-			auto it = referenceMap.find(key);
-			if (it != referenceMap.end())
-				referenceCount = it->second;
+         if (referenceMap.count(key))
+            return referenceMap.at(key);
 
-			return referenceCount;
+			return 0;
 		}
 
 		size_t GetResourcesCount() const
@@ -180,7 +175,7 @@ namespace Resources
 			return resourceCount;
 		}
 
-		bool TryToFreeMemory(key_t& key)
+		bool TryToFreeMemory(const key_t& key)
 		{
 			bool bMemoryFreed = false;
 			sharedValue_t resource = GetResource(key);

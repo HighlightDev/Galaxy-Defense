@@ -18,6 +18,7 @@ namespace Game
       {
          PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
          KinematicBodyMovedEvent::GetInstance()->AddListener(this);
+         PlayerMovedEvent::GetInstance()->AddListener(this);
       }
    }
 
@@ -27,6 +28,7 @@ namespace Game
       {
          PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
          KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+         PlayerMovedEvent::GetInstance()->RemoveListener(this);
       }
    }
 
@@ -84,6 +86,13 @@ namespace Game
    }
 
    void PointLightComponent::ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data)
+   {
+      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+
+      NotifySceneProxyThatShadowmapIsDirty(functionId);
+   }
+
+   void PointLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
    {
       constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 

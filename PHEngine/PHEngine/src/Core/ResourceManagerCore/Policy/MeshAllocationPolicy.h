@@ -13,7 +13,7 @@ namespace Resources
 	{
 	public:
 
-		static std::shared_ptr<Skin> AllocateMemory(Model& arg);
+		static std::shared_ptr<Skin> AllocateMemory(const Model& arg);
 
 		static void DeallocateMemory(std::shared_ptr<Skin> arg);
 	};

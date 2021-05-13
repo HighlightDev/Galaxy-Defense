@@ -26,9 +26,7 @@ namespace Graphics
 
 			Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH);
 
-         Texture2d(TexParams&& textureParameters);
-
-         Texture2d(TexParams& textureParameters);
+         Texture2d(const TexParams& textureParameters);
 
 			virtual ~Texture2d();
 

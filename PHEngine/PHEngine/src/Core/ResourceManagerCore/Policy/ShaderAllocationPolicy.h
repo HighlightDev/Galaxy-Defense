@@ -19,7 +19,7 @@ namespace Resources
       using model_t = Model;
 
 		template <typename ShaderT>
-      static std::shared_ptr<Shader> AllocateMemory(Model& arg)
+      static std::shared_ptr<Shader> AllocateMemory(const Model& arg)
       {
          return std::shared_ptr<Shader>(std::make_shared<ShaderT>(arg));
       }

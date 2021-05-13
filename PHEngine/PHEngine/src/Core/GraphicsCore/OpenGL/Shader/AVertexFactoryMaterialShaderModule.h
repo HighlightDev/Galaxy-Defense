@@ -1,13 +1,15 @@
 #pragma once
 
-#include "Core/GraphicsCore/OpenGL/Shader/AVertexFactoryShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/AVertexFactoryShaderModule.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 
 namespace Graphics
 {
    namespace OpenGL
    {
-      class AVertexFactoryMaterialShader : public AVertexFactoryShader
+      class AVertexFactoryMaterialShaderModule 
+         : public AVertexFactoryShaderModule
       {
       protected:
 
@@ -15,11 +17,11 @@ namespace Graphics
 
       public:
 
-         AVertexFactoryMaterialShader(const std::string& shaderName, std::shared_ptr<Shader> shader,
+         AVertexFactoryMaterialShaderModule(const CompositeShaderParams& shaderParams,
             std::shared_ptr<VertexFactoryShader> vertexFactoryShader,
             std::shared_ptr<MaterialShader> materialShader);
           
-         virtual ~AVertexFactoryMaterialShader();
+         virtual ~AVertexFactoryMaterialShaderModule();
 
          std::shared_ptr<MaterialShader> GetMaterialShader() const;
 

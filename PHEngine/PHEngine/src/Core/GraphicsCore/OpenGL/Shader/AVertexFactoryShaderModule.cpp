@@ -1,19 +1,18 @@
-#include "AVertexFactoryShader.h"
+#include "AVertexFactoryShaderModule.h"
 
 namespace Graphics
 {
    namespace OpenGL
    {
-      AVertexFactoryShader::AVertexFactoryShader(const std::string& shaderName,
-         std::shared_ptr<Shader> shader,
+      AVertexFactoryShaderModule::AVertexFactoryShaderModule(const CompositeShaderParams& shaderParams,
          std::shared_ptr<VertexFactoryShader> vertexFactoryShader)
-         : IShader(shaderName)
-         , mShader(shader)
+         : IShader(shaderParams.mShaderName)
+         , mShader(shaderParams.mShader)
          , mVertexFactoryShader(vertexFactoryShader)
       {
       }
 
-      void AVertexFactoryShader::AccessAllUniformLocations(uint32_t shaderProgramID)
+      void AVertexFactoryShaderModule::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
          IShader::AccessAllUniformLocations(shaderProgramID);
 
@@ -21,13 +20,13 @@ namespace Graphics
          mShader->AccessAllUniformLocations(shaderProgramID);
       }
 
-      void AVertexFactoryShader::ProcessAllPredefines()
+      void AVertexFactoryShaderModule::ProcessAllPredefines()
       {
          mVertexFactoryShader->ProcessAllPredefines();
          mShader->ProcessAllPredefines();
       }
 
-      bool AVertexFactoryShader::AssembleShaderSource()
+      bool AVertexFactoryShaderModule::AssembleShaderSource()
       {
          const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
 
@@ -53,7 +52,7 @@ namespace Graphics
          return SendToGpuShadersSources(vsSource, gsSource, fsSource);
       }
 
-      void AVertexFactoryShader::Init()
+      void AVertexFactoryShaderModule::Init()
       {
          ProcessAllPredefines();
 
@@ -69,7 +68,7 @@ namespace Graphics
 
 #if DEBUG
 
-      void AVertexFactoryShader::RecompileShader()
+      void AVertexFactoryShaderModule::RecompileShader()
       {
          CleanUp(false);
          Init();

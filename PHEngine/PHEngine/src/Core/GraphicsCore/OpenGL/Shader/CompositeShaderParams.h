@@ -15,14 +15,12 @@ namespace Graphics
 
          std::shared_ptr<Shader> mShader;
          std::string mShaderName;
-         std::shared_ptr<MaterialProxy> mMaterialProxy;
 
          const uint64_t HASH;
 
-         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader, std::shared_ptr<MaterialProxy> materialProxy)
+         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader)
             : mShader(shader)
             , mShaderName(shaderName)
-            , mMaterialProxy(materialProxy)
             , HASH(hash)
          {
          }
@@ -34,20 +32,49 @@ namespace Graphics
          }
       };
 
-#define NAME_TO_STR(name) #name
-#define COMPOSITE_SHADER_TO_STR(name1, name2, materialName) (NAME_TO_STR(name1) ## NAME_TO_STR(name2) + materialName)
-
-      template <typename CompositeShaderType>
-      struct TemplatedCompositeShaderParams 
+      struct CompositeMaterialShaderParams
          : public CompositeShaderParams
       {
 
-         TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
-            : CompositeShaderParams(
+         std::shared_ptr<MaterialProxy> mMaterialProxy;
+
+         CompositeMaterialShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader, std::shared_ptr<MaterialProxy> materialProxy)
+            : CompositeShaderParams(hash, shaderName, shader)
+            , mMaterialProxy(materialProxy)
+         {
+         }
+      };
+
+#define NAME_TO_STR(name) #name
+#define COMPOSITE_MATERIAL_SHADER_TO_STR(name1, name2, materialName) (NAME_TO_STR(name1) ## NAME_TO_STR(name2) + materialName)
+#define COMPOSITE_SHADER_TO_STR(name1, name2) (NAME_TO_STR(name1) ## NAME_TO_STR(name2))
+
+      template <typename CompositeShaderType>
+      struct TemplatedCompositeMaterialShaderParams
+         : public CompositeMaterialShaderParams
+      {
+
+         TemplatedCompositeMaterialShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
+            : CompositeMaterialShaderParams(
                Game::Hash(uniqueName),
                uniqueName,
                std::make_shared<typename CompositeShaderType::shader_t>(shaderParams),
                materialProxy)
+         {
+
+         }
+      };
+
+      template <typename CompositeShaderType>
+      struct TemplatedCompositeShaderParams
+         : public CompositeShaderParams
+      {
+
+         TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams)
+            : CompositeShaderParams(
+               Game::Hash(uniqueName),
+               uniqueName,
+               std::make_shared<typename CompositeShaderType::shader_t>(shaderParams))
          {
 
          }

@@ -18,15 +18,15 @@ namespace Resources
 	{
 	public:
 
-		static std::shared_ptr<ITexture> AllocateMemory(Model& arg);
+		static std::shared_ptr<ITexture> AllocateMemory(const Model& arg);
 
 		static void DeallocateMemory(std::shared_ptr<ITexture> arg);
 
 	private:
 
-		static ITexture* LoadTexture2dFromFile(Model& pathToFile);
+		static ITexture* LoadTexture2dFromFile(const Model& pathToFile);
 
-		static ITexture* LoadTextureCubeFromFile(std::vector<Model>& pathToFiles);
+		static ITexture* LoadTextureCubeFromFile(const std::vector<Model>& pathToFiles);
 	};
 
 }

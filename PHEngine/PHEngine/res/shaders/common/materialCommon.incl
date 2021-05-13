@@ -3,9 +3,9 @@ struct MATERIAL_VS_OUTPUT
 	// For texture 2D only two components are used, for Cube three components are used
 	vec3 TextureCoordinates; 
 
-	vec3 WorldCoordinates;
+	vec4 WorldCoordinates;
 
-	vec3 ViewCoordinates;
+	vec4 ViewCoordinates;
 
 	vec4 ClippedCoordinates;
 

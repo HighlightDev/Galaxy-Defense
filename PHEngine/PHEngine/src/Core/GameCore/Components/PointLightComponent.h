@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/RenderData/PointLightRenderData.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+#include "Core/GameCore/Event/PlayerMovedEvent.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
@@ -16,6 +17,7 @@ namespace Game
       : public LightComponent
       , public PhysicsSimulationUpdatedEvent
       , public KinematicBodyMovedEvent
+      , public PlayerMovedEvent
    {
       using Base = LightComponent;
 
@@ -46,6 +48,7 @@ namespace Game
 
       virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
       virtual void ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data) override;
 
    private:
 

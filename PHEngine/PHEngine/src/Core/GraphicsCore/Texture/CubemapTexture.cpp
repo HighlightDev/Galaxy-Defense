@@ -13,7 +13,7 @@ namespace Graphics
 	namespace Texture
 	{
 
-		CubemapTexture::CubemapTexture(std::vector<std::string>& pathToTextures)
+		CubemapTexture::CubemapTexture(const std::vector<std::string>& pathToTextures)
 		{
 			m_texDescriptor = CreateCubemapTexture(pathToTextures);
 		}
@@ -52,7 +52,7 @@ namespace Graphics
          return resultTextureDescriptor;
       }
 
-		uint32_t CubemapTexture::CreateCubemapTexture(std::vector<std::string>& pathToTextures)
+		uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string>& pathToTextures)
 		{
 			uint32_t resultTextureDescriptor = -1;
 			size_t mutualPixelFormat = -1;

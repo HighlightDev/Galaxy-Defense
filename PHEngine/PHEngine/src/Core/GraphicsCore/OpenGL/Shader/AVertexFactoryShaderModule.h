@@ -3,12 +3,14 @@
 #include "Shader.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 
 namespace Graphics
 {
    namespace OpenGL
    {
-      class AVertexFactoryShader : public IShader
+      class AVertexFactoryShaderModule 
+         : public IShader
       {
       protected:
 
@@ -17,8 +19,7 @@ namespace Graphics
 
       public:
 
-         AVertexFactoryShader(const std::string& shaderName,
-            std::shared_ptr<Shader> shader,
+         AVertexFactoryShaderModule(const CompositeShaderParams& shaderParams,
             std::shared_ptr<VertexFactoryShader> vertexFactoryShader);
 
       protected:

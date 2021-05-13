@@ -19,7 +19,7 @@ void main()
 	mat3 tangentToWorld = mat3(worldTangent, worldBitangent, worldNormal);
 	normalFromNM = tangentToWorld * normalFromNM;
 
-	gBuffer_Position = VsOutput.WorldCoordinates;
+	gBuffer_Position = VsOutput.WorldCoordinates.xyz;
 	gBuffer_Normal = normalFromNM;
 	gBuffer_Albedo = albedoColor;
 	gBuffer_MetallicRoughness = metallicRoughnessFactor;

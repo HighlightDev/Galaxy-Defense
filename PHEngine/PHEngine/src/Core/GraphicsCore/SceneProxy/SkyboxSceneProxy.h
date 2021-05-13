@@ -17,8 +17,8 @@ namespace Graphics
       class SkyboxSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<SkyboxVertexFactory, SimpleShader>;
-         using PlanarReflectionShaderType = CompositeShader<SkyboxVertexFactory, CapturePlanarReflectionShader>;
+         using ShaderType = VertexFactoryMaterialCompositeShader<SkyboxVertexFactory, SimpleShader>;
+         using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkyboxVertexFactory, CapturePlanarReflectionShader>;
 
       protected:
 

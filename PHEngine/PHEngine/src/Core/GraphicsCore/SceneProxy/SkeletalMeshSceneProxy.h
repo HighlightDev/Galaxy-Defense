@@ -4,7 +4,7 @@
 
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
@@ -20,8 +20,8 @@ namespace Graphics
       class SkeletalMeshSceneProxy :
          public PrimitiveSceneProxy
       {
-         using ShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
-         using PlanarReflectionShaderType = CompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
+         using ShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
+         using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
          using Base = PrimitiveSceneProxy;
 
          std::shared_ptr<AnimationPlayer> mAnimationPlayer;

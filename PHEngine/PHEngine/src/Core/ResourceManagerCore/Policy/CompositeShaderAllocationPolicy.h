@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
+#include "Core/GraphicsCore/OpenGL/Shader/IShader.h"
 
 using namespace Graphics::OpenGL;
 
@@ -17,7 +17,7 @@ namespace Resources
       template <typename CompositeShaderType>
       static std::shared_ptr<IShader> AllocateMemory(const CompositeShaderParams& arg)
       {
-         return std::make_shared<CompositeShaderType>(arg.mShaderName, arg.mShader, arg.mMaterialProxy);
+         return std::make_shared<CompositeShaderType>(arg);
       }
 
       static void DeallocateMemory(std::shared_ptr<IShader> arg)

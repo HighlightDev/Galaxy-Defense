@@ -45,15 +45,7 @@ namespace Graphics
          glBindTexture(GL_TEXTURE_2D, 0);
       }
 
-		Texture2d::Texture2d(TexParams&& textureParameters)
-			: ITexture()
-         , m_textureParams(std::move(textureParameters))
-			, m_mipmapState(nullptr)
-		{
-         InitEmptyTexture();
-		}
-
-      Texture2d::Texture2d(TexParams& textureParameters)
+      Texture2d::Texture2d(const TexParams& textureParameters)
          : ITexture()
          , m_textureParams(textureParameters)
          , m_mipmapState(nullptr)

@@ -181,7 +181,7 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          auto camera = scene->GetCamera(std::get<4>(data));
-         const glm::vec4& viewPortInfo = std::get<5>(data);
+         const glm::ivec4& viewPortInfo = std::get<5>(data);
 
          dataPtr = LuaToCPPAdapter::CreatePlanarReflectionComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
             std::get<3>(data), camera.get(), ViewPortInfo(viewPortInfo.x, viewPortInfo.y, viewPortInfo.z, viewPortInfo.w));

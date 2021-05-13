@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 

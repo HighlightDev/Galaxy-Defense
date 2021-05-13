@@ -26,7 +26,7 @@ namespace Resources
    template class MeshAllocationPolicy<std::string>;
 
    template <typename Model>
-	std::shared_ptr<Skin> MeshAllocationPolicy<Model>::AllocateMemory(Model& arg)
+	std::shared_ptr<Skin> MeshAllocationPolicy<Model>::AllocateMemory(const Model& arg)
 	{
 		const int32_t countOfBonesInfluencingOnVertex = GlobalSettings::GetCountBonesPerVertexForAnimation();
 
