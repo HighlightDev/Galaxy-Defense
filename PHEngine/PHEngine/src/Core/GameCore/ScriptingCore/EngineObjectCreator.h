@@ -19,7 +19,7 @@ namespace Game
 {
    class SceneComponent;
 
-   class LuaToCPPAdapter
+   class EngineObjectCreator
    {
    public:
 
@@ -53,6 +53,8 @@ namespace Game
       static PhysicsShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);
       static PhysicsShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const float d);
       static PhysicsShapeBase* CreatePhysicsSphereShape(const float radius);
+      static PhysicsShapeBase* CreatePhysicsCompoundShape();
+      static void AddChildShapeToCompoundShape(PhysicsShapeBase* compoundShape, PhysicsShapeBase* childShape, const glm::vec3& translation, const glm::vec3& rotation);
 
       static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass);
       static PhysicsDescriptor* CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass);

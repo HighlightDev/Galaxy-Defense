@@ -17,26 +17,27 @@ class Graphics::Proxy::LightSceneProxy;
 class Graphics::Proxy::PrimitiveSceneProxy;
 class Graphics::MaterialProxy;
 class Graphics::PlanarReflectionProxy;
-class EnginePhysics::PhysicsWorld;
 
 namespace Graphics {
    class IMaterial;
    class DynamicMaterial;
 }
 
+namespace EnginePhysics {
+   class PhysicsWorld;
+}
+
 namespace Game
 {
    class Scene :
-      public GameObject, 
+      public GameObject,
       public std::enable_shared_from_this<Scene>
    {
-   public:
+   private:
+
+      EnginePhysics::PhysicsWorld* mPhysicsWorld;
 
       std::unordered_map<std::string, GameObject*> GameObjects;
-
-      class EnginePhysics::PhysicsWorld* mPhysicsWorld;
-
-   private:
 
       InterThreadCommunicationMgr& m_interThreadMgr;
 
@@ -95,7 +96,11 @@ namespace Game
 
       std::shared_ptr<PlayerController> GetPlayerController() const;
 
+      EnginePhysics::PhysicsWorld* GetPhysicsWorld() const;
+
       const std::vector<std::shared_ptr<Actor>>& GetActors() const;
+
+      std::shared_ptr<Actor> GetActor(const std::string& name) const;
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
@@ -160,13 +165,13 @@ namespace Game
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);
 #endif
 
-      private:
+   private:
 
-         void RegisterComponentSceneProxy(std::shared_ptr<Component> component);
+      void RegisterComponentSceneProxy(std::shared_ptr<Component> component);
 
-         bool RegisterGameObject(GameObject* const gameObjectPtr);
+      bool RegisterGameObject(GameObject* const gameObjectPtr);
 
-         bool RemoveGameObject(GameObject* const gameObjectPtr);
+      bool RemoveGameObject(GameObject* const gameObjectPtr);
    };
 
 }

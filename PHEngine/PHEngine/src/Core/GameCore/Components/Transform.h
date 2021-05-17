@@ -34,6 +34,13 @@ namespace Game
       EulerRotationTransform(const glm::vec3& eulerRotationAngles);
    };
 
+   struct NoScaleEulerRotationTransform
+      : public TranslationTransform
+      , public EulerRotationTransform
+   {
+      NoScaleEulerRotationTransform(const glm::vec3& translation, const glm::vec3& eulerAngles);
+   };
+
    struct BoundingBoxTransform
       : public TranslationTransform
       , public ScaleTransform

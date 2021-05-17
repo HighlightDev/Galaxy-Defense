@@ -113,6 +113,13 @@ namespace Game
       /*-------------------- Create physics collision plane shape --------------*/
       PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
 
+      /*-------------------- Create physics compound shape --------------*/
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<>& noData);
+
+      /*-------------------- Add child shape to compound --------------*/
+      void ExecuteLuaCallback(const std::tuple</*compound shape*/PhysicsShapeBase*,
+         /*child shape*/ PhysicsShapeBase*, glm::vec3/*child translation*/, glm::vec3/*child rotation*/>& data);
+
       /*-------------------- Create rigid body controller--------------*/
       PhysicsDescriptor* ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*, std::string, float> descData);
 

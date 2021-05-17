@@ -24,6 +24,12 @@ namespace Game
    {
    }
 
+   NoScaleEulerRotationTransform::NoScaleEulerRotationTransform(const glm::vec3& translation, const glm::vec3& eulerAngles)
+      : TranslationTransform(translation)
+      , EulerRotationTransform(eulerAngles)
+   {
+   }
+
    BoundingBoxTransform::BoundingBoxTransform()
       : TranslationTransform(glm::vec3())
       , ScaleTransform(glm::vec3(1))

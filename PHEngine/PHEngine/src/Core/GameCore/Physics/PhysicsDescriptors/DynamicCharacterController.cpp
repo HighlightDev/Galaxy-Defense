@@ -2,14 +2,10 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
-#include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Components/Transform.h"
 
 #include <glm/gtx/projection.hpp>
-
 #include <iostream>
-
-using namespace Converter;
 
 namespace EnginePhysics
 {

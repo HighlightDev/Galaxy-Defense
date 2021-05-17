@@ -1,5 +1,5 @@
 #include "LuaScriptExecutor_EngineObjectsCreator.h"
-#include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
+#include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -62,7 +62,14 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(LuaArgDummyPlaceholder<>, IMaterial*, std::string, std::string)>::Register(mLuaInstance, "_SetDeferredTextureToMaterial");
       LuaRegisterCallback<LuaExecutor_t, void(IMaterial*, std::string, std::string, std::string)>::Register(mLuaInstance, "_SetBindingToMaterial");
 
+      /**********************************************PHYSICS COLLISION SHAPE***********************************************/
       LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(glm::vec3)>::Register(mLuaInstance, "_CreatePhysicsBoxShape");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(float)>::Register(mLuaInstance, "_CreatePhysicsSphereShape");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(float, float)>::Register(mLuaInstance, "_CreatePhysicsCapsuleShape");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*(glm::vec3, float)>::Register(mLuaInstance, "_CreatePhysicsPlaneShape");
+      LuaRegisterCallback<LuaExecutor_t, PhysicsShapeBase*()>::Register(mLuaInstance, "_CreatePhysicsCompoundShape");
+      LuaRegisterCallback<LuaExecutor_t, void(PhysicsShapeBase*, PhysicsShapeBase*, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_AddCompoundChildShape");
+      /**********************************************PHYSICS COLLISION SHAPE***********************************************/
 
       LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(PhysicsShapeBase*, std::string, float)>::Register(mLuaInstance, "_CreateRigidBodyController");
       LuaRegisterCallback<LuaExecutor_t, PhysicsDescriptor*(float, float, float, float)>::Register(mLuaInstance, "_CreateDynamicCharacterController");
@@ -84,7 +91,7 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         auto actorSP = LuaToCPPAdapter::CreateActorByString(std::get<0>(actorData), std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
+         auto actorSP = EngineObjectCreator::CreateActorByString(std::get<0>(actorData), std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
          scene->AddActor(actorSP);
          createdActor = actorSP.get();
       }
@@ -133,7 +140,7 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         std::shared_ptr<Component> component = LuaToCPPAdapter::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
+         std::shared_ptr<Component> component = EngineObjectCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
          assert(component);
 
          mActiveComponents[component->GetObjectId()] = component;
@@ -146,7 +153,7 @@ namespace Game
    /* -------------------  Create mesh component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateMeshComponentData(std::get<0>(meshComponentData),
+      auto dataPtr = EngineObjectCreator::CreateMeshComponentData(std::get<0>(meshComponentData),
          IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)), std::get<2>(meshComponentData),
          std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
 
@@ -157,7 +164,7 @@ namespace Game
    /* -------------------  Create simple mesh component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial*>& meshComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateSimpleMeshComponentData(std::get<1>(meshComponentData), std::get<2>(meshComponentData), std::get<3>(meshComponentData),
+      auto dataPtr = EngineObjectCreator::CreateSimpleMeshComponentData(std::get<1>(meshComponentData), std::get<2>(meshComponentData), std::get<3>(meshComponentData),
          std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData), std::get<7>(meshComponentData));
 
       mAllocatedComponentData.push_back(dataPtr);
@@ -167,7 +174,7 @@ namespace Game
    /* -------------------  Create water plane component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial*>&  data)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateWaterPlaneComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
+      auto dataPtr = EngineObjectCreator::CreateWaterPlaneComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
          std::get<3>(data), std::get<4>(data));
 
       mAllocatedComponentData.push_back(dataPtr);
@@ -183,7 +190,7 @@ namespace Game
          auto camera = scene->GetCamera(std::get<4>(data));
          const glm::ivec4& viewPortInfo = std::get<5>(data);
 
-         dataPtr = LuaToCPPAdapter::CreatePlanarReflectionComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
+         dataPtr = EngineObjectCreator::CreatePlanarReflectionComponentData(std::get<0>(data), std::get<1>(data), std::get<2>(data),
             std::get<3>(data), camera.get(), ViewPortInfo(viewPortInfo.x, viewPortInfo.y, viewPortInfo.z, viewPortInfo.w));
 
          mAllocatedComponentData.push_back(dataPtr);
@@ -194,7 +201,7 @@ namespace Game
    /* -------------------  Create dir light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*>& dirLightComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
+      auto dataPtr = EngineObjectCreator::CreateDirLightComponentData(std::get<0>(dirLightComponentData), std::get<1>(dirLightComponentData), std::get<2>(dirLightComponentData),
          std::get<3>(dirLightComponentData), std::get<4>(dirLightComponentData), std::get<5>(dirLightComponentData), std::get<6>(dirLightComponentData));
 
       mAllocatedComponentData.push_back(dataPtr);
@@ -204,7 +211,7 @@ namespace Game
    /* -------------------  Create point light component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo*>& pointLightComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreatePointLightComponentData(
+      auto dataPtr = EngineObjectCreator::CreatePointLightComponentData(
          std::get<0>(pointLightComponentData), std::get<1>(pointLightComponentData),
          std::get<2>(pointLightComponentData), std::get<3>(pointLightComponentData),
          std::get<4>(pointLightComponentData), std::get<5>(pointLightComponentData),
@@ -218,7 +225,7 @@ namespace Game
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3,
       glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo*>& spotlightComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateSpotlightComponentData(
+      auto dataPtr = EngineObjectCreator::CreateSpotlightComponentData(
          std::get<0>(spotlightComponentData), std::get<1>(spotlightComponentData),
          std::get<2>(spotlightComponentData), std::get<3>(spotlightComponentData),
          std::get<4>(spotlightComponentData), std::get<5>(spotlightComponentData),
@@ -232,7 +239,7 @@ namespace Game
    /* -------------------  Create physics component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, PhysicsDescriptor*>& phyComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreatePhysicsComponentData(std::get<0>(phyComponentData), std::get<1>(phyComponentData));
+      auto dataPtr = EngineObjectCreator::CreatePhysicsComponentData(std::get<0>(phyComponentData), std::get<1>(phyComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }
@@ -240,7 +247,7 @@ namespace Game
    /* -------------------  Create input component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateInputComponentData(std::get<0>(inputComponentData));
+      auto dataPtr = EngineObjectCreator::CreateInputComponentData(std::get<0>(inputComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }
@@ -248,7 +255,7 @@ namespace Game
    /* -------------------  Create character movement component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
+      auto dataPtr = EngineObjectCreator::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }
@@ -256,7 +263,7 @@ namespace Game
    /* -------------------  Create movement component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
+      auto dataPtr = EngineObjectCreator::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }
@@ -264,7 +271,7 @@ namespace Game
    /* -------------------  Create skybox component data ----------------------------*/
    ComponentData* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, IMaterial*>& skyboxComponentData)
    {
-      auto dataPtr = LuaToCPPAdapter::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
+      auto dataPtr = EngineObjectCreator::CreateSkyboxComponentData(std::get<0>(skyboxComponentData), std::get<1>(skyboxComponentData), std::get<2>(skyboxComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }
@@ -277,7 +284,7 @@ namespace Game
       const int32_t shadowAtlasSize = std::get<0>(lightProjectionData);
       const std::string& lightType = std::get<1>(lightProjectionData);
 
-      shadowProjInfo = LuaToCPPAdapter::CreateProjectedShadowInfo(lightType, glm::ivec2(shadowAtlasSize, shadowAtlasSize));
+      shadowProjInfo = EngineObjectCreator::CreateProjectedShadowInfo(lightType, glm::ivec2(shadowAtlasSize, shadowAtlasSize));
 
       return shadowProjInfo;
    }
@@ -355,25 +362,40 @@ namespace Game
    /*-------------------- Create physics collision sphere shape --------------*/
    PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float>& value)
    {
-      return LuaToCPPAdapter::CreatePhysicsSphereShape(std::get<0>(value));
+      return EngineObjectCreator::CreatePhysicsSphereShape(std::get<0>(value));
    }
 
    /*-------------------- Create physics collision box shape --------------*/
    PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent)
    {
-      return LuaToCPPAdapter::CreatePhysicsBoxShape(std::get<0>(halfExtent));
+      return EngineObjectCreator::CreatePhysicsBoxShape(std::get<0>(halfExtent));
    }
 
    /*-------------------- Create physics collision capsule shape --------------*/
    PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<float, float>& capsuleData)
    {
-      return LuaToCPPAdapter::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
+      return EngineObjectCreator::CreatePhysicsCapsuleShape(std::get<0>(capsuleData), std::get<1>(capsuleData));
    }
 
    /*-------------------- Create physics collision plane shape --------------*/
    PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData)
    {
-      return LuaToCPPAdapter::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
+      return EngineObjectCreator::CreatePhysicsPlaneShape(std::get<0>(planeData), std::get<1>(planeData));
+   }
+
+   /*-------------------- Create physics compound shape --------------*/
+   PhysicsShapeBase* LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<>& noData)
+   {
+      return EngineObjectCreator::CreatePhysicsCompoundShape();
+   }
+
+   /*-------------------- Add child shape to compound --------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*/*compound shape*/,
+      PhysicsShapeBase*/*child shape*/, glm::vec3/*child translation*/, glm::vec3/*child rotation*/>& data)
+   {
+      assert(std::get<0>(data));
+      assert(std::get<1>(data));
+      EngineObjectCreator::AddChildShapeToCompoundShape(std::get<0>(data), std::get<1>(data), std::get<2>(data), std::get<3>(data));
    }
 
    /*-------------------- Create rigid body controller--------------*/
@@ -383,8 +405,8 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         descriptor = LuaToCPPAdapter::CreateRigidBodyController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData), std::get<2>(descData));
-         scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
+         descriptor = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), std::get<0>(descData), std::get<1>(descData), std::get<2>(descData));
+         scene->GetPhysicsWorld()->AddPhysDescriptor(descriptor);
       }
 
       return descriptor;
@@ -397,9 +419,9 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         descriptor = LuaToCPPAdapter::CreateDynamicCharacterController(scene->mPhysicsWorld, std::get<0>(descData), std::get<1>(descData),
+         descriptor = EngineObjectCreator::CreateDynamicCharacterController(scene->GetPhysicsWorld(), std::get<0>(descData), std::get<1>(descData),
             std::get<2>(descData), std::get<3>(descData));
-         scene->mPhysicsWorld->AddPhysDescriptor(descriptor);
+         scene->GetPhysicsWorld()->AddPhysDescriptor(descriptor);
       }
 
       return descriptor;

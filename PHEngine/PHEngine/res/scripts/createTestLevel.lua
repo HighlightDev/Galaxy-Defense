@@ -195,6 +195,22 @@ function CreateTestLevel(host)
 		_AttachComponentToActor(host, house, housePhysComp)
 	end
 
+	-- ***************************TEST******************** --
+
+	local test = _CreateActor(host, "test", 
+	15, 5, 0,
+	0, 0, 0,
+	1, 1, 1)
+
+	if test ~= nil then
+		local compoundShape = _CreatePhysicsCompoundShape(host)
+		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0 ,0 ,0)
+		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0 ,0 ,0)
+		local testDesc = _CreateRigidBodyController(host, compoundShape, "DYNAMIC_BODY", 1000.0)
+		local testCompData = _CreatePhysicsComponentData(host, "testPhyComp", testDesc)
+		_AttachComponentToActor(host, house,  _CreateComponent(host, "PhysicsComponent", testCompData))
+	end
+
 	-- ***************************SKYBOX******************** --
 
 	local skyboxActor = _CreateActor(host,"Skybox actor", 

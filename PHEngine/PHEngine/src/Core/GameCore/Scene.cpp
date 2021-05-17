@@ -97,6 +97,11 @@ namespace Game
       return m_interThreadMgr;
    }
 
+   EnginePhysics::PhysicsWorld* Scene::GetPhysicsWorld() const
+   {
+      return mPhysicsWorld;
+   }
+
    std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
    {
       auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto& cameraPtr) { return cameraPtr->GetGameObjectName() == cameraName; });
@@ -118,6 +123,13 @@ namespace Game
    const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const
    {
       return mActors;
+   }
+
+   std::shared_ptr<Actor> Scene::GetActor(const std::string& name) const
+   {
+      auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto& actor) { return actor->GetGameObjectName() == name;  });
+      assert(foundActor != mActors.end());
+      return *foundActor;
    }
 
    std::shared_ptr<IMaterial> Scene::GetMaterialByProxyId(const size_t proxyId) const

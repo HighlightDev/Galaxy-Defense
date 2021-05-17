@@ -1736,9 +1736,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PhysicsComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2028,6 +2025,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2353,9 +2359,6 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaToCPPAdapter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineObjectsCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2549,6 +2552,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "LuaToCPPAdapter.h"
+#include "EngineObjectCreator.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
@@ -11,6 +11,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
@@ -24,42 +25,42 @@
 namespace Game
 {
 
-   ComponentData* LuaToCPPAdapter::CreateSpotlightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation,
+   ComponentData* EngineObjectCreator::CreateSpotlightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation,
       const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, float cutoff, ProjectedShadowInfo* shadowInfo)
    {
       return new SpotlightComponentData(gameObjectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* LuaToCPPAdapter::CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
+   ComponentData* EngineObjectCreator::CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, ProjectedShadowInfo* shadowInfo)
    {
       return new PointLightComponentData(gameObjectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
+   ComponentData* EngineObjectCreator::CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
       const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo)
    {
       return new DirectionalLightComponentData(gameObjectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
+   ComponentData* EngineObjectCreator::CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
       const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
    {
-         return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
+      return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateSimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
-      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material) 
+   ComponentData* EngineObjectCreator::CreateSimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
+      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
    {
       return new SimpleMeshComponentData(gameObjectName, simpleMeshType, translation, rotation, scale, luaPathToFile, material);
    }
 
-   std::shared_ptr<Actor> LuaToCPPAdapter::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
+   std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
    {
       return std::make_shared<Actor>(gameObjectName, rootComponent);
    }
 
-   std::shared_ptr<Component> LuaToCPPAdapter::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
+   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
    {
       assert(componentData && scene);
 
@@ -125,7 +126,7 @@ namespace Game
       return result;
    }
 
-   ProjectedShadowInfo* LuaToCPPAdapter::CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize)
+   ProjectedShadowInfo* EngineObjectCreator::CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize)
    {
       ProjectedShadowInfo* shadowProjInfo = nullptr;
       if (lightType == "point_light")
@@ -152,74 +153,87 @@ namespace Game
       return shadowProjInfo;
    }
 
-   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
+   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
    {
       return new PhyBoxShape(halfExtent);
    }
 
-   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsCapsuleShape(const float radius, const float height)
+   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsCapsuleShape(const float radius, const float height)
    {
       return new PhyCapsuleShape(radius, height);
    }
 
-   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
+   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
    {
       return new PhyPlaneShape(normal, d);
    }
 
-   PhysicsShapeBase* LuaToCPPAdapter::CreatePhysicsSphereShape(const float radius)
+   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsSphereShape(const float radius)
    {
       return new PhySphereShape(radius);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass)
+   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsCompoundShape()
+   {
+      return new PhyCompoundShape();
+   }
+
+   void EngineObjectCreator::AddChildShapeToCompoundShape(PhysicsShapeBase* compoundShape, PhysicsShapeBase* childShape, const glm::vec3& translation, const glm::vec3& rotation)
+   {
+      PhyCompoundShape* mCompoundShape = static_cast<PhyCompoundShape*>(compoundShape);
+      assert(mCompoundShape);
+      NoScaleEulerRotationTransform childTransform = NoScaleEulerRotationTransform(translation, rotation);
+      mCompoundShape->AddChildShape(childTransform, childShape);
+   }
+
+   PhysicsDescriptor* EngineObjectCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass)
    {
       const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC : PhysicsBodyType::DYNAMIC;
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
+   PhysicsDescriptor* EngineObjectCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
    {
       return new RigidBodyController(physWorld, phyShape, bodyType, mass);
    }
 
-   PhysicsDescriptor* LuaToCPPAdapter::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
+   PhysicsDescriptor* EngineObjectCreator::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
       float mass, float stepHeight)
    {
       return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
    }
 
-   ComponentData* LuaToCPPAdapter::CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor)
+   ComponentData* EngineObjectCreator::CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor)
    {
       return new PhysicsComponentData(gameObjectName, physDescriptor);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+   ComponentData* EngineObjectCreator::CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
    {
       return new CharacterMovementComponentData(gameObjectName, launchDirection, cameraName);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+   ComponentData* EngineObjectCreator::CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
    {
       return new MovementComponentData(gameObjectName, scriptName);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateInputComponentData(const std::string& gameObjectName)
+   ComponentData* EngineObjectCreator::CreateInputComponentData(const std::string& gameObjectName)
    {
       return new InputComponentData(gameObjectName);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material) 
+   ComponentData* EngineObjectCreator::CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material)
    {
       return new SkyboxComponentData(gameObjectName, scale, material);
    }
 
-   ComponentData* LuaToCPPAdapter::CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance)
+   ComponentData* EngineObjectCreator::CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance)
    {
       return new WaterPlaneComponentData(gameObjectName, translation, rotation, scale, materialInstance);
    }
 
-   ComponentData* LuaToCPPAdapter::CreatePlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
+   ComponentData* EngineObjectCreator::CreatePlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
       const ViewPortInfo& fboViewPortInfo)
    {
       return new PlanarReflectionComponentData(gameObjectName, translation, rotation, scale, ownerCamera, fboViewPortInfo);

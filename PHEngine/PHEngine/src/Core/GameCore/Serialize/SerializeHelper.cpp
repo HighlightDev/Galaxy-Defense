@@ -10,7 +10,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
-#include "Core/GameCore/ScriptingCore/LuaToCPPAdapter.h"
+#include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
@@ -173,9 +173,9 @@ namespace Game {
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
-            auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
+            auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
                meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
-            result = LuaToCPPAdapter::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
+            result = EngineObjectCreator::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::SkeletalMesh:
@@ -186,9 +186,9 @@ namespace Game {
 
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
-            auto meshCompData = LuaToCPPAdapter::CreateMeshComponentData(meshData->ComponentName,
+            auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
                meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
-            result = LuaToCPPAdapter::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
+            result = EngineObjectCreator::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Skybox: {
@@ -197,8 +197,8 @@ namespace Game {
 
             IMaterial* material = CreateMaterialFromSerializedData(skyboxData->Material);
 
-            auto skyboxCompData = LuaToCPPAdapter::CreateSkyboxComponentData(skyboxData->ComponentName, skyboxData->Scale, material);
-            result = LuaToCPPAdapter::CreateComponentByString("SkyboxComponent", skyboxCompData, scene);
+            auto skyboxCompData = EngineObjectCreator::CreateSkyboxComponentData(skyboxData->ComponentName, skyboxData->Scale, material);
+            result = EngineObjectCreator::CreateComponentByString("SkyboxComponent", skyboxCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::DirectionalLight:
@@ -216,14 +216,14 @@ namespace Game {
                dirShadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
             }
 
-               auto dirLightCompData = LuaToCPPAdapter::CreateDirLightComponentData(dirLightSerData->ComponentName,
+               auto dirLightCompData = EngineObjectCreator::CreateDirLightComponentData(dirLightSerData->ComponentName,
                   dirLightSerData->Rotation, dirLightSerData->Direction,
                   dirLightSerData->AmbientLight,
                   dirLightSerData->DiffuseLight,
                   dirLightSerData->SpecularLight, dirShadowProjInfo);
             
 
-               result = LuaToCPPAdapter::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
+               result = EngineObjectCreator::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::PointLight:
@@ -239,7 +239,7 @@ namespace Game {
                pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTextureAtlasRequest);
             }
 
-            auto pointLightCompData = LuaToCPPAdapter::CreatePointLightComponentData(pointLightSerData->ComponentName,
+            auto pointLightCompData = EngineObjectCreator::CreatePointLightComponentData(pointLightSerData->ComponentName,
                pointLightSerData->Translation,
                pointLightSerData->AmbientLight,
                pointLightSerData->DiffuseLight,
@@ -249,7 +249,7 @@ namespace Game {
                pointLightShadowProjInfo);
 
 
-            result = LuaToCPPAdapter::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
+            result = EngineObjectCreator::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Spotlight:
@@ -265,7 +265,7 @@ namespace Game {
                spotlightShadowProjInfo = new ProjectedPointLightShadowInfo(spotlightTextureAtlasRequest);
             }
 
-            auto spotlightCompData = LuaToCPPAdapter::CreateSpotlightComponentData(spotlightSerData->ComponentName,
+            auto spotlightCompData = EngineObjectCreator::CreateSpotlightComponentData(spotlightSerData->ComponentName,
                spotlightSerData->Translation,
                spotlightSerData->Rotation,
                spotlightSerData->AmbientLight,
@@ -277,31 +277,31 @@ namespace Game {
                spotlightShadowProjInfo);
 
 
-            result = LuaToCPPAdapter::CreateComponentByString("SpotlightComponent", spotlightCompData, scene);
+            result = EngineObjectCreator::CreateComponentByString("SpotlightComponent", spotlightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Input:
          {
             logCompType = "Input";
             SerializeDataInputComponent* inputSerData = static_cast<SerializeDataInputComponent*>(data.get());
-            auto inputCompData = LuaToCPPAdapter::CreateInputComponentData(inputSerData->ComponentName);
-            result = LuaToCPPAdapter::CreateComponentByString("InputComponent", inputCompData, scene);
+            auto inputCompData = EngineObjectCreator::CreateInputComponentData(inputSerData->ComponentName);
+            result = EngineObjectCreator::CreateComponentByString("InputComponent", inputCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::CharacterMovement:
          {
             logCompType = "CharacterMovement";
             SerializeDataCharacterMovementComponent* charMovSerData = static_cast<SerializeDataCharacterMovementComponent*>(data.get());
-            auto charMoveCompData = LuaToCPPAdapter::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
-            result = LuaToCPPAdapter::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
+            auto charMoveCompData = EngineObjectCreator::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
+            result = EngineObjectCreator::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Movement:
          {
             logCompType = "Movement";
             SerializeDataMovementComponent* movSerData = static_cast<SerializeDataMovementComponent*>(data.get());
-            auto moveCompData = LuaToCPPAdapter::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
-            result = LuaToCPPAdapter::CreateComponentByString("MovementComponent", moveCompData, scene);
+            auto moveCompData = EngineObjectCreator::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
+            result = EngineObjectCreator::CreateComponentByString("MovementComponent", moveCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::Physics:
@@ -309,18 +309,18 @@ namespace Game {
             logCompType = "Physics";
             SerializeDataPhysicsComponent* serData = static_cast<SerializeDataPhysicsComponent*>(data.get());
             auto physShape = CreatePhysicsShape(serData);
-            auto compController = LuaToCPPAdapter::CreateRigidBodyController(scene->mPhysicsWorld, physShape, serData->BodyType, serData->Mass);
-            auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
-            result = LuaToCPPAdapter::CreateComponentByString("PhysicsComponent", compData, scene);
+            auto compController = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), physShape, serData->BodyType, serData->Mass);
+            auto compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
+            result = EngineObjectCreator::CreateComponentByString("PhysicsComponent", compData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::CharacterPhysics:
          {
             logCompType = "CharacterPhysics";
             SerializeDataCharacterPhysicsComponent* serData = static_cast<SerializeDataCharacterPhysicsComponent*>(data.get());
-            auto compController = LuaToCPPAdapter::CreateDynamicCharacterController(scene->mPhysicsWorld, serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
-            auto compData = LuaToCPPAdapter::CreatePhysicsComponentData(serData->ComponentName, compController);
-            result = LuaToCPPAdapter::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
+            auto compController = EngineObjectCreator::CreateDynamicCharacterController(scene->GetPhysicsWorld(), serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
+            auto compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
+            result = EngineObjectCreator::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
             break;
          }
 
