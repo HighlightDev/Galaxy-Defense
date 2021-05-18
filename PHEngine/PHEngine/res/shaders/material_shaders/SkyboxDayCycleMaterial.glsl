@@ -13,8 +13,8 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 	
 	float mixCoef = ((dayTimeElapsed * 2.0) * dayEnable) + (((1.0 - dayTimeElapsed) * 2.0) * nightEnable);
 
-	vec4 dayColour = texture(dayTexture, materialIn.TextureCoordinates.xyz);
-	vec4 nightColour = texture(nightTexture, materialIn.TextureCoordinates.xyz);
+	vec3 dayColour = texture(dayTexture, materialIn.TextureCoordinates.xyz).rgb;
+	vec3 nightColour = texture(nightTexture, materialIn.TextureCoordinates.xyz).rgb;
 
 	return mix(nightColour, dayColour, mixCoef);
 }
