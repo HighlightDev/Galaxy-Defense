@@ -104,6 +104,7 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dummy_metallic_roughness.png"));
       
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("playerCube.obj"));
+      ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("witcher.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("model.dae"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("player_walk.fbx"));
