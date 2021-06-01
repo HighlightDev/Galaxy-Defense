@@ -20,6 +20,14 @@ namespace Graphics
       {
       }
 
+      ViewPortInfo()
+         : OriginX(0)
+         , OriginY(0)
+         , Width(0)
+         , Height(0)
+      {
+      }
+
       ViewPortInfo(int32_t originX, int32_t originY, const glm::ivec2& resolution)
          : OriginX(originY)
          , OriginY(originY)

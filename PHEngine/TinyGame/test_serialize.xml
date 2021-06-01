@@ -25,38 +25,39 @@
 				<value5 size="dynamic">
 					<value0>
 						<polymorphic_id>2147483649</polymorphic_id>
-						<polymorphic_name>SerializeDataDirLightComponent</polymorphic_name>
+						<polymorphic_name>SerializeDataPointLightComponent</polymorphic_name>
 						<ptr_wrapper>
 							<id>2147483649</id>
 							<data>
-								<value0>MainLightComp</value0>
+								<value0>SecondaryLightComp</value0>
 								<value1>
-									<value0>-0.5</value0>
-									<value1>-0.5</value1>
+									<value0>15</value0>
+									<value1>15</value1>
 									<value2>0</value2>
 								</value1>
 								<value2>
 									<value0>0</value0>
-									<value1>29.208925247192383</value1>
+									<value1>0</value1>
 									<value2>0</value2>
 								</value2>
-								<value3>
+								<value3>100</value3>
+								<value4>
 									<value0>0.20000000298023224</value0>
 									<value1>0.20000000298023224</value1>
 									<value2>0.20000000298023224</value2>
-								</value3>
-								<value4>
+								</value4>
+								<value5>
 									<value0>1.6799999475479126</value0>
 									<value1>1.5</value1>
 									<value2>1.5</value2>
-								</value4>
-								<value5>
+								</value5>
+								<value6>
 									<value0>0.69999998807907104</value0>
 									<value1>0.69999998807907104</value1>
 									<value2>0.69999998807907104</value2>
-								</value5>
-								<value6>true</value6>
-								<value7>512</value7>
+								</value6>
+								<value7>true</value7>
+								<value8>256</value8>
 							</data>
 						</ptr_wrapper>
 					</value0>
@@ -112,34 +113,34 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>float</value0>
-											<value1>uvScale</value1>
-											<value2>10.000000</value2>
-										</value0>
-										<value1>
 											<value0>texture</value0>
 											<value1>albedo</value1>
 											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
-										</value1>
-										<value2>
+										</value0>
+										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
+										</value1>
+										<value2>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
-											<value1>metallicMap</value1>
-											<value2></value2>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
-											<value1>roughnessMap</value1>
+											<value1>ambientOcclusionMap</value1>
 											<value2></value2>
 										</value4>
 										<value5>
-											<value0>texture</value0>
-											<value1>ambientOcclusionMap</value1>
-											<value2></value2>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>10.000000</value2>
 										</value5>
 									</value2>
 								</value6>
@@ -188,13 +189,13 @@
 				<value0>SmallGround</value0>
 				<value1>
 					<value0>0</value0>
-					<value1>15</value1>
+					<value1>25</value1>
 					<value2>0</value2>
 				</value1>
 				<value2>
-					<value0>180.00015258789063</value0>
-					<value1>77.682640075683594</value1>
-					<value2>180.00015258789063</value2>
+					<value0>0</value0>
+					<value1>-0</value1>
+					<value2>0</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -233,34 +234,34 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>float</value0>
-											<value1>uvScale</value1>
-											<value2>1.000000</value2>
-										</value0>
-										<value1>
 											<value0>texture</value0>
 											<value1>albedo</value1>
 											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
-										</value1>
-										<value2>
+										</value0>
+										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
+										</value1>
+										<value2>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
-											<value1>metallicMap</value1>
-											<value2></value2>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
-											<value1>roughnessMap</value1>
+											<value1>ambientOcclusionMap</value1>
 											<value2></value2>
 										</value4>
 										<value5>
-											<value0>texture</value0>
-											<value1>ambientOcclusionMap</value1>
-											<value2></value2>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>1.000000</value2>
 										</value5>
 									</value2>
 								</value6>
@@ -268,26 +269,15 @@
 						</ptr_wrapper>
 					</value0>
 					<value1>
-						<polymorphic_id>2147483653</polymorphic_id>
-						<polymorphic_name>SerializeDataMovementComponent</polymorphic_name>
-						<ptr_wrapper>
-							<id>2147483654</id>
-							<data>
-								<value0>moveCompData</value0>
-								<value1>platformMovementComponentAction.lua</value1>
-							</data>
-						</ptr_wrapper>
-					</value1>
-					<value2>
 						<polymorphic_id>3</polymorphic_id>
 						<ptr_wrapper>
-							<id>2147483655</id>
+							<id>2147483654</id>
 							<data>
 								<value0>smallFloorPhysComp</value0>
 								<value1>
 									<polymorphic_id>4</polymorphic_id>
 									<ptr_wrapper>
-										<id>2147483656</id>
+										<id>2147483655</id>
 										<data>
 											<value0>
 												<value0>7.9600000381469727</value0>
@@ -311,7 +301,7 @@
 								<value5>0</value5>
 							</data>
 						</ptr_wrapper>
-					</value2>
+					</value1>
 				</value5>
 			</value2>
 			<value3>
@@ -338,7 +328,7 @@
 					<value0>
 						<polymorphic_id>2</polymorphic_id>
 						<ptr_wrapper>
-							<id>2147483657</id>
+							<id>2147483656</id>
 							<data>
 								<value0>playerCubeMeshComp1</value0>
 								<value1>..\..\PHEngine\res\model\playerCube.obj</value1>
@@ -363,34 +353,34 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>float</value0>
-											<value1>uvScale</value1>
-											<value2>1.000000</value2>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_albedo.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
-											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
+											<value1>normalMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_normal.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
-											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_metallic.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
-											<value1>metallicMap</value1>
-											<value2></value2>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
-											<value1>roughnessMap</value1>
+											<value1>ambientOcclusionMap</value1>
 											<value2></value2>
 										</value4>
 										<value5>
-											<value0>texture</value0>
-											<value1>ambientOcclusionMap</value1>
-											<value2></value2>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>1.000000</value2>
 										</value5>
 									</value2>
 								</value6>
@@ -400,13 +390,13 @@
 					<value1>
 						<polymorphic_id>3</polymorphic_id>
 						<ptr_wrapper>
-							<id>2147483658</id>
+							<id>2147483657</id>
 							<data>
 								<value0>smallFloorPhysComp1</value0>
 								<value1>
 									<polymorphic_id>4</polymorphic_id>
 									<ptr_wrapper>
-										<id>2147483659</id>
+										<id>2147483658</id>
 										<data>
 											<value0>
 												<value0>7.9600000381469727</value0>
@@ -436,14 +426,14 @@
 			<value4>
 				<value0>House</value0>
 				<value1>
-					<value0>4.3080940486106556e-06</value0>
-					<value1>2.495244026184082</value1>
+					<value0>1.1093338798673358e-06</value0>
+					<value1>5.493370532989502</value1>
 					<value2>0</value2>
 				</value1>
 				<value2>
-					<value0>-2.1147403458599001e-05</value0>
-					<value1>8.2231803389731795e-05</value1>
-					<value2>-8.6650536104571074e-05</value2>
+					<value0>-2.1375435608206317e-06</value0>
+					<value1>4.5780893742630724e-06</value1>
+					<value2>-9.4233282652567141e-06</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -457,7 +447,7 @@
 					<value0>
 						<polymorphic_id>2</polymorphic_id>
 						<ptr_wrapper>
-							<id>2147483660</id>
+							<id>2147483659</id>
 							<data>
 								<value0>houseMeshComp</value0>
 								<value1>..\..\PHEngine\res\model\City_House_2_BI.obj</value1>
@@ -472,9 +462,9 @@
 									<value2>0</value2>
 								</value3>
 								<value4>
-									<value0>0.5</value0>
-									<value1>0.5</value1>
-									<value2>0.5</value2>
+									<value0>1.5</value0>
+									<value1>1.5</value1>
+									<value2>1.5</value2>
 								</value4>
 								<value5></value5>
 								<value6>
@@ -482,34 +472,34 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>float</value0>
-											<value1>uvScale</value1>
-											<value2>1.000000</value2>
-										</value0>
-										<value1>
 											<value0>texture</value0>
 											<value1>albedo</value1>
 											<value2>..\..\PHEngine\res\texture\albedo\city_house_2_Col.png</value2>
-										</value1>
-										<value2>
+										</value0>
+										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\city_house_2_Nor.png</value2>
+										</value1>
+										<value2>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
-											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\specularmap\city_house_2_Spec.png</value2>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
-											<value1>roughnessMap</value1>
+											<value1>ambientOcclusionMap</value1>
 											<value2></value2>
 										</value4>
 										<value5>
-											<value0>texture</value0>
-											<value1>ambientOcclusionMap</value1>
-											<value2></value2>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>1.000000</value2>
 										</value5>
 									</value2>
 								</value6>
@@ -519,18 +509,18 @@
 					<value1>
 						<polymorphic_id>3</polymorphic_id>
 						<ptr_wrapper>
-							<id>2147483661</id>
+							<id>2147483660</id>
 							<data>
 								<value0>housePhyComp</value0>
 								<value1>
 									<polymorphic_id>4</polymorphic_id>
 									<ptr_wrapper>
-										<id>2147483662</id>
+										<id>2147483661</id>
 										<data>
 											<value0>
-												<value0>0.95999997854232788</value0>
-												<value1>1.4600000381469727</value1>
-												<value2>0.95999997854232788</value2>
+												<value0>2.9600000381469727</value0>
+												<value1>4.4600000381469727</value1>
+												<value2>2.9600000381469727</value2>
 											</value0>
 										</data>
 									</ptr_wrapper>
@@ -546,13 +536,122 @@
 									<value1>1</value1>
 									<value2>1</value2>
 								</value4>
-								<value5>125</value5>
+								<value5>525</value5>
 							</data>
 						</ptr_wrapper>
 					</value1>
 				</value5>
 			</value4>
 			<value5>
+				<value0>test</value0>
+				<value1>
+					<value0>15</value0>
+					<value1>5.9986381530761719</value1>
+					<value2>1.2483677664931747e-06</value2>
+				</value1>
+				<value2>
+					<value0>8.9520915125262945e-09</value0>
+					<value1>4.8948891162581276e-06</value1>
+					<value2>3.1344427497970173e-06</value2>
+				</value2>
+				<value3>
+					<value0>1</value0>
+					<value1>1</value1>
+					<value2>1</value2>
+				</value3>
+				<value4>
+					<polymorphic_id>0</polymorphic_id>
+				</value4>
+				<value5 size="dynamic">
+					<value0>
+						<polymorphic_id>2</polymorphic_id>
+						<ptr_wrapper>
+							<id>2147483662</id>
+							<data>
+								<value0>testMeshComponent</value0>
+								<value1>..\..\PHEngine\res\model\witcher.obj</value1>
+								<value2>
+									<value0>0</value0>
+									<value1>0</value1>
+									<value2>0</value2>
+								</value2>
+								<value3>
+									<value0>0</value0>
+									<value1>-0</value1>
+									<value2>0</value2>
+								</value3>
+								<value4>
+									<value0>1.5</value0>
+									<value1>1.5</value1>
+									<value2>1.5</value2>
+								</value4>
+								<value5></value5>
+								<value6>
+									<value0>PBS material</value0>
+									<value1>PBRMaterial.glsl</value1>
+									<value2 size="dynamic">
+										<value0>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_albedo.png</value2>
+										</value0>
+										<value1>
+											<value0>texture</value0>
+											<value1>normalMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_normal.png</value2>
+										</value1>
+										<value2>
+											<value0>texture</value0>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_metallic.png</value2>
+										</value2>
+										<value3>
+											<value0>texture</value0>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_roughness.png</value2>
+										</value3>
+										<value4>
+											<value0>texture</value0>
+											<value1>ambientOcclusionMap</value1>
+											<value2></value2>
+										</value4>
+										<value5>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>5.000000</value2>
+										</value5>
+									</value2>
+								</value6>
+							</data>
+						</ptr_wrapper>
+					</value0>
+					<value1>
+						<polymorphic_id>3</polymorphic_id>
+						<ptr_wrapper>
+							<id>2147483663</id>
+							<data>
+								<value0>testPhyComp</value0>
+								<value1>
+									<polymorphic_id>0</polymorphic_id>
+								</value1>
+								<value2>1</value2>
+								<value3>
+									<value0>1</value0>
+									<value1>1</value1>
+									<value2>1</value2>
+								</value3>
+								<value4>
+									<value0>1</value0>
+									<value1>1</value1>
+									<value2>1</value2>
+								</value4>
+								<value5>1000</value5>
+							</data>
+						</ptr_wrapper>
+					</value1>
+				</value5>
+			</value5>
+			<value6>
 				<value0>Skybox actor</value0>
 				<value1>
 					<value0>0</value0>
@@ -574,10 +673,10 @@
 				</value4>
 				<value5 size="dynamic">
 					<value0>
-						<polymorphic_id>2147483654</polymorphic_id>
+						<polymorphic_id>2147483653</polymorphic_id>
 						<polymorphic_name>SerializeDataSkyboxComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483663</id>
+							<id>2147483664</id>
 							<data>
 								<value0>SkyboxComp</value0>
 								<value1>
@@ -596,21 +695,26 @@
 										</value0>
 										<value1>
 											<value0>texture</value0>
-											<value1>nightTexure</value1>
-											<value2></value2>
+											<value1>nightTexture</value1>
+											<value2>..\..\PHEngine\res\texture\cubemap\nightRight.png,..\..\PHEngine\res\texture\cubemap\nightLeft.png,..\..\PHEngine\res\texture\cubemap\nightTop.png,..\..\PHEngine\res\texture\cubemap\nightBottom.png,..\..\PHEngine\res\texture\cubemap\nightBack.png,..\..\PHEngine\res\texture\cubemap\nightFront.png</value2>
 										</value1>
+										<value2>
+											<value0>float</value0>
+											<value1>dayTimeElapsed</value1>
+											<value2>0.421264</value2>
+										</value2>
 									</value2>
 								</value2>
 							</data>
 						</ptr_wrapper>
 					</value0>
 				</value5>
-			</value5>
-			<value6>
+			</value6>
+			<value7>
 				<value0>SkeletBuddy</value0>
 				<value1>
 					<value0>10</value0>
-					<value1>3.8329601287841797</value1>
+					<value1>3.8324158191680908</value1>
 					<value2>10</value2>
 				</value1>
 				<value2>
@@ -626,9 +730,9 @@
 				<value4>
 					<polymorphic_id>1073741824</polymorphic_id>
 					<ptr_wrapper>
-						<id>2147483664</id>
+						<id>2147483665</id>
 						<data>
-							<value0>..\..\PHEngine\res\fsm\playerAnimation.fsm</value0>
+							<value0>..\..\PHEngine\res\tweeners\playerAnimation.tween</value0>
 							<value1 size="dynamic">
 								<value0>
 									<value0>buddyMeshComp</value0>
@@ -641,10 +745,10 @@
 				</value4>
 				<value5 size="dynamic">
 					<value0>
-						<polymorphic_id>2147483655</polymorphic_id>
+						<polymorphic_id>2147483654</polymorphic_id>
 						<polymorphic_name>SerializeDataSkeletalMesh</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483665</id>
+							<id>2147483666</id>
 							<data>
 								<value0>buddyMeshComp</value0>
 								<value1>..\..\PHEngine\res\model\player_walk.fbx</value1>
@@ -669,34 +773,34 @@
 									<value1>PBRMaterial.glsl</value1>
 									<value2 size="dynamic">
 										<value0>
-											<value0>float</value0>
-											<value1>uvScale</value1>
-											<value2>1.000000</value2>
+											<value0>texture</value0>
+											<value1>albedo</value1>
+											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
-											<value1>albedo</value1>
+											<value1>normalMap</value1>
 											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
-											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
+											<value1>metallicMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
-											<value1>metallicMap</value1>
-											<value2></value2>
+											<value1>roughnessMap</value1>
+											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
-											<value1>roughnessMap</value1>
+											<value1>ambientOcclusionMap</value1>
 											<value2></value2>
 										</value4>
 										<value5>
-											<value0>texture</value0>
-											<value1>ambientOcclusionMap</value1>
-											<value2></value2>
+											<value0>float</value0>
+											<value1>uvScale</value1>
+											<value2>1.000000</value2>
 										</value5>
 									</value2>
 								</value6>
@@ -704,10 +808,10 @@
 						</ptr_wrapper>
 					</value0>
 					<value1>
-						<polymorphic_id>2147483656</polymorphic_id>
+						<polymorphic_id>2147483655</polymorphic_id>
 						<polymorphic_name>SerializeDataCharacterPhysicsComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483666</id>
+							<id>2147483667</id>
 							<data>
 								<value0>buddyPhyComp</value0>
 								<value1>1</value1>
@@ -718,33 +822,55 @@
 						</ptr_wrapper>
 					</value1>
 					<value2>
-						<polymorphic_id>2147483657</polymorphic_id>
+						<polymorphic_id>2147483656</polymorphic_id>
 						<polymorphic_name>SerializeDataInputComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483667</id>
+							<id>2147483668</id>
 							<data>
 								<value0>skeletInputComp</value0>
 							</data>
 						</ptr_wrapper>
 					</value2>
 					<value3>
-						<polymorphic_id>2147483658</polymorphic_id>
+						<polymorphic_id>2147483657</polymorphic_id>
 						<polymorphic_name>SerializeDataCharacterMovementComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483668</id>
+							<id>2147483669</id>
 							<data>
 								<value0>charMovementCompData</value0>
 								<value1>
-									<value0>-0.17085070908069611</value0>
-									<value1>-0.94483458995819092</value1>
-									<value2>0.27945947647094727</value2>
+									<value0>-0.50502806901931763</value0>
+									<value1>-0.46576851606369019</value1>
+									<value2>-0.72664046287536621</value2>
 								</value1>
 								<value2>MainCamera</value2>
 							</data>
 						</ptr_wrapper>
 					</value3>
 				</value5>
-			</value6>
+			</value7>
+			<value8>
+				<value0>WaterActor</value0>
+				<value1>
+					<value0>20</value0>
+					<value1>2</value1>
+					<value2>0</value2>
+				</value1>
+				<value2>
+					<value0>0</value0>
+					<value1>-0</value1>
+					<value2>0</value2>
+				</value2>
+				<value3>
+					<value0>1</value0>
+					<value1>1</value1>
+					<value2>1</value2>
+				</value3>
+				<value4>
+					<polymorphic_id>0</polymorphic_id>
+				</value4>
+				<value5 size="dynamic"/>
+			</value8>
 		</value0>
 		<value1>
 			<polymorphic_id>1073741824</polymorphic_id>

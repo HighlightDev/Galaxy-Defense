@@ -26,21 +26,21 @@ function CreateTestLevel(host)
 		local specular = { x = 0.7, y = 0.7, z = 0.7 }
 		
 		local attenuation = { x = 0, y = 0, z = 0 }
-		local pointLTranslation = {x = 0 , y = 15, z = 0}
+		local pointLTranslation = {x = 15 , y = 15, z = 0}
 	
-		local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
+		--local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
 		--local dirShadowInfo1= _CreateLightProjectionShadowInfo(host, 256, "direct_light")
 	
-		local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
-			rotation.x, rotation.y, rotation.z,
-			direction.x, direction.y, direction.z,
-			ambient.x, ambient.y, ambient.z,
-			diffuse.x, diffuse.y, diffuse.z,
-			specular.x, specular.y, specular.z,
-			dirShadowInfo
-		)
-		local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
-		 _AttachComponentToActor(host, lightActor, dirLightComponent)
+		--local dirLightComponentData = _CreateDirLightComponentData(host, "MainLightComp",
+		--	rotation.x, rotation.y, rotation.z,
+		--	direction.x, direction.y, direction.z,
+		--	ambient.x, ambient.y, ambient.z,
+		--	diffuse.x, diffuse.y, diffuse.z,
+		--	specular.x, specular.y, specular.z,
+		--	dirShadowInfo
+		--)
+		--local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
+		-- _AttachComponentToActor(host, lightActor, dirLightComponent)
 
 		--	local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
 		--	rotation.x, rotation.y, rotation.z,
@@ -54,18 +54,18 @@ function CreateTestLevel(host)
 		 --_AttachComponentToActor(host, lightActor, dirLightComponent1)
 
 
-		--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
-		--local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
-		--	pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
-		--	ambient.x, ambient.y, ambient.z,
-		--	diffuse.x, diffuse.y, diffuse.z,
-		--	specular.x, specular.y, specular.z,
-		--	attenuation.x, attenuation.y, attenuation.z,
-		--	100.0,
-		--	pointShadowInfo
-		--	)
-		--local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
-		--_AttachComponentToActor(host, lightActor, pointLightComponent)
+		local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
+		local pointLightComponentData = _CreatePointLightComponentData(host, "SecondaryLightComp",
+			pointLTranslation.x, pointLTranslation.y, pointLTranslation.z,
+			ambient.x, ambient.y, ambient.z,
+			diffuse.x, diffuse.y, diffuse.z,
+			specular.x, specular.y, specular.z,
+			attenuation.x, attenuation.y, attenuation.z,
+			100.0,
+			pointShadowInfo
+			)
+		local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
+		_AttachComponentToActor(host, lightActor, pointLightComponent)
 
 		--local spotlightShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "spotlight")
 		--local spotlightCD = _CreateSpotlightComponentData(host, 
@@ -181,15 +181,15 @@ function CreateTestLevel(host)
 		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
 		0, -2, 0,
 		0, 0, 0,
-		0.5, 0.5, 0.5, 
+		1.5, 1.5, 1.5, 
 		"",
 		houseMat)
 
 		local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
 		_AttachComponentToActor(host, house, meshComponent)
 
-		local houseShape = _CreatePhysicsBoxShape(host, 1, 1.5, 1)
-		local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 125.0)
+		local houseShape = _CreatePhysicsBoxShape(host, 3, 4.5, 3)
+		local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 525.0)
 		local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 		local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
 		_AttachComponentToActor(host, house, housePhysComp)
@@ -203,6 +203,23 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	if test ~= nil then
+		local testMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_albedo.png", "albedo")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_normal.png", "normalMap")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_roughness.png", "roughnessMap")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_metallic.png", "metallicMap")
+		_SetFloatToMaterial(host, testMat, 5.0, "uvScale")
+
+		local testData = _CreateMeshComponentData(host, "testMeshComponent", "witcher.obj",
+		0, 0, 0,
+		0, 0, 0,
+		1.5, 1.5, 1.5, 
+		"",
+		testMat)
+
+		local testMeshComponent = _CreateComponent(host, "StaticMeshComponent", testData)
+		_AttachComponentToActor(host, test, testMeshComponent)
+
 		local compoundShape = _CreatePhysicsCompoundShape(host)
 		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0 ,0 ,0)
 		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0 ,0 ,0)

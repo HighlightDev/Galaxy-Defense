@@ -28,6 +28,10 @@ namespace Game
 
       bool m_bThirdPersonTargetTransformationDirty = false;
 
+      std::string mThirdPersonTargetGOName;
+
+      bool bThirdPersonTargetDeferredDirty;
+
    public:
 
       float m_maxDistanceFromTargetToCamera;
@@ -41,6 +45,8 @@ namespace Game
       virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data);
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
+
+      virtual void PostLevelInit() override;
 
       void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
 
@@ -64,7 +70,13 @@ namespace Game
 
       std::shared_ptr<Actor> GetThirdPersonTarget() const;
 
+      void SetThirdPersonTargetDeferred(const std::string& targetGameObjectName);
+
       void SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget);
+
+   private:
+
+      void ProcessDeferredThirdPersonTarget();
    };
 }
 

@@ -2,42 +2,73 @@
 
 #include <stdint.h>
 #include <gl/glew.h>
+#include <type_traits>
 
 namespace Graphics
 {
-   template <
-      bool depthTestEnabled = true,
-      int32_t depthFunc = GL_LEQUAL,
-      int32_t stencilFunc = GL_ALWAYS,
-      int32_t stencilRef = 0x0,
-      int32_t stencilMask = 0x1>
-      struct DepthStencilState
+   /* Depth / stencil state */
+   template<
+      bool depthTestEnabled,
+      int32_t depthFunc,
+      bool stencilTestEnabled,
+      int32_t stencilFunc,
+      int32_t stencilRef,
+      int32_t stencilMask>
+      struct DepthStencilState;
+
+   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
+   struct DepthStencilState<false, depthFunc, false, stencilFunc, stencilRef, stencilMask>
+   {
+      static void BindDepthStencilState()
+      {
+         glDisable(GL_DEPTH_TEST);
+
+         glDisable(GL_STENCIL_TEST);
+      }
+   };
+
+   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
+   struct DepthStencilState<true, depthFunc, false, stencilFunc, stencilRef, stencilMask>
    {
       static void BindDepthStencilState()
       {
          glEnable(GL_DEPTH_TEST);
          glDepthFunc(depthFunc);
-         //glEnable(GL_STENCIL_TEST);
-         //glStencilFunc(stencilFunc, stencilRef, stencilMask);
+
+         glDisable(GL_STENCIL_TEST);
       }
    };
 
-   template <int32_t depthFunc,
-      int32_t stencilFunc,
-      int32_t stencilRef,
-      int32_t stencilMask>
-   struct DepthStencilState<false, depthFunc, stencilFunc, stencilRef, stencilMask>
+   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
+   struct DepthStencilState<false, depthFunc, true, stencilFunc, stencilRef, stencilMask>
    {
       static void BindDepthStencilState()
       {
          glDisable(GL_DEPTH_TEST);
+
+         glEnable(GL_STENCIL_TEST);
+         glStencilFunc(stencilFunc, stencilRef, stencilMask);
       }
    };
 
+   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
+   struct DepthStencilState<true, depthFunc, true, stencilFunc, stencilRef, stencilMask>
+   {
+      static void BindDepthStencilState()
+      {
+         glEnable(GL_DEPTH_TEST);
+         glDepthFunc(depthFunc);
+
+         glEnable(GL_STENCIL_TEST);
+         glStencilFunc(stencilFunc, stencilRef, stencilMask);
+      }
+   };
+
+   /* Blending state */
    template <bool bEnableBlending = true,
       int32_t srcFactor = GL_SRC_ALPHA,
       int32_t dstFactor = GL_ONE_MINUS_SRC_ALPHA>
-   struct BlendingState
+      struct BlendingState
    {
       static void BindBlendState()
       {
@@ -46,9 +77,8 @@ namespace Graphics
       }
    };
 
-   template <int32_t srcFactor,
-      int32_t dstFactor>
-      struct BlendingState<false, srcFactor, dstFactor>
+   template <>
+      struct BlendingState<false>
    {
       static void BindBlendState()
       {

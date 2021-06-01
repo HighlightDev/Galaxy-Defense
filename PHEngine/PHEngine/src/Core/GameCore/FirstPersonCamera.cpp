@@ -9,7 +9,7 @@ namespace Game
       , m_firstPersonCameraPosition(camPos)
       , m_cameraMoveSpeed(0.1f)
    {
-      m_cameraType = ACamera::CameraType::FIRST_PERSON;
+      m_cameraType = ACamera::CameraType::SECONDARY_FIRST_PERSON_CAMERA;
       ACamera::UpdateRotationMatrix(0, 0);
    }
 

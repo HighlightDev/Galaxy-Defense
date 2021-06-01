@@ -26,16 +26,16 @@ namespace Game
    {
    public:
 
-      enum class CameraType
+      enum CameraType
       {
-         FIRST_PERSON,
-         THIRD_PERSON,
-         UNINITIALIZED
+         SECONDARY_FIRST_PERSON_CAMERA = 0x0001, // not fully implemented
+         MAIN_FIRST_PERSON_CAMERA = (SECONDARY_FIRST_PERSON_CAMERA | 0x0010), // not fully implemented
+         SECONDARY_THIRD_PERSON_CAMERA = 0x0100,
+         MAIN_THIRD_PERSON_CAMERA = (SECONDARY_THIRD_PERSON_CAMERA | 0x1000),
+         UNINITIALIZED = 0x0,
       };
 
    private:
-
-      std::weak_ptr<Scene> mScene;
 
       float m_rotateSensetivity;
 
@@ -44,6 +44,8 @@ namespace Game
       ViewPerspectiveInfo mViewPerspectiveInfo;
 
    protected:
+
+      std::weak_ptr<Scene> mScene;
 
       std::shared_ptr<PlanarReflectionComponent> mPlanarReflectionComponent;
 

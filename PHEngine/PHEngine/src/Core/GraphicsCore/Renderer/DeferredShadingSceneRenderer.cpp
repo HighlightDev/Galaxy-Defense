@@ -105,7 +105,7 @@ namespace Graphics
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
-         RenderState<DepthStencilState<true>, BlendingState<false>> renderState;
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          for (auto& atlasLightGroup : mGroupedByShadowAtlasLights)
@@ -441,7 +441,8 @@ namespace Graphics
          m_gbuffer->CopyFramebufferData(cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height,
             cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
 
-         RenderState<DepthStencilState<true>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
+            BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto& proxy : mForwardRenderingProxiesVec)
@@ -461,7 +462,8 @@ namespace Graphics
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
-         RenderState<DepthStencilState<true>, BlendingState<false>> renderState;
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
+            BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec)
@@ -695,7 +697,8 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {
-         RenderState<DepthStencilState<false>, BlendingState<false>> renderState;
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
+            BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          m_textureRenderer.RenderFrames(m_gbuffer);
@@ -838,12 +841,12 @@ namespace Graphics
                      glVertex3f(vertex3.x, vertex3.y, vertex3.z);
                   }
                   glEnd();
+               }
          }
-      }
 #endif
+      }
    }
-}
 #endif
 
-   }
+}
 }

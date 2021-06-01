@@ -51,7 +51,7 @@ namespace TinyLogger
    void Logger::EnqueuLogMessage(LogMessage&& message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
-      mMessageQueue.emplace(std::move(message));
+      mMessageQueue.emplace(message);
    }
 
    std::string Logger::ConcatMessages()

@@ -10,6 +10,7 @@ namespace Game
       : ThirdPersonCamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget)
    {
       MouseMovedEvent::GetInstance()->AddListener(this);
+      m_cameraType = ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA;
    }
 
    MainThirdPersonCamera::~MainThirdPersonCamera()

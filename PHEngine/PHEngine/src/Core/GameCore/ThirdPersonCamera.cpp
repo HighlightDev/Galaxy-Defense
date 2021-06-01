@@ -6,6 +6,9 @@
 
 #include <algorithm>
 
+#undef max
+#undef min
+
 namespace Game
 {
 
@@ -13,11 +16,13 @@ namespace Game
       const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
       : ACamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
+      , mThirdPersonTargetGOName("")
+      , bThirdPersonTargetDeferredDirty(false)
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
-      m_cameraType = ACamera::CameraType::THIRD_PERSON;
+      m_cameraType = ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA;
    }
 
    ThirdPersonCamera::~ThirdPersonCamera()
@@ -37,14 +42,18 @@ namespace Game
       Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, this);
    }
 
+   void ThirdPersonCamera::PostLevelInit()
+   {
+      ACamera::PostLevelInit();
+
+      ProcessDeferredThirdPersonTarget();
+   }
+
    void ThirdPersonCamera::Tick(const float DeltaTime)
    {
       ACamera::Tick(DeltaTime);
 
-      constexpr auto max = [](const auto& left, const auto& right) -> auto{return left > right ? left : right};
-      constexpr auto min = [](const auto& left, const auto& right) -> auto{return left < right ? left : right};
-
-      float clampedDeltaTime = max(DeltaTime, 0.03f);
+      float clampedDeltaTime = std::max(DeltaTime, 0.03f);
 
       if (bTransformationDirty)
       {
@@ -53,7 +62,7 @@ namespace Game
 
       if (m_bThirdPersonTargetTransformationDirty)
       {
-         m_lerpTimeElapsed = min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
+         m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
 
          glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
          m_actualTargetVector = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
@@ -127,11 +136,29 @@ namespace Game
       return std::make_shared<CameraSceneProxy>(this);
    }
 
+   void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string& targetGameObjectName)
+   {
+      bThirdPersonTargetDeferredDirty = true;
+      mThirdPersonTargetGOName = targetGameObjectName;
+   }
+
    void ThirdPersonCamera::SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget)
    {
+      assert(!bThirdPersonTargetDeferredDirty);
+
       m_thirdPersonTarget = thirdPersonTarget;
       m_actualTargetVector = thirdPersonTarget->GetRootComponent()->GetTranslation();
 
       ACamera::UpdateRotationMatrix(0, 0);
+   }
+
+   void ThirdPersonCamera::ProcessDeferredThirdPersonTarget()
+   {
+      if (auto sceneSp = mScene.lock())
+      {
+         const auto& actor = sceneSp->GetActor(mThirdPersonTargetGOName);
+         bThirdPersonTargetDeferredDirty = false;
+         SetThirdPersonTarget(actor);
+      }
    }
 }

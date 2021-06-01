@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
@@ -153,6 +154,19 @@ namespace Game {
       meshData->MeshMaterial = material;
 
       return meshData;
+   }
+
+   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent* component)
+   {
+      auto planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
+      planarReflectionData->ComponentName = component->GetGameObjectName();
+      planarReflectionData->Translation = component->GetTranslation();
+      planarReflectionData->EulerAnglesRotation = component->GetRotationEuler();
+      planarReflectionData->Scale = component->GetScale();
+      planarReflectionData->OwnerCameraName = component->GetOwnerCamera()->GetCameraName();
+      const auto& viewPortInfo = component->GetRenderTargetViewPortInfo();
+      planarReflectionData->ViewPortInfo = glm::vec4(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
+      return planarReflectionData;
    }
 
    std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) 

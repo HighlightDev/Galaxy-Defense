@@ -3,7 +3,6 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
-#include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
@@ -112,6 +111,11 @@ namespace Game
       }
 
       return nullptr;
+   }
+
+   std::vector<std::shared_ptr<ACamera>> Scene::GetActiveCameras() const
+   {
+      return mActiveCameras;
    }
 
    std::shared_ptr<ACamera> Scene::GetMainCamera() const

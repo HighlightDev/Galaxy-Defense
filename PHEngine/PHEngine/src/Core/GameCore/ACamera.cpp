@@ -12,10 +12,10 @@ namespace Game
 
    ACamera::ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)
       : GameObject(cameraName)
-      , mScene(scene)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
       , mViewPerspectiveInfo(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000)
+      , mScene(scene)
       , mPlanarReflectionComponent(nullptr)
       , mViewPort(viewPort)
       , m_localSpaceRightVector(1, 0, 0)

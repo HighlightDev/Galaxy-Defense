@@ -106,6 +106,8 @@ namespace Game
 
       std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
 
+      std::vector<std::shared_ptr<ACamera>> GetActiveCameras() const;
+
       std::shared_ptr<ACamera> GetMainCamera() const;
 
       const InterThreadCommunicationMgr& GetThreadManager() const;

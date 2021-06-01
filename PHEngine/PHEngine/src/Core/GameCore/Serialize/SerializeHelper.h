@@ -22,6 +22,7 @@ namespace Game {
    class Component;
    class StaticMeshComponent;
    class SkeletalMeshComponent;
+   class PlanarReflectionComponent;
 
    class SerializeHelper
    {
@@ -30,6 +31,8 @@ namespace Game {
       static std::shared_ptr<SerializeDataStaticMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
 
       static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
+
+      static std::shared_ptr<SerializeDataPlanarReflectionComponent> GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent* component);
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 

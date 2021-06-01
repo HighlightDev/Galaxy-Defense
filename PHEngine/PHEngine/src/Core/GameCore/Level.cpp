@@ -1,6 +1,6 @@
 #include "Level.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/MainThirdPersonCamera.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
@@ -69,6 +69,11 @@ namespace Game
          actor->CollectDataForSerialization(container);
       }
 
+      for (auto& camera : mScene->GetActiveCameras())
+      {
+         // todo: serialize camera + planar reflection components
+      }
+
       container.PlayerControllerData =
          std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
 
@@ -113,7 +118,7 @@ namespace Game
 
             // stub for now!
 
-            if (auto thirdPersonCamera = std::static_pointer_cast<ThirdPersonCamera>(mScene->GetMainCamera()))
+            if (auto thirdPersonCamera = std::static_pointer_cast<MainThirdPersonCamera>(mScene->GetMainCamera()))
             {
                thirdPersonCamera->SetThirdPersonTarget(actor);
             }

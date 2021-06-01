@@ -122,14 +122,14 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          auto camera = scene->GetMainCamera();
-         assert(camera && ACamera::CameraType::THIRD_PERSON == camera->GetCameraType());
+         assert(camera && ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
             [&](const std::shared_ptr<Actor>& sceneActor) { return sceneActor->GetObjectId() == actor->GetObjectId(); });
          assert(actorIt != scene->GetActors().end());
 
          scene->SetPlayerController(std::make_shared<PlayerController>((*actorIt)));
-         std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTarget(*actorIt);
+         std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetGameObjectName());
       }
    }
 
@@ -390,8 +390,8 @@ namespace Game
    }
 
    /*-------------------- Add child shape to compound --------------*/
-   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<PhysicsShapeBase*/*compound shape*/,
-      PhysicsShapeBase*/*child shape*/, glm::vec3/*child translation*/, glm::vec3/*child rotation*/>& data)
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple</*compound shape*/PhysicsShapeBase*,
+      /*child shape*/PhysicsShapeBase*, glm::vec3/*child translation*/, glm::vec3/*child rotation*/>& data)
    {
       assert(std::get<0>(data));
       assert(std::get<1>(data));

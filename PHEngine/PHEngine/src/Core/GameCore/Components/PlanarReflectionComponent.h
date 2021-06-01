@@ -48,6 +48,8 @@ namespace Game {
 
       virtual void PostLevelInit() override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
 
       ACamera* GetOwnerCamera() const;
