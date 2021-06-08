@@ -122,16 +122,6 @@ namespace Labyrinth
    {
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-      //Camera
-      {
-         int32_t windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-         int32_t windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
-
-         ViewPortInfo viewPort{ 0 , 0, windowWidth, windowHeight };
-
-         mScene->RegisterMainCamera(std::make_shared<MainThirdPersonCamera>("MainCamera", mScene, viewPort, 50.0f, 20.0f, 20.0f, glm::vec3(0, 5, 0)));
-      }
-
 #if false
       DeserializeLevel("test_serialize.xml");
 #else

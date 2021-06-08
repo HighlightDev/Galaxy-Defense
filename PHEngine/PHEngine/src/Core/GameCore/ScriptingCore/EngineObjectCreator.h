@@ -25,6 +25,10 @@ namespace Game
 
       static std::shared_ptr<Actor> CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent);
 
+      static std::shared_ptr<ACamera> CreateThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
+         const float initPitchDeg, const float initYawDeg,
+         const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset, const bool bIsMainSceneCamera);
+
       static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
       
       static ProjectedShadowInfo* CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize);

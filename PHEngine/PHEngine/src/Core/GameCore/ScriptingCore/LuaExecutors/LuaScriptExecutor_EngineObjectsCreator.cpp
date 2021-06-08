@@ -2,6 +2,8 @@
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/MainThirdPersonCamera.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
@@ -36,10 +38,15 @@ namespace Game
 
       LuaRegisterCallback<LuaExecutor_t, Component*(std::string, ComponentData*)>::Register(mLuaInstance, "_CreateComponent");
       LuaRegisterCallback<LuaExecutor_t, Actor*(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
+
+      LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)> ::Register(mLuaInstance, "_CreateThirdPersonCamera");
+
+
       LuaRegisterCallback<LuaExecutor_t, void(Actor*, Component*)>::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor*)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
       LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo*(int32_t, std::string)>::Register(mLuaInstance, "_CreateLightProjectionShadowInfo");
+
 
       /*************************************COMPONENT DATA**************************************/
       LuaRegisterCallback<LuaExecutor_t, ComponentData*(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo*)>::Register(mLuaInstance, "_CreateDirLightComponentData");
@@ -111,6 +118,36 @@ namespace Game
       assert((componentExists, "Sought component doesn't exist"));
 
       actor->AddComponent(mActiveComponents[component->GetObjectId()]);
+   }
+
+   /* -------------------  Create third person camera ----------------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string/*cameraName*/,
+      glm::ivec4/*viewPort*/, float/*initPitchDeg*/, float/*initYawDeg*/, float/*camDistanceToThirdPersonTarget*/, glm::vec3/*thirdPersonTargetOffset*/,
+      int32_t/*is main camera in the scene*/>& cameraData)
+   {
+      if (auto scene = mSceneWP.lock()) {
+         const glm::ivec4& viewPortData = std::get<1>(cameraData);
+         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<6>(cameraData));
+
+         auto thirdPersonCamera = EngineObjectCreator::CreateThirdPersonCamera(
+            std::get<0>(cameraData),
+            scene,
+            ViewPortInfo(viewPortData.x, viewPortData.y, viewPortData.z, viewPortData.w),
+            std::get<2>(cameraData),
+            std::get<3>(cameraData),
+            std::get<4>(cameraData),
+            std::get<5>(cameraData),
+            bIsMainSceneCamera);
+
+         if (bIsMainSceneCamera)
+         {
+            scene->RegisterMainCamera(thirdPersonCamera);
+         }
+         else
+         {
+            scene->RegisterCamera(thirdPersonCamera);
+         }
+      }
    }
 
    /* ------------------- Attach actor to player controller ----------------------------*/

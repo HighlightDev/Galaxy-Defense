@@ -4,6 +4,17 @@ function CreateTestLevel(host)
 	local aRot = { x = 0, y = 0, z = 0 }
 	local aSca = { x = 1, y = 1, z = 1 }
 
+	--void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)
+	-- *********************************CREATE MAIN CAMERA******************************** --
+	_CreateThirdPersonCamera(host, "MainCamera",
+	0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
+	50.0,
+	20.0,
+	20.0,
+	0, 5, 0,
+	1) -- is main camera on scene
+
+
 	-- ****************************PLANAR REFLECTION***************************** --
 
 	local planarReflectionCD = _CreatePlanarReflectionComponentData(host, "planarReflectionComponent",

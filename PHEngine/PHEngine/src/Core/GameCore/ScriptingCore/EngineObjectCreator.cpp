@@ -1,5 +1,7 @@
 #include "EngineObjectCreator.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/MainThirdPersonCamera.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
@@ -58,6 +60,26 @@ namespace Game
    std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
    {
       return std::make_shared<Actor>(gameObjectName, rootComponent);
+   }
+
+   std::shared_ptr<ACamera> EngineObjectCreator::CreateThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
+      const float initPitchDeg, const float initYawDeg,
+      const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset, const bool bIsMainSceneCamera)
+   {
+      std::shared_ptr<ACamera> result;
+
+      if (bIsMainSceneCamera)
+      {
+         result = std::make_shared<MainThirdPersonCamera>(cameraName, scene, viewPort,
+            initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+      }
+      else
+      {
+         result = std::make_shared<ThirdPersonCamera>(cameraName, scene, viewPort,
+            initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+      }
+
+      return result;
    }
 
    std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
