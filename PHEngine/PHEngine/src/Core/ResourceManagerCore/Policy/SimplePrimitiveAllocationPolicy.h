@@ -13,6 +13,7 @@ namespace Resources
    {
       POINT,
       CUBE,
+      INVERTED_VERTICES_DIRECTION_CUBE,
       PLANE,
       PLANE_WITH_ATTRIBUTES
    };

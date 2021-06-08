@@ -57,9 +57,14 @@ namespace Graphics
          return true;
       }
 
-      PrimitiveProxyType StaticMeshSceneProxy::GetPrimitiveProxyType() const
+      eMeshFacing StaticMeshSceneProxy::GetMeshFrontFace() const
       {
-         return PrimitiveProxyType::STATIC_MESH_PROXY;
+         return eMeshFacing::COUNTER_CLOCK_WISE;
+      }
+
+      ePrimitiveProxyType StaticMeshSceneProxy::GetPrimitiveProxyType() const
+      {
+         return ePrimitiveProxyType::STATIC_MESH_PROXY;
       }
 
    }

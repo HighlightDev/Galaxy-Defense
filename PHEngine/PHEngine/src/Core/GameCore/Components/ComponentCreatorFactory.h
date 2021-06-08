@@ -94,7 +94,7 @@ namespace Game
          {
             const SkyboxComponentData& mData = static_cast<const SkyboxComponentData&>(data);
 
-            int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
+            int32_t primitive = (int32_t)SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE;
             auto skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
 
             const auto& materialProxy = RegisterMaterialOnScene(scene, mData.m_material);

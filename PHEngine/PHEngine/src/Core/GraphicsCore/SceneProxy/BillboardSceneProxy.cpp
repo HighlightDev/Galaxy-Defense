@@ -36,5 +36,9 @@ namespace Graphics
          return false;
       }
 
+      eMeshFacing BillboardSceneProxy::GetMeshFrontFace() const {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
+      }
+
    }
 }

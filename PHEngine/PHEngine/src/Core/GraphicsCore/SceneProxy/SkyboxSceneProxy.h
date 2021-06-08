@@ -40,11 +40,13 @@ namespace Graphics
 
          virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
+         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
          virtual bool IsFrustumCullTestNeeded() const override;
 
          virtual bool IsDeferred() const;
+
+         virtual eMeshFacing GetMeshFrontFace() const override;
       };
 
    }

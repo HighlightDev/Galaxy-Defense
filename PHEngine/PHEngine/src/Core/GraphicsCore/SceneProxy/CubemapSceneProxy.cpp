@@ -45,5 +45,10 @@ namespace Graphics
          return false;
       }
 
+      eMeshFacing CubemapSceneProxy::GetMeshFrontFace() const
+      {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
+      }
+
    }
 }

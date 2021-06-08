@@ -13,11 +13,12 @@ namespace Game
 {
 
    ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
-      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
+      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset)
       : ACamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg)
       , PlayerMovedEvent()
       , mThirdPersonTargetGOName("")
       , bThirdPersonTargetDeferredDirty(false)
+      , m_thirdPersonTargetOffset(thirdPersonTargetOffset)
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
@@ -113,7 +114,7 @@ namespace Game
    glm::vec3 ThirdPersonCamera::GetTargetVector() const
    {
       assert(m_thirdPersonTarget);
-      return m_actualTargetVector + glm::vec3(0, 5, 0); // attach to "head"
+      return m_actualTargetVector + m_thirdPersonTargetOffset; // attach to "head"
    }
 
    void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetToCamera)

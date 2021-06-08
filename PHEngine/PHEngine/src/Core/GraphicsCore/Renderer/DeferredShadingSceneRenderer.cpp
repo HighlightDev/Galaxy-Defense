@@ -458,7 +458,7 @@ namespace Graphics
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
       {
          glEnable(GL_CULL_FACE);
-         glFrontFace(GL_CCW);
+         glFrontFace(GL_CW);
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
@@ -476,23 +476,10 @@ namespace Graphics
                const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
                const glm::vec4& mirrorPlane = planarReflectionProxy->GetReflectionPlane();
 
-               CameraFrustum mirroredCameraFrustum =
+               const CameraFrustum& mirroredCameraFrustum =
                   CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
 
                planarReflectionProxy->RenderToPlanarReflectionFBO();
-
-               if (mForwardRenderingProxiesVec.size() > 0)
-               {
-                  for (auto& proxy : mForwardRenderingProxiesVec)
-                  {
-                     if (proxy->IsEnabled() && proxy->IsVisible())
-                     {
-                        bool bDraw = proxy->IsFrustumCullTestNeeded() ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
-                        if (bDraw)
-                           proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
-                     }
-                  }
-               }
 
                if (mSkeletalProxiesVec.size() > 0)
                {
@@ -510,6 +497,19 @@ namespace Graphics
                if (mNonSkeletalProxiesVec.size() > 0)
                {
                   for (auto& proxy : mNonSkeletalProxiesVec)
+                  {
+                     if (proxy->IsEnabled() && proxy->IsVisible())
+                     {
+                        bool bDraw = proxy->IsFrustumCullTestNeeded() ? mirroredCameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
+                        if (bDraw)
+                           proxy->RenderPlanarReflection(mirrorPlane, mirrorMatrix, viewMatrix, projectionMatrix);
+                     }
+                  }
+               }
+
+               if (mForwardRenderingProxiesVec.size() > 0)
+               {
+                  for (auto& proxy : mForwardRenderingProxiesVec)
                   {
                      if (proxy->IsEnabled() && proxy->IsVisible())
                      {
@@ -543,7 +543,7 @@ namespace Graphics
 
                if (proxyPtr->IsDeferred())
                {
-                  if (proxyPtr->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY)
+                  if (proxyPtr->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
                      mSkeletalProxiesVec.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
                   else
                      mNonSkeletalProxiesVec.push_back(proxyPtr);
@@ -796,7 +796,7 @@ namespace Graphics
 
             for (auto& proxy : SceneProxiesMap)
             {
-               if (proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == PrimitiveProxyType::STATIC_MESH_PROXY)
+               if (proxy.second->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == ePrimitiveProxyType::STATIC_MESH_PROXY)
                {
                   const auto bb = proxy.second->GetTransformedBoundingBox();
                   const auto& positions = bb.GetBoundPositions();

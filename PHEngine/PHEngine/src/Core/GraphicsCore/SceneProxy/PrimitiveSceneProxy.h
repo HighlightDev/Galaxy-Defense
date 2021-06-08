@@ -21,11 +21,17 @@ namespace Graphics
 {
    namespace Proxy
    {
-      enum class PrimitiveProxyType
+      enum class ePrimitiveProxyType
       {
          PRIMITIVE_PROXY,
          STATIC_MESH_PROXY,
          SKELETAL_MESH_PROXY
+      };
+
+      enum class eMeshFacing
+      {
+         CLOCK_WISE,
+         COUNTER_CLOCK_WISE,
       };
 
       class PrimitiveSceneProxy
@@ -61,7 +67,7 @@ namespace Graphics
 
          virtual std::shared_ptr<Skin> GetSkin() const;
 
-         virtual PrimitiveProxyType GetPrimitiveProxyType() const;
+         virtual ePrimitiveProxyType GetPrimitiveProxyType() const;
 
          virtual bool IsFrustumCullTestNeeded() const override;
 
@@ -70,6 +76,8 @@ namespace Graphics
          virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) { }
 
          virtual bool IsDeferred() const = 0;
+
+         virtual eMeshFacing GetMeshFrontFace() const = 0;
 
       };
 

@@ -6,8 +6,8 @@ namespace Game
 {
 
    MainThirdPersonCamera::MainThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
-      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget)
-      : ThirdPersonCamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget)
+      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset)
+      : ThirdPersonCamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset)
    {
       MouseMovedEvent::GetInstance()->AddListener(this);
       m_cameraType = ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA;

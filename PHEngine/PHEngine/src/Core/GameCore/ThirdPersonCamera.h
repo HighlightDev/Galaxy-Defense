@@ -22,6 +22,8 @@ namespace Game
 
       glm::vec3 m_actualTargetVector;
 
+      glm::vec3 m_thirdPersonTargetOffset;
+
       float m_lerpTimeElapsed = 0.0f;
 
       float m_timeForInterpolation = 0.55f;
@@ -36,7 +38,9 @@ namespace Game
 
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
+      ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene,
+         const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg,
+         const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset = glm::vec3());
 
       virtual ~ThirdPersonCamera();
 

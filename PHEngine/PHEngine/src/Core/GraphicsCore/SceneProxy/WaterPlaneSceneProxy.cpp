@@ -62,9 +62,14 @@ namespace Graphics
          m_farClipPlane = farClipPlane;
       }
 
-      PrimitiveProxyType WaterPlaneSceneProxy::GetPrimitiveProxyType() const
+      ePrimitiveProxyType WaterPlaneSceneProxy::GetPrimitiveProxyType() const
       {
-         return PrimitiveProxyType::PRIMITIVE_PROXY;
+         return ePrimitiveProxyType::PRIMITIVE_PROXY;
+      }
+
+      eMeshFacing WaterPlaneSceneProxy::GetMeshFrontFace() const
+      {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
       }
 
       bool WaterPlaneSceneProxy::IsDeferred() const

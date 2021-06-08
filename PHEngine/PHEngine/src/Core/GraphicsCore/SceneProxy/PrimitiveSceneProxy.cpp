@@ -42,9 +42,9 @@ namespace Graphics
          return m_skin;
       }
 
-      PrimitiveProxyType PrimitiveSceneProxy::GetPrimitiveProxyType() const
+      ePrimitiveProxyType PrimitiveSceneProxy::GetPrimitiveProxyType() const
       {
-         return PrimitiveProxyType::PRIMITIVE_PROXY;
+         return ePrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
       bool PrimitiveSceneProxy::IsFrustumCullTestNeeded() const

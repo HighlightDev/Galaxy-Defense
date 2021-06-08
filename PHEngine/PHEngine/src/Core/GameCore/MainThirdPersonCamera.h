@@ -15,7 +15,7 @@ namespace Game
    public:
 
       MainThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
-         const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget);
+         const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset = glm::vec3());
 
       ~MainThirdPersonCamera();
 

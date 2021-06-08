@@ -34,16 +34,13 @@ namespace Graphics
          return std::static_pointer_cast<SkyboxSceneProxy::PlanarReflectionShaderType>(m_planarReflectionShader);
       }
 
-      PrimitiveProxyType SkyboxSceneProxy::GetPrimitiveProxyType() const
+      ePrimitiveProxyType SkyboxSceneProxy::GetPrimitiveProxyType() const
       {
-         return PrimitiveProxyType::PRIMITIVE_PROXY;
+         return ePrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
       void SkyboxSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         glEnable(GL_CULL_FACE);
-         glCullFace(GL_FRONT);
-
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
 
@@ -58,8 +55,6 @@ namespace Graphics
 
       void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
       {
-         glEnable(GL_CULL_FACE);
-         glCullFace(GL_BACK);
          const auto& planarReflectionShader = GetPlanarReflectionShader();
 
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
@@ -81,6 +76,11 @@ namespace Graphics
       bool SkyboxSceneProxy::IsDeferred() const
       {
          return false;
+      }
+
+      eMeshFacing SkyboxSceneProxy::GetMeshFrontFace() const
+      {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
       }
    }
 }

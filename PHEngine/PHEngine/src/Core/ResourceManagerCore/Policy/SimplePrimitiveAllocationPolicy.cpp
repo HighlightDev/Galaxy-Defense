@@ -34,6 +34,52 @@ namespace Resources
             case SimplePrimitiveType::POINT:
                vertices = std::vector<float>({ 0.0f, 0.0f, 0.0f });
                break;
+            case SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE:
+               vertices = std::vector<float>({
+                  // back face
+                  -1.0f, -1.0f, -1.0f, // bottom-left
+                   1.0f, -1.0f, -1.0f, // bottom-right         
+                   1.0f,  1.0f, -1.0f, // top-right
+                   1.0f,  1.0f, -1.0f, // top-right
+                  -1.0f,  1.0f, -1.0f, // top-left
+                  -1.0f, -1.0f, -1.0f, // bottom-left
+                  // front face
+                  -1.0f, -1.0f,  1.0f, // bottom-left
+                   1.0f,  1.0f,  1.0f, // top-right
+                   1.0f, -1.0f,  1.0f, // bottom-right
+                   1.0f,  1.0f,  1.0f, // top-right
+                  -1.0f, -1.0f,  1.0f, // bottom-left
+                  -1.0f,  1.0f,  1.0f, // top-left
+                  // left face
+                  -1.0f,  1.0f,  1.0f, // top-right
+                  -1.0f, -1.0f, -1.0f, // bottom-left
+                  -1.0f,  1.0f, -1.0f, // top-left
+                  -1.0f, -1.0f, -1.0f, // bottom-left
+                  -1.0f,  1.0f,  1.0f, // top-right
+                  -1.0f, -1.0f,  1.0f, // bottom-right
+                  // right face
+                   1.0f,  1.0f,  1.0f, // top-left
+                   1.0f,  1.0f, -1.0f, // top-right         
+                   1.0f, -1.0f, -1.0f, // bottom-right
+                   1.0f, -1.0f, -1.0f, // bottom-right
+                   1.0f, -1.0f,  1.0f, // bottom-left     
+                   1.0f,  1.0f,  1.0f, // top-left
+                  // bottom face
+                  -1.0f, -1.0f, -1.0f, // top-right
+                   1.0f, -1.0f,  1.0f, // bottom-left
+                   1.0f, -1.0f, -1.0f, // top-left
+                   1.0f, -1.0f,  1.0f, // bottom-left
+                  -1.0f, -1.0f, -1.0f, // top-right
+                  -1.0f, -1.0f,  1.0f, // bottom-right
+                  // top face
+                  -1.0f,  1.0f, -1.0f, // top-left
+                   1.0f,  1.0f, -1.0f, // top-right     
+                   1.0f,  1.0f , 1.0f, // bottom-right
+                   1.0f,  1.0f,  1.0f, // bottom-right
+                  -1.0f,  1.0f,  1.0f, // bottom-left        
+                  -1.0f,  1.0f, -1.0f // top-left
+                  });
+               break;
             case SimplePrimitiveType::CUBE:
                vertices = std::vector<float>({
                   // back face
@@ -84,11 +130,11 @@ namespace Resources
             case SimplePrimitiveType::PLANE_WITH_ATTRIBUTES:
                vertices = std::vector<float>({
                   -1.0f, 0.0f, -1.0f, // top-right
+                  1.0f, 0.0f, 1.0f, // bottom-left
                   1.0f, 0.0f, -1.0f, // top-left
                   1.0f, 0.0f, 1.0f, // bottom-left
-                  1.0f, 0.0f, 1.0f, // bottom-left
-                  -1.0f, 0.0f, 1.0f, // bottom-right
                   -1.0f, 0.0f, -1.0f, // top-right
+                  -1.0f, 0.0f, 1.0f, // bottom-right
                   });
                break;
          }
@@ -97,19 +143,19 @@ namespace Resources
          {
             normals = std::vector<float>({
                   0.0f, 0.0f, 1.0f, // top-right
+                  0.0f, 0.0f, 1.0f, // bottom-left
                   0.0f, 0.0f, 1.0f, // top-left
                   0.0f, 0.0f, 1.0f, // bottom-left
-                  0.0f, 0.0f, 1.0f, // bottom-left
-                  0.0f, 0.0f, 1.0f, // bottom-right
                   0.0f, 0.0f, 1.0f, // top-right
+                  0.0f, 0.0f, 1.0f, // bottom-right
                });
             texCoords = std::vector<float>({
                   1.0f, 0.0f, // top-right
+                  0.0f, 1.0f, // bottom-left
                   0.0f, 0.0f, // top-left
                   0.0f, 1.0f, // bottom-left
-                  0.0f, 1.0f, // bottom-left
-                  1.0f, 1.0f, // bottom-right
                   1.0f, 0.0f, // top-right
+                  1.0f, 1.0f, // bottom-right
                });
          }
 

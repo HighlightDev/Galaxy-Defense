@@ -42,7 +42,9 @@ namespace Graphics
 
          virtual bool IsDeferred() const;
 
-         virtual PrimitiveProxyType GetPrimitiveProxyType() const override;
+         virtual eMeshFacing GetMeshFrontFace() const override;
+
+         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
          void SetMoveFactor(float moveFactor);
          void SetWaveStrength(float waveStr);

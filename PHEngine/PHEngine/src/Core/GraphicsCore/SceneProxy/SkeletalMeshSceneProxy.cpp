@@ -89,9 +89,9 @@ namespace Graphics
          bIsDirty = true;
       }
 
-      PrimitiveProxyType SkeletalMeshSceneProxy::GetPrimitiveProxyType() const
+      ePrimitiveProxyType SkeletalMeshSceneProxy::GetPrimitiveProxyType() const
       {
-         return PrimitiveProxyType::SKELETAL_MESH_PROXY;
+         return ePrimitiveProxyType::SKELETAL_MESH_PROXY;
       }
 
       const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices()
@@ -108,6 +108,11 @@ namespace Graphics
       bool SkeletalMeshSceneProxy::IsDeferred() const
       {
          return true;
+      }
+
+      eMeshFacing SkeletalMeshSceneProxy::GetMeshFrontFace() const
+      {
+         return eMeshFacing::COUNTER_CLOCK_WISE;
       }
    }
 }
