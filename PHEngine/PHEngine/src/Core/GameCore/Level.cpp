@@ -71,7 +71,7 @@ namespace Game
 
       for (auto& camera : mScene->GetActiveCameras())
       {
-         // todo: serialize camera + planar reflection components
+         camera->CollectDataForSerialization(container);
       }
 
       container.PlayerControllerData =

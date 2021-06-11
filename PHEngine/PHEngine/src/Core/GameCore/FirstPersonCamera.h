@@ -5,7 +5,8 @@
 namespace Game
 {
    class Scene;
-	class FirstPersonCamera : public ACamera
+	class FirstPersonCamera 
+      : public ACamera
 	{
 	private:
 
@@ -25,6 +26,10 @@ namespace Game
       virtual glm::vec3 GetTargetVector()  const override;
 
       virtual glm::vec3 GetLocalSpaceUpVector() const override;
+
+      virtual std::string GetCameraTypeName() const override;
+
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       void MoveCamera(int32_t direction);
 

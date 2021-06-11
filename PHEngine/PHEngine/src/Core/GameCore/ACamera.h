@@ -12,6 +12,7 @@
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
+#include "Core/GameCore/Serialize/ISerializable.h"
 
 using namespace Graphics;
 
@@ -23,6 +24,7 @@ namespace Game
    class ACamera
       : public GameObject
       , public ITickable
+      , public ISerializable
    {
    public:
 
@@ -91,13 +93,17 @@ namespace Game
 
       virtual glm::vec3 GetLocalSpaceUpVector() const = 0;
 
-      std::shared_ptr<PlanarReflectionComponent> GetPlanarReflectionComponent() const;
-
       virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const = 0;
+
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
+
+      std::shared_ptr<PlanarReflectionComponent> GetPlanarReflectionComponent() const;
 
       std::string GetCameraName() const;
 
       CameraType GetCameraType() const;
+
+      virtual std::string GetCameraTypeName() const = 0;
 
       void SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent);
 

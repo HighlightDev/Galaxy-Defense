@@ -1,5 +1,6 @@
 #include "SerializeHelper.h"
 
+#include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -18,6 +19,8 @@
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GameCore/FirstPersonCamera.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -25,6 +28,42 @@ using namespace Graphics;
 using namespace EnginePhysics;
 
 namespace Game {
+
+   std::shared_ptr<SerializeDataCamera> SerializeHelper::GetSerializedDataCamera(const ACamera* camera)
+   {
+      std::shared_ptr<SerializeDataCamera> cameraData;
+
+      if (ACamera::CameraType::SECONDARY_THIRD_PERSON_CAMERA & camera->GetCameraType())
+      {
+         // third person camera
+         auto thirdPersonCameraData = std::make_shared<SerializeDataThirdPersonCamera>();
+         cameraData = thirdPersonCameraData;
+         const auto thirdPersonCamera = static_cast<const ThirdPersonCamera*>(camera);
+         thirdPersonCameraData->ThirdPersonTargetOffset = thirdPersonCamera->GetThirdPersonTargetOffset();
+         thirdPersonCameraData->CameraDistanceToThirdPersonTarget = thirdPersonCamera->GetMaxDistanceFromTargetToCamera();
+      }
+      else if (ACamera::CameraType::SECONDARY_FIRST_PERSON_CAMERA & camera->GetCameraType())
+      {
+         // first person camera
+         auto firstPersonCameraData = std::make_shared<SerializeDataFirstPersonCamera>();
+         cameraData = firstPersonCameraData;
+         const auto firstPersonCamera = static_cast<const FirstPersonCamera*>(camera);
+         firstPersonCameraData->CameraPosition = firstPersonCamera->GetEyeVector();
+      }
+      else { assert(false); }
+
+      cameraData->CameraName = camera->GetCameraName();
+      cameraData->ViewPortInfo = glm::ivec4(camera->GetViewPort());
+      cameraData->InitPitchDeg = camera->GetRotationPitch();
+      cameraData->InitYawDeg = camera->GetRotationYaw();
+      cameraData->CameraType = camera->GetCameraTypeName();
+
+      std::vector<std::shared_ptr<SerializeDataPlanarReflectionComponent>> planarReflectionComponents;
+
+      cameraData->PlanarReflectionComponentsData = std::move(planarReflectionComponents);
+
+      return cameraData;
+   }
 
    std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(PhysicsComponent* component)
    {

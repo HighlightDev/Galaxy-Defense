@@ -22,6 +22,8 @@ namespace Game
       virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
 
       virtual void ProcessEvent(const typename MouseMovedEvent::EventData_t& data) override;
+
+      virtual std::string GetCameraTypeName() const override;
    };
 }
 

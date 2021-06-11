@@ -10,15 +10,14 @@
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
-#include "Core/GameCore/ACamera.h"
 
 using namespace EnginePhysics;
-using namespace Game;
 
 namespace glm 
 {
    template<class Archive> void serialize(Archive& archive, glm::vec3& v) { archive(v.x, v.y, v.z); }
    template<class Archive> void serialize(Archive& archive, glm::vec4& v) { archive(v.x, v.y, v.z, v.w); }
+   template<class Archive> void serialize(Archive& archive, glm::ivec4& v) { archive(v.x, v.y, v.z, v.w); }
 }
 
 struct SerializeDataBase
@@ -411,22 +410,57 @@ struct SerializeDataActor
    }
 };
 
+struct SerializeDataPlanarReflectionComponent;
+
 struct SerializeDataCamera
    : public SerializeDataBase
 {
    std::string CameraName;
-   ACamera::CameraType CameraType;
-   std::vector<std::shared_ptr<SerializeDataBase>> PlanarReflectionComponentsData;
+   glm::ivec4 ViewPortInfo;
+   float InitPitchDeg;
+   float InitYawDeg;
+   std::string CameraType;
+
+   std::vector<std::shared_ptr<SerializeDataPlanarReflectionComponent>> PlanarReflectionComponentsData;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(CameraName, CameraType, PlanarReflectionComponentsData);
+      archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, PlanarReflectionComponentsData);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Camera;
+   }
+};
+
+struct SerializeDataThirdPersonCamera
+   : public SerializeDataCamera
+{
+   float CameraDistanceToThirdPersonTarget;
+   glm::vec3 ThirdPersonTargetOffset;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataCamera::serialize(archive);
+
+      archive(CameraDistanceToThirdPersonTarget, ThirdPersonTargetOffset);
+   }
+};
+
+struct SerializeDataFirstPersonCamera
+   : public SerializeDataCamera
+{
+   glm::vec3 CameraPosition;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      SerializeDataCamera::serialize(archive);
+
+      archive(CameraPosition);
    }
 };
 
@@ -535,7 +569,8 @@ CEREAL_REGISTER_TYPE(SerializeDataInputComponent);
 CEREAL_REGISTER_TYPE(SerializeDataSkyboxComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPlanarReflectionComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPlayerController);
-CEREAL_REGISTER_TYPE(SerializeDataCamera);
+CEREAL_REGISTER_TYPE(SerializeDataFirstPersonCamera);
+CEREAL_REGISTER_TYPE(SerializeDataThirdPersonCamera);
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataActor)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataStaticMesh)
@@ -552,7 +587,8 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataInputCompon
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSkyboxComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPlanarReflectionComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPlayerController)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCamera)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataFirstPersonCamera)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataThirdPersonCamera)
 
 CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
 CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);

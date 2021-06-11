@@ -1,5 +1,6 @@
 #include "FirstPersonCamera.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 namespace Game
 {
@@ -38,6 +39,11 @@ namespace Game
    {
    }
 
+   std::string FirstPersonCamera::GetCameraTypeName() const
+   {
+      return "FirstPersonCamera";
+   }
+
    void FirstPersonCamera::MoveCamera(int32_t direction)
    {
       switch (direction)
@@ -47,6 +53,12 @@ namespace Game
          case 3: m_firstPersonCameraPosition -= GetEyeSpaceRightVector() * m_cameraMoveSpeed; break;
          case 4: m_firstPersonCameraPosition += GetEyeSpaceRightVector() * m_cameraMoveSpeed; break;
       }
+   }
+
+   void FirstPersonCamera::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+      auto cameraData = SerializeHelper::GetSerializedDataCamera(this);
+      dataContainer.Cameras.emplace_back(cameraData);
    }
 }
 

@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
 #include <cereal/types/vector.hpp>
+#include <glm/vec3.hpp>
 
 #include "SerializeData.h"
-#include <glm/vec3.hpp>
 
 namespace Game
 {
@@ -13,10 +13,12 @@ namespace Game
 
       std::unique_ptr<SerializeDataPlayerController> PlayerControllerData;
 
+      std::vector<std::shared_ptr<SerializeDataCamera>> Cameras;
+
       template <typename Archive>
       void serialize(Archive& archive)
       {
-         archive(Actors, PlayerControllerData);
+         archive(Actors, PlayerControllerData, Cameras);
       }
    };
 }

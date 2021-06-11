@@ -17,6 +17,7 @@ namespace Game {
    using EnginePhysics::PhysicsComponent;
 
    class Actor;
+   class ACamera;
    class Tweener;
    class Scene;
    class Component;
@@ -28,6 +29,8 @@ namespace Game {
    {
    public:
       
+      static std::shared_ptr<SerializeDataCamera> GetSerializedDataCamera(const ACamera* camera);
+
       static std::shared_ptr<SerializeDataStaticMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
 
       static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);

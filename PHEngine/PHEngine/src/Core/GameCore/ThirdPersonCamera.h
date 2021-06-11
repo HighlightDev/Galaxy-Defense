@@ -52,6 +52,8 @@ namespace Game
 
       virtual void PostLevelInit() override;
 
+      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
       void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
 
       float GetMaxDistanceFromTargetToCamera() const;
@@ -59,6 +61,8 @@ namespace Game
       float GetTimeForInterpolation() const;
 
       void SetTimeForInterpolation(float timeForInterpolation);
+
+      virtual std::string GetCameraTypeName() const override;
 
       virtual glm::vec3 GetLocalSpaceUpVector() const override;
 
@@ -71,6 +75,8 @@ namespace Game
       void SetDistanceFromTargetToCamera(float distanceFromTargetToCamera);
 
       float GetDistanceFromTargetToCamera() const;
+
+      glm::vec3 GetThirdPersonTargetOffset() const;
 
       std::shared_ptr<Actor> GetThirdPersonTarget() const;
 

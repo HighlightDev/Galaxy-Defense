@@ -3,6 +3,7 @@
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 #include <algorithm>
 
@@ -127,6 +128,11 @@ namespace Game
       return m_distanceFromTargetToCamera;
    }
 
+   glm::vec3 ThirdPersonCamera::GetThirdPersonTargetOffset() const
+   {
+      return m_thirdPersonTargetOffset;
+   }
+
    std::shared_ptr<Actor> ThirdPersonCamera::GetThirdPersonTarget() const
    {
       return m_thirdPersonTarget;
@@ -135,6 +141,17 @@ namespace Game
    std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::CreateSceneProxy() const
    {
       return std::make_shared<CameraSceneProxy>(this);
+   }
+
+   std::string ThirdPersonCamera::GetCameraTypeName() const
+   {
+      return "ThirdPersonCamera";
+   }
+
+   void ThirdPersonCamera::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   {
+      auto cameraData = SerializeHelper::GetSerializedDataCamera(this);
+      dataContainer.Cameras.emplace_back(cameraData);
    }
 
    void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string& targetGameObjectName)

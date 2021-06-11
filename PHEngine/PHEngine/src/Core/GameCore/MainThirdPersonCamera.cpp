@@ -23,6 +23,11 @@ namespace Game
       return std::make_shared<MainCameraSceneProxy>(this);
    }
 
+   std::string MainThirdPersonCamera::GetCameraTypeName() const
+   {
+      return "MainThirdPersonCamera";
+   }
+
    void MainThirdPersonCamera::ProcessEvent(const typename MouseMovedEvent::EventData_t& data)
    {
       const auto& mouseData = std::get<0>(data);

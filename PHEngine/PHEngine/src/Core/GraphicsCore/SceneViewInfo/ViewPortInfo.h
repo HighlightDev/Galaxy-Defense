@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 
 namespace Graphics
 {
@@ -34,6 +35,10 @@ namespace Graphics
          , Width(resolution.x)
          , Height(resolution.y)
       {
+      }
+
+      explicit operator glm::ivec4 () const {
+         return glm::ivec4(OriginX, OriginY, Width, Height);
       }
    };
 }
