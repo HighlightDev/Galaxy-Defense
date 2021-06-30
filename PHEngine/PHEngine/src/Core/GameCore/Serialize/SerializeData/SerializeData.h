@@ -416,17 +416,17 @@ struct SerializeDataCamera
    : public SerializeDataBase
 {
    std::string CameraName;
+   std::string CameraType;
    glm::ivec4 ViewPortInfo;
    float InitPitchDeg;
    float InitYawDeg;
-   std::string CameraType;
 
-   std::vector<std::shared_ptr<SerializeDataPlanarReflectionComponent>> PlanarReflectionComponentsData;
+   std::shared_ptr<SerializeDataPlanarReflectionComponent> mPlanarReflectionComponentData;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
-      archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, PlanarReflectionComponentsData);
+      archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, mPlanarReflectionComponentData);
    }
 
    virtual SerializeDataType GetSerializeDataType() const override
@@ -439,14 +439,17 @@ struct SerializeDataThirdPersonCamera
    : public SerializeDataCamera
 {
    float CameraDistanceToThirdPersonTarget;
+
    glm::vec3 ThirdPersonTargetOffset;
+
+   std::string ThirdPersonTargetActorName;
 
    template <typename Archive>
    void serialize(Archive& archive)
    {
       SerializeDataCamera::serialize(archive);
 
-      archive(CameraDistanceToThirdPersonTarget, ThirdPersonTargetOffset);
+      archive(CameraDistanceToThirdPersonTarget, ThirdPersonTargetOffset, ThirdPersonTargetActorName);
    }
 };
 
@@ -587,8 +590,8 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataInputCompon
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSkyboxComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPlanarReflectionComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPlayerController)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataFirstPersonCamera)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataThirdPersonCamera)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataCamera, SerializeDataThirdPersonCamera)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataCamera, SerializeDataFirstPersonCamera)
 
 CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
 CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);

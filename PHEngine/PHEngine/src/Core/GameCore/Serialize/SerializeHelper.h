@@ -39,13 +39,15 @@ namespace Game {
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 
-      static std::shared_ptr<SerializeDataPhysicsComponent> GetSerializeDataPhysicsComponent(PhysicsComponent* component);
+      static std::shared_ptr<SerializeDataPhysicsComponent> GetSerializeDataPhysicsComponent(const PhysicsComponent* component);
+
+      static std::shared_ptr<ACamera> CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool& outIsMainSceneCamera);
 
       static std::shared_ptr<Actor> CreateActorFromSerializedData(const SerializeDataActor& data);
 
       static std::shared_ptr<Tweener> CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data);
 
-      static std::shared_ptr<Component> CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data);
+      static std::shared_ptr<Component> CreateComponentFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataBase> data);
 
       static PhysicsShapeBase* CreatePhysicsShape(const SerializeDataPhysicsComponent* serData);
 

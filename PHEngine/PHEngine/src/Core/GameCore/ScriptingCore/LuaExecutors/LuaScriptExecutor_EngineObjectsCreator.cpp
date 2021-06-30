@@ -177,7 +177,7 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         std::shared_ptr<Component> component = EngineObjectCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene.get());
+         std::shared_ptr<Component> component = EngineObjectCreator::CreateComponentByString(std::get<0>(componentData), std::get<1>(componentData), scene);
          assert(component);
 
          mActiveComponents[component->GetObjectId()] = component;

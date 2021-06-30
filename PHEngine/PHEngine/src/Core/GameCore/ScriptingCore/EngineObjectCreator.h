@@ -29,7 +29,7 @@ namespace Game
          const float initPitchDeg, const float initYawDeg,
          const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset, const bool bIsMainSceneCamera);
 
-      static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, class Scene* scene);
+      static std::shared_ptr<Component> CreateComponentByString(const std::string& componentType, ComponentData* data, std::shared_ptr<Scene> scene);
       
       static ProjectedShadowInfo* CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize);
 

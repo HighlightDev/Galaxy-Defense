@@ -22,7 +22,7 @@ namespace EnginePhysics
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, mDescriptor->GetId());
    }
 
-   PhysicsDescriptor* PhysicsComponent::GetDescriptor() {
+   PhysicsDescriptor* PhysicsComponent::GetDescriptor() const {
       return mDescriptor;
    }
 

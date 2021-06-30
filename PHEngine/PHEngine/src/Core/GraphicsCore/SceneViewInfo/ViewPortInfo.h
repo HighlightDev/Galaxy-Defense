@@ -37,6 +37,14 @@ namespace Graphics
       {
       }
 
+      ViewPortInfo(const glm::ivec4& viewport)
+         : OriginX(viewport.x)
+         , OriginY(viewport.y)
+         , Width(viewport.z)
+         , Height(viewport.w)
+      {
+      }
+
       explicit operator glm::ivec4 () const {
          return glm::ivec4(OriginX, OriginY, Width, Height);
       }

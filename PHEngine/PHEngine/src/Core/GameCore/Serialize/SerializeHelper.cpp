@@ -21,6 +21,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/MainThirdPersonCamera.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -41,6 +42,7 @@ namespace Game {
          const auto thirdPersonCamera = static_cast<const ThirdPersonCamera*>(camera);
          thirdPersonCameraData->ThirdPersonTargetOffset = thirdPersonCamera->GetThirdPersonTargetOffset();
          thirdPersonCameraData->CameraDistanceToThirdPersonTarget = thirdPersonCamera->GetMaxDistanceFromTargetToCamera();
+         thirdPersonCameraData->ThirdPersonTargetActorName = thirdPersonCamera->GetThirdPersonTarget()->GetName();
       }
       else if (ACamera::CameraType::SECONDARY_FIRST_PERSON_CAMERA & camera->GetCameraType())
       {
@@ -58,14 +60,15 @@ namespace Game {
       cameraData->InitYawDeg = camera->GetRotationYaw();
       cameraData->CameraType = camera->GetCameraTypeName();
 
-      std::vector<std::shared_ptr<SerializeDataPlanarReflectionComponent>> planarReflectionComponents;
-
-      cameraData->PlanarReflectionComponentsData = std::move(planarReflectionComponents);
+      if (camera->GetPlanarReflectionComponent())
+      {
+         cameraData->mPlanarReflectionComponentData = GetSerializedDataPlanarReflectionComponent(camera->GetPlanarReflectionComponent().get());
+      }
 
       return cameraData;
    }
 
-   std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(PhysicsComponent* component)
+   std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(const PhysicsComponent* component)
    {
       std::shared_ptr<SerializeDataPhysicsComponent> physCompData = std::make_shared<SerializeDataPhysicsComponent>();
 
@@ -208,7 +211,55 @@ namespace Game {
       return planarReflectionData;
    }
 
-   std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(Scene* scene, std::shared_ptr<SerializeDataBase> data) 
+   std::shared_ptr<ACamera> SerializeHelper::CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool& outIsMainSceneCamera)
+   {
+      std::shared_ptr<ACamera> result;
+
+      const auto& cameraTypeName = data->CameraType;
+
+      if (cameraTypeName == "FirstPersonCamera")
+      {
+         auto fpCameraData = std::static_pointer_cast<SerializeDataFirstPersonCamera>(data);
+         assert(fpCameraData);
+         auto fpCamera = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, scene, ViewPortInfo(fpCameraData->ViewPortInfo), fpCameraData->InitPitchDeg,
+            fpCameraData->InitYawDeg, fpCameraData->CameraPosition);
+         result = fpCamera;
+      }
+      else
+      {
+         auto thpCameraData = std::static_pointer_cast<SerializeDataThirdPersonCamera>(data);
+         assert(thpCameraData);
+
+         std::shared_ptr<ThirdPersonCamera> thirdPersonCamera;
+
+         if (cameraTypeName == "ThirdPersonCamera")
+         {
+            thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
+               thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
+         }
+         else if (cameraTypeName == "MainThirdPersonCamera")
+         {
+            outIsMainSceneCamera = true;
+            thirdPersonCamera = std::make_shared<MainThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
+               thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
+         }
+
+         thirdPersonCamera->SetThirdPersonTargetDeferred(thpCameraData->ThirdPersonTargetActorName);
+
+         result = thirdPersonCamera;
+      }
+
+      // Deserialize planar reflection component
+      if (result && data->mPlanarReflectionComponentData)
+      {
+         auto planarReflectionComponent = CreateComponentFromSerializedData(scene, data->mPlanarReflectionComponentData);
+         result->SetPlanarReflectionComponent(std::static_pointer_cast<PlanarReflectionComponent>(planarReflectionComponent));
+      }
+
+      return result;
+   }
+
+   std::shared_ptr<Component> SerializeHelper::CreateComponentFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataBase> data)
    {
       std::shared_ptr<Component> result;
 
@@ -269,14 +320,14 @@ namespace Game {
                dirShadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
             }
 
-               auto dirLightCompData = EngineObjectCreator::CreateDirLightComponentData(dirLightSerData->ComponentName,
-                  dirLightSerData->Rotation, dirLightSerData->Direction,
-                  dirLightSerData->AmbientLight,
-                  dirLightSerData->DiffuseLight,
-                  dirLightSerData->SpecularLight, dirShadowProjInfo);
-            
+            auto dirLightCompData = EngineObjectCreator::CreateDirLightComponentData(dirLightSerData->ComponentName,
+               dirLightSerData->Rotation, dirLightSerData->Direction,
+               dirLightSerData->AmbientLight,
+               dirLightSerData->DiffuseLight,
+               dirLightSerData->SpecularLight, dirShadowProjInfo);
 
-               result = EngineObjectCreator::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
+
+            result = EngineObjectCreator::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
             break;
          }
          case SerializeDataBase::SerializeDataType::PointLight:

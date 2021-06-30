@@ -21,6 +21,8 @@ namespace Game
 
       virtual void Tick(const float DeltaTime) override;
 
+      virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
+
       virtual glm::vec3 GetEyeVector()  const override;
 
       virtual glm::vec3 GetTargetVector()  const override;

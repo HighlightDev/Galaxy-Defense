@@ -39,6 +39,13 @@ namespace Game
    {
    }
 
+   std::shared_ptr<CameraSceneProxy> FirstPersonCamera::CreateSceneProxy() const
+   {
+      // todo: stub
+      throw "todo: stub";
+      return nullptr;
+   }
+
    std::string FirstPersonCamera::GetCameraTypeName() const
    {
       return "FirstPersonCamera";

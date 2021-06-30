@@ -5,7 +5,6 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GraphicsCore/Texture/Texture2d.h"
-#include "Core/GameCore/Serialize/SerializeHelper.h"
 
 using namespace Graphics;
 using namespace EngineMath;
@@ -110,14 +109,6 @@ namespace Game {
 
    ComponentType PlanarReflectionComponent::GetComponentType() const {
       return PLANAR_REFLECTION_COMPONENT;
-   }
-
-   void PlanarReflectionComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-   {
-      auto& actorData = GetSerializeDataActor(dataContainer);
-
-      auto staticCompData = SerializeHelper::GetSerializedDataPlanarReflectionComponent(this);
-      actorData.ComponentsData.emplace_back(staticCompData);
    }
 
    std::shared_ptr<IDeferredResourceBase> PlanarReflectionComponent::GetDeferredResource()

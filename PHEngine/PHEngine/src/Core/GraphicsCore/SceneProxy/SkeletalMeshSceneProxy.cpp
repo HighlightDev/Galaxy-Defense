@@ -74,7 +74,7 @@ namespace Graphics
          mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
          mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
       
-         bIsDirty = true;
+         bAnimationDataIsDirty = true;
       }
 
       void SkeletalMeshSceneProxy::UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
@@ -86,7 +86,7 @@ namespace Graphics
          mAnimationPlayer->SetDstAnimationByIndex(dstAnimationIndex);
          mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
 
-         bIsDirty = true;
+         bAnimationDataIsDirty = true;
       }
 
       ePrimitiveProxyType SkeletalMeshSceneProxy::GetPrimitiveProxyType() const
@@ -94,12 +94,12 @@ namespace Graphics
          return ePrimitiveProxyType::SKELETAL_MESH_PROXY;
       }
 
-      const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices()
+      const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices() const
       {
-         if (bIsDirty)
+         if (bAnimationDataIsDirty)
          {
             mAnimationPlayer->UpdateAnimationMatrices();
-            bIsDirty = false;
+            bAnimationDataIsDirty = false;
          }
 
          return mAnimationPlayer->GetAnimatedMatrices();

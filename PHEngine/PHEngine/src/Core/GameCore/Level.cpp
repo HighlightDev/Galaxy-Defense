@@ -94,6 +94,21 @@ namespace Game
    {
       TinyLogger::LogProxy::LogMessages(std::string("InstantiateLevelFromSerializedContainer"));
 
+      for (const auto& cameraData : container.Cameras)
+      {
+         bool outIsMainSceneCamera = false;
+         auto camera = SerializeHelper::CreateCameraFromSerializedData(mScene, cameraData, outIsMainSceneCamera);
+
+         if (outIsMainSceneCamera)
+         {
+            mScene->RegisterMainCamera(camera);
+         }
+         else
+         {
+            mScene->RegisterCamera(camera);
+         }
+      }
+
       for (const auto& actorData : container.Actors)
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
@@ -102,7 +117,7 @@ namespace Game
 
          for (const auto& componentData : actorData.ComponentsData)
          {
-            auto component = SerializeHelper::CreateComponentFromSerializedData(mScene.get(), componentData);
+            auto component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
             TinyLogger::LogProxy::LogMessages(std::string("Component name: "), component->GetGameObjectName());
 
@@ -115,13 +130,6 @@ namespace Game
          if (actor->GetGameObjectName() == container.PlayerControllerData->BindedActorName)
          {
             mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
-
-            // stub for now!
-
-            if (auto thirdPersonCamera = std::static_pointer_cast<MainThirdPersonCamera>(mScene->GetMainCamera()))
-            {
-               thirdPersonCamera->SetThirdPersonTarget(actor);
-            }
          }
       }
 

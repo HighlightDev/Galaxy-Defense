@@ -106,7 +106,8 @@ namespace Game
 
          if (auto physCompSP = GetOwner()->GetPhysicsComponent())
          {
-            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physCompSP->GetDescriptor(), transform);
+            const auto physComp = physCompSP->GetDescriptor();
+            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physComp, transform);
          }
       }
       else

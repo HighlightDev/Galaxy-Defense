@@ -24,9 +24,9 @@ namespace Graphics
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
          using Base = PrimitiveSceneProxy;
 
-         std::shared_ptr<AnimationPlayer> mAnimationPlayer;
+         mutable std::shared_ptr<AnimationPlayer> mAnimationPlayer;
 
-         bool bIsDirty = true;
+         mutable bool bAnimationDataIsDirty = true;
 
       private:
 
@@ -51,7 +51,7 @@ namespace Graphics
 
          virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
-         const std::vector<glm::mat4>& GetSkinningMatrices();
+         const std::vector<glm::mat4>& GetSkinningMatrices() const;
 
          virtual bool IsDeferred() const;
 

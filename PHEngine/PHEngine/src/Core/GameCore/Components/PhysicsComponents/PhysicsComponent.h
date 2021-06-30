@@ -29,7 +29,7 @@ namespace EnginePhysics {
 
       void PostPhysicsInit();
 
-      PhysicsDescriptor* GetDescriptor();
+      PhysicsDescriptor* GetDescriptor() const;
 
       bool IsTransformDirty() const;
 

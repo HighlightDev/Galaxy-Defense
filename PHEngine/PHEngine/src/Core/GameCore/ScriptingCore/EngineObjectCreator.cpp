@@ -82,7 +82,7 @@ namespace Game
       return result;
    }
 
-   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, Scene* scene)
+   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, std::shared_ptr<Scene> scene)
    {
       assert(componentData && scene);
 
