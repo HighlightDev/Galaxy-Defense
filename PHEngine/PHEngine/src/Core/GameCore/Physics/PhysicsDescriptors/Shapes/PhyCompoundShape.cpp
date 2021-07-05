@@ -9,16 +9,15 @@ namespace EnginePhysics
 
    PhyCompoundShape::PhyCompoundShape()
       : PhysicsShapeBase(new btCompoundShape())
+      , mChildShapes()
    {
    }
 
    PhyCompoundShape::~PhyCompoundShape()
    {
-      auto compoundShape = static_cast<btCompoundShape*>(mCollisionShape);
-      const auto shapeCount = compoundShape->getNumChildShapes();
-      for (int32_t shapeIndex = 0; shapeIndex < shapeCount; ++shapeIndex)
+      for (auto& childShapePtr : mChildShapes)
       {
-         delete compoundShape->getChildShape(shapeIndex);
+         delete childShapePtr.first;
       }
    }
 
@@ -34,7 +33,12 @@ namespace EnginePhysics
 
       auto compoundShape = static_cast<btCompoundShape*>(mCollisionShape);
       compoundShape->addChildShape(localTransform, childShape->GetCollisionShape());
+      mChildShapes.emplace_back(childShape);
    }
 
+   const std::vector<std::pair<PhysicsShapeBase*, NoScaleEulerRotationTransform>>& PhyCompoundShape::GetChildShapes() const
+   {
+      return mChildShapes;
+   }
    
 }
