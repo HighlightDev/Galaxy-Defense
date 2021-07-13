@@ -168,7 +168,7 @@ namespace Graphics
                            mDepthCollectShaderSkeletal->StopShader();
                         }
 
-                        // Next frame shadow map will not be updated unless position of objects on level are changed
+                        // Next frame shadow map will not be updated unless position of objects on scene were changed
                         shadowInfo->SetIsShadowMapDirty(false);
                      }
                   }
@@ -246,7 +246,7 @@ namespace Graphics
                      const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
                      if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
-                        shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own texture atlas 
+                        shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own depth texture atlas 
 
                         if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {

@@ -30,10 +30,11 @@ namespace EnginePhysics
          glm::quat(glm::vec3(DEG_TO_RAD(childTransform.RotationEulerAngles.x),
             DEG_TO_RAD(childTransform.RotationEulerAngles.y),
             DEG_TO_RAD(childTransform.RotationEulerAngles.z)))));
-
+      
       auto compoundShape = static_cast<btCompoundShape*>(mCollisionShape);
       compoundShape->addChildShape(localTransform, childShape->GetCollisionShape());
-      mChildShapes.emplace_back(childShape);
+
+      mChildShapes.emplace_back(std::make_pair(childShape, NoScaleEulerRotationTransform(childTransform.Translation, childTransform.RotationEulerAngles)));
    }
 
    const std::vector<std::pair<PhysicsShapeBase*, NoScaleEulerRotationTransform>>& PhyCompoundShape::GetChildShapes() const

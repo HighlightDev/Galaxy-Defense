@@ -122,7 +122,7 @@ namespace Labyrinth
    {
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-#if true
+#if 1
       DeserializeLevel("test_serialize.xml");
 #else
       RunLuaBuildLevelScript();

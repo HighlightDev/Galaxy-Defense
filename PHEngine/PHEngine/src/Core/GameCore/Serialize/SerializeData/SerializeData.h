@@ -2,22 +2,26 @@
 #include <string>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
+#include <glm/ext/quaternion_float.hpp>
 #include <vector>
 #include <memory>
+#include <map>
 
 #include <cereal/types/string.hpp>
 #include <cereal/types/memory.hpp>
 
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Components/Transform.h"
 
 using namespace EnginePhysics;
 
-namespace glm 
+namespace glm
 {
    template<class Archive> void serialize(Archive& archive, glm::vec3& v) { archive(v.x, v.y, v.z); }
    template<class Archive> void serialize(Archive& archive, glm::vec4& v) { archive(v.x, v.y, v.z, v.w); }
    template<class Archive> void serialize(Archive& archive, glm::ivec4& v) { archive(v.x, v.y, v.z, v.w); }
+   template<class Archive> void serialize(Archive& archive, glm::quat& v) { archive(v.x, v.y, v.z, v.w); }
 }
 
 struct SerializeDataBase
@@ -330,6 +334,48 @@ struct SerializeDataSpherePhysicsShape
    }
 };
 
+struct SerializeDataTranslationEulerRotation
+{
+   glm::vec3 Translation;
+   glm::vec3 Rotation;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(Translation, Rotation);
+   }
+};
+
+struct SerializeDataCompoundChildShape
+{
+   std::shared_ptr<SerializeDataPhysicsShape> Child;
+
+   SerializeDataTranslationEulerRotation ChildTransform;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(Child, ChildTransform);
+   }
+};
+
+struct SerializeDataCompoundPhysicsShape
+   : public SerializeDataPhysicsShape
+{
+   std::vector<SerializeDataCompoundChildShape> ChildrenWithRotation;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(ChildrenWithRotation);
+   }
+
+   virtual int32_t GetShapeProxyType() override
+   {
+      return COMPOUND_SHAPE_PROXYTYPE;
+   }
+};
+
 struct SerializeDataPhysicsComponent
    : public SerializeDataComponent
 {
@@ -596,7 +642,9 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataCamera, SerializeDataFirstPers
 CEREAL_REGISTER_TYPE(SerializeDataCapsulePhysicsShape);
 CEREAL_REGISTER_TYPE(SerializeDataSpherePhysicsShape);
 CEREAL_REGISTER_TYPE(SerializeDataBoxPhysicsShape);
+CEREAL_REGISTER_TYPE(SerializeDataCompoundPhysicsShape);
 
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataCapsulePhysicsShape)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataSpherePhysicsShape)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataBoxPhysicsShape)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataPhysicsShape, SerializeDataCompoundPhysicsShape)

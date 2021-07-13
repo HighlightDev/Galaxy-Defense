@@ -9,6 +9,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -68,39 +69,75 @@ namespace Game {
       return cameraData;
    }
 
+   std::shared_ptr<SerializeDataPhysicsShape> SerializeHelper::GetSerializePhysicsShapeData(PhysicsShapeBase* physicsShape)
+   {
+      std::shared_ptr<SerializeDataPhysicsShape> resultData;
+
+      int32_t shapeType = physicsShape->GetCollisionShape()->getShapeType();
+
+      if (SPHERE_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhySphereShape* sphere = static_cast<PhySphereShape*>(physicsShape);
+         auto shapeData = std::make_shared<SerializeDataSpherePhysicsShape>();
+         shapeData->Radius = sphere->GetRadius();
+         resultData = shapeData;
+      }
+      else if (BOX_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhyBoxShape* box = static_cast<PhyBoxShape*>(physicsShape);
+         auto shapeData = std::make_shared<SerializeDataBoxPhysicsShape>();
+         shapeData->HalfExtent = box->GetHalfExtent();
+         resultData = shapeData;
+      }
+      else if (CAPSULE_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhyCapsuleShape* capsule = static_cast<PhyCapsuleShape*>(physicsShape);
+         auto shapeData = std::make_shared<SerializeDataCapsulePhysicsShape>();
+         shapeData->Height = capsule->GetHeight();
+         shapeData->Radius = capsule->GetRadius();
+         resultData = shapeData;
+      }
+      else if (COMPOUND_SHAPE_PROXYTYPE == shapeType)
+      {
+         PhyCompoundShape* compoundShape = static_cast<PhyCompoundShape*>(physicsShape);
+         auto shapeData = std::make_shared<SerializeDataCompoundPhysicsShape>();
+         auto childShapeMap = compoundShape->GetChildShapes();
+
+         for (const auto& phyShapeAndTransform : childShapeMap)
+         {
+            auto childShape = phyShapeAndTransform.first;
+            auto childTransform =  phyShapeAndTransform.second;
+            SerializeDataTranslationEulerRotation serializeTransformData;
+            serializeTransformData.Translation = childTransform.Translation;
+            serializeTransformData.Rotation = childTransform.RotationEulerAngles;
+
+            auto packedPhysicsShape = GetSerializePhysicsShapeData(childShape);
+            SerializeDataCompoundChildShape compoundChildShape;
+            compoundChildShape.Child = packedPhysicsShape;
+            compoundChildShape.ChildTransform = serializeTransformData;
+
+            shapeData->ChildrenWithRotation.emplace_back(std::move(compoundChildShape));
+         }
+
+         resultData = shapeData;
+      }
+      else
+      {
+         assert(false);
+      }
+
+      return resultData;
+   }
+
    std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(const PhysicsComponent* component)
    {
       std::shared_ptr<SerializeDataPhysicsComponent> physCompData = std::make_shared<SerializeDataPhysicsComponent>();
 
-      std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
-
       PhysicsShapeBase* physShape = component->GetDescriptor()->GetShape();
-      int32_t shapeType = physShape->GetCollisionShape()->getShapeType();
+    
+      std::shared_ptr<SerializeDataPhysicsShape> physicsShapeData = GetSerializePhysicsShapeData(physShape);
 
-      if (SPHERE_SHAPE_PROXYTYPE == shapeType)
-      {
-         PhySphereShape* sphere = static_cast<PhySphereShape*>(physShape);
-         auto shape = std::make_shared<SerializeDataSpherePhysicsShape>();
-         shape->Radius = sphere->GetRadius();
-         PhysicsShape = shape;
-      }
-      else if (BOX_SHAPE_PROXYTYPE == shapeType)
-      {
-         PhyBoxShape* box = static_cast<PhyBoxShape*>(physShape);
-         auto shape = std::make_shared<SerializeDataBoxPhysicsShape>();
-         shape->HalfExtent = box->GetHalfExtent();
-         PhysicsShape = shape;
-      }
-      else if (CAPSULE_SHAPE_PROXYTYPE == shapeType)
-      {
-         PhyCapsuleShape* capsule = static_cast<PhyCapsuleShape*>(physShape);
-         auto shape = std::make_shared<SerializeDataCapsulePhysicsShape>();
-         shape->Height = capsule->GetHeight();
-         shape->Radius = capsule->GetRadius();
-         PhysicsShape = shape;
-      }
-
-      physCompData->PhysicsShape = PhysicsShape;
+      physCompData->PhysicsShape = physicsShapeData;
       physCompData->Mass = component->GetDescriptor()->GetMass();
       auto motionModifiers = component->GetDescriptor()->GetMotionModifiers();
       physCompData->AngularFactor = Converter::bulletToGlm(motionModifiers.AngularFactor);
@@ -412,7 +449,7 @@ namespace Game {
          {
             logCompType = "Physics";
             SerializeDataPhysicsComponent* serData = static_cast<SerializeDataPhysicsComponent*>(data.get());
-            auto physShape = CreatePhysicsShape(serData);
+            auto physShape = CreatePhysicsShape(serData->PhysicsShape.get());
             auto compController = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), physShape, serData->BodyType, serData->Mass);
             auto compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
             result = EngineObjectCreator::CreateComponentByString("PhysicsComponent", compData, scene);
@@ -437,30 +474,49 @@ namespace Game {
       return result;
    }
 
-   PhysicsShapeBase* SerializeHelper::CreatePhysicsShape(const SerializeDataPhysicsComponent* serData) {
+   PhysicsShapeBase* SerializeHelper::CreatePhysicsShape(SerializeDataPhysicsShape* serDataShape) {
       PhysicsShapeBase* result = nullptr;
 
-      switch (serData->PhysicsShape->GetShapeProxyType())
+      switch (serDataShape->GetShapeProxyType())
       {
          case BOX_SHAPE_PROXYTYPE:
          {
-            auto shape = static_cast<SerializeDataBoxPhysicsShape*>(serData->PhysicsShape.get());
-            result = new PhyBoxShape(shape->HalfExtent);
+            auto shapeData = static_cast<SerializeDataBoxPhysicsShape*>(serDataShape);
+            result = new PhyBoxShape(shapeData->HalfExtent);
             break;
          }
          case CAPSULE_SHAPE_PROXYTYPE:
          {
-            auto shape = static_cast<SerializeDataCapsulePhysicsShape*>(serData->PhysicsShape.get());
-            result = new PhyCapsuleShape(shape->Radius, shape->Height);
+            auto shapeData = static_cast<SerializeDataCapsulePhysicsShape*>(serDataShape);
+            result = new PhyCapsuleShape(shapeData->Radius, shapeData->Height);
             break;
          }
          case SPHERE_SHAPE_PROXYTYPE:
          {
-            auto shape = static_cast<SerializeDataSpherePhysicsShape*>(serData->PhysicsShape.get());
-            result = new PhySphereShape(shape->Radius);
+            auto shapeData = static_cast<SerializeDataSpherePhysicsShape*>(serDataShape);
+            result = new PhySphereShape(shapeData->Radius);
+            break;
+         }
+         case COMPOUND_SHAPE_PROXYTYPE:
+         {
+            auto shapeData = static_cast<SerializeDataCompoundPhysicsShape*>(serDataShape);
+            const auto& childrenData = shapeData->ChildrenWithRotation;
+
+            auto compoundPhyShape = new PhyCompoundShape();
+ 
+            for (const auto& childData : childrenData)
+            {
+               const auto childPhysicsShape = CreatePhysicsShape(childData.Child.get());
+               compoundPhyShape->AddChildShape(NoScaleEulerRotationTransform(childData.ChildTransform.Translation, childData.ChildTransform.Rotation),
+                  childPhysicsShape);
+            }
+
+            result = compoundPhyShape;
+
             break;
          }
          default:
+            assert(false);
             break;
       }
 

@@ -1036,6 +1036,14 @@
     <ClCompile Include="src\Core\GameCore\ThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+    <Text Include="src\CMakeLists.txt" />
+    <Text Include="src\Core\CMakeLists.txt" />
+    <Text Include="src\Core\CommonCore\CMakeLists.txt" />
+    <Text Include="src\Core\DebugCore\CMakeLists.txt" />
+    <Text Include="src\Core\GameCore\CMakeLists.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

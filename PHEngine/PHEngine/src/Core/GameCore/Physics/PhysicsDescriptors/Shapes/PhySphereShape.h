@@ -15,7 +15,7 @@ namespace EnginePhysics
       }
 
       float GetRadius() const {
-         return static_cast<btCapsuleShape*>(mCollisionShape)->getRadius();
+         return static_cast<btSphereShape*>(mCollisionShape)->getRadius();
       }
    };
 

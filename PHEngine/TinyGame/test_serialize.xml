@@ -25,39 +25,38 @@
 				<value5 size="dynamic">
 					<value0>
 						<polymorphic_id>2147483649</polymorphic_id>
-						<polymorphic_name>SerializeDataPointLightComponent</polymorphic_name>
+						<polymorphic_name>SerializeDataDirLightComponent</polymorphic_name>
 						<ptr_wrapper>
 							<id>2147483649</id>
 							<data>
-								<value0>SecondaryLightComp</value0>
+								<value0>MainLightComp</value0>
 								<value1>
-									<value0>15</value0>
-									<value1>15</value1>
+									<value0>-0.5</value0>
+									<value1>-0.5</value1>
 									<value2>0</value2>
 								</value1>
 								<value2>
-									<value0>0</value0>
-									<value1>0</value1>
-									<value2>0</value2>
+									<value0>-0</value0>
+									<value1>0.31912058591842651</value1>
+									<value2>-0</value2>
 								</value2>
-								<value3>100</value3>
-								<value4>
+								<value3>
 									<value0>0.20000000298023224</value0>
 									<value1>0.20000000298023224</value1>
 									<value2>0.20000000298023224</value2>
-								</value4>
-								<value5>
+								</value3>
+								<value4>
 									<value0>1.6799999475479126</value0>
 									<value1>1.5</value1>
 									<value2>1.5</value2>
-								</value5>
-								<value6>
+								</value4>
+								<value5>
 									<value0>0.69999998807907104</value0>
 									<value1>0.69999998807907104</value1>
 									<value2>0.69999998807907104</value2>
-								</value6>
-								<value7>true</value7>
-								<value8>256</value8>
+								</value5>
+								<value6>true</value6>
+								<value7>1024</value7>
 							</data>
 						</ptr_wrapper>
 					</value0>
@@ -632,7 +631,62 @@
 							<data>
 								<value0>testPhyComp</value0>
 								<value1>
-									<polymorphic_id>0</polymorphic_id>
+									<polymorphic_id>2147483653</polymorphic_id>
+									<polymorphic_name>SerializeDataCompoundPhysicsShape</polymorphic_name>
+									<ptr_wrapper>
+										<id>2147483664</id>
+										<data>
+											<value0 size="dynamic">
+												<value0>
+													<value0>
+														<polymorphic_id>2147483654</polymorphic_id>
+														<polymorphic_name>SerializeDataSpherePhysicsShape</polymorphic_name>
+														<ptr_wrapper>
+															<id>2147483665</id>
+															<data>
+																<value0>5</value0>
+															</data>
+														</ptr_wrapper>
+													</value0>
+													<value1>
+														<value0>
+															<value0>-4</value0>
+															<value1>0</value1>
+															<value2>0</value2>
+														</value0>
+														<value1>
+															<value0>0</value0>
+															<value1>0</value1>
+															<value2>0</value2>
+														</value1>
+													</value1>
+												</value0>
+												<value1>
+													<value0>
+														<polymorphic_id>6</polymorphic_id>
+														<ptr_wrapper>
+															<id>2147483666</id>
+															<data>
+																<value0>5</value0>
+															</data>
+														</ptr_wrapper>
+													</value0>
+													<value1>
+														<value0>
+															<value0>4</value0>
+															<value1>0</value1>
+															<value2>0</value2>
+														</value0>
+														<value1>
+															<value0>0</value0>
+															<value1>0</value1>
+															<value2>0</value2>
+														</value1>
+													</value1>
+												</value1>
+											</value0>
+										</data>
+									</ptr_wrapper>
 								</value1>
 								<value2>1</value2>
 								<value3>
@@ -673,10 +727,10 @@
 				</value4>
 				<value5 size="dynamic">
 					<value0>
-						<polymorphic_id>2147483653</polymorphic_id>
+						<polymorphic_id>2147483655</polymorphic_id>
 						<polymorphic_name>SerializeDataSkyboxComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483664</id>
+							<id>2147483667</id>
 							<data>
 								<value0>SkyboxComp</value0>
 								<value1>
@@ -701,7 +755,7 @@
 										<value2>
 											<value0>float</value0>
 											<value1>dayTimeElapsed</value1>
-											<value2>0.309488</value2>
+											<value2>0.572732</value2>
 										</value2>
 									</value2>
 								</value2>
@@ -730,7 +784,7 @@
 				<value4>
 					<polymorphic_id>1073741824</polymorphic_id>
 					<ptr_wrapper>
-						<id>2147483665</id>
+						<id>2147483668</id>
 						<data>
 							<value0>..\..\PHEngine\res\tweeners\playerAnimation.tween</value0>
 							<value1 size="dynamic">
@@ -745,10 +799,10 @@
 				</value4>
 				<value5 size="dynamic">
 					<value0>
-						<polymorphic_id>2147483654</polymorphic_id>
+						<polymorphic_id>2147483656</polymorphic_id>
 						<polymorphic_name>SerializeDataSkeletalMesh</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483666</id>
+							<id>2147483669</id>
 							<data>
 								<value0>buddyMeshComp</value0>
 								<value1>..\..\PHEngine\res\model\player_walk.fbx</value1>
@@ -808,10 +862,10 @@
 						</ptr_wrapper>
 					</value0>
 					<value1>
-						<polymorphic_id>2147483655</polymorphic_id>
+						<polymorphic_id>2147483657</polymorphic_id>
 						<polymorphic_name>SerializeDataCharacterPhysicsComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483667</id>
+							<id>2147483670</id>
 							<data>
 								<value0>buddyPhyComp</value0>
 								<value1>1</value1>
@@ -822,26 +876,26 @@
 						</ptr_wrapper>
 					</value1>
 					<value2>
-						<polymorphic_id>2147483656</polymorphic_id>
+						<polymorphic_id>2147483658</polymorphic_id>
 						<polymorphic_name>SerializeDataInputComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483668</id>
+							<id>2147483671</id>
 							<data>
 								<value0>skeletInputComp</value0>
 							</data>
 						</ptr_wrapper>
 					</value2>
 					<value3>
-						<polymorphic_id>2147483657</polymorphic_id>
+						<polymorphic_id>2147483659</polymorphic_id>
 						<polymorphic_name>SerializeDataCharacterMovementComponent</polymorphic_name>
 						<ptr_wrapper>
-							<id>2147483669</id>
+							<id>2147483672</id>
 							<data>
 								<value0>charMovementCompData</value0>
 								<value1>
-									<value0>-0.081552207469940186</value0>
-									<value1>-0.97667217254638672</value1>
-									<value2>0.19864730536937714</value2>
+									<value0>0</value0>
+									<value1>0</value1>
+									<value2>0</value2>
 								</value1>
 								<value2>MainCamera</value2>
 							</data>
@@ -883,10 +937,10 @@
 		</value1>
 		<value2 size="dynamic">
 			<value0>
-				<polymorphic_id>2147483658</polymorphic_id>
+				<polymorphic_id>2147483660</polymorphic_id>
 				<polymorphic_name>SerializeDataThirdPersonCamera</polymorphic_name>
 				<ptr_wrapper>
-					<id>2147483670</id>
+					<id>2147483673</id>
 					<data>
 						<value0>MainCamera</value0>
 						<value1>MainThirdPersonCamera</value1>
@@ -896,12 +950,12 @@
 							<value2>1200</value2>
 							<value3>900</value3>
 						</value2>
-						<value3>77.599967956542969</value3>
-						<value4>-22.319997787475586</value4>
+						<value3>50</value3>
+						<value4>20</value4>
 						<value5>
 							<polymorphic_id>1073741824</polymorphic_id>
 							<ptr_wrapper>
-								<id>2147483671</id>
+								<id>2147483674</id>
 								<data>
 									<value0>planarReflectionComponent</value0>
 									<value1>

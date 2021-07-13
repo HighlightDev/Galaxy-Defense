@@ -2561,4 +2561,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Core\CMakeLists.txt" />
+    <Text Include="src\CMakeLists.txt" />
+    <Text Include="CMakeLists.txt" />
+    <Text Include="src\Core\GameCore\CMakeLists.txt" />
+    <Text Include="src\Core\CommonCore\CMakeLists.txt" />
+    <Text Include="src\Core\DebugCore\CMakeLists.txt" />
+  </ItemGroup>
 </Project>
