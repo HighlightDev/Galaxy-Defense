@@ -1,3 +1,6 @@
 [submodule "PHEngine/External/Assimp"]
 	path = PHEngine/External/Assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "PHEngine/External/bullet3"]
+	path = PHEngine/External/bullet3
+	url = https://github.com/bulletphysics/bullet3.git
