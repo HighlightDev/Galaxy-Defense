@@ -46,6 +46,79 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/Event/TEvent.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Event/TextureAtlasGeneratedEvent.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Event/Policy/Policies.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/PlanarReflectionFramebuffer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/ShadowFramebuffer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/WaterPlaneFramebuffer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObjectPropertyBindings/AnimationPropertyBinding.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObjectPropertyBindings/FloatPropertyBinding.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObjectPropertyBindings/PropertyBinding.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Input/InputManager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Input/KeyboardBindings.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Input/KeyboardData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Input/Keys.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/DebugRender/BulletDebugRenderer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/DebugRender/DebugPhysicsRenderer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhysicsShapeBase.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/DynamicCharacterController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/PhysicsDescriptor.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/RigidBodyController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsWorld.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_Actor.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineBase.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/EngineObjectCreator.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaCore.inl
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaWrapper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeData.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeDataContainer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/ISerializable.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeHelper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/BillboardShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CapturePlanarReflectionShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CubemapShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CapturePlanarReflectionShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CubemapShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/DeferredLightShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/DepthCollectShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/PointLightDepthShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/TextureRendererShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/WaterPlaneShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/ShaderCommon.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/SimpleShader.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/AnimationTweenController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/FloatTweenController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/ITweenController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/StateTransition.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/Tweener.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/TweenerParser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/State.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/StateProperty.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/BindingAttachmentBuilder.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ACamera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Actor.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/BoundingBox.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/BoundingBoxBuilder.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/FirstPersonCamera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObject.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GlobalSettings.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Level.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/MainThirdPersonCamera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/PlayerController.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Scene.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ThirdPersonCamera.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/LevelFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/ITickable.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/LoggerExtension.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObjectProperty.h
 )
 
 set(SOURCE
@@ -71,6 +144,49 @@ set(SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/StaticMeshComponent.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Components/PrimitiveComponents/WaterPlaneComponent.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/Event/TEvent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/PlanarReflectionFramebuffer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/ShadowFramebuffer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/FramebufferImplementation/WaterPlaneFramebuffer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/DynamicCharacterController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/PhysicsDescriptor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/RigidBodyController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsWorld.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_Actor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineBase.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/EngineObjectCreator.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaWrapper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeHelper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/BillboardShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CapturePlanarReflectionShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CubemapShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CapturePlanarReflectionShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CubemapShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/DeferredLightShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/DepthCollectShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/PointLightDepthShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/TextureRendererShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/WaterPlaneShader.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/AnimationTweenController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/FloatTweenController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/ITweenController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/StateTransition.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/Tweener.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Tweener/TweenerParser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ACamera.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Actor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/BoundingBox.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/BoundingBoxBuilder.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/FirstPersonCamera.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/GameObject.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/GlobalSettings.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Level.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/MainThirdPersonCamera.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/PlayerController.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Scene.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/ThirdPersonCamera.cpp
 )
 
 add_library(EngineGameCoreModule STATIC ${HEADERS} ${SOURCE})
