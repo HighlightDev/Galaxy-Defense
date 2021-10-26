@@ -1,4 +1,3 @@
-
 set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/Batcher/Batch.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Batcher/BatchJobMaster.h
@@ -57,7 +56,7 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/Input/KeyboardData.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Input/Keys.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Physics/DebugRender/BulletDebugRenderer.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/DebugRender/DebugPhysicsRenderer.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Physics/DebugRender/DebugPhysicsRenderData.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h
@@ -77,8 +76,8 @@ set(HEADERS
   ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaWrapper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeData.h
   ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeDataContainer.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/ISerializable.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeHelper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/ISerializable.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeHelper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h
@@ -158,7 +157,7 @@ set(SOURCE
   ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/EngineObjectCreator.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ScriptingCore/LuaWrapper.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeData/SerializeHelper.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/Serialize/SerializeHelper.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/BillboardShader.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CapturePlanarReflectionShader.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/ShaderImplementation/CubemapShader.cpp
@@ -191,4 +190,6 @@ set(SOURCE
 
 add_library(EngineGameCoreModule STATIC ${HEADERS} ${SOURCE})
 
-target_include_directories(EngineGameCoreModule INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
+set_target_properties(EngineGameCoreModule PROPERTIES LINKER_LANGUAGE CXX)
+
+target_include_directories(EngineGameCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
