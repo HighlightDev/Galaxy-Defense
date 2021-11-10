@@ -29,7 +29,7 @@ add_library(EngineCoreModule STATIC ${HEADERS} ${SOURCE})
 
 set_target_properties(EngineCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(EngineCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(EngineCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 target_link_libraries(EngineCoreModule
  ${ENGINE_COMMON_CORE_MODULE}

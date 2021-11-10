@@ -192,4 +192,9 @@ add_library(EngineGameCoreModule STATIC ${HEADERS} ${SOURCE})
 
 set_target_properties(EngineGameCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(EngineGameCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+set(DEPEND_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include)
+
+target_include_directories(EngineGameCoreModule 
+  INTERFACE ${ENGINE_CORE_INCLUDE}
+  PUBLIC ${DEPEND_INCLUDE})
