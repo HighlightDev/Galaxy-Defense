@@ -31,7 +31,7 @@ set_target_properties(EngineCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
 target_include_directories(EngineCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-target_link_libraries(EngineCoreModule
+target_link_libraries(EngineCoreModule PUBLIC
  ${ENGINE_COMMON_CORE_MODULE}
  ${ENGINE_DEBUG_CORE_MODULE}
  ${ENGINE_GAME_CORE_MODULE} 

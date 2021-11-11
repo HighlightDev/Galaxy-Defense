@@ -4,7 +4,7 @@
 #include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
 
 #include <algorithm>
-#include <GL/glew.h>
+#include <gl/glew.h>
 
 using namespace Resources;
 

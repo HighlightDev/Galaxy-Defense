@@ -13,4 +13,4 @@ set(
 
 add_library(TinyGameSrcModule STATIC ${HEADERS} ${SOURCE})
 
-target_include_directories(TinyGameSrcModule INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
+target_include_directories(TinyGameSrcModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )

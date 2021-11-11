@@ -1,6 +1,6 @@
 #include "IndexBufferObject.h"
 
-#include <GL/glew.h>
+#include <gl/glew.h>
 
 namespace Graphics
 {

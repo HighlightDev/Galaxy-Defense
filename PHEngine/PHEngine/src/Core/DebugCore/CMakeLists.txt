@@ -11,4 +11,4 @@ add_library(EngineDebugCoreModule STATIC ${HEADERS} ${SOURCE})
 
 set_target_properties(EngineDebugCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(EngineDebugCoreModule INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} )
+target_include_directories(EngineDebugCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )

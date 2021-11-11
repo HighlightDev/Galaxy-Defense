@@ -196,9 +196,22 @@ ${CMAKE_CURRENT_SOURCE_DIR}/TextureAtlas/TextureAtlas.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/TextureAtlas/TextureAtlasFactory.cpp
 ${CMAKE_CURRENT_SOURCE_DIR}/TextureAtlas/TextureAtlasSpaceRequest.cpp
 )
+include_directories(GLM_DEPENDENCE_INCLUDE)
 
 add_library(EngineGraphicsCoreModule STATIC ${HEADERS} ${SOURCE})
 
-set_target_properties(EngineGraphicsCoreModule PROPERTIES LINKER_LANGUAGE CXX)
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
+set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
+set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 
-target_include_directories(EngineGraphicsCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+message(STATUS "GLM_DEPENDENCE_INCLUDE path = ${GLM_DEPENDENCE_INCLUDE}")
+
+target_include_directories(EngineGraphicsCoreModule
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC ${ENGINE_CORE_INCLUDE}
+  PUBLIC ${GLM_DEPENDENCE_INCLUDE}
+  PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
+  PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
+  )

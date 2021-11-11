@@ -33,6 +33,10 @@ set(SOURCE
 
 add_library(EngineIoCoreModule STATIC ${HEADERS} ${SOURCE})
 
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+
 set_target_properties(EngineIoCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(EngineIoCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(EngineIoCoreModule
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC ${ENGINE_CORE_INCLUDE})
