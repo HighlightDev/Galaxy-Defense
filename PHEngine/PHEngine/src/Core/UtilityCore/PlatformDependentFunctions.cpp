@@ -5,7 +5,7 @@ namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system
 
-   uint64_t getProcessMemmorySize()
+   uint64_t getProcessMemorySize()
    {
       PROCESS_MEMORY_COUNTERS pmc;
       GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));

@@ -8,6 +8,7 @@
 
 #include <thread>
 #include <chrono>
+#include <atomic>
 
 using namespace Game;
 using namespace Graphics::Renderer;
@@ -31,7 +32,7 @@ private:
 
    std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
-   bool bGameThreadExecution = true;
+   std::atomic_bool bGameThreadExecution = true;
 
 private:
    std::thread m_gameThread;

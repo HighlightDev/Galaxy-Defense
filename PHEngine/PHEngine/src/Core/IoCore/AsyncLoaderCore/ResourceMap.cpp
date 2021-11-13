@@ -49,15 +49,15 @@ namespace IO {
       {
          case RESOURCE_TYPE::TEXTURE:
          {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartAsync(std::launch::async, key);
+            AsyncJob<Resource*, const std::string&> job(std::move(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1)));
+            std::future<Resource*> futureResult = job.StartAsync(key);
             mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
             break;
          }
          case RESOURCE_TYPE::MESH:
          {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartAsync(std::launch::async, key);
+            AsyncJob<Resource*, const std::string&> job(std::move(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1)));
+            std::future<Resource*> futureResult = job.StartAsync(key);
             mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
             break;
          }

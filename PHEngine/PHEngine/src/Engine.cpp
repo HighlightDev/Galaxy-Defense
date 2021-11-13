@@ -27,7 +27,7 @@ std::shared_ptr<InputManager> Engine::GetInputManager() const
 
 void Engine::StopGameThreadExecution()
 {
-   bGameThreadExecution = false;
+   bGameThreadExecution.store(false);
 }
 
 void Engine::PlayLevel(std::shared_ptr<Level> level)
@@ -71,9 +71,9 @@ void Engine::PostPhysicsInitialize()
 
 void Engine::GameThreadPulse()
 {
-   while (bGameThreadExecution)
+   while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst))
    {
-      uint64_t memoryBeforeExe = getProcessMemmorySize();
+      const uint64_t memoryBeforeExe = getProcessMemorySize();
 
       /* GAME THREAD*/
       {
@@ -97,7 +97,7 @@ void Engine::GameThreadPulse()
          /* Events: post execution */
          ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
 
-         uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemmorySize();
+         const uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemorySize();
 
          if (memoryAfterExe > 0)
          {

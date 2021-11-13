@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "Core/GameCore/Input/InputManager.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Engine.h"
@@ -22,7 +23,7 @@ bool bDeserializeLevel = false;
 
 bool bPollEvents = true;
 
-static std::shared_ptr<InputManager> engineInputManger = nullptr;
+static std::shared_ptr<InputManager> engineInputManager = nullptr;
 
 void get_window_pos(GLFWwindow *window) {
   int32_t x, y;

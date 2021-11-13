@@ -12,7 +12,7 @@ namespace EngineUtility
 #include <psapi.h>
 #pragma comment(lib, "Psapi.lib")
 
-   uint64_t getProcessMemmorySize();
+   uint64_t getProcessMemorySize();
 
 	char * get_module_file_name(HMODULE hModule = NULL);
 #elif __linux__  // compile only for linux system operating system
