@@ -28,10 +28,12 @@ namespace Game
 
    void Level::PreLevelInit()
    {
+      TinyLogger::LogProxy::LogMessages("Level::PreLevelInit");
    }
 
    void Level::PostLevelInit()
    {
+      TinyLogger::LogProxy::LogMessages("Level::PostLevelInit");
       mScene->PostLevelInit();
 
       ResourceMap::DeleteInstance();
@@ -92,7 +94,7 @@ namespace Game
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer& container)
    {
-      TinyLogger::LogProxy::LogMessages(std::string("InstantiateLevelFromSerializedContainer"));
+      TinyLogger::LogProxy::LogMessages("InstantiateLevelFromSerializedContainer");
 
       for (const auto& cameraData : container.Cameras)
       {
@@ -113,13 +115,13 @@ namespace Game
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         TinyLogger::LogProxy::LogMessages(std::string("Actor name: "), actor->GetName());
+         TinyLogger::LogProxy::LogMessages("Actor name: ", actor->GetName());
 
          for (const auto& componentData : actorData.ComponentsData)
          {
             auto component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            TinyLogger::LogProxy::LogMessages(std::string("Component name: "), component->GetGameObjectName());
+            TinyLogger::LogProxy::LogMessages("Component name: ", component->GetGameObjectName());
 
             if (component)
                actor->AddComponent(component);

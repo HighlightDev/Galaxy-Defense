@@ -101,7 +101,7 @@ void Engine::GameThreadPulse()
 
          if (memoryAfterExe > 0)
          {
-            TinyLogger::LogProxy::LogMessages(std::string("Engine::GameThread execution. Memory consumption : "), (uint64_t)memoryAfterExe);
+            TinyLogger::LogProxy::LogMessages("Engine::GameThread execution. Memory consumption : ", (uint64_t)memoryAfterExe);
          }
       }
    }

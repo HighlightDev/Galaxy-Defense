@@ -56,7 +56,7 @@ namespace TinyLogger
 
    std::string Logger::ConcatMessages()
    {
-      std::string result;
+      std::string result = "";
 
       while (!mMessageQueue.empty())
       {
@@ -74,9 +74,14 @@ namespace TinyLogger
       while (true)
       {
          std::unique_lock<std::mutex> uLock(mWriteToFileMutex);
-
-         const std::string& log = ConcatMessages();
-         std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](LoggerClientBase* client) { client->WriteLog(log); });
+         if (!mMessageQueue.empty())
+         {
+            const std::string& log = ConcatMessages();
+            if ("" != log)
+            {
+               std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](LoggerClientBase* client) { client->WriteLog(log); });
+            }
+         }
          uLock.unlock();
          std::this_thread::sleep_for(std::chrono::seconds(1));
       }

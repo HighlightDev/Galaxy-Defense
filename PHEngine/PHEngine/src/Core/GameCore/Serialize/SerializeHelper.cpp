@@ -469,7 +469,7 @@ namespace Game {
             break;
       }
 
-      TinyLogger::LogProxy::LogMessages(std::string("Deserialize component, type:"), std::string(logCompType));
+      TinyLogger::LogProxy::LogMessages("Deserialize component, type:", std::string(logCompType));
 
       return result;
    }

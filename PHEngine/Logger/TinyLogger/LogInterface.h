@@ -76,15 +76,6 @@ namespace TinyLogger
          }
       };
 
-      /* template <size_t N>
-       struct CastTypeToString<const char[N]>
-       {
-          static std::string Do(const char* str)
-          {
-             return std::string(str);
-          }
-       };*/
-
       template <typename TupleT, size_t max_index, size_t index>
       struct IterateTuple
       {
@@ -92,8 +83,7 @@ namespace TinyLogger
          {
             using arg_t = typename std::tuple_element<index, TupleT>::type;
 
-            auto value = std::get<index>(tuple);
-            result.push_back(CastTypeToString<arg_t>::Do(value));
+            result.push_back(CastTypeToString<arg_t>::Do(std::forward<arg_t>(std::get<index>(tuple))));
             IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
          }
       };
@@ -107,6 +97,16 @@ namespace TinyLogger
       };
    }
 
+   template <typename T>
+   struct GetCompressedMessageType {
+      using type = typename std::decay<T>::type;
+   };
+
+   template <>
+   struct GetCompressedMessageType<const char*> {
+      using type = std::string;
+   };
+
    struct LogProxy
    {
       static size_t index ;
@@ -117,16 +117,31 @@ namespace TinyLogger
          const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
          std::string timeFileWasChanged = std::asctime(std::localtime(&currentTime));
          timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
-        
-         using tuple_t = std::tuple<LogArg, LogArgs...>;
-         tuple_t tup = std::make_tuple<LogArg, LogArgs...>(std::forward<LogArg>(arg), std::forward<LogArgs>(args)...);
+         
+         auto argument = CompressMessage<LogArg>(std::forward<LogArg>(arg));
+         using argument_t = typename GetCompressedMessageType<typename std::decay<LogArg>::type>::type;
+         using tuple_t = std::tuple<argument_t, LogArgs...>;
+         tuple_t argTuple = std::make_tuple<argument_t, LogArgs...>(std::forward<argument_t>(argument),
+            std::forward<LogArgs>(args)...);
 
          std::vector<std::string> result{ std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id())) };
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
-         LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, tup);
+         LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
 
          Logger::GetInstance_()->EnqueuLogMessage(LogMessage(result));
+      }
+
+      template <typename T>
+      static typename std::enable_if<!std::is_same<typename std::decay<T>::type, const char*>::value, T>::type CompressMessage(T && arg)
+      {
+         return std::forward<T>(arg);
+      }
+
+      template <typename T>
+      static typename std::enable_if<std::is_same<typename std::decay<T>::type, const char*>::value, std::string>::type CompressMessage(const char* arg)
+      {
+         return std::string(arg);
       }
 
 #define LOG_INFO (AT)
