@@ -206,7 +206,7 @@ set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 
 
-message(STATUS "GLM_DEPENDENCE_INCLUDE path = ${GLM_DEPENDENCE_INCLUDE}")
+message(STATUS "GraphicsCore: GLEW_DEPENDENCE_INCLUDE path = ${GLEW_DEPENDENCE_INCLUDE}")
 
 target_include_directories(EngineGraphicsCoreModule
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}

@@ -197,6 +197,8 @@ set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/inclu
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 
+message(STATUS "GLM_DEPENDENCE_INCLUDE path=${GLM_DEPENDENCE_INCLUDE}")
+
 target_include_directories(EngineGameCoreModule 
   PUBLIC ${ENGINE_CORE_INCLUDE}
   PUBLIC ${GLM_DEPENDENCE_INCLUDE}

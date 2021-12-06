@@ -1,5 +1,5 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "StbLoader.h"
+#include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 
 namespace IO
 {

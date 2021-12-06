@@ -13,4 +13,10 @@ set(
 
 add_library(TinyGameSrcModule STATIC ${HEADERS} ${SOURCE})
 
-target_include_directories(TinyGameSrcModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} )
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+
+message(STATUS "ENGINE_CORE_INCLUDE path = ${ENGINE_CORE_INCLUDE}")
+
+target_include_directories(TinyGameSrcModule
+ PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+ PUBLIC ${ENGINE_CORE_INCLUDE})
