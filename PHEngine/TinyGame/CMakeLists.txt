@@ -20,4 +20,4 @@ target_include_directories(TinyGame
     PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
     )
 
-#target_link_libraries(TinyGame ${STATIC_LIBS})
+target_link_libraries(TinyGame ${STATIC_LIBS})

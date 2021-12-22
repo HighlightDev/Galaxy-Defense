@@ -3,11 +3,11 @@
 #include <iostream>
 #include <stdint.h>
 
+#include "Engine.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
-#include "Engine.h"
 #include "src/LabyrinthLevelFactory.h"
 
 #include <TinyLogger/LogInterface.h>

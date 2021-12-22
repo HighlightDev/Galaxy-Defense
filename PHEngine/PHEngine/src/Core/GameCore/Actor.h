@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <memory>
-#include <glm/mat4x4.hpp>
 #include <type_traits>
 
 #include "GameObject.h"

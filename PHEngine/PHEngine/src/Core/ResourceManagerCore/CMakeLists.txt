@@ -45,4 +45,18 @@ add_library(EngineResourceManagerCoreModule STATIC ${HEADERS} ${SOURCE})
 
 set_target_properties(EngineResourceManagerCoreModule PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(EngineResourceManagerCoreModule PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
+set(STB_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/STB/include/)
+set(ASSIMP_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp/include/)
+set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
+set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
+set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
+
+target_include_directories(EngineResourceManagerCoreModule
+PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
+PUBLIC ${ENGINE_CORE_INCLUDE}
+PUBLIC ${STB_DEPENDENCE_INCLUDE}
+PUBLIC ${ASSIMP_DEPENDENCE_INCLUDE}
+PUBLIC ${GLM_DEPENDENCE_INCLUDE}
+PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
+PUBLIC ${GLEW_DEPENDENCE_INCLUDE})
