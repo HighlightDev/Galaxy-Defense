@@ -1,6 +1,4 @@
-add_subdirectory(src)
-
-set(APPEND STATIC_LIBS TinyGameSrcModule PHEngine)
+#add_subdirectory(src)
 
 add_executable(TinyGame main.cpp)
 
@@ -10,14 +8,20 @@ set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
 set(EXTERNAL_DEPENDENCIES_INCLUDE ${PROJECT_SOURCE_DIR}/External/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 set(GLFW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/include/)
-
-message(STATUS "GLEW directory path=${GLFW_DEPENDENCE_INCLUDE}")
+set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 
 target_include_directories(TinyGame
-    PUBLIC ${ENGINE_CORE_INCLUDE}
-    PUBLIC ${EXTERNAL_DEPENDENCIES_INCLUDE}
-    PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
-    PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
-    )
+PUBLIC ${ENGINE_CORE_INCLUDE}
+PUBLIC ${EXTERNAL_DEPENDENCIES_INCLUDE}
+PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
+PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
+PUBLIC ${LOGER_DEPENDENCE_INCLUDE}
+)
 
-target_link_libraries(TinyGame ${STATIC_LIBS})
+set(GLFW_DEPENDENCE_LIB ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/libglfw3.a)
+
+target_link_libraries(TinyGame 
+PUBLIC ${GLFW_DEPENDENCE_LIB}
+#TinyGameSrcModule 
+#PHEngine
+)

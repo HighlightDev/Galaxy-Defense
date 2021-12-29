@@ -35,7 +35,7 @@ namespace TinyLogger
       {
          std::ofstream stream;
 
-         int32_t openFileFlag = std::ios_base::app;
+         std::ios_base::openmode openFileFlag = std::ios_base::app;
 
          if (bClearFileAtStart)
          {

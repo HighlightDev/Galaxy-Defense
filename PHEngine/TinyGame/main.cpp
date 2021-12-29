@@ -3,16 +3,117 @@
 #include <iostream>
 #include <stdint.h>
 
-#include "Engine.h"
+/*
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
-#include "src/LabyrinthLevelFactory.h"
+#include "Engine.h"
+#include "src/LabyrinthLevelFactory.h"*/
 
 #include <TinyLogger/LogInterface.h>
 
-using namespace Game;
+bool bPushFrame = false;
+bool bShaderRecompile = false;
+bool bSerializeLevel = false;
+bool bDeserializeLevel = false;
+
+bool bPollEvents = true;
+
+void get_window_pos(GLFWwindow *window) {
+  int32_t x, y;
+  glfwGetWindowPos(window, &x, &y);
+}
+
+void cursor_position_callback(GLFWwindow *window, double xpos, double ypos) {
+  const int32_t xPos = static_cast<int32_t>(xpos);
+  const int32_t yPos = static_cast<int32_t>(ypos);
+}
+
+#define ESCAPE_KEY 256
+
+void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
+                          int32_t actionType, int32_t modifierKey) {
+  if (actionType == GLFW_PRESS) {
+    if (key == 'P' || key == 'p') {
+      bPushFrame = true;
+    } else if (key == 'R' || key == 'p') {
+      bShaderRecompile = true;
+    }
+
+    else if (key == ESCAPE_KEY) {
+      bPollEvents = false;
+    }
+
+    else if (key == 'M' || key == 'm') {
+      bSerializeLevel = true;
+    }
+
+    else if (key == 'N' || key == 'n') {
+      bDeserializeLevel = true;
+    }
+  }
+
+  else if (actionType == GLFW_RELEASE) {
+    bPushFrame = false;
+  }
+}
+
+void get_screen_rezolution() {
+  const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+}
+
+void get_window_size(GLFWwindow *window) {
+  int32_t width, height;
+
+  glfwGetWindowSize(window, &width, &height);
+}
+
+int32_t main() {
+  GLFWwindow *window;
+  // Initialize the library
+  if (!glfwInit())
+    return -1;
+
+  // Create a windowed mode window and its OpenGL context
+  get_screen_rezolution();
+
+  window = glfwCreateWindow(1200, 900, "PHEngine", NULL, NULL);
+
+  if (!window) {
+    glfwTerminate();
+    return -1;
+  }
+
+  // Make the window's context current
+  glfwMakeContextCurrent(window);
+  get_window_size(window);
+  get_window_pos(window);
+  glfwSetCursorPosCallback(window, cursor_position_callback);
+  glfwSetKeyCallback(window, key_pressed_callback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+  GLenum initResult = glewInit();
+
+  if (initResult != GLEW_OK) {
+    std::cout << "Something is wrong" << std::endl;
+    glfwTerminate();
+  }
+
+  {
+    while (!glfwWindowShouldClose(window) && bPollEvents) {
+      // Swap front and back buffers
+      glfwSwapBuffers(window);
+      // Poll for and process events
+      glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return 0;
+  }
+}
+
+/*using namespace Game;
 using namespace Labyrinth;
 using namespace IO;
 
@@ -104,32 +205,32 @@ int32_t main(int32_t argc, char **argv)
   TinyLogger::LogProxy::StartLogThread();
 
   GLFWwindow *window;
-  /* Initialize the library */
+  // Initialize the library
   if (!glfwInit())
     return -1;
 
-  /* Create a windowed mode window and its OpenGL context */
+  // Create a windowed mode window and its OpenGL context
   get_screen_rezolution();
   auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
   auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
 
   // window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
   window = glfwCreateWindow(1200, 900, "PHEngine", NULL, NULL);
-  
+
   if (!window)
   {
     glfwTerminate();
     return -1;
   }
 
-  /* Make the window's context current */
+  // Make the window's context current
   glfwMakeContextCurrent(window);
   get_window_size(window);
   get_window_pos(window);
   glfwSetCursorPosCallback(window, cursor_position_callback);
   glfwSetKeyCallback(window, key_pressed_callback);
   glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-  
+
   GLenum initResult = glewInit();
 
   if (initResult != GLEW_OK)
@@ -146,13 +247,13 @@ int32_t main(int32_t argc, char **argv)
         "test level", threadManager);
 
     engine.PlayLevel(level);
-    /* Loop until the user closes the window */
+    // Loop until the user closes the window
     while (!glfwWindowShouldClose(window) && bPollEvents)
     {
       engine.TickWindow();
-      /* Swap front and back buffers */
+      // Swap front and back buffers
       glfwSwapBuffers(window);
-      /* Poll for and process events */
+      // Poll for and process events
       glfwPollEvents();
 #ifdef DEBUG
       if (bPushFrame)
@@ -187,4 +288,4 @@ int32_t main(int32_t argc, char **argv)
   glfwTerminate();
 
   return 0;
-}
+}*/

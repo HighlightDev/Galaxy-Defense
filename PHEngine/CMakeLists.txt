@@ -17,8 +17,8 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
 endif()
 
-add_subdirectory(PHEngine)
-#add_subdirectory(TinyGame)
+#add_subdirectory(PHEngine)
+add_subdirectory(TinyGame)
 
 
 
