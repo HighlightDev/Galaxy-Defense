@@ -131,7 +131,6 @@ namespace Graphics
 
          void RenderScene_RenderThread();
 
-         void PushRenderTargetToTextureRenderer();
 
          void SetProxiesAreDirty(const bool bDirty);
 
@@ -141,6 +140,8 @@ namespace Graphics
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
+
+         void PushRenderTargetToTextureRenderer();
 
          private:
 

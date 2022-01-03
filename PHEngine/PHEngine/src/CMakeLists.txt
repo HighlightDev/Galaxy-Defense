@@ -1,17 +1,27 @@
 
-set(HEADERS
-  Engine.h
+#set(HEADERS
+#  Engine.h
+#)
+
+#set(SOURCE
+#  Engine.cpp
+#)
+
+#add_subdirectory(Core)
+
+#set(APPEND ENGINE_CORE_MODULE EngineCoreModule)
+
+add_compile_definitions(
+  GLM_ENABLE_EXPERIMENTAL
+  SHADING_MODEL_PBR
+  )
+
+file(GLOB_RECURSE SOURCES
+     "*.h"
+     "*.cpp"
 )
 
-set(SOURCE
-  Engine.cpp
-)
-
-add_subdirectory(Core)
-
-set(APPEND ENGINE_CORE_MODULE EngineCoreModule)
-
-add_library(PHEngine STATIC ${HEADERS} ${SOURCE})
+add_library(PHEngine STATIC ${SOURCES})
 
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
 set(STB_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/STB/include/)
@@ -19,6 +29,9 @@ set(ASSIMP_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Assimp
 set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
+set(LUA_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/include/)
+set(BULLET_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/include/)
+set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 
 target_include_directories(PHEngine 
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}
@@ -27,10 +40,17 @@ target_include_directories(PHEngine
   PUBLIC ${ASSIMP_DEPENDENCE_INCLUDE}
   PUBLIC ${GLM_DEPENDENCE_INCLUDE}
   PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
-  PUBLIC ${GLEW_DEPENDENCE_INCLUDE})
+  PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
+  PUBLIC ${BULLET_DEPENDENCE_INCLUDE}
+  PUBLIC ${LOGER_DEPENDENCE_INCLUDE}
+  PUBLIC ${LUA_DEPENDENCE_INCLUDE}
+  )
 
 link_directories(${CMAKE_BINARY_DIR}/Dependencies/Assimp/lib/Debug/)
 
 if (WIN32)
-  target_link_libraries(PHEngine ${ENGINE_CORE_MODULE} assimp-vc141-mtd)
+  target_link_libraries(PHEngine
+  PUBLIC assimp-vc141-mtd
+  #PUBLIC ${ENGINE_CORE_MODULE} 
+  )
 endif()

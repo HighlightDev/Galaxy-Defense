@@ -417,7 +417,10 @@ namespace Graphics
          m_deferredLightShader->SetGBufferPosition(0);
          m_deferredLightShader->SetGBufferAlbedo(1);
          m_deferredLightShader->SetGBufferNormal(2);
+
+#ifdef SHADING_MODEL_PBR
          m_deferredLightShader->SetGBufferMetallicRoughness(3);
+#endif
 
 #ifndef NO_LIT
          m_deferredLightShader->SetLightsInfo(LightProxiesMap);
@@ -665,12 +668,13 @@ namespace Graphics
 
 #if DEBUG
             DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+#endif
          }
 
+#if DEBUG
          DebugFramePanelsPass();
-
-
 #endif
+
       }
 
       void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
@@ -688,12 +692,12 @@ namespace Graphics
          bPlanarReflectionProxiesDirty = bDirty;
       }
 
+#if DEBUG
+
       void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
       {
          m_textureRenderer.PushDebugRenderTarget();
       }
-
-#if DEBUG
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {

@@ -29,10 +29,9 @@ namespace Debug
 
    public:
 
-#if DEBUG
-
       const size_t MAX_FRAME_COUNT = 3;
 
+#if DEBUG
       size_t DebugRenderTargetIndex = 0;
 #endif
 

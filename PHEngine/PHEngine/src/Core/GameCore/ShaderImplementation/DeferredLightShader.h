@@ -82,7 +82,9 @@ namespace Game
 
          void SetGBufferPosition(int32_t slot);
 
+#ifdef SHADING_MODEL_PBR
          void SetGBufferMetallicRoughness(int32_t slot);
+#endif
 
 #ifndef NO_LIT
          void SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies);

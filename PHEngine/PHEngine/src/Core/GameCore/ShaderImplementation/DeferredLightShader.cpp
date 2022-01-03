@@ -121,10 +121,12 @@ namespace Game
          u_gBuffer_Position.LoadUniform(slot);
       }
 
+#ifdef SHADING_MODEL_PBR
       void DeferredLightShader::SetGBufferMetallicRoughness(int32_t slot)
       {
          u_gBuffer_MetallicRoughness.LoadUniform(slot);
       }
+#endif
 
 #ifndef NO_LIT
 
