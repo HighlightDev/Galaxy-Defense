@@ -26,7 +26,6 @@
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 
-#include <glm/vec3.hpp>
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"

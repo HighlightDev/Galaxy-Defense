@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#include <algorithm>
+
 namespace TinyLogger
 {
    LogMessage::LogMessage(std::initializer_list<std::string> messages)
