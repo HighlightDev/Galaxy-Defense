@@ -1,13 +1,13 @@
 set(
 	HEADERS
-	src/LabyrinthLevelFactory.h
-	src/SimpleLevel.h
+	#src/LabyrinthLevelFactory.h
+	#src/SimpleLevel.h
 )
 
 set(
 	SOURCES
-	src/LabyrinthLevelFactory.cpp
-	src/SimpleLevel.cpp
+	#src/LabyrinthLevelFactory.cpp
+	#src/SimpleLevel.cpp
     main.cpp
 )
 
@@ -27,10 +27,10 @@ set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
-set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/include/)
+set(GLFW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/include/)
 
 target_include_directories(TinyGame
-PUBLIC ${ENGINE_CORE_INCLUDE}
+#PUBLIC ${ENGINE_CORE_INCLUDE}
 PUBLIC ${EXTERNAL_DEPENDENCIES_INCLUDE}
 PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
 PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
@@ -39,14 +39,17 @@ PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
 PUBLIC ${GLM_DEPENDENCE_INCLUDE}
 )
 
-if (UNIX)
-	find_library(GLEW_LIBRARIES glew ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
-	target_link_libraries(TinyGame 
-		PUBLIC glew)
+if (UNIX)	
+	find_library(GLEW_LIBRARIES GLEW ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
+	if (NOT GLEW_LIBRARIES)
+		message(FATAL_ERROR "GLEW libraries were not found!")
+	else()
+		target_link_libraries(TinyGame PUBLIC ${GLEW_LIBRARIES})
+	endif()
 endif(UNIX)
 
 target_link_libraries(TinyGame 
 PUBLIC glfw
 PUBLIC TinyLogger
-PUBLIC PHEngine
+#PUBLIC PHEngine
 )
