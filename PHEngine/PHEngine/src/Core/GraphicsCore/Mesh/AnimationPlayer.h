@@ -1,5 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <string.h>
+#include <vector>
+#include <cstddef>
+#include <glm/mat4x4.hpp>
+
 #include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
 
 namespace Game
@@ -12,7 +18,7 @@ namespace Graphics
    namespace Mesh
    {
 
-      class AnimationPlayer 
+      class AnimationPlayer
       {
          friend class Game::AnimationTweenController;
 
@@ -37,7 +43,6 @@ namespace Graphics
          std::vector<glm::mat4> mCachedAnimatedMatrices;
 
       public:
-
          AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData);
 
          AnimationPlayer() = default;
@@ -45,15 +50,15 @@ namespace Graphics
          /* updates matrices with current animation*/
          void UpdateAnimationMatrices();
 
-         const std::vector<glm::mat4>& GetAnimatedMatrices() const;
+         const std::vector<glm::mat4> &GetAnimatedMatrices() const;
 
          bool SetSrcAnimationByIndex(const size_t index);
 
          bool SetDstAnimationByIndex(const size_t index);
 
-         bool SetSrcAnimationName(const std::string& srcAnimationName);
+         bool SetSrcAnimationName(const std::string &srcAnimationName);
 
-         bool SetDstAnimationName(const std::string& dstAnimationName);
+         bool SetDstAnimationName(const std::string &dstAnimationName);
 
          void SetSrcAnimationTime(const float srcAnimationTime);
 
@@ -66,15 +71,12 @@ namespace Graphics
          std::string GetDstAnimationName() const;
 
          float GetSrcAnimationTime() const;
-         
+
          float GetDstAnimationTime() const;
 
       private:
-
          void UpdateAnimationMatrices_Inner();
-
       };
 
    }
 }
-

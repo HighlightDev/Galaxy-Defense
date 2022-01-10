@@ -27,62 +27,62 @@
 namespace Game
 {
 
-   ComponentData* EngineObjectCreator::CreateSpotlightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation,
-      const glm::vec3& ambient, const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, float cutoff, ProjectedShadowInfo* shadowInfo)
+   ComponentData *EngineObjectCreator::CreateSpotlightComponentData(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation,
+                                                                    const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular, const glm::vec3 &attenutation, float radianceRadius, float cutoff, ProjectedShadowInfo *shadowInfo)
    {
       return new SpotlightComponentData(gameObjectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* EngineObjectCreator::CreatePointLightComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& ambient,
-      const glm::vec3& diffuse, const glm::vec3& specular, const glm::vec3& attenutation, float radianceRadius, ProjectedShadowInfo* shadowInfo)
+   ComponentData *EngineObjectCreator::CreatePointLightComponentData(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &ambient,
+                                                                     const glm::vec3 &diffuse, const glm::vec3 &specular, const glm::vec3 &attenutation, float radianceRadius, ProjectedShadowInfo *shadowInfo)
    {
       return new PointLightComponentData(gameObjectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* EngineObjectCreator::CreateDirLightComponentData(const std::string& gameObjectName, const glm::vec3& rotation, const glm::vec3& direction, const glm::vec3& ambient,
-      const glm::vec3& diffuse, const glm::vec3& specular, ProjectedShadowInfo* shadowInfo)
+   ComponentData *EngineObjectCreator::CreateDirLightComponentData(const std::string &gameObjectName, const glm::vec3 &rotation, const glm::vec3 &direction, const glm::vec3 &ambient,
+                                                                   const glm::vec3 &diffuse, const glm::vec3 &specular, ProjectedShadowInfo *shadowInfo)
    {
       return new DirectionalLightComponentData(gameObjectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData* EngineObjectCreator::CreateMeshComponentData(const std::string& gameObjectName, const std::string& pathToMesh, const glm::vec3& translation,
-      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
+   ComponentData *EngineObjectCreator::CreateMeshComponentData(const std::string &gameObjectName, const std::string &pathToMesh, const glm::vec3 &translation,
+                                                               const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material)
    {
       return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   ComponentData* EngineObjectCreator::CreateSimpleMeshComponentData(const std::string& gameObjectName, const std::string& simpleMeshType, const glm::vec3& translation,
-      const glm::vec3& rotation, const glm::vec3& scale, const std::string& luaPathToFile, IMaterial* material)
+   ComponentData *EngineObjectCreator::CreateSimpleMeshComponentData(const std::string &gameObjectName, const std::string &simpleMeshType, const glm::vec3 &translation,
+                                                                     const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material)
    {
       return new SimpleMeshComponentData(gameObjectName, simpleMeshType, translation, rotation, scale, luaPathToFile, material);
    }
 
-   std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string& gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
+   std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string &gameObjectName, std::shared_ptr<SceneComponent> rootComponent)
    {
       return std::make_shared<Actor>(gameObjectName, rootComponent);
    }
 
-   std::shared_ptr<ACamera> EngineObjectCreator::CreateThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
-      const float initPitchDeg, const float initYawDeg,
-      const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset, const bool bIsMainSceneCamera)
+   std::shared_ptr<ACamera> EngineObjectCreator::CreateThirdPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
+                                                                         const float initPitchDeg, const float initYawDeg,
+                                                                         const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset, const bool bIsMainSceneCamera)
    {
       std::shared_ptr<ACamera> result;
 
       if (bIsMainSceneCamera)
       {
          result = std::make_shared<MainThirdPersonCamera>(cameraName, scene, viewPort,
-            initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+                                                          initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
       }
       else
       {
          result = std::make_shared<ThirdPersonCamera>(cameraName, scene, viewPort,
-            initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+                                                      initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
       }
 
       return result;
    }
 
-   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string& componentType, ComponentData* componentData, std::shared_ptr<Scene> scene)
+   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string &componentType, ComponentData *componentData, std::shared_ptr<Scene> scene)
    {
       assert(componentData && scene);
 
@@ -90,55 +90,55 @@ namespace Game
 
       if ("PointLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::PointLight, PointLightComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<PointLightComponent, ComponentMetaType::PointLight>(*componentData);
       }
       else if ("DirectionalLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<Game::ComponentMetaType::DirectionalLight, DirectionalLightComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<DirectionalLightComponent, Game::ComponentMetaType::DirectionalLight>(*componentData);
       }
       else if ("SpotlightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<Game::ComponentMetaType::Spotlight, SpotlightComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<SpotlightComponent, Game::ComponentMetaType::Spotlight>(*componentData);
       }
       else if ("StaticMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::StaticMesh, StaticMeshComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<StaticMeshComponent, ComponentMetaType::StaticMesh>(*componentData);
       }
       else if ("SkeletalMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::SkeletalMesh, SkeletalMeshComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<SkeletalMeshComponent, ComponentMetaType::SkeletalMesh>(*componentData);
       }
       else if ("PhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Physics, PhysicsComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<PhysicsComponent, ComponentMetaType::Physics>(*componentData);
       }
       else if ("CharacterPhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Physics, CharacterPhysicsComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<CharacterPhysicsComponent, ComponentMetaType::Physics>(*componentData);
       }
       else if ("InputComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Input, InputComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<InputComponent, ComponentMetaType::Input>(*componentData);
       }
       else if ("CharacterMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::CharacterMovement, CharacterMovementComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<CharacterMovementComponent, ComponentMetaType::CharacterMovement>(*componentData);
       }
       else if ("MovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Movement, MovementComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<MovementComponent, ComponentMetaType::Movement>(*componentData);
       }
       else if ("SkyboxComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::Skybox, SkyboxComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<SkyboxComponent, ComponentMetaType::Skybox>(*componentData);
       }
       else if ("WaterPlaneComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::WaterPlane, WaterPlaneComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<WaterPlaneComponent, ComponentMetaType::WaterPlane>(*componentData);
       }
       else if ("PlanarReflectionComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<ComponentMetaType::PlanarReflection, PlanarReflectionComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<PlanarReflectionComponent, ComponentMetaType::PlanarReflection>(*componentData);
       }
       else
       {
@@ -148,9 +148,9 @@ namespace Game
       return result;
    }
 
-   ProjectedShadowInfo* EngineObjectCreator::CreateProjectedShadowInfo(const std::string& lightType, const glm::ivec2& shadowAtlasSize)
+   ProjectedShadowInfo *EngineObjectCreator::CreateProjectedShadowInfo(const std::string &lightType, const glm::ivec2 &shadowAtlasSize)
    {
-      ProjectedShadowInfo* shadowProjInfo = nullptr;
+      ProjectedShadowInfo *shadowProjInfo = nullptr;
       if (lightType == "point_light")
       {
          auto pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(shadowAtlasSize);
@@ -175,88 +175,89 @@ namespace Game
       return shadowProjInfo;
    }
 
-   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsBoxShape(const glm::vec3& halfExtent)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsBoxShape(const glm::vec3 &halfExtent)
    {
       return new PhyBoxShape(halfExtent);
    }
 
-   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsCapsuleShape(const float radius, const float height)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCapsuleShape(const float radius, const float height)
    {
       return new PhyCapsuleShape(radius, height);
    }
 
-   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3& normal, const float d)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3 &normal, const float d)
    {
       return new PhyPlaneShape(normal, d);
    }
 
-   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsSphereShape(const float radius)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsSphereShape(const float radius)
    {
       return new PhySphereShape(radius);
    }
 
-   PhysicsShapeBase* EngineObjectCreator::CreatePhysicsCompoundShape()
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCompoundShape()
    {
       return new PhyCompoundShape();
    }
 
-   void EngineObjectCreator::AddChildShapeToCompoundShape(PhysicsShapeBase* compoundShape, PhysicsShapeBase* childShape, const glm::vec3& translation, const glm::vec3& rotation)
+   void EngineObjectCreator::AddChildShapeToCompoundShape(PhysicsShapeBase *compoundShape, PhysicsShapeBase *childShape, const glm::vec3 &translation, const glm::vec3 &rotation)
    {
-      PhyCompoundShape* mCompoundShape = static_cast<PhyCompoundShape*>(compoundShape);
+      PhyCompoundShape *mCompoundShape = static_cast<PhyCompoundShape *>(compoundShape);
       assert(mCompoundShape);
       NoScaleEulerRotationTransform childTransform = NoScaleEulerRotationTransform(translation, rotation);
       mCompoundShape->AddChildShape(childTransform, childShape);
    }
 
-   PhysicsDescriptor* EngineObjectCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const std::string& bodyType, const float mass)
+   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const std::string &bodyType, const float mass)
    {
-      const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC : PhysicsBodyType::DYNAMIC;
+      const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC
+                                                                                                                              : PhysicsBodyType::DYNAMIC;
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
-   PhysicsDescriptor* EngineObjectCreator::CreateRigidBodyController(PhysicsWorld* physWorld, PhysicsShapeBase* phyShape, const PhysicsBodyType& bodyType, const float mass)
+   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const PhysicsBodyType &bodyType, const float mass)
    {
       return new RigidBodyController(physWorld, phyShape, bodyType, mass);
    }
 
-   PhysicsDescriptor* EngineObjectCreator::CreateDynamicCharacterController(PhysicsWorld* physWorld, float capsuleRadius, float capsuleHeight,
-      float mass, float stepHeight)
+   PhysicsDescriptor *EngineObjectCreator::CreateDynamicCharacterController(PhysicsWorld *physWorld, float capsuleRadius, float capsuleHeight,
+                                                                            float mass, float stepHeight)
    {
       return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
    }
 
-   ComponentData* EngineObjectCreator::CreatePhysicsComponentData(const std::string& gameObjectName, PhysicsDescriptor* physDescriptor)
+   ComponentData *EngineObjectCreator::CreatePhysicsComponentData(const std::string &gameObjectName, PhysicsDescriptor *physDescriptor)
    {
       return new PhysicsComponentData(gameObjectName, physDescriptor);
    }
 
-   ComponentData* EngineObjectCreator::CreateCharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+   ComponentData *EngineObjectCreator::CreateCharacterMovementComponentData(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName)
    {
       return new CharacterMovementComponentData(gameObjectName, launchDirection, cameraName);
    }
 
-   ComponentData* EngineObjectCreator::CreateMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+   ComponentData *EngineObjectCreator::CreateMovementComponentData(const std::string &gameObjectName, const std::string &scriptName)
    {
       return new MovementComponentData(gameObjectName, scriptName);
    }
 
-   ComponentData* EngineObjectCreator::CreateInputComponentData(const std::string& gameObjectName)
+   ComponentData *EngineObjectCreator::CreateInputComponentData(const std::string &gameObjectName)
    {
       return new InputComponentData(gameObjectName);
    }
 
-   ComponentData* EngineObjectCreator::CreateSkyboxComponentData(const std::string& gameObjectName, const glm::vec3& scale, IMaterial* material)
+   ComponentData *EngineObjectCreator::CreateSkyboxComponentData(const std::string &gameObjectName, const glm::vec3 &scale, IMaterial *material)
    {
       return new SkyboxComponentData(gameObjectName, scale, material);
    }
 
-   ComponentData* EngineObjectCreator::CreateWaterPlaneComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, IMaterial* materialInstance)
+   ComponentData *EngineObjectCreator::CreateWaterPlaneComponentData(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale, IMaterial *materialInstance)
    {
       return new WaterPlaneComponentData(gameObjectName, translation, rotation, scale, materialInstance);
    }
 
-   ComponentData* EngineObjectCreator::CreatePlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
-      const ViewPortInfo& fboViewPortInfo)
+   ComponentData *EngineObjectCreator::CreatePlanarReflectionComponentData(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale, ACamera *ownerCamera,
+                                                                           const ViewPortInfo &fboViewPortInfo)
    {
       return new PlanarReflectionComponentData(gameObjectName, translation, rotation, scale, ownerCamera, fboViewPortInfo);
    }

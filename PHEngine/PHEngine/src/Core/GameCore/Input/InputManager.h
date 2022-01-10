@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/Input/Keys.h"
 
+#include <cstddef>
 #include <stdint.h>
 
 namespace Game

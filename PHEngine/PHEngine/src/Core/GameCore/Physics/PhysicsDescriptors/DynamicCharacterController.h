@@ -54,7 +54,7 @@ namespace EnginePhysics
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      virtual void ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
 
       // Acceleration vector in XZ plane
       void Walk(const glm::vec2& dir);

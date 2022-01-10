@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstddef>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 

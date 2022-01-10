@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstddef>
 #include <glm/mat4x4.hpp>
 
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"

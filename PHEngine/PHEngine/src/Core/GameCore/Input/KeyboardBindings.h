@@ -54,7 +54,7 @@ namespace Game
 
       ~KeyboardBindings();
 
-      virtual void ProcessEvent(const KeyboardButtonDownEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t& data) override;
 
       bool HasPressedKeys() const;
 

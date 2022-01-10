@@ -14,6 +14,7 @@
 #include "Core/GameCore/BoundingBoxBuilder.h"
 
 #include <gl/glew.h>
+#include <vector>
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -23,36 +24,33 @@ using namespace IO;
 
 namespace Resources
 {
-   template class MeshAllocationPolicy<std::string>;
-
-   template <typename Model>
-	std::shared_ptr<Skin> MeshAllocationPolicy<Model>::AllocateMemory(const Model& arg)
+	std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const std::string &arg)
 	{
 		const int32_t countOfBonesInfluencingOnVertex = GlobalSettings::GetCountBonesPerVertexForAnimation();
 
 		std::shared_ptr<Skin> resultSkin;
 
 		{
-         VertexArrayObject vao;
+			VertexArrayObject vao;
 
-         Resource* outResource;
-         bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
+			Resource *outResource;
+			bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
 
-         assert(bResourceValid);
+			assert(bResourceValid);
 
-         const MeshResource* meshResource = static_cast<MeshResource*>(outResource);
-         const MeshResourceInfo* meshInfo = meshResource->GetMeshResourceInfo();
+			const MeshResource *meshResource = static_cast<MeshResource *>(outResource);
+			const MeshResourceInfo *meshInfo = meshResource->GetMeshResourceInfo();
 
-         MeshAttributes* meshAttributes = meshInfo->MeshAttributes;
+			MeshAttributes *meshAttributes = meshInfo->meshAttributes;
 
-			IndexBufferObject* ibo = nullptr;
+			IndexBufferObject *ibo = nullptr;
 
 			VertexBufferObjectBase *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
 
 			if (meshAttributes->VertexIndices.size())
-				ibo = new IndexBufferObject(meshAttributes->VertexIndices);
+				ibo = new IndexBufferObject(meshAttributes->VertexIndices, DataCarryFlag::Invalidate);
 
-         VertexBufferObject<float, 3, GL_FLOAT>* vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Store);
+			VertexBufferObject<float, 3, GL_FLOAT> *vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Store);
 
 			if (meshAttributes->Normals.size())
 				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
@@ -74,26 +72,23 @@ namespace Resources
 			vao.AddIndexBuffer(ibo);
 			vao.BindBuffersToVao();
 
-         BoundingBoxBuilder builder;
-         BoundingBox boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
-         vertexVBO->InvalidateData();
+			BoundingBoxBuilder builder;
+			BoundingBox boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
+			vertexVBO->InvalidateData();
 
-			if (meshInfo->MeshAnimatedData)
+			if (meshInfo->meshAnimatedData)
 			{
-				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->MeshAnimatedData), boundingBox);
+				resultSkin = std::make_shared<AnimatedSkin>(vao, std::shared_ptr<AnimatedMeshData>(meshInfo->meshAnimatedData), boundingBox);
 			}
 			else
 			{
 				resultSkin = std::make_shared<Skin>(vao, boundingBox);
 			}
-
 		}
 
 		return resultSkin;
 	}
-
-   template <typename Model>
-	void MeshAllocationPolicy<Model>::DeallocateMemory(std::shared_ptr<Skin> arg)
+	void MeshAllocationPolicy::DeallocateMemory(std::shared_ptr<Skin> arg)
 	{
 		arg->CleanUp();
 	}

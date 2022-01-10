@@ -27,7 +27,7 @@ namespace Graphics
 
       virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      virtual void ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
 
       glm::mat4 GetShadowViewMatrix() const;
 

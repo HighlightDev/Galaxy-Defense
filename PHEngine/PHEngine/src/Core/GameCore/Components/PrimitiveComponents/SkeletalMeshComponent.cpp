@@ -96,7 +96,7 @@ namespace Game
    {
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-      static constexpr uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+      static const uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
       if (const auto& sceneSP = m_sceneWP.lock())
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())

@@ -80,21 +80,21 @@ namespace Game
 
    void PointLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
    {
-      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+      static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
    void PointLightComponent::ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data)
    {
-      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+      static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
    void PointLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
    {
-      constexpr uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
+      static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }

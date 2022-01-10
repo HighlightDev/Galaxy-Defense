@@ -34,54 +34,42 @@ namespace Graphics
    namespace Renderer
    {
 
-      DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr)
-         : SceneViewsMap()
-         , bLightProxiesDirty(false)
-         , bProxiesDirty(false)
-         , bPlanarReflectionProxiesDirty(false)
-         , SceneProxiesMap()
-         , LightProxiesMap()
-         , m_interThreadMgr(interThreadMgr)
-         , m_gbuffer(
-            std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
-               DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+      DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
+          : SceneViewsMap(), bLightProxiesDirty(false), bProxiesDirty(false), bPlanarReflectionProxiesDirty(false), SceneProxiesMap(), LightProxiesMap(), m_interThreadMgr(interThreadMgr), m_gbuffer(
+                                                                                                                                                                                                std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
+                                                                                                                                                                                                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                                                                                                                                                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
       {
-         const auto& folderManager = FolderManager::GetInstance();
-
+         const auto &folderManager = FolderManager::GetInstance();
 
          const ShaderParams depthCollectShaderParams("DepthCollectShader",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectVS.glsl",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectFS.glsl");
+                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectVS.glsl",
+                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectFS.glsl");
 
          const ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightVS.glsl",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightFS.glsl",
-            FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightGS.glsl");
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightVS.glsl",
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightFS.glsl",
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightGS.glsl");
 
          TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> staticMeshParams(
-            std::string(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, DepthCollectShader)), depthCollectShaderParams);
+             "StaticMeshVertexFactory_DepthCollectShader", depthCollectShaderParams);
          TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> skeletalMeshParams(
-            std::string(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, DepthCollectShader)), depthCollectShaderParams);
+             "SkeletalMeshVertexFactory<4>_DepthCollectShader", depthCollectShaderParams);
 
          TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> staticMeshCompositeParams(
-            std::string(COMPOSITE_SHADER_TO_STR(StaticMeshVertexFactory, PointLightDepthCollectShader)), plDepthCollectShaderParams);
+             "StaticMeshVertexFactory_PointLightDepthCollectShader", plDepthCollectShaderParams);
          TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> skeletalMeshCompositeParams(
-            std::string(COMPOSITE_SHADER_TO_STR(SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader)), plDepthCollectShaderParams);
+             "SkeletalMeshVertexFactory<4>_PointLightDepthCollectShader", plDepthCollectShaderParams);
 
-         mDepthCollectShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->
-            template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);
-         mDepthCollectShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->
-            template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>>(skeletalMeshParams);
+         mDepthCollectShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);
+         mDepthCollectShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>>(skeletalMeshParams);
 
-         mDepthCollectPointLightShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->
-            template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>>(skeletalMeshCompositeParams);
-         mDepthCollectPointLightShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->
-            template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>>(staticMeshCompositeParams);
+         mDepthCollectPointLightShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>>(skeletalMeshCompositeParams);
+         mDepthCollectPointLightShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>>(staticMeshCompositeParams);
 
          ShaderParams deferredLightShaderParams(
-            "DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl");
-         m_deferredLightShader = ShaderPool::GetInstance()-> template GetOrAllocateResource<DeferredLightShader>(deferredLightShaderParams);
+             "DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl");
+         m_deferredLightShader = ShaderPool::GetInstance()->template GetOrAllocateResource<DeferredLightShader>(deferredLightShaderParams);
       }
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
@@ -91,13 +79,12 @@ namespace Graphics
       void DeferredShadingSceneRenderer::PostLevelInit()
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(0, 0, [=]()
-         {
+                                                 Job(0, 0, [=]()
+                                                     {
             for (auto& lightProxy : LightProxiesMap)
             {
                lightProxy.second->PostLevelInit();
-            }
-         }));
+            } }));
       }
 
       void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView)
@@ -108,39 +95,39 @@ namespace Graphics
          RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
-         for (auto& atlasLightGroup : mGroupedByShadowAtlasLights)
+         for (auto &atlasLightGroup : mGroupedByShadowAtlasLights)
          {
             bool bNewDepthShadowAtlas = true;
 
-            for (auto& lightProxyPtr : atlasLightGroup.second)
+            for (auto &lightProxyPtr : atlasLightGroup.second)
             {
                auto lightProxyType = lightProxyPtr->GetLightProxyType();
 
                if (lightProxyType == LightSceneProxyType::DIR_LIGHT)
                {
-                  DirectionalLightSceneProxy* lightPtr = static_cast<DirectionalLightSceneProxy*>(lightProxyPtr);
+                  DirectionalLightSceneProxy *lightPtr = static_cast<DirectionalLightSceneProxy *>(lightProxyPtr);
 
                   if (lightPtr->IsEnabled())
                   {
-                     ProjectedShadowInfo* const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
+                     ProjectedShadowInfo *const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
                      if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
                         shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                        DirectionalLightSceneProxy* dirLightPtr = lightPtr;
-                        const BoundingBox& dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
+                        DirectionalLightSceneProxy *dirLightPtr = lightPtr;
+                        const BoundingBox &dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
                         if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mDepthCollectShaderNonSkeletal->ExecuteShader();
                            mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(false);
-                           for (auto& proxy : mNonSkeletalProxiesVec)
+                           for (auto &proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox()))
                               {
-                                 const auto& worldMatrix = proxy->GetMatrix();
-                                 const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                                 const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                                 const auto &worldMatrix = proxy->GetMatrix();
+                                 const auto &viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                                 const auto &projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
                                  mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, viewMatrix, projectionMatrix);
 
                                  proxy->GetSkin()->GetBuffer()->RenderVAO(GL_TRIANGLES);
@@ -152,13 +139,13 @@ namespace Graphics
                         if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
                         {
                            mDepthCollectShaderSkeletal->ExecuteShader();
-                           for (auto& proxy : mSkeletalProxiesVec)
+                           for (auto &proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox()))
                               {
-                                 const auto& worldMatrix = proxy->GetMatrix();
-                                 const auto& viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
-                                 const auto& projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
+                                 const auto &worldMatrix = proxy->GetMatrix();
+                                 const auto &viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
+                                 const auto &projectionMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowProjectionMatrix();
                                  mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, viewMatrix, projectionMatrix);
                                  mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(proxy->GetSkinningMatrices());
 
@@ -175,11 +162,11 @@ namespace Graphics
                }
                else if (lightProxyType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  SpotlightSceneProxy* spotlightPtr = static_cast<SpotlightSceneProxy*>(lightProxyPtr);
+                  SpotlightSceneProxy *spotlightPtr = static_cast<SpotlightSceneProxy *>(lightProxyPtr);
 
                   if (spotlightPtr->IsEnabled())
                   {
-                     const auto& shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
+                     const auto &shadowInfo = spotlightPtr->GetProjectedSpotLightShadowInfo();
                      if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
                         shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
@@ -188,13 +175,13 @@ namespace Graphics
                         {
                            mDepthCollectShaderNonSkeletal->ExecuteShader();
                            mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(true);
-                           for (auto& proxy : mNonSkeletalProxiesVec)
+                           for (auto &proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
-                                 const auto& worldMatrix = proxy->GetMatrix();
-                                 const auto& viewMatrix = shadowInfo->GetShadowViewMatrix();
-                                 const auto& projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
+                                 const auto &worldMatrix = proxy->GetMatrix();
+                                 const auto &viewMatrix = shadowInfo->GetShadowViewMatrix();
+                                 const auto &projectionMatrix = shadowInfo->GetShadowProjectionMatrix();
 
                                  mDepthCollectShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, viewMatrix, projectionMatrix);
                                  mDepthCollectShaderNonSkeletal->GetShader()->SetShadowDistance(spotlightPtr->GetRadianceRadius());
@@ -210,15 +197,15 @@ namespace Graphics
                            mDepthCollectShaderSkeletal->ExecuteShader();
                            mDepthCollectShaderSkeletal->GetShader()->SetWriteDepthLinearly(true);
 
-                           for (auto& proxy : mSkeletalProxiesVec)
+                           for (auto &proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
-                                 SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                                 SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
 
-                                 const auto& worldMatrix = skeletalProxy->GetMatrix();
-                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrix();
-                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
+                                 const auto &worldMatrix = skeletalProxy->GetMatrix();
+                                 const auto &viewMatrices = shadowInfo->GetShadowViewMatrix();
+                                 const auto &projectionMatrices = shadowInfo->GetShadowProjectionMatrix();
 
                                  mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, viewMatrices, projectionMatrices);
                                  mDepthCollectShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
@@ -239,25 +226,25 @@ namespace Graphics
                }
                else if (lightProxyType == LightSceneProxyType::POINT_LIGHT)
                {
-                  PointLightSceneProxy* pointLightPtr = static_cast<PointLightSceneProxy*>(lightProxyPtr);
+                  PointLightSceneProxy *pointLightPtr = static_cast<PointLightSceneProxy *>(lightProxyPtr);
 
                   if (pointLightPtr->IsEnabled())
                   {
-                     const auto& shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
+                     const auto &shadowInfo = pointLightPtr->GetProjectedPointShadowInfo();
                      if (shadowInfo && shadowInfo->IsShadowMapDirty())
                      {
-                        shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own depth texture atlas 
+                        shadowInfo->BindShadowFramebuffer(true, true); // every point light has it's own depth texture atlas
 
                         if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                         {
                            mDepthCollectPointLightShaderNonSkeletal->ExecuteShader();
-                           for (auto& proxy : mNonSkeletalProxiesVec)
+                           for (auto &proxy : mNonSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
-                                 const auto& worldMatrix = proxy->GetMatrix();
-                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                                 const auto &worldMatrix = proxy->GetMatrix();
+                                 const auto &viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                 const auto &projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
                                  mDepthCollectPointLightShaderNonSkeletal->GetShader()->SetTransformationMatrices(viewMatrices, projectionMatrices);
                                  mDepthCollectPointLightShaderNonSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, glm::mat4(), glm::mat4());
@@ -272,15 +259,15 @@ namespace Graphics
                         if (mSkeletalProxiesVec.size() > 0) // Skeletal proxies
                         {
                            mDepthCollectPointLightShaderSkeletal->ExecuteShader();
-                           for (auto& proxy : mSkeletalProxiesVec)
+                           for (auto &proxy : mSkeletalProxiesVec)
                            {
                               if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                               {
-                                 SkeletalMeshSceneProxy* skeletalProxy = static_cast<SkeletalMeshSceneProxy*>(proxy);
+                                 SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
 
-                                 const auto& worldMatrix = skeletalProxy->GetMatrix();
-                                 const auto& viewMatrices = shadowInfo->GetShadowViewMatrices();
-                                 const auto& projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
+                                 const auto &worldMatrix = skeletalProxy->GetMatrix();
+                                 const auto &viewMatrices = shadowInfo->GetShadowViewMatrices();
+                                 const auto &projectionMatrices = shadowInfo->GetShadowProjectionMatrices();
 
                                  mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetMatrices(worldMatrix, glm::mat4(), glm::mat4());
                                  mDepthCollectPointLightShaderSkeletal->GetVertexFactoryShader()->SetSkinningMatrices(skeletalProxy->GetSkinningMatrices());
@@ -321,7 +308,7 @@ namespace Graphics
 
          if (mSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mSkeletalProxiesVec)
+            for (auto &proxy : mSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
@@ -330,7 +317,7 @@ namespace Graphics
 
          if (mNonSkeletalProxiesVec.size() > 0)
          {
-            for (auto& proxy : mNonSkeletalProxiesVec)
+            for (auto &proxy : mNonSkeletalProxiesVec)
             {
                if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
@@ -349,11 +336,11 @@ namespace Graphics
          // ************************** SHADOWS ************************** //
          size_t pointLightIndex = 0, dirLightIndex = 0, spotlightIndex = 0;
          size_t shadowMapSlot = 4, dirShadowMapCount = 0, pointShadowMapCount = 0, spotlightShadowMapCount = 0;
-         for (auto& dirLightProxy : mDirLightProxiesVec)
+         for (auto &dirLightProxy : mDirLightProxiesVec)
          {
             if (dirLightProxy->IsEnabled())
             {
-               ProjectedDirectionalLightShadowInfo* shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
+               ProjectedDirectionalLightShadowInfo *shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -367,11 +354,11 @@ namespace Graphics
             }
          }
 
-         for (auto& pointLightProxy : mPointLightProxiesVec)
+         for (auto &pointLightProxy : mPointLightProxiesVec)
          {
             if (pointLightProxy->IsEnabled())
             {
-               ProjectedPointLightShadowInfo* shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
+               ProjectedPointLightShadowInfo *shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -384,11 +371,11 @@ namespace Graphics
             }
          }
 
-         for (const auto& spotLightProxy : mSpotlightProxiesVec)
+         for (const auto &spotLightProxy : mSpotlightProxiesVec)
          {
             if (spotLightProxy->IsEnabled())
             {
-               ProjectedSpotlightShadowInfo* shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
+               ProjectedSpotlightShadowInfo *shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -442,13 +429,14 @@ namespace Graphics
          auto cameraViewPort = cameraProxy->GetViewPort();
 
          m_gbuffer->CopyFramebufferData(cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height,
-            cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
+                                        cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
 
          RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
-            BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
+             renderState;
          renderState.BindRenderState();
 
-         for (const auto& proxy : mForwardRenderingProxiesVec)
+         for (const auto &proxy : mForwardRenderingProxiesVec)
          {
             if (proxy->IsEnabled() && proxy->IsVisible() && sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
@@ -466,27 +454,28 @@ namespace Graphics
          glEnable(GL_CLIP_DISTANCE0);
 
          RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
-            BlendingState<false>> renderState;
+                     BlendingState<false>>
+             renderState;
          renderState.BindRenderState();
 
-         for (const auto& planarReflectionProxy : mPlanarReflectionProxiesVec)
+         for (const auto &planarReflectionProxy : mPlanarReflectionProxiesVec)
          {
             auto wp = planarReflectionProxy->GetSceneViewWeakPtr();
             if (auto scenViewSp = wp.lock())
             {
-               const auto& viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
-               const auto& projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
-               const glm::mat4& mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
-               const glm::vec4& mirrorPlane = planarReflectionProxy->GetReflectionPlane();
+               const auto &viewMatrix = scenViewSp->GetCameraProxy()->GetViewMatrix();
+               const auto &projectionMatrix = scenViewSp->GetCameraProxy()->GetProjectionMatrix();
+               const glm::mat4 &mirrorMatrix = planarReflectionProxy->GetMirrorMatrix();
+               const glm::vec4 &mirrorPlane = planarReflectionProxy->GetReflectionPlane();
 
-               const CameraFrustum& mirroredCameraFrustum =
-                  CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
+               const CameraFrustum &mirroredCameraFrustum =
+                   CameraFrustum::GetConstructedFromViewProjectionMatrices(viewMatrix * mirrorMatrix, projectionMatrix);
 
                planarReflectionProxy->RenderToPlanarReflectionFBO();
 
                if (mSkeletalProxiesVec.size() > 0)
                {
-                  for (auto& proxy : mSkeletalProxiesVec)
+                  for (auto &proxy : mSkeletalProxiesVec)
                   {
                      if (proxy->IsEnabled() && proxy->IsVisible())
                      {
@@ -499,7 +488,7 @@ namespace Graphics
 
                if (mNonSkeletalProxiesVec.size() > 0)
                {
-                  for (auto& proxy : mNonSkeletalProxiesVec)
+                  for (auto &proxy : mNonSkeletalProxiesVec)
                   {
                      if (proxy->IsEnabled() && proxy->IsVisible())
                      {
@@ -512,7 +501,7 @@ namespace Graphics
 
                if (mForwardRenderingProxiesVec.size() > 0)
                {
-                  for (auto& proxy : mForwardRenderingProxiesVec)
+                  for (auto &proxy : mForwardRenderingProxiesVec)
                   {
                      if (proxy->IsEnabled() && proxy->IsVisible())
                      {
@@ -540,14 +529,14 @@ namespace Graphics
             mSkeletalProxiesVec.clear();
             mNonSkeletalProxiesVec.clear();
 
-            for (auto& proxy : SceneProxiesMap)
+            for (auto &proxy : SceneProxiesMap)
             {
-               PrimitiveSceneProxy* proxyPtr = proxy.second.get();
+               PrimitiveSceneProxy *proxyPtr = proxy.second.get();
 
                if (proxyPtr->IsDeferred())
                {
                   if (proxyPtr->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     mSkeletalProxiesVec.push_back(static_cast<SkeletalMeshSceneProxy*>(proxyPtr));
+                     mSkeletalProxiesVec.push_back(static_cast<SkeletalMeshSceneProxy *>(proxyPtr));
                   else
                      mNonSkeletalProxiesVec.push_back(proxyPtr);
                }
@@ -565,23 +554,23 @@ namespace Graphics
             mPointLightProxiesVec.clear();
             mSpotlightProxiesVec.clear();
 
-            for (auto& proxy : LightProxiesMap)
+            for (auto &proxy : LightProxiesMap)
             {
-               LightSceneProxy* proxyPtr = proxy.second.get();
+               LightSceneProxy *proxyPtr = proxy.second.get();
 
-               const LightSceneProxyType& lightType = proxyPtr->GetLightProxyType();
+               const LightSceneProxyType &lightType = proxyPtr->GetLightProxyType();
 
                if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
-                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy*>(proxyPtr));
+                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy *>(proxyPtr));
                }
                else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
-                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy*>(proxyPtr));
+                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy *>(proxyPtr));
                }
                else if (lightType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy*>(proxyPtr));
+                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy *>(proxyPtr));
                }
             }
 
@@ -592,13 +581,15 @@ namespace Graphics
 
          if (bPlanarReflectionProxiesDirty)
          {
-            for (auto& proxy : PlanarReflectionProxiesMap)
+            for (auto &proxy : PlanarReflectionProxiesMap)
             {
-               PlanarReflectionProxy* proxyPtr = proxy.second.get();
+               PlanarReflectionProxy *proxyPtr = proxy.second.get();
                auto findIt = std::find_if(mPlanarReflectionProxiesVec.begin(), mPlanarReflectionProxiesVec.end(),
-                  [=](const auto& existingProxy) { return proxyPtr->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
+                                          [=](const auto &existingProxy)
+                                          { return proxyPtr->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
 
-               if (mPlanarReflectionProxiesVec.end() == findIt) {
+               if (mPlanarReflectionProxiesVec.end() == findIt)
+               {
                   mPlanarReflectionProxiesVec.push_back(proxyPtr);
                }
             }
@@ -610,7 +601,7 @@ namespace Graphics
       void DeferredShadingSceneRenderer::GroupLightsByShadowMap()
       {
          mGroupedByShadowAtlasLights.clear();
-         for (auto& lProxy : LightProxiesMap)
+         for (auto &lProxy : LightProxiesMap)
          {
             if (auto shadowInfo = lProxy.second->GetShadowInfo())
             {
@@ -619,9 +610,9 @@ namespace Graphics
                   auto lastDesc = atlasResource->GetTextureDescriptor();
                   if (mGroupedByShadowAtlasLights.count(lastDesc) == 0)
                   {
-                     std::vector<LightSceneProxy*> result;
+                     std::vector<LightSceneProxy *> result;
 
-                     for (const auto& seekLProxy : LightProxiesMap)
+                     for (const auto &seekLProxy : LightProxiesMap)
                      {
                         if (seekLProxy.second->GetShadowInfo() && seekLProxy.second->GetShadowInfo()->GetAtlasResource())
                         {
@@ -640,7 +631,7 @@ namespace Graphics
       {
          PrepareSceneProxiesForRender();
 
-         for (const auto& sceneViewPair : SceneViewsMap)
+         for (const auto &sceneViewPair : SceneViewsMap)
          {
             auto sceneView = sceneViewPair.second;
             auto cameraProxy = sceneView->GetCameraProxy();
@@ -674,7 +665,6 @@ namespace Graphics
 #if DEBUG
          DebugFramePanelsPass();
 #endif
-
       }
 
       void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
@@ -702,35 +692,35 @@ namespace Graphics
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
-            BlendingState<false>> renderState;
+                     BlendingState<false>>
+             renderState;
          renderState.BindRenderState();
 
          m_textureRenderer.RenderFrames(m_gbuffer);
       }
 
-      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData)
+      void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {
          mDebugPhysicsRenderData = debugPhysicsRenderData;
       }
 
-      void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          // todo: delete this crap and use buffers =\
 
-         const auto& physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();
+         const auto &physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();
          if (physicsRenderData.size())
          {
-            float viewMatVec[16]{ 0.0f };
-            const float *pSource = (const float*)glm::value_ptr(viewMatrix);
+            float viewMatVec[16]{0.0f};
+            const float *pSource = (const float *)glm::value_ptr(viewMatrix);
             for (int i = 0; i < 16; ++i)
                viewMatVec[i] = pSource[i];
-
 
             glMatrixMode(GL_MODELVIEW);
             glLoadMatrixf(pSource);
 
-            float projMatrix[16]{ 0.0f };
-            pSource = (const float*)glm::value_ptr(projectionMatrix);
+            float projMatrix[16]{0.0f};
+            pSource = (const float *)glm::value_ptr(projectionMatrix);
             for (int i = 0; i < 16; ++i)
                projMatrix[i] = pSource[i];
 
@@ -848,9 +838,9 @@ namespace Graphics
                }
          }
 #endif
+         }
       }
-   }
 #endif
 
-}
+   }
 }

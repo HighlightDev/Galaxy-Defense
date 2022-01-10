@@ -46,9 +46,9 @@ namespace Game
 
    protected:
 
-      virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const KinematicBodyMovedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename KinematicBodyMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
 
    private:
 

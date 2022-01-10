@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <glm/vec3.hpp>
 #include <tuple>
+#include <algorithm>
 
 #include "Policy/Policies.h"
 
@@ -25,7 +25,7 @@ namespace Event
 
    private:
 
-      typename EventHandlePolicy mPolicy[2];
+      EventHandlePolicy mPolicy[2];
 
       std::vector<TEvent<EventHandlePolicy_t>*> m_listeners;
 

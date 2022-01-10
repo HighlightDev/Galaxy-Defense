@@ -1,4 +1,7 @@
 #pragma once
+
+#include <memory>
+
 #include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
 
 namespace Game

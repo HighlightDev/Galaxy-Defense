@@ -22,7 +22,7 @@ namespace EnginePhysics
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      virtual void ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
 
    private:
 

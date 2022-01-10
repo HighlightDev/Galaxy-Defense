@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <stdint.h>
+#include <cstddef>
 #include <unordered_map>
 
 #include "Core/UtilityCore/PlatformDependentFunctions.h"

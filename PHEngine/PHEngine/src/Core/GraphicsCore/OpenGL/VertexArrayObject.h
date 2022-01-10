@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <memory>
-#include <gl\glew.h>
+#include <gl/glew.h>
 
 namespace Graphics
 {

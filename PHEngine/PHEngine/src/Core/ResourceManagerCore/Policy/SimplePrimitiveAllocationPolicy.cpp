@@ -13,10 +13,7 @@ using namespace Game;
 namespace Resources
 {
 
-   template class SimplePrimitiveAllocationPolicy<int32_t>;
-
-   template <typename Model>
-   std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy<Model>::AllocateMemory(int32_t arg)
+   std::shared_ptr<Skin> SimplePrimitiveAllocationPolicy::AllocateMemory(int32_t arg)
    {
       auto typeArg = SimplePrimitiveType(arg);
 
@@ -182,8 +179,7 @@ namespace Resources
       return resultSkin;
    }
 
-   template <typename Model>
-   void SimplePrimitiveAllocationPolicy<Model>::DeallocateMemory(const std::shared_ptr<Skin>& arg)
+   void SimplePrimitiveAllocationPolicy::DeallocateMemory(const std::shared_ptr<Skin>& arg)
    {
       arg->CleanUp();
    }

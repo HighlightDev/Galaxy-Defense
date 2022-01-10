@@ -55,7 +55,7 @@ namespace Game {
 
    void PlanarReflectionComponent::PostLevelInit()
    {
-      static constexpr uint64_t functionId = Hash("PlanarReflectionComponent: PostLevelInit");
+      static const uint64_t functionId = Hash("PlanarReflectionComponent: PostLevelInit");
       if (const auto& sceneSP = m_sceneWP.lock())
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
@@ -118,7 +118,7 @@ namespace Game {
 
    void PlanarReflectionComponent::SyncDataWithRenderThread()
    {
-      static constexpr uint64_t functionId = Hash("PlanarReflectionComponent: SyncDataWithRenderThread");
+      static const uint64_t functionId = Hash("PlanarReflectionComponent: SyncDataWithRenderThread");
       if (const auto& sceneSP = m_sceneWP.lock())
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())

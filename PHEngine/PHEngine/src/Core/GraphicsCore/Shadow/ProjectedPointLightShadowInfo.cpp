@@ -19,7 +19,7 @@ namespace Graphics
       return  std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedPointLightShadowInfo::ProcessEvent(typename const Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data)
    {
       if (TextureType::TEXTURE_CUBE == std::get<0>(data))
       {

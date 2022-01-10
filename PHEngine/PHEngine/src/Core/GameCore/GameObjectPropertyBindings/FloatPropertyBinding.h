@@ -16,7 +16,7 @@ namespace Game {
 
    public:
 
-      FloatPropertyBinding(const std::string& bindingName, propertyPtr_t<float> value)
+      FloatPropertyBinding(const std::string& bindingName, Game::propertyPtr_t<float> value)
          : PropertyBinding(bindingName)
          , Value(value)
       {
@@ -28,7 +28,7 @@ namespace Game {
       {
       }
 
-      void SetValuePtr(propertyPtr_t<float> value)
+      void SetValuePtr(Game::propertyPtr_t<float> value)
       {
          Value = value;
          bValueSet = true;

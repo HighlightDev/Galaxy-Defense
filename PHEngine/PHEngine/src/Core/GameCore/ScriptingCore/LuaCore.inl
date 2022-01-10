@@ -5,6 +5,8 @@
 #include <type_traits>
 #include <glm/vec3.hpp>
 #include <glm/ext/quaternion_float.hpp>
+#include <algorithm>
+#include <utility>
 
 extern "C"
 {
@@ -52,29 +54,8 @@ namespace Game
          }
       };
 
-      template <typename ArgType>
+       template <typename ArgType>
       struct PushValue;
-
-      template <typename ArgType, bool isPtr>
-      struct ConditionalPushValue;
-
-      template <typename ArgType>
-      struct ConditionalPushValue<ArgType, true>
-      {
-         static void Do(lua_State* state, const ArgType& value)
-         {
-            PushValue<void*>::Do(state, (void*)value);
-         }
-      };
-
-      template <typename ArgType>
-      struct ConditionalPushValue<ArgType, false>
-      {
-         static void Do(lua_State* state, const ArgType& value)
-         {
-            PushValue<ArgType>::Do(state, value);
-         }
-      };
 
       template <>
       struct PushValue<void*>
@@ -130,6 +111,18 @@ namespace Game
          }
       };
 
+      template <typename ArgType>
+      typename std::enable_if<std::is_pointer<ArgType>::value>::type PushTypeValue(lua_State* state, const ArgType& value)
+      {
+         PushValue<void*>::Do(state, (void*)value);
+      }
+
+      template <typename ArgType>
+      typename std::enable_if<!std::is_pointer<ArgType>::value>::type PushTypeValue(lua_State* state, const ArgType& value)
+      {
+        PushValue<ArgType>::Do(state, value);
+      }
+
       template <typename... Args>
       struct IterateFunctionArgs;
 
@@ -138,7 +131,7 @@ namespace Game
       {
          static void PushArg(const LuaWrapper& instanceWrapper, Arg&& arg, Args&&... args)
          {
-            PushValue<std::decay<Arg>::type>::Do(instanceWrapper.GetState(), std::forward<Arg>(arg));
+            PushValue<typename std::decay<Arg>::type>::Do(instanceWrapper.GetState(), std::forward<Arg>(arg));
             IterateFunctionArgs<Args...>::PushArg(instanceWrapper, std::forward<Args>(args)...);
          }
       };
@@ -506,8 +499,8 @@ namespace Game
       {
          static int PushToLua(lua_State* state, ILuaExecutor_t* executorInstance, ArgsPack_t& packArgs)
          {
-            auto value = executorInstance->ExecuteLuaCallback(packArgs);
-            LuaInnerCore::ConditionalPushValue<ReturnValueType, std::is_pointer<ReturnValueType>::value>::Do(state, value);
+            const auto value = executorInstance->ExecuteLuaCallback(packArgs);
+            LuaInnerCore::PushTypeValue<ReturnValueType>(state, value);
             return 1;
          }
       };
@@ -610,7 +603,7 @@ namespace Game
          LuaInnerCore::CheckLuaExecution::Do(instanceWrapper, lua_pcall(instanceWrapper.GetState(), argsCount, 1, /*error handling in lua*/0));
 
          int32_t stackIndex = -1;
-         return LuaInnerCore::GetValue<std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
+         return LuaInnerCore::GetValue<typename std::decay<RetType>::type>::Value(instanceWrapper, stackIndex);
       }
    };
 

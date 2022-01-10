@@ -2,6 +2,7 @@
 #include "Core/CommonCore/XMLParserHelper.h"
 
 #include <glm/vec2.hpp>
+#include <memory>
 
 using namespace Common;
 

@@ -12,14 +12,10 @@ using namespace EngineUtility;
 namespace Resources
 {
 
-   template <typename Model>
-	class ShaderAllocationPolicy
+	struct ShaderAllocationPolicy
 	{
-	public:
-      using model_t = Model;
-
-		template <typename ShaderT>
-      static std::shared_ptr<Shader> AllocateMemory(const Model& arg)
+	  template <typename ShaderT, typename ShaderParamsModelType>
+      static std::shared_ptr<Shader> AllocateMemory(const ShaderParamsModelType& arg)
       {
          return std::shared_ptr<Shader>(std::make_shared<ShaderT>(arg));
       }

@@ -289,7 +289,7 @@ namespace Game
    void Scene::PrimitiveSceneProxyDeleted_OnRenderThread(size_t primitiveSceneProxyIndex)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::PrimitiveSceneProxyDeleted_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyDeleted_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -308,7 +308,7 @@ namespace Game
    void Scene::PrimitiveSceneProxiesUpdated_OnRenderThread()
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::PrimitiveSceneProxiesUpdated_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -323,7 +323,7 @@ namespace Game
    void Scene::LightSceneProxyDeleted_OnRenderThread(size_t lightSceneProxyIndex)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::LightSceneProxyDeleted_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::LightSceneProxyDeleted_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -342,7 +342,7 @@ namespace Game
    void Scene::LightSceneProxiesUpdated_OnRenderThread()
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::LightSceneProxiesUpdated_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::LightSceneProxiesUpdated_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -357,7 +357,7 @@ namespace Game
    void Scene::CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::CameraSceneProxyAdded_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::CameraSceneProxyAdded_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -372,7 +372,7 @@ namespace Game
    void Scene::PrimitiveSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::PrimitiveSceneProxyAdded_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyAdded_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -388,7 +388,7 @@ namespace Game
    void Scene::LightSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -404,7 +404,7 @@ namespace Game
    void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -419,7 +419,7 @@ namespace Game
    void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> properties)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -434,7 +434,7 @@ namespace Game
    void Scene::PlanarReflectionSceneProxyAdded_OnRenderThread(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::PlanarReflectionSceneProxyAdded");
+      static const uint64_t functionId = Hash("Scene::PlanarReflectionSceneProxyAdded");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -450,7 +450,7 @@ namespace Game
    void Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera* cameraOwner)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
+      static const uint64_t functionId = Hash("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -472,7 +472,7 @@ namespace Game
    void Scene::UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData)
    {
       static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
+      static const uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
 
       if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
@@ -556,7 +556,7 @@ namespace Game
       RemoveGameObject(component.get());
    }
 
-   void Scene::RegisterComponentSceneProxy(std::shared_ptr<Component> component)
+   void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& component)
    {
       ComponentType type = component->GetComponentType();
       if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)

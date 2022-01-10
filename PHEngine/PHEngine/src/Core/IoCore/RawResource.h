@@ -15,7 +15,7 @@ namespace IO
 
       virtual void Clear()
       {
-         delete DATA;
+         free(DATA);
       }
    };
 

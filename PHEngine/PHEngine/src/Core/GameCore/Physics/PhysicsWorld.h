@@ -50,7 +50,7 @@ namespace EnginePhysics
 
    protected:
 
-      virtual void ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t& data) override;
 
    };
 }

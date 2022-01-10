@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <stdint.h>
+#include <cstddef>
 
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"

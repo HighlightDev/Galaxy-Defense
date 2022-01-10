@@ -25,7 +25,7 @@ namespace Resources
 
    private:
 
-      std::shared_future<typename arg_t> mResourceFuture;
+      std::shared_future<arg_t> mResourceFuture;
 
       bool bIsFutureInitialized;
 
@@ -45,7 +45,7 @@ namespace Resources
 
       }
 
-      void Initialize(std::shared_future<typename arg_t> sharedFuture)
+      void Initialize(std::shared_future<arg_t> sharedFuture)
       {
          mResourceFuture = sharedFuture;
          bIsFutureInitialized = true;

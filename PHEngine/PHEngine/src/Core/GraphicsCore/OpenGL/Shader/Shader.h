@@ -6,7 +6,6 @@
 #include "IShader.h"
 
 #include <vector>
-#include <xutility>
 
 namespace Graphics
 {

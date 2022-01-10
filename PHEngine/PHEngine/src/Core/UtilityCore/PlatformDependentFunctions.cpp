@@ -5,56 +5,73 @@ namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system
 
-   uint64_t getProcessMemorySize()
-   {
-      PROCESS_MEMORY_COUNTERS pmc;
-      GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
-      uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
-      return mHeapCapacity;
-   }
+	uint64_t getProcessMemorySize()
+	{
+		PROCESS_MEMORY_COUNTERS pmc;
+		GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc));
+		uint64_t mHeapCapacity = static_cast<uint64_t>(pmc.WorkingSetSize);
+		return mHeapCapacity;
+	}
 
-	char * get_module_file_name(HMODULE hModule) {
+	char* get_module_file_name(HMODULE hModule)
+	{
 		size_t size = 1;
-		char * buffer;
-		for (; ; ) {
+		char *buffer;
+		for (;;)
+		{
 			buffer = new char[size + 1];
 			DWORD r = GetModuleFileName(hModule, buffer, size);
-			if (r < size && r != 0) break;
-			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+			if (r < size && r != 0)
+				break;
+			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+			{
 				delete buffer;
 				size += 64;
 			}
-			else return NULL;
+			else
+				return NULL;
 		}
 		return buffer;
 	}
-#elif __linux__  // compile only for linux system operating system
+#elif __linux__ // compile only for linux system operating system
+
+	uint64_t getProcessMemorySize()
+	{
+		// not implemented yet
+		return 0;
+	}
+
+	char* get_module_file_name()
+	{
+		// todo: not implemented yet
+		return "\0";
+	}
 
 #endif
 
 	std::string GetExecutablePath()
 	{
-      static std::string currentDirPath;
-      static bool bFirstExecution = true;
+		static std::string currentDirPath;
+		static bool bFirstExecution = true;
 
-      if (currentDirPath == "")
-      {
-         bFirstExecution = false;
-         char* fileName = get_module_file_name();
-         std::string exeFilePath = std::string(fileName);
-         size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
-         currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
+		if (currentDirPath == "")
+		{
+			bFirstExecution = false;
+			char *fileName = get_module_file_name();
+			std::string exeFilePath = std::string(fileName);
+			size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
+			currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
 
-         delete fileName;
-      }
+			delete fileName;
+		}
 
 		return currentDirPath;
 	}
 
-	std::string ConvertFromRelativeToAbsolutePath(const std::string& relativePath)
+	std::string ConvertFromRelativeToAbsolutePath(const std::string &relativePath)
 	{
-      if ("" == relativePath)
-         return relativePath;
+		if ("" == relativePath)
+			return relativePath;
 
 		std::string pathToExe = EngineUtility::GetExecutablePath();
 		std::string absolutePath = pathToExe;
@@ -63,7 +80,7 @@ namespace EngineUtility
 		std::string relativeTrimmedGoBack;
 
 		size_t relativeOffset = 0;
-		const std::string& lookForGoBack = "..";
+		const std::string &lookForGoBack = "..";
 
 		size_t new_offset = 0;
 		do
@@ -75,7 +92,6 @@ namespace EngineUtility
 				countOfGoBack++;
 			}
 		} while (new_offset != std::string::npos);
-
 
 		relativeTrimmedGoBack = relativePath.substr(relativeOffset);
 

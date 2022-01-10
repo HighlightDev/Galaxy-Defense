@@ -1,6 +1,8 @@
 #pragma once
+
 #include <string>
 #include <functional>
+#include <memory>
 
 struct EngineGOPropertyBase
 {

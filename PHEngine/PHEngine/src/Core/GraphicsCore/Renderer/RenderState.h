@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstddef>
 #include <gl/glew.h>
 #include <type_traits>
 

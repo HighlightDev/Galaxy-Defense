@@ -10,13 +10,12 @@ using namespace Graphics::Texture;
 namespace Resources
 {
 
-   template <typename Model>
    class RenderTargetAllocationPolicy
    {
    public:
 
-      template <typename TextureType = Texture2d>
-      static inline std::shared_ptr<ITexture> AllocateMemory(const Model& texParams)
+      template <typename TextureType = Texture2d, typename TextureParamsModel>
+      static inline std::shared_ptr<ITexture> AllocateMemory(const TextureParamsModel& texParams)
       {
          return std::make_shared<TextureType>(texParams);
       }

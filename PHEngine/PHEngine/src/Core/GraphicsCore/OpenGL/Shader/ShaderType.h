@@ -1,6 +1,6 @@
 #pragma once
-#include <stdint.h>
-#include <gl\glew.h>
+#include <cstddef>
+#include <gl/glew.h>
 
 namespace Graphics
 {

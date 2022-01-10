@@ -4,6 +4,7 @@
 #include <deque>
 #include <mutex>
 #include <array>
+#include <memory>
 
 #include "Job.h"
 
@@ -70,9 +71,9 @@ namespace Thread
 
       ~InterThreadCommunicationMgr();
 
-      void EmplaceGameThreadJob(const EnqueueJobPolicy, Job job);
+      void EmplaceGameThreadJob(const EnqueueJobPolicy, Job&& job);
 
-      void EmplaceRenderThreadJob(const EnqueueJobPolicy, Job job);
+      void EmplaceRenderThreadJob(const EnqueueJobPolicy, Job&& job);
 
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();
@@ -90,11 +91,11 @@ namespace Thread
 
    private:
 
-      void ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job);
+      void ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job&& job);
 
-      void ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job);
+      void ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job&& job);
 
-      void ProcessPushJob(const EnqueueJobPolicy policy, Job job, std::deque<Job>& jobs);
+      void ProcessPushJob(const EnqueueJobPolicy policy, Job&& job, std::deque<Job>& jobs);
 
       void SwapRenderThreadChain();
    };

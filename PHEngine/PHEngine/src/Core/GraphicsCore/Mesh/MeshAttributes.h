@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <cstddef>
+#include <stdint.h>
 
 namespace MeshLoader {
    namespace Assimp
@@ -22,7 +24,7 @@ namespace Graphics
 
          std::vector<int32_t> BoneIndices;
 
-         std::vector<size_t> VertexIndices;
+         std::vector<uint32_t> VertexIndices;
 
          std::vector<float> Positions;
 

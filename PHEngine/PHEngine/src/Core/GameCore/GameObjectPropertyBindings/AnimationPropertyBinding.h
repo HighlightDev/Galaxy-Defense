@@ -10,19 +10,19 @@ namespace Game {
    {
    private:
 
-      propertyPtr_t<std::string> SrcName;
-      propertyPtr_t<std::string> DstName;
+      Game::propertyPtr_t<std::string> SrcName;
+      Game::propertyPtr_t<std::string> DstName;
 
-      propertyPtr_t<float> SrcTime;
-      propertyPtr_t<float> DstTime;
+      Game::propertyPtr_t<float> SrcTime;
+      Game::propertyPtr_t<float> DstTime;
 
-      propertyPtr_t<bool> bTranstitionEnabled;
-      propertyPtr_t<float> TransitionValue;
+      Game::propertyPtr_t<bool> bTranstitionEnabled;
+      Game::propertyPtr_t<float> TransitionValue;
 
    public:
 
-      AnimationPropertyBinding(const std::string& bindingName, propertyPtr_t<std::string> srcName, propertyPtr_t<std::string> dstName,
-         propertyPtr_t<float> srcTime, propertyPtr_t<float> dstTime, propertyPtr_t<bool> isTransitionEnabled, propertyPtr_t<float> transitionValue)
+      AnimationPropertyBinding(const std::string& bindingName, Game::propertyPtr_t<std::string> srcName, Game::propertyPtr_t<std::string> dstName,
+         Game::propertyPtr_t<float> srcTime, Game::propertyPtr_t<float> dstTime, Game::propertyPtr_t<bool> isTransitionEnabled, Game::propertyPtr_t<float> transitionValue)
          : PropertyBinding(bindingName)
          , SrcName(srcName)
          , DstName(dstName)
@@ -101,12 +101,12 @@ namespace Game {
       }
 
       void SetBindingProperties(
-         propertyPtr_t<std::string> srcName,
-         propertyPtr_t<std::string> dstName,
-         propertyPtr_t<float> srcTime,
-         propertyPtr_t<float> dstTime,
-         propertyPtr_t<bool> isTransitionEnabled,
-         propertyPtr_t<float> transitionValue)
+         Game::propertyPtr_t<std::string> srcName,
+         Game::propertyPtr_t<std::string> dstName,
+         Game::propertyPtr_t<float> srcTime,
+         Game::propertyPtr_t<float> dstTime,
+         Game::propertyPtr_t<bool> isTransitionEnabled,
+         Game::propertyPtr_t<float> transitionValue)
       {
          SrcName = srcName;
          DstName = dstName;

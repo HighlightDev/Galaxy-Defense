@@ -25,9 +25,13 @@ namespace Event {
       };
 
       template <typename ParentEventDispatcher>
-      struct EventsIterator<ParentEventDispatcher, -1>
+      struct EventsIterator<ParentEventDispatcher, 0>
       {
-         static void IterateParentEventDispatcher(ExecutionOrder order) { }
+         static void IterateParentEventDispatcher(ExecutionOrder order)
+         {
+            using event_t = typename std::tuple_element<0, typename ParentEventDispatcher::EventTypes_t>::type;
+            event_t::GetInstance()->ProcessCachedEvents(order);
+         }
       };
    }
 

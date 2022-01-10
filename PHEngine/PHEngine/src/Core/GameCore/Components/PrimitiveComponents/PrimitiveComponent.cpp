@@ -30,7 +30,7 @@ namespace Game
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
       // Update primitives proxy transform
-      constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
+      static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {
@@ -43,7 +43,7 @@ namespace Game
       SceneComponent::SetIsEnabled(bEnabled);
 
       // Update primitives proxy enabled
-      constexpr uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
+      static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
       if (const auto& sceneSP = m_sceneWP.lock())
       {
          sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
@@ -66,7 +66,7 @@ namespace Game
 
    void PrimitiveComponent::OnVisibilityChanged()
    {
-      constexpr uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
+      static const uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {

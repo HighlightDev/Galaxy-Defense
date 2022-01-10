@@ -1,7 +1,5 @@
 #include "VertexArrayObject.h"
 
-#include <xutility>
-
 namespace Graphics
 {
 	namespace OpenGL

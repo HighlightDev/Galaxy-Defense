@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stb/stb_image.h>
-#include <stdint.h>
+#include <cstddef>
 #include <string>
 #include "Core/GraphicsCore/Texture/TexParams.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"

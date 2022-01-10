@@ -11,11 +11,11 @@ namespace IO
 {
    struct MeshResourceInfo
    {
-      AnimatedMeshData* MeshAnimatedData = nullptr;
-      MeshAttributes* MeshAttributes = nullptr;
+      AnimatedMeshData* meshAnimatedData = nullptr;
+      MeshAttributes* meshAttributes = nullptr;
 
       ~MeshResourceInfo() {
-         delete MeshAttributes;
+         delete meshAttributes;
       }
    };
 }

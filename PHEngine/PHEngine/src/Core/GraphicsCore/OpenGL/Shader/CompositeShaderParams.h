@@ -45,10 +45,6 @@ namespace Graphics
          }
       };
 
-#define NAME_TO_STR(name) #name
-#define COMPOSITE_MATERIAL_SHADER_TO_STR(name1, name2, materialName) (NAME_TO_STR(name1) ## NAME_TO_STR(name2) + materialName)
-#define COMPOSITE_SHADER_TO_STR(name1, name2) (NAME_TO_STR(name1) ## NAME_TO_STR(name2))
-
       template <typename CompositeShaderType>
       struct TemplatedCompositeMaterialShaderParams
          : public CompositeMaterialShaderParams

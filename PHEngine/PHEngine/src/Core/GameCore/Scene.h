@@ -61,14 +61,15 @@ namespace Game
 
    public:
 
-      Scene(InterThreadCommunicationMgr& interThreadMgr);
+      explicit Scene(InterThreadCommunicationMgr& interThreadMgr);
 
       ~Scene();
 
-      template <ComponentMetaType metaType, typename ComponentT>
+      template <typename ComponentType, ComponentMetaType componentMetaType>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
-         const auto& component = ComponentCreatorFactory<metaType, ComponentT>::CreateComponent(componentData, this);
+         ComponentCreatorFactory<ComponentType, componentMetaType> componentFactory;
+         std::shared_ptr<Component> component = componentFactory.CreateComponent(componentData, this);
          RegisterComponentSceneProxy(component);
          RegisterGameObject(component.get());
          component->OnPostInitialized();
@@ -169,7 +170,7 @@ namespace Game
 
    private:
 
-      void RegisterComponentSceneProxy(std::shared_ptr<Component> component);
+      void RegisterComponentSceneProxy(const std::shared_ptr<Component>& component);
 
       bool RegisterGameObject(GameObject* const gameObjectPtr);
 

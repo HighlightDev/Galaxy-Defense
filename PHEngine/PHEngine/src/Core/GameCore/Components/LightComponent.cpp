@@ -23,7 +23,7 @@ namespace Game
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
       // Update light proxy transform
-      constexpr uint64_t functionId = Hash("LightComponent: UpdateLightComponentTransform_GameThread");
+      static const uint64_t functionId = Hash("LightComponent: UpdateLightComponentTransform_GameThread");
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {

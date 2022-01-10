@@ -40,35 +40,35 @@ namespace Thread
       return mScene;
    }
 
-   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job job)
+   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
-      ProcessPushGameThreadJob(policy, job);
+      ProcessPushGameThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job job)
+   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
-      ProcessPushRenderThreadJob(policy, job);
+      ProcessPushRenderThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job job)
+   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOpMutex);
-      ProcessPushJob(policy, job, mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.WriteChainType)]);
+      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.WriteChainType)]);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job job)
+   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-      ProcessPushJob(policy, job, m_gameThreadJobs);
+      ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job job, std::deque<Job>& jobs)
+   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job&& job, std::deque<Job>& jobs)
    {
       switch (policy)
       {
          case EnqueueJobPolicy::PUSH_ANYWAY:
          {
-            jobs.emplace_back(job);
+            jobs.emplace_back(std::move(job));
             break;
          }
          case EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH:
@@ -81,7 +81,7 @@ namespace Thread
 
             if (jobs.end() == duplicateIt)
             {
-               jobs.emplace_back(job);
+               jobs.emplace_back(std::move(job));
             }
 
             break;
@@ -96,11 +96,11 @@ namespace Thread
 
             if (jobs.end() == duplicateIt)
             {
-               jobs.emplace_back(job);
+               jobs.emplace_back(std::move(job));
             }
             else
             {
-               *(duplicateIt) = job;
+               *(duplicateIt) = std::move(job);
             }
 
             break;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <stdint.h>
+#include <cstddef>
 #include "Core/CommonCore/Assertion.h"
 
 namespace Game

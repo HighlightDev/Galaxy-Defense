@@ -10,8 +10,6 @@ using namespace Graphics::OpenGL;
 
 namespace Resources
 {
-
-   template <typename ModelT>
    struct CompositeShaderAllocationPolicy
    {
       template <typename CompositeShaderType>

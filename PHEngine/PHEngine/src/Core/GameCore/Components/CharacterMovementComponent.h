@@ -38,7 +38,7 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual void ProcessEvent(const CameraTransformChangedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename CameraTransformChangedEvent::EventData_t& data) override;
 
       glm::vec3 GetVelocity() const;
 

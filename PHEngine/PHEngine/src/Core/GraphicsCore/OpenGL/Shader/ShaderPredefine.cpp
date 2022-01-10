@@ -1,6 +1,5 @@
 #include "ShaderPredefine.h"
 
-#include <xutility>
 
 namespace Graphics
 {

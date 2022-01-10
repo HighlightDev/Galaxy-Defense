@@ -64,8 +64,8 @@ namespace IO
 
       MeshResourceInfo* data = new MeshResourceInfo();
 
-      data->MeshAnimatedData = loader.GetAnimatedMeshData();
-      data->MeshAttributes = loader.GetMeshAttributes();
+      data->meshAnimatedData = loader.GetAnimatedMeshData();
+      data->meshAttributes = loader.GetMeshAttributes();
 
       MeshResource* resource = new MeshResource();
       resource->DATA = data;

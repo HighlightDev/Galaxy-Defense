@@ -46,7 +46,7 @@ namespace Game
 
       virtual void Tick(const float DeltaTime) override;
 
-      virtual void ProcessEvent(const PlayerMovedEvent::EventData_t& data);
+      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data);
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 

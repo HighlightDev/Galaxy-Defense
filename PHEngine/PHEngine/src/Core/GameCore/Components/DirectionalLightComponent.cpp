@@ -92,7 +92,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
+            static const uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
             {
@@ -113,7 +113,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
+            static const uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
             {

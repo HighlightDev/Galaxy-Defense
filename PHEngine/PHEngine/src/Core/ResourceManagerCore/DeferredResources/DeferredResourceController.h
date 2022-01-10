@@ -7,11 +7,11 @@ namespace Resources
    template <typename TResource, eResourceType resourceType>
    struct DeferredResourceController
    {
-      using DeferredResource_t = IDeferredResource<typename TResource, resourceType>;
+      using DeferredResource_t = IDeferredResource<TResource, resourceType>;
 
    private:
 
-      std::promise<typename TResource> mPromise;
+      std::promise<TResource> mPromise;
 
       std::shared_ptr<DeferredResource_t> mDeferredResource;
 
@@ -43,7 +43,7 @@ namespace Resources
          return bValueSet;
       }
 
-      void SetResource(typename TResource const& resource) {
+      void SetResource(TResource const& resource) {
          assert(mDeferredResource);
          assert(mDeferredResource->GetIsFutureInitialized());
          mPromise.set_value(resource);

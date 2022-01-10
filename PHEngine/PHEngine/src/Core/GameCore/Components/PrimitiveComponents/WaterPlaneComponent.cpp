@@ -39,7 +39,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
+            static const uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
             {
@@ -73,7 +73,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
+            static const uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
@@ -92,7 +92,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
+            static const uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
@@ -126,7 +126,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
+            static const uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 
@@ -145,7 +145,7 @@ namespace Game
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            constexpr uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
+            static const uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
 

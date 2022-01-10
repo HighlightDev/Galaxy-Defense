@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstddef>
+#include <functional>
 #include <gl/glew.h>
-#include <type_traits>
 
 namespace Graphics
 {

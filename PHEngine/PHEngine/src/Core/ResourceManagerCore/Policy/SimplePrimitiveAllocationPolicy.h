@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <stdint.h>
+#include <cstddef>
 
 #include "Core/GraphicsCore/Mesh/Skin.h"
 
@@ -18,7 +18,6 @@ namespace Resources
       PLANE_WITH_ATTRIBUTES
    };
 
-   template <typename Model>
    class SimplePrimitiveAllocationPolicy
    {
    public:

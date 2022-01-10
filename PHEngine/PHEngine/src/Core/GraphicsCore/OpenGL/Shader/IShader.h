@@ -5,7 +5,7 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "ShaderPredefine.h"
 
-#include <stdint.h>
+#include <cstddef>
 #include <string>
 #if DEBUG
 #include <iostream>

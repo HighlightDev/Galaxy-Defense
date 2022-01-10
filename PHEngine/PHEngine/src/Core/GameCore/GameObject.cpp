@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include <cstddef>
 
 #include "GameObject.h"
 #include "Core/CommonCore/Assertion.h"

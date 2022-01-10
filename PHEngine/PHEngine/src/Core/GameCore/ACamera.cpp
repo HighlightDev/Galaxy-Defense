@@ -41,7 +41,7 @@ namespace Game
 
    void ACamera::UpdateCameraProxyData(const float DeltaTime)
    {
-      static constexpr uint64_t functionId = Hash("ACamera: Update camera proxy data.");
+      static const uint64_t functionId = Hash("ACamera: Update camera proxy data.");
 
       if (bTransformationDirty)
       {

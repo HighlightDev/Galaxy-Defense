@@ -30,7 +30,7 @@ namespace Game
 
       std::shared_ptr<Actor> GetBindedActor() const;
 
-      virtual void ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
 
    private:
 

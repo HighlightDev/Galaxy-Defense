@@ -52,7 +52,7 @@ namespace MeshLoader
 
          std::vector<int32_t> BoneIndices;
 
-         std::vector<size_t> VertexIndices;
+         std::vector<uint32_t> VertexIndices;
 
          std::vector<float> Positions;
 
@@ -64,7 +64,7 @@ namespace MeshLoader
 
          std::vector<float> BitangetNormals;
 
-         std::map<std::string /* Bone Name */, size_t /* Bone index */> BoneIndexMapping;
+         std::map<std::string /* Bone Name */, uint32_t /* Bone index */> BoneIndexMapping;
 
       public:
 
