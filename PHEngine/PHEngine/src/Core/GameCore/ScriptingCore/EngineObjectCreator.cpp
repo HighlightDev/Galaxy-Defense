@@ -180,17 +180,17 @@ namespace Game
       return new PhyBoxShape(halfExtent);
    }
 
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCapsuleShape(const float radius, const float height)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCapsuleShape(const double radius, const double height)
    {
       return new PhyCapsuleShape(radius, height);
    }
 
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3 &normal, const float d)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3 &normal, const double d)
    {
       return new PhyPlaneShape(normal, d);
    }
 
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsSphereShape(const float radius)
+   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsSphereShape(const double radius)
    {
       return new PhySphereShape(radius);
    }

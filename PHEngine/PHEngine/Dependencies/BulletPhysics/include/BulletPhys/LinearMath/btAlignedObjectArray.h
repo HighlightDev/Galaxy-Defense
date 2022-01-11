@@ -1,6 +1,6 @@
 /*
 Bullet Continuous Collision Detection and Physics Library
-Copyright (c) 2003-2006 Erwin Coumans  http://continuousphysics.com/Bullet/
+Copyright (c) 2003-2006 Erwin Coumans  https://bulletphysics.org
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
@@ -22,7 +22,7 @@ subject to the following restrictions:
 ///If the platform doesn't support placement new, you can disable BT_USE_PLACEMENT_NEW
 ///then the btAlignedObjectArray doesn't support objects with virtual methods, and non-trivial constructors/destructors
 ///You can enable BT_USE_MEMCPY, then swapping elements in the array will use memcpy instead of operator=
-///see discussion here: http://continuousphysics.com/Bullet/phpBB2/viewtopic.php?t=1231 and
+///see discussion here: https://bulletphysics.orgphpBB2/viewtopic.php?t=1231 and
 ///http://www.continuousphysics.com/Bullet/phpBB2/viewtopic.php?t=1240
 
 #define BT_USE_PLACEMENT_NEW 1
@@ -37,13 +37,6 @@ subject to the following restrictions:
 #ifdef BT_USE_PLACEMENT_NEW
 #include <new>  //for placement new
 #endif          //BT_USE_PLACEMENT_NEW
-
-// The register keyword is deprecated in C++11 so don't use it.
-#if __cplusplus >= 201103L
-#define BT_REGISTER
-#else
-#define BT_REGISTER register
-#endif
 
 ///The btAlignedObjectArray template class uses a subset of the stl::vector interface for its methods
 ///It is developed to replace stl::vector to avoid portability issues, including STL alignment issues to add SIMD/SSE data
@@ -209,7 +202,7 @@ public:
 
 	SIMD_FORCE_INLINE void resize(int newsize, const T& fillData = T())
 	{
-		const BT_REGISTER int curSize = size();
+		const int curSize = size();
 
 		if (newsize < curSize)
 		{
@@ -236,7 +229,7 @@ public:
 	}
 	SIMD_FORCE_INLINE T& expandNonInitializing()
 	{
-		const BT_REGISTER int sz = size();
+		const int sz = size();
 		if (sz == capacity())
 		{
 			reserve(allocSize(size()));
@@ -248,7 +241,7 @@ public:
 
 	SIMD_FORCE_INLINE T& expand(const T& fillValue = T())
 	{
-		const BT_REGISTER int sz = size();
+		const int sz = size();
 		if (sz == capacity())
 		{
 			reserve(allocSize(size()));
@@ -263,7 +256,7 @@ public:
 
 	SIMD_FORCE_INLINE void push_back(const T& _Val)
 	{
-		const BT_REGISTER int sz = size();
+		const int sz = size();
 		if (sz == capacity())
 		{
 			reserve(allocSize(size()));

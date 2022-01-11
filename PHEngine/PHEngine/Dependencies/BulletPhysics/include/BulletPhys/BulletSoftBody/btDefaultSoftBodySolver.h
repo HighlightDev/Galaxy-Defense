@@ -1,6 +1,6 @@
 /*
 Bullet Continuous Collision Detection and Physics Library
-Copyright (c) 2003-2006 Erwin Coumans  http://continuousphysics.com/Bullet/
+Copyright (c) 2003-2006 Erwin Coumans  https://bulletphysics.org
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
@@ -46,9 +46,9 @@ public:
 
 	virtual void copyBackToSoftBodies(bool bMove = true);
 
-	virtual void solveConstraints(float solverdt);
+	virtual void solveConstraints(btScalar solverdt);
 
-	virtual void predictMotion(float solverdt);
+	virtual void predictMotion(btScalar solverdt);
 
 	virtual void copySoftBodyToVertexBuffer(const btSoftBody *const softBody, btVertexBufferDescriptor *vertexBuffer);
 

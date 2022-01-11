@@ -105,16 +105,16 @@ namespace Game
       void ExecuteLuaCallback(const std::tuple<IMaterial*, /*game object name*/std::string, /*gamePropertyName*/std::string, /*bindingName*/std::string>& setBindingToMaterial);
 
       /*-------------------- Create physics collision sphere shape --------------*/
-      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<float>& value);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<double>& value);
 
       /*-------------------- Create physics collision box shape --------------*/
       PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3>& halfExtent);
 
       /*-------------------- Create physics collision capsule shape --------------*/
-      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<float, float>& capsuleData);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<double, double>& capsuleData);
 
       /*-------------------- Create physics collision plane shape --------------*/
-      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, float> planeData);
+      PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<glm::vec3, double> planeData);
 
       /*-------------------- Create physics compound shape --------------*/
       PhysicsShapeBase* ExecuteLuaCallback(const std::tuple<>& noData);

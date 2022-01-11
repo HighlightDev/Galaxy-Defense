@@ -9,12 +9,12 @@ namespace EnginePhysics
       : public PhysicsShapeBase
    {
 
-      PhySphereShape(const float radius)
-         : PhysicsShapeBase(new btSphereShape(btScalar(radius)))
+      PhySphereShape(const double radius)
+         : PhysicsShapeBase(new btSphereShape(radius))
       {
       }
 
-      float GetRadius() const {
+      double GetRadius() const {
          return static_cast<btSphereShape*>(mCollisionShape)->getRadius();
       }
    };

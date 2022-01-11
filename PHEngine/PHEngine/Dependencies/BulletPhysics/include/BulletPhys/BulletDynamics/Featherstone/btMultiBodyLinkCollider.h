@@ -36,6 +36,10 @@ public:
 	btMultiBody* m_multiBody;
 	int m_link;
 
+	virtual ~btMultiBodyLinkCollider()
+	{
+
+	}
 	btMultiBodyLinkCollider(btMultiBody* multiBody, int link)
 		: m_multiBody(multiBody),
 		  m_link(link)
@@ -124,6 +128,23 @@ public:
 			}
 		}
 		return true;
+	}
+
+	bool isStaticOrKinematic() const
+	{
+		return isStaticOrKinematicObject();
+	}
+
+	bool isKinematic() const
+	{
+		return isKinematicObject();
+	}
+
+	void setDynamicType(int dynamicType)
+	{
+		int oldFlags = getCollisionFlags();
+		oldFlags &= ~(btCollisionObject::CF_STATIC_OBJECT | btCollisionObject::CF_KINEMATIC_OBJECT);
+		setCollisionFlags(oldFlags | dynamicType);
 	}
 
 	virtual int calculateSerializeBufferSize() const;

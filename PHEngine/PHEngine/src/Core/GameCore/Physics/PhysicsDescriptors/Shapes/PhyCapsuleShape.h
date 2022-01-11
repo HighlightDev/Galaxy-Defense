@@ -8,7 +8,7 @@ namespace EnginePhysics
    struct PhyCapsuleShape
       : public PhysicsShapeBase
    {
-      PhyCapsuleShape(const float radius, const float height)
+      PhyCapsuleShape(const double radius, const double height)
          : PhysicsShapeBase(new btCapsuleShape(radius, height))
       {
       }

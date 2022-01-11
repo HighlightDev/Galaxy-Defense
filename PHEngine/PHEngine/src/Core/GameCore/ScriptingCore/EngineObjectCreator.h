@@ -54,9 +54,9 @@ namespace Game
          const ViewPortInfo& fboViewPortInfo);
 
       static PhysicsShapeBase* CreatePhysicsBoxShape(const glm::vec3& halfExtent);
-      static PhysicsShapeBase* CreatePhysicsCapsuleShape(const float radius, const float height);
-      static PhysicsShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const float d);
-      static PhysicsShapeBase* CreatePhysicsSphereShape(const float radius);
+      static PhysicsShapeBase* CreatePhysicsCapsuleShape(const double radius, const double height);
+      static PhysicsShapeBase* CreatePhysicsPlaneShape(const glm::vec3& normal, const double d);
+      static PhysicsShapeBase* CreatePhysicsSphereShape(const double radius);
       static PhysicsShapeBase* CreatePhysicsCompoundShape();
       static void AddChildShapeToCompoundShape(PhysicsShapeBase* compoundShape, PhysicsShapeBase* childShape, const glm::vec3& translation, const glm::vec3& rotation);
 
