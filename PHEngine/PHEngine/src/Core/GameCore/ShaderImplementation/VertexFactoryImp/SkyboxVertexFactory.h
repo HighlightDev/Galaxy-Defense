@@ -9,7 +9,7 @@ using namespace IO;
 namespace Game
 {
    class SkyboxVertexFactory
-      : public VertexFactoryShader
+       : public VertexFactoryShader
    {
 
       Uniform u_worldMatrix;
@@ -17,11 +17,10 @@ namespace Game
       Uniform u_projectionMatrix;
 
    public:
-
       SkyboxVertexFactory()
-         : VertexFactoryShader("SkyboxVertexFactory")
+          : VertexFactoryShader("SkyboxVertexFactory")
       {
-         InitShader(EngineUtility::ConvertFromRelativeToAbsolutePath(FolderManager::GetInstance()->GetShadersPath() + "\\vertex_factory\\SkyboxVertexFactory.glsl"));
+         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkyboxVertexFactory.glsl");
       }
 
       virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override
@@ -31,7 +30,7 @@ namespace Game
          u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
       }
 
-      void SetMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SetMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          u_worldMatrix.LoadUniform(worldMatrix);
          u_viewMatrix.LoadUniform(viewMatrix);

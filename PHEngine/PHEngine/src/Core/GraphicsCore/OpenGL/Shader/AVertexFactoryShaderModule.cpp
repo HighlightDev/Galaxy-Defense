@@ -32,9 +32,9 @@ namespace Graphics
 
          ShaderParams shaderParams = mShader->GetShaderParams();
 
-         std::string vsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(shaderParams.VertexShaderFile);
-         std::string fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(shaderParams.FragmentShaderFile);
-         std::string gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(shaderParams.GeometryShaderFile);
+         std::string vsSourcePath = shaderParams.VertexShaderFile;
+         std::string fsSourcePath = shaderParams.FragmentShaderFile;
+         std::string gsSourcePath = shaderParams.GeometryShaderFile;
 
          auto vsSource = LoadShaderSource(vsSourcePath);
          auto fsSource = LoadShaderSource(fsSourcePath);

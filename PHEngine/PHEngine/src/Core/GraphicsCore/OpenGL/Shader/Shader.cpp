@@ -23,9 +23,9 @@ namespace Graphics
 
 		void Shader::ShaderInit()
 		{
-         std::string vsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.VertexShaderFile);
-         std::string fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile);
-         std::string gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile);
+         std::string vsSourcePath = m_shaderParams.VertexShaderFile;
+         std::string fsSourcePath = m_shaderParams.FragmentShaderFile;
+         std::string gsSourcePath = m_shaderParams.GeometryShaderFile;
 
 			SetShaderPredefine(); // start precompile shader customization
          ProcessAllPredefines();
@@ -47,9 +47,9 @@ namespace Graphics
 
       bool Shader::LoadShadersSourceToGpu()
       {
-         std::string vsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.VertexShaderFile);
-         std::string fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile);
-         std::string gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile);
+         std::string vsSourcePath = m_shaderParams.VertexShaderFile;
+         std::string fsSourcePath = m_shaderParams.FragmentShaderFile;
+         std::string gsSourcePath = m_shaderParams.GeometryShaderFile;
 
          auto vsSource = LoadShaderSource(vsSourcePath);
          auto fsSource = LoadShaderSource(fsSourcePath);
@@ -106,24 +106,21 @@ namespace Graphics
 			{
 				if (m_shaderParams.VertexShaderFile != "")
 				{
-					const std::string& vsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.VertexShaderFile);
-               ProcessPredefineToFile(vsSourcePath, vertexConstantPredefine, vertexPredefine);
+               ProcessPredefineToFile(m_shaderParams.VertexShaderFile, vertexConstantPredefine, vertexPredefine);
 				}
 			}
 			if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0)
 			{
 				if (m_shaderParams.FragmentShaderFile != "")
 				{
-               const std::string& fsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.FragmentShaderFile);
-               ProcessPredefineToFile(fsSourcePath, fragmentConstantPredefine, fragmentPredefine);
+               ProcessPredefineToFile(m_shaderParams.FragmentShaderFile, fragmentConstantPredefine, fragmentPredefine);
 				}
 			}
 			if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0)
 			{
 				if (m_shaderParams.GeometryShaderFile != "")
 				{
-               const std::string& gsSourcePath = EngineUtility::ConvertFromRelativeToAbsolutePath(m_shaderParams.GeometryShaderFile);
-               ProcessPredefineToFile(gsSourcePath, geometryConstantPredefine, geometryPredefine);
+               ProcessPredefineToFile(m_shaderParams.GeometryShaderFile, geometryConstantPredefine, geometryPredefine);
 				}
 			}
 		}
@@ -133,9 +130,9 @@ namespace Graphics
 			return glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
 		}
 
-		void Shader::LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, int32_t subroutineIndex) const
+		void Shader::LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t* subroutineIndices) const
 		{
-			glUniformSubroutinesuiv((int32_t)shaderType, countIndices, (uint32_t*)subroutineIndex);
+			glUniformSubroutinesuiv((int32_t)shaderType, countIndices, subroutineIndices);
 		}
 
 #if DEBUG

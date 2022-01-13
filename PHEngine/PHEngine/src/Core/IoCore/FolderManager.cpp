@@ -5,172 +5,150 @@
 
 namespace IO
 {
-
 	std::shared_ptr<FolderManager> FolderManager::m_instance;
 
 	FolderManager::FolderManager()
+		: mFilesPathMap(), m_rootFolder("")
 	{
-		BuildPathToFolders();
 	}
-
 
 	FolderManager::~FolderManager()
 	{
 	}
 
-#ifdef WIN32
-
-	std::string FolderManager::ConcatDirectoryBack(int32_t countChangeDirectoryBack)
+	void FolderManager::BuildSystemPathToFolders()
 	{
-		std::string resultStr = std::move(std::string(""));
-		while (countChangeDirectoryBack-- > 0)
-		{
-			resultStr += "..\\";
-		}
-		return resultStr + "PHEngine\\";
-	}
-#endif
-
-	void FolderManager::BuildPathToFolders()
-	{
-#ifdef WIN32
 		// Root folder
-		std::string currentDirPath = std::move(EngineUtility::GetExecutablePath());
-		size_t indexOfRootEntrance = EngineUtility::IndexOf(currentDirPath, BINARY_FOLDER_NAME);
-		std::string pathFromRootToCurrentDir = currentDirPath.substr(indexOfRootEntrance);
+		m_rootFolder = EngineUtility::GetExecutablePath();
+		assert(m_rootFolder != "");
+	}
+/*
+terminate called after throwing an instance of 'std::filesystem::__cxx11::filesystem_error'
+  what():  filesystem error: recursive directory iterator cannot open directory: No such file or directory [/home/dzinoviev/MyProjects/phengine/PHEngine/build/TinyGame//home/dzinoviev/MyProjects/phengine/PHEngine/build/TinyGame/res\texture\albedo\]
+*/
+	void FolderManager::CreateFilePathMap(const std::string &pathToDir)
+	{
+		using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-		size_t countChangeDirectoryBack = 0;
-		for (auto& item : pathFromRootToCurrentDir) {
-			countChangeDirectoryBack = item == '\\' ? ++countChangeDirectoryBack : countChangeDirectoryBack;
+		const std::string &absolutePath = pathToDir;
+
+		for (const auto &dirEntry : recursive_directory_iterator(absolutePath))
+		{
+			const std::string &fileName = std::string(dirEntry.path().filename().string());
+			assert(mFilesPathMap.count(fileName) == 0);
+			mFilesPathMap[fileName] = pathToDir;
 		}
-
-		m_rootFolder = ConcatDirectoryBack(countChangeDirectoryBack);
-#endif
 	}
 
-
-   void FolderManager::CreateFilePathMap(const std::string& pathToDir)
-   {
-      using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
-
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(pathToDir);
-
-      for (const auto& dirEntry : recursive_directory_iterator(absolutePath))
-      {
-         const std::string& fileName = std::string(dirEntry.path().filename().string());
-         assert(mFilesPathMap.count(fileName) == 0);
-         mFilesPathMap[fileName] = pathToDir;
-      }
-   }
-
-   std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string& fileName) const
-   {
-      assert(mFilesPathMap.count(fileName));
-      return mFilesPathMap.at(fileName) + fileName;
-   }
-
-   const std::string FolderManager::GetRootPath() const
+	std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string &fileName) const
 	{
+		assert(mFilesPathMap.count(fileName));
+		return mFilesPathMap.at(fileName) + fileName;
+	}
+
+	const std::string FolderManager::GetRootPath() const
+	{
+		assert(m_rootFolder != ""); // if assert has fired, maybe you forget to invoke BuildSystemPathToFolders
 		return m_rootFolder;
 	}
 
-   const std::string FolderManager::GetResPath() const
+	const std::string FolderManager::GetResPath() const
 	{
-		return GetRootPath() + "res\\";
+		return GetRootPath() + "res" + SLASH;
 	}
 
-   const std::string FolderManager::GetModelPath() const
+	const std::string FolderManager::GetModelPath() const
 	{
-		return GetResPath() + "model\\";
+		return GetResPath() + "model" + SLASH;
 	}
 
 	const std::string FolderManager::GetShadersPath() const
 	{
-		return GetResPath() + "shaders\\";
+		return GetResPath() + "shaders" + SLASH;
 	}
 
-   const std::string FolderManager::GetShaderCommonPath() const
-   {
-      return GetShadersPath() + "common\\";
-   }
-
-   const std::string FolderManager::GetCollisionPath() const
+	const std::string FolderManager::GetShaderCommonPath() const
 	{
-		return GetResPath() + "collision\\";
+		return GetShadersPath() + "common" + SLASH;
 	}
 
-   const std::string FolderManager::GetTexturesPath() const
+	const std::string FolderManager::GetCollisionPath() const
 	{
-		return GetResPath() + "texture\\";
+		return GetResPath() + "collision" + SLASH;
 	}
 
-   const std::string FolderManager::GetIniPath() const
+	const std::string FolderManager::GetTexturesPath() const
 	{
-		return GetResPath() + "ini\\";
+		return GetResPath() + "texture" + SLASH;
 	}
 
-   const std::string FolderManager::GetGrassTexturePath() const
+	const std::string FolderManager::GetIniPath() const
 	{
-		return GetTexturesPath() + "grass\\";
+		return GetResPath() + "ini" + SLASH;
 	}
 
-   const std::string FolderManager::GetLandscapeTexturePath() const
-   {
-      return GetTexturesPath() + "landscape\\";
-   }
-
-   const std::string FolderManager::GetMaterialTexturesPath() const
+	const std::string FolderManager::GetGrassTexturePath() const
 	{
-		return GetTexturesPath() + "materials\\";
+		return GetTexturesPath() + "grass" + SLASH;
 	}
 
-   const std::string FolderManager::GetCubemapTexturePath() const
+	const std::string FolderManager::GetLandscapeTexturePath() const
 	{
-		return GetTexturesPath() + "cubemap\\";
+		return GetTexturesPath() + "landscape" + SLASH;
 	}
 
-   const std::string FolderManager::GetNormalMapPath() const
+	const std::string FolderManager::GetMaterialTexturesPath() const
 	{
-		return GetTexturesPath() + "normalmap\\";
+		return GetTexturesPath() + "materials" + SLASH;
 	}
 
-   const std::string FolderManager::GetSpecularMapPath() const
+	const std::string FolderManager::GetCubemapTexturePath() const
 	{
-		return GetTexturesPath() + "specularmap\\";
+		return GetTexturesPath() + "cubemap" + SLASH;
 	}
 
-   const std::string FolderManager::GetAlbedoTexturePath() const
+	const std::string FolderManager::GetNormalMapPath() const
 	{
-		return GetTexturesPath() + "albedo\\";
+		return GetTexturesPath() + "normalmap" + SLASH;
 	}
 
-   const std::string FolderManager::GetDistortionTexturePath() const
+	const std::string FolderManager::GetSpecularMapPath() const
 	{
-		return GetTexturesPath() + "distortion\\";
+		return GetTexturesPath() + "specularmap" + SLASH;
 	}
 
-   const std::string FolderManager::GetPostprocessTexturePath() const
+	const std::string FolderManager::GetAlbedoTexturePath() const
 	{
-		return GetTexturesPath() + "postprocess\\";
+		return GetTexturesPath() + "albedo" + SLASH;
 	}
 
-   const std::string FolderManager::GetEditorTexturePath() const
+	const std::string FolderManager::GetDistortionTexturePath() const
 	{
-		return GetTexturesPath() + "editor\\";
+		return GetTexturesPath() + "distortion" + SLASH;
 	}
 
-   const std::string FolderManager::GetScriptPath() const
-   {
-      return GetResPath() + "scripts\\";
-   }
+	const std::string FolderManager::GetPostprocessTexturePath() const
+	{
+		return GetTexturesPath() + "postprocess" + SLASH;
+	}
 
-   const std::string FolderManager::GetMaterialPath() const
-   {
-      return GetResPath() + "materials\\";
-   }
+	const std::string FolderManager::GetEditorTexturePath() const
+	{
+		return GetTexturesPath() + "editor" + SLASH;
+	}
 
-   const std::string FolderManager::GetTweenerPath() const
-   {
-      return GetResPath() + "tweeners\\";
-   }
+	const std::string FolderManager::GetScriptPath() const
+	{
+		return GetResPath() + "scripts" + SLASH;
+	}
+
+	const std::string FolderManager::GetMaterialPath() const
+	{
+		return GetResPath() + "materials" + SLASH;
+	}
+
+	const std::string FolderManager::GetTweenerPath() const
+	{
+		return GetResPath() + "tweeners" + SLASH;
+	}
 }

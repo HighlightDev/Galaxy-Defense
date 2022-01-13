@@ -92,7 +92,7 @@ namespace Graphics
 
    IMaterial* MaterialParser::ParseMaterialDescriptor(const std::string& relPathToMaterial)
    {
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(relPathToMaterial);
+      const std::string& absolutePath = relPathToMaterial;
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();

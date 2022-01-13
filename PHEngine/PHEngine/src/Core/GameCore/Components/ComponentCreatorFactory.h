@@ -86,18 +86,18 @@ namespace Game
                 VertexFactoryType, BaseShaderType>>(compositeParams);
     }
 
-    std::shared_ptr<MaterialProxy> RegisterMaterialOnScene(class Scene * const scene,
+    std::shared_ptr<MaterialProxy> RegisterMaterialOnScene(class Scene *const scene,
                                                            IMaterial *material);
 
     struct IComponentCreator
     {
-        virtual std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const = 0;
+        virtual std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const = 0;
     };
 
     template <typename ComponentType>
     struct StaticMeshComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             std::shared_ptr<Skin> skin = nullptr;
 
@@ -127,9 +127,9 @@ namespace Game
             const ShaderParams shaderParams(
                 "DeferredNonSkeletalBase Shader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "simpleVS.glsl",
+                    "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "deferredFS.glsl");
+                    "composite_shaders" + SLASH + "deferredFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t staticMeshShader =
                 CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
@@ -140,9 +140,9 @@ namespace Game
             const ShaderParams planarReflectionParams(
                 "PlanarReflectionShader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "planarReflectionVS.glsl",
+                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "forwardFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t planarReflectionShader =
                 CreateMaterialShader<StaticMeshVertexFactory,
@@ -163,7 +163,7 @@ namespace Game
     template <typename ComponentType>
     struct SkeletalMeshComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const MeshComponentData &mData =
                 static_cast<const MeshComponentData &>(data);
@@ -177,9 +177,9 @@ namespace Game
             const ShaderParams shaderParams(
                 "DeferredNonSkeletalBase Shader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "simpleVS.glsl",
+                    "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "deferredFS.glsl");
+                    "composite_shaders" + SLASH + "deferredFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t skeletalMeshShader =
                 CreateMaterialShader<SkeletalMeshVertexFactory<4>, SimpleShader>(
@@ -189,9 +189,9 @@ namespace Game
             const ShaderParams planarReflectionParams(
                 "PlanarReflectionShader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "planarReflectionVS.glsl",
+                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "forwardFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t planarReflectionShader =
                 CreateMaterialShader<SkeletalMeshVertexFactory<4>,
@@ -212,7 +212,7 @@ namespace Game
     template <typename ComponentType>
     struct DirectionalLightComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const DirectionalLightComponentData &mData =
                 static_cast<const DirectionalLightComponentData &>(data);
@@ -227,7 +227,7 @@ namespace Game
     template <typename ComponentType>
     struct PointLightComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const PointLightComponentData &mData =
                 static_cast<const PointLightComponentData &>(data);
@@ -242,7 +242,7 @@ namespace Game
     template <typename ComponentType>
     struct SpotlightComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const SpotlightComponentData &mData =
                 static_cast<const SpotlightComponentData &>(data);
@@ -257,7 +257,7 @@ namespace Game
     template <typename ComponentType>
     struct SkyboxComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const SkyboxComponentData &mData =
                 static_cast<const SkyboxComponentData &>(data);
@@ -273,9 +273,9 @@ namespace Game
             const ShaderParams shaderParams(
                 "SkyboxForwardShader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "simpleVS.glsl",
+                    "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "forwardFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t skyboxMeshShader =
                 CreateMaterialShader<SkyboxVertexFactory, SimpleShader>(
@@ -285,9 +285,9 @@ namespace Game
             const ShaderParams planarReflectionParams(
                 "PlanarReflectionShader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "planarReflectionVS.glsl",
+                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "forwardFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t planarReflectionShader =
                 CreateMaterialShader<SkyboxVertexFactory, CapturePlanarReflectionShader>("SkyboxVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName,
@@ -303,7 +303,7 @@ namespace Game
     template <typename ComponentType>
     struct WaterPlaneComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const WaterPlaneComponentData &mData =
                 static_cast<const WaterPlaneComponentData &>(data);
@@ -319,9 +319,9 @@ namespace Game
             const ShaderParams shaderParams(
                 "ForwardWaterPlane Shader",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "simpleVS.glsl",
+                    "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders\\" + "forwardFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t waterPlaneShader =
                 CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
@@ -338,7 +338,7 @@ namespace Game
     template <typename ComponentType>
     struct CubemapComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const CubemapComponentData &mData =
                 static_cast<const CubemapComponentData &>(data);
@@ -363,7 +363,7 @@ namespace Game
     template <typename ComponentType>
     struct BillboardComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const BillboardComponentData &mData =
                 static_cast<const BillboardComponentData &>(data);
@@ -391,7 +391,7 @@ namespace Game
     template <typename ComponentType>
     struct InputComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             return std::make_shared<ComponentType>(data.GameObjectName);
         }
@@ -400,7 +400,7 @@ namespace Game
     template <typename ComponentType>
     struct CharacterMovementComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const CharacterMovementComponentData &mData =
                 static_cast<const CharacterMovementComponentData &>(data);
@@ -412,7 +412,7 @@ namespace Game
     template <typename ComponentType>
     struct MovementComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const MovementComponentData &mData =
                 static_cast<const MovementComponentData &>(data);
@@ -424,7 +424,7 @@ namespace Game
     template <typename ComponentType>
     struct PhysicsComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const PhysicsComponentData &mData =
                 static_cast<const PhysicsComponentData &>(data);
@@ -436,7 +436,7 @@ namespace Game
     template <typename ComponentType>
     struct PlanarReflectionComponentCreator : public IComponentCreator
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene * const scene) const override
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const PlanarReflectionComponentData &mData =
                 static_cast<const PlanarReflectionComponentData &>(data);
@@ -539,7 +539,7 @@ namespace Game
     struct ComponentCreatorFactory
     {
         std::shared_ptr<Component> CreateComponent(const ComponentData &data,
-                                                   class Scene * const scene)
+                                                   class Scene *const scene)
         {
             const auto &componentCreator = CreateComponentCreatorInstance<ComponentType, componentMetaType>();
             return componentCreator->CreateComponent(data, scene);

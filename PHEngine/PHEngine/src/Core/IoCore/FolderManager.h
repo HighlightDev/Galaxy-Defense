@@ -7,6 +7,12 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
+#ifdef _WIN32
+#define SLASH "\\"
+#elif __linux__
+#define SLASH "/"
+#endif
+
 namespace IO
 {
 
@@ -14,24 +20,13 @@ namespace IO
 	{
 
 	private:
-
-      std::unordered_map<std::string/*file name*/, std::string/*full path to file*/> mFilesPathMap;
-
-		const std::string BINARY_FOLDER_NAME = "\\bin";
+		std::unordered_map<std::string /*file name*/, std::string /*full path to file*/> mFilesPathMap;
 
 		std::string m_rootFolder;
 
 		static std::shared_ptr<FolderManager> m_instance;
 
-#ifdef WIN32
-		std::string ConcatDirectoryBack(int32_t countChangeDirectoryBack);
-#endif
-
-		void BuildPathToFolders();
-
-
 	public:
-
 		FolderManager();
 
 		~FolderManager();
@@ -44,16 +39,17 @@ namespace IO
 			return m_instance;
 		}
 
+		void BuildSystemPathToFolders();
 		const std::string GetRootPath() const;
 		const std::string GetResPath() const;
 		const std::string GetModelPath() const;
 		const std::string GetShadersPath() const;
-      const std::string GetShaderCommonPath() const;
+		const std::string GetShaderCommonPath() const;
 		const std::string GetCollisionPath() const;
 		const std::string GetTexturesPath() const;
 		const std::string GetIniPath() const;
 
-      const std::string GetMaterialTexturesPath() const;
+		const std::string GetMaterialTexturesPath() const;
 		const std::string GetGrassTexturePath() const;
 		const std::string GetLandscapeTexturePath() const;
 		const std::string GetCubemapTexturePath() const;
@@ -63,13 +59,12 @@ namespace IO
 		const std::string GetDistortionTexturePath() const;
 		const std::string GetPostprocessTexturePath() const;
 		const std::string GetEditorTexturePath() const;
-      const std::string GetPersistencyPath() const;
-      const std::string GetScriptPath() const;
-      const std::string GetMaterialPath() const;
-      const std::string GetTweenerPath() const;
+		const std::string GetPersistencyPath() const;
+		const std::string GetScriptPath() const;
+		const std::string GetMaterialPath() const;
+		const std::string GetTweenerPath() const;
 
-      void CreateFilePathMap(const std::string& pathToDir);
-      std::string GetDirectoryRelativePathByFileName(const std::string& fileName) const;
+		void CreateFilePathMap(const std::string &pathToDir);
+		std::string GetDirectoryRelativePathByFileName(const std::string &fileName) const;
 	};
 }
-

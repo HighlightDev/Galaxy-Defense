@@ -43,13 +43,13 @@ namespace Graphics
          const auto &folderManager = FolderManager::GetInstance();
 
          const ShaderParams depthCollectShaderParams("DepthCollectShader",
-                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectVS.glsl",
-                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectFS.glsl");
+                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectVS.glsl",
+                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectFS.glsl");
 
          const ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightVS.glsl",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightFS.glsl",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders\\" + "depthCollectPointLightGS.glsl");
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightVS.glsl",
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
+                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
 
          TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> staticMeshParams(
              "StaticMeshVertexFactory_DepthCollectShader", depthCollectShaderParams);

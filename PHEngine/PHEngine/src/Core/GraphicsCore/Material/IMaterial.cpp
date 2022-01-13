@@ -11,7 +11,7 @@ namespace Graphics
       : MaterialProxyId(0)
       , MaterialName(materialName)
       , MaterialShaderName(materialShaderName)
-      , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "\\material_shaders\\" + materialShaderName)
+      , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
    {
    }
 

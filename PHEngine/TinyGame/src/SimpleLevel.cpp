@@ -61,7 +61,7 @@ namespace Labyrinth
    {
       Base::PreLevelInit();
 
-      const auto folderManager = IO::FolderManager::GetInstance();
+      const auto& folderManager = IO::FolderManager::GetInstance();
 
 #define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
@@ -121,7 +121,7 @@ namespace Labyrinth
    {
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-#if 1
+#if 0
       DeserializeLevel("test_serialize.xml");
 #else
       RunLuaBuildLevelScript();

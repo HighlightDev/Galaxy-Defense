@@ -104,7 +104,7 @@ namespace Graphics
                         includes.insert(name);
                         name.erase(std::remove(name.begin(), name.end(), '\"'), name.end()); // remove quotes
 
-                        const std::string absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(IO::FolderManager::GetInstance()->GetShaderCommonPath() + name);
+                        const std::string& absolutePath = IO::FolderManager::GetInstance()->GetShaderCommonPath() + name;
                         includingSources += LoadShaderSource(absolutePath) + "\n";
                      }
                      it = sourceVector.erase(it);

@@ -140,7 +140,7 @@ namespace Game
 
    std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& relPathTweener)
    {
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(relPathTweener);
+      const std::string& absolutePath = relPathTweener;
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();

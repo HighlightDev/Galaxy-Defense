@@ -31,10 +31,9 @@ namespace IO
    Resource* TextureResourceLoader::LoadResource(const std::string& key)
    {
       StbLoader textureResourceLoader;
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
 
       TextureResourceInfo texResourceInfo;
-      uint8_t* data = textureResourceLoader.AllocateTextureMemoryFromFile(absolutePath, texResourceInfo);
+      uint8_t* data = textureResourceLoader.AllocateTextureMemoryFromFile(key, texResourceInfo);
 
       size_t size = texResourceInfo.Height * texResourceInfo.Width * texResourceInfo.PixelComponents;
       void* localData = malloc(size);
@@ -59,7 +58,7 @@ namespace IO
 
    Resource* MeshResourceLoader::LoadResource(const std::string& key)
    {
-      const std::string& absolutePath = EngineUtility::ConvertFromRelativeToAbsolutePath(key);
+      const std::string& absolutePath = key;
       AssimpLoader loader(absolutePath);
 
       MeshResourceInfo* data = new MeshResourceInfo();

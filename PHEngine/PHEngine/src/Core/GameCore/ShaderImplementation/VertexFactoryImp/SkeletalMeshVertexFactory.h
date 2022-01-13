@@ -26,7 +26,7 @@ namespace Game
      SkeletalMeshVertexFactory()
         : VertexFactoryShader("SkeletalMeshVertexFactory")
      {
-        InitShader(EngineUtility::ConvertFromRelativeToAbsolutePath(FolderManager::GetInstance()->GetShadersPath() + "\\vertex_factory\\SkeletalMeshVertexFactory.glsl"));
+        InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkeletalMeshVertexFactory.glsl");
      }
 
      virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override

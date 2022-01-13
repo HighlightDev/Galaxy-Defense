@@ -34,7 +34,7 @@ namespace Game
    void LuaScriptExecutor_EngineBase::RunScript()
    {
       const auto& folderManager = FolderManager::GetInstance();
-      const bool bScriptExecuted = mLuaInstance.ExecuteScript(EngineUtility::ConvertFromRelativeToAbsolutePath(folderManager->GetScriptPath() + mScriptName));
+      const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetScriptPath() + mScriptName);
       assert(bScriptExecuted);
 
       mLuaCoreData.HasOnStart = LuaGetGlobal<int64_t>::Value(mLuaInstance, "HasOnStart", -1);

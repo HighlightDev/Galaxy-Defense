@@ -1,5 +1,15 @@
 #include "PlatformDependentFunctions.h"
 #include "StringExtendedFunctions.h"
+#include "Core/CommonCore/Assertion.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#include <wchar.h>
+#include <psapi.h>
+#pragma comment(lib, "Psapi.lib")
+#elif __linux__
+#include <filesystem>
+#endif
 
 namespace EngineUtility
 {
@@ -13,14 +23,14 @@ namespace EngineUtility
 		return mHeapCapacity;
 	}
 
-	char* get_module_file_name(HMODULE hModule)
+	const char *get_module_file_name(HMODULE module)
 	{
 		size_t size = 1;
 		char *buffer;
 		for (;;)
 		{
 			buffer = new char[size + 1];
-			DWORD r = GetModuleFileName(hModule, buffer, size);
+			DWORD r = GetModuleFileName(module, buffer, size);
 			if (r < size && r != 0)
 				break;
 			if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
@@ -41,31 +51,35 @@ namespace EngineUtility
 		return 0;
 	}
 
-	char* get_module_file_name()
+	std::string get_module_file_name()
 	{
-		// todo: not implemented yet
-		return "\0";
+		const auto &path = std::filesystem::canonical("/proc/self/exe");
+		const auto &pathToExeStr = path.u8string();
+		return pathToExeStr;
 	}
 
 #endif
 
 	std::string GetExecutablePath()
 	{
-		static std::string currentDirPath;
-		static bool bFirstExecution = true;
-
-		if (currentDirPath == "")
+		if ("" == sPATH_TO_EXE)
 		{
-			bFirstExecution = false;
-			char *fileName = get_module_file_name();
-			std::string exeFilePath = std::string(fileName);
-			size_t indexToCurrentDir = LastIndexOf(exeFilePath, "\\");
-			currentDirPath = exeFilePath.substr(0, indexToCurrentDir);
-
-			delete fileName;
+#ifdef _WIN32
+			const char *exeFilePathCharPtr = get_module_file_name();
+			std::string exeFilePathStr = exeFilePathCharPtr;
+			delete exeFilePathCharPtr;
+			size_t indexToCurrentDir = LastIndexOf(exeFilePathStr, "\\");
+			assert(std::string::npos != indexToCurrentDir);
+			sPATH_TO_EXE = exeFilePathStr.substr(0, indexToCurrentDir);
+#elif __linux__
+			const std::string& fullPath = get_module_file_name();
+			const auto indexOfExecutable =  LastIndexOf(fullPath, "/");
+			assert(indexOfExecutable != std::string::npos);
+			sPATH_TO_EXE = fullPath.substr(0, indexOfExecutable + 1);
+#endif
 		}
 
-		return currentDirPath;
+		return sPATH_TO_EXE;
 	}
 
 	std::string ConvertFromRelativeToAbsolutePath(const std::string &relativePath)
@@ -73,16 +87,13 @@ namespace EngineUtility
 		if ("" == relativePath)
 			return relativePath;
 
-		std::string pathToExe = EngineUtility::GetExecutablePath();
-		std::string absolutePath = pathToExe;
+		std::string absolutePath = sPATH_TO_EXE;
 
 		int32_t countOfGoBack = 0;
-		std::string relativeTrimmedGoBack;
-
 		size_t relativeOffset = 0;
 		const std::string &lookForGoBack = "..";
 
-		size_t new_offset = 0;
+				size_t new_offset = 0;
 		do
 		{
 			new_offset = IndexOf(relativePath, lookForGoBack, relativeOffset);
@@ -93,7 +104,7 @@ namespace EngineUtility
 			}
 		} while (new_offset != std::string::npos);
 
-		relativeTrimmedGoBack = relativePath.substr(relativeOffset);
+		const std::string& relativeTrimmedGoBack = relativePath.substr(relativeOffset);
 
 		while (countOfGoBack != 0)
 		{

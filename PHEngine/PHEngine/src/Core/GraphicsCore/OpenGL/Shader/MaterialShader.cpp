@@ -31,8 +31,7 @@ namespace Graphics
 
       void MaterialShader::LoadMaterialShaderSource(const std::string& relativePathToMaterialShader)
       {
-         std::string absoluteShaderPath = EngineUtility::ConvertFromRelativeToAbsolutePath(relativePathToMaterialShader);
-         mShaderSource = LoadShaderSource(absoluteShaderPath);
+         mShaderSource = LoadShaderSource(relativePathToMaterialShader);
       }
 
       std::string MaterialShader::GetShaderSource() const

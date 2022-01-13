@@ -29,7 +29,7 @@ namespace Graphics
 
 		protected:
 
-         void LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, int32_t subroutineIndex) const;
+         void LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t* subroutineIndices) const;
 
          int32_t GetSubroutineIndex(ShaderType shaderType, const std::string& subroutineName) const;
 

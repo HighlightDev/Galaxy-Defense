@@ -4,19 +4,14 @@
 
 namespace EngineUtility
 {
+   static std::string sPATH_TO_EXE = "";
 
    uint64_t getProcessMemorySize();
 
 #ifdef _WIN32 // compile only for windows operating system
-
-#include <windows.h>
-#include <wchar.h>
-#include <psapi.h>
-#pragma comment(lib, "Psapi.lib")
-   char *get_module_file_name(HMODULE hModule = NULL);
+   const char *get_module_file_name(HMODULE module = NULL);
 #elif __linux__ // compile only for linux system operating system
-
-   char *get_module_file_name();
+   std::string get_module_file_name();
 #endif
 
    std::string GetExecutablePath();

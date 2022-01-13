@@ -24,7 +24,8 @@ bool bPollEvents = true;
 
 static std::shared_ptr<InputManager> engineInputManager = nullptr;
 
-void get_window_pos(GLFWwindow *window) {
+void get_window_pos(GLFWwindow *window)
+{
   int32_t x, y;
   glfwGetWindowPos(window, &x, &y);
 
@@ -59,7 +60,8 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
       bPollEvents = false;
     }
 
-    else if (key == 'M' || key == 'm') {
+    else if (key == 'M' || key == 'm')
+    {
       bSerializeLevel = true;
     }
 
@@ -98,6 +100,8 @@ void get_window_size(GLFWwindow *window)
 
 int32_t main(int32_t argc, char **argv)
 {
+  FolderManager::GetInstance()->BuildSystemPathToFolders();
+
   // TinyLogger::LogProxy::InitLog(new TinyLogger::LoggerClientConsole());
   TinyLogger::LogProxy::InitLog(new TinyLogger::LoggerClientFile());
   TinyLogger::LogProxy::StartLogThread();
