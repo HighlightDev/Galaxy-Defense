@@ -11,6 +11,10 @@ set(
     main.cpp
 )
 
+add_compile_definitions(
+  DEBUG
+  )
+
 add_executable(TinyGame ${HEADERS} ${SOURCES})
 
 set_target_properties(TinyGame PROPERTIES LINKER_LANGUAGE CXX)

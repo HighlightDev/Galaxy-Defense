@@ -10,7 +10,7 @@ namespace Game
       , CameraTransformChangedEvent()
       , mCameraName(cameraName)
       , mDirection(launchDirection)
-      , mSpeed(4.0f)
+      , mSpeed(1.0f)
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
    }

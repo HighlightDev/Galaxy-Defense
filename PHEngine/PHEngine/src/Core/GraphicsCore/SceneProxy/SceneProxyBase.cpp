@@ -6,6 +6,7 @@ namespace Graphics
 
    SceneProxyBase::SceneProxyBase()
       : mSceneProxyId(SceneProxyIdCounter)
+      , mIsEnabled(true)
    {
       SceneProxyIdCounter++;
    }

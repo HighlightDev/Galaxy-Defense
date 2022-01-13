@@ -1,6 +1,7 @@
 add_compile_definitions(
   GLM_ENABLE_EXPERIMENTAL
   SHADING_MODEL_PBR
+  DEBUG
   )
 
 file(GLOB_RECURSE SOURCES
