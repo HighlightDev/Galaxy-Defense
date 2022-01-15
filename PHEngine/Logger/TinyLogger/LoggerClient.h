@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <fstream>
+#include <string>
+#include <iostream>
 
 namespace TinyLogger
 {
@@ -12,9 +13,6 @@ namespace TinyLogger
       virtual void WriteLog(const std::string& message) = 0;
    };
 
-#ifdef WIN32
-#include <iostream>
-
    class LoggerClientConsole
       : public LoggerClientBase
    {
@@ -24,7 +22,6 @@ namespace TinyLogger
          std::cout << message << std::endl;
       }
    };
-#endif
 
    class LoggerClientFile
       : public LoggerClientBase
