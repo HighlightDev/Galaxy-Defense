@@ -60,6 +60,8 @@ namespace Graphics
 
       bool IsShadowMapDirty() const;
 
+      TextureAtlasSpaceRequest GetTextureAtlasSpaceRequest() const;
+
    protected:
 
       void AllocateFramebuffer() const;

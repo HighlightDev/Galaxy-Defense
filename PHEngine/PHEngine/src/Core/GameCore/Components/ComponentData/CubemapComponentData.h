@@ -10,16 +10,16 @@ namespace Game
 {
    struct CubemapComponentData : public ComponentData
    {
-      CubemapComponentData(const std::string& gameObjectName, glm::vec3&& translation, glm::vec3&& rotation, glm::vec3&& scale,
-         std::string&& vsPath, std::string&& fsPath, const TextureAtlasSpaceRequest& textureObtainer)
+      CubemapComponentData(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale,
+                           const std::string &vsPath, const std::string &fsPath, const TextureAtlasSpaceRequest &textureObtainer)
 
-         : ComponentData(gameObjectName)
-         , m_translation(std::move(translation))
-         , m_eulerRotationDegrees(std::move(rotation))
-         , m_scale(std::move(scale))
-         , m_vsShaderPath(std::move(vsPath))
-         , m_fsShaderPath(std::move(fsPath))
-         , m_textureObtainer(textureObtainer)
+          : ComponentData(gameObjectName)
+          , m_translation(translation)
+          , m_eulerRotationDegrees(rotation)
+          , m_scale(scale)
+          , m_vsShaderPath(vsPath)
+          , m_fsShaderPath(fsPath)
+          , m_textureObtainer(textureObtainer)
       {
       }
 

@@ -75,4 +75,9 @@ namespace Graphics
    {
       return bShadowmapDirty;
    }
+
+   TextureAtlasSpaceRequest ProjectedShadowInfo::GetTextureAtlasSpaceRequest() const
+   {
+      return mShadowmapAtlasRequest;
+   }
 }

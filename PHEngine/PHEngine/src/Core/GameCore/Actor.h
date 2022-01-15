@@ -126,7 +126,7 @@ namespace Game
 
       template <typename ComponentT>
       typename std::enable_if<std::is_base_of<Component, ComponentT>::value,
-         std::vector<std::shared_ptr<ComponentT>>>::type GetComponents()
+         std::vector<std::shared_ptr<ComponentT>>>::type GetComponentsByType()
       {
          std::vector<std::shared_ptr<ComponentT>> result;
 

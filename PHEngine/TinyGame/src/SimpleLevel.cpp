@@ -6,6 +6,8 @@
 
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/CubemapComponent.h"
+#include "Core/GameCore/Components/ComponentData/CubemapComponentData.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/MovementComponent.h"
@@ -39,14 +41,13 @@ namespace Labyrinth
 
 #define GET_REL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(fileName))
 
-   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr& threadMgr)
-      : Level(threadMgr)
+   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr &threadMgr)
+       : Level(threadMgr)
    {
    }
 
    SimpleLevel::~SimpleLevel()
    {
-
    }
 
    void SimpleLevel::RunLuaBuildLevelScript()
@@ -61,7 +62,7 @@ namespace Labyrinth
    {
       Base::PreLevelInit();
 
-      const auto& folderManager = IO::FolderManager::GetInstance();
+      const auto &folderManager = IO::FolderManager::GetInstance();
 
 #define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
@@ -101,13 +102,13 @@ namespace Labyrinth
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_roughness.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("Brick_Medieval_metallic.png"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("dummy_metallic_roughness.png"));
-      
+
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("playerCube.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("witcher.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("City_House_2_BI.obj"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("model.dae"));
       ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("player_walk.fbx"));
-      //ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
+      // ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
 
 #undef ALLOC_RES_ASYNC
    }
@@ -115,6 +116,15 @@ namespace Labyrinth
    void SimpleLevel::PostLevelInit()
    {
       Base::PostLevelInit();
+
+      const auto groundActor = mScene->GetActor("Ground");
+      const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
+      const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();
+
+      const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),
+                                                      FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
+      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, Game::ComponentMetaType::Cubemap>(cubemapComponentData);
+      groundActor->AddComponent(cubemapRendererComponent);
    }
 
    void SimpleLevel::LoadLevel()
