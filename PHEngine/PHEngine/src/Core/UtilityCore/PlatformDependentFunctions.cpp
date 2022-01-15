@@ -2,15 +2,6 @@
 #include "StringExtendedFunctions.h"
 #include "Core/CommonCore/Assertion.h"
 
-#ifdef _WIN32
-#include <windows.h>
-#include <wchar.h>
-#include <psapi.h>
-#pragma comment(lib, "Psapi.lib")
-#elif __linux__
-#include <filesystem>
-#endif
-
 namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system
@@ -47,7 +38,7 @@ namespace EngineUtility
 
 	uint64_t getProcessMemorySize()
 	{
-		// not implemented yet
+		// todo: not implemented yet
 		return 0;
 	}
 

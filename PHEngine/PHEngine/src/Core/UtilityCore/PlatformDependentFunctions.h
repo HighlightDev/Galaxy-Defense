@@ -2,6 +2,15 @@
 
 #include <string>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <wchar.h>
+#include <psapi.h>
+#pragma comment(lib, "Psapi.lib")
+#elif __linux__
+#include <filesystem>
+#endif
+
 namespace EngineUtility
 {
    static std::string sPATH_TO_EXE = "";
