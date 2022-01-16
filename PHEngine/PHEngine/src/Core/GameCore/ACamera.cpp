@@ -4,6 +4,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
+#include <algorithm>
+
 using namespace EngineMath;
 using namespace IO;
 
