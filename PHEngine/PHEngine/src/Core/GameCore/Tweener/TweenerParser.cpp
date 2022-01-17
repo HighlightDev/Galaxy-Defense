@@ -2,6 +2,7 @@
 #include "Core/IoCore/FileFacade.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/CommonCore/XMLParserHelper.h"
+#include "Core/IoCore/FolderManager.h"
 
 #include <unordered_map>
 
@@ -140,7 +141,7 @@ namespace Game
 
    std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& relPathTweener)
    {
-      const std::string& absolutePath = relPathTweener;
+      const std::string& absolutePath = IO::FolderManager::GetInstance()->GetRootPath() + relPathTweener;
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();

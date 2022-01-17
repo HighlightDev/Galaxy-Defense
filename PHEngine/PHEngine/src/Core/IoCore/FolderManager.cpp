@@ -22,10 +22,7 @@ namespace IO
 		m_rootFolder = EngineUtility::GetExecutablePath();
 		assert(m_rootFolder != "");
 	}
-/*
-terminate called after throwing an instance of 'std::filesystem::__cxx11::filesystem_error'
-  what():  filesystem error: recursive directory iterator cannot open directory: No such file or directory [/home/dzinoviev/MyProjects/phengine/PHEngine/build/TinyGame//home/dzinoviev/MyProjects/phengine/PHEngine/build/TinyGame/res\texture\albedo\]
-*/
+
 	void FolderManager::CreateFilePathMap(const std::string &pathToDir)
 	{
 		using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;

@@ -23,6 +23,7 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/MainThirdPersonCamera.h"
+#include "Core/IoCore/FolderManager.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -304,6 +305,7 @@ namespace Game {
 
       std::string logCompType = "";
 
+      const auto& folderManagerInstance = IO::FolderManager::GetInstance();
       switch (dataType)
       {
          case SerializeDataBase::SerializeDataType::StaticMesh:
@@ -315,7 +317,7 @@ namespace Game {
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
             auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-               meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+               folderManagerInstance->GetRootPath() + meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
             result = EngineObjectCreator::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
             break;
          }
@@ -328,7 +330,7 @@ namespace Game {
             IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
 
             auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-               meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+               folderManagerInstance->GetRootPath() + meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
             result = EngineObjectCreator::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
             break;
          }
@@ -537,7 +539,7 @@ namespace Game {
             std::string resultPathToAllTextures;
             for (size_t i = 0; i < pathToTextures.size(); ++i)
             {
-               resultPathToAllTextures += pathToTextures[i];
+               resultPathToAllTextures += IO::FolderManager::GetInstance()->GetRootPath() + pathToTextures[i];
 
                if (i + 1 < pathToTextures.size())
                {

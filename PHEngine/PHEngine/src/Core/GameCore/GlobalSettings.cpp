@@ -10,7 +10,9 @@ namespace Game
       , mMaxDirLightCount(5)
       , mMaxDirLightShadowMapCount(4)
       , mMaxPointLightCount(50)
-      , mMaxPointLightShadowMapCount(4)
+      // todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
+      // so currently engine supports only one cubemap sampler
+      , mMaxPointLightShadowMapCount(1)
       , mMaxSpotlightCount(50)
       , mMaxSpotlightShadowMapCount(4)
       , mShadowMapBiasDirLight(0.005f)

@@ -487,7 +487,8 @@ namespace Game
 
    void Scene::Tick_GameThread(float delta)
    {
-      constexpr float physTickStep = 1.0f / 100.0f;
+      constexpr float inv_PhysicsStep = 1.0f  / 260.0f;
+      const float physTickStep = delta * (inv_PhysicsStep / delta);
 
       mGameThreadDeltaSec.SetValue(delta);
 

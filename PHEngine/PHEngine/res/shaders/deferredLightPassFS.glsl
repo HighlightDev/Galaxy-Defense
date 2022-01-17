@@ -31,6 +31,8 @@ uniform sampler2D gBuffer_Albedo;
 uniform sampler2D gBuffer_MetallicRoughness;
 
 uniform sampler2D DirLightShadowMaps[MAX_DIR_LIGHT_SHADOW_MAP_COUNT];
+// todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
+// so currently engine supports only one cubemap sampler
 uniform samplerCube PointLightShadowMaps[MAX_POINT_LIGHT_SHADOW_MAP_COUNT];
 uniform sampler2D SpotlightShadowMaps[MAX_SPOTLIGHT_SHADOW_MAP_COUNT];
 
@@ -232,7 +234,7 @@ vec3 CalculatePointLightLitColor(in vec3 radiance, in int pointLightIndex, in ve
 // todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
 // so currently engine supports only one cubemap sampler
   return step(pointLightIndex, PointLightShadowMapCount) * CalcLitFactorPointLight(
-      PointLightShadowMaps[0], pixelWorldPos,
+      PointLightShadowMaps[pointLightIndex], pixelWorldPos,
       PointLightPositionWorld[pointLightIndex],
       PointLightShadowProjectionFarPlane[pointLightIndex]) * radiance;
 }

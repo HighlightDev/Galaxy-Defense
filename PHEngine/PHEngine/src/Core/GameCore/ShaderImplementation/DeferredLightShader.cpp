@@ -40,7 +40,7 @@ namespace Game
          u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-
+   
          u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
          u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);

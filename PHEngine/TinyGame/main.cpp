@@ -131,7 +131,7 @@ int32_t main(int32_t argc, char **argv)
   get_window_pos(window);
   glfwSetCursorPosCallback(window, cursor_position_callback);
   glfwSetKeyCallback(window, key_pressed_callback);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
   GLenum initResult = glewInit();
 
