@@ -7,12 +7,12 @@
 namespace EngineUtility
 {
 
-	bool StartsWith(const std::string& sourceStr, const std::string& lookfor)
+	bool StartsWith(const std::string &sourceStr, const std::string &lookfor)
 	{
 		return sourceStr.find(lookfor) == 0;
 	}
 
-	size_t IndexOf(const std::string& sourceStr, const std::string& lookfor, size_t offset)
+	size_t IndexOf(const std::string &sourceStr, const std::string &lookfor, size_t offset)
 	{
 		size_t result = std::string::npos;
 		typename std::string::size_type location = sourceStr.find(lookfor, offset);
@@ -22,7 +22,7 @@ namespace EngineUtility
 		return result;
 	}
 
-	size_t LastIndexOf(const std::string& sourceStr, const std::string& lookfor, size_t offset)
+	size_t LastIndexOf(const std::string &sourceStr, const std::string &lookfor, size_t offset)
 	{
 		size_t index = std::string::npos;
 		size_t new_offset = 0;
@@ -39,36 +39,36 @@ namespace EngineUtility
 		return index;
 	}
 
-	std::string TrimStart(const std::string& sourceStr)
+	std::string TrimStart(const std::string &sourceStr)
 	{
 		std::string str = sourceStr;
-		auto trim = [](std::string& s) -> void
+		auto trim = [](std::string &s) -> void
 		{
-			s.erase(s.begin(), std::find_if(s.begin(), s.end(), 
-				[](int32_t ch) {
-				return ! std::isspace(ch); }
-			));
+			s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+											[](int32_t ch)
+											{ return !std::isspace(ch); }));
 		};
 
 		trim(str);
 		return str;
 	}
 
-	std::string TrimEnd(const std::string& sourceStr)
+	std::string TrimEnd(const std::string &sourceStr)
 	{
 		std::string str = sourceStr;
-		auto trim = [](std::string& s) -> void
+		auto trim = [](std::string &s) -> void
 		{
-			s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
-				return !std::isspace(ch);
-			}).base(), s.end());
+			s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch)
+								 { return !std::isspace(ch); })
+						.base(),
+					s.end());
 		};
 
 		trim(str);
 		return str;
 	}
 
-	std::vector<std::string> Split(const std::string& source, char splitChar)
+	std::vector<std::string> Split(const std::string &source, char splitChar)
 	{
 		std::stringstream test(source);
 		std::string segment;
@@ -81,12 +81,13 @@ namespace EngineUtility
 		return seglist;
 	}
 
-   std::string ToLower(const std::string& source)
-   {
-      std::string result = source;
-      std::transform(source.begin(), source.end(), result.begin(),
-         [](unsigned char c) { return std::tolower(c); });
+	std::string ToLower(const std::string &source)
+	{
+		std::string result = source;
+		std::transform(source.begin(), source.end(), result.begin(),
+					   [](unsigned char c)
+					   { return std::tolower(c); });
 
-      return result;
-   }
+		return result;
+	}
 }

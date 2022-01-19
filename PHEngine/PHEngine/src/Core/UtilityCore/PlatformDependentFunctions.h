@@ -7,9 +7,13 @@
 #include <wchar.h>
 #include <psapi.h>
 #pragma comment(lib, "Psapi.lib")
+#define SLASH '\\'
 #elif __linux__
 #include <filesystem>
+#define SLASH '/'
 #endif
+
+#define GENERAL_SLASH '|'
 
 namespace EngineUtility
 {
@@ -27,4 +31,7 @@ namespace EngineUtility
 
    std::string ConvertFromRelativeToAbsolutePath(const std::string &relativePath);
 
+   std::string FromOsSpecificUrlToGeneral(const std::string &path);
+
+   std::string FromGeneralUrlToOsSPecific(const std::string &path);
 }

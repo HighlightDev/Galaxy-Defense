@@ -10,26 +10,26 @@ using namespace Common;
 
 namespace Game
 {
-#define TWEENER_START_NODE_NAME              "<tweener>"
-#define TWEENER_END_NODE_NAME                "</tweener>"
-#define STATES_START_NODE_NAME               "<states>"
-#define STATES_END_NODE_NAME                 "</states>"
-#define STATE_START_NODE_NAME                "<state>"
-#define STATE_END_NODE_NAME                  "</state>"
-#define TRANSITIONS_START_NODE_NAME          "<transitions>"
-#define TRANSITIONS_END_NODE_NAME            "</transitions>"
-#define TRANSITION_START_NODE_NAME           "<transition>"
-#define TRANSITION_END_NODE_NAME             "</transition>"
-#define BINDINGS_START_NODE_NAME             "<bindings>"
-#define BINDINGS_END_NODE_NAME               "</bindings>"
-#define BINDING_START_NODE_NAME              "<binding>"
-#define BINDING_END_NODE_NAME                "</binding>"
-#define PROPERTIES_START_NODE_NAME           "<properties>"
-#define PROPERTIES_END_NODE_NAME             "</properties>"
-#define PROPERTY_START_NODE_NAME             "<property>"
-#define PROPERTY_END_NODE_NAME               "</property>"
+#define TWEENER_START_NODE_NAME "<tweener>"
+#define TWEENER_END_NODE_NAME "</tweener>"
+#define STATES_START_NODE_NAME "<states>"
+#define STATES_END_NODE_NAME "</states>"
+#define STATE_START_NODE_NAME "<state>"
+#define STATE_END_NODE_NAME "</state>"
+#define TRANSITIONS_START_NODE_NAME "<transitions>"
+#define TRANSITIONS_END_NODE_NAME "</transitions>"
+#define TRANSITION_START_NODE_NAME "<transition>"
+#define TRANSITION_END_NODE_NAME "</transition>"
+#define BINDINGS_START_NODE_NAME "<bindings>"
+#define BINDINGS_END_NODE_NAME "</bindings>"
+#define BINDING_START_NODE_NAME "<binding>"
+#define BINDING_END_NODE_NAME "</binding>"
+#define PROPERTIES_START_NODE_NAME "<properties>"
+#define PROPERTIES_END_NODE_NAME "</properties>"
+#define PROPERTY_START_NODE_NAME "<property>"
+#define PROPERTY_END_NODE_NAME "</property>"
 
-   TweenerParser::TweenerParser_Property GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Property GetPropertyAndAdvanceIt(XMLParserHelper::iterator_t &beginIt, const XMLParserHelper::iterator_t &endIt)
    {
       auto propertyStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, PROPERTY_START_NODE_NAME);
       auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertyStartNode, endIt, PROPERTY_END_NODE_NAME);
@@ -39,7 +39,7 @@ namespace Game
 
       for (auto it = propertyStartNode; it != propertyEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          std::string name, from, to, duration;
 
@@ -71,7 +71,7 @@ namespace Game
       return property;
    }
 
-   TweenerParser::TweenerParser_Binding GetBindingAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Binding GetBindingAndAdvanceIt(XMLParserHelper::iterator_t &beginIt, const XMLParserHelper::iterator_t &endIt)
    {
       auto bindingStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, BINDING_START_NODE_NAME);
       auto bindingEndNode = XMLParserHelper::GetItByNodeName(bindingStartNode, endIt, BINDING_END_NODE_NAME);
@@ -81,7 +81,7 @@ namespace Game
 
       for (auto it = bindingStartNode; it != bindingEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          std::string name, from, to, duration;
 
@@ -101,7 +101,7 @@ namespace Game
       return binding;
    }
 
-   TweenerParser::TweenerParser_Transition GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t& beginIt, const XMLParserHelper::iterator_t& endIt)
+   TweenerParser::TweenerParser_Transition GetTransitionAndAdvanceIt(XMLParserHelper::iterator_t &beginIt, const XMLParserHelper::iterator_t &endIt)
    {
       auto transitionStartNode = XMLParserHelper::GetItByNodeName(beginIt, endIt, TRANSITION_START_NODE_NAME);
       auto transitionEndNode = XMLParserHelper::GetItByNodeName(transitionStartNode, endIt, TRANSITION_END_NODE_NAME);
@@ -111,7 +111,7 @@ namespace Game
 
       for (auto it = transitionStartNode; it != transitionEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          std::string name, from, to, duration;
 
@@ -139,11 +139,12 @@ namespace Game
       return transition;
    }
 
-   std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string& relPathTweener)
+   std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string &relPathTweener)
    {
-      const std::string& absolutePath = IO::FolderManager::GetInstance()->GetRootPath() + relPathTweener;
-      FileFacade fileWorker(absolutePath);
+      const std::string &absolutePath = IO::FolderManager::GetInstance()->GetRootPath() +
+                                        EngineUtility::FromGeneralUrlToOsSPecific(relPathTweener);
 
+      FileFacade fileWorker(absolutePath);
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
       assert(sizeOfSrc > 0);
 
@@ -162,11 +163,11 @@ namespace Game
 
          for (auto it = statesStartNode; it != statesEndNode; ++it)
          {
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+            const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
             if (EngineUtility::StartsWith(currentNodeStr, "name"))
             {
-               const std::string& name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+               const std::string &name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
                mStates.emplace_back(TweenerParser_State(name));
             }
          }
@@ -202,17 +203,19 @@ namespace Game
       return BuildTweener(relPathTweener);
    }
 
-   std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding& binding)
+   std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding &binding)
    {
       std::shared_ptr<PropertyBinding> result;
 
-      if ("animation" == binding.Type) {
+      if ("animation" == binding.Type)
+      {
          result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
       }
-      else if ("float" == binding.Type) {
+      else if ("float" == binding.Type)
+      {
          result = std::make_shared<FloatPropertyBinding>(binding.BindingName);
       }
-      else 
+      else
       {
          assert((false, "unknown binding type."));
       }
@@ -220,13 +223,13 @@ namespace Game
       return result;
    }
 
-   BaseStateProperty* CreateProperty(const TweenerParser::TweenerParser_Property& property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>>& bindings)
+   BaseStateProperty *CreateProperty(const TweenerParser::TweenerParser_Property &property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> &bindings)
    {
-      BaseStateProperty* result = nullptr;
+      BaseStateProperty *result = nullptr;
 
       assert(bindings.count(property.BindingName));
 
-      if ("animation" == property.Type) 
+      if ("animation" == property.Type)
       {
          result = new StateProperty<eBindingType::ANIMATION>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
       }
@@ -235,7 +238,7 @@ namespace Game
          const float value = std::stof(property.Value);
          result = new StateProperty<eBindingType::FLOAT>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
       }
-      else 
+      else
       {
          assert((false, "unknown binding type."));
       }
@@ -243,13 +246,13 @@ namespace Game
       return result;
    }
 
-   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string& relPathTweener)
+   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string &relPathTweener)
    {
       std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::vector<std::shared_ptr<State>> allStates;
       std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> bindings;
 
-      for (const auto& item : mStates)
+      for (const auto &item : mStates)
       {
          states[item.Name] = std::make_shared<State>(item.Name);
          allStates.push_back(states[item.Name]);
@@ -257,44 +260,44 @@ namespace Game
 
       auto tweener = std::make_shared<Tweener>(relPathTweener, states[mStates[0].Name], allStates);
 
-      for (const auto& item : mTransitions)
+      for (const auto &item : mTransitions)
       {
          assert(states.count(item.From));
          auto transition = StateTransition(states.at(item.From), states.at(item.To), std::stof(item.Duration));
          states.at(item.From)->AddStateTransition(transition);
       }
 
-      for (const auto& item : mBindings)
+      for (const auto &item : mBindings)
       {
          bindings[item.BindingName] = CreatePropertyBinding(item);
          tweener->AddPropertyBinding(item.BindingName, bindings.at(item.BindingName));
       }
 
-      for (const auto& item : mProperties)
+      for (const auto &item : mProperties)
       {
-         BaseStateProperty* property = CreateProperty(item, bindings);
+         BaseStateProperty *property = CreateProperty(item, bindings);
          states[item.State]->AddStateProperty(property);
       }
 
       return tweener;
    }
 
-#undef TWEENER_START_NODE_NAME             
-#undef TWEENER_END_NODE_NAME               
-#undef STATES_START_NODE_NAME          
-#undef STATES_END_NODE_NAME            
-#undef STATE_START_NODE_NAME           
-#undef STATE_END_NODE_NAME             
-#undef TRANSITIONS_START_NODE_NAME     
-#undef TRANSITIONS_END_NODE_NAME       
-#undef TRANSITION_START_NODE_NAME      
-#undef TRANSITION_END_NODE_NAME        
-#undef BINDINGS_START_NODE_NAME        
-#undef BINDINGS_END_NODE_NAME          
-#undef BINDING_START_NODE_NAME         
-#undef BINDING_END_NODE_NAME           
-#undef PROPERTIES_START_NODE_NAME      
-#undef PROPERTIES_END_NODE_NAME        
-#undef PROPERTY_START_NODE_NAME        
-#undef PROPERTY_END_NODE_NAME          
+#undef TWEENER_START_NODE_NAME
+#undef TWEENER_END_NODE_NAME
+#undef STATES_START_NODE_NAME
+#undef STATES_END_NODE_NAME
+#undef STATE_START_NODE_NAME
+#undef STATE_END_NODE_NAME
+#undef TRANSITIONS_START_NODE_NAME
+#undef TRANSITIONS_END_NODE_NAME
+#undef TRANSITION_START_NODE_NAME
+#undef TRANSITION_END_NODE_NAME
+#undef BINDINGS_START_NODE_NAME
+#undef BINDINGS_END_NODE_NAME
+#undef BINDING_START_NODE_NAME
+#undef BINDING_END_NODE_NAME
+#undef PROPERTIES_START_NODE_NAME
+#undef PROPERTIES_END_NODE_NAME
+#undef PROPERTY_START_NODE_NAME
+#undef PROPERTY_END_NODE_NAME
 }

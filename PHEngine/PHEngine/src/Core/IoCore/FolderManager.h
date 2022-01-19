@@ -7,12 +7,6 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 
-#ifdef _WIN32
-#define SLASH "\\"
-#elif __linux__
-#define SLASH "/"
-#endif
-
 namespace IO
 {
 

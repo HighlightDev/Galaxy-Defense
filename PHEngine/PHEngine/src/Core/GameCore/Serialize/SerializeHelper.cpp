@@ -30,9 +30,10 @@
 using namespace Graphics;
 using namespace EnginePhysics;
 
-namespace Game {
+namespace Game
+{
 
-   std::shared_ptr<SerializeDataCamera> SerializeHelper::GetSerializedDataCamera(const ACamera* camera)
+   std::shared_ptr<SerializeDataCamera> SerializeHelper::GetSerializedDataCamera(const ACamera *camera)
    {
       std::shared_ptr<SerializeDataCamera> cameraData;
 
@@ -41,7 +42,7 @@ namespace Game {
          // third person camera
          auto thirdPersonCameraData = std::make_shared<SerializeDataThirdPersonCamera>();
          cameraData = thirdPersonCameraData;
-         const auto thirdPersonCamera = static_cast<const ThirdPersonCamera*>(camera);
+         const auto thirdPersonCamera = static_cast<const ThirdPersonCamera *>(camera);
          thirdPersonCameraData->ThirdPersonTargetOffset = thirdPersonCamera->GetThirdPersonTargetOffset();
          thirdPersonCameraData->CameraDistanceToThirdPersonTarget = thirdPersonCamera->GetMaxDistanceFromTargetToCamera();
          thirdPersonCameraData->ThirdPersonTargetActorName = thirdPersonCamera->GetThirdPersonTarget()->GetName();
@@ -51,10 +52,13 @@ namespace Game {
          // first person camera
          auto firstPersonCameraData = std::make_shared<SerializeDataFirstPersonCamera>();
          cameraData = firstPersonCameraData;
-         const auto firstPersonCamera = static_cast<const FirstPersonCamera*>(camera);
+         const auto firstPersonCamera = static_cast<const FirstPersonCamera *>(camera);
          firstPersonCameraData->CameraPosition = firstPersonCamera->GetEyeVector();
       }
-      else { assert(false); }
+      else
+      {
+         assert(false);
+      }
 
       cameraData->CameraName = camera->GetCameraName();
       cameraData->ViewPortInfo = glm::ivec4(camera->GetViewPort());
@@ -70,7 +74,7 @@ namespace Game {
       return cameraData;
    }
 
-   std::shared_ptr<SerializeDataPhysicsShape> SerializeHelper::GetSerializePhysicsShapeData(PhysicsShapeBase* physicsShape)
+   std::shared_ptr<SerializeDataPhysicsShape> SerializeHelper::GetSerializePhysicsShapeData(PhysicsShapeBase *physicsShape)
    {
       std::shared_ptr<SerializeDataPhysicsShape> resultData;
 
@@ -78,21 +82,21 @@ namespace Game {
 
       if (SPHERE_SHAPE_PROXYTYPE == shapeType)
       {
-         PhySphereShape* sphere = static_cast<PhySphereShape*>(physicsShape);
+         PhySphereShape *sphere = static_cast<PhySphereShape *>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataSpherePhysicsShape>();
          shapeData->Radius = sphere->GetRadius();
          resultData = shapeData;
       }
       else if (BOX_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyBoxShape* box = static_cast<PhyBoxShape*>(physicsShape);
+         PhyBoxShape *box = static_cast<PhyBoxShape *>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataBoxPhysicsShape>();
          shapeData->HalfExtent = box->GetHalfExtent();
          resultData = shapeData;
       }
       else if (CAPSULE_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyCapsuleShape* capsule = static_cast<PhyCapsuleShape*>(physicsShape);
+         PhyCapsuleShape *capsule = static_cast<PhyCapsuleShape *>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataCapsulePhysicsShape>();
          shapeData->Height = capsule->GetHeight();
          shapeData->Radius = capsule->GetRadius();
@@ -100,14 +104,14 @@ namespace Game {
       }
       else if (COMPOUND_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyCompoundShape* compoundShape = static_cast<PhyCompoundShape*>(physicsShape);
+         PhyCompoundShape *compoundShape = static_cast<PhyCompoundShape *>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataCompoundPhysicsShape>();
          auto childShapeMap = compoundShape->GetChildShapes();
 
-         for (const auto& phyShapeAndTransform : childShapeMap)
+         for (const auto &phyShapeAndTransform : childShapeMap)
          {
             auto childShape = phyShapeAndTransform.first;
-            auto childTransform =  phyShapeAndTransform.second;
+            auto childTransform = phyShapeAndTransform.second;
             SerializeDataTranslationEulerRotation serializeTransformData;
             serializeTransformData.Translation = childTransform.Translation;
             serializeTransformData.Rotation = childTransform.RotationEulerAngles;
@@ -130,12 +134,12 @@ namespace Game {
       return resultData;
    }
 
-   std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(const PhysicsComponent* component)
+   std::shared_ptr<SerializeDataPhysicsComponent> SerializeHelper::GetSerializeDataPhysicsComponent(const PhysicsComponent *component)
    {
       std::shared_ptr<SerializeDataPhysicsComponent> physCompData = std::make_shared<SerializeDataPhysicsComponent>();
 
-      PhysicsShapeBase* physShape = component->GetDescriptor()->GetShape();
-    
+      PhysicsShapeBase *physShape = component->GetDescriptor()->GetShape();
+
       std::shared_ptr<SerializeDataPhysicsShape> physicsShapeData = GetSerializePhysicsShapeData(physShape);
 
       physCompData->PhysicsShape = physicsShapeData;
@@ -155,11 +159,11 @@ namespace Game {
       materialData.MaterialName = materialInstance->MaterialName;
       materialData.MaterialShaderName = materialInstance->MaterialShaderName;
 
-      const auto& properties = materialInstance->GetProperties();
+      const auto &properties = materialInstance->GetProperties();
 
-      for (const auto& propertyItem : properties)
+      for (const auto &propertyItem : properties)
       {
-         const std::string& uniformName = propertyItem->GetPropertyName();
+         const std::string &uniformName = propertyItem->GetPropertyName();
          std::shared_ptr<MaterialProperty> prop = propertyItem;
          auto type = prop->GetPropertyType();
 
@@ -169,7 +173,9 @@ namespace Game {
          {
             std::shared_ptr<TextureMaterialProperty> texProp = std::static_pointer_cast<TextureMaterialProperty>(prop);
             propertyType = "texture";
-            uniformValue = Resources::TexturePool::GetInstance()->GetKey(texProp->GetValue());
+            uniformValue = EngineUtility::FromOsSpecificUrlToGeneral(
+                Resources::TexturePool::GetInstance()->GetKey(
+                    texProp->GetValue()));
          }
          else if (type == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
          {
@@ -184,83 +190,90 @@ namespace Game {
          property.UniformName = uniformName;
 
          materialData.Properties.emplace_back(property);
-
       }
 
       return materialData;
    }
 
-   std::shared_ptr<Actor> SerializeHelper::CreateActorFromSerializedData(const SerializeDataActor& data) {
+   std::shared_ptr<Actor> SerializeHelper::CreateActorFromSerializedData(const SerializeDataActor &data)
+   {
 
-      auto actor = std::make_shared<Actor>(data.ActorName,
-         std::make_shared<SceneComponent>(data.ActorName + "_RootComponent", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
+      const auto &actor = std::make_shared<Actor>(data.ActorName,
+                                                  std::make_shared<SceneComponent>(data.ActorName + "_RootComponent", data.RootCompTranslation, data.RootCompRotation, data.RootCompScale));
       return actor;
    }
 
-   std::shared_ptr<Tweener> SerializeHelper::CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data) {
+   std::shared_ptr<Tweener> SerializeHelper::CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data)
+   {
       TweenerParser fsmParser;
       return fsmParser.ParseTweenerDescriptor(data->TweenerRelPath);
    }
 
-   std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent* component)
+   std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent *component)
    {
       auto meshData = std::make_shared<SerializeDataStaticMesh>();
       meshData->ComponentName = component->GetGameObjectName();
-      meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
+      const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
+          MeshPool::GetInstance()->GetKey(
+              component->GetRenderData().m_skin));
+      meshData->ModelName = generalUrlToModel;
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationEuler();
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = ""; // TODO: for now
 
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
+      const SerializeDataMaterial &material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
 
       meshData->MeshMaterial = material;
 
       return meshData;
    }
 
-   std::shared_ptr<SerializeDataSkeletalMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component)
+   std::shared_ptr<SerializeDataSkeletalMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent *component)
    {
       auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
       meshData->ComponentName = component->GetGameObjectName();
-      meshData->ModelName = MeshPool::GetInstance()->GetKey(component->GetRenderData().m_skin);
+      const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
+          MeshPool::GetInstance()->GetKey(
+              component->GetRenderData().m_skin));
+      meshData->ModelName = generalUrlToModel;
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationEuler();
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = component->LuaScriptName;
 
-      const SerializeDataMaterial& material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
+      const SerializeDataMaterial &material = SerializeHelper::GetSerializeDataMaterial(component->GetMaterial());
 
       meshData->MeshMaterial = material;
 
       return meshData;
    }
 
-   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent* component)
+   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent *component)
    {
-      auto planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
+      const auto &planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
       planarReflectionData->ComponentName = component->GetGameObjectName();
       planarReflectionData->Translation = component->GetTranslation();
       planarReflectionData->EulerAnglesRotation = component->GetRotationEuler();
       planarReflectionData->Scale = component->GetScale();
       planarReflectionData->OwnerCameraName = component->GetOwnerCamera()->GetCameraName();
-      const auto& viewPortInfo = component->GetRenderTargetViewPortInfo();
+      const auto &viewPortInfo = component->GetRenderTargetViewPortInfo();
       planarReflectionData->ViewPortInfo = glm::vec4(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
       return planarReflectionData;
    }
 
-   std::shared_ptr<ACamera> SerializeHelper::CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool& outIsMainSceneCamera)
+   std::shared_ptr<ACamera> SerializeHelper::CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool &outIsMainSceneCamera)
    {
       std::shared_ptr<ACamera> result;
 
-      const auto& cameraTypeName = data->CameraType;
+      const auto &cameraTypeName = data->CameraType;
 
       if (cameraTypeName == "FirstPersonCamera")
       {
          auto fpCameraData = std::static_pointer_cast<SerializeDataFirstPersonCamera>(data);
          assert(fpCameraData);
          auto fpCamera = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, scene, ViewPortInfo(fpCameraData->ViewPortInfo), fpCameraData->InitPitchDeg,
-            fpCameraData->InitYawDeg, fpCameraData->CameraPosition);
+                                                             fpCameraData->InitYawDeg, fpCameraData->CameraPosition);
          result = fpCamera;
       }
       else
@@ -273,25 +286,18 @@ namespace Game {
          if (cameraTypeName == "ThirdPersonCamera")
          {
             thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
-               thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
+                                                                    thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
          }
          else if (cameraTypeName == "MainThirdPersonCamera")
          {
             outIsMainSceneCamera = true;
             thirdPersonCamera = std::make_shared<MainThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
-               thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
+                                                                        thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
          }
 
          thirdPersonCamera->SetThirdPersonTargetDeferred(thpCameraData->ThirdPersonTargetActorName);
 
          result = thirdPersonCamera;
-      }
-
-      // Deserialize planar reflection component
-      if (result && data->mPlanarReflectionComponentData)
-      {
-         auto planarReflectionComponent = CreateComponentFromSerializedData(scene, data->mPlanarReflectionComponentData);
-         result->SetPlanarReflectionComponent(std::static_pointer_cast<PlanarReflectionComponent>(planarReflectionComponent));
       }
 
       return result;
@@ -305,170 +311,183 @@ namespace Game {
 
       std::string logCompType = "";
 
-      const auto& folderManagerInstance = IO::FolderManager::GetInstance();
+      const auto &folderManagerInstance = IO::FolderManager::GetInstance();
       switch (dataType)
       {
-         case SerializeDataBase::SerializeDataType::StaticMesh:
+      case SerializeDataBase::SerializeDataType::StaticMesh:
+      {
+         logCompType = "StaticMesh";
+
+         SerializeDataStaticMesh *meshData = static_cast<SerializeDataStaticMesh *>(data.get());
+
+         IMaterial *material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
+         const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(meshData->ModelName);
+         const auto &meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
+                                                                                 folderManagerInstance->GetRootPath() + osSpecificUrl, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+         result = EngineObjectCreator::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::SkeletalMesh:
+      {
+         logCompType = "SkeletalMesh";
+
+         SerializeDataSkeletalMesh *meshData = static_cast<SerializeDataSkeletalMesh *>(data.get());
+
+         IMaterial *material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
+         const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(meshData->ModelName);
+         const auto &meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
+                                                                                 folderManagerInstance->GetRootPath() + osSpecificUrl, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+         result = EngineObjectCreator::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::Skybox:
+      {
+         logCompType = "Skybox";
+         SerializeDataSkyboxComponent *skyboxData = static_cast<SerializeDataSkyboxComponent *>(data.get());
+
+         IMaterial *material = CreateMaterialFromSerializedData(skyboxData->Material);
+
+         const auto &skyboxCompData = EngineObjectCreator::CreateSkyboxComponentData(skyboxData->ComponentName, skyboxData->Scale, material);
+         result = EngineObjectCreator::CreateComponentByString("SkyboxComponent", skyboxCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::DirectionalLight:
+      {
+         logCompType = "DirectionalLight";
+         SerializeDataDirLightComponent *dirLightSerData = static_cast<SerializeDataDirLightComponent *>(data.get());
+
+         ProjectedShadowInfo *dirShadowProjInfo = nullptr;
+         if (dirLightSerData->bHasShadowMap)
          {
-            logCompType = "StaticMesh";
+            const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
 
-            SerializeDataStaticMesh* meshData = static_cast<SerializeDataStaticMesh*>(data.get());
-
-            IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
-
-            auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-               folderManagerInstance->GetRootPath() + meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
-            result = EngineObjectCreator::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
-            break;
+            const auto &rezolution = glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize);
+            const auto &directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
+            dirShadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
          }
-         case SerializeDataBase::SerializeDataType::SkeletalMesh:
+
+         const auto &dirLightCompData = EngineObjectCreator::CreateDirLightComponentData(dirLightSerData->ComponentName,
+                                                                                         dirLightSerData->Rotation, dirLightSerData->Direction,
+                                                                                         dirLightSerData->AmbientLight,
+                                                                                         dirLightSerData->DiffuseLight,
+                                                                                         dirLightSerData->SpecularLight, dirShadowProjInfo);
+
+         result = EngineObjectCreator::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::PointLight:
+      {
+         logCompType = "PointLight";
+         SerializeDataPointLightComponent *pointLightSerData = static_cast<SerializeDataPointLightComponent *>(data.get());
+
+         ProjectedShadowInfo *pointLightShadowProjInfo = nullptr;
+         if (pointLightSerData->bHasShadowMap)
          {
-            logCompType = "SkeletalMesh";
-
-            SerializeDataSkeletalMesh* meshData = static_cast<SerializeDataSkeletalMesh*>(data.get());
-
-            IMaterial* material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
-
-            auto meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-               folderManagerInstance->GetRootPath() + meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
-            result = EngineObjectCreator::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
-            break;
+            const auto &rezolution = glm::ivec2(pointLightSerData->ShadowMapSize, pointLightSerData->ShadowMapSize);
+            const auto &pointLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(rezolution);
+            pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTextureAtlasRequest);
          }
-         case SerializeDataBase::SerializeDataType::Skybox: {
-            logCompType = "Skybox";
-            SerializeDataSkyboxComponent* skyboxData = static_cast<SerializeDataSkyboxComponent*>(data.get());
 
-            IMaterial* material = CreateMaterialFromSerializedData(skyboxData->Material);
+         const auto &pointLightCompData = EngineObjectCreator::CreatePointLightComponentData(pointLightSerData->ComponentName,
+                                                                                             pointLightSerData->Translation,
+                                                                                             pointLightSerData->AmbientLight,
+                                                                                             pointLightSerData->DiffuseLight,
+                                                                                             pointLightSerData->SpecularLight,
+                                                                                             pointLightSerData->Attenuation,
+                                                                                             pointLightSerData->RadianceRadius,
+                                                                                             pointLightShadowProjInfo);
 
-            auto skyboxCompData = EngineObjectCreator::CreateSkyboxComponentData(skyboxData->ComponentName, skyboxData->Scale, material);
-            result = EngineObjectCreator::CreateComponentByString("SkyboxComponent", skyboxCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::DirectionalLight:
+         result = EngineObjectCreator::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::Spotlight:
+      {
+         logCompType = "Spotlight";
+         SerializeDataSpotlightComponent *spotlightSerData = static_cast<SerializeDataSpotlightComponent *>(data.get());
+
+         ProjectedShadowInfo *spotlightShadowProjInfo = nullptr;
+         if (spotlightSerData->bHasShadowMap)
          {
-            logCompType = "DirectionalLight";
-            SerializeDataDirLightComponent* dirLightSerData = static_cast<SerializeDataDirLightComponent*>(data.get());
-
-            ProjectedShadowInfo* dirShadowProjInfo = nullptr;
-            if (dirLightSerData->bHasShadowMap)
-            {
-               const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
-
-               auto rezolution = glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize);
-               auto directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
-               dirShadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTextureAtlasRequest, orthoHalfExtent);
-            }
-
-            auto dirLightCompData = EngineObjectCreator::CreateDirLightComponentData(dirLightSerData->ComponentName,
-               dirLightSerData->Rotation, dirLightSerData->Direction,
-               dirLightSerData->AmbientLight,
-               dirLightSerData->DiffuseLight,
-               dirLightSerData->SpecularLight, dirShadowProjInfo);
-
-
-            result = EngineObjectCreator::CreateComponentByString("DirectionalLightComponent", dirLightCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::PointLight:
-         {
-            logCompType = "PointLight";
-            SerializeDataPointLightComponent* pointLightSerData = static_cast<SerializeDataPointLightComponent*>(data.get());
-
-            ProjectedShadowInfo* pointLightShadowProjInfo = nullptr;
-            if (pointLightSerData->bHasShadowMap)
-            {
-               auto rezolution = glm::ivec2(pointLightSerData->ShadowMapSize, pointLightSerData->ShadowMapSize);
-               auto pointLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(rezolution);
-               pointLightShadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTextureAtlasRequest);
-            }
-
-            auto pointLightCompData = EngineObjectCreator::CreatePointLightComponentData(pointLightSerData->ComponentName,
-               pointLightSerData->Translation,
-               pointLightSerData->AmbientLight,
-               pointLightSerData->DiffuseLight,
-               pointLightSerData->SpecularLight,
-               pointLightSerData->Attenuation,
-               pointLightSerData->RadianceRadius,
-               pointLightShadowProjInfo);
-
-
-            result = EngineObjectCreator::CreateComponentByString("PointLightComponent", pointLightCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::Spotlight:
-         {
-            logCompType = "Spotlight";
-            SerializeDataSpotlightComponent* spotlightSerData = static_cast<SerializeDataSpotlightComponent*>(data.get());
-
-            ProjectedShadowInfo* spotlightShadowProjInfo = nullptr;
-            if (spotlightSerData->bHasShadowMap)
-            {
-               auto rezolution = glm::ivec2(spotlightSerData->ShadowMapSize, spotlightSerData->ShadowMapSize);
-               auto spotlightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
-               spotlightShadowProjInfo = new ProjectedPointLightShadowInfo(spotlightTextureAtlasRequest);
-            }
-
-            auto spotlightCompData = EngineObjectCreator::CreateSpotlightComponentData(spotlightSerData->ComponentName,
-               spotlightSerData->Translation,
-               spotlightSerData->Rotation,
-               spotlightSerData->AmbientLight,
-               spotlightSerData->DiffuseLight,
-               spotlightSerData->SpecularLight,
-               spotlightSerData->Attenuation,
-               spotlightSerData->RadianceRadius,
-               spotlightSerData->Cutoff,
-               spotlightShadowProjInfo);
-
-
-            result = EngineObjectCreator::CreateComponentByString("SpotlightComponent", spotlightCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::Input:
-         {
-            logCompType = "Input";
-            SerializeDataInputComponent* inputSerData = static_cast<SerializeDataInputComponent*>(data.get());
-            auto inputCompData = EngineObjectCreator::CreateInputComponentData(inputSerData->ComponentName);
-            result = EngineObjectCreator::CreateComponentByString("InputComponent", inputCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::CharacterMovement:
-         {
-            logCompType = "CharacterMovement";
-            SerializeDataCharacterMovementComponent* charMovSerData = static_cast<SerializeDataCharacterMovementComponent*>(data.get());
-            auto charMoveCompData = EngineObjectCreator::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
-            result = EngineObjectCreator::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::Movement:
-         {
-            logCompType = "Movement";
-            SerializeDataMovementComponent* movSerData = static_cast<SerializeDataMovementComponent*>(data.get());
-            auto moveCompData = EngineObjectCreator::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
-            result = EngineObjectCreator::CreateComponentByString("MovementComponent", moveCompData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::Physics:
-         {
-            logCompType = "Physics";
-            SerializeDataPhysicsComponent* serData = static_cast<SerializeDataPhysicsComponent*>(data.get());
-            auto physShape = CreatePhysicsShape(serData->PhysicsShape.get());
-            auto compController = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), physShape, serData->BodyType, serData->Mass);
-            auto compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
-            result = EngineObjectCreator::CreateComponentByString("PhysicsComponent", compData, scene);
-            break;
-         }
-         case SerializeDataBase::SerializeDataType::CharacterPhysics:
-         {
-            logCompType = "CharacterPhysics";
-            SerializeDataCharacterPhysicsComponent* serData = static_cast<SerializeDataCharacterPhysicsComponent*>(data.get());
-            auto compController = EngineObjectCreator::CreateDynamicCharacterController(scene->GetPhysicsWorld(), serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
-            auto compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
-            result = EngineObjectCreator::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
-            break;
+            const auto &rezolution = glm::ivec2(spotlightSerData->ShadowMapSize, spotlightSerData->ShadowMapSize);
+            const auto &spotlightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);
+            spotlightShadowProjInfo = new ProjectedPointLightShadowInfo(spotlightTextureAtlasRequest);
          }
 
-         default:
-            break;
+         const auto &spotlightCompData = EngineObjectCreator::CreateSpotlightComponentData(
+             spotlightSerData->ComponentName,
+             spotlightSerData->Translation,
+             spotlightSerData->Rotation,
+             spotlightSerData->AmbientLight,
+             spotlightSerData->DiffuseLight,
+             spotlightSerData->SpecularLight,
+             spotlightSerData->Attenuation,
+             spotlightSerData->RadianceRadius,
+             spotlightSerData->Cutoff,
+             spotlightShadowProjInfo);
+
+         result = EngineObjectCreator::CreateComponentByString("SpotlightComponent", spotlightCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::Input:
+      {
+         logCompType = "Input";
+         SerializeDataInputComponent *inputSerData = static_cast<SerializeDataInputComponent *>(data.get());
+         const auto &inputCompData = EngineObjectCreator::CreateInputComponentData(inputSerData->ComponentName);
+         result = EngineObjectCreator::CreateComponentByString("InputComponent", inputCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::CharacterMovement:
+      {
+         logCompType = "CharacterMovement";
+         SerializeDataCharacterMovementComponent *charMovSerData = static_cast<SerializeDataCharacterMovementComponent *>(data.get());
+         const auto &charMoveCompData = EngineObjectCreator::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
+         result = EngineObjectCreator::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::Movement:
+      {
+         logCompType = "Movement";
+         SerializeDataMovementComponent *movSerData = static_cast<SerializeDataMovementComponent *>(data.get());
+         const auto &moveCompData = EngineObjectCreator::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
+         result = EngineObjectCreator::CreateComponentByString("MovementComponent", moveCompData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::Physics:
+      {
+         logCompType = "Physics";
+         SerializeDataPhysicsComponent *serData = static_cast<SerializeDataPhysicsComponent *>(data.get());
+         auto physShape = CreatePhysicsShape(serData->PhysicsShape.get());
+         auto compController = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), physShape, serData->BodyType, serData->Mass);
+         const auto &compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
+         result = EngineObjectCreator::CreateComponentByString("PhysicsComponent", compData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::CharacterPhysics:
+      {
+         logCompType = "CharacterPhysics";
+         SerializeDataCharacterPhysicsComponent *serData = static_cast<SerializeDataCharacterPhysicsComponent *>(data.get());
+         auto compController = EngineObjectCreator::CreateDynamicCharacterController(scene->GetPhysicsWorld(), serData->CapsuleRadius, serData->CapsuleHeight, serData->Mass, serData->StepHeight);
+         const auto &compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
+         result = EngineObjectCreator::CreateComponentByString("CharacterPhysicsComponent", compData, scene);
+         break;
+      }
+      case SerializeDataBase::SerializeDataType::PlanarReflection:
+      {
+         logCompType = "PlanarReflection";
+         SerializeDataPlanarReflectionComponent *serData = static_cast<SerializeDataPlanarReflectionComponent *>(data.get());
+         auto camera = scene->GetCamera(serData->OwnerCameraName);
+         const auto viewPortInfoVec4 = serData->ViewPortInfo;
+         const auto &compData = EngineObjectCreator::CreatePlanarReflectionComponentData(serData->ComponentName, serData->Translation, serData->EulerAnglesRotation, serData->Scale,
+                                                                                         camera.get(), ViewPortInfo(viewPortInfoVec4.x, viewPortInfoVec4.y, viewPortInfoVec4.z, viewPortInfoVec4.w));
+         result = EngineObjectCreator::CreateComponentByString("PlanarReflectionComponent", compData, scene);
+         break;
+      }
+
+      default:
+      {
+         assert(false);
+         break;
+      }
       }
 
       TinyLogger::LogProxy::LogMessages("Deserialize component, type:", std::string(logCompType));
@@ -476,70 +495,73 @@ namespace Game {
       return result;
    }
 
-   PhysicsShapeBase* SerializeHelper::CreatePhysicsShape(SerializeDataPhysicsShape* serDataShape) {
-      PhysicsShapeBase* result = nullptr;
+   PhysicsShapeBase *SerializeHelper::CreatePhysicsShape(SerializeDataPhysicsShape *serDataShape)
+   {
+      PhysicsShapeBase *result = nullptr;
 
       switch (serDataShape->GetShapeProxyType())
       {
-         case BOX_SHAPE_PROXYTYPE:
-         {
-            auto shapeData = static_cast<SerializeDataBoxPhysicsShape*>(serDataShape);
-            result = new PhyBoxShape(shapeData->HalfExtent);
-            break;
-         }
-         case CAPSULE_SHAPE_PROXYTYPE:
-         {
-            auto shapeData = static_cast<SerializeDataCapsulePhysicsShape*>(serDataShape);
-            result = new PhyCapsuleShape(shapeData->Radius, shapeData->Height);
-            break;
-         }
-         case SPHERE_SHAPE_PROXYTYPE:
-         {
-            auto shapeData = static_cast<SerializeDataSpherePhysicsShape*>(serDataShape);
-            result = new PhySphereShape(shapeData->Radius);
-            break;
-         }
-         case COMPOUND_SHAPE_PROXYTYPE:
-         {
-            auto shapeData = static_cast<SerializeDataCompoundPhysicsShape*>(serDataShape);
-            const auto& childrenData = shapeData->ChildrenWithRotation;
+      case BOX_SHAPE_PROXYTYPE:
+      {
+         auto shapeData = static_cast<SerializeDataBoxPhysicsShape *>(serDataShape);
+         result = new PhyBoxShape(shapeData->HalfExtent);
+         break;
+      }
+      case CAPSULE_SHAPE_PROXYTYPE:
+      {
+         auto shapeData = static_cast<SerializeDataCapsulePhysicsShape *>(serDataShape);
+         result = new PhyCapsuleShape(shapeData->Radius, shapeData->Height);
+         break;
+      }
+      case SPHERE_SHAPE_PROXYTYPE:
+      {
+         auto shapeData = static_cast<SerializeDataSpherePhysicsShape *>(serDataShape);
+         result = new PhySphereShape(shapeData->Radius);
+         break;
+      }
+      case COMPOUND_SHAPE_PROXYTYPE:
+      {
+         auto shapeData = static_cast<SerializeDataCompoundPhysicsShape *>(serDataShape);
+         const auto &childrenData = shapeData->ChildrenWithRotation;
 
-            auto compoundPhyShape = new PhyCompoundShape();
- 
-            for (const auto& childData : childrenData)
-            {
-               const auto childPhysicsShape = CreatePhysicsShape(childData.Child.get());
-               compoundPhyShape->AddChildShape(NoScaleEulerRotationTransform(childData.ChildTransform.Translation, childData.ChildTransform.Rotation),
-                  childPhysicsShape);
-            }
+         auto compoundPhyShape = new PhyCompoundShape();
 
-            result = compoundPhyShape;
-
-            break;
+         for (const auto &childData : childrenData)
+         {
+            const auto childPhysicsShape = CreatePhysicsShape(childData.Child.get());
+            compoundPhyShape->AddChildShape(NoScaleEulerRotationTransform(childData.ChildTransform.Translation, childData.ChildTransform.Rotation),
+                                            childPhysicsShape);
          }
-         default:
-            assert(false);
-            break;
+
+         result = compoundPhyShape;
+
+         break;
+      }
+      default:
+         assert(false);
+         break;
       }
 
       return result;
    }
 
-   IMaterial* SerializeHelper::CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData) {
-      IMaterial* material = new IMaterial(materialData.MaterialName, materialData.MaterialShaderName);
+   IMaterial *SerializeHelper::CreateMaterialFromSerializedData(const SerializeDataMaterial &materialData)
+   {
+      IMaterial *material = new IMaterial(materialData.MaterialName, materialData.MaterialShaderName);
 
-      for (const auto& property : materialData.Properties)
+      for (const auto &property : materialData.Properties)
       {
          if (property.PropertyType == "texture" && property.Value != "")
          {
             material->PushMaterialProperty(std::make_shared<TextureMaterialProperty>(property.UniformName));
-            const std::vector<std::string>& pathToTextures = Split(property.Value, ',');
+            const std::vector<std::string> &pathToTextures = Split(property.Value, ',');
             std::shared_ptr<ITexture> texture;
 
             std::string resultPathToAllTextures;
             for (size_t i = 0; i < pathToTextures.size(); ++i)
             {
-               resultPathToAllTextures += IO::FolderManager::GetInstance()->GetRootPath() + pathToTextures[i];
+               const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(pathToTextures[i]);
+               resultPathToAllTextures += IO::FolderManager::GetInstance()->GetRootPath() + osSpecificUrl;
 
                if (i + 1 < pathToTextures.size())
                {

@@ -15,8 +15,8 @@
 namespace Game
 {
 
-   Level::Level(InterThreadCommunicationMgr& interThreadMgr)
-      : mScene(std::make_shared<Scene>(interThreadMgr))
+   Level::Level(InterThreadCommunicationMgr &interThreadMgr)
+       : mScene(std::make_shared<Scene>(interThreadMgr))
    {
       auto sharedFromMePtr = mScene->GetSharedFromMe();
       mScene->SetMeSharedPtr(sharedFromMePtr);
@@ -59,30 +59,31 @@ namespace Game
    {
    }
 
-   void Level::SerializeLevel(const std::string& pathToFolder) {
+   void Level::SerializeLevel(const std::string &pathToFolder)
+   {
 
       std::ofstream os(pathToFolder);
       cereal::XMLOutputArchive oarchive(os);
 
       SerializeDataContainer container;
 
-      for (auto& actor : mScene->GetActors())
+      for (auto &actor : mScene->GetActors())
       {
          actor->CollectDataForSerialization(container);
       }
 
-      for (auto& camera : mScene->GetActiveCameras())
+      for (auto &camera : mScene->GetActiveCameras())
       {
          camera->CollectDataForSerialization(container);
       }
 
       container.PlayerControllerData =
-         std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
+          std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
 
       oarchive(container);
    }
 
-   void Level::DeserializeLevel(const std::string& pathToFile)
+   void Level::DeserializeLevel(const std::string &pathToFile)
    {
       std::ifstream is(pathToFile);
       cereal::XMLInputArchive iarchive(is);
@@ -92,11 +93,11 @@ namespace Game
       InstantiateLevelFromSerializedContainer(container);
    }
 
-   void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer& container)
+   void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
    {
       TinyLogger::LogProxy::LogMessages("InstantiateLevelFromSerializedContainer");
 
-      for (const auto& cameraData : container.Cameras)
+      for (const auto &cameraData : container.Cameras)
       {
          bool outIsMainSceneCamera = false;
          auto camera = SerializeHelper::CreateCameraFromSerializedData(mScene, cameraData, outIsMainSceneCamera);
@@ -109,17 +110,23 @@ namespace Game
          {
             mScene->RegisterCamera(camera);
          }
+
+         // Deserialize planar reflection component
+         if (camera && cameraData->mPlanarReflectionComponentData)
+         {
+            SerializeHelper::CreateComponentFromSerializedData(mScene, cameraData->mPlanarReflectionComponentData);
+         }
       }
 
-      for (const auto& actorData : container.Actors)
+      for (const auto &actorData : container.Actors)
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
          TinyLogger::LogProxy::LogMessages("Actor name: ", actor->GetName());
 
-         for (const auto& componentData : actorData.ComponentsData)
+         for (const auto &componentData : actorData.ComponentsData)
          {
-            auto component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
+            const auto& component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
             TinyLogger::LogProxy::LogMessages("Component name: ", component->GetGameObjectName());
 
@@ -136,7 +143,7 @@ namespace Game
       }
 
       // deserialize tweener
-      for (const auto& actorData : container.Actors)
+      for (const auto &actorData : container.Actors)
       {
          if (actorData.TweenerData)
          {
@@ -144,17 +151,15 @@ namespace Game
 
             std::shared_ptr<Tweener> actorTweener = SerializeHelper::CreateTweenerFromSerializedData(data);
 
-            for (const auto& bindingData : data->Bindings)
+            for (const auto &bindingData : data->Bindings)
             {
                auto gameObject = mScene->GetGameObjectByName(bindingData.GameObjectName);
-               const auto& binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
+               const auto &binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
                BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
             }
 
             auto actorIt = std::find_if(mScene->GetActors().begin(), mScene->GetActors().end(), [&](const std::shared_ptr<Actor> actor)
-            {
-               return actor->GetGameObjectName() == actorData.ActorName;
-            });
+                                        { return actor->GetGameObjectName() == actorData.ActorName; });
 
             assert(actorIt != mScene->GetActors().end());
 
@@ -170,5 +175,3 @@ namespace Game
       mScene->Tick_GameThread(deltaTime);
    }
 }
-
-

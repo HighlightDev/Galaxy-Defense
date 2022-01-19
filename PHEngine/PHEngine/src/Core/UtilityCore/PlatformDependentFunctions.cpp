@@ -63,8 +63,8 @@ namespace EngineUtility
 			assert(std::string::npos != indexToCurrentDir);
 			sPATH_TO_EXE = exeFilePathStr.substr(0, indexToCurrentDir);
 #elif __linux__
-			const std::string& fullPath = get_module_file_name();
-			const auto indexOfExecutable =  LastIndexOf(fullPath, "/");
+			const std::string &fullPath = get_module_file_name();
+			const auto indexOfExecutable = LastIndexOf(fullPath, "/");
 			assert(indexOfExecutable != std::string::npos);
 			sPATH_TO_EXE = fullPath.substr(0, indexOfExecutable + 1);
 #endif
@@ -84,7 +84,7 @@ namespace EngineUtility
 		size_t relativeOffset = 0;
 		const std::string &lookForGoBack = "..";
 
-				size_t new_offset = 0;
+		size_t new_offset = 0;
 		do
 		{
 			new_offset = IndexOf(relativePath, lookForGoBack, relativeOffset);
@@ -95,7 +95,7 @@ namespace EngineUtility
 			}
 		} while (new_offset != std::string::npos);
 
-		const std::string& relativeTrimmedGoBack = relativePath.substr(relativeOffset);
+		const std::string &relativeTrimmedGoBack = relativePath.substr(relativeOffset);
 
 		while (countOfGoBack != 0)
 		{
@@ -107,5 +107,47 @@ namespace EngineUtility
 		absolutePath += relativeTrimmedGoBack;
 
 		return absolutePath;
+	}
+
+	std::string FromOsSpecificUrlToGeneral(const std::string &path)
+	{
+		std::string result = "";
+		const auto &splitPathBySlash = Split(path, SLASH);
+		for (auto i = 0; i < splitPathBySlash.size(); ++i)
+		{
+			if (!splitPathBySlash[i].empty())
+			{
+				if ((i + 1) < splitPathBySlash.size())
+				{
+					result += splitPathBySlash[i] + GENERAL_SLASH;
+				}
+				else
+				{
+					result += splitPathBySlash[i];
+				}
+			}
+		}
+		return result;
+	}
+
+	std::string FromGeneralUrlToOsSPecific(const std::string &path)
+	{
+		std::string result = "";
+		const auto &splitPathBySlash = Split(path, GENERAL_SLASH);
+		for (auto i = 0; i < splitPathBySlash.size(); ++i)
+		{
+			if (!splitPathBySlash[i].empty())
+			{
+				if ((i + 1) < splitPathBySlash.size())
+				{
+					result += splitPathBySlash[i] + SLASH;
+				}
+				else
+				{
+					result += splitPathBySlash[i];
+				}
+			}
+		}
+		return result;
 	}
 }
