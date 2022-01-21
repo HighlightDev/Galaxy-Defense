@@ -1,10 +1,14 @@
 #include "ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/IoCore/FolderManager.h"
 #include "AsyncDataProxy.h"
 #include "Core/IoCore/ResourceExtensionsInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/AsyncJob.h"
 
 #include <functional>
+
+#define GET_REL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(fileName))
+#define GET_FUL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetPathToExeFile() + GET_REL_PATH_TO_FILE(fileName))
 
 namespace IO {
 
@@ -44,20 +48,21 @@ namespace IO {
    void ResourceMap::AllocateAsync(const std::string& key) {
 
       const RESOURCE_TYPE resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
+      const std::string& fileFullPath = GET_FUL_PATH_TO_FILE(key);
 
       switch (resType)
       {
          case RESOURCE_TYPE::TEXTURE:
          {
             AsyncJob<Resource*, const std::string&> job(std::move(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1)));
-            std::future<Resource*> futureResult = job.StartAsync(key);
+            std::future<Resource*> futureResult = job.StartAsync(fileFullPath);
             mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
             break;
          }
          case RESOURCE_TYPE::MESH:
          {
             AsyncJob<Resource*, const std::string&> job(std::move(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1)));
-            std::future<Resource*> futureResult = job.StartAsync(key);
+            std::future<Resource*> futureResult = job.StartAsync(fileFullPath);
             mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
             break;
          }

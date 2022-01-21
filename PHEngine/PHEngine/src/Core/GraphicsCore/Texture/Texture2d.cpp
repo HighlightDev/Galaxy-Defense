@@ -11,21 +11,19 @@ using namespace IO;
 
 namespace Graphics
 {
-	namespace Texture
-	{
+   namespace Texture
+   {
 
-		Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH)
-			: ITexture()
-			, m_mipmapState(nullptr)
-		{
-			m_texDescriptor = texDescriptor;
-			m_textureParams.TexBufferWidth = texBufferWH.x;
-			m_textureParams.TexBufferHeight = texBufferWH.y;
-		}
+      Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH)
+          : ITexture(), m_mipmapState(nullptr)
+      {
+         m_texDescriptor = texDescriptor;
+         m_textureParams.TexBufferWidth = texBufferWH.x;
+         m_textureParams.TexBufferHeight = texBufferWH.y;
+      }
 
-      Texture2d::Texture2d(const std::string& pathToTex, ITextureMipMapState* mipmapState)
-         : ITexture()
-         , m_mipmapState(mipmapState)
+      Texture2d::Texture2d(const std::string &pathToTex, ITextureMipMapState *mipmapState)
+          : ITexture(), m_mipmapState(mipmapState)
       {
          m_texDescriptor = GetTextureResource(pathToTex);
       }
@@ -45,19 +43,17 @@ namespace Graphics
          glBindTexture(GL_TEXTURE_2D, 0);
       }
 
-      Texture2d::Texture2d(const TexParams& textureParameters)
-         : ITexture()
-         , m_textureParams(textureParameters)
-         , m_mipmapState(nullptr)
+      Texture2d::Texture2d(const TexParams &textureParameters)
+          : ITexture(), m_textureParams(textureParameters), m_mipmapState(nullptr)
       {
          InitEmptyTexture();
       }
 
-		Texture2d::~Texture2d()
-		{
-			if (m_mipmapState)
-				delete m_mipmapState;
-		}
+      Texture2d::~Texture2d()
+      {
+         if (m_mipmapState)
+            delete m_mipmapState;
+      }
 
       void Texture2d::BindTexture(uint32_t textureSlot) const
       {
@@ -71,15 +67,15 @@ namespace Graphics
          glBindTexture(m_textureParams.TexTarget, 0);
       }
 
-		uint32_t Texture2d::GetTextureResource(const std::string& pathToTex, int32_t texWrapMode)
-		{
-         Resource* outResource;
-         bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTex);
+      uint32_t Texture2d::GetTextureResource(const std::string &pathToTex, int32_t texWrapMode)
+      {
+         Resource *outResource;
+         const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTex);
 
          assert(bResourceValid);
 
-         TextureResource* texResource = static_cast<TextureResource*>(outResource);
-       
+         TextureResource *texResource = static_cast<TextureResource *>(outResource);
+
          m_textureParams.TexBufferWidth = texResource->TexInfo.Width;
          m_textureParams.TexBufferHeight = texResource->TexInfo.Height;
 
@@ -94,41 +90,41 @@ namespace Graphics
             m_textureParams.TexPixelInternalFormat = GL_RGBA;
          }
 
-			return CreateTexture(texResource->DATA);
-		}
+         return CreateTexture(texResource->DATA);
+      }
 
-		uint32_t Texture2d::CreateTexture(const void* pixelsData)
-		{
-			uint32_t texObject = -1;
-			int32_t& textureTarget = m_textureParams.TexTarget;
+      uint32_t Texture2d::CreateTexture(const void *pixelsData)
+      {
+         uint32_t texObject = -1;
+         int32_t &textureTarget = m_textureParams.TexTarget;
 
-			glGenTextures(1, &texObject);
+         glGenTextures(1, &texObject);
 
-			glBindTexture(textureTarget, texObject);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+         glBindTexture(textureTarget, texObject);
+         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-			glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, m_textureParams.TexWrapMode);
-			glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, m_textureParams.TexWrapMode);
-			glTexParameteri(textureTarget, GL_TEXTURE_MAG_FILTER, m_textureParams.TexMagFilter);
-			glTexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, m_textureParams.TexMinFilter);
-			if (m_mipmapState)
-			{
-				m_mipmapState->ExecuteTextureSampleFilteringInstructions();
-			}
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+         glTexParameteri(textureTarget, GL_TEXTURE_WRAP_S, m_textureParams.TexWrapMode);
+         glTexParameteri(textureTarget, GL_TEXTURE_WRAP_T, m_textureParams.TexWrapMode);
+         glTexParameteri(textureTarget, GL_TEXTURE_MAG_FILTER, m_textureParams.TexMagFilter);
+         glTexParameteri(textureTarget, GL_TEXTURE_MIN_FILTER, m_textureParams.TexMinFilter);
+         if (m_mipmapState)
+         {
+            m_mipmapState->ExecuteTextureSampleFilteringInstructions();
+         }
+         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-			glTexImage2D(textureTarget, 0, m_textureParams.TexPixelInternalFormat,
-				m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight, 0, m_textureParams.TexPixelFormat, m_textureParams.TexPixelType, pixelsData);
+         glTexImage2D(textureTarget, 0, m_textureParams.TexPixelInternalFormat,
+                      m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight, 0, m_textureParams.TexPixelFormat, m_textureParams.TexPixelType, pixelsData);
 
-			glBindTexture(textureTarget, 0);
+         glBindTexture(textureTarget, 0);
 
-			return texObject;
-		}
+         return texObject;
+      }
 
-		void Texture2d::CleanUp()
-		{
-			glDeleteTextures(1, &m_texDescriptor);
-		}
+      void Texture2d::CleanUp()
+      {
+         glDeleteTextures(1, &m_texDescriptor);
+      }
 
       float Texture2d::GetTextureAspectRatio() const
       {
@@ -139,5 +135,5 @@ namespace Graphics
       {
          return TextureType::TEXTURE_2D;
       }
-	}
+   }
 }

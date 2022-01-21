@@ -139,10 +139,9 @@ namespace Game
       return transition;
    }
 
-   std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string &relPathTweener)
+   std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string &tweenerName)
    {
-      const std::string &absolutePath = IO::FolderManager::GetInstance()->GetRootPath() +
-                                        EngineUtility::FromGeneralUrlToOsSPecific(relPathTweener);
+      const std::string &absolutePath = IO::FolderManager::GetInstance()->GetTweenerPath() + tweenerName;
 
       FileFacade fileWorker(absolutePath);
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
@@ -200,7 +199,7 @@ namespace Game
          }
       }
 
-      return BuildTweener(relPathTweener);
+      return BuildTweener(tweenerName);
    }
 
    std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding &binding)

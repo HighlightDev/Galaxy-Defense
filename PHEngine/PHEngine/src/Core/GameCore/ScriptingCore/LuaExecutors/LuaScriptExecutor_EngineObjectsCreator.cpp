@@ -187,8 +187,9 @@ namespace Game
    /* -------------------  Create mesh component data ----------------------------*/
    ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *> &meshComponentData)
    {
+      const auto &meshModelName = std::get<1>(meshComponentData);
       auto dataPtr = EngineObjectCreator::CreateMeshComponentData(std::get<0>(meshComponentData),
-                                                                  IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<1>(meshComponentData)), std::get<2>(meshComponentData),
+                                                                  meshModelName, std::get<2>(meshComponentData),
                                                                   std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
 
       mAllocatedComponentData.push_back(dataPtr);
@@ -327,30 +328,17 @@ namespace Game
    IMaterial *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>> &buildMaterial)
    {
       MaterialParser materialParser;
-      return materialParser.ParseMaterialDescriptor(IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(std::get<0>(buildMaterial)));
+      const std::string& materialName = std::get<0>(buildMaterial);
+      return materialParser.ParseMaterialDescriptor(materialName);
    }
 
    /* -------------------  Set texture --------------------*/
    void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<IMaterial *, std::string, std::string> &setTextureToMaterial)
    {
       IMaterial *material = std::get<0>(setTextureToMaterial);
-
-      const std::vector<std::string> &pathToTextures = Split(std::get<1>(setTextureToMaterial), ',');
-      std::shared_ptr<ITexture> texture;
-
-      std::string resultPathToAllTextures;
-      for (size_t i = 0; i < pathToTextures.size(); ++i)
-      {
-         resultPathToAllTextures += IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(pathToTextures[i]);
-
-         if (i + 1 < pathToTextures.size())
-         {
-            resultPathToAllTextures += ",";
-         }
-      }
-
+      const std::string& textureNames = std::get<1>(setTextureToMaterial);
       const std::string &propertyName = std::get<2>(setTextureToMaterial);
-      texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
+      const auto& texture = TexturePool::GetInstance()->GetOrAllocateResource(textureNames);
       MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, texture);
    }
 
@@ -467,7 +455,8 @@ namespace Game
       Tweener *createdTweener = nullptr;
 
       TweenerParser fsmParser;
-      auto tweener = fsmParser.ParseTweenerDescriptor(IO::FolderManager::GetInstance()->GetTweenerPath() + std::get<1>(tweenerData));
+      const auto &tweener = fsmParser.ParseTweenerDescriptor(
+          std::get<1>(tweenerData));
       Actor *actor = std::get<0>(tweenerData);
 
       assert(actor && tweener);

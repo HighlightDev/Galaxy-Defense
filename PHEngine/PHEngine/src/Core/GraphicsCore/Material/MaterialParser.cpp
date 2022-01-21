@@ -1,6 +1,7 @@
 #include "MaterialParser.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/IoCore/FileFacade.h"
+#include "Core/IoCore/FolderManager.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
@@ -90,9 +91,9 @@ namespace Graphics
       return CreatePropertyByType(propertyType, propertyName);
    }
 
-   IMaterial* MaterialParser::ParseMaterialDescriptor(const std::string& relPathToMaterial)
+   IMaterial* MaterialParser::ParseMaterialDescriptor(const std::string& materialFileName)
    {
-      const std::string& absolutePath = relPathToMaterial;
+      const std::string& absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();

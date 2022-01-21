@@ -17,7 +17,7 @@ namespace Graphics
 
    public: 
 
-      IMaterial* ParseMaterialDescriptor(const std::string& relPathToMaterial);
+      IMaterial* ParseMaterialDescriptor(const std::string& materialFileName);
 
    private:
 

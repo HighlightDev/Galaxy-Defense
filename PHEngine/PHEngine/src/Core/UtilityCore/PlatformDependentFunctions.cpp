@@ -130,7 +130,7 @@ namespace EngineUtility
 		return result;
 	}
 
-	std::string FromGeneralUrlToOsSPecific(const std::string &path)
+	std::string FromGeneralUrlToOsSpecific(const std::string &path)
 	{
 		std::string result = "";
 		const auto &splitPathBySlash = Split(path, GENERAL_SLASH);

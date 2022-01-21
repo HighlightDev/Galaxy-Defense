@@ -321,9 +321,8 @@ namespace Game
          SerializeDataStaticMesh *meshData = static_cast<SerializeDataStaticMesh *>(data.get());
 
          IMaterial *material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
-         const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(meshData->ModelName);
          const auto &meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-                                                                                 folderManagerInstance->GetRootPath() + osSpecificUrl, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+                                                                                 meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
          result = EngineObjectCreator::CreateComponentByString("StaticMeshComponent", meshCompData, scene);
          break;
       }
@@ -334,9 +333,8 @@ namespace Game
          SerializeDataSkeletalMesh *meshData = static_cast<SerializeDataSkeletalMesh *>(data.get());
 
          IMaterial *material = CreateMaterialFromSerializedData(meshData->MeshMaterial);
-         const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(meshData->ModelName);
          const auto &meshCompData = EngineObjectCreator::CreateMeshComponentData(meshData->ComponentName,
-                                                                                 folderManagerInstance->GetRootPath() + osSpecificUrl, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
+                                                                                 meshData->ModelName, meshData->Translation, meshData->Rotation, meshData->Scale, meshData->LuaScriptName, material);
          result = EngineObjectCreator::CreateComponentByString("SkeletalMeshComponent", meshCompData, scene);
          break;
       }
@@ -554,21 +552,7 @@ namespace Game
          if (property.PropertyType == "texture" && property.Value != "")
          {
             material->PushMaterialProperty(std::make_shared<TextureMaterialProperty>(property.UniformName));
-            const std::vector<std::string> &pathToTextures = Split(property.Value, ',');
-            std::shared_ptr<ITexture> texture;
-
-            std::string resultPathToAllTextures;
-            for (size_t i = 0; i < pathToTextures.size(); ++i)
-            {
-               const auto &osSpecificUrl = EngineUtility::FromGeneralUrlToOsSPecific(pathToTextures[i]);
-               resultPathToAllTextures += IO::FolderManager::GetInstance()->GetRootPath() + osSpecificUrl;
-
-               if (i + 1 < pathToTextures.size())
-               {
-                  resultPathToAllTextures += ",";
-               }
-            }
-            texture = TexturePool::GetInstance()->GetOrAllocateResource(resultPathToAllTextures);
+            const auto& texture = TexturePool::GetInstance()->GetOrAllocateResource(property.Value);
 
             MaterialPropertySetter::SetMaterialPropertyValue(material, property.UniformName, texture);
          }

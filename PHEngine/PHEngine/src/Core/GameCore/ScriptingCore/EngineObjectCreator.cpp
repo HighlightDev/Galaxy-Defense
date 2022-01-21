@@ -45,10 +45,10 @@ namespace Game
       return new DirectionalLightComponentData(gameObjectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
    }
 
-   ComponentData *EngineObjectCreator::CreateMeshComponentData(const std::string &gameObjectName, const std::string &pathToMesh, const glm::vec3 &translation,
+   ComponentData *EngineObjectCreator::CreateMeshComponentData(const std::string &gameObjectName, const std::string &relativePathToMesh, const glm::vec3 &translation,
                                                                const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material)
    {
-      return new MeshComponentData(gameObjectName, pathToMesh, translation, rotation, scale, luaPathToFile, material);
+      return new MeshComponentData(gameObjectName, relativePathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
    ComponentData *EngineObjectCreator::CreateSimpleMeshComponentData(const std::string &gameObjectName, const std::string &simpleMeshType, const glm::vec3 &translation,
