@@ -2560,6 +2560,9 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Core\CommonCore\StringHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Core\CMakeLists.txt" />

@@ -93,6 +93,7 @@
       <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UndefinePreprocessorDefinitions>NO_LIT;</UndefinePreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -105,6 +106,7 @@
       <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UndefinePreprocessorDefinitions>NO_LIT;</UndefinePreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -862,6 +864,7 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\CommonCore\StringHash.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShaderModule.cpp" />
