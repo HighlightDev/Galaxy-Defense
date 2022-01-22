@@ -55,19 +55,26 @@ namespace IO
 	std::string FolderManager::GetPathToExeFile() const
 	{
 		assert(m_pathToExe != ""); // if assert has fired, maybe you forget to invoke BuildSystemPathToFolders
-		return m_pathToExe;
+#ifdef _WIN32
+      return m_pathToExe + SLASH;
+#elif __linux__
+      return m_pathToExe;
+#endif
 	}
 
 	std::string FolderManager::GetResPath() const
 	{
-		return GetPathToExeFile() + "res" + SLASH;
+#ifdef _WIN32
+		return GetPathToExeFile() + SLASH + "res" + SLASH;
+#elif __linux__
+      return GetPathToExeFile() + "res" + SLASH;
+#endif
 	}
 
 	std::string FolderManager::GetShortResPath() const
 	{
-		std::string res = "res";
-		res += SLASH;
-		return res;
+      std::string result = "res";
+      return result + SLASH;
 	}
 
 	std::string FolderManager::GetShortModelPath() const
@@ -127,7 +134,7 @@ namespace IO
 
 	std::string FolderManager::GetShortSpecularMapPath() const
 	{
-		return GetShortTexturesPath() + "normalmap" + SLASH;
+		return GetShortTexturesPath() + "specularmap" + SLASH;
 	}
 
 	std::string FolderManager::GetShortAlbedoTexturePath() const

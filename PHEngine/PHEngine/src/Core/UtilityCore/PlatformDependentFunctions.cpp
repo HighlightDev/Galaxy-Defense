@@ -113,7 +113,7 @@ namespace EngineUtility
 	{
 		std::string result = "";
 		const auto &splitPathBySlash = Split(path, SLASH);
-		for (auto i = 0; i < splitPathBySlash.size(); ++i)
+		for (size_t i = 0; i < splitPathBySlash.size(); ++i)
 		{
 			if (!splitPathBySlash[i].empty())
 			{
@@ -134,7 +134,7 @@ namespace EngineUtility
 	{
 		std::string result = "";
 		const auto &splitPathBySlash = Split(path, GENERAL_SLASH);
-		for (auto i = 0; i < splitPathBySlash.size(); ++i)
+		for (size_t i = 0; i < splitPathBySlash.size(); ++i)
 		{
 			if (!splitPathBySlash[i].empty())
 			{

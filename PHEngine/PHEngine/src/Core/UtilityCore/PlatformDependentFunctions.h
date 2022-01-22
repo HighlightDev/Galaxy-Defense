@@ -7,7 +7,7 @@
 #include <wchar.h>
 #include <psapi.h>
 #pragma comment(lib, "Psapi.lib")
-#define SLASH '\\'
+constexpr auto SLASH = '\\';
 #elif __linux__
 #include <filesystem>
 #define SLASH '/'
