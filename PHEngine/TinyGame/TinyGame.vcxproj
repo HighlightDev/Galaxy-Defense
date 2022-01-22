@@ -95,12 +95,13 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;glfw3dll.lib;Logger.lib;PHEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -113,12 +114,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;glfw3dll.lib;Logger.lib;PHEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
