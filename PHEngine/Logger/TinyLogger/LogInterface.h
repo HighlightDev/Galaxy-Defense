@@ -115,7 +115,11 @@ namespace TinyLogger
       {
          static std::hash<std::thread::id> hasher;
          const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-         std::string timeFileWasChanged = std::asctime(std::localtime(&currentTime));
+         char str[26];
+         struct tm timeinfo;
+         localtime_s(&timeinfo, &currentTime);
+         asctime_s(str, sizeof str, &timeinfo);
+         std::string timeFileWasChanged = str;
          timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
          
          auto argument = CompressMessage<LogArg>(std::forward<LogArg>(arg));

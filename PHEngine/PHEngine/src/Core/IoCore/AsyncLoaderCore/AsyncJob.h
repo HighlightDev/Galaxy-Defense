@@ -22,4 +22,10 @@ public:
       auto result = std::async(std::launch::async, mJobImplementation, std::forward<InputArgs>(args)...);
       return result;
    }
+
+   std::future<ReturnType> StartDeferred(InputArgs&&... args)
+   {
+      auto result = std::async(std::launch::deferred, mJobImplementation, std::forward<InputArgs>(args)...);
+      return result;
+   }
 };

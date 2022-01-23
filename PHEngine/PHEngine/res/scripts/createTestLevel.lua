@@ -1,5 +1,38 @@
 function CreateTestLevel(host)
 	
+	_LoadResourcesAsync(host, 
+	[[brick_mid.png
+	,brick_nm_mid.png
+	,city_house_2_Col.png
+	,city_house_2_Nor.png
+	,city_house_2_Spec.png
+	,diffuse.png
+	,dummy_nm.png
+	,dayRight.png
+	,dayLeft.png
+	,dayTop.png
+	,dayBottom.png
+	,dayBack.png
+	,dayFront.png
+	,nightRight.png
+	,nightLeft.png
+	,nightTop.png
+	,nightBottom.png
+	,nightBack.png
+	,nightFront.png
+	,water_dudv.png
+	,Brick_Medieval_albedo.png
+	,Brick_Medieval_normal.png
+	,Brick_Medieval_roughness.png
+	,Brick_Medieval_metallic.png
+	,dummy_metallic_roughness.png
+	,playerCube.obj
+	,witcher.obj
+	,City_House_2_BI.obj
+	,model.dae
+	,player_walk.fbx
+	]])
+	 
 	local aTra = { x = 0, y = 0, z = 0 }
 	local aRot = { x = 0, y = 0, z = 0 }
 	local aSca = { x = 1, y = 1, z = 1 }

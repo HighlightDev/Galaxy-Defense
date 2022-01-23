@@ -9,6 +9,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
 using namespace Graphics;
 
@@ -33,6 +34,8 @@ namespace Game
       LuaScriptExecutor_EngineBase::RegisterCallbacks();
 
       using LuaExecutor_t = LuaScriptExecutor_EngineObjectsCreator;
+
+      LuaRegisterCallback<LuaExecutor_t, void(LuaArgDummyPlaceholder<>, std::string)>::Register(mLuaInstance, "_LoadResourcesAsync");
 
       LuaRegisterCallback<LuaExecutor_t, Component *(std::string, ComponentData *)>::Register(mLuaInstance, "_CreateComponent");
       LuaRegisterCallback<LuaExecutor_t, Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
@@ -84,6 +87,23 @@ namespace Game
    void LuaScriptExecutor_EngineObjectsCreator::RunScript()
    {
       LuaScriptExecutor_EngineBase::RunScript();
+   }
+
+   /* -------------------  Load asynchronously resources by names ----------------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string>& asyncLoadNamesData)
+   {
+      const std::string& resourcesNamesStr = std::get<1>(asyncLoadNamesData);
+      assert(!resourcesNamesStr.empty());
+
+      const std::vector<std::string>& resourceNames = Split(resourcesNamesStr, ',');
+
+      for (std::string resName : resourceNames)
+      {
+         resName = TrimEnd(resName);
+         ResourceMap::GetInstance()->AllocateAsync(resName);
+      }
+
+      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
    }
 
    /* -------------------  Create Actor ----------------------------*/

@@ -11,7 +11,7 @@ namespace IO
 		: mFilesPathMap(), m_pathToExe("")
 	{
 	}
-
+      
 	FolderManager::~FolderManager()
 	{
 	}

@@ -60,11 +60,11 @@ namespace Labyrinth
    {
       Base::PreLevelInit();
 
-      const auto &folderManager = IO::FolderManager::GetInstance();
+     // const auto &folderManager = IO::FolderManager::GetInstance();
 
 #define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
 
-      ALLOC_RES_ASYNC("brick_mid.png");
+      /*ALLOC_RES_ASYNC("brick_mid.png");
       ALLOC_RES_ASYNC("brick_nm_mid.png");
       ALLOC_RES_ASYNC("city_house_2_Col.png");
       ALLOC_RES_ASYNC("city_house_2_Nor.png");
@@ -95,7 +95,7 @@ namespace Labyrinth
       ALLOC_RES_ASYNC("witcher.obj");
       ALLOC_RES_ASYNC("City_House_2_BI.obj");
       ALLOC_RES_ASYNC("model.dae");
-      ALLOC_RES_ASYNC("player_walk.fbx");
+      ALLOC_RES_ASYNC("player_walk.fbx");*/
       // ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
 
 #undef ALLOC_RES_ASYNC
@@ -117,7 +117,7 @@ namespace Labyrinth
 
    void SimpleLevel::LoadLevel()
    {
-      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+      //ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
 #if 0
       DeserializeLevel("test_serialize.xml");

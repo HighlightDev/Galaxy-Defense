@@ -33,6 +33,9 @@ namespace Game
       virtual void RunScript() override;
 
       // Common callbacks
+      /* -------------------  Load asynchronously resources by names ----------------------------*/
+      void ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string>& asyncLoadNamesData);
+
       /* -------------------  Create Actor ----------------------------*/
       Actor* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>& actorData);
 
