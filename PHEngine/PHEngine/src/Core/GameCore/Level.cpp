@@ -118,6 +118,14 @@ namespace Game
    {
       TinyLogger::LogProxy::LogMessages("InstantiateLevelFromSerializedContainer");
 
+      const std::vector<std::string> &resourceNames = SerializeHelper::GetSerializedAllocatedResources(container.Resources);
+      for (const auto &resName : resourceNames)
+      {
+         ResourceMap::GetInstance()->AllocateAsync(resName);
+      }
+
+      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+
       for (const auto &cameraData : container.Cameras)
       {
          bool outIsMainSceneCamera = false;

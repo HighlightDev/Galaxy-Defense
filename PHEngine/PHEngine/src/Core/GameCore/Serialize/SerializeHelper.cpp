@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
@@ -552,7 +553,7 @@ namespace Game
          if (property.PropertyType == "texture" && property.Value != "")
          {
             material->PushMaterialProperty(std::make_shared<TextureMaterialProperty>(property.UniformName));
-            const auto& texture = TexturePool::GetInstance()->GetOrAllocateResource(property.Value);
+            const auto &texture = TexturePool::GetInstance()->GetOrAllocateResource(property.Value);
 
             MaterialPropertySetter::SetMaterialPropertyValue(material, property.UniformName, texture);
          }
@@ -564,5 +565,28 @@ namespace Game
       }
 
       return material;
+   }
+
+   std::vector<std::string> SerializeHelper::GetSerializedAllocatedResources(const SerializeAllocatedResources &allocatedResources)
+   {
+      std::vector<std::string> resourceNames;
+      resourceNames.reserve(allocatedResources.ResourceNames.size());
+      for (const auto &name : allocatedResources.ResourceNames)
+      {
+         if (std::string::npos != EngineUtility::IndexOf(name, ","))
+         {
+            const std::vector<std::string> &splitedNames = EngineUtility::Split(name, ',');
+            for (std::string splitName : splitedNames)
+            {
+               splitName = EngineUtility::TrimEnd(splitName);
+               resourceNames.emplace_back(std::move(splitName));
+            }
+         }
+         else
+         {
+            resourceNames.emplace_back(name);
+         }
+      }
+      return resourceNames;
    }
 }

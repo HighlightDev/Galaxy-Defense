@@ -54,6 +54,8 @@ namespace Game {
       static PhysicsShapeBase* CreatePhysicsShape(SerializeDataPhysicsShape* serDataShape);
 
       static IMaterial* CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData);
+
+      static std::vector<std::string> GetSerializedAllocatedResources(const SerializeAllocatedResources& allocatedResources);
    };
 
 }
