@@ -193,6 +193,16 @@ namespace Resources
 
       return bMemoryFreed;
     }
+
+    std::vector<key_t> GetAllKeys() const
+    {
+      std::vector<key_t> keys;
+      for (const auto &resourcePair : resourceMap)
+      {
+        keys.push_back(resourcePair.first);
+      }
+      return keys;
+    }
   };
 
 } // namespace Resources

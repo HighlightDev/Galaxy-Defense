@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <thread>
 #include <istream>
@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <thread>
 #include <ctime>
-#include <chrono> 
+#include <chrono>
 #include <string>
 #include <type_traits>
 
@@ -23,30 +23,61 @@ namespace TinyLogger
    {
       struct FalseType
       {
-         enum {
+         enum
+         {
             value = false
          };
       };
 
       struct TrueType
       {
-         enum {
+         enum
+         {
             value = true
          };
       };
 
       template <typename T>
-      struct IsDefaultType : public FalseType {};
+      struct IsDefaultType : public FalseType
+      {
+      };
 
-      template <> struct IsDefaultType<int64_t> : public TrueType {};
-      template <> struct IsDefaultType<int32_t> : public TrueType {};
-      template <> struct IsDefaultType<int8_t> : public TrueType {};
-      template <> struct IsDefaultType<uint64_t> : public TrueType {};
-      template <> struct IsDefaultType<uint32_t> : public TrueType {};
-      template <> struct IsDefaultType<uint8_t> : public TrueType {};
-      template <> struct IsDefaultType<float> : public TrueType {};
-      template <> struct IsDefaultType<double> : public TrueType {};
-      template <> struct IsDefaultType<bool> : public TrueType {};
+      template <>
+      struct IsDefaultType<int64_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<int32_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<int8_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<uint64_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<uint32_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<uint8_t> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<float> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<double> : public TrueType
+      {
+      };
+      template <>
+      struct IsDefaultType<bool> : public TrueType
+      {
+      };
 
       template <typename T>
       struct ToString
@@ -70,7 +101,7 @@ namespace TinyLogger
       template <>
       struct CastTypeToString<std::string>
       {
-         static std::string Do(const std::string& str)
+         static std::string Do(const std::string &str)
          {
             return str;
          }
@@ -79,7 +110,7 @@ namespace TinyLogger
       template <typename TupleT, size_t max_index, size_t index>
       struct IterateTuple
       {
-         static void Collect(std::vector<std::string>& result, TupleT& tuple)
+         static void Collect(std::vector<std::string> &result, TupleT &tuple)
          {
             using arg_t = typename std::tuple_element<index, TupleT>::type;
 
@@ -87,48 +118,55 @@ namespace TinyLogger
             IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
          }
       };
-      
+
       template <typename TupleT, size_t max_index>
       struct IterateTuple<TupleT, max_index, max_index>
       {
-         static void Collect(std::vector<std::string>& result, TupleT& tuple)
+         static void Collect(std::vector<std::string> &result, TupleT &tuple)
          {
          }
       };
    }
 
    template <typename T>
-   struct GetCompressedMessageType {
+   struct GetCompressedMessageType
+   {
       using type = typename std::decay<T>::type;
    };
 
    template <>
-   struct GetCompressedMessageType<const char*> {
+   struct GetCompressedMessageType<const char *>
+   {
       using type = std::string;
    };
 
    struct LogProxy
    {
-      static size_t index ;
+      static size_t index;
       template <typename LogArg, typename... LogArgs>
-      static void LogMessages(LogArg&& arg, LogArgs&&... args)
+      static void LogMessages(LogArg &&arg, LogArgs &&...args)
       {
          static std::hash<std::thread::id> hasher;
          const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+#ifdef _WIN32
          char str[26];
          struct tm timeinfo;
          localtime_s(&timeinfo, &currentTime);
          asctime_s(str, sizeof str, &timeinfo);
+#elif __linux__
+         const std::string& str =std::asctime(std::localtime(&currentTime));
+#endif
          std::string timeFileWasChanged = str;
          timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
-         
+
          auto argument = CompressMessage<LogArg>(std::forward<LogArg>(arg));
          using argument_t = typename GetCompressedMessageType<typename std::decay<LogArg>::type>::type;
          using tuple_t = std::tuple<argument_t, LogArgs...>;
          tuple_t argTuple = std::make_tuple<argument_t, LogArgs...>(std::forward<argument_t>(argument),
-            std::forward<LogArgs>(args)...);
+                                                                    std::forward<LogArgs>(args)...);
 
-         std::vector<std::string> result{ std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id())) };
+         std::vector<std::string> result{std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id()))};
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
@@ -137,13 +175,13 @@ namespace TinyLogger
       }
 
       template <typename T>
-      static typename std::enable_if<!std::is_same<typename std::decay<T>::type, const char*>::value, T>::type CompressMessage(T && arg)
+      static typename std::enable_if<!std::is_same<typename std::decay<T>::type, const char *>::value, T>::type CompressMessage(T &&arg)
       {
          return std::forward<T>(arg);
       }
 
       template <typename T>
-      static typename std::enable_if<std::is_same<typename std::decay<T>::type, const char*>::value, std::string>::type CompressMessage(const char* arg)
+      static typename std::enable_if<std::is_same<typename std::decay<T>::type, const char *>::value, std::string>::type CompressMessage(const char *arg)
       {
          return std::string(arg);
       }
@@ -152,12 +190,12 @@ namespace TinyLogger
 
       /* initialization should be called before any action with log*/
 
-      static void InitLog() {
-
+      static void InitLog()
+      {
       }
 
       template <typename LoggerClient, typename... Args>
-      static void InitLog(LoggerClient* loggerClient, Args&&... clients)
+      static void InitLog(LoggerClient *loggerClient, Args &&...clients)
       {
          Logger::GetInstance_()->AddLoggerClient(loggerClient);
          InitLog(std::move(clients)...);

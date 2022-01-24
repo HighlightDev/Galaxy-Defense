@@ -34,7 +34,7 @@ namespace Resources
 			VertexArrayObject vao;
 
 			Resource *outResource;
-			bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
+			const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
 
 			assert(bResourceValid);
 

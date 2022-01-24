@@ -150,4 +150,19 @@ namespace EngineUtility
 		}
 		return result;
 	}
+
+	std::string GetLocalTimeStr()
+	{
+		const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		#ifdef _WIN32
+         char timeFileWasChanged[26];
+         struct tm timeinfo;
+         localtime_s(&timeinfo, &currentTime);
+         asctime_s(timeFileWasChanged, sizeof timeFileWasChanged, &timeinfo);
+#elif __linux__
+         std::asctime(std::localtime(&currentTime));
+         const std::string& timeFileWasChanged = std::asctime(std::localtime(&currentTime));
+#endif
+         return timeFileWasChanged;
+	}
 }

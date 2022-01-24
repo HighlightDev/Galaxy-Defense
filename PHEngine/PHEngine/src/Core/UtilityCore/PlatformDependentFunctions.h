@@ -34,4 +34,6 @@ namespace EngineUtility
    std::string FromOsSpecificUrlToGeneral(const std::string &path);
 
    std::string FromGeneralUrlToOsSpecific(const std::string &path);
+
+   std::string GetLocalTimeStr();
 }

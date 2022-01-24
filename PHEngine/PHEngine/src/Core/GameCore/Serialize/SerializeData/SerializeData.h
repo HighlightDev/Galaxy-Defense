@@ -24,6 +24,17 @@ namespace glm
    template<class Archive> void serialize(Archive& archive, glm::quat& v) { archive(v.x, v.y, v.z, v.w); }
 }
 
+struct SerializeAllocatedResources
+{
+   std::vector<std::string> ResourceNames;
+
+   template <typename Archive>
+   void serialize(Archive& archive)
+   {
+      archive(ResourceNames);
+   }
+};
+
 struct SerializeDataBase
 {
    enum class SerializeDataType

@@ -67,6 +67,8 @@ namespace Game
 
       SerializeDataContainer container;
 
+      CollectAllocatedResourcesForSerialization(container);
+
       for (auto &actor : mScene->GetActors())
       {
          actor->CollectDataForSerialization(container);
@@ -91,6 +93,25 @@ namespace Game
       iarchive(container);
 
       InstantiateLevelFromSerializedContainer(container);
+   }
+
+   void Level::CollectAllocatedResourcesForSerialization(SerializeDataContainer &container)
+   {
+      TinyLogger::LogProxy::LogMessages("CollectAllocatedResourcesForSerialization");
+
+      std::vector<std::string> loadedTextureNames = TexturePool::GetInstance()->GetAllKeys();
+      std::vector<std::string> loadedModelNames = MeshPool::GetInstance()->GetAllKeys();
+      std::vector<std::string> concatNamesVec;
+      concatNamesVec.reserve(loadedTextureNames.size() + loadedModelNames.size());
+      concatNamesVec.insert(concatNamesVec.end(),
+                            std::make_move_iterator(loadedTextureNames.begin()),
+                            std::make_move_iterator(loadedTextureNames.end()));
+
+      concatNamesVec.insert(concatNamesVec.end(),
+                            std::make_move_iterator(loadedModelNames.begin()),
+                            std::make_move_iterator(loadedModelNames.end()));
+
+      container.Resources.ResourceNames = std::move(concatNamesVec);
    }
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
@@ -126,7 +147,7 @@ namespace Game
 
          for (const auto &componentData : actorData.ComponentsData)
          {
-            const auto& component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
+            const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
             TinyLogger::LogProxy::LogMessages("Component name: ", component->GetGameObjectName());
 

@@ -42,6 +42,8 @@ namespace Game
    private:
 
       void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer& container);
+
+      void CollectAllocatedResourcesForSerialization(struct SerializeDataContainer& container);
    };
 }
 

@@ -9,6 +9,8 @@ namespace Game
 {
    struct SerializeDataContainer
    {
+      SerializeAllocatedResources Resources;
+
       std::vector<SerializeDataActor> Actors;
 
       std::unique_ptr<SerializeDataPlayerController> PlayerControllerData;
@@ -18,7 +20,7 @@ namespace Game
       template <typename Archive>
       void serialize(Archive& archive)
       {
-         archive(Actors, PlayerControllerData, Cameras);
+         archive(Resources, Actors, PlayerControllerData, Cameras);
       }
    };
 }
