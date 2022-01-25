@@ -20,7 +20,6 @@ add_executable(TinyGame ${HEADERS} ${SOURCES})
 set_target_properties(TinyGame PROPERTIES LINKER_LANGUAGE CXX)
 
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
-set(EXTERNAL_DEPENDENCIES_INCLUDE ${PROJECT_SOURCE_DIR}/External/)
 set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
@@ -31,7 +30,6 @@ set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
 
 target_include_directories(TinyGame
 PUBLIC ${ENGINE_CORE_INCLUDE}
-PUBLIC ${EXTERNAL_DEPENDENCIES_INCLUDE}
 PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
 PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
 PUBLIC ${LOGER_DEPENDENCE_INCLUDE}
@@ -42,6 +40,22 @@ PUBLIC ${BULLET_PHYS_INCLUDE}
 )
 
 if (UNIX)
+	target_link_libraries(TinyGame PRIVATE X11)
+	target_link_libraries(TinyGame PRIVATE Threads::Threads)
+
+	find_library(GLFW_LIBRARIES glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/Unix/)
+	if (NOT GLFW_LIBRARIES)
+		message(FATAL_ERROR "GLFW libraries were not found!")
+	else()
+		target_link_libraries(TinyGame PUBLIC ${GLFW_LIBRARIES})
+	endif()
+
+	if (NOT CMAKE_DL_LIBS)
+   	 	message(FATAL_ERROR "DL library wasn't found!")
+  	else()
+    	target_link_libraries(TinyGame PUBLIC ${CMAKE_DL_LIBS})
+	endif()
+
 	find_library(GLEW_LIBRARIES GLEW ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
 	if (NOT GLEW_LIBRARIES)
 		message(FATAL_ERROR "GLEW libraries were not found!")
@@ -117,7 +131,6 @@ endif(UNIX)
 
 target_link_libraries(TinyGame 
 PRIVATE ${OPENGL_LIBRARIES}
-PRIVATE glfw
 PRIVATE TinyLogger
 PRIVATE PHEngine
 )

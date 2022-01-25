@@ -1,7 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <cereal>
 	<value0>
-		<value0 size="dynamic">
+		<value0>
+			<value0 size="dynamic">
+				<value0>brick_mid.png</value0>
+				<value1>dummy_metallic_roughness.png</value1>
+				<value2>water_dudv.png</value2>
+				<value3>dummy_nm.png</value3>
+				<value4>Brick_Medieval_albedo.png</value4>
+				<value5>brick_nm_mid.png</value5>
+				<value6>Brick_Medieval_normal.png</value6>
+				<value7>spaceship_roughness.jpg</value7>
+				<value8>Brick_Medieval_roughness.png</value8>
+				<value9>Brick_Medieval_metallic.png</value9>
+				<value10>nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png</value10>
+				<value11>spaceship_albedo.jpg</value11>
+				<value12>dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png</value12>
+				<value13>spaceship_normal.jpg</value13>
+				<value14>spaceship_metallic.jpg</value14>
+				<value15>player_walk.fbx</value15>
+				<value16>witcher.obj</value16>
+				<value17>spaceship.obj</value17>
+				<value18>playerCube.obj</value18>
+			</value0>
+		</value0>
+		<value1 size="dynamic">
 			<value0>
 				<value0>MainLightActor</value0>
 				<value1>
@@ -36,9 +59,9 @@
 									<value2>0</value2>
 								</value1>
 								<value2>
-									<value0>-0</value0>
-									<value1>0.31912058591842651</value1>
-									<value2>-0</value2>
+									<value0>180.00015258789062</value0>
+									<value1>38.435916900634766</value1>
+									<value2>180.00015258789062</value2>
 								</value2>
 								<value3>
 									<value0>0.20000000298023224</value0>
@@ -90,7 +113,7 @@
 							<id>2147483650</id>
 							<data>
 								<value0>floor1Comp</value0>
-								<value1>..\..\PHEngine\res\model\playerCube.obj</value1>
+								<value1>playerCube.obj</value1>
 								<value2>
 									<value0>0</value0>
 									<value1>0</value1>
@@ -114,22 +137,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
+											<value2>brick_mid.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
+											<value2>brick_nm_mid.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -211,7 +234,7 @@
 							<id>2147483653</id>
 							<data>
 								<value0>playerCubeMeshComp</value0>
-								<value1>..\..\PHEngine\res\model\playerCube.obj</value1>
+								<value1>playerCube.obj</value1>
 								<value2>
 									<value0>0</value0>
 									<value1>0</value1>
@@ -235,22 +258,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\brick_mid.png</value2>
+											<value2>brick_mid.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\brick_nm_mid.png</value2>
+											<value2>brick_nm_mid.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -313,7 +336,7 @@
 				<value2>
 					<value0>0</value0>
 					<value1>-0</value1>
-					<value2>90.000076293945313</value2>
+					<value2>90.000076293945312</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -330,7 +353,7 @@
 							<id>2147483656</id>
 							<data>
 								<value0>playerCubeMeshComp1</value0>
-								<value1>..\..\PHEngine\res\model\playerCube.obj</value1>
+								<value1>playerCube.obj</value1>
 								<value2>
 									<value0>0</value0>
 									<value1>0</value1>
@@ -354,22 +377,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_albedo.png</value2>
+											<value2>Brick_Medieval_albedo.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_normal.png</value2>
+											<value2>Brick_Medieval_normal.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_metallic.png</value2>
+											<value2>Brick_Medieval_metallic.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_roughness.png</value2>
+											<value2>Brick_Medieval_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -425,14 +448,14 @@
 			<value4>
 				<value0>House</value0>
 				<value1>
-					<value0>1.1093338798673358e-06</value0>
-					<value1>5.493370532989502</value1>
-					<value2>0</value2>
+					<value0>0.57198095321655273</value0>
+					<value1>5.4902153015136719</value1>
+					<value2>-1.1029388588212896e-05</value2>
 				</value1>
 				<value2>
-					<value0>-2.1375435608206317e-06</value0>
-					<value1>4.5780893742630724e-06</value1>
-					<value2>-9.4233282652567141e-06</value2>
+					<value0>3.2068346627056599e-05</value0>
+					<value1>9.9877433967776597e-05</value1>
+					<value2>0.00026589384651742876</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -449,10 +472,10 @@
 							<id>2147483659</id>
 							<data>
 								<value0>houseMeshComp</value0>
-								<value1>..\..\PHEngine\res\model\City_House_2_BI.obj</value1>
+								<value1>spaceship.obj</value1>
 								<value2>
 									<value0>0</value0>
-									<value1>-2</value1>
+									<value1>0</value1>
 									<value2>0</value2>
 								</value2>
 								<value3>
@@ -461,9 +484,9 @@
 									<value2>0</value2>
 								</value3>
 								<value4>
-									<value0>1.5</value0>
-									<value1>1.5</value1>
-									<value2>1.5</value2>
+									<value0>4.5</value0>
+									<value1>4.5</value1>
+									<value2>4.5</value2>
 								</value4>
 								<value5></value5>
 								<value6>
@@ -473,22 +496,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\albedo\city_house_2_Col.png</value2>
+											<value2>spaceship_albedo.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\city_house_2_Nor.png</value2>
+											<value2>spaceship_normal.jpg</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>spaceship_metallic.jpg</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>spaceship_roughness.jpg</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -545,13 +568,13 @@
 				<value0>test</value0>
 				<value1>
 					<value0>15</value0>
-					<value1>5.9986381530761719</value1>
-					<value2>1.2483677664931747e-06</value2>
+					<value1>5.9990248680114746</value1>
+					<value2>2.0572350822921446e-15</value2>
 				</value1>
 				<value2>
-					<value0>8.9520915125262945e-09</value0>
-					<value1>4.8948891162581276e-06</value1>
-					<value2>3.1344427497970173e-06</value2>
+					<value0>-1.7786319698965755e-14</value0>
+					<value1>-8.9746181609873764e-15</value1>
+					<value2>-8.9025455451974267e-08</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -568,7 +591,7 @@
 							<id>2147483662</id>
 							<data>
 								<value0>testMeshComponent</value0>
-								<value1>..\..\PHEngine\res\model\witcher.obj</value1>
+								<value1>witcher.obj</value1>
 								<value2>
 									<value0>0</value0>
 									<value1>0</value1>
@@ -592,22 +615,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_albedo.png</value2>
+											<value2>Brick_Medieval_albedo.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_normal.png</value2>
+											<value2>Brick_Medieval_normal.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_metallic.png</value2>
+											<value2>Brick_Medieval_metallic.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\Brick_Medieval_roughness.png</value2>
+											<value2>Brick_Medieval_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -745,17 +768,17 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>dayTexture</value1>
-											<value2>..\..\PHEngine\res\texture\cubemap\dayRight.png,..\..\PHEngine\res\texture\cubemap\dayLeft.png,..\..\PHEngine\res\texture\cubemap\dayTop.png,..\..\PHEngine\res\texture\cubemap\dayBottom.png,..\..\PHEngine\res\texture\cubemap\dayBack.png,..\..\PHEngine\res\texture\cubemap\dayFront.png</value2>
+											<value2>dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>nightTexture</value1>
-											<value2>..\..\PHEngine\res\texture\cubemap\nightRight.png,..\..\PHEngine\res\texture\cubemap\nightLeft.png,..\..\PHEngine\res\texture\cubemap\nightTop.png,..\..\PHEngine\res\texture\cubemap\nightBottom.png,..\..\PHEngine\res\texture\cubemap\nightBack.png,..\..\PHEngine\res\texture\cubemap\nightFront.png</value2>
+											<value2>nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png</value2>
 										</value1>
 										<value2>
 											<value0>float</value0>
 											<value1>dayTimeElapsed</value1>
-											<value2>0.572732</value2>
+											<value2>0.141565</value2>
 										</value2>
 									</value2>
 								</value2>
@@ -768,7 +791,7 @@
 				<value0>SkeletBuddy</value0>
 				<value1>
 					<value0>10</value0>
-					<value1>3.8324158191680908</value1>
+					<value1>3.8331239223480225</value1>
 					<value2>10</value2>
 				</value1>
 				<value2>
@@ -786,7 +809,7 @@
 					<ptr_wrapper>
 						<id>2147483668</id>
 						<data>
-							<value0>..\..\PHEngine\res\tweeners\playerAnimation.tween</value0>
+							<value0>playerAnimation.tween</value0>
 							<value1 size="dynamic">
 								<value0>
 									<value0>buddyMeshComp</value0>
@@ -805,7 +828,7 @@
 							<id>2147483669</id>
 							<data>
 								<value0>buddyMeshComp</value0>
-								<value1>..\..\PHEngine\res\model\player_walk.fbx</value1>
+								<value1>player_walk.fbx</value1>
 								<value2>
 									<value0>0</value0>
 									<value1>-0.60000002384185791</value1>
@@ -829,22 +852,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
+											<value2>dummy_nm.png</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>..\..\PHEngine\res\texture\normalmap\dummy_nm.png</value2>
+											<value2>dummy_nm.png</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>..\..\PHEngine\res\texture\materials\dummy_metallic_roughness.png</value2>
+											<value2>dummy_metallic_roughness.png</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -893,9 +916,9 @@
 							<data>
 								<value0>charMovementCompData</value0>
 								<value1>
-									<value0>0</value0>
-									<value1>0</value1>
-									<value2>0</value2>
+									<value0>-0.42424604296684265</value0>
+									<value1>-0.89818108081817627</value1>
+									<value2>0.1152651309967041</value2>
 								</value1>
 								<value2>MainCamera</value2>
 							</data>
@@ -925,8 +948,8 @@
 				</value4>
 				<value5 size="dynamic"/>
 			</value8>
-		</value0>
-		<value1>
+		</value1>
+		<value2>
 			<polymorphic_id>1073741824</polymorphic_id>
 			<ptr_wrapper>
 				<valid>1</valid>
@@ -934,8 +957,8 @@
 					<value0>SkeletBuddy</value0>
 				</data>
 			</ptr_wrapper>
-		</value1>
-		<value2 size="dynamic">
+		</value2>
+		<value3 size="dynamic">
 			<value0>
 				<polymorphic_id>2147483660</polymorphic_id>
 				<polymorphic_name>SerializeDataThirdPersonCamera</polymorphic_name>
@@ -950,8 +973,8 @@
 							<value2>1200</value2>
 							<value3>900</value3>
 						</value2>
-						<value3>50</value3>
-						<value4>20</value4>
+						<value3>63.919998168945312</value3>
+						<value4>-74.799995422363281</value4>
 						<value5>
 							<polymorphic_id>1073741824</polymorphic_id>
 							<ptr_wrapper>
@@ -993,7 +1016,7 @@
 					</data>
 				</ptr_wrapper>
 			</value0>
-		</value2>
+		</value3>
 	</value0>
 </cereal>
 

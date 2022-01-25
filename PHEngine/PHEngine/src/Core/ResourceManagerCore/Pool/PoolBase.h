@@ -194,7 +194,7 @@ namespace Resources
       return bMemoryFreed;
     }
 
-    const std::vector<key_t> &GetAllKeys() const
+    std::vector<key_t> GetAllKeys() const
     {
       std::vector<key_t> keys;
       for (const auto &resourcePair : resourceMap)

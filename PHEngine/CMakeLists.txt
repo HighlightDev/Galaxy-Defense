@@ -17,17 +17,17 @@ else()
         message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++17 support. Please use a different C++ compiler.")
 endif()
 
+if (UNIX)
+    find_package(X11 REQUIRED)
+    find_package(Threads REQUIRED)
+endif()
+
 find_package(OpenGL REQUIRED)
 
 add_compile_definitions(
     BT_USE_DOUBLE_PRECISION
 )
 
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-
-add_subdirectory(${PROJECT_SOURCE_DIR}/External/glfw glfw_build)
 add_subdirectory(Logger/TinyLogger)
 add_subdirectory(PHEngine/src)
 add_subdirectory(TinyGame)

@@ -38,6 +38,26 @@ target_include_directories(PHEngine
   )
 
 if (UNIX)	
+  target_link_libraries(PHEngine PRIVATE X11)
+  target_link_libraries(PHEngine PRIVATE Threads::Threads)
+
+  find_library(GLFW_LIBRARIES glfw3 ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/lib/Unix/)
+  if (NOT GLFW_LIBRARIES)
+    message(FATAL_ERROR "GLFW libraries were not found!")
+  else()
+    target_link_libraries(PHEngine 
+      PUBLIC ${GLFW_LIBRARIES}
+      )
+  endif()
+
+  if (NOT CMAKE_DL_LIBS)
+    message(FATAL_ERROR "DL library wasn't found!")
+  else()
+    target_link_libraries(PHEngine
+      PUBLIC ${CMAKE_DL_LIBS}
+      )
+  endif()
+
 	find_library(GLEW_LIBRARIES GLEW ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/lib/Unix/)
 	if (NOT GLEW_LIBRARIES)
 		message(FATAL_ERROR "GLEW libraries were not found!")
@@ -102,6 +122,5 @@ endif(UNIX)
 
 target_link_libraries(PHEngine 
 PUBLIC ${OPENGL_LIBRARIES}
-PUBLIC glfw
 PUBLIC TinyLogger
 )
