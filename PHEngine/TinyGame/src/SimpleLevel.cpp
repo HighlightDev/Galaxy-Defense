@@ -10,7 +10,7 @@
 #include "Core/GameCore/Components/ComponentData/CubemapComponentData.h"
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
-#include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/PlatformMovementComponent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"

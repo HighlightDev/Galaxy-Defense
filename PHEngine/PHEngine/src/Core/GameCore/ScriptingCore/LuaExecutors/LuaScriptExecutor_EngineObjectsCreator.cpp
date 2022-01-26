@@ -56,7 +56,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, PhysicsDescriptor *)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateCharacterMovementComponentData");
-      LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, std::string)>::Register(mLuaInstance, "_CreateMovementComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, std::string)>::Register(mLuaInstance, "_CreatePlatformMovementComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, IMaterial *)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *)>::Register(mLuaInstance, "_CreateWaterPlaneComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, std::string /*Camera name*/, glm::ivec4)>::Register(mLuaInstance, "_CreatePlanarReflectionComponentData");
@@ -315,10 +315,10 @@ namespace Game
       return dataPtr;
    }
 
-   /* -------------------  Create movement component data ----------------------------*/
-   ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string> &movementComponentData)
+   /* -------------------  Create platform movement component data ----------------------------*/
+   ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string> &platformMovementComponentData)
    {
-      auto dataPtr = EngineObjectCreator::CreateMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData));
+      auto dataPtr = EngineObjectCreator::CreatePlatformMovementComponentData(std::get<0>(platformMovementComponentData), std::get<1>(platformMovementComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }

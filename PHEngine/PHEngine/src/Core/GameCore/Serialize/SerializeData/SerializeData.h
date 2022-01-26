@@ -48,7 +48,7 @@ struct SerializeDataBase
       PointLight,
       Spotlight,
       CharacterMovement,
-      Movement,
+      PlatformMovement,
       Input,
       Physics,
       CharacterPhysics,
@@ -254,7 +254,7 @@ struct SerializeDataCharacterMovementComponent
    }
 };
 
-struct SerializeDataMovementComponent
+struct SerializeDataPlatformMovementComponent
    : public SerializeDataComponent
 {
    std::string ScriptName;
@@ -269,7 +269,7 @@ struct SerializeDataMovementComponent
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
-      return SerializeDataBase::SerializeDataType::Movement;
+      return SerializeDataBase::SerializeDataType::PlatformMovement;
    }
 };
 
@@ -621,7 +621,7 @@ CEREAL_REGISTER_TYPE(SerializeDataDirLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPointLightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataSpotlightComponent);
 CEREAL_REGISTER_TYPE(SerializeDataMaterial);
-CEREAL_REGISTER_TYPE(SerializeDataMovementComponent);
+CEREAL_REGISTER_TYPE(SerializeDataPlatformMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataCharacterMovementComponent);
 CEREAL_REGISTER_TYPE(SerializeDataPhysicsComponent);
 CEREAL_REGISTER_TYPE(SerializeDataCharacterPhysicsComponent);
@@ -640,7 +640,7 @@ CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPointLightC
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataSpotlightComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMaterial)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterMovementComponent)
-CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataMovementComponent)
+CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPlatformMovementComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataPhysicsComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataCharacterPhysicsComponent)
 CEREAL_REGISTER_POLYMORPHIC_RELATION(SerializeDataBase, SerializeDataInputComponent)

@@ -1,41 +1,38 @@
-#include "MovementComponent.h"
-
+#include "PlatformMovementComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+
 #include <iostream>
 
 namespace Game
 {
 
-   MovementComponent::MovementComponent(const std::string& gameObjectName, const std::string& relPathToScript)
-      : Component(gameObjectName)
-      , mScriptExecutor(this, relPathToScript)
-      , mDestinationPoint("NO")
-      , mTime(0.0f)
+   PlatformMovementComponent::PlatformMovementComponent(const std::string &gameObjectName, const std::string &relPathToScript)
+       : Component(gameObjectName), mScriptExecutor(this, relPathToScript), mDestinationPoint("NO"), mTime(0.0f)
    {
    }
 
-   MovementComponent::~MovementComponent()
+   PlatformMovementComponent::~PlatformMovementComponent()
    {
    }
 
-   void MovementComponent::PostLevelInit()
+   void PlatformMovementComponent::PostLevelInit()
    {
-      const auto& rootComponent = GetOwner()->GetRootComponent();
+      const auto &rootComponent = GetOwner()->GetRootComponent();
       assert(rootComponent);
 
       mScriptExecutor.PostInit(GetOwner()->GetSceneOwner());
 
-      const auto& physComponent = GetOwner()->GetPhysicsComponent();
+      const auto &physComponent = GetOwner()->GetPhysicsComponent();
 
       if (physComponent)
       {
-         mBehaviorVisitor = std::make_unique<MoveCompBehaviorVisitorWithPhys>(rootComponent, physComponent);
+         mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorWithPhys>(rootComponent, physComponent);
       }
       else
       {
-         mBehaviorVisitor = std::make_unique<MoveCompBehaviorVisitorNoPhys>(rootComponent);
+         mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorNoPhys>(rootComponent);
       }
 
       mBehaviorVisitor->Init();
@@ -44,37 +41,37 @@ namespace Game
       mScriptExecutor.RunScript();
    }
 
-   ComponentType MovementComponent::GetComponentType() const
+   ComponentType PlatformMovementComponent::GetComponentType() const
    {
       return MOVEMENT_COMPONENT;
-   }   
+   }
 
-   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>&  MovementComponent::GetMovementPoints() const
+   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> &PlatformMovementComponent::GetMovementPoints() const
    {
       return mMovementPoints;
    }
 
-   void MovementComponent::AddMovementPoint(const std::string& pointName, const EulerAnglesTransform& t, const float transitionTime)
+   void PlatformMovementComponent::AddMovementPoint(const std::string &pointName, const EulerAnglesTransform &t, const float transitionTime)
    {
       assert(!mMovementPoints.count(pointName));
 
       mMovementPoints.emplace(pointName, std::make_tuple(t, transitionTime));
    }
 
-   void MovementComponent::SetDestinationPoint(const std::string& pointName)
+   void PlatformMovementComponent::SetDestinationPoint(const std::string &pointName)
    {
       mDestinationPoint = pointName;
       mLastDestinationPoint = pointName;
-      const EulerAnglesTransform& transform = std::get<0>(mMovementPoints[mDestinationPoint]);
+      const EulerAnglesTransform &transform = std::get<0>(mMovementPoints[mDestinationPoint]);
       mBehaviorVisitor->CommitMovementStarted(transform);
    }
 
-   std::string MovementComponent::GetDestinationPoint() const
+   std::string PlatformMovementComponent::GetDestinationPoint() const
    {
       return mDestinationPoint;
    }
 
-   void MovementComponent::Move(const float deltaTime)
+   void PlatformMovementComponent::Move(const float deltaTime)
    {
       mTime += deltaTime;
 
@@ -82,7 +79,7 @@ namespace Game
 
       mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
 
-      // If component is at final time position  
+      // If component is at final time position
       if (EngineMath::CompareFloats(mTime, transitionTime))
       {
          mTime = 0.0f;
@@ -91,7 +88,7 @@ namespace Game
       mTime = fmod(mTime, transitionTime);
    }
 
-   void MovementComponent::Tick(const float deltaTime)
+   void PlatformMovementComponent::Tick(const float deltaTime)
    {
       mScriptExecutor.OnUpdate(deltaTime);
 
@@ -124,13 +121,13 @@ namespace Game
       }
    }
 
-   void MovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer) 
+   void PlatformMovementComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+      auto &actorData = GetSerializeDataActor(dataContainer);
 
-      std::shared_ptr<SerializeDataMovementComponent> data = std::make_shared<SerializeDataMovementComponent>();
+      std::shared_ptr<SerializeDataPlatformMovementComponent> data = std::make_shared<SerializeDataPlatformMovementComponent>();
       data->ComponentName = GameObjectName;
-      data->ScriptName= mScriptExecutor.GetScriptRelPath();
+      data->ScriptName = mScriptExecutor.GetScriptRelPath();
 
       actorData.ComponentsData.emplace_back(data);
    }

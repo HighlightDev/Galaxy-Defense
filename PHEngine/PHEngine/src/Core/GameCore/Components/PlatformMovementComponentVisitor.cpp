@@ -1,4 +1,4 @@
-#include "MoveCompBehaviorVisitor.h"
+#include "PlatformMovementComponentVisitor.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -8,12 +8,12 @@ using namespace EnginePhysics;
 namespace Game
 {
 
-   MoveCompBehaviorVisitorBase::MoveCompBehaviorVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent)
+   PlatformMovementComponentVisitorBase::PlatformMovementComponentVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent)
       : mOwnerRootComp(ownerRootComponent)
    {
    }
 
-   void MoveCompBehaviorVisitorBase::Init()
+   void PlatformMovementComponentVisitorBase::Init()
    {
       if (auto rootCompSP = mOwnerRootComp.lock())
       {
@@ -26,7 +26,7 @@ namespace Game
       }
    }
 
-   void MoveCompBehaviorVisitorBase::LerpTransformation(const float time, const float transitionTime)
+   void PlatformMovementComponentVisitorBase::LerpTransformation(const float time, const float transitionTime)
    {
       const float currentTransitionTime = glm::clamp(time, 0.0f, transitionTime);
 
@@ -37,49 +37,49 @@ namespace Game
       mWorldRotator = EngineMath::SLerpQuat(currentTransitionTime / transitionTime, mStartRotator, mEndRotator);
    }
 
-   glm::vec3 MoveCompBehaviorVisitorBase::GetWorldTranslation() const {
+   glm::vec3 PlatformMovementComponentVisitorBase::GetWorldTranslation() const {
       return mWorldTranslation;
    }
 
-   glm::vec3 MoveCompBehaviorVisitorBase::GetWorldTranslationDelta() const {
+   glm::vec3 PlatformMovementComponentVisitorBase::GetWorldTranslationDelta() const {
       return mWorldTranslationDelta;
    }
 
-   glm::vec3 MoveCompBehaviorVisitorBase::GetStartWorldTranslation() const {
+   glm::vec3 PlatformMovementComponentVisitorBase::GetStartWorldTranslation() const {
       return mStartTranslation;
    }
 
-   glm::quat MoveCompBehaviorVisitorBase::GetWorldRotator() const {
+   glm::quat PlatformMovementComponentVisitorBase::GetWorldRotator() const {
       return mWorldRotator;
    }
 
-   glm::quat MoveCompBehaviorVisitorBase::GetWorldRotatorDelta() const {
+   glm::quat PlatformMovementComponentVisitorBase::GetWorldRotatorDelta() const {
       return glm::quat();
    }
 
-   glm::quat MoveCompBehaviorVisitorBase::GetStartWorldRotator() const
+   glm::quat PlatformMovementComponentVisitorBase::GetStartWorldRotator() const
    {
       return glm::quat();
    }
 
-   MoveCompBehaviorVisitorNoPhys::MoveCompBehaviorVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent)
-      : MoveCompBehaviorVisitorBase(ownerRootComponent)
+   PlatformMovementComponentVisitorNoPhys::PlatformMovementComponentVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent)
+      : PlatformMovementComponentVisitorBase(ownerRootComponent)
    {
    }
 
-   void MoveCompBehaviorVisitorBase::CommitMovementStarted(const EulerAnglesTransform& targetTransform)
+   void PlatformMovementComponentVisitorBase::CommitMovementStarted(const EulerAnglesTransform& targetTransform)
    {
       mEndTranslation = mStartTranslation + targetTransform.Translation;
       mEndRotator = mStartRotator * EngineMath::EulerAnglesToQuat(targetTransform.RotationEulerAngles);
    }
 
-   void MoveCompBehaviorVisitorBase::CommitMovementFinished()
+   void PlatformMovementComponentVisitorBase::CommitMovementFinished()
    {
       mStartTranslation = mWorldTranslation;
       mStartRotator = mWorldRotator;
    }
 
-   void MoveCompBehaviorVisitorNoPhys::CommitMove()
+   void PlatformMovementComponentVisitorNoPhys::CommitMove()
    {
       if (auto rootCompSP = mOwnerRootComp.lock())
       {
@@ -88,13 +88,13 @@ namespace Game
       }
    }
    
-   MoveCompBehaviorVisitorWithPhys::MoveCompBehaviorVisitorWithPhys(std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent)
-      : MoveCompBehaviorVisitorBase(ownerRootComponent)
+   PlatformMovementComponentVisitorWithPhys::PlatformMovementComponentVisitorWithPhys(std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent)
+      : PlatformMovementComponentVisitorBase(ownerRootComponent)
       , mOwnerPhysComp(ownerPhysComponent)
    {
    }
 
-   void MoveCompBehaviorVisitorWithPhys::CommitMove()
+   void PlatformMovementComponentVisitorWithPhys::CommitMove()
    {
       if (auto rootCompSP = mOwnerRootComp.lock())
       {

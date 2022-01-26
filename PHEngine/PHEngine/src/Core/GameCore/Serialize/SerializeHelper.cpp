@@ -443,12 +443,12 @@ namespace Game
          result = EngineObjectCreator::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
          break;
       }
-      case SerializeDataBase::SerializeDataType::Movement:
+      case SerializeDataBase::SerializeDataType::PlatformMovement:
       {
-         logCompType = "Movement";
-         SerializeDataMovementComponent *movSerData = static_cast<SerializeDataMovementComponent *>(data.get());
-         const auto &moveCompData = EngineObjectCreator::CreateMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
-         result = EngineObjectCreator::CreateComponentByString("MovementComponent", moveCompData, scene);
+         logCompType = "PlatformMovement";
+         SerializeDataPlatformMovementComponent *movSerData = static_cast<SerializeDataPlatformMovementComponent *>(data.get());
+         const auto &moveCompData = EngineObjectCreator::CreatePlatformMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
+         result = EngineObjectCreator::CreateComponentByString("PlatformMovementComponent", moveCompData, scene);
          break;
       }
       case SerializeDataBase::SerializeDataType::Physics:

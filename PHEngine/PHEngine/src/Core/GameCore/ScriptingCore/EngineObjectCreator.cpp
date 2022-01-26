@@ -4,7 +4,7 @@
 #include "Core/GameCore/MainThirdPersonCamera.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
-#include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/PlatformMovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
@@ -124,9 +124,9 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<CharacterMovementComponent, ComponentMetaType::CharacterMovement>(*componentData);
       }
-      else if ("MovementComponent" == componentType)
+      else if ("PlatformMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<MovementComponent, ComponentMetaType::Movement>(*componentData);
+         result = scene->CreateComponent_GameThread<PlatformMovementComponent, ComponentMetaType::PlatformMovement>(*componentData);
       }
       else if ("SkyboxComponent" == componentType)
       {
@@ -236,9 +236,9 @@ namespace Game
       return new CharacterMovementComponentData(gameObjectName, launchDirection, cameraName);
    }
 
-   ComponentData *EngineObjectCreator::CreateMovementComponentData(const std::string &gameObjectName, const std::string &scriptName)
+   ComponentData *EngineObjectCreator::CreatePlatformMovementComponentData(const std::string &gameObjectName, const std::string &scriptName)
    {
-      return new MovementComponentData(gameObjectName, scriptName);
+      return new PlatformMovementComponentData(gameObjectName, scriptName);
    }
 
    ComponentData *EngineObjectCreator::CreateInputComponentData(const std::string &gameObjectName)

@@ -407,11 +407,11 @@
     <ClInclude Include="src\Core\GameCore\LoggerExtension.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeHelper.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeData.h" />
-    <ClInclude Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.h" />
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h" />
     <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
-    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeDataContainer.h" />
@@ -908,10 +908,10 @@
     <ClCompile Include="src\Core\GameCore\BoundingBox.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\CameraFrustum.cpp" />
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Tweener\FloatTweenController.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp" />

@@ -22,9 +22,9 @@ namespace Game
 		glm::vec3 m_launchDirection;
 	};
 
-   struct MovementComponentData : public ComponentData
+   struct PlatformMovementComponentData : public ComponentData
    {
-      MovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+      PlatformMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
          : ComponentData(gameObjectName)
          , mScriptName(scriptName)
       {

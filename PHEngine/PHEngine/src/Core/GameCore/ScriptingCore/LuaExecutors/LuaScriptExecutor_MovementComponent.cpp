@@ -1,5 +1,5 @@
 #include "LuaScriptExecutor_MovementComponent.h"
-#include "Core/GameCore/Components/MovementComponent.h"
+#include "Core/GameCore/Components/PlatformMovementComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineMath;
@@ -7,7 +7,7 @@ using namespace EngineMath;
 namespace Game
 {
   
-   LuaScriptExecutor_MovementComponent::LuaScriptExecutor_MovementComponent(MovementComponent* owner, const std::string& scriptName)
+   LuaScriptExecutor_MovementComponent::LuaScriptExecutor_MovementComponent(PlatformMovementComponent* owner, const std::string& scriptName)
       : LuaScriptExecutor_EngineBase(scriptName)
       , mOwnerComponent(owner)
    {

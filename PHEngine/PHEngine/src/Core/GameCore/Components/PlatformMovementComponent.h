@@ -2,7 +2,7 @@
 #include "SceneComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.h"
-#include "MoveCompBehaviorVisitor.h"
+#include "PlatformMovementComponentVisitor.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace EnginePhysics;
@@ -10,7 +10,7 @@ using namespace EnginePhysics;
 namespace Game
 {
 
-   class MovementComponent
+   class PlatformMovementComponent
       : public Component
    {
 
@@ -18,7 +18,7 @@ namespace Game
 
       LuaScriptExecutor_MovementComponent mScriptExecutor;
 
-      std::unique_ptr<MoveCompBehaviorVisitorBase> mBehaviorVisitor;
+      std::unique_ptr<PlatformMovementComponentVisitorBase> mBehaviorVisitor;
 
       std::string mDestinationPoint;
       std::string mLastDestinationPoint;
@@ -27,9 +27,9 @@ namespace Game
 
    public:
 
-      MovementComponent(const std::string& gameObjectName, const std::string& relPathToScript);
+      PlatformMovementComponent(const std::string& gameObjectName, const std::string& relPathToScript);
 
-      virtual ~MovementComponent();
+      virtual ~PlatformMovementComponent();
 
       virtual ComponentType GetComponentType() const override;
 

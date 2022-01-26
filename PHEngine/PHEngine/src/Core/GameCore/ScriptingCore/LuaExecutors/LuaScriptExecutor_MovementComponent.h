@@ -6,17 +6,17 @@
 
 namespace Game
 {
-   class MovementComponent;
+   class PlatformMovementComponent;
 
    class LuaScriptExecutor_MovementComponent
       : public LuaScriptExecutor_EngineBase
    {
 
-      MovementComponent* mOwnerComponent;
+      PlatformMovementComponent* mOwnerComponent;
 
    public:
 
-      LuaScriptExecutor_MovementComponent(MovementComponent* owner, const std::string& scriptName);
+      LuaScriptExecutor_MovementComponent(PlatformMovementComponent* owner, const std::string& scriptName);
 
       ~LuaScriptExecutor_MovementComponent();
 

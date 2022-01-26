@@ -51,7 +51,7 @@ namespace Resources
 		template <typename TextureParamsModelType>
 		static ITexture *LoadTexture2dFromFile(const TextureParamsModelType &pathToFile)
 		{
-			return new Texture2d(pathToFile, new TextureAnisotropy(8.0f));
+			return new Texture2d(pathToFile, new TextureAnisotropy(16.0f));
 		}
 
 		template <typename TextureParamsModelType>

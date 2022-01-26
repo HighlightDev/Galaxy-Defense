@@ -1748,13 +1748,13 @@
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h">
@@ -1766,7 +1766,7 @@
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h">
@@ -2365,13 +2365,13 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp">
@@ -2380,7 +2380,7 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\MoveCompBehaviorVisitor.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp">

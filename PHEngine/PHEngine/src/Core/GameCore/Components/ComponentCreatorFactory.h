@@ -67,7 +67,7 @@ namespace Game
         Billboard,
         Input,
         CharacterMovement,
-        Movement,
+        PlatformMovement,
         Physics,
         PlanarReflection
     };
@@ -414,8 +414,8 @@ namespace Game
     {
         std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
-            const MovementComponentData &mData =
-                static_cast<const MovementComponentData &>(data);
+            const PlatformMovementComponentData &mData =
+                static_cast<const PlatformMovementComponentData &>(data);
             return std::make_shared<ComponentType>(mData.GameObjectName,
                                                    mData.mScriptName);
         }
@@ -518,7 +518,7 @@ namespace Game
     }
 
     template <typename ComponentType, ComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == ComponentMetaType::Movement, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    typename std::enable_if<componentMetaType == ComponentMetaType::PlatformMovement, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
     {
         return std::make_unique<MovementComponentCreator<ComponentType>>();
     }

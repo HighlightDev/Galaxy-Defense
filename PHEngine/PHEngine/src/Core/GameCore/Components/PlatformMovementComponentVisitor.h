@@ -15,7 +15,7 @@ namespace Game
    class SceneComponent;
    using EnginePhysics::PhysicsComponent;
 
-   class MoveCompBehaviorVisitorBase
+   class PlatformMovementComponentVisitorBase
    {
    protected:
 
@@ -34,7 +34,7 @@ namespace Game
 
    public:
 
-      MoveCompBehaviorVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent);
+      PlatformMovementComponentVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent);
 
       void Init();
 
@@ -54,26 +54,26 @@ namespace Game
       virtual void CommitMove() = 0;
    };
 
-   class MoveCompBehaviorVisitorNoPhys 
-      : public MoveCompBehaviorVisitorBase
+   class PlatformMovementComponentVisitorNoPhys 
+      : public PlatformMovementComponentVisitorBase
    {
 
    public:
 
-      MoveCompBehaviorVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent);
+      PlatformMovementComponentVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent);
 
       virtual void CommitMove() override;
    };
 
-   class MoveCompBehaviorVisitorWithPhys
-      : public MoveCompBehaviorVisitorBase
+   class PlatformMovementComponentVisitorWithPhys
+      : public PlatformMovementComponentVisitorBase
    {
 
       std::weak_ptr<PhysicsComponent> mOwnerPhysComp;
 
    public:
 
-      MoveCompBehaviorVisitorWithPhys(std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent);
+      PlatformMovementComponentVisitorWithPhys(std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent);
 
       virtual void CommitMove() override;
    };
