@@ -82,7 +82,7 @@ namespace Game
 
       mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
 
-      // If camera is at final position  
+      // If component is at final time position  
       if (EngineMath::CompareFloats(mTime, transitionTime))
       {
          mTime = 0.0f;
