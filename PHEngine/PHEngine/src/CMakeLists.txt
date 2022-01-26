@@ -104,7 +104,7 @@ if (UNIX)
     OR NOT BULLETSOFTBODY_LIBRARIES)
 		  message(FATAL_ERROR "BulletPhysics libraries were not found!")
 	else()
-		target_link_libraries(PHEngine PUBLIC
+		target_link_libraries(PHEngine
       PUBLIC ${BULLETCOLLISION_LIBRARIES}
       PUBLIC ${BULLET3COLLISION_LIBRARIES}
       PUBLIC ${BULLET3DYNAMICS_LIBRARIES}

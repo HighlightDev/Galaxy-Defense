@@ -21,6 +21,8 @@ bool bSerializeLevel = false;
 bool bDeserializeLevel = false;
 
 bool bPollEvents = true;
+bool bShowCursor = true;
+bool bMouseButtonPressed = false;
 
 static std::shared_ptr<InputManager> engineInputManager = nullptr;
 
@@ -30,6 +32,37 @@ void get_window_pos(GLFWwindow *window)
   glfwGetWindowPos(window, &x, &y);
 
   DisplayDeviceDataProvider::GetInstance()->SetWindowPos(x, y);
+}
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+{
+  /*  @param[in] button The [mouse button](@ref buttons) that was pressed or
+   *  released.
+   *  @param[in] action One of `GLFW_PRESS` or `GLFW_RELEASE`.  Future releases
+   *  may add more actions.
+   * */
+
+  if (GLFW_MOUSE_BUTTON_1 == button)
+  {
+    if (GLFW_PRESS == action)
+    {
+    }
+    else if (GLFW_RELEASE == action)
+    {
+    }
+  }
+  else if (GLFW_MOUSE_BUTTON_2 == button)
+  {
+    if (GLFW_PRESS == action)
+    {
+      bMouseButtonPressed = true;
+      bShowCursor = !bShowCursor;
+    }
+    else if (GLFW_RELEASE == action)
+    {
+      bMouseButtonPressed = false;
+    }
+  }
 }
 
 void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
@@ -113,10 +146,9 @@ int32_t main(int32_t argc, char **argv)
 
   // Create a windowed mode window and its OpenGL context
   get_screen_rezolution();
-  auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-  auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
-
-  // window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
+  // auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
+  // auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+  //  window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
   window = glfwCreateWindow(1200, 900, "PHEngine", NULL, NULL);
 
   if (!window)
@@ -131,7 +163,7 @@ int32_t main(int32_t argc, char **argv)
   get_window_pos(window);
   glfwSetCursorPosCallback(window, cursor_position_callback);
   glfwSetKeyCallback(window, key_pressed_callback);
-  //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetMouseButtonCallback(window, mouse_button_callback);
 
   GLenum initResult = glewInit();
 
@@ -158,6 +190,12 @@ int32_t main(int32_t argc, char **argv)
       // Poll for and process events
       glfwPollEvents();
 #ifdef DEBUG
+
+      if (bMouseButtonPressed)
+      {
+        glfwSetInputMode(window, GLFW_CURSOR, bShowCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
+      }
+
       if (bPushFrame)
       {
         engine.PushFrame();

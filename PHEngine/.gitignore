@@ -2,6 +2,4 @@
 /Debug
 /tools
 /PHEngine/test_build
-/External/assimp
-/External/bullet3
-/External/lua-5.4.3
+/External

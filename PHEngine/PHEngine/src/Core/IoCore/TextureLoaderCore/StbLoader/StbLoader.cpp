@@ -25,7 +25,7 @@ namespace IO
 				ReleaseTextureMemory(); // If memory is already possessed by other texture, first of all 
 										// release previously allocated memory
 
-				uint8_t* texData = stbi_load(pathToFile.c_str(), &width, &height, &components, STBI_rgb_alpha);
+				uint8_t* texData = stbi_load(pathToFile.c_str(), &width, &height, &components, 0);
 
 				if (texData != nullptr)
 					m_lastAllocatedMemory = texData;
