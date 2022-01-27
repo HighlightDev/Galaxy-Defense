@@ -13,7 +13,7 @@ namespace Thread
 {
 
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
-      : mRenderThreadSwapChain()
+       : mRenderThreadSwapChain()
    {
    }
 
@@ -36,75 +36,76 @@ namespace Thread
       return mSceneRenderer;
    }
 
-   std::weak_ptr<Scene> InterThreadCommunicationMgr::TryGetSceneWP() const {
+   std::weak_ptr<Scene> InterThreadCommunicationMgr::TryGetSceneWP() const
+   {
       return mScene;
    }
 
-   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job &&job)
    {
       ProcessPushGameThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job &&job)
    {
       ProcessPushRenderThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job &&job)
    {
-      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOpMutex);
-      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.WriteChainType)]);
+      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
+      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.WriteChainType.load())));
    }
 
-   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job&& job)
+   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job&& job, std::deque<Job>& jobs)
+   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs)
    {
       switch (policy)
       {
-         case EnqueueJobPolicy::PUSH_ANYWAY:
+      case EnqueueJobPolicy::PUSH_ANYWAY:
+      {
+         jobs.emplace_back(std::move(job));
+         break;
+      }
+      case EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH:
+      {
+         const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
+                                               [&](const Job &collectionJob)
+                                               {
+                                                  return (collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId() && collectionJob.GetFunctionId() == job.GetFunctionId());
+                                               });
+
+         if (jobs.end() == duplicateIt)
          {
             jobs.emplace_back(std::move(job));
-            break;
          }
-         case EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH:
+
+         break;
+      }
+      case EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH:
+      {
+         const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
+                                               [&](const Job &collectionJob)
+                                               {
+                                                  return (collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId() && collectionJob.GetFunctionId() == job.GetFunctionId());
+                                               });
+
+         if (jobs.end() == duplicateIt)
          {
-            const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
-               [&](const Job& collectionJob)
-            {
-               return (collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId() && collectionJob.GetFunctionId() == job.GetFunctionId());
-            });
-
-            if (jobs.end() == duplicateIt)
-            {
-               jobs.emplace_back(std::move(job));
-            }
-
-            break;
+            jobs.emplace_back(std::move(job));
          }
-         case EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH:
+         else
          {
-            const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
-               [&](const Job& collectionJob)
-            {
-               return (collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId() && collectionJob.GetFunctionId() == job.GetFunctionId());
-            });
-
-            if (jobs.end() == duplicateIt)
-            {
-               jobs.emplace_back(std::move(job));
-            }
-            else
-            {
-               *(duplicateIt) = std::move(job);
-            }
-
-            break;
+            *(duplicateIt) = std::move(job);
          }
+
+         break;
+      }
       }
    }
 
@@ -123,7 +124,7 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SpinRenderThreadJobs()
    {
-      auto& renderThreadChain = mRenderThreadSwapChain.Tasks[uint8_t(mRenderThreadSwapChain.ReadChainType)];
+      auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.ReadChainType.load()));
       auto countRenderThreadJobs = renderThreadChain.size();
       while (countRenderThreadJobs)
       {
@@ -132,16 +133,14 @@ namespace Thread
          renderThreadChain.pop_front();
          --countRenderThreadJobs;
       }
+
       SwapRenderThreadChain();
    }
 
    void InterThreadCommunicationMgr::SwapRenderThreadChain()
    {
-      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOpMutex);
-      assert(mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 && mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_2 
-         || mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_2 && mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_1);
-
+      std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
       mRenderThreadSwapChain.ReadChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
-      mRenderThreadSwapChain.WriteChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
+      mRenderThreadSwapChain.WriteChainType = mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
    }
 }
