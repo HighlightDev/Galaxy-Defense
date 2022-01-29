@@ -9,37 +9,27 @@ using namespace EngineMath;
 namespace Game
 {
 
-   SceneComponent::SceneComponent(const std::string& gameObjectName)
-      : Component(gameObjectName)
-      , bTransformationDirty(true)
-      , mTransform(std::make_shared<Transform>())
-      , m_additionalRotationEuler()
-      , m_relativeMatrix(1)
-      , m_sceneWP()
+   SceneComponent::SceneComponent(const std::string &gameObjectName)
+       : Component(gameObjectName), bTransformationDirty(true), mTransform(std::make_shared<Transform>()), m_additionalRotationEuler(), m_relativeMatrix(1), m_sceneWP()
    {
    }
 
-   SceneComponent::SceneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
-      : Component(gameObjectName)
-      , bTransformationDirty(true)
-      , mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale))
-      , m_additionalRotationEuler()
-      , m_relativeMatrix(1)
-      , m_sceneWP()
+   SceneComponent::SceneComponent(const std::string &gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
+       : Component(gameObjectName), bTransformationDirty(true), mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale)), m_additionalRotationEuler(), m_relativeMatrix(1), m_sceneWP()
    {
    }
 
-	SceneComponent::~SceneComponent()
-	{
-	}
+   SceneComponent::~SceneComponent()
+   {
+   }
 
-	void SceneComponent::Tick(const float deltaTime)
-	{
+   void SceneComponent::Tick(const float deltaTime)
+   {
       if (!mIsEnabled)
          return;
-	}
+   }
 
-   void SceneComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void SceneComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
    }
 
@@ -52,22 +42,20 @@ namespace Game
    {
       mTransform->Translation = mTransform->Translation + AXIS_UP * offsetValue;
    }
+#include <iostream>
 
-   void SceneComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+   void SceneComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
    {
       if (!mIsEnabled)
          return;
 
       // Update current relative matrix
 
-      glm::mat4 identityMatrix(1);
+      const glm::mat4 identityMatrix(1);
       m_relativeMatrix = identityMatrix;
-
-      glm::mat4 translationMatrix = glm::translate(identityMatrix, mTransform->Translation);
-
       m_relativeMatrix *= parentRelativeMatrix;
       m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
-      m_relativeMatrix *= translationMatrix;
+      m_relativeMatrix *= glm::translate(identityMatrix, mTransform->Translation);
 
       if (bIsRootComponent)
       {
@@ -75,8 +63,8 @@ namespace Game
          m_relativeMatrix *= cameraYawRotation;
       }
 
-      glm::mat4 rotationMatrix = glm::toMat4(mTransform->Rotator);
-      m_relativeMatrix *= rotationMatrix;
+      const auto nRotator = glm::normalize(mTransform->Rotator);
+      m_relativeMatrix *= glm::toMat4(nRotator);
 
       SetIsTransformationDirty(false);
    }
@@ -91,13 +79,13 @@ namespace Game
       bTransformationDirty = true;
    }
 
-   void SceneComponent::SetTranslation(const glm::vec3& translation)
+   void SceneComponent::SetTranslation(const glm::vec3 &translation)
    {
       mTransform->Translation = translation;
       SetIsTransformationDirty(true);
    }
 
-   void SceneComponent::SetRotator(const glm::quat& rotator)
+   void SceneComponent::SetRotator(const glm::quat &rotator)
    {
       mTransform->Rotator = rotator;
       SetIsTransformationDirty(true);
@@ -109,17 +97,19 @@ namespace Game
       SetIsTransformationDirty(true);
    }
 
-   void SceneComponent::SetAdditionalRotation(const glm::vec3& rotationEuler, const bool bTriggerTransformUpdateEvent)
+   void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationEuler, const bool bTriggerTransformUpdateEvent)
    {
       m_additionalRotationEuler = rotationEuler;
       SetIsTransformationDirty(true);
    }
 
-   std::weak_ptr<Transform> SceneComponent::GetTransformWeakPtr() const {
+   std::weak_ptr<Transform> SceneComponent::GetTransformWeakPtr() const
+   {
       return mTransform;
    }
 
-   bool SceneComponent::GetIsTransformationDirty() const {
+   bool SceneComponent::GetIsTransformationDirty() const
+   {
       return bTransformationDirty;
    }
 
