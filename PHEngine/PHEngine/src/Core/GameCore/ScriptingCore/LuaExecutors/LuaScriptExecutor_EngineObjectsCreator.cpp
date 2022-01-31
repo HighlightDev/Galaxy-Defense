@@ -2,7 +2,7 @@
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/MainThirdPersonCamera.h"
+#include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/IoCore/FolderManager.h"
@@ -41,6 +41,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
 
       LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Register(mLuaInstance, "_CreateThirdPersonCamera");
+      LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, glm::vec3)>::Register(mLuaInstance, "_CreateFirstPersonCamera");
 
       LuaRegisterCallback<LuaExecutor_t, void(Actor *, Component *)>::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor *)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
@@ -90,12 +91,12 @@ namespace Game
    }
 
    /* -------------------  Load asynchronously resources by names ----------------------------*/
-   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string>& asyncLoadNamesData)
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<LuaArgDummyPlaceholder<>, std::string> &asyncLoadNamesData)
    {
-      const std::string& resourcesNamesStr = std::get<1>(asyncLoadNamesData);
+      const std::string &resourcesNamesStr = std::get<1>(asyncLoadNamesData);
       assert(!resourcesNamesStr.empty());
 
-      const std::vector<std::string>& resourceNames = Split(resourcesNamesStr, ',');
+      const std::vector<std::string> &resourceNames = Split(resourcesNamesStr, ',');
 
       for (std::string resName : resourceNames)
       {
@@ -133,6 +134,29 @@ namespace Game
       assert((componentExists, "Sought component doesn't exist"));
 
       actor->AddComponent(mActiveComponents[component->GetObjectId()]);
+   }
+
+   /* -------------------  Create first person camera ----------------------------*/
+   void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string /*cameraName*/,
+                                                                                    glm::ivec4 /*viewPort*/,
+                                                                                    float /*initPitchDeg*/,
+                                                                                    float /*initYawDeg*/,
+                                                                                    glm::vec3 /*init camera position*/> &cameraData)
+   {
+      if (auto scene = mSceneWP.lock())
+      {
+         const glm::ivec4 &viewPortData = std::get<1>(cameraData);
+
+         const auto &firstPersonCamera = EngineObjectCreator::CreateFirstPersonCamera(
+             std::get<0>(cameraData),
+             scene,
+             ViewPortInfo(viewPortData.x, viewPortData.y, viewPortData.z, viewPortData.w),
+             std::get<2>(cameraData),
+             std::get<3>(cameraData),
+             std::get<4>(cameraData));
+
+         scene->RegisterCamera(firstPersonCamera);
+      }
    }
 
    /* -------------------  Create third person camera ----------------------------*/
@@ -175,14 +199,14 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          auto camera = scene->GetMainCamera();
-         assert(camera && ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType());
+         assert(camera && eCameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
                                      [&](const std::shared_ptr<Actor> &sceneActor)
                                      { return sceneActor->GetObjectId() == actor->GetObjectId(); });
          assert(actorIt != scene->GetActors().end());
 
-         scene->SetPlayerController(std::make_shared<PlayerController>((*actorIt)));
+         scene->SetPlayerController(std::make_shared<PlayerController>(camera, (*actorIt)));
          std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetGameObjectName());
       }
    }
@@ -348,7 +372,7 @@ namespace Game
    IMaterial *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, LuaArgDummyPlaceholder<>> &buildMaterial)
    {
       MaterialParser materialParser;
-      const std::string& materialName = std::get<0>(buildMaterial);
+      const std::string &materialName = std::get<0>(buildMaterial);
       return materialParser.ParseMaterialDescriptor(materialName);
    }
 
@@ -356,9 +380,9 @@ namespace Game
    void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<IMaterial *, std::string, std::string> &setTextureToMaterial)
    {
       IMaterial *material = std::get<0>(setTextureToMaterial);
-      const std::string& textureNames = std::get<1>(setTextureToMaterial);
+      const std::string &textureNames = std::get<1>(setTextureToMaterial);
       const std::string &propertyName = std::get<2>(setTextureToMaterial);
-      const auto& texture = TexturePool::GetInstance()->GetOrAllocateResource(textureNames);
+      const auto &texture = TexturePool::GetInstance()->GetOrAllocateResource(textureNames);
       MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, texture);
    }
 

@@ -23,7 +23,6 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/MainThirdPersonCamera.h"
 #include "Core/IoCore/FolderManager.h"
 
 #include <TinyLogger/LogInterface.h>
@@ -38,7 +37,7 @@ namespace Game
    {
       std::shared_ptr<SerializeDataCamera> cameraData;
 
-      if (ACamera::CameraType::SECONDARY_THIRD_PERSON_CAMERA & camera->GetCameraType())
+      if (eCameraType::SECONDARY_THIRD_PERSON_CAMERA & camera->GetCameraType())
       {
          // third person camera
          auto thirdPersonCameraData = std::make_shared<SerializeDataThirdPersonCamera>();
@@ -48,7 +47,7 @@ namespace Game
          thirdPersonCameraData->CameraDistanceToThirdPersonTarget = thirdPersonCamera->GetMaxDistanceFromTargetToCamera();
          thirdPersonCameraData->ThirdPersonTargetActorName = thirdPersonCamera->GetThirdPersonTarget()->GetName();
       }
-      else if (ACamera::CameraType::SECONDARY_FIRST_PERSON_CAMERA & camera->GetCameraType())
+      else if (eCameraType::SECONDARY_FIRST_PERSON_CAMERA & camera->GetCameraType())
       {
          // first person camera
          auto firstPersonCameraData = std::make_shared<SerializeDataFirstPersonCamera>();
@@ -283,19 +282,11 @@ namespace Game
          assert(thpCameraData);
 
          std::shared_ptr<ThirdPersonCamera> thirdPersonCamera;
+         const eCameraType cameraType = cameraTypeName == "MainThirdPersonCamera" ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
+         outIsMainSceneCamera = eCameraType::MAIN_THIRD_PERSON_CAMERA == cameraType;
 
-         if (cameraTypeName == "ThirdPersonCamera")
-         {
-            thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
-                                                                    thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
-         }
-         else if (cameraTypeName == "MainThirdPersonCamera")
-         {
-            outIsMainSceneCamera = true;
-            thirdPersonCamera = std::make_shared<MainThirdPersonCamera>(thpCameraData->CameraName, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
-                                                                        thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
-         }
-
+         thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, cameraType, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
+                                                                 thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
          thirdPersonCamera->SetThirdPersonTargetDeferred(thpCameraData->ThirdPersonTargetActorName);
 
          result = thirdPersonCamera;

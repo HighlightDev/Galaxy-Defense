@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
+#include "Core/GameCore/Input/MouseBindings.h"
 
 namespace Game
 {
@@ -10,6 +11,8 @@ namespace Game
    {
 
       KeyboardBindings m_keyboardBindings;
+
+      MouseBindings m_mouseBindings;
 
    public:
 
@@ -28,7 +31,9 @@ namespace Game
 
       std::vector<eKeyActionType> GetPressedKeyActions();
 
-      const KeyboardBindings& GetKeyboardBindings() const;
+      KeyboardBindings& GetKeyboardBindings();
+
+      MouseBindings& GetMouseBindings();
    };
 
 }

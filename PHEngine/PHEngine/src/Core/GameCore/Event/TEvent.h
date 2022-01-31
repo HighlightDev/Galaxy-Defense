@@ -46,12 +46,12 @@ namespace Event
       }
 
       template <typename... DataTypesT>
-      void SendEvent(ExecutionOrder order, DataTypesT&&... data)
+      void SendEvent(const ExecutionOrder order, DataTypesT&&... data)
       {
          mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
       }
 
-      void ProcessCachedEvents(ExecutionOrder currentOrder)
+      void ProcessCachedEvents(const ExecutionOrder currentOrder)
       {
          while (mPolicy[currentOrder].HasData())
          {

@@ -8,9 +8,8 @@
 namespace Game
 {
 
-   PlayerController::PlayerController(std::shared_ptr<Actor> playerActor)
-      : m_playerPhysicsComponent()
-      , m_playerActor(playerActor)
+   PlayerController::PlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
+       : m_playerPhysicsComponent(), m_camera(playerCamera), m_playerActor(playerActor)
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
 
@@ -28,7 +27,7 @@ namespace Game
 
       assert(m_playerActor);
 
-      const auto& rootComponent = m_playerActor->GetBaseRootComponent();
+      const auto &rootComponent = m_playerActor->GetBaseRootComponent();
 
       assert(rootComponent);
       assert(m_playerPhysicsComponent);
@@ -36,7 +35,7 @@ namespace Game
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t& data)
+   void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
    {
       std::string actorName = std::move(std::get<0>(data));
 
@@ -61,38 +60,52 @@ namespace Game
       assert(m_playerActor);
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-      std::shared_ptr<CharacterMovementComponent> movementComponent = m_playerActor->GetMovementComponent();
+      std::shared_ptr<CharacterMovementComponent> characterMovementComponent = m_playerActor->GetCharacterMovementComponent();
 
-      if (movementComponent->GetIsCameraRotationDirty())
+      if (characterMovementComponent->GetIsCameraRotationDirty())
       {
-         rootComponent->SetAdditionalRotation(movementComponent->GetCameraPitchYawRoll());
-         movementComponent->SetIsCameraRotationDirty(false);
+         rootComponent->SetAdditionalRotation(characterMovementComponent->GetCameraPitchYawRoll());
+         characterMovementComponent->SetIsCameraRotationDirty(false);
       }
 
       if (m_playerActor->GetInputComponent())
       {
-         const auto& inputComponent = m_playerActor->GetInputComponent();
-         const std::vector<eKeyActionType>& currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
-         const std::vector<eKeyActionType>& currentFramePressedKeys = inputComponent->GetPressedKeyActions();
+         const auto &inputComponent = m_playerActor->GetInputComponent();
 
-         const auto& bindings = inputComponent->GetKeyboardBindings();
-         if (bindings.HasPressedKeys())
+         auto &mouseBindings = inputComponent->GetMouseBindings();
+         if (mouseBindings.IsMouseMoveEventDirty())
          {
-            if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
-            {
-               m_playerPhysicsComponent->SetWalkVelocity(movementComponent->GetVelocity());
-            }
-            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT)) {}
-            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT)) {}
-            else if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK)) {}
+            const auto &mouseMoveQueue = mouseBindings.FlushMouseMoveEvent();
+            m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
+         }
 
-            if (KeyState::PRESSED == bindings.GetKeyState(eKeyActionType::ACTION_JUMP))
+         const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
+         if (keyboardBindings.HasPressedKeys())
+         {
+            if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
+            {
+               m_playerPhysicsComponent->SetWalkVelocity(characterMovementComponent->GetVelocity());
+            }
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
+            {
+            }
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
+            {
+            }
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
+            {
+            }
+
+            if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
                m_playerPhysicsComponent->SetJumpVelocity();
             }
          }
 
-         // Buttons which have been released 
+         const std::vector<eKeyActionType> &currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
+         const std::vector<eKeyActionType> &currentFramePressedKeys = inputComponent->GetPressedKeyActions();
+
+         // Buttons which have been released
          if (currentFrameReleasedKeys.size())
          {
             auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
@@ -102,7 +115,7 @@ namespace Game
             }
          }
 
-         // Buttons which have been pressed 
+         // Buttons which have been pressed
          if (currentFramePressedKeys.size())
          {
             auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
@@ -112,7 +125,6 @@ namespace Game
             }
          }
       }
-
    }
 
 }

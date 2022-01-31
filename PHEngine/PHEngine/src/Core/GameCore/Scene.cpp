@@ -12,12 +12,11 @@ using namespace Graphics;
 namespace Game
 {
 
-   Scene::Scene(InterThreadCommunicationMgr& interThreadMgr)
-      : GameObject("EngineScene")
-      , mPhysicsWorld(new PhysicsWorld())
-      , m_interThreadMgr(interThreadMgr)
-      , mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec"))
-      , mActiveCameras()
+   Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
+       : GameObject("EngineScene"), mPhysicsWorld(new PhysicsWorld()),
+         m_interThreadMgr(interThreadMgr),
+         mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec")),
+         mActiveCameras()
    {
       RegisterGameObject(this);
       mPhysicsWorld->InitPhysicsWorld();
@@ -26,13 +25,13 @@ namespace Game
 
    void Scene::PostLevelInit()
    {
-      for (auto& actor : mActors)
+      for (auto &actor : mActors)
       {
          actor->SetScene(mMeSharedPtr);
          actor->PostLevelInit();
       }
 
-      for (auto& camera : mActiveCameras)
+      for (auto &camera : mActiveCameras)
       {
          camera->PostLevelInit();
       }
@@ -40,7 +39,7 @@ namespace Game
 
    void Scene::PostPhysicsInitialize()
    {
-      for (auto& actor : mActors)
+      for (auto &actor : mActors)
       {
          actor->PostPhysicsInitialize();
       }
@@ -83,7 +82,7 @@ namespace Game
          mDynamicMaterials.push_back(dynamicMaterial);
       }
 
-      const auto& materialProxy = material->CreateMaterialProxy();
+      const auto &materialProxy = material->CreateMaterialProxy();
       material->MaterialProxyId = materialProxy->GetSceneProxyId();
 
       MaterialProxyAdded_OnRenderThread(materialProxy->GetSceneProxyId(), materialProxy);
@@ -91,19 +90,20 @@ namespace Game
       return materialProxy;
    }
 
-   const InterThreadCommunicationMgr& Scene::GetThreadManager() const
+   const InterThreadCommunicationMgr &Scene::GetThreadManager() const
    {
       return m_interThreadMgr;
    }
 
-   EnginePhysics::PhysicsWorld* Scene::GetPhysicsWorld() const
+   EnginePhysics::PhysicsWorld *Scene::GetPhysicsWorld() const
    {
       return mPhysicsWorld;
    }
 
-   std::shared_ptr<ACamera> Scene::GetCamera(const std::string& cameraName) const
+   std::shared_ptr<ACamera> Scene::GetCamera(const std::string &cameraName) const
    {
-      auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto& cameraPtr) { return cameraPtr->GetGameObjectName() == cameraName; });
+      auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto &cameraPtr)
+                                   { return cameraPtr->GetGameObjectName() == cameraName; });
 
       if (cameraIt != mActiveCameras.end())
       {
@@ -124,34 +124,36 @@ namespace Game
       return mMainCamera;
    }
 
-   const std::vector<std::shared_ptr<Actor>>& Scene::GetActors() const
+   const std::vector<std::shared_ptr<Actor>> &Scene::GetActors() const
    {
       return mActors;
    }
 
-   std::shared_ptr<Actor> Scene::GetActor(const std::string& name) const
+   std::shared_ptr<Actor> Scene::GetActor(const std::string &name) const
    {
-      auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto& actor) { return actor->GetGameObjectName() == name;  });
+      auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto &actor)
+                                     { return actor->GetGameObjectName() == name; });
       assert(foundActor != mActors.end());
       return *foundActor;
    }
 
    std::shared_ptr<IMaterial> Scene::GetMaterialByProxyId(const size_t proxyId) const
    {
-      const auto materialIt = std::find_if(mMaterials.begin(), mMaterials.end(), [=](const auto& material) { return material->MaterialProxyId == proxyId; });
+      const auto materialIt = std::find_if(mMaterials.begin(), mMaterials.end(), [=](const auto &material)
+                                           { return material->MaterialProxyId == proxyId; });
       return materialIt != mMaterials.end() ? *materialIt : nullptr;
    }
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
    {
-      const std::string& goName = actor->GetGameObjectName();
+      const std::string &goName = actor->GetGameObjectName();
       RegisterGameObject(actor.get());
       mActors.emplace_back(actor);
    }
 
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
    {
-      const std::string& goName = actor->GetGameObjectName();
+      const std::string &goName = actor->GetGameObjectName();
       if (!GameObjects.count(goName))
       {
          GameObjects.erase(goName);
@@ -162,9 +164,9 @@ namespace Game
          mActors.erase(it);
    }
 
-   GameObject* Scene::GetGameObjectByName(const std::string& name) const
+   GameObject *Scene::GetGameObjectByName(const std::string &name) const
    {
-      GameObject* go = nullptr;
+      GameObject *go = nullptr;
 
       if (GameObjects.count(name))
       {
@@ -174,9 +176,9 @@ namespace Game
       return go;
    }
 
-   IDeferredResourceCreator* Scene::GetDeferredResourceCreatorByName(const std::string& name) const
+   IDeferredResourceCreator *Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
-      IDeferredResourceCreator* creatorInstance = nullptr;
+      IDeferredResourceCreator *creatorInstance = nullptr;
 
       if (mDeferredResourceCreators.count(name))
       {
@@ -208,80 +210,72 @@ namespace Game
 
    void Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
    {
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-               Job(creatorObjectId, functionId, [=]()
-            {
-               sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetEnabled(bEnabled);
-            }));
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        { sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetEnabled(bEnabled); }));
          }
       }
    }
 
    void Scene::UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
    {
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-               Job(creatorObjectId, functionId, [=]()
-            {
-               sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetVisibility(visibility);
-            }));
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        { sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetVisibility(visibility); }));
          }
       }
    }
 
    void Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-      const uint64_t functionId, const glm::mat4& newRelativeMatrix, const BoundingBox& newTransformedBoundingBox)
+                                                                const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox &newTransformedBoundingBox)
    {
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-               Job(creatorObjectId, functionId, [=]()
-            {
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        {
                auto& sceneProxy = sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex];
                sceneProxy->SetTransformationMatrix(newRelativeMatrix);
-               sceneProxy->SetTransformedBoundingBox(newTransformedBoundingBox);
-            }));
+               sceneProxy->SetTransformedBoundingBox(newTransformedBoundingBox); }));
          }
       }
    }
 
-   void Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera* camera)
+   void Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera)
    {
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->SceneViewsMap.count(sceneProxyId))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-               Job(creatorObjectId, functionId, [=]()
-            {
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        {
                auto sceneView = sceneRenderer->SceneViewsMap[sceneProxyId];
                sceneView->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
-               sceneView->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix());
-            }));
+               sceneView->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix()); }));
          }
       }
    }
 
-   void Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix)
+   void Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
    {
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->LightProxiesMap.count(lightSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-               Job(creatorObjectId, functionId, [=]()
-            {
-               sceneRenderer->LightProxiesMap[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
-            }));
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        { sceneRenderer->LightProxiesMap[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix); }));
          }
       }
    }
@@ -291,16 +285,15 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyDeleted_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-               Job(creatorObjectId, functionId, [=]()
-            {
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        {
                sceneRenderer->SceneProxiesMap.erase(primitiveSceneProxyIndex);
-               sceneRenderer->SetProxiesAreDirty(true);
-            }));
+               sceneRenderer->SetProxiesAreDirty(true); }));
          }
       }
    }
@@ -310,13 +303,11 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-            Job(creatorObjectId, functionId, [=]()
-         {
-            sceneRenderer->SetProxiesAreDirty(true);
-         }));
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->SetProxiesAreDirty(true); }));
       }
    }
 
@@ -325,16 +316,15 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxyDeleted_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          if (sceneRenderer->LightProxiesMap.count(lightSceneProxyIndex))
          {
             m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-               Job(creatorObjectId, functionId, [=]()
-            {
+                                                    Job(creatorObjectId, functionId, [=]()
+                                                        {
                sceneRenderer->LightProxiesMap.erase(lightSceneProxyIndex);
-               sceneRenderer->SetLightProxiesAreDirty(true);
-            }));
+               sceneRenderer->SetLightProxiesAreDirty(true); }));
          }
       }
    }
@@ -344,13 +334,11 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxiesUpdated_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-            Job(creatorObjectId, functionId, [=]()
-         {
-            sceneRenderer->SetLightProxiesAreDirty(true);
-         }));
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->SetLightProxiesAreDirty(true); }));
       }
    }
 
@@ -359,13 +347,11 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::CameraSceneProxyAdded_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
-            sceneRenderer->SceneViewsMap.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->SceneProxiesMap));
-         }));
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->SceneViewsMap.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->SceneProxiesMap)); }));
       }
    }
 
@@ -374,14 +360,13 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyAdded_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
             sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex] = primitiveSceneProxy;
-            sceneRenderer->SetProxiesAreDirty(true);
-         }));
+            sceneRenderer->SetProxiesAreDirty(true); }));
       }
    }
 
@@ -390,14 +375,13 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
             sceneRenderer->LightProxiesMap[primitiveSceneProxyIndex] = lightSceneProxy;
-            sceneRenderer->SetLightProxiesAreDirty(true);
-         }));
+            sceneRenderer->SetLightProxiesAreDirty(true); }));
       }
    }
 
@@ -406,13 +390,11 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
-            sceneRenderer->MaterialProxiesMap[materialProxyIndex] = materialProxy;
-         }));
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->MaterialProxiesMap[materialProxyIndex] = materialProxy; }));
       }
    }
 
@@ -421,13 +403,11 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]() mutable
-         {
-            sceneRenderer->MaterialProxiesMap.at(materialProxyIndex)->UpdateProperties(std::move(properties));
-         }));
+                                                 Job(creatorObjectId, functionId, [=]() mutable
+                                                     { sceneRenderer->MaterialProxiesMap.at(materialProxyIndex)->UpdateProperties(std::move(properties)); }));
       }
    }
 
@@ -436,77 +416,77 @@ namespace Game
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PlanarReflectionSceneProxyAdded");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
             sceneRenderer->PlanarReflectionProxiesMap[planarReflectionSceneProxyId] = proxy;
-            sceneRenderer->SetPlanarReflectionProxiesAreDirty(true);
-         }));
+            sceneRenderer->SetPlanarReflectionProxiesAreDirty(true); }));
       }
    }
 
-   void Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera* cameraOwner)
+   void Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner)
    {
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          const auto proxyId = cameraOwner->SceneProxyId;
 
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
-            Job(creatorObjectId, functionId, [=]()
-         {
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
             const auto& sceneViews = sceneRenderer->SceneViewsMap;
             if (sceneViews.count(proxyId))
             {
                planarReflectionProxy->SetSceneViewWeakPtr(sceneViews.at(proxyId));
-            }
-         }));
+            } }));
       }
    }
 
 #if DEBUG
-   void Scene::UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData)
+   void Scene::UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData)
    {
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
 
-      if (const auto& sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-            Job(creatorObjectId, functionId, [=]()
-         {
-            sceneRenderer->SetDebugPhysicsRenderData(physRenderData);
-         }));
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->SetDebugPhysicsRenderData(physRenderData); }));
       }
    }
 #endif
 
    void Scene::Tick_GameThread(float delta)
    {
-      constexpr float inv_PhysicsStep = 1.0f  / 260.0f;
+      constexpr float inv_PhysicsStep = 1.0f / 260.0f;
       const float physTickStep = delta * (inv_PhysicsStep / delta);
 
       mGameThreadDeltaSec.SetValue(delta);
 
       mPhysicsWorld->Tick(physTickStep);
 
-      for (const auto& cameraPtr : mActiveCameras)
+      for (const auto &cameraPtr : mActiveCameras)
       {
          cameraPtr->Tick(delta);
       }
 
-      mPlayerController->Tick(delta);
+      if (mPlayerController)
+      {
+         mPlayerController->Tick(delta);
+      }
 
-      for (auto& actor : mActors)
+      for (auto &actor : mActors)
       {
          actor->Tick(delta);
       }
 
-      for (auto& dynamicMaterial : mDynamicMaterials) {
+      for (auto &dynamicMaterial : mDynamicMaterials)
+      {
          dynamicMaterial->Tick(delta);
       }
 
@@ -537,8 +517,7 @@ namespace Game
          LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
       }
 
-
-      if (Actor* ownerActor = component->GetOwner())
+      if (Actor *ownerActor = component->GetOwner())
       {
          if ((type & ComponentType::CHARACTER_MOVEMENT_COMPONENT) == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
          {
@@ -557,16 +536,16 @@ namespace Game
       RemoveGameObject(component.get());
    }
 
-   void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component>& component)
+   void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
       ComponentType type = component->GetComponentType();
       if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
       {
-         SceneComponent* sceneComponentPtr = static_cast<SceneComponent*>(component.get());
+         SceneComponent *sceneComponentPtr = static_cast<SceneComponent *>(component.get());
          sceneComponentPtr->SetScene(mMeSharedPtr);
          if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
          {
-            PrimitiveComponent* componentPtr = static_cast<PrimitiveComponent*>(sceneComponentPtr);
+            PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);
 
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
@@ -574,14 +553,14 @@ namespace Game
          }
          else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
          {
-            LightComponent* componentPtr = static_cast<LightComponent*>(sceneComponentPtr);
+            LightComponent *componentPtr = static_cast<LightComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->LightSceneProxyId = sceneProxySp->GetSceneProxyId();
             LightSceneProxyAdded_OnRenderThread(componentPtr->LightSceneProxyId, sceneProxySp);
          }
          else if ((type & ComponentType::PLANAR_REFLECTION_COMPONENT) == ComponentType::PLANAR_REFLECTION_COMPONENT)
          {
-            PlanarReflectionComponent* componentPtr = static_cast<PlanarReflectionComponent*>(sceneComponentPtr);
+            PlanarReflectionComponent *componentPtr = static_cast<PlanarReflectionComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreatePlanarReflectionProxy();
             BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, componentPtr->GetOwnerCamera());
             componentPtr->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
@@ -590,7 +569,7 @@ namespace Game
       }
    }
 
-   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string& gameObjectName)
+   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName)
    {
       // Add deferred resource creator instance
       assert(!mDeferredResourceCreators.count(gameObjectName));
@@ -599,7 +578,7 @@ namespace Game
       return true;
    }
 
-   bool Scene::RemoveDeferredResourceCreator(const std::string& gameObjectName)
+   bool Scene::RemoveDeferredResourceCreator(const std::string &gameObjectName)
    {
       // Remove deferred resource creator instance
       if (mDeferredResourceCreators.count(gameObjectName))
@@ -611,9 +590,9 @@ namespace Game
       return false;
    }
 
-   bool Scene::RegisterGameObject(GameObject* const gameObjectPtr)
+   bool Scene::RegisterGameObject(GameObject *const gameObjectPtr)
    {
-      const std::string& goName = gameObjectPtr->GetGameObjectName();
+      const std::string &goName = gameObjectPtr->GetGameObjectName();
 
       // Add game object
       assert(!GameObjects.count(goName));
@@ -622,9 +601,9 @@ namespace Game
       return true;
    }
 
-   bool Scene::RemoveGameObject(GameObject* const gameObjectPtr)
+   bool Scene::RemoveGameObject(GameObject *const gameObjectPtr)
    {
-      const std::string& goName = gameObjectPtr->GetGameObjectName();
+      const std::string &goName = gameObjectPtr->GetGameObjectName();
 
       // Remove game object
       if (GameObjects.count(goName))

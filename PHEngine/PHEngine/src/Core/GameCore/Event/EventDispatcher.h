@@ -40,7 +40,7 @@ namespace Event {
    {
       using EventTypes_t = std::tuple<EventTypes...>;
 
-      static constexpr size_t registeredEventsCount = std::tuple_size<std::tuple<EventTypes...>>::value;
+      static constexpr size_t registeredEventsCount = std::tuple_size<EventTypes_t>::value;
 
       static void ProcessEvents(ExecutionOrder order) {
 

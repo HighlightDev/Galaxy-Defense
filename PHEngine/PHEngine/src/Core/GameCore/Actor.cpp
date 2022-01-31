@@ -18,7 +18,7 @@ namespace Game
       , mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool& visibility) { SyncComponentsVisibility(visibility); })))
       , mIsEnabled(true)
       , m_inputComponent(nullptr)
-      , m_movementComponent(nullptr)
+      , m_characterMovementComponent(nullptr)
       , mTweener(nullptr)
       , m_parent(nullptr)
    {
@@ -67,8 +67,8 @@ namespace Game
       if (m_inputComponent)
          m_inputComponent->PostLevelInit();
 
-      if (m_movementComponent)
-         m_movementComponent->PostLevelInit();
+      if (m_characterMovementComponent)
+         m_characterMovementComponent->PostLevelInit();
    }
 
    void Actor::CollectDataForSerialization(SerializeDataContainer& dataContainer)
@@ -98,9 +98,9 @@ namespace Game
          m_inputComponent->CollectDataForSerialization(dataContainer);
       }
 
-      if (m_movementComponent)
+      if (m_characterMovementComponent)
       {
-         m_movementComponent->CollectDataForSerialization(dataContainer);
+         m_characterMovementComponent->CollectDataForSerialization(dataContainer);
       }
 
       if (mTweener)
@@ -237,8 +237,8 @@ namespace Game
       if (m_inputComponent)
          m_inputComponent->Tick(deltaTime);
 
-      if (m_movementComponent)
-         m_movementComponent->Tick(deltaTime);
+      if (m_characterMovementComponent)
+         m_characterMovementComponent->Tick(deltaTime);
 
       if (mTweener)
          mTweener->Tick(deltaTime);
@@ -250,7 +250,7 @@ namespace Game
 
       if (component->GetComponentType() == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
       {
-         m_movementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
+         m_characterMovementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
       }
       else if (component->GetComponentType() == ComponentType::INPUT_COMPONENT)
       {
@@ -278,7 +278,7 @@ namespace Game
 
    void Actor::RemoveMovementComponent()
    {
-      m_movementComponent = std::shared_ptr<CharacterMovementComponent>(nullptr);
+      m_characterMovementComponent = std::shared_ptr<CharacterMovementComponent>(nullptr);
    }
 
    void Actor::RemoveInputComponent()
@@ -391,9 +391,9 @@ namespace Game
       return m_inputComponent;
    }
 
-   std::shared_ptr<CharacterMovementComponent> Actor::GetMovementComponent() const
+   std::shared_ptr<CharacterMovementComponent> Actor::GetCharacterMovementComponent() const
    {
-      return m_movementComponent;
+      return m_characterMovementComponent;
    }
 
    std::shared_ptr<PhysicsComponent> Actor::GetPhysicsComponent() const 

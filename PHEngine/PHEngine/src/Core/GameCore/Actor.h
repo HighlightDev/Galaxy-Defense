@@ -49,7 +49,7 @@ namespace Game
 
       std::shared_ptr<InputComponent> m_inputComponent;
 
-      std::shared_ptr<CharacterMovementComponent> m_movementComponent;
+      std::shared_ptr<CharacterMovementComponent> m_characterMovementComponent;
 
       std::shared_ptr<Tweener> mTweener;
 
@@ -114,7 +114,7 @@ namespace Game
 
       std::shared_ptr<InputComponent> GetInputComponent() const;
 
-      std::shared_ptr<CharacterMovementComponent> GetMovementComponent() const;
+      std::shared_ptr<CharacterMovementComponent> GetCharacterMovementComponent() const;
 
       std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const;
 

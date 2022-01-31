@@ -12,7 +12,7 @@ using namespace IO;
 namespace Game
 {
 
-   ACamera::ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)
+   ACamera::ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)
       : GameObject(cameraName)
       , m_rotateSensetivity(0.08f)
       , mCameraName(cameraName)
@@ -28,7 +28,7 @@ namespace Game
       , mPitchClampValue_min_max(-80, 80)
       , mYaw(initYawDeg)
       , mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y))
-      , m_cameraType(CameraType::UNINITIALIZED)
+      , m_cameraType(cameraType)
    {
    }
 
@@ -99,7 +99,7 @@ namespace Game
       return mCameraName;
    }
 
-   ACamera::CameraType ACamera::GetCameraType() const {
+   eCameraType ACamera::GetCameraType() const {
       return m_cameraType;
    }
 

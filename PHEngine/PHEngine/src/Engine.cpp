@@ -112,17 +112,20 @@ void Engine::ProcessEvents(Event::ExecutionOrder order)
    Event::EngineEventDispatcher::ProcessEvents(order);
 }
 
+#include <iostream>
+
 void Engine::RenderThreadPulse()
 {
    /* RENDER THREAD */
    {
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
+      //std::cout << "spin RT spent sec="<<  mRenderThreadDeltaTimeSeconds << std::endl;
       
       // This should be executed on render thread
       m_interThreadMgr.SpinRenderThreadJobs();
+      mLastRenderThreadPulseTime = Clock_t::now();
 
       m_sceneRenderer->RenderScene_RenderThread();
-      mLastRenderThreadPulseTime = Clock_t::now();
    }
 }
 

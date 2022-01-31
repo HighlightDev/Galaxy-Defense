@@ -32,6 +32,6 @@ namespace Game
 
       virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty);
 
-      enum class eBindingType GetControllerPropertyType() const;
+      enum eBindingType GetControllerPropertyType() const;
    };
 }

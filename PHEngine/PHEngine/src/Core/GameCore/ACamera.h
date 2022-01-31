@@ -21,14 +21,7 @@ namespace Game
    class Scene;
    class PlanarReflectionComponent;
 
-   class ACamera
-      : public GameObject
-      , public ITickable
-      , public ISerializable
-   {
-   public:
-
-      enum CameraType
+      enum eCameraType
       {
          SECONDARY_FIRST_PERSON_CAMERA = 0x0001, // not fully implemented
          MAIN_FIRST_PERSON_CAMERA = (SECONDARY_FIRST_PERSON_CAMERA | 0x0010), // not fully implemented
@@ -37,8 +30,11 @@ namespace Game
          UNINITIALIZED = 0x0,
       };
 
-   private:
-
+   class ACamera
+      : public GameObject
+      , public ITickable
+      , public ISerializable
+   {
       float m_rotateSensetivity;
 
       std::string mCameraName;
@@ -71,7 +67,7 @@ namespace Game
 
       bool bTransformationDirty = false;
 
-      CameraType m_cameraType;
+      eCameraType m_cameraType;
 
    public:
 
@@ -79,7 +75,7 @@ namespace Game
 
    public:
 
-      ACamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
+      ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
 
       virtual ~ACamera();
 
@@ -101,7 +97,7 @@ namespace Game
 
       std::string GetCameraName() const;
 
-      CameraType GetCameraType() const;
+      eCameraType GetCameraType() const;
 
       virtual std::string GetCameraTypeName() const = 0;
 
@@ -135,9 +131,9 @@ namespace Game
 
       ViewPerspectiveInfo GetViewPerspectiveInfo() const;
 
-   protected:
-
       void SetRotation(const int32_t deltaX, const int32_t deltaY);
+
+   protected:
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
 

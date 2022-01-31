@@ -4,6 +4,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
 
 #include <algorithm>
 
@@ -13,18 +14,13 @@
 namespace Game
 {
 
-   ThirdPersonCamera::ThirdPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
-      const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset)
-      : ACamera(cameraName, scene, viewPort, initPitchDeg, initYawDeg)
-      , PlayerMovedEvent()
-      , mThirdPersonTargetGOName("")
-      , bThirdPersonTargetDeferredDirty(false)
-      , m_thirdPersonTargetOffset(thirdPersonTargetOffset)
+   ThirdPersonCamera::ThirdPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
+                                        const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset)
+       : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), PlayerMovedEvent(), mThirdPersonTargetGOName(""), bThirdPersonTargetDeferredDirty(false), m_thirdPersonTargetOffset(thirdPersonTargetOffset)
    {
       PlayerMovedEvent::GetInstance()->AddListener(this);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
-      m_cameraType = ACamera::CameraType::MAIN_THIRD_PERSON_CAMERA;
    }
 
    ThirdPersonCamera::~ThirdPersonCamera()
@@ -32,7 +28,7 @@ namespace Game
       PlayerMovedEvent::GetInstance()->RemoveListener(this);
    }
 
-   void ThirdPersonCamera::ProcessEvent(const PlayerMovedEvent::EventData_t& data)
+   void ThirdPersonCamera::ProcessEvent(const PlayerMovedEvent::EventData_t &data)
    {
       m_bThirdPersonTargetTransformationDirty = true;
       m_lerpTimeElapsed = 0.0f;
@@ -71,7 +67,7 @@ namespace Game
 
          bTransformationDirty = true;
 
-         // If camera is at final position  
+         // If camera is at final position
          if (EngineMath::CompareFloats(m_lerpTimeElapsed, m_timeForInterpolation))
          {
             m_lerpTimeElapsed = 0.0f;
@@ -140,21 +136,28 @@ namespace Game
 
    std::shared_ptr<CameraSceneProxy> ThirdPersonCamera::CreateSceneProxy() const
    {
-      return std::make_shared<CameraSceneProxy>(this);
+      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType)
+      {
+         return std::make_shared<MainCameraSceneProxy>(this);
+      }
+      else
+      {
+         return std::make_shared<CameraSceneProxy>(this);
+      }
    }
 
    std::string ThirdPersonCamera::GetCameraTypeName() const
    {
-      return "ThirdPersonCamera";
+      return eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType ? "MainThirdPersonCamera" : "ThirdPersonCamera";
    }
 
-   void ThirdPersonCamera::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void ThirdPersonCamera::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       auto cameraData = SerializeHelper::GetSerializedDataCamera(this);
       dataContainer.Cameras.emplace_back(cameraData);
    }
 
-   void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string& targetGameObjectName)
+   void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string &targetGameObjectName)
    {
       bThirdPersonTargetDeferredDirty = true;
       mThirdPersonTargetGOName = targetGameObjectName;
@@ -174,7 +177,7 @@ namespace Game
    {
       if (auto sceneSp = mScene.lock())
       {
-         const auto& actor = sceneSp->GetActor(mThirdPersonTargetGOName);
+         const auto &actor = sceneSp->GetActor(mThirdPersonTargetGOName);
          bThirdPersonTargetDeferredDirty = false;
          SetThirdPersonTarget(actor);
       }

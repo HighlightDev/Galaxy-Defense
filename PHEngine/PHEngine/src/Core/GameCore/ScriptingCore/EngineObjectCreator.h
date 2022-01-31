@@ -27,6 +27,8 @@ namespace Game
       static std::shared_ptr<ACamera> CreateThirdPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
                                                               const float initPitchDeg, const float initYawDeg,
                                                               const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset, const bool bIsMainSceneCamera);
+      static std::shared_ptr<ACamera> CreateFirstPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort,
+                                                              const float initPitchDeg, const float initYawDeg, const glm::vec3& cameraPosition);
 
       static std::shared_ptr<Component> CreateComponentByString(const std::string &componentType, ComponentData *data, std::shared_ptr<Scene> scene);
 

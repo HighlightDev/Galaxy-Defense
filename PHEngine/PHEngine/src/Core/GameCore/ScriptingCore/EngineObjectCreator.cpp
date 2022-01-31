@@ -1,7 +1,7 @@
 #include "EngineObjectCreator.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/MainThirdPersonCamera.h"
+#include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/PlatformMovementComponent.h"
@@ -66,20 +66,15 @@ namespace Game
                                                                          const float initPitchDeg, const float initYawDeg,
                                                                          const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset, const bool bIsMainSceneCamera)
    {
-      std::shared_ptr<ACamera> result;
+      const eCameraType thirdPersonCameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
+      return std::make_shared<ThirdPersonCamera>(cameraName, thirdPersonCameraType, scene, viewPort,
+                                                 initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+   }
 
-      if (bIsMainSceneCamera)
-      {
-         result = std::make_shared<MainThirdPersonCamera>(cameraName, scene, viewPort,
-                                                          initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
-      }
-      else
-      {
-         result = std::make_shared<ThirdPersonCamera>(cameraName, scene, viewPort,
-                                                      initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
-      }
-
-      return result;
+   std::shared_ptr<ACamera> EngineObjectCreator::CreateFirstPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
+                                                                         const float initPitchDeg, const float initYawDeg, const glm::vec3 &cameraPosition)
+   {
+      return std::make_shared<FirstPersonCamera>(cameraName, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
    }
 
    std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string &componentType, ComponentData *componentData, std::shared_ptr<Scene> scene)

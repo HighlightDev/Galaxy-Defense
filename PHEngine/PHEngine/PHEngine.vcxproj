@@ -394,7 +394,6 @@
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceCreator.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.h" />
-    <ClInclude Include="src\Core\GameCore\MainThirdPersonCamera.h" />
     <ClInclude Include="src\Core\GraphicsCore\Renderer\RenderState.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.h" />
@@ -897,7 +896,6 @@
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\DeferredShadingGBuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\MainCameraSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GameCore\MainThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\RenderState.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SceneProxyBase.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\CameraSceneProxy.cpp" />

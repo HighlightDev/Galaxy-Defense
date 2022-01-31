@@ -1,6 +1,5 @@
 #include "Level.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/MainThirdPersonCamera.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
@@ -167,7 +166,7 @@ namespace Game
 
          if (actor->GetGameObjectName() == container.PlayerControllerData->BindedActorName)
          {
-            mScene->SetPlayerController(std::make_shared<PlayerController>(actor));
+            mScene->SetPlayerController(std::make_shared<PlayerController>(mScene->GetMainCamera(), actor));
          }
       }
 

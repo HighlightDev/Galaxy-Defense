@@ -7,6 +7,7 @@ namespace Game
    InputComponent::InputComponent(const std::string& gameObjectName)
       : Component(gameObjectName)
       , m_keyboardBindings(std::make_shared<DefaultKeyboardBindings>())
+      , m_mouseBindings()
    {
    }
 
@@ -45,8 +46,12 @@ namespace Game
       dataActor.ComponentsData.emplace_back(inputComp);
    }
 
-   const KeyboardBindings& InputComponent::GetKeyboardBindings() const {
+   KeyboardBindings& InputComponent::GetKeyboardBindings() {
       return m_keyboardBindings;
+   }
+   
+   MouseBindings& InputComponent::GetMouseBindings() {
+      return m_mouseBindings;
    }
 
    void InputComponent::Tick(const float deltaTime) { }

@@ -16,13 +16,15 @@ namespace Game
 
       using Base = Actor;
 
+      std::shared_ptr<ACamera> m_camera;
+
       std::shared_ptr<Actor> m_playerActor;
 
       std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
 
-      PlayerController(std::shared_ptr<Actor> playerActor);
+      PlayerController(std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor);
 
       virtual ~PlayerController();
 

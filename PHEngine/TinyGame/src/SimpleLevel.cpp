@@ -1,35 +1,5 @@
 #include "SimpleLevel.h"
-
-#include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/MainThirdPersonCamera.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
-
-#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/CubemapComponent.h"
-#include "Core/GameCore/Components/ComponentData/CubemapComponentData.h"
-#include "Core/GameCore/Components/PointLightComponent.h"
-#include "Core/GameCore/Components/PlanarReflectionComponent.h"
-#include "Core/GameCore/Components/PlatformMovementComponent.h"
-
-#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-#include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
-#include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
-#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
-#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
-#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
-
-#include "Core/GameCore/GlobalSettings.h"
-#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
-
-#include "Core/GameCore/Physics/PhysicsWorld.h"
-
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
-#include "Core/GraphicsCore/Material/MaterialParser.h"
-
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 
 using namespace Graphics;
@@ -50,7 +20,9 @@ namespace Labyrinth
 
    void SimpleLevel::RunLuaBuildLevelScript()
    {
-      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator("createTestLevel.lua");
+      static constexpr const char* lvlName = "createTestLevel.lua";
+      //"spaceLvl1.lua";
+      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(lvlName);
       mLuaLevelBuilder.PostInit(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
@@ -59,46 +31,6 @@ namespace Labyrinth
    void SimpleLevel::PreLevelInit()
    {
       Base::PreLevelInit();
-
-     // const auto &folderManager = IO::FolderManager::GetInstance();
-
-#define ALLOC_RES_ASYNC(path) ResourceMap::GetInstance()->AllocateAsync(path)
-
-      /*ALLOC_RES_ASYNC("brick_mid.png");
-      ALLOC_RES_ASYNC("brick_nm_mid.png");
-      ALLOC_RES_ASYNC("city_house_2_Col.png");
-      ALLOC_RES_ASYNC("city_house_2_Nor.png");
-      ALLOC_RES_ASYNC("city_house_2_Spec.png");
-      ALLOC_RES_ASYNC("diffuse.png");
-      ALLOC_RES_ASYNC("dummy_nm.png");
-      ALLOC_RES_ASYNC("dayRight.png");
-      ALLOC_RES_ASYNC("dayLeft.png");
-      ALLOC_RES_ASYNC("dayTop.png");
-      ALLOC_RES_ASYNC("dayBottom.png");
-      ALLOC_RES_ASYNC("dayBack.png");
-      ALLOC_RES_ASYNC("dayFront.png");
-
-      ALLOC_RES_ASYNC("nightRight.png");
-      ALLOC_RES_ASYNC("nightLeft.png");
-      ALLOC_RES_ASYNC("nightTop.png");
-      ALLOC_RES_ASYNC("nightBottom.png");
-      ALLOC_RES_ASYNC("nightBack.png");
-      ALLOC_RES_ASYNC("nightFront.png");
-      ALLOC_RES_ASYNC("water_dudv.png");
-      ALLOC_RES_ASYNC("Brick_Medieval_albedo.png");
-      ALLOC_RES_ASYNC("Brick_Medieval_normal.png");
-      ALLOC_RES_ASYNC("Brick_Medieval_roughness.png");
-      ALLOC_RES_ASYNC("Brick_Medieval_metallic.png");
-      ALLOC_RES_ASYNC("dummy_metallic_roughness.png");
-
-      ALLOC_RES_ASYNC("playerCube.obj");
-      ALLOC_RES_ASYNC("witcher.obj");
-      ALLOC_RES_ASYNC("City_House_2_BI.obj");
-      ALLOC_RES_ASYNC("model.dae");
-      ALLOC_RES_ASYNC("player_walk.fbx");*/
-      // ALLOC_RES_ASYNC(GET_REL_PATH_TO_FILE("tina.fbx"));
-
-#undef ALLOC_RES_ASYNC
    }
 
    void SimpleLevel::PostLevelInit()

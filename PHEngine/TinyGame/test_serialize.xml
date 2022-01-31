@@ -3,19 +3,19 @@
 	<value0>
 		<value0>
 			<value0 size="dynamic">
-				<value0>brick_mid.png</value0>
-				<value1>dummy_metallic_roughness.png</value1>
-				<value2>water_dudv.png</value2>
-				<value3>dummy_nm.png</value3>
-				<value4>Brick_Medieval_albedo.png</value4>
-				<value5>brick_nm_mid.png</value5>
-				<value6>Brick_Medieval_normal.png</value6>
-				<value7>spaceship_roughness.jpg</value7>
-				<value8>Brick_Medieval_roughness.png</value8>
-				<value9>Brick_Medieval_metallic.png</value9>
-				<value10>nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png</value10>
-				<value11>spaceship_albedo.jpg</value11>
-				<value12>dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png</value12>
+				<value0>water_dudv.jpg</value0>
+				<value1>dummy_nm.png</value1>
+				<value2>brick_mid.jpg</value2>
+				<value3>spaceship_roughness.jpg</value3>
+				<value4>dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg</value4>
+				<value5>Brick_Medieval_albedo.jpg</value5>
+				<value6>Brick_Medieval_normal.jpg</value6>
+				<value7>nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value7>
+				<value8>brick_nm_mid.jpg</value8>
+				<value9>Brick_Medieval_roughness.jpg</value9>
+				<value10>dummy_metallic_roughness.png</value10>
+				<value11>Brick_Medieval_metallic.jpg</value11>
+				<value12>spaceship_albedo.jpg</value12>
 				<value13>spaceship_normal.jpg</value13>
 				<value14>spaceship_metallic.jpg</value14>
 				<value15>player_walk.fbx</value15>
@@ -60,7 +60,7 @@
 								</value1>
 								<value2>
 									<value0>180.00015258789062</value0>
-									<value1>4.2224416732788086</value1>
+									<value1>-37.561656951904297</value1>
 									<value2>180.00015258789062</value2>
 								</value2>
 								<value3>
@@ -137,12 +137,12 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>brick_mid.png</value2>
+											<value2>brick_mid.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>brick_nm_mid.png</value2>
+											<value2>brick_nm_mid.jpg</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
@@ -210,13 +210,13 @@
 			<value2>
 				<value0>SmallGround</value0>
 				<value1>
-					<value0>-2.0950942039489746</value0>
-					<value1>34.876022338867188</value1>
+					<value0>0</value0>
+					<value1>10</value1>
 					<value2>0</value2>
 				</value1>
 				<value2>
 					<value0>180.00015258789062</value0>
-					<value1>59.054367065429688</value1>
+					<value1>21.174007415771484</value1>
 					<value2>180.00015258789062</value2>
 				</value2>
 				<value3>
@@ -258,12 +258,12 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>brick_mid.png</value2>
+											<value2>brick_mid.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>brick_nm_mid.png</value2>
+											<value2>brick_nm_mid.jpg</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
@@ -388,22 +388,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>Brick_Medieval_albedo.png</value2>
+											<value2>Brick_Medieval_albedo.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>Brick_Medieval_normal.png</value2>
+											<value2>Brick_Medieval_normal.jpg</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>Brick_Medieval_metallic.png</value2>
+											<value2>Brick_Medieval_metallic.jpg</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>Brick_Medieval_roughness.png</value2>
+											<value2>Brick_Medieval_roughness.jpg</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -459,14 +459,14 @@
 			<value4>
 				<value0>House</value0>
 				<value1>
-					<value0>0.57198095321655273</value0>
-					<value1>5.4902153015136719</value1>
-					<value2>-1.1029389497707598e-05</value2>
+					<value0>-nan</value0>
+					<value1>-nan</value1>
+					<value2>-nan</value2>
 				</value1>
 				<value2>
-					<value0>3.2068342989077792e-05</value0>
-					<value1>9.9877433967776597e-05</value1>
-					<value2>0.0002658938174135983</value2>
+					<value0>0</value0>
+					<value1>-0</value1>
+					<value2>0</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -578,14 +578,14 @@
 			<value5>
 				<value0>test</value0>
 				<value1>
-					<value0>15</value0>
-					<value1>5.9990248680114746</value1>
-					<value2>2.0572350822921446e-15</value2>
+					<value0>-nan</value0>
+					<value1>-nan</value1>
+					<value2>-nan</value2>
 				</value1>
 				<value2>
-					<value0>-1.7786319698965755e-14</value0>
-					<value1>-8.9746181609873764e-15</value1>
-					<value2>-8.9025455451974267e-08</value2>
+					<value0>0</value0>
+					<value1>-0</value1>
+					<value2>0</value2>
 				</value2>
 				<value3>
 					<value0>1</value0>
@@ -626,22 +626,22 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>albedo</value1>
-											<value2>Brick_Medieval_albedo.png</value2>
+											<value2>Brick_Medieval_albedo.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>normalMap</value1>
-											<value2>Brick_Medieval_normal.png</value2>
+											<value2>Brick_Medieval_normal.jpg</value2>
 										</value1>
 										<value2>
 											<value0>texture</value0>
 											<value1>metallicMap</value1>
-											<value2>Brick_Medieval_metallic.png</value2>
+											<value2>Brick_Medieval_metallic.jpg</value2>
 										</value2>
 										<value3>
 											<value0>texture</value0>
 											<value1>roughnessMap</value1>
-											<value2>Brick_Medieval_roughness.png</value2>
+											<value2>Brick_Medieval_roughness.jpg</value2>
 										</value3>
 										<value4>
 											<value0>texture</value0>
@@ -779,17 +779,17 @@
 										<value0>
 											<value0>texture</value0>
 											<value1>dayTexture</value1>
-											<value2>dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png</value2>
+											<value2>dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg</value2>
 										</value0>
 										<value1>
 											<value0>texture</value0>
 											<value1>nightTexture</value1>
-											<value2>nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png</value2>
+											<value2>nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg</value2>
 										</value1>
 										<value2>
 											<value0>float</value0>
 											<value1>dayTimeElapsed</value1>
-											<value2>0.175778</value2>
+											<value2>0.217558</value2>
 										</value2>
 									</value2>
 								</value2>
@@ -801,9 +801,9 @@
 			<value7>
 				<value0>SkeletBuddy</value0>
 				<value1>
-					<value0>10</value0>
-					<value1>3.8331239223480225</value1>
-					<value2>10</value2>
+					<value0>-11.069257736206055</value0>
+					<value1>3.8322863578796387</value1>
+					<value2>10.19655704498291</value2>
 				</value1>
 				<value2>
 					<value0>0</value0>
@@ -927,9 +927,9 @@
 							<data>
 								<value0>charMovementCompData</value0>
 								<value1>
-									<value0>-0.8229827880859375</value0>
-									<value1>-0.2890317440032959</value1>
-									<value2>-0.4890398383140564</value2>
+									<value0>0.67481684684753418</value0>
+									<value1>-0.30503052473068237</value1>
+									<value2>-0.67199599742889404</value2>
 								</value1>
 								<value2>MainCamera</value2>
 							</data>
@@ -984,8 +984,8 @@
 							<value2>1200</value2>
 							<value3>900</value3>
 						</value2>
-						<value3>16.799999237060547</value3>
-						<value4>-120.71999359130859</value4>
+						<value3>17.760000228881836</value3>
+						<value4>-225.12001037597656</value4>
 						<value5>
 							<polymorphic_id>1073741824</polymorphic_id>
 							<ptr_wrapper>
