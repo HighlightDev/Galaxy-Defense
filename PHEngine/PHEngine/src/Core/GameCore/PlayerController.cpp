@@ -9,7 +9,7 @@ namespace Game
 {
 
    PlayerController::PlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : m_playerPhysicsComponent(), m_camera(playerCamera), m_playerActor(playerActor)
+       : ActorController(playerActor), m_playerPhysicsComponent(), m_camera(playerCamera)
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
 
@@ -48,11 +48,6 @@ namespace Game
             PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
-   }
-
-   std::shared_ptr<Actor> PlayerController::GetBindedActor() const
-   {
-      return m_playerActor;
    }
 
    void PlayerController::Tick(float deltaTime)
