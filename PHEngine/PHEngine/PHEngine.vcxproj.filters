@@ -474,6 +474,7 @@
     <None Include="res\shaders\composite_shaders\depthCollectPointLightVS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightFS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightGS.glsl" />
+    <None Include="res\scripts\spaceLvl1.lua" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLEW\include\GL\eglew.h">
@@ -2033,6 +2034,15 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ActorController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -2555,6 +2565,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\CommonCore\StringHash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ActorController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Input\MouseBindings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

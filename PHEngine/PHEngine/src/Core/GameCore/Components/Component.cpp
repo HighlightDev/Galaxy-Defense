@@ -22,7 +22,7 @@ namespace Game
 
    void Component::RemoveOwner()
    {
-      m_owner = nullptr;
+      m_owner.reset();
    }
 
    ComponentType Component::GetComponentType() const
@@ -41,9 +41,9 @@ namespace Game
          if (auto spBase = base.lock())
          {
             auto parent = spBase->GetParent();
-            if (parent && parent.lock())
+            if (const auto& spParent = parent.lock())
             {
-               base = parent->GetParent()
+               base = spParent->GetParent();
             }
             else
             {
@@ -65,13 +65,19 @@ namespace Game
 
    SerializeDataActor &Component::GetSerializeDataActor(SerializeDataContainer &dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
-                             { return actorData.ActorName == GetOwner()->GetName(); });
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData) {
+         bool bFindResult = false;
+         if (const auto& spOwner = GetOwner().lock())
+         {
+            bFindResult = actorData.ActorName == spOwner->GetName();
+         }
+         return bFindResult;
+      });
       assert(it != dataContainer.Actors.end());
       return *it;
    }
 
-   Actor *Component::GetOwner() const
+   std::weak_ptr<Actor> Component::GetOwner() const
    {
       return m_owner;
    }

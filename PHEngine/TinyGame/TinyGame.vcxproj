@@ -162,7 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\LabyrinthLevelFactory.cpp" />
     <ClCompile Include="src\SimpleLevel.cpp" />
   </ItemGroup>

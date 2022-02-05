@@ -6,17 +6,15 @@
 namespace Game
 {
 
-   CharacterMovementComponent::CharacterMovementComponent(const std::string &gameObjectName, std::weak_ptr<Actor> owner,
-                                                          const glm::vec3 &launchDirection, const std::string &cameraName)
-       : MovementComponent(gameObjectName, owner), CameraTransformChangedEvent(), mCameraName(cameraName), mDirection(launchDirection), m_playerPhysicsComponent()
+   CharacterMovementComponent::CharacterMovementComponent(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName)
+       : MovementComponent(gameObjectName), CameraTransformChangedEvent(), mCameraName(cameraName), mDirection(launchDirection), m_playerPhysicsComponent()
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
-      Init();
    }
 
-   void CharacterMovementComponent::Init()
+   void CharacterMovementComponent::PostLevelInit()
    {
-      if (const auto &spOwner = mOwner.lock())
+      if (const auto &spOwner = GetOwner().lock())
       {
          m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());
          assert(m_playerPhysicsComponent);
@@ -37,7 +35,7 @@ namespace Game
    {
       if (bIsCameraRotationDirty)
       {
-         if (const auto &spOwner = mOwner.lock())
+         if (const auto &spOwner = GetOwner().lock())
          {
             spOwner->GetRootComponent()->SetAdditionalRotation(GetCameraPitchYawRoll());
          }
@@ -50,20 +48,11 @@ namespace Game
    {
       auto &actorData = GetSerializeDataActor(dataContainer);
 
-      if (const auto &spOwner = mOwner.lock())
-      {
-         std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
-         data->ComponentName = GameObjectName;
-         data->CameraName = mCameraName;
-         data->LaunchDirection = mDirection;
-         data->OwnerActorName = spOwner->GetName();
-
-         actorData.ComponentsData.emplace_back(data);
-      }
-      else
-      {
-         assert(false);
-      }
+      std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
+      data->ComponentName = GameObjectName;
+      data->CameraName = mCameraName;
+      data->LaunchDirection = mDirection;
+      actorData.ComponentsData.emplace_back(data);
    }
 
    void CharacterMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t &data)

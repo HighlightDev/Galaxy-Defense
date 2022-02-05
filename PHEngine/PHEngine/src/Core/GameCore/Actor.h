@@ -25,7 +25,7 @@ namespace Game
       : public GameObject
       , public ITickable
       , public ISerializable
-      , std::enable_shared_from_this<Actor>
+      , public std::enable_shared_from_this<Actor>
    {
    private:
 

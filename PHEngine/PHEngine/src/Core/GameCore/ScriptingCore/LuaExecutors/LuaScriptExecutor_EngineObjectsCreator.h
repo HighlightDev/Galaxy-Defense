@@ -49,7 +49,7 @@ namespace Game
       void ExecuteLuaCallback(const std::tuple<Actor*>& actorData);
 
       /* -------------------  Attach component to Actor ----------------------------*/
-      void ExecuteLuaCallback(const std::tuple<Actor*, Component*>& dataToAttachActorToComponent);
+      void ExecuteLuaCallback(const std::tuple<std::string, Component*>& dataToAttachActorToComponent);
 
       /* -------------------  Create component ----------------------------*/
       Component* ExecuteLuaCallback(const std::tuple<std::string, ComponentData*>& componentData);
@@ -81,7 +81,7 @@ namespace Game
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string>& inputComponentData);
 
       /* -------------------  Create character movement component data ----------------------------*/
-      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string, glm::vec3, std::string>& movementComponentData);
+      ComponentData* ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string>& movementComponentData);
 
       /* -------------------  Create movement component data ----------------------------*/
       ComponentData* ExecuteLuaCallback(const std::tuple<std::string, std::string>& movementComponentData);

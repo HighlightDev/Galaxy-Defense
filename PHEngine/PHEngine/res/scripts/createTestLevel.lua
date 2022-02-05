@@ -89,7 +89,7 @@ function CreateTestLevel(host)
 			dirShadowInfo
 		)
 		local dirLightComponent = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData)
-		 _AttachComponentToActor(host, lightActor, dirLightComponent)
+		 _AttachComponentToActor(host, "MainLightActor", dirLightComponent)
 
 		--	local dirLightComponentData1 = _CreateDirLightComponentData(host, "MainLightComp1",
 		--	rotation.x, rotation.y, rotation.z,
@@ -100,7 +100,7 @@ function CreateTestLevel(host)
 		--	dirShadowInfo1
 		--	)
 		-- local dirLightComponent1 = _CreateComponent(host, "DirectionalLightComponent", dirLightComponentData1)
-		--_AttachComponentToActor(host, lightActor, dirLightComponent1)
+		--_AttachComponentToActor(host, "MainLightActor", dirLightComponent1)
 
 
 		--local pointShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "point_light")
@@ -114,7 +114,7 @@ function CreateTestLevel(host)
 		--	pointShadowInfo
 		--	)
 		--local pointLightComponent = _CreateComponent(host, "PointLightComponent", pointLightComponentData)
-		--_AttachComponentToActor(host, lightActor, pointLightComponent)
+		--_AttachComponentToActor(host, "MainLightActor", pointLightComponent)
 
 		--local spotlightShadowInfo = _CreateLightProjectionShadowInfo(host, 256, "spotlight")
 		--local spotlightCD = _CreateSpotlightComponentData(host, 
@@ -129,7 +129,7 @@ function CreateTestLevel(host)
 		--	0.75,
 		--	spotlightShadowInfo)
 		--local spotlightComponent = _CreateComponent(host, "SpotlightComponent", spotlightCD)
-		--_AttachComponentToActor(host, lightActor, spotlightComponent)
+		--_AttachComponentToActor(host, "MainLightActor", spotlightComponent)
 	end
 
 	-- ****************************BIG GROUND***************************** --
@@ -149,13 +149,13 @@ function CreateTestLevel(host)
 
 		local meshData = _CreateMeshComponentData(host, "floor1Comp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 50, 1, 50, "", material)
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", meshData)
-		_AttachComponentToActor(host, groundActor, floorComponent)
+		_AttachComponentToActor(host, "Ground", floorComponent)
 
 		local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
 		local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
 		local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
 		local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
-		_AttachComponentToActor(host, groundActor, phyComponent)
+		_AttachComponentToActor(host, "Ground", phyComponent)
 	end
 
 	-- ****************************SMALL GROUND***************************** --
@@ -177,14 +177,14 @@ function CreateTestLevel(host)
 		local moveCompData = _CreatePlatformMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
 		local moveComponent = _CreateComponent(host, "PlatformMovementComponent", moveCompData)
-		_AttachComponentToActor(host, smallGroundActor, floorComponent)
-		_AttachComponentToActor(host, smallGroundActor, moveComponent)
+		_AttachComponentToActor(host, "SmallGround", floorComponent)
+		_AttachComponentToActor(host, "SmallGround", moveComponent)
 
 		local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 		local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
 		local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
 		local phyComponent1 = _CreateComponent(host, "PhysicsComponent", physData1)
-		_AttachComponentToActor(host, smallGroundActor, phyComponent1)
+		_AttachComponentToActor(host, "SmallGround", phyComponent1)
 	end
 
 	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
@@ -203,18 +203,18 @@ function CreateTestLevel(host)
 
 		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
 		local floorComponent1 = _CreateComponent(host, "StaticMeshComponent", smallMeshData1)
-		_AttachComponentToActor(host, smallGroundActor1, floorComponent1)
+		_AttachComponentToActor(host, "SmallGround1", floorComponent1)
 
 		local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 		local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
 		local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
 		local phyComponent2 = _CreateComponent(host, "PhysicsComponent", physData2)
-		_AttachComponentToActor(host, smallGroundActor1, phyComponent2)
+		_AttachComponentToActor(host, "SmallGround1", phyComponent2)
 	end
 
 	-- ***************************HOUSE******************** --
 
-	local house = _CreateActor(host,"House", 
+	local house = _CreateActor(host, "House", 
 	5, 15, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -235,13 +235,13 @@ function CreateTestLevel(host)
 		houseMat)
 
 		local meshComponent = _CreateComponent(host, "StaticMeshComponent", houseData)
-		_AttachComponentToActor(host, house, meshComponent)
+		_AttachComponentToActor(host, "House", meshComponent)
 
 		local houseShape = _CreatePhysicsBoxShape(host, 3, 4.5, 3)
 		local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 525.0)
 		local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
 		local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
-		_AttachComponentToActor(host, house, housePhysComp)
+		_AttachComponentToActor(host, "House", housePhysComp)
 	end
 
 	-- ***************************TEST******************** --
@@ -267,19 +267,19 @@ function CreateTestLevel(host)
 		testMat)
 
 		local testMeshComponent = _CreateComponent(host, "StaticMeshComponent", testData)
-		_AttachComponentToActor(host, test, testMeshComponent)
+		_AttachComponentToActor(host, "test", testMeshComponent)
 
 		local compoundShape = _CreatePhysicsCompoundShape(host)
 		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), -4, 0, 0, 0 ,0 ,0)
 		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0 ,0 ,0)
 		local testDesc = _CreateRigidBodyController(host, compoundShape, "DYNAMIC_BODY", 1000.0)
 		local testCompData = _CreatePhysicsComponentData(host, "testPhyComp", testDesc)
-		_AttachComponentToActor(host, test,  _CreateComponent(host, "PhysicsComponent", testCompData))
+		_AttachComponentToActor(host, "test",  _CreateComponent(host, "PhysicsComponent", testCompData))
 	end
 
 	-- ***************************SKYBOX******************** --
 
-	local skyboxActor = _CreateActor(host,"Skybox actor", 
+	local skyboxActor = _CreateActor(host, "Skybox actor", 
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -297,10 +297,10 @@ function CreateTestLevel(host)
 	skyboxMat)
 
 	local skyboxComponent = _CreateComponent(host, "SkyboxComponent", skyboxData)
-	_AttachComponentToActor(host, skyboxActor, skyboxComponent)
+	_AttachComponentToActor(host, "Skybox actor", skyboxComponent)
 
 	-- ***************************SKELET******************** --
-	local buddy = _CreateActor(host,"SkeletBuddy", 
+	local buddy = _CreateActor(host, "SkeletBuddy", 
 	10, 50, 10,
 	0, 0, 0,
 	1, 1, 1)
@@ -328,10 +328,10 @@ function CreateTestLevel(host)
 	local skeletMovementComponent = _CreateComponent(host, "CharacterMovementComponent", skeletMovementCompData)
 	local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
 
-	_AttachComponentToActor(host, buddy, skeletComponent)
-	_AttachComponentToActor(host, buddy, skeletPhysComp)
-	_AttachComponentToActor(host, buddy, skeletInputComponent)
-	_AttachComponentToActor(host, buddy, skeletMovementComponent)
+	_AttachComponentToActor(host, "SkeletBuddy", skeletComponent)
+	_AttachComponentToActor(host, "SkeletBuddy", skeletPhysComp)
+	_AttachComponentToActor(host, "SkeletBuddy", skeletInputComponent)
+	_AttachComponentToActor(host, "SkeletBuddy", skeletMovementComponent)
 
 	local buddyAnimationTweener = _CreateTweener(host, buddy, "playerAnimation.tween")
 	_SetTweenerBinding(host, buddyAnimationTweener, "buddyMeshComp", "animationBinding", "")	
@@ -354,7 +354,7 @@ function CreateTestLevel(host)
 
 		local waterMeshData = 	_CreateWaterPlaneComponentData(host, "waterComponent", 0, 0, 0, 0, 0, 0, 20, 1, 20, waterMat)
 		local waterComponent = _CreateComponent(host, "WaterPlaneComponent", waterMeshData)
-		_AttachComponentToActor(host, waterActor, waterComponent)
+		_AttachComponentToActor(host, "WaterActor", waterComponent)
 	end
 end
 

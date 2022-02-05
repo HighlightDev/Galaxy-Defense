@@ -12,11 +12,9 @@ namespace Game
    
       float mSpeed;
 
-      std::weak_ptr<Actor> mOwner;
-
    public:
 
-      MovementComponent(const std::string &gameObjectName, std::weak_ptr<Actor> owner);
+      MovementComponent(const std::string &gameObjectName);
 
       virtual ~MovementComponent();
 
@@ -29,8 +27,6 @@ namespace Game
       virtual void Move() = 0;
 
       virtual void Jump() = 0;
-
-      virtual void PostLevelInit() override;
 
       float GetSpeed() const;
 

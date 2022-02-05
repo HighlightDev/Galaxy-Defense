@@ -26,7 +26,7 @@ function CreateTestLevel(host)
 	    20.0,
 	    0, 0, -10)
 
-	local a_skybox = _CreateActor(host,"SkyboxActor", 
+	local a_skybox = _CreateActor(host, "SkyboxActor", 
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -44,10 +44,10 @@ function CreateTestLevel(host)
 	    mat)
 
 	    local c_skybox = _CreateComponent(host, "SkyboxComponent", d_skybox)
-	    _AttachComponentToActor(host, a_skybox, c_skybox)
+	    _AttachComponentToActor(host, "SkyboxActor", c_skybox)
     end
 
-    local a_spaceship = _CreateActor(host,"SpaceshipActor", 
+    local a_spaceship = _CreateActor(host, "SpaceshipActor", 
 	0, 0, 0,
 	0, 0, 0,
 	1, 1, 1)
@@ -68,7 +68,7 @@ function CreateTestLevel(host)
 		mat)
 
 		local c_spaceship = _CreateComponent(host, "StaticMeshComponent", d_spaceship)
-		_AttachComponentToActor(host, a_spaceship, c_spaceship)
+		_AttachComponentToActor(host, "SpaceshipActor", c_spaceship)
     end
 
 end

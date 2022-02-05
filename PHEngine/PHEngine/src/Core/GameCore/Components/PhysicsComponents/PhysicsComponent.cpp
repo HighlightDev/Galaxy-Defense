@@ -5,6 +5,7 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/CommonCore/Assertion.h"
 
 using namespace EngineMath;
 
@@ -38,12 +39,13 @@ namespace EnginePhysics
 
          if (bIsDirty)
          {
-            const Actor* owner = GetOwner();
+            if (const auto& spOwner = GetOwner().lock())
+            {
+               spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
+               spOwner->GetRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
 
-            owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
-            owner->GetRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
-
-            Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, owner->GetName());
+               Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, spOwner->GetName());
+            }
          }
       }
    }
@@ -64,12 +66,13 @@ namespace EnginePhysics
 
    void PhysicsComponent::PostPhysicsInit()
    {
-      const Actor* owner = GetOwner();
-      const glm::vec3& translation = owner->GetRootComponent()->GetTranslation();
-      const glm::quat& rotator = owner->GetRootComponent()->GetRotator();
+      const auto& spOwner = GetOwner().lock();
+      assert(spOwner);
+
+      const glm::vec3& translation = spOwner->GetRootComponent()->GetTranslation();
+      const glm::quat& rotator = spOwner->GetRootComponent()->GetRotator();
 
       mDescriptor->SetMotionStateWorldTransform(Converter::glmToBullet(rotator), Converter::glmToBullet(translation));
-
       mDescriptor->CompleteRigidBodyConstruction();
    }
 

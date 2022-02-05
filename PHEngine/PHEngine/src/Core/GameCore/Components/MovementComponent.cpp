@@ -6,8 +6,8 @@
 namespace Game
 {
 
-   MovementComponent::MovementComponent(const std::string &gameObjectName, std::weak_ptr<Actor> owner)
-       : Component(gameObjectName), mSpeed(1.0f), mOwner(owner)
+   MovementComponent::MovementComponent(const std::string &gameObjectName)
+       : Component(gameObjectName), mSpeed(1.0f)
    {
    }
 
@@ -30,8 +30,4 @@ namespace Game
       mSpeed = speed;
    }
 
-   void MovementComponent::PostLevelInit()
-   {
-      mOwner = GetOwner();
-   }
 }

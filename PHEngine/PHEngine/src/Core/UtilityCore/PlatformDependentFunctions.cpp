@@ -2,6 +2,9 @@
 #include "StringExtendedFunctions.h"
 #include "Core/CommonCore/Assertion.h"
 
+#include <ctime>
+#include <chrono>
+
 namespace EngineUtility
 {
 #ifdef _WIN32 // compile only for windows operating system

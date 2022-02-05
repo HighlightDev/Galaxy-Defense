@@ -35,7 +35,7 @@ namespace Game
 
       virtual ComponentType GetComponentType() const;
 
-		void SetOwner(const std::weak_ptr<Actor> ownerActor);
+		void SetOwner(const std::weak_ptr<Actor>& ownerActor);
 
       void RemoveOwner();
 

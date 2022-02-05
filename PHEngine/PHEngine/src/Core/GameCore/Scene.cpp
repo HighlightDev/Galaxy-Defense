@@ -27,7 +27,7 @@ namespace Game
    {
       for (auto &actor : mActors)
       {
-         actor->SetScene(mMeSharedPtr);
+         actor->SetScene(shared_from_this());
          actor->PostLevelInit();
       }
 
@@ -43,16 +43,6 @@ namespace Game
       {
          actor->PostPhysicsInitialize();
       }
-   }
-
-   void Scene::SetMeSharedPtr(std::shared_ptr<Scene> meSharedPtr)
-   {
-      mMeSharedPtr = meSharedPtr;
-   }
-
-   std::shared_ptr<Scene> Scene::GetSharedFromMe()
-   {
-      return shared_from_this();
    }
 
    void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
@@ -78,7 +68,7 @@ namespace Game
       if (material->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
       {
          auto dynamicMaterial = std::static_pointer_cast<DynamicMaterial>(material);
-         dynamicMaterial->SetScene(mMeSharedPtr);
+         dynamicMaterial->SetScene(shared_from_this());
          mDynamicMaterials.push_back(dynamicMaterial);
       }
 
@@ -517,19 +507,19 @@ namespace Game
          LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
       }
 
-      if (Actor *ownerActor = component->GetOwner())
+      if (const auto& spOwner = component->GetOwner().lock())
       {
-         if ((type & ComponentType::CHARACTER_MOVEMENT_COMPONENT) == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
+         if ((type & ComponentType::MOVEMENT_COMPONENT) == ComponentType::MOVEMENT_COMPONENT)
          {
-            ownerActor->RemoveMovementComponent();
+            spOwner->RemoveMovementComponent();
          }
          else if ((type & ComponentType::INPUT_COMPONENT) == ComponentType::INPUT_COMPONENT)
          {
-            ownerActor->RemoveInputComponent();
+            spOwner->RemoveInputComponent();
          }
          else
          {
-            ownerActor->RemoveComponent(component);
+            spOwner->RemoveComponent(component);
          }
       }
 
@@ -542,7 +532,7 @@ namespace Game
       if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
       {
          SceneComponent *sceneComponentPtr = static_cast<SceneComponent *>(component.get());
-         sceneComponentPtr->SetScene(mMeSharedPtr);
+         sceneComponentPtr->SetScene(shared_from_this());
          if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
          {
             PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);

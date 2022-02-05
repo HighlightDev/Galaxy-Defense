@@ -17,7 +17,7 @@ namespace Game
    Actor::Actor(const std::string &gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
        : GameObject(gameObjectName), m_rootComponent(rootComponent), m_physicsComponent(nullptr), mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
                                                                                                                                                                                                                    { SyncComponentsVisibility(visibility); }))),
-         mIsEnabled(true), m_inputComponent(nullptr), m_movementComponent(nullptr), mTweener(nullptr), m_parent(nullptr)
+         mIsEnabled(true), m_inputComponent(), m_movementComponent(), mTweener(nullptr), m_parent()
    {
       assert(m_rootComponent);
 
@@ -30,6 +30,10 @@ namespace Game
    {
    }
 
+   std::weak_ptr<Actor> Actor::GetWeakFromThis() {
+      return shared_from_this();
+   }
+
    void Actor::PostPhysicsInitialize()
    {
       if (m_physicsComponent)
@@ -37,9 +41,12 @@ namespace Game
          m_physicsComponent->PostPhysicsInit();
       }
 
-      for (const auto &child : m_children)
+      for (const auto &childWp : m_children)
       {
-         child->PostPhysicsInitialize();
+         if (const auto& childSp = childWp.lock())
+         {
+            childSp->PostPhysicsInitialize();
+         }
       }
    }
 
@@ -55,9 +62,12 @@ namespace Game
          comp->PostLevelInit();
       }
 
-      for (auto &actor : m_children)
+      for (const auto &childWp : m_children)
       {
-         actor->PostLevelInit();
+         if (const auto& childSp = childWp.lock())
+         {
+            childSp->PostLevelInit();
+         }
       }
 
       if (m_physicsComponent)
@@ -125,9 +135,9 @@ namespace Game
             // Update root component with parent transform matrix
             {
                glm::mat4 parentRelativeMatrix(1); // identity matrix
-               if (m_parent)
+               if (const auto& spParent  = m_parent.lock())
                {
-                  parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
+                  parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
                }
 
                m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
@@ -173,9 +183,12 @@ namespace Game
          }
       }
 
-      for (const auto &childActor : m_children)
+      for (const auto& wpChild : m_children)
       {
-         childActor->SetIsVisible(isVisible);
+         if (const auto& spChild = wpChild.lock())
+         {
+            spChild->SetIsVisible(isVisible);
+         }
       }
    }
 
@@ -185,9 +198,9 @@ namespace Game
       {
          glm::mat4 parentRelativeMatrix(1); // identity matrix
 
-         if (m_parent)
+         if (const auto& spParent = m_parent.lock())
          {
-            parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
+            parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
          }
 
          // Update all components that have transformation
@@ -235,10 +248,13 @@ namespace Game
          component->Tick(deltaTime);
       }
 
-      for (auto &actor : m_children)
+      for (const auto &childWp : m_children)
       {
-         // tick all attached actors
-         actor->Tick(deltaTime);
+         if (const auto& childSp = childWp.lock())
+         {
+            // tick all attached actors
+            childSp->Tick(deltaTime);
+         }
       }
 
       if (m_inputComponent)
@@ -259,17 +275,19 @@ namespace Game
 
    void Actor::AddComponent(std::shared_ptr<Game::Component> component)
    {
-      component->SetOwner(this);
+      component->SetOwner(this->GetWeakFromThis());
 
-      if (component->GetComponentType() == ComponentType::MOVEMENT_COMPONENT)
+      const uint64_t componentType = component->GetComponentType();
+
+      if ((componentType & ComponentType::MOVEMENT_COMPONENT) == ComponentType::MOVEMENT_COMPONENT)
       {
          m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
       }
-      else if (component->GetComponentType() == ComponentType::INPUT_COMPONENT)
+      else if ((componentType & ComponentType::INPUT_COMPONENT) == ComponentType::INPUT_COMPONENT)
       {
          m_inputComponent = std::static_pointer_cast<InputComponent>(component);
       }
-      else if (component->GetComponentType() == ComponentType::PHYSICS_COMPONENT)
+      else if ((componentType & ComponentType::PHYSICS_COMPONENT) == ComponentType::PHYSICS_COMPONENT)
       {
          m_physicsComponent = std::static_pointer_cast<PhysicsComponent>(component);
       }
@@ -319,10 +337,6 @@ namespace Game
       return mSceneOwner;
    }
 
-   std::weak_ptr<Actor> GetWeakFromThis() {
-      return shared_from_this();
-   }
-
    void Actor::AttachActor(std::shared_ptr<Actor> actor)
    {
       actor->SetParent(GetWeakFromThis());
@@ -331,10 +345,17 @@ namespace Game
 
    void Actor::DetachActor(std::shared_ptr<Actor> actor)
    {
-      auto actorIt = std::find(m_children.begin(), m_children.end(), actor);
+      const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto& childWp) {
+         if (const auto& childSp = childWp.lock())
+         {
+            return actor->GetName() == childSp->GetName();
+         } 
+         return false;
+      });
+
       if (actorIt != m_children.end())
       {
-         actor->SetParent(nullptr);
+         actor->SetParent(std::weak_ptr<Actor>());
          m_children.erase(actorIt);
       }
    }
@@ -359,13 +380,17 @@ namespace Game
       {
          mIsEnabled = isEnabled;
 
-         for (std::shared_ptr<Component> component : m_allComponents)
+         for (const auto& component : m_allComponents)
          {
             component->SetIsEnabled(isEnabled);
          }
-         for (const auto &childActor : m_children)
+
+         for (const auto &wpChild : m_children)
          {
-            childActor->SetIsEnabled(isEnabled);
+            if (const auto& spChild = wpChild.lock())
+            {
+               spChild->SetIsEnabled(isEnabled);
+            }
          }
       }
    }
@@ -382,16 +407,16 @@ namespace Game
 
    std::shared_ptr<SceneComponent> Actor::GetBaseRootComponent() const
    {
-      std::shared_ptr<SceneComponent> rootComponent;
+      std::shared_ptr<const Actor> baseParent = shared_from_this();
+      auto parentWp = m_parent;
 
-      const Actor *ptrActor = this;
-      while (m_parent)
+      while (const auto& spParent = parentWp.lock())
       {
-         ptrActor = m_parent;
+         baseParent = spParent;
+         parentWp = spParent->GetParent();
       }
 
-      rootComponent = ptrActor->GetRootComponent();
-      return rootComponent;
+      return baseParent->GetRootComponent();
    }
 
    std::string Actor::GetName() const

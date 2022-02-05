@@ -17,8 +17,6 @@ namespace Game
    Level::Level(InterThreadCommunicationMgr &interThreadMgr)
        : mScene(std::make_shared<Scene>(interThreadMgr))
    {
-      auto sharedFromMePtr = mScene->GetSharedFromMe();
-      mScene->SetMeSharedPtr(sharedFromMePtr);
    }
 
    Level::~Level()

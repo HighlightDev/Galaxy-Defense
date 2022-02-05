@@ -29,8 +29,7 @@ namespace Game
      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
-      CharacterMovementComponent(const std::string &gameObjectName, std::weak_ptr<Actor> owner,
-                                 const glm::vec3 &launchDirection, const std::string &cameraName);
+      CharacterMovementComponent(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName);
 
       virtual ~CharacterMovementComponent();
 
@@ -46,6 +45,8 @@ namespace Game
 
       virtual void Jump() override;
 
+      virtual void PostLevelInit() override;
+
    protected:
       glm::vec3 GetVelocity() const;
 
@@ -53,8 +54,6 @@ namespace Game
 
       glm::vec3 GetCameraPitchYawRoll() const;
 
-   private:
-      void Init();
    };
 
 }

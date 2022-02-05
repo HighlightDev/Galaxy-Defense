@@ -19,26 +19,29 @@ namespace Game
 
    void PlatformMovementComponent::PostLevelInit()
    {
-      const auto &rootComponent = GetOwner()->GetRootComponent();
-      assert(rootComponent);
-
-      mScriptExecutor.PostInit(GetOwner()->GetSceneOwner());
-
-      const auto &physComponent = GetOwner()->GetPhysicsComponent();
-
-      if (physComponent)
+      if (const auto& spOwner = GetOwner().lock())
       {
-         mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorWithPhys>(rootComponent, physComponent);
-      }
-      else
-      {
-         mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorNoPhys>(rootComponent);
-      }
+         const auto &rootComponent = spOwner->GetRootComponent();
+         assert(rootComponent);
 
-      mBehaviorVisitor->Init();
+         mScriptExecutor.PostInit(spOwner->GetSceneOwner());
 
-      mScriptExecutor.RegisterCallbacks();
-      mScriptExecutor.RunScript();
+         const auto &physComponent = spOwner->GetPhysicsComponent();
+
+         if (physComponent)
+         {
+            mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorWithPhys>(rootComponent, physComponent);
+         }
+         else
+         {
+            mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorNoPhys>(rootComponent);
+         }
+
+         mBehaviorVisitor->Init();
+
+         mScriptExecutor.RegisterCallbacks();
+         mScriptExecutor.RunScript();
+      }
    }
 
    ComponentType PlatformMovementComponent::GetComponentType() const
@@ -101,10 +104,13 @@ namespace Game
          EulerAnglesTransform transform;
          transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
 
-         if (auto physCompSP = GetOwner()->GetPhysicsComponent())
+         if (const auto& spOwner = GetOwner().lock())
          {
-            const auto physComp = physCompSP->GetDescriptor();
-            KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physComp, transform);
+            if (auto physCompSP = spOwner->GetPhysicsComponent())
+            {
+               const auto physDescriptor = physCompSP->GetDescriptor();
+               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physDescriptor, transform);
+            }
          }
       }
       else

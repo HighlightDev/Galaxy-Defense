@@ -29,11 +29,11 @@ namespace EnginePhysics
 
       if (bIsTransformationDirty)
       {
-         const Actor* owner = GetOwner();
-
-         owner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
-
-         Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, owner->GetName());
+         if (const auto& spOwner = GetOwner().lock())
+         {
+            spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
+            Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, spOwner->GetName());
+         }
       }
    }
 

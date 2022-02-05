@@ -57,8 +57,6 @@ namespace Game
 
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
-      std::shared_ptr<Scene> mMeSharedPtr;
-
    public:
 
       explicit Scene(InterThreadCommunicationMgr& interThreadMgr);
@@ -76,10 +74,6 @@ namespace Game
 
          return component;
       }
-
-      std::shared_ptr<Scene> GetSharedFromMe();
-
-      void SetMeSharedPtr(std::shared_ptr<Scene> meSharedPtr);
 
       void PostLevelInit();
 

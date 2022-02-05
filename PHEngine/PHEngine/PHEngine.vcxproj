@@ -283,6 +283,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
+    <None Include="res\scripts\spaceLvl1.lua" />
     <None Include="res\shaders\composite_shaders\depthCollectFS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightFS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightVS.glsl" />
@@ -343,6 +344,9 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GameCore\ActorController.h" />
+    <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h" />
@@ -864,6 +868,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\CommonCore\StringHash.cpp" />
+    <ClCompile Include="src\Core\GameCore\ActorController.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Input\MouseBindings.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShaderModule.cpp" />
