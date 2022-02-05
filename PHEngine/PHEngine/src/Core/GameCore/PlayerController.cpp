@@ -9,7 +9,7 @@ namespace Game
 {
 
    PlayerController::PlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_playerPhysicsComponent(), m_camera(playerCamera)
+       : ActorController(playerActor), m_camera(playerCamera)
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
 
@@ -23,14 +23,11 @@ namespace Game
 
    void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
    {
-      m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(m_playerActor->GetPhysicsComponent());
-
       assert(m_playerActor);
 
       const auto &rootComponent = m_playerActor->GetBaseRootComponent();
 
       assert(rootComponent);
-      assert(m_playerPhysicsComponent);
 
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
@@ -55,13 +52,7 @@ namespace Game
       assert(m_playerActor);
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-      std::shared_ptr<CharacterMovementComponent> characterMovementComponent = m_playerActor->GetCharacterMovementComponent();
-
-      if (characterMovementComponent->GetIsCameraRotationDirty())
-      {
-         rootComponent->SetAdditionalRotation(characterMovementComponent->GetCameraPitchYawRoll());
-         characterMovementComponent->SetIsCameraRotationDirty(false);
-      }
+      const auto& movementComponent = m_playerActor->GetMovementComponent();
 
       if (m_playerActor->GetInputComponent())
       {
@@ -79,7 +70,7 @@ namespace Game
          {
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               m_playerPhysicsComponent->SetWalkVelocity(characterMovementComponent->GetVelocity());
+               movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
@@ -93,7 +84,7 @@ namespace Game
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
-               m_playerPhysicsComponent->SetJumpVelocity();
+               movementComponent->Jump();
             }
          }
 

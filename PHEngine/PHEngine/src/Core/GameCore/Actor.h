@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
-#include "Core/GameCore/Components/CharacterMovementComponent.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Tweener/Tweener.h"
@@ -25,6 +25,7 @@ namespace Game
       : public GameObject
       , public ITickable
       , public ISerializable
+      , std::enable_shared_from_this<Actor>
    {
    private:
 
@@ -43,13 +44,13 @@ namespace Game
        */
       bool mIsEnabled;
 
-      std::vector<std::shared_ptr<Actor>> m_children;
+      std::vector<std::weak_ptr<Actor>> m_children;
 
-      Actor* m_parent;
+      std::weak_ptr<Actor> m_parent;
 
       std::shared_ptr<InputComponent> m_inputComponent;
 
-      std::shared_ptr<CharacterMovementComponent> m_characterMovementComponent;
+      std::shared_ptr<MovementComponent> m_movementComponent;
 
       std::shared_ptr<Tweener> mTweener;
 
@@ -62,6 +63,8 @@ namespace Game
       Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent);
 
       virtual ~Actor();
+
+      std::weak_ptr<Actor> GetWeakFromThis();
 
       void PostPhysicsInitialize();
 
@@ -90,11 +93,11 @@ namespace Game
 
       bool IsEnabled() const;
 
-      void SetParent(Actor* actor);
+      void SetParent(const std::weak_ptr<Actor>& actor);
 
       void SetScene(std::weak_ptr<Scene> sceneOwner);
 
-      Actor* GetParent() const;
+      std::weak_ptr<Actor> GetParent() const;
 
       std::string GetName() const;
 
@@ -114,7 +117,7 @@ namespace Game
 
       std::shared_ptr<InputComponent> GetInputComponent() const;
 
-      std::shared_ptr<CharacterMovementComponent> GetCharacterMovementComponent() const;
+      std::shared_ptr<MovementComponent> GetMovementComponent() const;
 
       std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const;
 

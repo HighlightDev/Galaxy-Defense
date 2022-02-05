@@ -1,18 +1,26 @@
 #include "CharacterMovementComponent.h"
 
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Actor.h"
 
 namespace Game
 {
 
-   CharacterMovementComponent::CharacterMovementComponent(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
-      : Component(gameObjectName)
-      , CameraTransformChangedEvent()
-      , mCameraName(cameraName)
-      , mDirection(launchDirection)
-      , mSpeed(1.0f)
+   CharacterMovementComponent::CharacterMovementComponent(const std::string &gameObjectName, std::weak_ptr<Actor> owner,
+                                                          const glm::vec3 &launchDirection, const std::string &cameraName)
+       : MovementComponent(gameObjectName, owner), CameraTransformChangedEvent(), mCameraName(cameraName), mDirection(launchDirection), m_playerPhysicsComponent()
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
+      Init();
+   }
+
+   void CharacterMovementComponent::Init()
+   {
+      if (const auto &spOwner = mOwner.lock())
+      {
+         m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());
+         assert(m_playerPhysicsComponent);
+      }
    }
 
    CharacterMovementComponent::~CharacterMovementComponent()
@@ -27,44 +35,59 @@ namespace Game
 
    void CharacterMovementComponent::Tick(const float deltaTime)
    {
-      
-   }
-
-   void CharacterMovementComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
-   {
-      auto& actorData = GetSerializeDataActor(dataContainer);
-
-      std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
-      data->ComponentName = GameObjectName;
-      data->CameraName = mCameraName;
-      data->LaunchDirection = mDirection;
-
-      actorData.ComponentsData.emplace_back(data);
-   }
-
-   void CharacterMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t& data)
-   {
-      auto& cameraPtr = std::get<0>(data);
-
-      if (cameraPtr->GetCameraName() == mCameraName)
+      if (bIsCameraRotationDirty)
       {
-         SetIsCameraRotationDirty(true);
+         if (const auto &spOwner = mOwner.lock())
+         {
+            spOwner->GetRootComponent()->SetAdditionalRotation(GetCameraPitchYawRoll());
+         }
 
-         mDirection = cameraPtr->GetEyeSpaceForwardVector();
-
-         mCameraYaw = cameraPtr->GetRotationYaw();
-         mCameraPitch = cameraPtr->GetRotationPitch();
+         bIsCameraRotationDirty = false;
       }
    }
 
-   float CharacterMovementComponent::GetSpeed() const
+   void CharacterMovementComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      return mSpeed;
+      auto &actorData = GetSerializeDataActor(dataContainer);
+
+      if (const auto &spOwner = mOwner.lock())
+      {
+         std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
+         data->ComponentName = GameObjectName;
+         data->CameraName = mCameraName;
+         data->LaunchDirection = mDirection;
+         data->OwnerActorName = spOwner->GetName();
+
+         actorData.ComponentsData.emplace_back(data);
+      }
+      else
+      {
+         assert(false);
+      }
    }
 
-   void CharacterMovementComponent::SetSpeed(const float speed)
+   void CharacterMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t &data)
    {
-      mSpeed = speed;
+      auto &cameraPtr = std::get<0>(data);
+
+      if (cameraPtr->GetCameraName() == mCameraName)
+      {
+         mDirection = cameraPtr->GetEyeSpaceForwardVector();
+         mCameraYaw = cameraPtr->GetRotationYaw();
+         mCameraPitch = cameraPtr->GetRotationPitch();
+
+         bIsCameraRotationDirty = true;
+      }
+   }
+
+   void CharacterMovementComponent::Move()
+   {
+      m_playerPhysicsComponent->SetWalkVelocity(GetVelocity());
+   }
+
+   void CharacterMovementComponent::Jump()
+   {
+      m_playerPhysicsComponent->SetJumpVelocity();
    }
 
    glm::vec3 CharacterMovementComponent::GetVelocity() const
@@ -77,7 +100,8 @@ namespace Game
       return glm::rotate(glm::mat4(1), DEG_TO_RAD(mCameraYaw), AXIS_UP);
    }
 
-   glm::vec3 CharacterMovementComponent::GetCameraPitchYawRoll() const {
+   glm::vec3 CharacterMovementComponent::GetCameraPitchYawRoll() const
+   {
       return glm::vec3(mCameraPitch, mCameraYaw, 0.0f);
    }
 }

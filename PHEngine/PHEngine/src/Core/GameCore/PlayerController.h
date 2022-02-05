@@ -2,14 +2,13 @@
 
 #include "ActorController.h"
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
-#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 
 using namespace Event;
-using namespace EnginePhysics;
 
 namespace Game
 {
-
+   class ACamera;
+   
    class PlayerController
       : public ActorController
       , public PhysicsSimulationUpdatedEvent
@@ -18,8 +17,6 @@ namespace Game
       using Base = Actor;
 
       std::shared_ptr<ACamera> m_camera;
-
-      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
 

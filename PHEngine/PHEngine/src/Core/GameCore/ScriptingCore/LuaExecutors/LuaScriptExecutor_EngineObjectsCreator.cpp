@@ -332,7 +332,7 @@ namespace Game
    }
 
    /* -------------------  Create character movement component data ----------------------------*/
-   ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, glm::vec3, std::string> &movementComponentData)
+   ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string,   glm::vec3, std::string> &movementComponentData)
    {
       auto dataPtr = EngineObjectCreator::CreateCharacterMovementComponentData(std::get<0>(movementComponentData), std::get<1>(movementComponentData), std::get<2>(movementComponentData));
       mAllocatedComponentData.push_back(dataPtr);

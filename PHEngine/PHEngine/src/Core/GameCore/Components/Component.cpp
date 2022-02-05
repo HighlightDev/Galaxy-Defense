@@ -6,21 +6,19 @@
 namespace Game
 {
 
-	Component::Component(const std::string& gameObjectName)
-		: GameObject(gameObjectName)
-      , m_owner(nullptr)
-      , mIsEnabled(true)
-	{
-	}
+   Component::Component(const std::string &gameObjectName)
+       : GameObject(gameObjectName), m_owner(), mIsEnabled(true)
+   {
+   }
 
-	Component::~Component()
-	{
-	}
+   Component::~Component()
+   {
+   }
 
-	void Component::SetOwner(Actor* ownerActor)
-	{
-		m_owner = ownerActor;
-	}
+   void Component::SetOwner(const std::weak_ptr<Actor> &ownerActor)
+   {
+      m_owner = ownerActor;
+   }
 
    void Component::RemoveOwner()
    {
@@ -32,34 +30,48 @@ namespace Game
       return COMPONENT;
    }
 
-   Actor* Component::GetBaseOwner() const 
+   std::weak_ptr<Actor> Component::GetBaseOwner() const
    {
-      Actor* base = m_owner;
+      std::weak_ptr<Actor> base = m_owner;
 
-      while (base && base->GetParent())
+      bool bHasParent = true;
+
+      while (bHasParent)
       {
-         base = base->GetParent();
+         if (auto spBase = base.lock())
+         {
+            auto parent = spBase->GetParent();
+            if (parent && parent.lock())
+            {
+               base = parent->GetParent()
+            }
+            else
+            {
+               bHasParent = false;
+            }
+         }
       }
 
       return base;
    }
 
-   void Component::OnPostInitialized() {
-
-   }
-
-   void Component::PostLevelInit() {
-
-   }
-
-   SerializeDataActor& Component::GetSerializeDataActor(SerializeDataContainer& dataContainer)
+   void Component::OnPostInitialized()
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetOwner()->GetName(); });
+   }
+
+   void Component::PostLevelInit()
+   {
+   }
+
+   SerializeDataActor &Component::GetSerializeDataActor(SerializeDataContainer &dataContainer)
+   {
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
+                             { return actorData.ActorName == GetOwner()->GetName(); });
       assert(it != dataContainer.Actors.end());
       return *it;
    }
 
-   Actor* Component::GetOwner() const
+   Actor *Component::GetOwner() const
    {
       return m_owner;
    }

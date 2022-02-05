@@ -1,26 +1,23 @@
-#include "Actor.h" 
+#include "Actor.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentType.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 #include <glm/gtc/quaternion.hpp>
 #include <functional>
 
+using namespace EngineMath;
+
 namespace Game
 {
 
-   Actor::Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
-      : GameObject(gameObjectName)
-      , m_rootComponent(rootComponent)
-      , m_physicsComponent(nullptr)
-      , mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool& visibility) { SyncComponentsVisibility(visibility); })))
-      , mIsEnabled(true)
-      , m_inputComponent(nullptr)
-      , m_characterMovementComponent(nullptr)
-      , mTweener(nullptr)
-      , m_parent(nullptr)
+   Actor::Actor(const std::string &gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
+       : GameObject(gameObjectName), m_rootComponent(rootComponent), m_physicsComponent(nullptr), mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
+                                                                                                                                                                                                                   { SyncComponentsVisibility(visibility); }))),
+         mIsEnabled(true), m_inputComponent(nullptr), m_movementComponent(nullptr), mTweener(nullptr), m_parent(nullptr)
    {
       assert(m_rootComponent);
 
@@ -29,9 +26,9 @@ namespace Game
       m_rootComponent->bIsRootComponent = true;
    }
 
-	Actor::~Actor()
-	{
-	}
+   Actor::~Actor()
+   {
+   }
 
    void Actor::PostPhysicsInitialize()
    {
@@ -40,7 +37,7 @@ namespace Game
          m_physicsComponent->PostPhysicsInit();
       }
 
-      for (const auto& child : m_children)
+      for (const auto &child : m_children)
       {
          child->PostPhysicsInitialize();
       }
@@ -49,41 +46,49 @@ namespace Game
    void Actor::PostLevelInit()
    {
       if (mTweener)
+      {
          mTweener->InitRootState();
+      }
 
-      for (const auto& comp : m_allComponents)
+      for (const auto &comp : m_allComponents)
       {
          comp->PostLevelInit();
       }
 
-      for (auto& actor : m_children)
+      for (auto &actor : m_children)
       {
          actor->PostLevelInit();
       }
 
       if (m_physicsComponent)
+      {
          m_physicsComponent->PostLevelInit();
+      }
 
       if (m_inputComponent)
+      {
          m_inputComponent->PostLevelInit();
+      }
 
-      if (m_characterMovementComponent)
-         m_characterMovementComponent->PostLevelInit();
+      if (m_movementComponent)
+      {
+         m_movementComponent->PostLevelInit();
+      }
    }
 
-   void Actor::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void Actor::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       SerializeDataActor data;
       data.ActorName = GameObject::GameObjectName;
       data.RootCompTranslation = m_rootComponent->GetTranslation();
+      const glm::vec3 eulerAngles = glm::eulerAngles(m_rootComponent->GetRotator());
 
-      constexpr float radToDeg = 180.f / 3.14159f;
-      data.RootCompRotation = glm::eulerAngles(m_rootComponent->GetRotator()) * radToDeg;
+      data.RootCompRotation = glm::vec3(RAD_TO_DEG(eulerAngles.x), RAD_TO_DEG(eulerAngles.y), RAD_TO_DEG(eulerAngles.z));
       data.RootCompScale = m_rootComponent->GetScale();
 
       dataContainer.Actors.emplace_back(data);
 
-      for (const auto& component : m_allComponents)
+      for (const auto &component : m_allComponents)
       {
          component->CollectDataForSerialization(dataContainer);
       }
@@ -98,9 +103,9 @@ namespace Game
          m_inputComponent->CollectDataForSerialization(dataContainer);
       }
 
-      if (m_characterMovementComponent)
+      if (m_movementComponent)
       {
-         m_characterMovementComponent->CollectDataForSerialization(dataContainer);
+         m_movementComponent->CollectDataForSerialization(dataContainer);
       }
 
       if (mTweener)
@@ -108,48 +113,48 @@ namespace Game
          mTweener->CollectDataForSerialization(dataContainer);
       }
    }
-  
-	void Actor::UpdateRootComponentTransform()
-	{
-		if (m_rootComponent)
-		{
-			// Root component and all attached objects to this actor must update their transforms
 
-			if (m_rootComponent->GetIsTransformationDirty())
-			{
-				// Update root component with parent transform matrix
-				{
-					glm::mat4 parentRelativeMatrix(1);	// identity matrix
+   void Actor::UpdateRootComponentTransform()
+   {
+      if (m_rootComponent)
+      {
+         // Root component and all attached objects to this actor must update their transforms
+
+         if (m_rootComponent->GetIsTransformationDirty())
+         {
+            // Update root component with parent transform matrix
+            {
+               glm::mat4 parentRelativeMatrix(1); // identity matrix
                if (m_parent)
                {
                   parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
                }
-               
-					m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
-				}
 
-				// Update all components that have transformation
-				glm::mat4 rootRelativeMatrix = m_rootComponent->GetRelativeMatrix();
+               m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
+            }
 
-				for (auto& component : m_allComponents)
-				{
-					if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
-					{
-						SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
+            // Update all components that have transformation
+            glm::mat4 rootRelativeMatrix = m_rootComponent->GetRelativeMatrix();
+
+            for (auto &component : m_allComponents)
+            {
+               if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+               {
+                  SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
                   sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
-					}
-				}
-			}
-			else // If root component wasn't updated then just check if component has dirty transform
-			{
-				UpdateComponentsTransform();
-			}
-		}
+               }
+            }
+         }
+         else // If root component wasn't updated then just check if component has dirty transform
+         {
+            UpdateComponentsTransform();
+         }
+      }
       else
       {
          UpdateComponentsTransform();
       }
-	}
+   }
 
    void Actor::SetIsVisible(bool isVisible)
    {
@@ -168,89 +173,97 @@ namespace Game
          }
       }
 
-      for (const auto& childActor : m_children)
+      for (const auto &childActor : m_children)
       {
          childActor->SetIsVisible(isVisible);
       }
    }
 
-	void Actor::UpdateComponentsTransform() 
-	{
-		if (m_allComponents.size() > 0)
-		{
-			glm::mat4 parentRelativeMatrix(1);	// identity matrix
+   void Actor::UpdateComponentsTransform()
+   {
+      if (m_allComponents.size() > 0)
+      {
+         glm::mat4 parentRelativeMatrix(1); // identity matrix
 
          if (m_parent)
          {
             parentRelativeMatrix = m_parent->GetRootComponent()->GetRelativeMatrix();
          }
 
-			// Update all components that have transformation
+         // Update all components that have transformation
 
          if (m_rootComponent)
          {
             parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
          }
-       
-			for (auto& component : m_allComponents)
-			{
-				if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
-				{
-					SceneComponent* sceneComp = static_cast<SceneComponent*>(component.get());
-					if (sceneComp->GetIsTransformationDirty())
-					{
-						sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
-					}
-				}
-			}
-		}
-	}
 
-   void Actor::ChangeState(const std::string& stateName)
+         for (auto &component : m_allComponents)
+         {
+            if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+            {
+               SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
+               if (sceneComp->GetIsTransformationDirty())
+               {
+                  sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
+               }
+            }
+         }
+      }
+   }
+
+   void Actor::ChangeState(const std::string &stateName)
    {
       if (mTweener)
          mTweener->ChangeState(stateName);
    }
 
-	void Actor::Tick(const float deltaTime)
-	{
+   void Actor::Tick(const float deltaTime)
+   {
       UpdateRootComponentTransform();
 
       // Update physics
       if (m_physicsComponent)
+      {
          m_physicsComponent->Tick(deltaTime);
+      }
 
-		m_rootComponent->Tick(deltaTime);
+      m_rootComponent->Tick(deltaTime);
 
-		for (auto& component : m_allComponents)
-		{
-			// tick all children components
-			component->Tick(deltaTime);
-		}
+      for (auto &component : m_allComponents)
+      {
+         // tick all children components
+         component->Tick(deltaTime);
+      }
 
-		for (auto& actor : m_children)
-		{
-			// tick all attached actors
-			actor->Tick(deltaTime);
-		}
+      for (auto &actor : m_children)
+      {
+         // tick all attached actors
+         actor->Tick(deltaTime);
+      }
 
       if (m_inputComponent)
+      {
          m_inputComponent->Tick(deltaTime);
+      }
 
-      if (m_characterMovementComponent)
-         m_characterMovementComponent->Tick(deltaTime);
+      if (m_movementComponent)
+      {
+         m_movementComponent->Tick(deltaTime);
+      }
 
       if (mTweener)
+      {
          mTweener->Tick(deltaTime);
-	}
+      }
+   }
 
-	void Actor::AddComponent(std::shared_ptr<Game::Component> component)
-	{
+   void Actor::AddComponent(std::shared_ptr<Game::Component> component)
+   {
       component->SetOwner(this);
 
-      if (component->GetComponentType() == ComponentType::CHARACTER_MOVEMENT_COMPONENT)
+      if (component->GetComponentType() == ComponentType::MOVEMENT_COMPONENT)
       {
-         m_characterMovementComponent = std::static_pointer_cast<CharacterMovementComponent>(component);
+         m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
       }
       else if (component->GetComponentType() == ComponentType::INPUT_COMPONENT)
       {
@@ -264,21 +277,21 @@ namespace Game
       {
          m_allComponents.push_back(component);
       }
-	}
+   }
 
-	void Actor::RemoveComponent(std::shared_ptr<Game::Component> component)
-	{
-		auto componentIt = std::find(m_allComponents.begin(), m_allComponents.end(), component);
-		if (componentIt != m_allComponents.end())
-		{
+   void Actor::RemoveComponent(std::shared_ptr<Game::Component> component)
+   {
+      auto componentIt = std::find(m_allComponents.begin(), m_allComponents.end(), component);
+      if (componentIt != m_allComponents.end())
+      {
          component->RemoveOwner();
-			m_allComponents.erase(componentIt);
-		}
-	}
+         m_allComponents.erase(componentIt);
+      }
+   }
 
    void Actor::RemoveMovementComponent()
    {
-      m_characterMovementComponent = std::shared_ptr<CharacterMovementComponent>(nullptr);
+      m_movementComponent = std::shared_ptr<MovementComponent>(nullptr);
    }
 
    void Actor::RemoveInputComponent()
@@ -286,17 +299,17 @@ namespace Game
       m_inputComponent = std::shared_ptr<InputComponent>(nullptr);
    }
 
-	void Actor::SetParent(Actor* actor)
-	{
-		m_parent = actor;
-	}
+   void Actor::SetParent(const std::weak_ptr<Actor>& actor)
+   {
+      m_parent = actor;
+   }
 
    void Actor::SetScene(std::weak_ptr<Scene> sceneOwner)
    {
       mSceneOwner = sceneOwner;
    }
 
-   Actor* Actor::GetParent() const
+   std::weak_ptr<Actor> Actor::GetParent() const
    {
       return m_parent;
    }
@@ -306,21 +319,25 @@ namespace Game
       return mSceneOwner;
    }
 
-	void Actor::AttachActor(std::shared_ptr<Actor> actor)
-	{
-		actor->SetParent(this);
-		m_children.push_back(actor);
-	}
+   std::weak_ptr<Actor> GetWeakFromThis() {
+      return shared_from_this();
+   }
 
-	void Actor::DetachActor(std::shared_ptr<Actor> actor)
-	{
-		auto actorIt = std::find(m_children.begin(), m_children.end(), actor);
-		if (actorIt != m_children.end())
-		{
-			actor->SetParent(nullptr);
-			m_children.erase(actorIt);
-		}
-	}
+   void Actor::AttachActor(std::shared_ptr<Actor> actor)
+   {
+      actor->SetParent(GetWeakFromThis());
+      m_children.push_back(actor);
+   }
+
+   void Actor::DetachActor(std::shared_ptr<Actor> actor)
+   {
+      auto actorIt = std::find(m_children.begin(), m_children.end(), actor);
+      if (actorIt != m_children.end())
+      {
+         actor->SetParent(nullptr);
+         m_children.erase(actorIt);
+      }
+   }
 
    void Actor::AttachTweener(std::shared_ptr<Tweener> tweener)
    {
@@ -346,7 +363,7 @@ namespace Game
          {
             component->SetIsEnabled(isEnabled);
          }
-         for (const auto& childActor : m_children)
+         for (const auto &childActor : m_children)
          {
             childActor->SetIsEnabled(isEnabled);
          }
@@ -358,7 +375,7 @@ namespace Game
       return mIsVisible;
    }
 
-   bool Actor::IsEnabled() const 
+   bool Actor::IsEnabled() const
    {
       return mIsEnabled;
    }
@@ -367,7 +384,7 @@ namespace Game
    {
       std::shared_ptr<SceneComponent> rootComponent;
 
-      const Actor* ptrActor = this;
+      const Actor *ptrActor = this;
       while (m_parent)
       {
          ptrActor = m_parent;
@@ -377,11 +394,12 @@ namespace Game
       return rootComponent;
    }
 
-   std::string Actor::GetName() const {
+   std::string Actor::GetName() const
+   {
       return GameObjectName;
    }
 
-   std::shared_ptr<Game::SceneComponent> Actor::GetRootComponent() const 
+   std::shared_ptr<Game::SceneComponent> Actor::GetRootComponent() const
    {
       return m_rootComponent;
    }
@@ -391,12 +409,12 @@ namespace Game
       return m_inputComponent;
    }
 
-   std::shared_ptr<CharacterMovementComponent> Actor::GetCharacterMovementComponent() const
+   std::shared_ptr<MovementComponent> Actor::GetMovementComponent() const
    {
-      return m_characterMovementComponent;
+      return m_movementComponent;
    }
 
-   std::shared_ptr<PhysicsComponent> Actor::GetPhysicsComponent() const 
+   std::shared_ptr<PhysicsComponent> Actor::GetPhysicsComponent() const
    {
       return m_physicsComponent;
    }

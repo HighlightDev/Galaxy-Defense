@@ -21,7 +21,7 @@ namespace Game
       , public ITickable
       , public ISerializable
 	{
-		Actor* m_owner;
+		std::weak_ptr<Actor> m_owner;
 
    protected:
 
@@ -35,13 +35,13 @@ namespace Game
 
       virtual ComponentType GetComponentType() const;
 
-		void SetOwner(Actor* ownerActor);
+		void SetOwner(const std::weak_ptr<Actor> ownerActor);
 
       void RemoveOwner();
 
-      Actor* GetOwner() const;
+      std::weak_ptr<Actor> GetOwner() const;
 
-      Actor* GetBaseOwner() const;
+      std::weak_ptr<Actor> GetBaseOwner() const;
 
       bool IsEnabled() const;
 

@@ -1,36 +1,41 @@
 function CreateTestLevel(host)
 	
 	_LoadResourcesAsync(host, 
-	[[brick_mid.png
-	,brick_nm_mid.png
-	,city_house_2_Col.png
-	,city_house_2_Nor.png
+	[[brick_mid.jpg
+	,brick_nm_mid.jpg
+	,city_house_2_Col.jpg
+	,city_house_2_Nor.jpg
 	,city_house_2_Spec.png
 	,diffuse.png
 	,dummy_nm.png
-	,dayRight.png
-	,dayLeft.png
-	,dayTop.png
-	,dayBottom.png
-	,dayBack.png
-	,dayFront.png
-	,nightRight.png
-	,nightLeft.png
-	,nightTop.png
-	,nightBottom.png
-	,nightBack.png
-	,nightFront.png
-	,water_dudv.png
-	,Brick_Medieval_albedo.png
-	,Brick_Medieval_normal.png
-	,Brick_Medieval_roughness.png
-	,Brick_Medieval_metallic.png
+	,dayRight.jpg
+	,dayLeft.jpg
+	,dayTop.jpg
+	,dayBottom.jpg
+	,dayBack.jpg
+	,dayFront.jpg
+	,nightRight.jpg
+	,nightLeft.jpg
+	,nightTop.jpg
+	,nightBottom.jpg
+	,nightBack.jpg
+	,nightFront.jpg
+	,water_dudv.jpg
+	,Brick_Medieval_albedo.jpg
+	,Brick_Medieval_normal.jpg
+	,Brick_Medieval_roughness.jpg
+	,Brick_Medieval_metallic.jpg
 	,dummy_metallic_roughness.png
 	,playerCube.obj
 	,witcher.obj
 	,City_House_2_BI.obj
 	,model.dae
 	,player_walk.fbx
+	,spaceship.obj
+	,spaceship_albedo.jpg
+	,spaceship_normal.jpg
+	,spaceship_roughness.jpg
+	,spaceship_metallic.jpg
 	]])
 	 
 	local aTra = { x = 0, y = 0, z = 0 }
@@ -136,8 +141,8 @@ function CreateTestLevel(host)
 	
 	if groundActor ~= nil then
 		local material = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, material, "brick_mid.png", "albedo")
-		_SetTextureToMaterial(host, material, "brick_nm_mid.png", "normalMap")
+		_SetTextureToMaterial(host, material, "brick_mid.jpg", "albedo")
+		_SetTextureToMaterial(host, material, "brick_nm_mid.jpg", "normalMap")
 		_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "roughnessMap")
 		_SetTextureToMaterial(host, material, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material, 10.0, "uvScale")
@@ -156,24 +161,24 @@ function CreateTestLevel(host)
 	-- ****************************SMALL GROUND***************************** --
 
 	local smallGroundActor = _CreateActor(host, "SmallGround",
-	0, 25, 0,
+	0, 10, 0,
 	0, 0, 0,
 	1, 1, 1)
 
 	if smallGroundActor ~= nil then 
 		local material1 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, material1, "brick_mid.png", "albedo")
-		_SetTextureToMaterial(host, material1, "brick_nm_mid.png", "normalMap")
+		_SetTextureToMaterial(host, material1, "brick_mid.jpg", "albedo")
+		_SetTextureToMaterial(host, material1, "brick_nm_mid.jpg", "normalMap")
 		_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "roughnessMap")
 		_SetTextureToMaterial(host, material1, "dummy_metallic_roughness.png", "metallicMap")
 		_SetFloatToMaterial(host, material1, 1, "uvScale")
 
 		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
-		local platformMoveCompData = _CreatePlatformMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
+		local moveCompData = _CreatePlatformMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
-		local platformMoveComponent = _CreateComponent(host, "PlatformMovementComponent", platformMoveCompData)
+		local moveComponent = _CreateComponent(host, "PlatformMovementComponent", moveCompData)
 		_AttachComponentToActor(host, smallGroundActor, floorComponent)
-		_AttachComponentToActor(host, smallGroundActor, platformMoveComponent)
+		_AttachComponentToActor(host, smallGroundActor, moveComponent)
 
 		local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 		local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
@@ -190,10 +195,10 @@ function CreateTestLevel(host)
 
 	if smallGroundActor1 ~= nil then 
 		local material2 = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, material2, "Brick_Medieval_albedo.png", "albedo")
-		_SetTextureToMaterial(host, material2, "Brick_Medieval_normal.png", "normalMap")
-		_SetTextureToMaterial(host, material2, "Brick_Medieval_roughness.png", "roughnessMap")
-		_SetTextureToMaterial(host, material2, "Brick_Medieval_metallic.png", "metallicMap")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_albedo.jpg", "albedo")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_normal.jpg", "normalMap")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_roughness.jpg", "roughnessMap")
+		_SetTextureToMaterial(host, material2, "Brick_Medieval_metallic.jpg", "metallicMap")
 		_SetFloatToMaterial(host, material2, 1, "uvScale")
 
 		local smallMeshData1 = _CreateMeshComponentData(host, "playerCubeMeshComp1", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material2)
@@ -210,22 +215,22 @@ function CreateTestLevel(host)
 	-- ***************************HOUSE******************** --
 
 	local house = _CreateActor(host,"House", 
-	0, 15, 0,
+	5, 15, 0,
 	0, 0, 0,
 	1, 1, 1)
 
 	if house ~= nil then 
 		local houseMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, houseMat, "city_house_2_Col.png", "albedo")
-		_SetTextureToMaterial(host, houseMat, "city_house_2_Nor.png", "normalMap")
-		_SetTextureToMaterial(host, houseMat, "dummy_metallic_roughness.png", "roughnessMap")
-		_SetTextureToMaterial(host, houseMat, "dummy_metallic_roughness.png", "metallicMap")
+		_SetTextureToMaterial(host, houseMat, "spaceship_albedo.jpg", "albedo")
+		_SetTextureToMaterial(host, houseMat, "spaceship_normal.jpg", "normalMap")
+		_SetTextureToMaterial(host, houseMat, "spaceship_roughness.jpg", "roughnessMap")
+		_SetTextureToMaterial(host, houseMat, "spaceship_metallic.jpg", "metallicMap")
 		_SetFloatToMaterial(host, houseMat, 1.0, "uvScale")
 
-		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "City_House_2_BI.obj",
-		0, -2, 0,
+		local houseData = _CreateMeshComponentData(host, "houseMeshComp", "spaceship.obj",
 		0, 0, 0,
-		1.5, 1.5, 1.5, 
+		0, 0, 0,
+		4.5, 4.5, 4.5, 
 		"",
 		houseMat)
 
@@ -248,10 +253,10 @@ function CreateTestLevel(host)
 
 	if test ~= nil then
 		local testMat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, testMat, "Brick_Medieval_albedo.png", "albedo")
-		_SetTextureToMaterial(host, testMat, "Brick_Medieval_normal.png", "normalMap")
-		_SetTextureToMaterial(host, testMat, "Brick_Medieval_roughness.png", "roughnessMap")
-		_SetTextureToMaterial(host, testMat, "Brick_Medieval_metallic.png", "metallicMap")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_albedo.jpg", "albedo")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_normal.jpg", "normalMap")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_roughness.jpg", "roughnessMap")
+		_SetTextureToMaterial(host, testMat, "Brick_Medieval_metallic.jpg", "metallicMap")
 		_SetFloatToMaterial(host, testMat, 5.0, "uvScale")
 
 		local testData = _CreateMeshComponentData(host, "testMeshComponent", "witcher.obj",
@@ -280,9 +285,9 @@ function CreateTestLevel(host)
 	1, 1, 1)
 
 	local skyboxMat = _CreateMaterial(host, "SkyboxMaterial.m")
-	_SetTextureToMaterial(host, skyboxMat, "dayRight.png,dayLeft.png,dayTop.png,dayBottom.png,dayBack.png,dayFront.png","dayTexture")
+	_SetTextureToMaterial(host, skyboxMat, "dayRight.jpg,dayLeft.jpg,dayTop.jpg,dayBottom.jpg,dayBack.jpg,dayFront.jpg","dayTexture")
 
-	_SetTextureToMaterial(host, skyboxMat,"nightRight.png,nightLeft.png,nightTop.png,nightBottom.png,nightBack.png,nightFront.png",	"nightTexture")
+	_SetTextureToMaterial(host, skyboxMat,"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",	"nightTexture")
 
 	_SetBindingToMaterial(host, skyboxMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 	_SetFloatToMaterial(host, skyboxMat, 0.1, "mul_coef")
@@ -342,8 +347,8 @@ function CreateTestLevel(host)
 	if waterActor ~= nil then
 		local waterMat = _CreateMaterial(host, "WaterMaterial.m")
 		_SetDeferredTextureToMaterial(host, waterMat, "planarReflectionComponent", "reflectionTexture")
-		_SetTextureToMaterial(host, waterMat, "water_dudv.png", "dudv")
-		_SetTextureToMaterial(host, waterMat, "brick_mid.png", "ground")
+		_SetTextureToMaterial(host, waterMat, "water_dudv.jpg", "dudv")
+		_SetTextureToMaterial(host, waterMat, "brick_mid.jpg", "ground")
 		_SetBindingToMaterial(host, waterMat, "EngineScene", "GT_DeltaSec", "deltaTime")
 		_SetFloatToMaterial(host, waterMat, 0.5, "mul_coef")
 

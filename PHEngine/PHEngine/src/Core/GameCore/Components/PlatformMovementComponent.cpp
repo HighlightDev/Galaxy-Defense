@@ -43,7 +43,7 @@ namespace Game
 
    ComponentType PlatformMovementComponent::GetComponentType() const
    {
-      return MOVEMENT_COMPONENT;
+      return PLATFORM_MOVEMENT_COMPONENT;
    }
 
    const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> &PlatformMovementComponent::GetMovementPoints() const
