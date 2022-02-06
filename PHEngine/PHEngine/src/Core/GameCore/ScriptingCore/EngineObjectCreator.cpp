@@ -73,9 +73,10 @@ namespace Game
    }
 
    std::shared_ptr<ACamera> EngineObjectCreator::CreateFirstPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
-                                                                         const float initPitchDeg, const float initYawDeg, const glm::vec3 &cameraPosition)
+                                                                         const float initPitchDeg, const float initYawDeg, const glm::vec3 &cameraPosition, const bool bIsMainSceneCamera)
    {
-      return std::make_shared<FirstPersonCamera>(cameraName, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
+      const eCameraType thirdPersonCameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
+      return std::make_shared<FirstPersonCamera>(cameraName, thirdPersonCameraType, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
    }
 
    std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string &componentType, ComponentData *componentData, std::shared_ptr<Scene> scene)

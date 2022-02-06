@@ -15,7 +15,7 @@ namespace Game
 
 	public:
 
-		FirstPersonCamera(const std::string& cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos);
+		FirstPersonCamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos);
 
 		~FirstPersonCamera();
 

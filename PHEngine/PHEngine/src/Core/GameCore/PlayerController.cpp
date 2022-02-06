@@ -34,7 +34,7 @@ namespace Game
 
    void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
    {
-      std::string actorName = std::move(std::get<0>(data));
+      const std::string& actorName = std::move(std::get<0>(data));
 
       assert(m_playerActor);
 

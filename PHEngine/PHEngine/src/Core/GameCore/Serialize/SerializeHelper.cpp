@@ -268,28 +268,36 @@ namespace Game
 
       const auto &cameraTypeName = data->CameraType;
 
-      if (cameraTypeName == "FirstPersonCamera")
+      static const std::map<std::string, eCameraType> cameraTypeMap =
+      {
+          { "FirstPersonCamera", eCameraType::SECONDARY_FIRST_PERSON_CAMERA},
+          { "MainFirstPersonCamera", eCameraType::MAIN_FIRST_PERSON_CAMERA},
+          { "MainThirdPersonCamera", eCameraType::MAIN_THIRD_PERSON_CAMERA},
+          { "ThirdPersonCamera", eCameraType::SECONDARY_THIRD_PERSON_CAMERA},
+      };
+
+      const eCameraType cameraType = cameraTypeMap.at(cameraTypeName);
+
+      if ((eCameraType::SECONDARY_FIRST_PERSON_CAMERA & cameraType) == eCameraType::SECONDARY_FIRST_PERSON_CAMERA)
       {
          auto fpCameraData = std::static_pointer_cast<SerializeDataFirstPersonCamera>(data);
          assert(fpCameraData);
-         auto fpCamera = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, scene, ViewPortInfo(fpCameraData->ViewPortInfo), fpCameraData->InitPitchDeg,
+         result = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, cameraType, scene, ViewPortInfo(fpCameraData->ViewPortInfo), fpCameraData->InitPitchDeg,
                                                              fpCameraData->InitYawDeg, fpCameraData->CameraPosition);
-         result = fpCamera;
       }
-      else
+      if ((eCameraType::SECONDARY_THIRD_PERSON_CAMERA & cameraType) == eCameraType::SECONDARY_THIRD_PERSON_CAMERA)
       {
          auto thpCameraData = std::static_pointer_cast<SerializeDataThirdPersonCamera>(data);
          assert(thpCameraData);
 
-         std::shared_ptr<ThirdPersonCamera> thirdPersonCamera;
-         const eCameraType cameraType = cameraTypeName == "MainThirdPersonCamera" ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
-         outIsMainSceneCamera = eCameraType::MAIN_THIRD_PERSON_CAMERA == cameraType;
-
-         thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, cameraType, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
+         const auto& thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, cameraType, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
                                                                  thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
          thirdPersonCamera->SetThirdPersonTargetDeferred(thpCameraData->ThirdPersonTargetActorName);
 
          result = thirdPersonCamera;
+      }
+      else {
+         assert(false);
       }
 
       return result;

@@ -41,7 +41,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Register(mLuaInstance, "_CreateActor");
 
       LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Register(mLuaInstance, "_CreateThirdPersonCamera");
-      LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, glm::vec3)>::Register(mLuaInstance, "_CreateFirstPersonCamera");
+      LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, glm::vec3, int32_t)>::Register(mLuaInstance, "_CreateFirstPersonCamera");
 
       LuaRegisterCallback<LuaExecutor_t, void(std::string , Component *) > ::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor *)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
@@ -145,11 +145,13 @@ namespace Game
                                                                                     glm::ivec4 /*viewPort*/,
                                                                                     float /*initPitchDeg*/,
                                                                                     float /*initYawDeg*/,
-                                                                                    glm::vec3 /*init camera position*/> &cameraData)
+                                                                                    glm::vec3 /*init camera position*/,
+                                                                                    int32_t /*is main camera in the scene*/> &cameraData)
    {
       if (auto scene = mSceneWP.lock())
       {
          const glm::ivec4 &viewPortData = std::get<1>(cameraData);
+         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<5>(cameraData));
 
          const auto &firstPersonCamera = EngineObjectCreator::CreateFirstPersonCamera(
              std::get<0>(cameraData),
@@ -157,7 +159,8 @@ namespace Game
              ViewPortInfo(viewPortData.x, viewPortData.y, viewPortData.z, viewPortData.w),
              std::get<2>(cameraData),
              std::get<3>(cameraData),
-             std::get<4>(cameraData));
+             std::get<4>(cameraData),
+             bIsMainSceneCamera);
 
          scene->RegisterCamera(firstPersonCamera);
       }

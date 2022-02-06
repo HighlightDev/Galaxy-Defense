@@ -1,12 +1,15 @@
 #include "FirstPersonCamera.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
+
+using namespace Graphics;
 
 namespace Game
 {
 
-   FirstPersonCamera::FirstPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
-       : ACamera(cameraName, eCameraType::SECONDARY_FIRST_PERSON_CAMERA, scene, viewPort, initPitchDeg, initYawDeg), m_firstPersonCameraPosition(camPos), m_cameraMoveSpeed(0.1f)
+   FirstPersonCamera::FirstPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
+       : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), m_firstPersonCameraPosition(camPos), m_cameraMoveSpeed(0.1f)
    {
       ACamera::UpdateRotationMatrix(0, 0);
    }
@@ -33,18 +36,24 @@ namespace Game
 
    void FirstPersonCamera::Tick(const float DeltaTime)
    {
+      ACamera::Tick(DeltaTime);
    }
 
    std::shared_ptr<CameraSceneProxy> FirstPersonCamera::CreateSceneProxy() const
    {
-      // todo: stub
-      throw "todo: stub";
-      return nullptr;
+      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType)
+      {
+         return std::make_shared<MainCameraSceneProxy>(this);
+      }
+      else
+      {
+         return std::make_shared<CameraSceneProxy>(this);
+      }
    }
 
    std::string FirstPersonCamera::GetCameraTypeName() const
    {
-      return "FirstPersonCamera";
+      return eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType ? "MainFirstPersonCamera" : "FirstPersonCamera";
    }
 
    void FirstPersonCamera::MoveCamera(int32_t direction)

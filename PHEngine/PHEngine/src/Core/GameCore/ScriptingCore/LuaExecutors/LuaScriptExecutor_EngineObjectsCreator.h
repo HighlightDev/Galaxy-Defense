@@ -43,7 +43,7 @@ namespace Game
       void ExecuteLuaCallback(const std::tuple<std::string, glm::ivec4, float, float, float, glm::vec3, int32_t>& cameraData);
 
       /* -------------------  Create first person camera ----------------------------*/
-      void ExecuteLuaCallback(const std::tuple<std::string, glm::ivec4, float, float, glm::vec3>& cameraData);
+      void ExecuteLuaCallback(const std::tuple<std::string, glm::ivec4, float, float, glm::vec3, int32_t>& cameraData);
 
       /* ------------------- Attach actor to player controller ----------------------------*/
       void ExecuteLuaCallback(const std::tuple<Actor*>& actorData);
