@@ -20,8 +20,9 @@ namespace Labyrinth
 
    void SimpleLevel::RunLuaBuildLevelScript()
    {
-      static constexpr const char* lvlName = "createTestLevel.lua";
-      //"spaceLvl1.lua";
+      static constexpr const char *lvlName
+          // = "createTestLevel.lua";
+          = "spaceLvl1.lua";
       LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(lvlName);
       mLuaLevelBuilder.PostInit(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
@@ -49,7 +50,7 @@ namespace Labyrinth
 
    void SimpleLevel::LoadLevel()
    {
-      //ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+      // ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
 #if 0
       DeserializeLevel("test_serialize.xml");

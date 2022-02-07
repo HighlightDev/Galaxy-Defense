@@ -2,15 +2,23 @@
 
 #include "ACamera.h"
 
+#include "Core/GameCore/Event/MouseMovedEvent.h"
+#include "Core/GameCore/Event/KeyboardInputEvent.h"
+
+using namespace Event;
+
 namespace Game
 {
    class Scene;
 	class FirstPersonCamera 
       : public ACamera
+      , public MouseMovedEvent
+      , public KeyboardButtonDownEvent
 	{
 	private:
 
 		float m_cameraMoveSpeed;
+      
 		glm::vec3 m_firstPersonCameraPosition;
 
 	public:
@@ -32,6 +40,10 @@ namespace Game
       virtual std::string GetCameraTypeName() const override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
+      virtual void ProcessEvent(const KeyboardButtonDownEvent::EventData_t& eventData) override;
+
+      virtual void ProcessEvent(const MouseMovedEvent::EventData_t& eventData) override;
 
       void MoveCamera(int32_t direction);
 

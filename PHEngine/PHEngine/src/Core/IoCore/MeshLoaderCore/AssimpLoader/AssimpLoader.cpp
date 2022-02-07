@@ -10,6 +10,8 @@ namespace MeshLoader
    namespace Assimp
    {
       AssimpLoader::AssimpLoader(const std::string& modelFilePath)
+         : m_animatedMeshData(nullptr)
+         , m_meshAttributes(nullptr)
       {
          size_t LOAD_FLAGS = (
             aiProcess_Triangulate |

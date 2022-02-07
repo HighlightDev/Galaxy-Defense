@@ -2,6 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
+#include "Core/GameCore/Input/Keys.h"
 
 using namespace Graphics;
 
@@ -11,11 +12,15 @@ namespace Game
    FirstPersonCamera::FirstPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
        : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), m_firstPersonCameraPosition(camPos), m_cameraMoveSpeed(0.1f)
    {
+      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
+      MouseMovedEvent::GetInstance()->AddListener(this);
       ACamera::UpdateRotationMatrix(0, 0);
    }
 
    FirstPersonCamera::~FirstPersonCamera()
    {
+      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
+      MouseMovedEvent::GetInstance()->RemoveListener(this);
    }
 
    glm::vec3 FirstPersonCamera::GetEyeVector() const
@@ -41,7 +46,7 @@ namespace Game
 
    std::shared_ptr<CameraSceneProxy> FirstPersonCamera::CreateSceneProxy() const
    {
-      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == m_cameraType)
+      if (eCameraType::MAIN_FIRST_PERSON_CAMERA == m_cameraType)
       {
          return std::make_shared<MainCameraSceneProxy>(this);
       }
@@ -73,6 +78,27 @@ namespace Game
          m_firstPersonCameraPosition += GetEyeSpaceRightVector() * m_cameraMoveSpeed;
          break;
       }
+   }
+
+   void FirstPersonCamera::ProcessEvent(const KeyboardButtonDownEvent::EventData_t &eventData)
+   {
+      const auto &data = std::get<0>(eventData);
+
+      static const std::map<Keys, int32_t> mappingDirections = {{Keys::W, 0}, {Keys::D, 4}, {Keys::A, 3}, {Keys::S, 1}};
+
+      if (data.State == KeyState::PRESSED)
+      {
+         if (mappingDirections.count(data.Key))
+         {
+            MoveCamera(mappingDirections.at(data.Key));
+         }
+      }
+   }
+
+   void FirstPersonCamera::ProcessEvent(const MouseMovedEvent::EventData_t &eventData)
+   {
+      const glm::ivec4 &mouseMoveData = std::get<0>(eventData);
+      SetRotation(mouseMoveData.z, mouseMoveData.w);
    }
 
    void FirstPersonCamera::CollectDataForSerialization(SerializeDataContainer &dataContainer)

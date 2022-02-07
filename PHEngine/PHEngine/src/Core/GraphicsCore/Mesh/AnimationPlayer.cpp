@@ -4,8 +4,8 @@ namespace Graphics
 {
    namespace Mesh
    {
-      AnimationPlayer::AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData)
-         : m_animatedMeshData(animatedData)
+      AnimationPlayer::AnimationPlayer(const std::shared_ptr<AnimatedSkin>& animatedSkin)
+         : m_animatedSkin(animatedSkin)
          , mSrcAnimationTime(0.0f)
          , mDstAnimationTime(0.0f)
          , mSrcAnimationName("")
@@ -13,11 +13,11 @@ namespace Graphics
          , mTransitionParameter(0.0f)
          , bTransitionEnabled(false)
       {
-         assert((m_animatedMeshData));
+         assert(m_animatedSkin);
 
          // TODO: TEMP SOLUTION
          bool bResult = false;
-         if (m_animatedMeshData->AnimationIndices.size() > 5)
+         if (m_animatedSkin->GetAnimatedMeshData()->AnimationIndices.size() > 5)
          {
             bResult = SetSrcAnimationByIndex(8);
          }
@@ -31,15 +31,17 @@ namespace Graphics
 
       bool AnimationPlayer::SetDstAnimationByIndex(const size_t index)
       {
-         assert(m_animatedMeshData->AnimationIndices.size() > index);
-         mDstAnimationName = m_animatedMeshData->AnimationIndices[index];
+         const auto& animationData = m_animatedSkin->GetAnimatedMeshData();
+         assert(animationData->AnimationIndices.size() > index);
+         mDstAnimationName = animationData->AnimationIndices[index];
          return true;
       }
 
       bool AnimationPlayer::SetSrcAnimationByIndex(const size_t index)
       {
-         assert(m_animatedMeshData->AnimationIndices.size() > index);
-         mSrcAnimationName = m_animatedMeshData->AnimationIndices[index];
+         const auto& animationData = m_animatedSkin->GetAnimatedMeshData();
+         assert(animationData->AnimationIndices.size() > index);
+         mSrcAnimationName = animationData->AnimationIndices[index];
          return true;
       }
 
@@ -47,7 +49,7 @@ namespace Graphics
       {
          bool bResult = false;
 
-         if (bResult = m_animatedMeshData->AnimationMapping.count(srcAnimationName))
+         if (bResult = m_animatedSkin->GetAnimatedMeshData()->AnimationMapping.count(srcAnimationName))
          {
             mSrcAnimationName = srcAnimationName;
          }
@@ -59,7 +61,7 @@ namespace Graphics
       {
          bool bResult = false;
 
-         if (bResult = m_animatedMeshData->AnimationMapping.count(dstAnimationName))
+         if (bResult = m_animatedSkin->GetAnimatedMeshData()->AnimationMapping.count(dstAnimationName))
          {
             mDstAnimationName = dstAnimationName;
          }
@@ -110,15 +112,16 @@ namespace Graphics
 
       void AnimationPlayer::UpdateAnimationMatrices_Inner()
       {
+         const auto& animationData = m_animatedSkin->GetAnimatedMeshData();
          if (bTransitionEnabled)
          {
-            auto blendedBoneData = m_animatedMeshData->GetBoneMappingForBlendedAnimation(mSrcAnimationName, mDstAnimationName,
+            const auto& blendedBoneData = animationData->GetBoneMappingForBlendedAnimation(mSrcAnimationName, mDstAnimationName,
                mSrcAnimationTime, mDstAnimationTime, mTransitionParameter);
-            mCachedAnimatedMatrices = m_animatedMeshData->GetAnimatedMatricesWithBlendedBoneData(blendedBoneData);
+            mCachedAnimatedMatrices = animationData->GetAnimatedMatricesWithBlendedBoneData(blendedBoneData);
          }
          else
          {
-            mCachedAnimatedMatrices = m_animatedMeshData->GetAnimatedMatrices(mSrcAnimationName, mSrcAnimationTime);
+            mCachedAnimatedMatrices = animationData->GetAnimatedMatrices(mSrcAnimationName, mSrcAnimationTime);
          }
       }
 

@@ -23,7 +23,7 @@ namespace Graphics
 
          assert((spt_AnimatedSkin));
 
-         mAnimationPlayer = std::make_shared<AnimationPlayer>(spt_AnimatedSkin->GetAnimatedMeshData());
+         mAnimationPlayer = std::make_shared<AnimationPlayer>(spt_AnimatedSkin);
       }
 
       SkeletalMeshSceneProxy::~SkeletalMeshSceneProxy()

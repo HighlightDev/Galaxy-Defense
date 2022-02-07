@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <glm/mat4x4.hpp>
 
-#include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
+#include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
 namespace Game
 {
@@ -22,7 +22,7 @@ namespace Graphics
       {
          friend class Game::AnimationTweenController;
 
-         std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
+         std::shared_ptr<AnimatedSkin> m_animatedSkin;
 
          /* this is the main animation time counter*/
          float mSrcAnimationTime;
@@ -43,7 +43,7 @@ namespace Graphics
          std::vector<glm::mat4> mCachedAnimatedMatrices;
 
       public:
-         AnimationPlayer(std::shared_ptr<AnimatedMeshData> animatedData);
+         AnimationPlayer(const std::shared_ptr<AnimatedSkin>& animatedSkin);
 
          AnimationPlayer() = default;
 
