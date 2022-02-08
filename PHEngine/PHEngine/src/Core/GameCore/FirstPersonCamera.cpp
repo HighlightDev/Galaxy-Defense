@@ -43,8 +43,6 @@ namespace Game
 
    void FirstPersonCamera::Tick(const float DeltaTime)
    {
-      static const std::map<Keys, int32_t> mappingDirections = {{Keys::W, 0}, {Keys::D, 4}, {Keys::A, 3}, {Keys::S, 1}};
-
       auto &mouseBindings = mInputComponent->GetMouseBindings();
       if (mouseBindings.IsMouseMoveEventDirty())
       {
@@ -60,17 +58,17 @@ namespace Game
          {
             moveDirection = 0;
          }
-         else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
-         {
-            moveDirection = 2;
-         }
-         else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
-         {
-            moveDirection = 3;
-         }
          else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
          {
             moveDirection = 1;
+         }
+         else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
+         {
+            moveDirection = 3;
+         }
+         else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
+         {
+            moveDirection = 2;
          }
 
          MoveCamera(moveDirection);

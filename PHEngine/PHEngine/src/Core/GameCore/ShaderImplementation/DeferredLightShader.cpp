@@ -9,18 +9,14 @@ namespace Game
    namespace ShaderImpl
    {
 
-      DeferredLightShader::DeferredLightShader(const ShaderParams& params)
-         : Shader(params)
-         , MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount())
-         , MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount())
-         , MAX_SPOTLIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxSpotlightCount())
-      {   
+      DeferredLightShader::DeferredLightShader(const ShaderParams &params)
+          : Shader(params), MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount()), MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount()), MAX_SPOTLIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxSpotlightCount())
+      {
          ShaderInit();
       }
 
       DeferredLightShader::~DeferredLightShader()
       {
-
       }
 
       void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
@@ -40,7 +36,7 @@ namespace Game
          u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-   
+
          u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
          u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", MAX_POINT_LIGHT_COUNT, shaderProgramId);
          u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
@@ -99,9 +95,15 @@ namespace Game
 #else
          Undefine(FragmentShader, "SHADING_MODEL_PBR");
 #endif
+
+#ifdef __linux__
+         Undefine(FragmentShader, "ENABLE_POINT_LIGHTING");
+#else
+         Define(FragmentShader, "ENABLE_POINT_LIGHTING");
+#endif
       }
 
-      void DeferredLightShader::SetCameraWorldPosition(const glm::vec3& cameraWorldPosition)
+      void DeferredLightShader::SetCameraWorldPosition(const glm::vec3 &cameraWorldPosition)
       {
          u_CameraWorldPosition.LoadUniform(cameraWorldPosition);
       }
@@ -130,7 +132,7 @@ namespace Game
 
 #ifndef NO_LIT
 
-      void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
+      void DeferredLightShader::SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4 &atlasOffset)
       {
          u_DirectionalLightShadowMaps.LoadUniform(index, slot);
          u_DirectionalLightAtlasOffset.LoadUniform(index, atlasOffset);
@@ -146,7 +148,7 @@ namespace Game
          u_DirectionalLightShadowMapCount.LoadUniform(count);
       }
 
-      void DeferredLightShader::SetDirectionalLightShadowMatrix(size_t index, const glm::mat4& shadowMatrix)
+      void DeferredLightShader::SetDirectionalLightShadowMatrix(size_t index, const glm::mat4 &shadowMatrix)
       {
          u_DirectionalLightShadowMatrices.LoadUniform(index, shadowMatrix);
       }
@@ -166,7 +168,7 @@ namespace Game
          u_PointLightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
       }
 
-      void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset)
+      void DeferredLightShader::SetSpotlightShadowMapSlot(size_t index, int32_t slot, const glm::vec4 &atlasOffset)
       {
          u_SpotlightShadowMaps.LoadUniform(index, slot);
          u_SpotlightAtlasOffset.LoadUniform(index, atlasOffset);
@@ -182,21 +184,21 @@ namespace Game
          u_SpotlightShadowProjectionFarPlane.LoadUniform(index, FarPlane);
       }
 
-      void DeferredLightShader::SetSpotlightShadowMatrix(size_t index, const glm::mat4& shadowMatrix)
+      void DeferredLightShader::SetSpotlightShadowMatrix(size_t index, const glm::mat4 &shadowMatrix)
       {
          u_SpotlightShadowMatrices.LoadUniform(index, shadowMatrix);
       }
 
-      void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies)
+      void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> &lightsProxies)
       {
          // Directional lights
          int32_t dirLightProxyIndex = 0;
-         for (const auto& lightProxyPair : lightsProxies)
+         for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < MAX_DIR_LIGHT_COUNT)
             {
-               DirectionalLightSceneProxy* dirLProxyPtr = static_cast<DirectionalLightSceneProxy*>(lightProxy.get());
+               DirectionalLightSceneProxy *dirLProxyPtr = static_cast<DirectionalLightSceneProxy *>(lightProxy.get());
                u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->AmbientColor);
                u_DirLightDiffuseColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->DiffuseColor);
                u_DirLightSpecularColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->SpecularColor);
@@ -209,12 +211,12 @@ namespace Game
 
          // Point lights
          int32_t pointLightProxyIndex = 0;
-         for (const auto& lightProxyPair : lightsProxies)
+         for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && pointLightProxyIndex < MAX_POINT_LIGHT_COUNT)
             {
-               PointLightSceneProxy* pointLProxyPtr = static_cast<PointLightSceneProxy*>(lightProxy.get());
+               PointLightSceneProxy *pointLProxyPtr = static_cast<PointLightSceneProxy *>(lightProxy.get());
                u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->DiffuseColor);
                u_PointLightSpecularColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->SpecularColor);
                u_PointLightPositionWorld.LoadUniform(pointLightProxyIndex, pointLProxyPtr->GetPosition());
@@ -227,12 +229,12 @@ namespace Game
 
          // Spotlights
          int32_t spotlightProxyIndex = 0;
-         for (const auto& lightProxyPair : lightsProxies)
+         for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < MAX_SPOTLIGHT_COUNT)
             {
-               SpotlightSceneProxy* spotlightProxyPtr = static_cast<SpotlightSceneProxy*>(lightProxy.get());
+               SpotlightSceneProxy *spotlightProxyPtr = static_cast<SpotlightSceneProxy *>(lightProxy.get());
                u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->AmbientColor);
                u_SpotlightDiffuseColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->DiffuseColor);
                u_SpotlightSpecularColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->SpecularColor);

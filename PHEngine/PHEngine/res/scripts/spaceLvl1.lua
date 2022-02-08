@@ -20,11 +20,40 @@ function CreateTestLevel(host)
 	,spaceship_metallic.jpg
 	]])
 
-    _CreateFirstPersonCamera(host, "MainCamera",
+    _CreateFirstPersonCamera(host, "MainFirstPersonCamera",
+
 	    0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
 	    25.0,
 	    20.0,
-	    0, 0, -10)
+	    0, 0, -10,
+		1) -- is main camera on scene
+
+	local a_light = _CreateActor(host, "MainLightActor", 
+	0, 0, 0,
+	0, 0, 0,
+	1, 1, 1)
+	
+	if a_light ~= nil then
+		local rotation = { x = 0, y = 0, z = 0 }
+		local direction = { x = -0.2, y = -0.8, z = 0 }
+		local ambient = { x = 0.2, y = 0.2, z = 0.2}
+		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
+		local specular = { x = 0.7, y = 0.7, z = 0.7 }
+	
+		local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
+	
+		local d_dirLight = _CreateDirLightComponentData(host, "MainLightComp",
+			rotation.x, rotation.y, rotation.z,
+			direction.x, direction.y, direction.z,
+			ambient.x, ambient.y, ambient.z,
+			diffuse.x, diffuse.y, diffuse.z,
+			specular.x, specular.y, specular.z,
+			dirShadowInfo
+		)
+
+		local c_dirLight = _CreateComponent(host, "DirectionalLightComponent", d_dirLight)
+		_AttachComponentToActor(host, "MainLightActor", c_dirLight)
+	end
 
 	local a_skybox = _CreateActor(host, "SkyboxActor", 
 	0, 0, 0,

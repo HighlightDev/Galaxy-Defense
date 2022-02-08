@@ -76,9 +76,6 @@ namespace Game
    void DirectionalLightComponent::Tick(float deltaTime)
    {
       Base::Tick(deltaTime);
-
-      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * 100), AXIS_UP));
-      ForceUpdateShadowMap();
    }
 
    ComponentType DirectionalLightComponent::GetComponentType() const
