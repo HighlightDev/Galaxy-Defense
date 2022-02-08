@@ -14,21 +14,21 @@ namespace Game
 
       switch (actionType)
       {
-         case Game::eKeyActionType::ACTION_MOVE_FORWARD:
-            result = Keys::W;
-            break;
-         case Game::eKeyActionType::ACTION_MOVE_LEFT:
-            result = Keys::A;
-            break;
-         case Game::eKeyActionType::ACTION_MOVE_RIGHT:
-            result = Keys::D;
-            break;
-         case Game::eKeyActionType::ACTION_MOVE_BACK:
-            result = Keys::S;
-            break;
-         case Game::eKeyActionType::ACTION_JUMP:
-            result = Keys::Space;
-            break;
+      case Game::eKeyActionType::ACTION_MOVE_FORWARD:
+         result = Keys::W;
+         break;
+      case Game::eKeyActionType::ACTION_MOVE_LEFT:
+         result = Keys::A;
+         break;
+      case Game::eKeyActionType::ACTION_MOVE_RIGHT:
+         result = Keys::D;
+         break;
+      case Game::eKeyActionType::ACTION_MOVE_BACK:
+         result = Keys::S;
+         break;
+      case Game::eKeyActionType::ACTION_JUMP:
+         result = Keys::Space;
+         break;
       }
 
       return result;
@@ -40,31 +40,28 @@ namespace Game
 
       switch (key)
       {
-         case Keys::W:
-            result = eKeyActionType::ACTION_MOVE_FORWARD;
-            break;
-         case Keys::A:
-            result = eKeyActionType::ACTION_MOVE_LEFT;
-            break;
-         case Keys::D:
-            result = eKeyActionType::ACTION_MOVE_RIGHT;
-            break;
-         case Keys::S:
-            result = eKeyActionType::ACTION_MOVE_BACK;
-            break;
-         case Keys::Space:
-            result = eKeyActionType::ACTION_JUMP;
-            break;
+      case Keys::W:
+         result = eKeyActionType::ACTION_MOVE_FORWARD;
+         break;
+      case Keys::A:
+         result = eKeyActionType::ACTION_MOVE_LEFT;
+         break;
+      case Keys::D:
+         result = eKeyActionType::ACTION_MOVE_RIGHT;
+         break;
+      case Keys::S:
+         result = eKeyActionType::ACTION_MOVE_BACK;
+         break;
+      case Keys::Space:
+         result = eKeyActionType::ACTION_JUMP;
+         break;
       }
 
       return result;
    }
 
    KeyboardBindings::KeyboardBindings(std::shared_ptr<IActionBinding> actionBindings)
-      : KeyboardButtonDownEvent()
-      , mActionBindings(actionBindings)
-      , mReleasedKeysOnCurrentTick()
-      , mPressedKeysOnCurrentTick()
+       : KeyboardButtonDownEvent(), mActionBindings(actionBindings), mReleasedKeysOnCurrentTick(), mPressedKeysOnCurrentTick()
    {
       KeyboardButtonDownEvent::GetInstance()->AddListener(this);
 
@@ -77,9 +74,9 @@ namespace Game
       KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
    }
 
-   void KeyboardBindings::ProcessEvent(const KeyboardButtonDownEvent::EventData_t& eventData)
+   void KeyboardBindings::ProcessEvent(const KeyboardButtonDownEvent::EventData_t &eventData)
    {
-      const auto& data = std::get<0>(eventData);
+      const auto &data = std::get<0>(eventData);
 
       if (data.State == KeyState::PRESSED)
       {
@@ -96,10 +93,17 @@ namespace Game
       return mPressedKeysCount > 0;
    }
 
+   bool KeyboardBindings::HasPressedSpecificKey(const Keys key) const
+   {
+      return std::find(mPressedKeysOnCurrentTick.begin(), mPressedKeysOnCurrentTick.end(),
+                       key) != mPressedKeysOnCurrentTick.end();
+   }
+
    void KeyboardBindings::KeyPress(Keys key)
    {
       auto it = std::find_if(mKeyboardMaskVec.begin(),
-         mKeyboardMaskVec.end(), [=](const auto& keyData) ->bool {return keyData.Key == key; });
+                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
+                             { return keyData.Key == key; });
 
       if (it == mKeyboardMaskVec.end())
       {
@@ -122,7 +126,8 @@ namespace Game
    void KeyboardBindings::KeyRelease(Keys key)
    {
       auto it = std::find_if(mKeyboardMaskVec.begin(),
-         mKeyboardMaskVec.end(), [=](const auto& keyData) ->bool {return keyData.Key == key; });
+                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
+                             { return keyData.Key == key; });
 
       if (it != mKeyboardMaskVec.end())
       {
@@ -143,7 +148,8 @@ namespace Game
 
       const Keys key = mActionBindings->GetMappedWithActionKey(actionType);
       auto it = std::find_if(mKeyboardMaskVec.begin(),
-         mKeyboardMaskVec.end(), [=](const auto& keyData) ->bool {return keyData.Key == key; });
+                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
+                             { return keyData.Key == key; });
 
       if (it != mKeyboardMaskVec.end())
       {

@@ -58,6 +58,8 @@ namespace Game
 
       bool HasPressedKeys() const;
 
+      bool HasPressedSpecificKey(const Keys key) const;
+
       void KeyPress(Keys key);
 
       void KeyRelease(Keys key);
