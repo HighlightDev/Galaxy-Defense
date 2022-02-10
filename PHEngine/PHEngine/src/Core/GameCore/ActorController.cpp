@@ -1,9 +1,10 @@
-#include "PlayerController.h"
+#include "HumanoidPlayerController.h"
 
 namespace Game
 {
    ActorController::ActorController(std::shared_ptr<Actor> playerActor)
        : m_playerActor(playerActor)
+       , m_movementComponent()
    {
    }
 

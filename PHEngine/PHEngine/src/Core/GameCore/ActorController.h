@@ -2,6 +2,7 @@
 
 #include "Actor.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Components/MovementComponent.h"
 
 namespace Game
 {
@@ -10,6 +11,8 @@ namespace Game
     {
     protected:
         std::shared_ptr<Actor> m_playerActor;
+
+        std::shared_ptr<MovementComponent> m_movementComponent;
 
     public:
         ActorController(std::shared_ptr<Actor> playerActor);
@@ -21,7 +24,7 @@ namespace Game
         std::shared_ptr<Actor> GetBindedActor() const;
 
     protected:
-        virtual void SetPlayerActor(std::shared_ptr<Actor> playerActor) = 0;
+        virtual void InitPlayerController() = 0;
     };
 
 }

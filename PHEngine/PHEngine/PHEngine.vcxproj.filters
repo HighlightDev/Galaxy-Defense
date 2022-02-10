@@ -1392,7 +1392,7 @@
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PointLightSceneProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\PlayerController.h">
+    <ClInclude Include="src\Core\GameCore\HumanoidPlayerController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h">
@@ -1752,7 +1752,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
@@ -2171,7 +2171,7 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PointLightSceneProxy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\PlayerController.cpp">
+    <ClCompile Include="src\Core\GameCore\HumanoidPlayerController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.cpp">
@@ -2375,7 +2375,7 @@
     <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">

@@ -5,7 +5,7 @@
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/PlatformMovementComponent.h"
-#include "Core/GameCore/Components/CharacterMovementComponent.h"
+#include "Core/GameCore/Components/CharacterPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
@@ -117,9 +117,9 @@ namespace Game
       {
          result = scene->CreateComponent_GameThread<InputComponent, ComponentMetaType::Input>(*componentData);
       }
-      else if ("CharacterMovementComponent" == componentType)
+      else if ("CharacterPhysicsMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<CharacterMovementComponent, ComponentMetaType::CharacterMovement>(*componentData);
+         result = scene->CreateComponent_GameThread<CharacterPhysicsMovementComponent, ComponentMetaType::CharacterMovement>(*componentData);
       }
       else if ("PlatformMovementComponent" == componentType)
       {

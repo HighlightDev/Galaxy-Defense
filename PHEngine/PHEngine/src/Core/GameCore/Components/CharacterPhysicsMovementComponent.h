@@ -12,7 +12,7 @@ using namespace EnginePhysics;
 namespace Game
 {
 
-   class CharacterMovementComponent
+   class CharacterPhysicsMovementComponent
        : public MovementComponent,
          public CameraTransformChangedEvent
    {
@@ -29,9 +29,9 @@ namespace Game
      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
-      CharacterMovementComponent(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName);
+      CharacterPhysicsMovementComponent(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName);
 
-      virtual ~CharacterMovementComponent();
+      virtual ~CharacterPhysicsMovementComponent();
 
       virtual ComponentType GetComponentType() const override;
 

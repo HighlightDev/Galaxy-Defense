@@ -43,7 +43,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Register(mLuaInstance, "_CreateThirdPersonCamera");
       LuaRegisterCallback<LuaExecutor_t, void(std::string, glm::ivec4, float, float, glm::vec3, int32_t)>::Register(mLuaInstance, "_CreateFirstPersonCamera");
 
-      LuaRegisterCallback<LuaExecutor_t, void(std::string , Component *) > ::Register(mLuaInstance, "_AttachComponentToActor");
+      LuaRegisterCallback<LuaExecutor_t, void(std::string, Component *)>::Register(mLuaInstance, "_AttachComponentToActor");
       LuaRegisterCallback<LuaExecutor_t, void(Actor *)>::Register(mLuaInstance, "_AttachPlayerControllerToActor");
 
       LuaRegisterCallback<LuaExecutor_t, ProjectedShadowInfo *(int32_t, std::string)>::Register(mLuaInstance, "_CreateLightProjectionShadowInfo");
@@ -125,13 +125,13 @@ namespace Game
    /* -------------------  Attach component to Actor ----------------------------*/
    void LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string /*actor name*/, Component *> &dataToAttachActorToComponent)
    {
-      const std::string& actorName = std::get<0>(dataToAttachActorToComponent);
+      const std::string &actorName = std::get<0>(dataToAttachActorToComponent);
       Component *component = std::get<1>(dataToAttachActorToComponent);
 
-      const auto& spScene = mSceneWP.lock();
+      const auto &spScene = mSceneWP.lock();
       assert(spScene);
 
-      const auto& actor = spScene->GetActor(actorName);
+      const auto &actor = spScene->GetActor(actorName);
       assert((actor && component, "Actor or component is null"));
 
       const bool componentExists = mActiveComponents.count(component->GetObjectId());
@@ -206,15 +206,18 @@ namespace Game
       if (auto scene = mSceneWP.lock())
       {
          auto camera = scene->GetMainCamera();
-         assert(camera && eCameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType());
 
          auto actorIt = std::find_if(scene->GetActors().begin(), scene->GetActors().end(),
                                      [&](const std::shared_ptr<Actor> &sceneActor)
                                      { return sceneActor->GetObjectId() == actor->GetObjectId(); });
          assert(actorIt != scene->GetActors().end());
 
-         scene->SetPlayerController(std::make_shared<PlayerController>(camera, (*actorIt)));
-         std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetGameObjectName());
+         scene->SetPlayerController(std::make_shared<HumanoidPlayerController>(camera, (*actorIt)));
+
+         if (eCameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType())
+         {
+            std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetGameObjectName());
+         }
       }
    }
 

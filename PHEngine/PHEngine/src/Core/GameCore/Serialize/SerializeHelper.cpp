@@ -439,7 +439,7 @@ namespace Game
          logCompType = "CharacterMovement";
          SerializeDataCharacterMovementComponent *charMovSerData = static_cast<SerializeDataCharacterMovementComponent *>(data.get());
          const auto &charMoveCompData = EngineObjectCreator::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
-         result = EngineObjectCreator::CreateComponentByString("CharacterMovementComponent", charMoveCompData, scene);
+         result = EngineObjectCreator::CreateComponentByString("CharacterPhysicsMovementComponent", charMoveCompData, scene);
          break;
       }
       case SerializeDataBase::SerializeDataType::PlatformMovement:

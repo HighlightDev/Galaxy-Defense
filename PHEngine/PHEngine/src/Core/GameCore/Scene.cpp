@@ -178,12 +178,12 @@ namespace Game
       return creatorInstance;
    }
 
-   std::shared_ptr<PlayerController> Scene::GetPlayerController() const
+   std::shared_ptr<HumanoidPlayerController> Scene::GetPlayerController() const
    {
       return mPlayerController;
    }
 
-   void Scene::SetPlayerController(std::shared_ptr<PlayerController> playerController)
+   void Scene::SetPlayerController(std::shared_ptr<HumanoidPlayerController> playerController)
    {
       mPlayerController = playerController;
    }

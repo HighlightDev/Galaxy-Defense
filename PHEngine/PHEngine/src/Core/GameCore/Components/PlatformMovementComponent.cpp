@@ -3,6 +3,8 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 
+#include "Core/CommonCore/TimeHelper.h"
+
 #include <iostream>
 
 namespace Game
@@ -90,10 +92,13 @@ namespace Game
       }
       mTime = fmod(mTime, transitionTime);
    }
-
+   #include <iostream>
    void PlatformMovementComponent::Tick(const float deltaTime)
    {
+      const auto& timeBefore = EngineTime::GetCurrentTime();
       mScriptExecutor.OnUpdate(deltaTime);
+      const auto& timeAfterInSec = EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(timeBefore));
+      std::cout << "time spent on Update = " << timeAfterInSec << std::endl;
 
       if (mDestinationPoint != "NO")
       {

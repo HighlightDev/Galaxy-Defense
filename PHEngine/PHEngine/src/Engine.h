@@ -5,6 +5,7 @@
 #include "Core/GameCore/Level.h"
 #include "Core/GameCore/LevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
+#include "Core/CommonCore/TimeHelper.h"
 
 #include <thread>
 #include <chrono>
@@ -15,12 +16,6 @@ using namespace Graphics::Renderer;
 
 class Engine
 {
-
-private:
-
-   using Clock_t = std::chrono::high_resolution_clock;
-
-private:
 
    static constexpr double InvLimitFPS = 1.0 / 60.0;
 
@@ -37,10 +32,10 @@ private:
 private:
    std::thread m_gameThread;
 
-   typename Clock_t::time_point mLastRenderThreadPulseTime;
+   Moment_t mLastRenderThreadPulseTime;
    double mRenderThreadDeltaTimeSeconds;
 
-   typename Clock_t::time_point mLastGameThreadPulseTime;
+   Moment_t mLastGameThreadPulseTime;
    double mGameThreadDeltaTimeSeconds;
    double mGameThreadSumDeltaTimeSec;
 

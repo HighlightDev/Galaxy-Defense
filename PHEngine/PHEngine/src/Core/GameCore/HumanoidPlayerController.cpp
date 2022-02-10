@@ -1,4 +1,4 @@
-#include "PlayerController.h"
+#include "HumanoidPlayerController.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
@@ -8,31 +8,35 @@
 namespace Game
 {
 
-   PlayerController::PlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_camera(playerCamera)
+   HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
+       : ActorController(playerActor), m_camera(playerCamera), m_inputComponent()
    {
+      InitPlayerController();
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
-
-      SetPlayerActor(m_playerActor);
    }
 
-   PlayerController::~PlayerController()
+   HumanoidPlayerController::~HumanoidPlayerController()
    {
       PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
-   void PlayerController::SetPlayerActor(std::shared_ptr<Actor> playerActor)
+   void HumanoidPlayerController::InitPlayerController()
    {
       assert(m_playerActor);
 
       const auto &rootComponent = m_playerActor->GetBaseRootComponent();
-
       assert(rootComponent);
+
+      m_movementComponent = m_playerActor->GetMovementComponent();
+      assert(m_movementComponent);
+
+      m_inputComponent = m_playerActor->GetInputComponent();
+      assert(m_inputComponent);
 
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   void PlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
+   void HumanoidPlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
    {
       const std::string& actorName = std::move(std::get<0>(data));
 
@@ -47,12 +51,11 @@ namespace Game
       }
    }
 
-   void PlayerController::Tick(float deltaTime)
+   void HumanoidPlayerController::Tick(float deltaTime)
    {
       assert(m_playerActor);
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-      const auto& movementComponent = m_playerActor->GetMovementComponent();
 
       if (m_playerActor->GetInputComponent())
       {
@@ -70,7 +73,7 @@ namespace Game
          {
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               movementComponent->Move();
+               m_movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
@@ -84,7 +87,7 @@ namespace Game
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
-               movementComponent->Jump();
+               m_movementComponent->Jump();
             }
          }
 

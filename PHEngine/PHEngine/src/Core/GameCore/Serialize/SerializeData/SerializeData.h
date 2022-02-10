@@ -53,7 +53,7 @@ struct SerializeDataBase
       Physics,
       CharacterPhysics,
       Tweener,
-      PlayerController,
+      HumanoidPlayerController,
       PlanarReflection,
       Camera,
    };
@@ -603,7 +603,7 @@ struct SerializeDataPlayerController
 
    virtual SerializeDataType GetSerializeDataType() const override
    {
-      return SerializeDataBase::SerializeDataType::PlayerController;
+      return SerializeDataBase::SerializeDataType::HumanoidPlayerController;
    }
 
    SerializeDataPlayerController(const std::string& actorName)

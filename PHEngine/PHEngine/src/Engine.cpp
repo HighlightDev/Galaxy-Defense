@@ -4,14 +4,8 @@
 
 #include <TinyLogger/LogInterface.h>
 
-Engine::Engine(InterThreadCommunicationMgr& interThreadMgr)
-   : m_interThreadMgr(interThreadMgr)
-   , mLastRenderThreadPulseTime(Clock_t::now())
-   , mRenderThreadDeltaTimeSeconds()
-   , mLastGameThreadPulseTime(Clock_t::now())
-   , mGameThreadDeltaTimeSeconds()
-   , mGameThreadSumDeltaTimeSec()
-   , mInputManager(std::make_shared<InputManager>())
+Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
+    : m_interThreadMgr(interThreadMgr), mLastRenderThreadPulseTime(EngineTime::GetCurrentTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetCurrentTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec(), mInputManager(std::make_shared<InputManager>())
 {
 }
 
@@ -20,7 +14,7 @@ Engine::~Engine()
    m_gameThread.join();
 }
 
-std::shared_ptr<InputManager> Engine::GetInputManager() const 
+std::shared_ptr<InputManager> Engine::GetInputManager() const
 {
    return mInputManager;
 }
@@ -48,7 +42,7 @@ void Engine::PlayLevel(std::shared_ptr<Level> level)
    m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
 }
 
-InterThreadCommunicationMgr& Engine::GetThreadCommunicationManager()
+InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
 {
    return m_interThreadMgr;
 }
@@ -90,19 +84,20 @@ void Engine::GameThreadPulse()
          {
             // This should be executed on game thread
             m_level->TickLevel(static_cast<float>(mGameThreadDeltaTimeSeconds));
-            mLastGameThreadPulseTime = Clock_t::now();
-            mGameThreadSumDeltaTimeSec = 0.0;
          }
+
+         mLastGameThreadPulseTime = EngineTime::GetCurrentTime();
+         mGameThreadSumDeltaTimeSec = 0.0;
 
          /* Events: post execution */
          ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
 
-         const uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemorySize();
+         /*const uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemorySize();
 
          if (memoryAfterExe > 0)
          {
             TinyLogger::LogProxy::LogMessages("Engine::GameThread execution. Memory consumption : ", (uint64_t)memoryAfterExe);
-         }
+         }*/
       }
    }
 }
@@ -119,13 +114,9 @@ void Engine::RenderThreadPulse()
    /* RENDER THREAD */
    {
       mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
-      //std::cout << "spin RT spent sec="<<  mRenderThreadDeltaTimeSeconds << std::endl;
-      
-      // This should be executed on render thread
       m_interThreadMgr.SpinRenderThreadJobs();
-      mLastRenderThreadPulseTime = Clock_t::now();
-
       m_sceneRenderer->RenderScene_RenderThread();
+      mLastRenderThreadPulseTime = EngineTime::GetCurrentTime();
    }
 }
 
@@ -136,16 +127,12 @@ void Engine::TickWindow()
 
 double Engine::GetRenderThreadDeltaSeconds() const
 {
-   Clock_t::duration deltaTime = Clock_t::now() - mLastRenderThreadPulseTime;
-   static constexpr double invFromNanoToSec = 0.000000001;
-   return static_cast<double>(deltaTime.count()) * invFromNanoToSec;
+   return EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(mLastRenderThreadPulseTime));
 }
 
 double Engine::GetGameThreadDeltaSeconds() const
 {
-   Clock_t::duration deltaTime = Clock_t::now() - mLastGameThreadPulseTime;
-   static constexpr double invFromNanoToSec = 0.000000001;
-   return static_cast<double>(deltaTime.count()) * invFromNanoToSec;
+   return EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(mLastGameThreadPulseTime));
 }
 
 double Engine::GetRenderThreadDeltaTime() const

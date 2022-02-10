@@ -413,7 +413,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.h" />
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h" />
-    <ClInclude Include="src\Core\GameCore\Components\CharacterMovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h" />
@@ -539,7 +539,7 @@
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\WaterPlaneRenderData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h" />
-    <ClInclude Include="src\Core\GameCore\PlayerController.h" />
+    <ClInclude Include="src\Core\GameCore\HumanoidPlayerController.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasFactory.h" />
     <ClInclude Include="src\Core\GameCore\Components\PointLightComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\DirectionalLightComponentData.h" />
@@ -915,7 +915,7 @@
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\CharacterMovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Tweener\FloatTweenController.cpp" />
@@ -982,7 +982,7 @@
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.cpp" />
     <ClCompile Include="src\Core\InterThreadCommunicationMgr.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.cpp" />
-    <ClCompile Include="src\Core\GameCore\PlayerController.cpp" />
+    <ClCompile Include="src\Core\GameCore\HumanoidPlayerController.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasFactory.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PointLightComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\DirectionalLightSceneProxy.cpp" />

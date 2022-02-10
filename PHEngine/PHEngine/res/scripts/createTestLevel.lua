@@ -325,7 +325,7 @@ function CreateTestLevel(host)
 
 	local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
 	local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
-	local skeletMovementComponent = _CreateComponent(host, "CharacterMovementComponent", skeletMovementCompData)
+	local skeletMovementComponent = _CreateComponent(host, "CharacterPhysicsMovementComponent", skeletMovementCompData)
 	local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
 
 	_AttachComponentToActor(host, "SkeletBuddy", skeletComponent)
