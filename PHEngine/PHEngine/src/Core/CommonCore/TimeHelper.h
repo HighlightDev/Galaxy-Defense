@@ -13,6 +13,10 @@ namespace Game
 
         static Duration_t GetPassedDuration(const Moment_t &lastTime);
 
-        static double GetSecondsFromDuration(const Duration_t &time);
+        static double GetSecondsFromDuration(const Duration_t &duration);
+
+        static double GetMillisecondsFromDuration(const Duration_t &duration);
+
+        static double GetMicrosecondsFromDuration(const Duration_t &duration);
     };
 }

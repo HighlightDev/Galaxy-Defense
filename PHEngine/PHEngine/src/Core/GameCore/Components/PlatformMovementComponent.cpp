@@ -21,7 +21,7 @@ namespace Game
 
    void PlatformMovementComponent::PostLevelInit()
    {
-      if (const auto& spOwner = GetOwner().lock())
+      if (const auto &spOwner = GetOwner().lock())
       {
          const auto &rootComponent = spOwner->GetRootComponent();
          assert(rootComponent);
@@ -92,13 +92,26 @@ namespace Game
       }
       mTime = fmod(mTime, transitionTime);
    }
-   #include <iostream>
+#include <iostream>
    void PlatformMovementComponent::Tick(const float deltaTime)
    {
-      const auto& timeBefore = EngineTime::GetCurrentTime();
+      const auto &timeBeforeLua = EngineTime::GetCurrentTime();
       mScriptExecutor.OnUpdate(deltaTime);
-      const auto& timeAfterInSec = EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(timeBefore));
-      std::cout << "time spent on Update = " << timeAfterInSec << std::endl;
+      const auto &timeAfterInMilliSecLua = EngineTime::GetMillisecondsFromDuration(EngineTime::GetPassedDuration(timeBeforeLua));
+
+      const auto &timeBeforeCore = EngineTime::GetCurrentTime();
+      if (const auto &spOwner = GetOwner().lock())
+      {
+         if (const auto &spScene = spOwner->GetSceneOwner().lock())
+         {
+            const auto gameObject = spScene->GetGameObjectByName("buddyMeshComp");
+            const auto &property = static_cast<EngineGOProperty<float> *>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
+            property->GetValue();
+         }
+      }
+      const auto &timeAfterInMilliSecCore = EngineTime::GetMillisecondsFromDuration(EngineTime::GetPassedDuration(timeBeforeCore));
+
+      std::cout << "Lua millisec =" << timeAfterInMilliSecLua << " CORE millisec=" << timeAfterInMilliSecCore << std::endl;
 
       if (mDestinationPoint != "NO")
       {
@@ -109,7 +122,7 @@ namespace Game
          EulerAnglesTransform transform;
          transform.Translation = mBehaviorVisitor->GetWorldTranslationDelta();
 
-         if (const auto& spOwner = GetOwner().lock())
+         if (const auto &spOwner = GetOwner().lock())
          {
             if (auto physCompSP = spOwner->GetPhysicsComponent())
             {
