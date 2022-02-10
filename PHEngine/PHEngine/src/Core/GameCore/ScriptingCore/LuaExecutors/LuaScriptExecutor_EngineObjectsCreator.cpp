@@ -10,6 +10,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/GameCore/HumanoidPlayerController.h"
 
 using namespace Graphics;
 

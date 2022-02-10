@@ -3,8 +3,6 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 
-#include "Core/CommonCore/TimeHelper.h"
-
 #include <iostream>
 
 namespace Game
@@ -92,26 +90,10 @@ namespace Game
       }
       mTime = fmod(mTime, transitionTime);
    }
-#include <iostream>
+
    void PlatformMovementComponent::Tick(const float deltaTime)
    {
-      const auto &timeBeforeLua = EngineTime::GetCurrentTime();
       mScriptExecutor.OnUpdate(deltaTime);
-      const auto &timeAfterInMilliSecLua = EngineTime::GetMillisecondsFromDuration(EngineTime::GetPassedDuration(timeBeforeLua));
-
-      const auto &timeBeforeCore = EngineTime::GetCurrentTime();
-      if (const auto &spOwner = GetOwner().lock())
-      {
-         if (const auto &spScene = spOwner->GetSceneOwner().lock())
-         {
-            const auto gameObject = spScene->GetGameObjectByName("buddyMeshComp");
-            const auto &property = static_cast<EngineGOProperty<float> *>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
-            property->GetValue();
-         }
-      }
-      const auto &timeAfterInMilliSecCore = EngineTime::GetMillisecondsFromDuration(EngineTime::GetPassedDuration(timeBeforeCore));
-
-      std::cout << "Lua millisec =" << timeAfterInMilliSecLua << " CORE millisec=" << timeAfterInMilliSecCore << std::endl;
 
       if (mDestinationPoint != "NO")
       {

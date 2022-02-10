@@ -7,16 +7,16 @@ using namespace Game;
 namespace Labyrinth
 {
 
-   class SimpleLevel :
+   class IntroLevel :
       public Level
    {
       using Base = Level;
 
    public:
 
-      SimpleLevel(InterThreadCommunicationMgr& threadMgr);
+      IntroLevel(InterThreadCommunicationMgr& threadMgr);
 
-      virtual ~SimpleLevel();
+      virtual ~IntroLevel();
 
       virtual void LoadLevel() override;
 

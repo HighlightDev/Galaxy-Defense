@@ -7,18 +7,18 @@ using namespace Game;
 namespace Labyrinth
 {
 
-   class LabyrinthLevelFactory
+   class GameLevelFactory
       : public LevelFactory
    {
 
-      static LabyrinthLevelFactory* mLevelFactoryInstance;
+      static GameLevelFactory* mLevelFactoryInstance;
 
    public:
-      LabyrinthLevelFactory() = default;
+      GameLevelFactory() = default;
 
       virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const override;
 
-      static LabyrinthLevelFactory* GetInstance();
+      static GameLevelFactory* GetInstance();
    };
 
 }

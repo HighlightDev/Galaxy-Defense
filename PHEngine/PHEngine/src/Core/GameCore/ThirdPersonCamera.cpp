@@ -177,6 +177,7 @@ namespace Game
    {
       if (auto sceneSp = mScene.lock())
       {
+         assert(mThirdPersonTargetGOName != "");
          const auto &actor = sceneSp->GetActor(mThirdPersonTargetGOName);
          bThirdPersonTargetDeferredDirty = false;
          SetThirdPersonTarget(actor);

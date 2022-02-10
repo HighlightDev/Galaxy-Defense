@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\LabyrinthLevelFactory.cpp">
+    <ClCompile Include="src\GameLevelFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SimpleLevel.cpp">
+    <ClCompile Include="src\IntroLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LabyrinthLevelFactory.h">
+    <ClInclude Include="src\GameLevelFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\SimpleLevel.h">
+    <ClInclude Include="src\IntroLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

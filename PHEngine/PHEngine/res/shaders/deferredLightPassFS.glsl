@@ -11,7 +11,7 @@
 #define PCF_SAMPLES_POINT_LIGHT 3
 #define PCF_SAMPLES_SPOTLIGHT 3
 #define MAX_DIR_LIGHT_SHADOW_MAP_COUNT 4
-#define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 4
+#define MAX_POINT_LIGHT_SHADOW_MAP_COUNT 1
 #define MAX_SPOTLIGHT_SHADOW_MAP_COUNT 4
 
 const float INV_COUNT_PCF_DIR_LIGHT_SAMPLES =
@@ -115,8 +115,12 @@ float CalcLitFactorPointLight(in samplerCube shadowmap, in vec3 pixelWorldPos,
   for (float x = -offset; x < offset; x += offsetStep) {
     for (float y = -offset; y < offset; y += offsetStep) {
       for (float z = -offset; z < offset; z += offsetStep) {
-        float shadowmapDepth = texture(shadowmap, LightToFragVec + vec3(x, y, z)).r; // depth is in range [0 ; 1]
-        shadowmapDepth *= shadowmapProjectionFarPlane; // now depth is linear in world space in range [0 ; Far Plane]
+        float shadowmapDepth =
+            texture(shadowmap, LightToFragVec + vec3(x, y, z))
+                .r; // depth is in range [0 ; 1]
+        shadowmapDepth *=
+            shadowmapProjectionFarPlane; // now depth is linear in world space
+                                         // in range [0 ; Far Plane]
         shadow +=
             step(shadowmapDepth, actualDepth - SHADOWMAP_BIAS_POINT_LIGHT);
       }
@@ -230,13 +234,16 @@ vec3 GetPBRContribution(in vec3 nWorldNormal, in vec3 albedoColor, in vec3 F0,
   return (diffuseBRDF + specularBRDF) * lightRadiance * cosLi;
 }
 
-vec3 CalculatePointLightLitColor(in vec3 radiance, in int pointLightIndex, in vec3 pixelWorldPos) {
-// todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
-// so currently engine supports only one cubemap sampler
-  return step(pointLightIndex, PointLightShadowMapCount) * CalcLitFactorPointLight(
-      PointLightShadowMaps[pointLightIndex], pixelWorldPos,
-      PointLightPositionWorld[pointLightIndex],
-      PointLightShadowProjectionFarPlane[pointLightIndex]) * radiance;
+vec3 CalculatePointLightLitColor(in vec3 radiance, in int pointLightIndex,
+                                 in vec3 pixelWorldPos) {
+  // todo: IMPORTANT!! some vendors don't support array of cubemap samplers,
+  // so currently engine supports only one cubemap sampler
+  return step(pointLightIndex, PointLightShadowMapCount) *
+         CalcLitFactorPointLight(
+             PointLightShadowMaps[pointLightIndex], pixelWorldPos,
+             PointLightPositionWorld[pointLightIndex],
+             PointLightShadowProjectionFarPlane[pointLightIndex]) *
+         radiance;
 }
 
 vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
@@ -249,6 +256,7 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
   // Specular reflection vector.
   vec3 Lr = 2.0 * cosLo * nWorldNormal - Lo;
 
+#ifdef ENABLE_POINT_LIGHTING
   vec3 pointLighting = vec3(0);
   {
     for (int pointLightIndex = 0; pointLightIndex < PointLightCount;
@@ -268,9 +276,11 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
           GetPBRContribution(nWorldNormal, albedoColor, F0, cosLo, Li, Lo,
                              LRadiance, metallicRoughness);
 
-      pointLighting += CalculatePointLightLitColor(pbrRadiance, pointLightIndex, pixelWorldPos);
+      pointLighting += CalculatePointLightLitColor(pbrRadiance, pointLightIndex,
+                                                   pixelWorldPos);
     }
   }
+#endif
 
   vec3 directLighting = vec3(0);
   {
@@ -368,7 +378,11 @@ vec3 GetPBRLightColor(in vec3 pixelWorldPos, in vec3 nWorldNormal,
     }
   }
 
+#ifdef ENABLE_POINT_LIGHTING
   return pointLighting + directLighting + spotlightColor;
+#else
+  return directLighting + spotlightColor;
+#endif
 }
 
 #endif
@@ -505,5 +519,10 @@ void main() {
 #endif
 #endif
 
+#ifdef GAMMA_CORRECTION
+  const float gammaCorrection = 1.0 / 2.2;
+  FragColor = vec4(pow(totalColor.rgb, vec3(gammaCorrection)), 1.0);
+#else
   FragColor = totalColor;
+#endif
 }

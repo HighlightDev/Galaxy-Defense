@@ -6,7 +6,7 @@
 #include "Core/GameCore/Components/ComponentCreatorFactory.h"
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
-#include "Core/GameCore/HumanoidPlayerController.h"
+#include "Core/GameCore/ActorController.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
@@ -51,7 +51,7 @@ namespace Game
 
       std::vector<std::shared_ptr<ACamera>> mActiveCameras;
 
-      std::shared_ptr<HumanoidPlayerController> mPlayerController;
+      std::shared_ptr<ActorController> mPlayerController;
 
       std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
 
@@ -89,7 +89,7 @@ namespace Game
 
       IDeferredResourceCreator* GetDeferredResourceCreatorByName(const std::string& name) const;
 
-      std::shared_ptr<HumanoidPlayerController> GetPlayerController() const;
+      std::shared_ptr<ActorController> GetPlayerController() const;
 
       EnginePhysics::PhysicsWorld* GetPhysicsWorld() const;
 
@@ -107,7 +107,7 @@ namespace Game
 
       const InterThreadCommunicationMgr& GetThreadManager() const;
 
-      void SetPlayerController(std::shared_ptr<HumanoidPlayerController> playerController);
+      void SetPlayerController(std::shared_ptr<ActorController> playerController);
 
       void AddActor(std::shared_ptr<Actor> actor);
 

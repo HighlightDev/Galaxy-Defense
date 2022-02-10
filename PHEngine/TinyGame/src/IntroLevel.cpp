@@ -1,6 +1,8 @@
-#include "SimpleLevel.h"
+#include "IntroLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
+#include "Core/GameCore/SpaceShipPlayerController.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -9,34 +11,44 @@ using namespace IO;
 namespace Labyrinth
 {
 
-   SimpleLevel::SimpleLevel(InterThreadCommunicationMgr &threadMgr)
+   IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
        : Level(threadMgr)
    {
    }
 
-   SimpleLevel::~SimpleLevel()
+   IntroLevel::~IntroLevel()
    {
    }
 
-   void SimpleLevel::RunLuaBuildLevelScript()
+   void IntroLevel::RunLuaBuildLevelScript()
    {
       static constexpr const char *lvlName
-           = "createTestLevel.lua";
-          //= "spaceLvl1.lua";
+          // = "createTestLevel.lua";
+          = "spaceLvl1.lua";
       LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(lvlName);
       mLuaLevelBuilder.PostInit(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
    }
 
-   void SimpleLevel::PreLevelInit()
+   void IntroLevel::PreLevelInit()
    {
       Base::PreLevelInit();
    }
 
-   void SimpleLevel::PostLevelInit()
+   void IntroLevel::PostLevelInit()
    {
-      Base::PostLevelInit();
+      const auto &a_spaceship = mScene->GetActor("SpaceshipActor");
+      assert(a_spaceship);
+      const auto &mainCamera = mScene->GetMainCamera();
+      assert(mainCamera);
+      std::shared_ptr<SpaceShipPlayerController> spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
+      mScene->SetPlayerController(spaceShipController);
+
+      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
+      {
+         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
+      }
 
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
@@ -46,9 +58,10 @@ namespace Labyrinth
                                                       FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
       const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, Game::ComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
+      Base::PostLevelInit();
    }
 
-   void SimpleLevel::LoadLevel()
+   void IntroLevel::LoadLevel()
    {
       // ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 

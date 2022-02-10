@@ -5,6 +5,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/GameCore/HumanoidPlayerController.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>

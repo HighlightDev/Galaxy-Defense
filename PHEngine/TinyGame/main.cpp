@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <TinyLogger/LogInterface.h>
 
-#include "src/LabyrinthLevelFactory.h"
+#include "src/GameLevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
@@ -177,7 +177,7 @@ int32_t main(int32_t argc, char **argv)
     InterThreadCommunicationMgr threadManager;
     Engine engine(threadManager);
     engineInputManager = engine.GetInputManager();
-    const auto &level = LabyrinthLevelFactory::GetInstance()->CreateLevel(
+    const auto &level = GameLevelFactory::GetInstance()->CreateLevel(
         "test level", threadManager);
 
     engine.PlayLevel(level);

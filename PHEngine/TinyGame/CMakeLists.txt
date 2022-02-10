@@ -1,13 +1,13 @@
 set(
 	HEADERS
-	src/LabyrinthLevelFactory.h
-	src/SimpleLevel.h
+	src/GameLevelFactory.h
+	src/IntroLevel.h
 )
 
 set(
 	SOURCES
-	src/LabyrinthLevelFactory.cpp
-	src/SimpleLevel.cpp
+	src/GameLevelFactory.cpp
+	src/IntroLevel.cpp
     main.cpp
 )
 

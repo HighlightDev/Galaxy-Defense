@@ -163,12 +163,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\LabyrinthLevelFactory.cpp" />
-    <ClCompile Include="src\SimpleLevel.cpp" />
+    <ClCompile Include="src\GameLevelFactory.cpp" />
+    <ClCompile Include="src\IntroLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\LabyrinthLevelFactory.h" />
-    <ClInclude Include="src\SimpleLevel.h" />
+    <ClInclude Include="src\GameLevelFactory.h" />
+    <ClInclude Include="src\IntroLevel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

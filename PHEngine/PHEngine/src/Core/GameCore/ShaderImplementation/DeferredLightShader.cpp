@@ -84,6 +84,8 @@ namespace Game
          DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
          DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount());
+
+         Define(FragmentShader, "GAMMA_CORRECTION");
 #ifdef NO_LIT
          Define(FragmentShader, "NO_LIT");
 #else
