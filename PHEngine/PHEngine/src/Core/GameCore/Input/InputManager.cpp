@@ -1,6 +1,7 @@
 #include "InputManager.h"
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
 #include "Core/GameCore/Event/MouseMovedEvent.h"
+#include "Core/GameCore/Event/MouseScrollEvent.h"
 
 using namespace Event;
 
@@ -27,5 +28,10 @@ namespace Game
       mMouseY = y;
 
       MouseMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
+   }
+
+   void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection)
+   {
+      MouseScrollEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, scrollDirection);
    }
 }

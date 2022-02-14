@@ -2,6 +2,7 @@
 #include "ACamera.h"
 #include "Actor.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
+#include "Core/GameCore/Input/MouseEventEnums.h"
 
 using namespace Event;
 
@@ -10,15 +11,14 @@ namespace Game
    class Scene;
 
    class ThirdPersonCamera
-      : public ACamera
-      , public PlayerMovedEvent
+       : public ACamera,
+         public PlayerMovedEvent
    {
 
       // todo: maybe something better
       bool bIsMainCamera;
 
    protected:
-
       float m_distanceFromTargetToCamera;
 
       std::shared_ptr<Actor> m_thirdPersonTarget;
@@ -37,25 +37,27 @@ namespace Game
 
       bool bThirdPersonTargetDeferredDirty;
 
-   public:
+      static constexpr float sCameraMinDistance = 5.0f;
+      static constexpr float sCameraMaxDistance = 35.0f;
 
+   public:
       float m_maxDistanceFromTargetToCamera;
 
-      ThirdPersonCamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene,
-         const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg,
-         const float camDistanceToThirdPersonTarget, const glm::vec3& thirdPersonTargetOffset = glm::vec3());
+      ThirdPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene,
+                        const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg,
+                        const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset = glm::vec3());
 
       virtual ~ThirdPersonCamera();
 
       virtual void Tick(const float DeltaTime) override;
 
-      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data);
+      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t &data);
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 
       virtual void PostLevelInit() override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
 
@@ -77,19 +79,19 @@ namespace Game
 
       void SetDistanceFromTargetToCamera(float distanceFromTargetToCamera);
 
+      virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower);
+
       float GetDistanceFromTargetToCamera() const;
 
       glm::vec3 GetThirdPersonTargetOffset() const;
 
       std::shared_ptr<Actor> GetThirdPersonTarget() const;
 
-      void SetThirdPersonTargetDeferred(const std::string& targetGameObjectName);
+      void SetThirdPersonTargetDeferred(const std::string &targetGameObjectName);
 
       void SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget);
 
    private:
-
       void ProcessDeferredThirdPersonTarget();
    };
 }
-

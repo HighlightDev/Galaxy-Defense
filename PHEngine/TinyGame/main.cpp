@@ -9,6 +9,7 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
+#include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Engine.h"
 
 using namespace Game;
@@ -32,6 +33,14 @@ void get_window_pos(GLFWwindow *window)
   glfwGetWindowPos(window, &x, &y);
 
   DisplayDeviceDataProvider::GetInstance()->SetWindowPos(x, y);
+}
+
+void mouse_scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+  if (std::abs(yoffset) > 0.0000001)
+  {
+    engineInputManager->TriggeOnMouseScroll(yoffset < -0.00001 ? eMouseScrollDirection::ZoomOut : yoffset > 0.00001 ? eMouseScrollDirection::ZoomIn                                                                                                          : eMouseScrollDirection::Undefined);
+  }
 }
 
 void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
@@ -162,6 +171,7 @@ int32_t main(int32_t argc, char **argv)
   get_window_size(window);
   get_window_pos(window);
   glfwSetCursorPosCallback(window, cursor_position_callback);
+  glfwSetScrollCallback(window, mouse_scroll_callback);
   glfwSetKeyCallback(window, key_pressed_callback);
   glfwSetMouseButtonCallback(window, mouse_button_callback);
 

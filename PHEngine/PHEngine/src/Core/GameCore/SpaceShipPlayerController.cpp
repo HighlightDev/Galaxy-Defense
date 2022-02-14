@@ -8,8 +8,10 @@ namespace Game
 {
 
    SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_camera(playerCamera)
+       : ActorController(playerActor), m_camera()
    {
+      assert((eCameraType::SECONDARY_THIRD_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_THIRD_PERSON_CAMERA);
+      m_camera = std::static_pointer_cast<ThirdPersonCamera>(playerCamera);
       InitPlayerController();
    }
 
@@ -33,7 +35,7 @@ namespace Game
       assert(m_playerActor);
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
-      const auto& movementComponent = m_playerActor->GetMovementComponent();
+      const auto &movementComponent = m_playerActor->GetMovementComponent();
 
       if (m_playerActor->GetInputComponent())
       {
@@ -46,12 +48,18 @@ namespace Game
             m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
          }
 
+         if (mouseBindings.IsMouseScrollEventDirty())
+         {
+            const auto scrollDirection = mouseBindings.FlushMouseScrollEvent();
+            m_camera->Zoom(scrollDirection, 1.25f);
+         }
+
          const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
          if (keyboardBindings.HasPressedKeys())
          {
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               //movementComponent->Move();
+               // movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
@@ -65,7 +73,7 @@ namespace Game
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
-               //movementComponent->Jump();
+               // movementComponent->Jump();
             }
          }
 

@@ -7,14 +7,15 @@ namespace EnginePhysics
 {
 
    PhysicsWorld::PhysicsWorld()
-      : Event::PhysicsDescriptorRemovedEvent()
-      , mBroadphase(nullptr)
-      , mCollisionConfiguration(nullptr)
-      , mDispatcher(nullptr)
-      , mSolver(nullptr)
-      , mWorld(nullptr)
+       : Event::PhysicsDescriptorRemovedEvent()
+       , mBroadphase(nullptr)
+       , mCollisionConfiguration(nullptr)
+       , mDispatcher(nullptr)
+       , mSolver(nullptr)
+       , mWorld(nullptr)
 #if DEBUG
-      , mDebugRenderer(new BulletDebugRenderer())
+         ,
+         mDebugRenderer(new BulletDebugRenderer())
 #endif
    {
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(this);
@@ -58,17 +59,17 @@ namespace EnginePhysics
 #endif
    }
 
-   btDiscreteDynamicsWorld* PhysicsWorld::GetWorld() const
+   btDiscreteDynamicsWorld *PhysicsWorld::GetWorld() const
    {
       return mWorld;
    }
 
-   void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor* inDescriptor)
+   void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor *inDescriptor)
    {
       mPhysicsDescriptors.push_back(inDescriptor);
    }
 
-   void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor)
+   void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor)
    {
       // !!! ATTENTION !!!
       // this is the only place,
@@ -78,25 +79,28 @@ namespace EnginePhysics
 
    void PhysicsWorld::Tick(const float deltaTime)
    {
-      mWorld->stepSimulation(deltaTime);
+      if (mPhysicsDescriptors.size())
+      {
+         mWorld->stepSimulation(deltaTime);
 
 #if DEBUG
-      mDebugRenderer->ClearLinesBuffer();
-      mWorld->debugDrawWorld();
+         mDebugRenderer->ClearLinesBuffer();
+         mWorld->debugDrawWorld();
 #endif
+      }
    }
 
 #if DEBUG
-   const DebugPhysicsRenderData& PhysicsWorld::GetDebugPhysicsRenderData() const
+   const DebugPhysicsRenderData &PhysicsWorld::GetDebugPhysicsRenderData() const
    {
       return mDebugRenderer->GetRenderData();
    }
 #endif
 
-   void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t& data)
+   void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t &data)
    {
-      auto removedDescriptorIt 
-         = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [&](const PhysicsDescriptor* physDesc) { return physDesc->GetId() == std::get<0>(data); });
+      auto removedDescriptorIt = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [&](const PhysicsDescriptor *physDesc)
+                                              { return physDesc->GetId() == std::get<0>(data); });
 
       mPhysicsDescriptors.erase(removedDescriptorIt);
       RemovePhysDescriptorFromSimulation(*removedDescriptorIt);

@@ -3,6 +3,8 @@
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/SpaceShipPlayerController.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
+#include "Core/GameCore/Components/InputComponent.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -49,6 +51,10 @@ namespace Labyrinth
       {
          std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
       }
+
+      InputComponentData inputComponentData = InputComponentData("SpaceshipInputComponent");
+      const auto& inputComponent = mScene->CreateComponent_GameThread<InputComponent, ComponentMetaType::Input>(inputComponentData);
+      a_spaceship->AddComponent(inputComponent);
 
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ActorController.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 
 using namespace Event;
 
@@ -14,7 +15,7 @@ namespace Game
 
       using Base = Actor;
 
-      std::shared_ptr<ACamera> m_camera;
+      std::shared_ptr<ThirdPersonCamera> m_camera;
 
    public:
 

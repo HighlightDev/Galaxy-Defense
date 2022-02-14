@@ -117,6 +117,27 @@ namespace Game
    void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetToCamera)
    {
       m_distanceFromTargetToCamera = distanceFromTargetToCamera;
+      bTransformationDirty = true;
+   }
+
+   void ThirdPersonCamera::Zoom(eMouseScrollDirection zoomDirection, float zoomPower)
+   {
+      switch (zoomDirection)
+      {
+      case eMouseScrollDirection::ZoomIn:
+      {
+         SetDistanceFromTargetToCamera(std::max(m_distanceFromTargetToCamera - zoomPower, sCameraMinDistance));
+         break;
+      }
+      case eMouseScrollDirection::ZoomOut:
+      {
+         SetDistanceFromTargetToCamera(std::min(m_distanceFromTargetToCamera + zoomPower, sCameraMaxDistance));
+         break;
+      }
+
+      default:
+         break;
+      }
    }
 
    float ThirdPersonCamera::GetDistanceFromTargetToCamera() const
