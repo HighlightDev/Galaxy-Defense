@@ -434,20 +434,20 @@ namespace Game
          result = EngineObjectCreator::CreateComponentByString("InputComponent", inputCompData, scene);
          break;
       }
-      case SerializeDataBase::SerializeDataType::CharacterMovement:
+      case SerializeDataBase::SerializeDataType::Movement:
       {
-         logCompType = "CharacterMovement";
+         logCompType = "Movement";
          SerializeDataCharacterMovementComponent *charMovSerData = static_cast<SerializeDataCharacterMovementComponent *>(data.get());
          const auto &charMoveCompData = EngineObjectCreator::CreateCharacterMovementComponentData(charMovSerData->ComponentName, charMovSerData->LaunchDirection, charMovSerData->CameraName);
-         result = EngineObjectCreator::CreateComponentByString("CharacterPhysicsMovementComponent", charMoveCompData, scene);
+         result = EngineObjectCreator::CreateComponentByString("HumanoidPhysicsMovementComponent", charMoveCompData, scene);
          break;
       }
-      case SerializeDataBase::SerializeDataType::PlatformMovement:
+      case SerializeDataBase::SerializeDataType::PlatformTraverse:
       {
-         logCompType = "PlatformMovement";
-         SerializeDataPlatformMovementComponent *movSerData = static_cast<SerializeDataPlatformMovementComponent *>(data.get());
-         const auto &moveCompData = EngineObjectCreator::CreatePlatformMovementComponentData(movSerData->ComponentName, movSerData->ScriptName);
-         result = EngineObjectCreator::CreateComponentByString("PlatformMovementComponent", moveCompData, scene);
+         logCompType = "PlatformTraverse";
+         SerializeDataPlatformTraverseComponent *movSerData = static_cast<SerializeDataPlatformTraverseComponent *>(data.get());
+         const auto &moveCompData = EngineObjectCreator::CreatePlatformTraverseComponentData(movSerData->ComponentName, movSerData->ScriptName);
+         result = EngineObjectCreator::CreateComponentByString("PlatformTraverseComponent", moveCompData, scene);
          break;
       }
       case SerializeDataBase::SerializeDataType::Physics:

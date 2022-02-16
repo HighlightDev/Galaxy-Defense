@@ -1,8 +1,8 @@
 #pragma once
 #include "SceneComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
-#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_MovementComponent.h"
-#include "PlatformMovementComponentVisitor.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_PlatformTraverseComponent.h"
+#include "PlatformTraverseComponentVisitor.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace EnginePhysics;
@@ -10,15 +10,15 @@ using namespace EnginePhysics;
 namespace Game
 {
 
-   class PlatformMovementComponent
+   class PlatformTraverseComponent
       : public Component
    {
 
       std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
 
-      LuaScriptExecutor_MovementComponent mScriptExecutor;
+      LuaScriptExecutor_PlatformTraverseComponent mScriptExecutor;
 
-      std::unique_ptr<PlatformMovementComponentVisitorBase> mBehaviorVisitor;
+      std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 
       std::string mDestinationPoint;
       std::string mLastDestinationPoint;
@@ -27,9 +27,9 @@ namespace Game
 
    public:
 
-      PlatformMovementComponent(const std::string& gameObjectName, const std::string& relPathToScript);
+      PlatformTraverseComponent(const std::string& gameObjectName, const std::string& relPathToScript);
 
-      virtual ~PlatformMovementComponent();
+      virtual ~PlatformTraverseComponent();
 
       virtual ComponentType GetComponentType() const override;
 

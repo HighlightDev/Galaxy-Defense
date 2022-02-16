@@ -292,7 +292,7 @@
 					</value0>
 					<value1>
 						<polymorphic_id>2147483653</polymorphic_id>
-						<polymorphic_name>SerializeDataPlatformMovementComponent</polymorphic_name>
+						<polymorphic_name>SerializeDataPlatformTraverseComponent</polymorphic_name>
 						<ptr_wrapper>
 							<id>2147483654</id>
 							<data>

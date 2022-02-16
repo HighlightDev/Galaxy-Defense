@@ -1749,16 +1749,16 @@
     <ClInclude Include="src\Core\GameCore\GameObjectProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\HumanoidPhysicsMovementComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h">
@@ -1767,7 +1767,7 @@
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.h">
+    <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h">
@@ -2372,22 +2372,22 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_Actor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\CharacterPhysicsMovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\HumanoidPhysicsMovementComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_MovementComponent.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\PlatformMovementComponentVisitor.cpp">
+    <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp">

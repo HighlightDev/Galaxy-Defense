@@ -11,8 +11,9 @@ using namespace EnginePhysics;
 
 namespace Game
 {
+   class MovementComponentData;
 
-   class CharacterPhysicsMovementComponent
+   class HumanoidPhysicsMovementComponent
        : public MovementComponent,
          public CameraTransformChangedEvent
    {
@@ -24,14 +25,12 @@ namespace Game
 
       bool bIsCameraRotationDirty = false;
 
-      glm::vec3 mDirection;
-
      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
-      CharacterPhysicsMovementComponent(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName);
+      HumanoidPhysicsMovementComponent(const MovementComponentData& movementComponentData);
 
-      virtual ~CharacterPhysicsMovementComponent();
+      virtual ~HumanoidPhysicsMovementComponent();
 
       virtual ComponentType GetComponentType() const override;
 

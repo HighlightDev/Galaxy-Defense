@@ -6,19 +6,19 @@
 
 namespace Game
 {
-   class PlatformMovementComponent;
+   class PlatformTraverseComponent;
 
-   class LuaScriptExecutor_MovementComponent
+   class LuaScriptExecutor_PlatformTraverseComponent
       : public LuaScriptExecutor_EngineBase
    {
 
-      PlatformMovementComponent* mOwnerComponent;
+      PlatformTraverseComponent* mOwnerComponent;
 
    public:
 
-      LuaScriptExecutor_MovementComponent(PlatformMovementComponent* owner, const std::string& scriptName);
+      LuaScriptExecutor_PlatformTraverseComponent(PlatformTraverseComponent* owner, const std::string& scriptName);
 
-      ~LuaScriptExecutor_MovementComponent();
+      ~LuaScriptExecutor_PlatformTraverseComponent();
 
       void RegisterCallbacks();
 

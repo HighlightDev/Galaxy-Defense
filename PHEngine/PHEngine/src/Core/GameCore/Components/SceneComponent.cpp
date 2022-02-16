@@ -38,11 +38,10 @@ namespace Game
       return SCENE_COMPONENT;
    }
 
-   void SceneComponent::AddOffsetUp(const float offsetValue)
+   void SceneComponent::AddTranslation(const glm::vec3& offsetTranslation)
    {
-      mTransform->Translation = mTransform->Translation + AXIS_UP * offsetValue;
+      SetTranslation(mTransform->Translation + offsetTranslation);
    }
-#include <iostream>
 
    void SceneComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
    {

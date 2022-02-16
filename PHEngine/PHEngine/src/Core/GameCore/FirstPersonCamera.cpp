@@ -5,6 +5,7 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
+#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 
 #include <set>
 
@@ -17,7 +18,8 @@ namespace Game
        : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg)
        , m_firstPersonCameraPosition(camPos)
        , m_cameraMoveSpeed(0.01f)
-       , mInputComponent(std::make_unique<InputComponent>("FirstPersonCameraInputComponent"))
+       , mInputComponent(std::make_unique<InputComponent>(
+          InputComponentData("FirstPersonCameraInputComponent")))
    {
       ACamera::UpdateRotationMatrix(0, 0);
    }

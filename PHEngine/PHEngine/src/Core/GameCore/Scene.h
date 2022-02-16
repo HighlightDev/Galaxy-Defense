@@ -63,7 +63,7 @@ namespace Game
 
       ~Scene();
 
-      template <typename ComponentType, ComponentMetaType componentMetaType>
+      template <typename ComponentType, eComponentMetaType componentMetaType>
       std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
       {
          ComponentCreatorFactory<ComponentType, componentMetaType> componentFactory;

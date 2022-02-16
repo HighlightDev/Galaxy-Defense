@@ -71,7 +71,7 @@ namespace Game
 
       glm::mat4 GetRelativeMatrix() const;
 
-      void AddOffsetUp(const float offsetValue);
+      void AddTranslation(const glm::vec3& offsetTranslation);
 	};
 }
 

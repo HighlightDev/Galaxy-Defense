@@ -9,22 +9,31 @@
 
 namespace Game
 {
-	struct CharacterMovementComponentData : public ComponentData
+   struct MovementComponentData : public ComponentData
+   {
+      MovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection)
+      : ComponentData(gameObjectName)
+      , m_launchDirection(launchDirection)
+      {
+      } 
+
+      glm::vec3 m_launchDirection;
+   };
+
+	struct HumanoidMovementComponentData : public MovementComponentData
 	{
-      CharacterMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
-			: ComponentData(gameObjectName)
+      HumanoidMovementComponentData(const std::string& gameObjectName, const glm::vec3& launchDirection, const std::string& cameraName)
+			: MovementComponentData(gameObjectName, launchDirection)
          , mCameraName(cameraName)
-         , m_launchDirection(launchDirection)
 		{
 		}
 
       std::string mCameraName;
-		glm::vec3 m_launchDirection;
 	};
 
-   struct PlatformMovementComponentData : public ComponentData
+   struct PlatformTraverseComponentData : public ComponentData
    {
-      PlatformMovementComponentData(const std::string& gameObjectName, const std::string& scriptName)
+      PlatformTraverseComponentData(const std::string& gameObjectName, const std::string& scriptName)
          : ComponentData(gameObjectName)
          , mScriptName(scriptName)
       {

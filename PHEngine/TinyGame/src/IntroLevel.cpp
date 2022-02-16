@@ -5,6 +5,7 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -44,7 +45,7 @@ namespace Labyrinth
       assert(a_spaceship);
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);
-      std::shared_ptr<SpaceShipPlayerController> spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
+      const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
       mScene->SetPlayerController(spaceShipController);
 
       if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
@@ -52,9 +53,14 @@ namespace Labyrinth
          std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
       }
 
-      InputComponentData inputComponentData = InputComponentData("SpaceshipInputComponent");
-      const auto& inputComponent = mScene->CreateComponent_GameThread<InputComponent, ComponentMetaType::Input>(inputComponentData);
-      a_spaceship->AddComponent(inputComponent);
+      InputComponentData d_input = InputComponentData("SpaceshipInputComponent");
+      const auto &c_input = mScene->CreateComponent_GameThread<InputComponent, eComponentMetaType::Input>(d_input);
+      a_spaceship->AddComponent(c_input);
+
+      MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
+      const auto &c_movement = mScene->CreateComponent_GameThread<NoPhysicsMovementComponent,
+                                                                  eComponentMetaType::Movement>(d_movement);
+      a_spaceship->AddComponent(c_movement);
 
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
@@ -62,7 +68,7 @@ namespace Labyrinth
 
       const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),
                                                       FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
-      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, Game::ComponentMetaType::Cubemap>(cubemapComponentData);
+      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, Game::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
       Base::PostLevelInit();
    }

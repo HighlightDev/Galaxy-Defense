@@ -30,9 +30,13 @@ namespace Game
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
+   #include <iostream>
+
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
       assert(m_playerActor);
+
+      static uint64_t i = 0;
 
       std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
       const auto &movementComponent = m_playerActor->GetMovementComponent();
@@ -59,16 +63,24 @@ namespace Game
          {
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               // movementComponent->Move();
+               std::cout << "keyboardBindings.HasPressedKeys() i = " << i++<< std::endl;
+               movementComponent->SetDirection(glm::vec3(0, 0, 1));
+               movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
+               movementComponent->SetDirection(glm::vec3(-1, 0, 0));
+               movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
             {
+               movementComponent->SetDirection(glm::vec3(1, 0, 0));
+               movementComponent->Move();
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
             {
+               movementComponent->SetDirection(glm::vec3(0, 0, -1));
+               movementComponent->Move();
             }
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
@@ -79,26 +91,6 @@ namespace Game
 
          const std::vector<eKeyActionType> &currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
          const std::vector<eKeyActionType> &currentFramePressedKeys = inputComponent->GetPressedKeyActions();
-
-         // Buttons which have been released
-         // if (currentFrameReleasedKeys.size())
-         // {
-         //    auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
-         //    if (moveForwardIt != currentFrameReleasedKeys.end())
-         //    {
-         //       m_playerActor->ChangeState("Idle");
-         //    }
-         // }
-
-         // Buttons which have been pressed
-         // if (currentFramePressedKeys.size())
-         // {
-         //    auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
-         //    if (moveForwardIt != currentFramePressedKeys.end())
-         //    {
-         //       m_playerActor->ChangeState("Walking");
-         //    }
-         // }
       }
    }
 

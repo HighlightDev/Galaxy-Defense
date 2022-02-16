@@ -5,6 +5,7 @@
 
 namespace Game
 {
+   struct InputComponentData;
 
    class InputComponent :
       public Component
@@ -16,7 +17,7 @@ namespace Game
 
    public:
 
-      InputComponent(const std::string& gameObjectName);
+      InputComponent(const InputComponentData& componentData);
 
       virtual ~InputComponent();
 

@@ -58,7 +58,7 @@ namespace Game
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, PhysicsDescriptor *)>::Register(mLuaInstance, "_CreatePhysicsComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string)>::Register(mLuaInstance, "_CreateInputComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, std::string)>::Register(mLuaInstance, "_CreateCharacterMovementComponentData");
-      LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, std::string)>::Register(mLuaInstance, "_CreatePlatformMovementComponentData");
+      LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, std::string)>::Register(mLuaInstance, "_CreatePlatformTraverseComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, IMaterial *)>::Register(mLuaInstance, "_CreateSkyboxComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *)>::Register(mLuaInstance, "_CreateWaterPlaneComponentData");
       LuaRegisterCallback<LuaExecutor_t, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, std::string /*Camera name*/, glm::ivec4)>::Register(mLuaInstance, "_CreatePlanarReflectionComponentData");
@@ -353,7 +353,7 @@ namespace Game
    /* -------------------  Create platform movement component data ----------------------------*/
    ComponentData *LuaScriptExecutor_EngineObjectsCreator::ExecuteLuaCallback(const std::tuple<std::string, std::string> &platformMovementComponentData)
    {
-      auto dataPtr = EngineObjectCreator::CreatePlatformMovementComponentData(std::get<0>(platformMovementComponentData), std::get<1>(platformMovementComponentData));
+      auto dataPtr = EngineObjectCreator::CreatePlatformTraverseComponentData(std::get<0>(platformMovementComponentData), std::get<1>(platformMovementComponentData));
       mAllocatedComponentData.push_back(dataPtr);
       return dataPtr;
    }

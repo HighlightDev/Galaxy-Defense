@@ -1,4 +1,4 @@
-#include "PlatformMovementComponent.h"
+#include "PlatformTraverseComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
@@ -8,16 +8,16 @@
 namespace Game
 {
 
-   PlatformMovementComponent::PlatformMovementComponent(const std::string &gameObjectName, const std::string &relPathToScript)
+   PlatformTraverseComponent::PlatformTraverseComponent(const std::string &gameObjectName, const std::string &relPathToScript)
        : Component(gameObjectName), mScriptExecutor(this, relPathToScript), mDestinationPoint("NO"), mTime(0.0f)
    {
    }
 
-   PlatformMovementComponent::~PlatformMovementComponent()
+   PlatformTraverseComponent::~PlatformTraverseComponent()
    {
    }
 
-   void PlatformMovementComponent::PostLevelInit()
+   void PlatformTraverseComponent::PostLevelInit()
    {
       if (const auto &spOwner = GetOwner().lock())
       {
@@ -30,11 +30,11 @@ namespace Game
 
          if (physComponent)
          {
-            mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorWithPhys>(rootComponent, physComponent);
+            mBehaviorVisitor = std::make_unique<PlatformTraverseComponentVisitorWithPhys>(rootComponent, physComponent);
          }
          else
          {
-            mBehaviorVisitor = std::make_unique<PlatformMovementComponentVisitorNoPhys>(rootComponent);
+            mBehaviorVisitor = std::make_unique<PlatformTraverseComponentVisitorNoPhys>(rootComponent);
          }
 
          mBehaviorVisitor->Init();
@@ -44,24 +44,24 @@ namespace Game
       }
    }
 
-   ComponentType PlatformMovementComponent::GetComponentType() const
+   ComponentType PlatformTraverseComponent::GetComponentType() const
    {
       return PLATFORM_MOVEMENT_COMPONENT;
    }
 
-   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> &PlatformMovementComponent::GetMovementPoints() const
+   const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> &PlatformTraverseComponent::GetMovementPoints() const
    {
       return mMovementPoints;
    }
 
-   void PlatformMovementComponent::AddMovementPoint(const std::string &pointName, const EulerAnglesTransform &t, const float transitionTime)
+   void PlatformTraverseComponent::AddMovementPoint(const std::string &pointName, const EulerAnglesTransform &t, const float transitionTime)
    {
       assert(!mMovementPoints.count(pointName));
 
       mMovementPoints.emplace(pointName, std::make_tuple(t, transitionTime));
    }
 
-   void PlatformMovementComponent::SetDestinationPoint(const std::string &pointName)
+   void PlatformTraverseComponent::SetDestinationPoint(const std::string &pointName)
    {
       mDestinationPoint = pointName;
       mLastDestinationPoint = pointName;
@@ -69,12 +69,12 @@ namespace Game
       mBehaviorVisitor->CommitMovementStarted(transform);
    }
 
-   std::string PlatformMovementComponent::GetDestinationPoint() const
+   std::string PlatformTraverseComponent::GetDestinationPoint() const
    {
       return mDestinationPoint;
    }
 
-   void PlatformMovementComponent::Move(const float deltaTime)
+   void PlatformTraverseComponent::Move(const float deltaTime)
    {
       mTime += deltaTime;
 
@@ -91,7 +91,7 @@ namespace Game
       mTime = fmod(mTime, transitionTime);
    }
 
-   void PlatformMovementComponent::Tick(const float deltaTime)
+   void PlatformTraverseComponent::Tick(const float deltaTime)
    {
       mScriptExecutor.OnUpdate(deltaTime);
 
@@ -127,11 +127,11 @@ namespace Game
       }
    }
 
-   void PlatformMovementComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
+   void PlatformTraverseComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       auto &actorData = GetSerializeDataActor(dataContainer);
 
-      std::shared_ptr<SerializeDataPlatformMovementComponent> data = std::make_shared<SerializeDataPlatformMovementComponent>();
+      std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
       data->ComponentName = GameObjectName;
       data->ScriptName = mScriptExecutor.GetScriptRelPath();
 

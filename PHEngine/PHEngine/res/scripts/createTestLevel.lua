@@ -174,9 +174,9 @@ function CreateTestLevel(host)
 		_SetFloatToMaterial(host, material1, 1, "uvScale")
 
 		local smallMeshData = _CreateMeshComponentData(host, "playerCubeMeshComp", "playerCube.obj", 0, 0, 0, 0, 0, 0, 8, 1, 8, "", material1)
-		local moveCompData = _CreatePlatformMovementComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
+		local moveCompData = _CreatePlatformTraverseComponentData(host, "moveCompData", "platformMovementComponentAction.lua")
 		local floorComponent = _CreateComponent(host, "StaticMeshComponent", smallMeshData)
-		local moveComponent = _CreateComponent(host, "PlatformMovementComponent", moveCompData)
+		local moveComponent = _CreateComponent(host, "PlatformTraverseComponent", moveCompData)
 		_AttachComponentToActor(host, "SmallGround", floorComponent)
 		_AttachComponentToActor(host, "SmallGround", moveComponent)
 
@@ -325,7 +325,7 @@ function CreateTestLevel(host)
 
 	local skeletPhysComp = _CreateComponent(host, "CharacterPhysicsComponent", skeletPhysCompData)
 	local skeletInputComponent = _CreateComponent(host, "InputComponent", skeletInputCompData)
-	local skeletMovementComponent = _CreateComponent(host, "CharacterPhysicsMovementComponent", skeletMovementCompData)
+	local skeletMovementComponent = _CreateComponent(host, "HumanoidPhysicsMovementComponent", skeletMovementCompData)
 	local skeletComponent = _CreateComponent(host, "SkeletalMeshComponent", buddyData)
 
 	_AttachComponentToActor(host, "SkeletBuddy", skeletComponent)

@@ -4,8 +4,8 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
-#include "Core/GameCore/Components/PlatformMovementComponent.h"
-#include "Core/GameCore/Components/CharacterPhysicsMovementComponent.h"
+#include "Core/GameCore/Components/PlatformTraverseComponent.h"
+#include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
@@ -87,55 +87,55 @@ namespace Game
 
       if ("PointLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PointLightComponent, ComponentMetaType::PointLight>(*componentData);
+         result = scene->CreateComponent_GameThread<PointLightComponent, eComponentMetaType::PointLight>(*componentData);
       }
       else if ("DirectionalLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<DirectionalLightComponent, Game::ComponentMetaType::DirectionalLight>(*componentData);
+         result = scene->CreateComponent_GameThread<DirectionalLightComponent, Game::eComponentMetaType::DirectionalLight>(*componentData);
       }
       else if ("SpotlightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SpotlightComponent, Game::ComponentMetaType::Spotlight>(*componentData);
+         result = scene->CreateComponent_GameThread<SpotlightComponent, Game::eComponentMetaType::Spotlight>(*componentData);
       }
       else if ("StaticMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<StaticMeshComponent, ComponentMetaType::StaticMesh>(*componentData);
+         result = scene->CreateComponent_GameThread<StaticMeshComponent, eComponentMetaType::StaticMesh>(*componentData);
       }
       else if ("SkeletalMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SkeletalMeshComponent, ComponentMetaType::SkeletalMesh>(*componentData);
+         result = scene->CreateComponent_GameThread<SkeletalMeshComponent, eComponentMetaType::SkeletalMesh>(*componentData);
       }
       else if ("PhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PhysicsComponent, ComponentMetaType::Physics>(*componentData);
+         result = scene->CreateComponent_GameThread<PhysicsComponent, eComponentMetaType::Physics>(*componentData);
       }
       else if ("CharacterPhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<CharacterPhysicsComponent, ComponentMetaType::Physics>(*componentData);
+         result = scene->CreateComponent_GameThread<CharacterPhysicsComponent, eComponentMetaType::Physics>(*componentData);
       }
       else if ("InputComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<InputComponent, ComponentMetaType::Input>(*componentData);
+         result = scene->CreateComponent_GameThread<InputComponent, eComponentMetaType::Input>(*componentData);
       }
-      else if ("CharacterPhysicsMovementComponent" == componentType)
+      else if ("HumanoidPhysicsMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<CharacterPhysicsMovementComponent, ComponentMetaType::CharacterMovement>(*componentData);
+         result = scene->CreateComponent_GameThread<HumanoidPhysicsMovementComponent, eComponentMetaType::Movement>(*componentData);
       }
-      else if ("PlatformMovementComponent" == componentType)
+      else if ("PlatformTraverseComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PlatformMovementComponent, ComponentMetaType::PlatformMovement>(*componentData);
+         result = scene->CreateComponent_GameThread<PlatformTraverseComponent, eComponentMetaType::PlatformTraverse>(*componentData);
       }
       else if ("SkyboxComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SkyboxComponent, ComponentMetaType::Skybox>(*componentData);
+         result = scene->CreateComponent_GameThread<SkyboxComponent, eComponentMetaType::Skybox>(*componentData);
       }
       else if ("WaterPlaneComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<WaterPlaneComponent, ComponentMetaType::WaterPlane>(*componentData);
+         result = scene->CreateComponent_GameThread<WaterPlaneComponent, eComponentMetaType::WaterPlane>(*componentData);
       }
       else if ("PlanarReflectionComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PlanarReflectionComponent, ComponentMetaType::PlanarReflection>(*componentData);
+         result = scene->CreateComponent_GameThread<PlanarReflectionComponent, eComponentMetaType::PlanarReflection>(*componentData);
       }
       else
       {
@@ -230,12 +230,12 @@ namespace Game
 
    ComponentData *EngineObjectCreator::CreateCharacterMovementComponentData(const std::string &gameObjectName, const glm::vec3 &launchDirection, const std::string &cameraName)
    {
-      return new CharacterMovementComponentData(gameObjectName, launchDirection, cameraName);
+      return new HumanoidMovementComponentData(gameObjectName, launchDirection, cameraName);
    }
 
-   ComponentData *EngineObjectCreator::CreatePlatformMovementComponentData(const std::string &gameObjectName, const std::string &scriptName)
+   ComponentData *EngineObjectCreator::CreatePlatformTraverseComponentData(const std::string &gameObjectName, const std::string &scriptName)
    {
-      return new PlatformMovementComponentData(gameObjectName, scriptName);
+      return new PlatformTraverseComponentData(gameObjectName, scriptName);
    }
 
    ComponentData *EngineObjectCreator::CreateInputComponentData(const std::string &gameObjectName)

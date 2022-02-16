@@ -120,6 +120,12 @@ namespace Game
          it->State = KeyState::PRESSED;
       }
 
+      auto removeIt = std::find(mReleasedKeysOnCurrentTick.begin(), mReleasedKeysOnCurrentTick.end(), key);
+      if (removeIt != mReleasedKeysOnCurrentTick.end())
+      {
+         mReleasedKeysOnCurrentTick.erase(removeIt);
+      }
+
       mPressedKeysCount++;
    }
 
@@ -135,6 +141,11 @@ namespace Game
          {
             assert(std::find(mReleasedKeysOnCurrentTick.begin(), mReleasedKeysOnCurrentTick.end(), key) == mReleasedKeysOnCurrentTick.end());
             mReleasedKeysOnCurrentTick.push_back(key);
+            auto removeIt = std::find(mPressedKeysOnCurrentTick.begin(), mPressedKeysOnCurrentTick.end(), key);
+            if (removeIt != mPressedKeysOnCurrentTick.end())
+            {
+               mPressedKeysOnCurrentTick.erase(removeIt);
+            }
          }
 
          it->State = KeyState::RELEASED;

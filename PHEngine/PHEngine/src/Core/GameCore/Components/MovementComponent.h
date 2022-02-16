@@ -1,9 +1,13 @@
 #pragma once
 #include "Component.h"
 
+#include <glm/vec3.hpp>
+
 namespace Game
 {
    class Actor;
+   
+   struct MovementComponentData;
 
    class MovementComponent
        : public Component
@@ -12,9 +16,11 @@ namespace Game
    
       float mSpeed;
 
+      glm::vec3 mDirection;
+
    public:
 
-      MovementComponent(const std::string &gameObjectName);
+      MovementComponent(const MovementComponentData& movementComponentData);
 
       virtual ~MovementComponent();
 
@@ -31,6 +37,10 @@ namespace Game
       float GetSpeed() const;
 
       void SetSpeed(const float speed);
+
+      void SetDirection(const glm::vec3& direction);
+
+      glm::vec3 GetDirection() const;
    };
 
 }
