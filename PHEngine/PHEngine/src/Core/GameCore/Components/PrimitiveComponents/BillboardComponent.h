@@ -10,6 +10,7 @@ using namespace Graphics::Data;
 
 namespace Game
 {
+   struct BillboardComponentData;
 
    class BillboardComponent :
       public PrimitiveComponent
@@ -24,7 +25,7 @@ namespace Game
 
    public:
 
-      BillboardComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const BillboardRenderData& renderData);
+      BillboardComponent(const BillboardComponentData& data, const BillboardRenderData& renderData);
 
       virtual ~BillboardComponent();
 

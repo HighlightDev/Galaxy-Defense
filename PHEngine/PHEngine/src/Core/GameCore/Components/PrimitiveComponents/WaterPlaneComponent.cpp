@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/Components/ComponentData/WaterPlaneComponentData.h"
 
 #include <glm/vec3.hpp>
 
@@ -11,19 +12,19 @@ using namespace Graphics::Renderer;
 namespace Game
 {
 
-   WaterPlaneComponent::WaterPlaneComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, WaterPlaneRenderData&& renderData, WaterQualityFlag waterQuality)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
-      , m_waveSpeed(0.4f)
-      , m_moveFactor(0.0f)
-      , m_renderData(std::forward<WaterPlaneRenderData>(renderData))
-      , m_waterQuality(waterQuality)
+   WaterPlaneComponent::WaterPlaneComponent(const WaterPlaneComponentData &data, const WaterPlaneRenderData &renderData,
+                                            WaterQualityFlag waterQuality)
+       : PrimitiveComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale,
+                            renderData.m_skin->GetBoundingBox()),
+         m_waveSpeed(0.4f), m_moveFactor(0.0f),
+         m_renderData(renderData), m_waterQuality(waterQuality)
    {
    }
 
    WaterPlaneComponent::~WaterPlaneComponent()
    {
    }
-   
+
    ComponentType WaterPlaneComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
@@ -35,17 +36,16 @@ namespace Game
 
       m_moveFactor += m_waveSpeed * deltaTime;
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
 
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
-            {
+                                           {
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetMoveFactor(m_moveFactor);
-            });
+               proxyPtr->SetMoveFactor(m_moveFactor); });
          }
       }
    }
@@ -60,7 +60,8 @@ namespace Game
       return m_waveStrength;
    }
 
-   float WaterPlaneComponent::GetTransparencyDepth() const {
+   float WaterPlaneComponent::GetTransparencyDepth() const
+   {
 
       return m_transparencyDepth;
    }
@@ -69,17 +70,17 @@ namespace Game
    {
       m_waveStrength = waveStr;
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+                                           {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetWaveStrength(m_waveStrength);
-            });
+               proxyPtr->SetWaveStrength(m_waveStrength); });
          }
       }
    }
@@ -88,17 +89,17 @@ namespace Game
    {
       m_transparencyDepth = transparencyDepth;
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+                                           {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetTransparencyDepth(m_transparencyDepth);
-            });
+               proxyPtr->SetTransparencyDepth(m_transparencyDepth); });
          }
       }
    }
@@ -108,7 +109,7 @@ namespace Game
       return std::make_shared<WaterPlaneSceneProxy>(this);
    }
 
-   float WaterPlaneComponent::GetNearClipPlane() const 
+   float WaterPlaneComponent::GetNearClipPlane() const
    {
       return m_nearClipPlane;
    }
@@ -122,17 +123,17 @@ namespace Game
    {
       m_nearClipPlane = nearClipPlane;
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
+                                           {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetNearClipPlane(m_nearClipPlane);
-            });
+               proxyPtr->SetNearClipPlane(m_nearClipPlane); });
          }
       }
    }
@@ -141,17 +142,17 @@ namespace Game
    {
       m_farClipPlane = farClipPlane;
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]() {
+            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
+                                           {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetFarClipPlane(m_farClipPlane);
-            });
+               proxyPtr->SetFarClipPlane(m_farClipPlane); });
          }
       }
    }

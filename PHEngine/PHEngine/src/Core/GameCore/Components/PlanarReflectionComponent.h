@@ -16,6 +16,7 @@ namespace Graphics{
 namespace Game {
 
    class ACamera;
+   struct PlanarReflectionComponentData;
 
    using Graphics::PlanarReflectionProxy;
    
@@ -35,8 +36,7 @@ namespace Game {
 
    public:
 
-      PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation,
-         glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& fboViewPortInfo);
+      PlanarReflectionComponent(const PlanarReflectionComponentData& data);
 
       virtual ~PlanarReflectionComponent();
 

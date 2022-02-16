@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/SkyboxSceneProxy.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 
 #include <glm/vec3.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -11,12 +12,11 @@ namespace Game
 {
 	using namespace EngineUtility;
 
-	SkyboxComponent::SkyboxComponent(const std::string& gameObjectName, const glm::vec3& scale, const SkyboxRenderData& renderData)
-		: PrimitiveComponent(gameObjectName, glm::vec3(), glm::vec3(), scale, renderData.m_skin->GetBoundingBox())
+	SkyboxComponent::SkyboxComponent(const SkyboxComponentData& data, const SkyboxRenderData& renderData)
+		: PrimitiveComponent(data.GameObjectName, glm::vec3(), glm::vec3(), data.m_scale, renderData.m_skin->GetBoundingBox())
 		, m_rotateSpeed(2.0f)
       , m_renderData(renderData)
 	{
-
 	}
 
 	SkyboxComponent::~SkyboxComponent()

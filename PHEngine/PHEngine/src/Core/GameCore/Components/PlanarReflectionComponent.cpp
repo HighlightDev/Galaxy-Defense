@@ -5,18 +5,18 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GraphicsCore/Texture/Texture2d.h"
+#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 
 using namespace Graphics;
 using namespace EngineMath;
 
 namespace Game {
 
-   PlanarReflectionComponent::PlanarReflectionComponent(const std::string& gameObjectName, glm::vec3 translation,
-      glm::vec3 rotation, glm::vec3 scale, ACamera* ownerCamera, const ::Graphics::ViewPortInfo& renderTargetViewPortInfo)
-      : SceneComponent(gameObjectName, translation, rotation, scale)
+   PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData& data)
+      : SceneComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale)
       , mReflectionPlane()
-      , mOwnerCamera(ownerCamera)
-      , mRenderTargetViewPortInfo(renderTargetViewPortInfo)
+      , mOwnerCamera(data.m_ownerCamera)
+      , mRenderTargetViewPortInfo(data.m_fboViewPortInfo)
       , mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
    {
    }

@@ -11,16 +11,14 @@ namespace Game
 	{
 
       PointLightComponentData(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 attenuation, float radianceRadius, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-         : LightComponentData(gameObjectName, ambient, diffuse, specular, shadowInfo)
+         : LightComponentData(gameObjectName, ambient, diffuse, specular, shadowInfo, translation, glm::vec3(0), glm::vec3(1))
          , Attenuation(attenuation)
          , RadianceRadius(radianceRadius)
-         , Translation(translation)
       {
       }
 
       glm::vec3 Attenuation;
       float RadianceRadius;
-      glm::vec3 Translation;
 	};
 
 }

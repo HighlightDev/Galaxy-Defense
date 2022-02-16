@@ -9,18 +9,15 @@ using namespace Graphics::Data;
 
 namespace Game
 {
+   struct LightComponentData;
    class SpotlightComponent
       : public PointLightComponent
    {
       using Base = PointLightComponent;
 
-   protected:
-
-     SpotlightRenderData m_renderData;
-
    public:
 
-      SpotlightComponent(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const SpotlightRenderData& renderData);
+      SpotlightComponent(const LightComponentData& data);
 
       virtual ~SpotlightComponent();
 
@@ -30,10 +27,7 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      inline const SpotlightRenderData& GetRenderData() const {
-
-         return m_renderData;
-      }
+      std::shared_ptr<SpotlightRenderData> GetRenderData() const;
    };
 }
 

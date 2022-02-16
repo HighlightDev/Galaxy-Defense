@@ -57,9 +57,7 @@ namespace Game
 {
     enum class eComponentMetaType
     {
-        DirectionalLight,
-        PointLight,
-        Spotlight,
+        LightComponent,
         Skybox,
         StaticMesh,
         WaterPlane,
@@ -100,7 +98,7 @@ namespace Game
     {
         std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
-            std::shared_ptr<Skin> skin = nullptr;
+            std::shared_ptr<Skin> skin;
 
             const MeshComponentData &mData =
                 static_cast<const MeshComponentData &>(data);
@@ -155,9 +153,7 @@ namespace Game
             StaticMeshRenderData renderData(
                 skin, staticMeshShader, planarReflectionShader, materialProxy);
 
-            return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData, renderData);
         }
     };
 
@@ -204,54 +200,19 @@ namespace Game
                                               planarReflectionShader, materialProxy);
 
             return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale, mData.m_luaScriptPath,
+                mData,
                 renderData);
         }
     };
 
     template <typename ComponentType>
-    struct DirectionalLightComponentCreator : public IComponentCreator
+    struct LightComponentCreator : public IComponentCreator
     {
         std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
-            const DirectionalLightComponentData &mData =
-                static_cast<const DirectionalLightComponentData &>(data);
-            DirectionalLightRenderData renderData(mData.Direction, mData.Ambient,
-                                                  mData.Diffuse, mData.Specular,
-                                                  mData.ShadowInfo);
-            return std::make_shared<ComponentType>(mData.GameObjectName,
-                                                   mData.Rotation, renderData);
-        }
-    };
-
-    template <typename ComponentType>
-    struct PointLightComponentCreator : public IComponentCreator
-    {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
-        {
-            const PointLightComponentData &mData =
-                static_cast<const PointLightComponentData &>(data);
-            PointLightRenderData renderData(mData.Attenuation, mData.RadianceRadius,
-                                            mData.Ambient, mData.Diffuse,
-                                            mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(mData.GameObjectName,
-                                                   mData.Translation, renderData);
-        }
-    };
-
-    template <typename ComponentType>
-    struct SpotlightComponentCreator : public IComponentCreator
-    {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
-        {
-            const SpotlightComponentData &mData =
-                static_cast<const SpotlightComponentData &>(data);
-            SpotlightRenderData renderData(mData.Attenuation, mData.RadianceRadius,
-                                           mData.Cutoff, mData.Ambient, mData.Diffuse,
-                                           mData.Specular, mData.ShadowInfo);
-            return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.Translation, mData.Rotation, renderData);
+            const LightComponentData &mData =
+                static_cast<const LightComponentData &>(data);
+            return std::make_shared<ComponentType>(mData);
         }
     };
 
@@ -295,9 +256,7 @@ namespace Game
                                                                                          planarReflectionParams, materialProxy);
 
             return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_scale,
-                SkyboxRenderData(skin, skyboxMeshShader, planarReflectionShader,
-                                 materialProxy));
+                mData, SkyboxRenderData(skin, skyboxMeshShader, planarReflectionShader, materialProxy));
         }
     };
 
@@ -329,10 +288,8 @@ namespace Game
                     "StaticMeshVertexFactory_SimpleShader_" + materialProxy->MaterialName,
                     shaderParams, materialProxy);
 
-            return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale,
-                WaterPlaneRenderData(skin, waterPlaneShader, materialProxy));
+            return std::make_shared<ComponentType>(mData,
+                                                   WaterPlaneRenderData(skin, waterPlaneShader, materialProxy));
         }
     };
 
@@ -355,9 +312,7 @@ namespace Game
 
             CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
 
-            return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData, renderData);
         }
     };
 
@@ -383,9 +338,7 @@ namespace Game
 
             BillboardRenderData renderData(skin, shader, texture);
 
-            return std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale, renderData);
+            return std::make_shared<ComponentType>(mData, renderData);
         }
     };
 
@@ -416,8 +369,7 @@ namespace Game
         {
             const PlatformTraverseComponentData &mData =
                 static_cast<const PlatformTraverseComponentData &>(data);
-            return std::make_shared<ComponentType>(mData.GameObjectName,
-                                                   mData.mScriptName);
+            return std::make_shared<ComponentType>(mData);
         }
     };
 
@@ -428,8 +380,7 @@ namespace Game
         {
             const PhysicsComponentData &mData =
                 static_cast<const PhysicsComponentData &>(data);
-            return std::make_shared<ComponentType>(mData.GameObjectName,
-                                                   mData.mPhysicsDescriptor);
+            return std::make_shared<ComponentType>(mData);
         }
     };
 
@@ -440,11 +391,10 @@ namespace Game
         {
             const PlanarReflectionComponentData &mData =
                 static_cast<const PlanarReflectionComponentData &>(data);
+
             assert(mData.m_ownerCamera);
-            const auto &component = std::make_shared<ComponentType>(
-                mData.GameObjectName, mData.m_translation,
-                mData.m_eulerRotationDegrees, mData.m_scale, mData.m_ownerCamera,
-                mData.m_fboViewPortInfo);
+
+            const auto &component = std::make_shared<ComponentType>(mData);
 
             mData.m_ownerCamera->SetPlanarReflectionComponent(component);
             return component;
@@ -452,21 +402,9 @@ namespace Game
     };
 
     template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::DirectionalLight, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    typename std::enable_if<componentMetaType == eComponentMetaType::LightComponent, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
     {
-        return std::make_unique<DirectionalLightComponentCreator<ComponentType>>();
-    }
-
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::PointLight, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
-    {
-        return std::make_unique<PointLightComponentCreator<ComponentType>>();
-    }
-
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Spotlight, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
-    {
-        return std::make_unique<SpotlightComponentCreator<ComponentType>>();
+        return std::make_unique<LightComponentCreator<ComponentType>>();
     }
 
     template <typename ComponentType, eComponentMetaType componentMetaType>

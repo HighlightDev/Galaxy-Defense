@@ -9,6 +9,7 @@ using namespace EnginePhysics;
 
 namespace Game
 {
+   struct PlatformTraverseComponentData;
 
    class PlatformTraverseComponent
       : public Component
@@ -27,7 +28,7 @@ namespace Game
 
    public:
 
-      PlatformTraverseComponent(const std::string& gameObjectName, const std::string& relPathToScript);
+      PlatformTraverseComponent(const PlatformTraverseComponentData& data);
 
       virtual ~PlatformTraverseComponent();
 

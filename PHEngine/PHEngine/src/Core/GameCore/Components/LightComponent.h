@@ -1,20 +1,27 @@
 #pragma once
-
-#include <glm/vec3.hpp>
-
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GraphicsCore/SceneProxy/LightSceneProxy.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
+#include "Core/GraphicsCore/RenderData/LightRenderData.h"
+
+#include <glm/vec3.hpp>
+#include <memory>
 
 using namespace Graphics::Proxy;
+using namespace Graphics::Data;
 
 namespace Game
 {
-   
+   struct LightComponentData;
+
    class LightComponent : 
       public SceneComponent
    {
+      protected:
+
       using Base = SceneComponent;
+
+      std::shared_ptr<LightRenderData> mLightRenderData;
 
    public:
 
@@ -26,7 +33,9 @@ namespace Game
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 
-      LightComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
+      LightComponent(const LightComponentData& data);
+
+      LightRenderData& GetLightRenderData();
 
       virtual ~LightComponent();
    };

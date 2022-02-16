@@ -6,14 +6,15 @@
 #include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   PhysicsComponent::PhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor)
-      : Component(gameObjectName)
-      , mDescriptor(descriptor)
+   PhysicsComponent::PhysicsComponent(const PhysicsComponentData& data)
+      : Component(data.GameObjectName)
+      , mDescriptor(data.mPhysicsDescriptor)
       , bIsTransformationDirty(true)
    {
    }

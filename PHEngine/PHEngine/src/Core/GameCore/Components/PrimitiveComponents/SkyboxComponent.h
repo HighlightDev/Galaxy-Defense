@@ -15,7 +15,8 @@ using namespace Graphics;
 
 namespace Game
 {
-
+	struct SkyboxComponentData;
+	
 	class SkyboxComponent :
 		public PrimitiveComponent
 	{
@@ -31,7 +32,7 @@ namespace Game
 
 	public:
 
-		SkyboxComponent(const std::string& gameObjectName, const glm::vec3& scale, const SkyboxRenderData& renderData);
+		SkyboxComponent(const SkyboxComponentData& data, const SkyboxRenderData& renderData);
 
 		virtual ~SkyboxComponent();
 

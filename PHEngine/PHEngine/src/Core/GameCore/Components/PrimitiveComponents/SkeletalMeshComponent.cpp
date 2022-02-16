@@ -8,7 +8,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
-
+#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
@@ -16,15 +16,19 @@ using namespace Graphics::Renderer;
 namespace Game
 {
 
-   SkeletalMeshComponent::SkeletalMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const std::string& LuaScriptName, const SkeletalMeshRenderData& renderData)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
+   SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData& meshComponentData, const SkeletalMeshRenderData& renderData)
+      : PrimitiveComponent(meshComponentData.GameObjectName
+      , meshComponentData.m_translation
+      , meshComponentData.m_eulerRotationDegrees
+      , meshComponentData.m_scale
+      , renderData.m_skin->GetBoundingBox())
       , m_renderData(renderData)
-      , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + LuaScriptName)
+      , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData.m_luaScriptPath)
       , mLuaInstance(std::make_unique<LuaWrapper>())
       , mUpdateDataResetTimeCounter(0.0f)
       , update_data_reset_time(0.015f)
       , mTimeIncreaseMultiply(1.0f)
-      , LuaScriptName(LuaScriptName)
+      , LuaScriptName(meshComponentData.m_luaScriptPath)
       , SrcAnimationTime(EngineGOProperty<float>(0.0f, "SrcAnimTime"))
       , DstAnimationTime(EngineGOProperty<float>(0.0f, "DstAnimTime"))
       , SrcAnimationName(EngineGOProperty<std::string>("", "SrcAnimName"))

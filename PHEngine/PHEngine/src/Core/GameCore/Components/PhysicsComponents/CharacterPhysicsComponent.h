@@ -3,6 +3,7 @@
 #include "PhysicsComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 namespace EnginePhysics {
 
@@ -13,7 +14,7 @@ namespace EnginePhysics {
 
    public:
 
-      CharacterPhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor);
+      CharacterPhysicsComponent(const PhysicsComponentData& data);
 
       virtual ~CharacterPhysicsComponent();
 

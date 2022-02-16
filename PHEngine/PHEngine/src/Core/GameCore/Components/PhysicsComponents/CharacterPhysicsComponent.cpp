@@ -12,9 +12,9 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   CharacterPhysicsComponent::CharacterPhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor)
-      : PhysicsComponent(gameObjectName, descriptor)
-      , characterController(static_cast<DynamicCharacterController*>(descriptor))
+   CharacterPhysicsComponent::CharacterPhysicsComponent(const PhysicsComponentData& data)
+      : PhysicsComponent(data)
+      , characterController(static_cast<DynamicCharacterController*>(data.mPhysicsDescriptor))
    {
       assert(characterController);
    }

@@ -9,10 +9,13 @@
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
 
+
 using namespace Event;
 
 namespace Game
 {
+   struct LightComponentData;
+
    class PointLightComponent
       : public LightComponent
       , public PhysicsSimulationUpdatedEvent
@@ -21,13 +24,9 @@ namespace Game
    {
       using Base = LightComponent;
 
-   protected:
-
-      PointLightRenderData m_renderData;
-
    public:
 
-      PointLightComponent(const std::string& gameObjectName, glm::vec3 translation, const PointLightRenderData& renderData);
+      PointLightComponent(const LightComponentData& lightComponentData);
 
       virtual ~PointLightComponent();
 
@@ -39,10 +38,7 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      inline const PointLightRenderData& GetRenderData() const {
-
-         return m_renderData;
-      }
+      std::shared_ptr<PointLightRenderData> GetRenderData() const;
 
    protected:
 

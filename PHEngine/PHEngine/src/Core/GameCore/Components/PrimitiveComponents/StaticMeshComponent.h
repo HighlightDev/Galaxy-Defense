@@ -9,41 +9,38 @@ using namespace Graphics;
 
 namespace Game
 {
+	struct MeshComponentData;
 
-	class StaticMeshComponent :
-		public PrimitiveComponent
+	class StaticMeshComponent : public PrimitiveComponent
 	{
 	protected:
-
 		using Base = PrimitiveComponent;
 
 	private:
-
-      StaticMeshRenderData m_renderData;
+		StaticMeshRenderData m_renderData;
 
 	public:
-
-		StaticMeshComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const StaticMeshRenderData& renderData);
+		StaticMeshComponent(const MeshComponentData& meshComponentData, const StaticMeshRenderData &renderData);
 
 		virtual ~StaticMeshComponent();
 
-      virtual ComponentType GetComponentType() const override;
+		virtual ComponentType GetComponentType() const override;
 
 		virtual void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+		virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+		virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      virtual void PostLevelInit() override;
+		virtual void PostLevelInit() override;
 
-      inline const StaticMeshRenderData& GetRenderData() const {
+		inline const StaticMeshRenderData &GetRenderData() const
+		{
 
-         return m_renderData;
-      }
+			return m_renderData;
+		}
 
-      std::shared_ptr<IMaterial> GetMaterial() const;
+		std::shared_ptr<IMaterial> GetMaterial() const;
 	};
 
 }
-

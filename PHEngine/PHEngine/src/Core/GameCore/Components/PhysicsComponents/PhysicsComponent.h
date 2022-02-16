@@ -2,6 +2,8 @@
 
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+
 #include <glm/ext/quaternion_float.hpp>
 
 using namespace Game;
@@ -19,7 +21,7 @@ namespace EnginePhysics {
 
    public:
 
-      PhysicsComponent(const std::string& gameObjectName, PhysicsDescriptor* descriptor);
+      PhysicsComponent(const PhysicsComponentData& data);
 
       virtual ~PhysicsComponent();
 

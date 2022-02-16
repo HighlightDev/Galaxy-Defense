@@ -11,6 +11,7 @@ using namespace Event;
 
 namespace Game
 {
+   struct LightComponentData;
 
    class DirectionalLightComponent 
       : public LightComponent
@@ -20,13 +21,9 @@ namespace Game
 
       using Base = LightComponent;
 
-   protected:
-
-      DirectionalLightRenderData m_renderData;
-
    public:
 
-      DirectionalLightComponent(const std::string& gameObjectName, glm::vec3 rotation, const DirectionalLightRenderData& renderData);
+      DirectionalLightComponent(const LightComponentData& lightComponentData);
 
       virtual ~DirectionalLightComponent();
 
@@ -36,10 +33,7 @@ namespace Game
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      inline const DirectionalLightRenderData& GetRenderData() const {
-
-         return m_renderData;
-      }
+      std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
 
       virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 

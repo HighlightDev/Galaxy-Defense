@@ -10,6 +10,7 @@ using namespace Graphics::Data;
 
 namespace Game
 {
+   struct CubemapComponentData;
 
    class CubemapComponent :
       public PrimitiveComponent
@@ -24,7 +25,7 @@ namespace Game
 
    public:
 
-      CubemapComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const CubemapRenderData& renderData);
+      CubemapComponent(const CubemapComponentData& data, const CubemapRenderData& renderData);
 
       virtual ~CubemapComponent();
 

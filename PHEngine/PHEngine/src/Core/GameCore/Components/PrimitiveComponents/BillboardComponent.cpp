@@ -1,12 +1,12 @@
 #include "BillboardComponent.h"
 #include "Core/GraphicsCore/SceneProxy/BillboardSceneProxy.h"
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 
 namespace Game
 {
 
-   BillboardComponent::BillboardComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, const BillboardRenderData& renderData)
-      : PrimitiveComponent(gameObjectName, translation, rotation, scale, renderData.m_skin->GetBoundingBox())
-      , m_renderData(renderData)
+   BillboardComponent::BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData)
+       : PrimitiveComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale, renderData.m_skin->GetBoundingBox()), m_renderData(renderData)
    {
    }
 
@@ -21,12 +21,11 @@ namespace Game
 
    void BillboardComponent::Tick(float deltaTime)
    {
-
    }
 
-   void BillboardComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void BillboardComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+      auto &actorData = GetSerializeDataActor(dataContainer);
    }
 
    std::shared_ptr<PrimitiveSceneProxy> BillboardComponent::CreateSceneProxy() const

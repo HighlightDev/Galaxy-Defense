@@ -12,7 +12,7 @@ namespace Graphics
 
       SpotlightSceneProxy::SpotlightSceneProxy(const SpotlightComponent* component)
          : PointLightSceneProxy(component)
-         , mCutoff(component->GetRenderData().Cutoff)
+         , mCutoff(component->GetRenderData()->Cutoff)
       {
       }
 

@@ -2,14 +2,15 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 
 #include <iostream>
 
 namespace Game
 {
 
-   PlatformTraverseComponent::PlatformTraverseComponent(const std::string &gameObjectName, const std::string &relPathToScript)
-       : Component(gameObjectName), mScriptExecutor(this, relPathToScript), mDestinationPoint("NO"), mTime(0.0f)
+   PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData& data)
+       : Component(data.GameObjectName), mScriptExecutor(this, data.mScriptName), mDestinationPoint("NO"), mTime(0.0f)
    {
    }
 

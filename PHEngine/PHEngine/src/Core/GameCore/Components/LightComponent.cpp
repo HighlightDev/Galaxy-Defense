@@ -1,12 +1,14 @@
 #include "LightComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/Components/ComponentData/LightComponentData.h"
 
 namespace Game
 {
 
-   LightComponent::LightComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
-      : SceneComponent(gameObjectName, translation, rotation, scale)
+   LightComponent::LightComponent(const LightComponentData& data)
+      : SceneComponent(data.GameObjectName, data.Translation, data.Rotation, data.Scale)
+      , mLightRenderData()
    {
    }
 
