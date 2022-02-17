@@ -74,9 +74,6 @@ namespace Game
          }
 
          MoveCamera(moveDirection);
-
-         const std::vector<eKeyActionType> &currentFrameReleasedKeys = mInputComponent->GetReleasedKeyActions();
-         const std::vector<eKeyActionType> &currentFramePressedKeys = mInputComponent->GetPressedKeyActions();
       }
 
       ACamera::Tick(DeltaTime);

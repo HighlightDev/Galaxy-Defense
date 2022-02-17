@@ -61,7 +61,7 @@ namespace Game
    }
 
    KeyboardBindings::KeyboardBindings(std::shared_ptr<IActionBinding> actionBindings)
-       : KeyboardButtonDownEvent(), mActionBindings(actionBindings), mReleasedKeysOnCurrentTick(), mPressedKeysOnCurrentTick()
+       : KeyboardButtonDownEvent(), mActionBindings(actionBindings), mKeyboardMaskVec(), mReleasedKeysOnCurrentTick(), mPressedKeysOnCurrentTick()
    {
       KeyboardButtonDownEvent::GetInstance()->AddListener(this);
 
@@ -76,81 +76,31 @@ namespace Game
 
    void KeyboardBindings::ProcessEvent(const KeyboardButtonDownEvent::EventData_t &eventData)
    {
-      const auto &data = std::get<0>(eventData);
+      mKeyboardMaskVec = std::move(std::get<0>(eventData));
 
-      if (data.State == KeyState::PRESSED)
-      {
-         KeyPress(data.Key);
-      }
-      else
-      {
-         KeyRelease(data.Key);
-      }
+      UpdateKyboardState();
+   }
+
+   void KeyboardBindings::UpdateKyboardState()
+   {
+      mPressedKeysOnCurrentTick.clear();
+      std::for_each(mKeyboardMaskVec.begin(), mKeyboardMaskVec.end(),
+                    [this](const auto &keyData)
+                    { if (KeyState::PRESSED == keyData.State) {
+                             mPressedKeysOnCurrentTick.emplace_back(keyData.Key);
+                          } });
+
+      mReleasedKeysOnCurrentTick.clear();
+      std::for_each(mKeyboardMaskVec.begin(), mKeyboardMaskVec.end(),
+                    [this](const auto &keyData)
+                    { if (KeyState::RELEASED == keyData.State) {
+                             mReleasedKeysOnCurrentTick.emplace_back(keyData.Key);
+                          } });
    }
 
    bool KeyboardBindings::HasPressedKeys() const
    {
-      return mPressedKeysCount > 0;
-   }
-
-   bool KeyboardBindings::HasPressedSpecificKey(const Keys key) const
-   {
-      return std::find(mPressedKeysOnCurrentTick.begin(), mPressedKeysOnCurrentTick.end(),
-                       key) != mPressedKeysOnCurrentTick.end();
-   }
-
-   void KeyboardBindings::KeyPress(Keys key)
-   {
-      auto it = std::find_if(mKeyboardMaskVec.begin(),
-                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
-                             { return keyData.Key == key; });
-
-      if (it == mKeyboardMaskVec.end())
-      {
-         mKeyboardMaskVec.emplace_back(key, KeyState::PRESSED);
-         mPressedKeysOnCurrentTick.push_back(key);
-      }
-      else
-      {
-         if (it->State == KeyState::RELEASED)
-         {
-            mPressedKeysOnCurrentTick.push_back(key);
-         }
-
-         it->State = KeyState::PRESSED;
-      }
-
-      auto removeIt = std::find(mReleasedKeysOnCurrentTick.begin(), mReleasedKeysOnCurrentTick.end(), key);
-      if (removeIt != mReleasedKeysOnCurrentTick.end())
-      {
-         mReleasedKeysOnCurrentTick.erase(removeIt);
-      }
-
-      mPressedKeysCount++;
-   }
-
-   void KeyboardBindings::KeyRelease(Keys key)
-   {
-      auto it = std::find_if(mKeyboardMaskVec.begin(),
-                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
-                             { return keyData.Key == key; });
-
-      if (it != mKeyboardMaskVec.end())
-      {
-         if (it->State == KeyState::PRESSED)
-         {
-            assert(std::find(mReleasedKeysOnCurrentTick.begin(), mReleasedKeysOnCurrentTick.end(), key) == mReleasedKeysOnCurrentTick.end());
-            mReleasedKeysOnCurrentTick.push_back(key);
-            auto removeIt = std::find(mPressedKeysOnCurrentTick.begin(), mPressedKeysOnCurrentTick.end(), key);
-            if (removeIt != mPressedKeysOnCurrentTick.end())
-            {
-               mPressedKeysOnCurrentTick.erase(removeIt);
-            }
-         }
-
-         it->State = KeyState::RELEASED;
-         mPressedKeysCount--;
-      }
+      return mPressedKeysOnCurrentTick.size() > 0;
    }
 
    KeyState KeyboardBindings::GetKeyState(eKeyActionType actionType) const
@@ -175,17 +125,13 @@ namespace Game
       return mActionBindings;
    }
 
-   std::vector<Keys> KeyboardBindings::GetReleasedKeysOnCurrentTickAndInvalidateVector()
+   const std::vector<Keys> &KeyboardBindings::GetReleasedKeysOnCurrentTick() const
    {
-      std::vector<Keys> result;
-      std::swap(result, mReleasedKeysOnCurrentTick);
-      return result;
+      return mReleasedKeysOnCurrentTick;
    }
 
-   std::vector<Keys> KeyboardBindings::GetPressedKeysOnCurrentTickAndInvalidateVector()
+   const std::vector<Keys> &KeyboardBindings::GetPressedKeysOnCurrentTick() const
    {
-      std::vector<Keys> result;
-      std::swap(result, mPressedKeysOnCurrentTick);
-      return result;
+      return mPressedKeysOnCurrentTick;
    }
 }

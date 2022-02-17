@@ -88,9 +88,6 @@ namespace Game
                // movementComponent->Jump();
             }
          }
-
-         const std::vector<eKeyActionType> &currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
-         const std::vector<eKeyActionType> &currentFramePressedKeys = inputComponent->GetPressedKeyActions();
       }
    }
 

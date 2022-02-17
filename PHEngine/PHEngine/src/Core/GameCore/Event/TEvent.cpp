@@ -15,7 +15,7 @@ namespace Event
    template class TEvent<SingleDataEventPolicy<std::weak_ptr<Game::Transform>>>;
    template class TEvent<SingleDataEventPolicy<std::string>>;
    template class TEvent<SingleDataEventPolicy<Game::ACamera*>>;
-   template class TEvent<SingleDataEventPolicy<KeyboardData>>;
+   template class TEvent<SingleDataEventPolicy<std::vector<KeyboardData>>>;
    template class TEvent<SingleDataEventPolicy<glm::ivec4>>;
    template class TEvent<SingleDataEventPolicy<Game::eMouseScrollDirection>>;
    template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, Game::EulerAnglesTransform>>;

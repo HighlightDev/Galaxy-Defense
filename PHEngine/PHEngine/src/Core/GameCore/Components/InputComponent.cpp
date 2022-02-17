@@ -25,7 +25,7 @@ namespace Game
    {
       std::vector<eKeyActionType> result;
       std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
-      const std::vector<Keys>& releasedKeys = m_keyboardBindings.GetReleasedKeysOnCurrentTickAndInvalidateVector();
+      const std::vector<Keys>& releasedKeys = m_keyboardBindings.GetReleasedKeysOnCurrentTick();
       std::for_each(releasedKeys.begin(), releasedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
       return result;
    }
@@ -34,7 +34,7 @@ namespace Game
    {
       std::vector<eKeyActionType> result;
       std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
-      const std::vector<Keys>& pressedKeys = m_keyboardBindings.GetPressedKeysOnCurrentTickAndInvalidateVector();
+      const std::vector<Keys>& pressedKeys = m_keyboardBindings.GetPressedKeysOnCurrentTick();
       std::for_each(pressedKeys.begin(), pressedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
       return result;
    }

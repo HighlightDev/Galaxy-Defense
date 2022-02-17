@@ -56,21 +56,17 @@ namespace Game
 
       virtual void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t& data) override;
 
+      void UpdateKyboardState();
+
       bool HasPressedKeys() const;
-
-      bool HasPressedSpecificKey(const Keys key) const;
-
-      void KeyPress(Keys key);
-
-      void KeyRelease(Keys key);
 
       KeyState GetKeyState(eKeyActionType actionType) const;
 
       std::shared_ptr<IActionBinding> GetActionBindings() const;
 
-      std::vector<Keys> GetReleasedKeysOnCurrentTickAndInvalidateVector();
+      const std::vector<Keys>& GetReleasedKeysOnCurrentTick() const;
 
-      std::vector<Keys> GetPressedKeysOnCurrentTickAndInvalidateVector();
+      const std::vector<Keys>& GetPressedKeysOnCurrentTick() const;
    };
 
 };
