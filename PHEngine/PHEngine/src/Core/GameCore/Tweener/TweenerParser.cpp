@@ -3,10 +3,14 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 
 #include <unordered_map>
+#include <type_traits>
 
 using namespace Common;
+using namespace EngineUtility;
 
 namespace Game
 {
@@ -139,6 +143,13 @@ namespace Game
       return transition;
    }
 
+   template <typename T>
+   typename std::enable_if<std::is_same<float, T>::value, T>::type GetTrivialValueAfterAssignOperator(const std::string &src)
+   {
+      const auto &valueStr = src.substr(IndexOf(src, "=") + 1);
+      return std::stof(valueStr);
+   }
+
    std::shared_ptr<Tweener> TweenerParser::ParseTweenerDescriptor(const std::string &tweenerName)
    {
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetTweenerPath() + tweenerName;
@@ -210,13 +221,17 @@ namespace Game
       {
          result = std::make_shared<AnimationPropertyBinding>(binding.BindingName);
       }
-      else if ("float" == binding.Type)
+      else if ("scalar_float" == binding.Type)
       {
          result = std::make_shared<FloatPropertyBinding>(binding.BindingName);
       }
+      else if ("euler_angles_rotation" == binding.Type)
+      {
+         result = std::make_shared<EulerAnglesRotationPropertyBinding>(binding.BindingName);
+      }
       else
       {
-         assert((false, "unknown binding type."));
+         assert(false);
       }
 
       return result;
@@ -230,12 +245,45 @@ namespace Game
 
       if ("animation" == property.Type)
       {
-         result = new StateProperty<eBindingType::ANIMATION>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+         result = new StateProperty<eBindingType::Animation>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
       }
-      else if ("float" == property.Type)
+      else if ("scalar_float" == property.Type)
       {
          const float value = std::stof(property.Value);
-         result = new StateProperty<eBindingType::FLOAT>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+         result = new StateProperty<eBindingType::FloatScalar>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+      }
+      else if ("euler_angles_rotation" == property.Type)
+      {
+         glm::vec3 eulerAngles = glm::vec3(0.0f);
+
+         const auto &values = Split(property.Value, ';');
+         for (const auto &value : values)
+         {
+            const auto trimmedValueStr = TrimEnd(TrimStart(RemoveAll(value, ' ')));
+
+            if (StartsWith(trimmedValueStr, "x="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+               eulerAngles.x = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            }
+            else if (StartsWith(trimmedValueStr, "y="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "="));
+               eulerAngles.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            }
+            else if (StartsWith(trimmedValueStr, "z="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "z="));
+               eulerAngles.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            }
+            else
+            {
+               assert(false);
+            }
+         }
+
+         result = new StateProperty<eBindingType::EulerAnglesRotation>(eulerAngles,
+                                                                       std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else
       {

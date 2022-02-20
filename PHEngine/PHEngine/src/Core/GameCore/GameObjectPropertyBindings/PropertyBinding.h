@@ -7,8 +7,9 @@ namespace Game {
 
    enum class eBindingType
    {
-      FLOAT,
-      ANIMATION,
+      FloatScalar,
+      EulerAnglesRotation,
+      Animation,
    };
 
    template <typename PtrType>

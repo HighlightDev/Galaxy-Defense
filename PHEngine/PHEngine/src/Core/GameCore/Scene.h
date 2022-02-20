@@ -11,6 +11,8 @@
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
 
+#include <type_traits>
+
 using namespace Thread;
 
 class Graphics::Proxy::LightSceneProxy;
@@ -18,32 +20,32 @@ class Graphics::Proxy::PrimitiveSceneProxy;
 class Graphics::MaterialProxy;
 class Graphics::PlanarReflectionProxy;
 
-namespace Graphics {
+namespace Graphics
+{
    class IMaterial;
    class DynamicMaterial;
 }
 
-namespace EnginePhysics {
+namespace EnginePhysics
+{
    class PhysicsWorld;
 }
 
 namespace Game
 {
-   class Scene :
-      public GameObject,
-      public std::enable_shared_from_this<Scene>
+   class Scene : public GameObject,
+                 public std::enable_shared_from_this<Scene>
    {
    private:
+      EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      EnginePhysics::PhysicsWorld* mPhysicsWorld;
+      std::unordered_map<std::string, GameObject *> GameObjects;
 
-      std::unordered_map<std::string, GameObject*> GameObjects;
-
-      InterThreadCommunicationMgr& m_interThreadMgr;
+      InterThreadCommunicationMgr &m_interThreadMgr;
 
       EngineGOProperty<float> mGameThreadDeltaSec;
 
-      std::unordered_map<std::string, IDeferredResourceCreator*> mDeferredResourceCreators;
+      std::unordered_map<std::string, IDeferredResourceCreator *> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
 
@@ -51,20 +53,19 @@ namespace Game
 
       std::vector<std::shared_ptr<ACamera>> mActiveCameras;
 
-      std::shared_ptr<ActorController> mPlayerController;
+      std::vector<std::shared_ptr<ActorController>> mActorControllers;
 
       std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
 
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
    public:
-
-      explicit Scene(InterThreadCommunicationMgr& interThreadMgr);
+      explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
 
       ~Scene();
 
       template <typename ComponentType, eComponentMetaType componentMetaType>
-      std::shared_ptr<Component> CreateComponent_GameThread(const ComponentData& componentData)
+      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<Component>>::type CreateComponent_GameThread(const ComponentData &componentData)
       {
          ComponentCreatorFactory<ComponentType, componentMetaType> componentFactory;
          std::shared_ptr<Component> component = componentFactory.CreateComponent(componentData, this);
@@ -85,29 +86,29 @@ namespace Game
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 
-      GameObject* GetGameObjectByName(const std::string& name) const;
+      GameObject *GetGameObjectByName(const std::string &name) const;
 
-      IDeferredResourceCreator* GetDeferredResourceCreatorByName(const std::string& name) const;
+      IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 
-      std::shared_ptr<ActorController> GetPlayerController() const;
+      const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
 
-      EnginePhysics::PhysicsWorld* GetPhysicsWorld() const;
+      void AddActorController(std::shared_ptr<ActorController> actorController);
 
-      const std::vector<std::shared_ptr<Actor>>& GetActors() const;
+      EnginePhysics::PhysicsWorld *GetPhysicsWorld() const;
 
-      std::shared_ptr<Actor> GetActor(const std::string& name) const;
+      const std::vector<std::shared_ptr<Actor>> &GetActors() const;
+
+      std::shared_ptr<Actor> GetActor(const std::string &name) const;
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
-      std::shared_ptr<ACamera> GetCamera(const std::string& name) const;
+      std::shared_ptr<ACamera> GetCamera(const std::string &name) const;
 
       std::vector<std::shared_ptr<ACamera>> GetActiveCameras() const;
 
       std::shared_ptr<ACamera> GetMainCamera() const;
 
-      const InterThreadCommunicationMgr& GetThreadManager() const;
-
-      void SetPlayerController(std::shared_ptr<ActorController> playerController);
+      const InterThreadCommunicationMgr &GetThreadManager() const;
 
       void AddActor(std::shared_ptr<Actor> actor);
 
@@ -116,15 +117,15 @@ namespace Game
       void Tick_GameThread(float delta);
 
       void UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-         const uint64_t functionId, const glm::mat4& newRelativeMatrix, const BoundingBox& newTransformedBoundingBox);
+                                                            const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox &newTransformedBoundingBox);
 
       void UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled);
 
       void UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility);
 
-      void UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4& newRelativeMatrix);
+      void UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix);
 
-      void UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera* camera);
+      void UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera);
 
       void RemoveComponent(std::shared_ptr<Component> component);
 
@@ -152,24 +153,22 @@ namespace Game
 
       void PlanarReflectionSceneProxyAdded_OnRenderThread(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy);
 
-      void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera* cameraOwner);
+      void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
 
-      bool RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string& gameObjectName);
+      bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
-      bool RemoveDeferredResourceCreator(const std::string& gameObjectName);
+      bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 
 #if DEBUG
-      void UpdatePhysicsRenderData(const DebugPhysicsRenderData& physRenderData);
+      void UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData);
 #endif
 
    private:
+      void RegisterComponentSceneProxy(const std::shared_ptr<Component> &component);
 
-      void RegisterComponentSceneProxy(const std::shared_ptr<Component>& component);
+      bool RegisterGameObject(GameObject *const gameObjectPtr);
 
-      bool RegisterGameObject(GameObject* const gameObjectPtr);
-
-      bool RemoveGameObject(GameObject* const gameObjectPtr);
+      bool RemoveGameObject(GameObject *const gameObjectPtr);
    };
 
 }
-

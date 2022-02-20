@@ -25,6 +25,10 @@ namespace Labyrinth
       virtual void PostLevelInit();
 
       void RunLuaBuildLevelScript();
+
+   private:
+
+      void CreateScene();
    };
 
 }

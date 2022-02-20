@@ -77,8 +77,10 @@ namespace Game
          camera->CollectDataForSerialization(container);
       }
 
-      container.PlayerControllerData =
-          std::make_unique<SerializeDataPlayerController>(mScene->GetPlayerController()->GetBindedActor()->GetGameObjectName());
+      for (auto &actorController : mScene->GetActorControllers())
+      {
+         actorController->CollectDataForSerialization(container);
+      }
 
       oarchive(container);
    }
@@ -158,15 +160,18 @@ namespace Game
             TinyLogger::LogProxy::LogMessages("Component name: ", component->GetGameObjectName());
 
             if (component)
+            {
                actor->AddComponent(component);
+            }
          }
 
          mScene->AddActor(actor);
+      }
 
-         if (actor->GetGameObjectName() == container.PlayerControllerData->BindedActorName)
-         {
-            mScene->SetPlayerController(std::make_shared<HumanoidPlayerController>(mScene->GetMainCamera(), actor));
-         }
+      for (const auto &actorControllerData : container.ActorControllerData)
+      {
+         const auto &bindedActor = mScene->GetActor(actorControllerData->BindedActorName);
+         mScene->AddActorController(std::make_shared<HumanoidPlayerController>(mScene->GetMainCamera(), bindedActor));
       }
 
       // deserialize tweener

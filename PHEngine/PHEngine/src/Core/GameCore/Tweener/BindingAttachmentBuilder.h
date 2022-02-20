@@ -23,7 +23,7 @@ namespace Game
 
          switch (binding->GetBindingType())
          {
-            case eBindingType::ANIMATION:
+            case eBindingType::Animation:
             {
                AnimationPropertyBinding* animationBinding = static_cast<AnimationPropertyBinding*>(binding);
                auto propSrcTime = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
@@ -36,7 +36,7 @@ namespace Game
                   propDstTime->GetValuePtr(), propIsTransition->GetValuePtr(), propTransitionValue->GetValuePtr());
                break;
             }
-            case eBindingType::FLOAT:
+            case eBindingType::FloatScalar:
             {
                FloatPropertyBinding* floatBinding = static_cast<FloatPropertyBinding*>(binding);
                auto propValue = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));

@@ -32,8 +32,8 @@ namespace Game
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FLOAT>* srcFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::SourceState]);
-         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::DestinationState]);
+         StateProperty<eBindingType::FloatScalar>* srcFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::SourceState]);
+         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::DestinationState]);
 
          floatBinding->SetValue(EngineMath::LerpFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter));
       }
@@ -44,7 +44,7 @@ namespace Game
       mPropertyBinding = dstStateProperty->Binding;
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(dstStateProperty);
+         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(dstStateProperty);
 
          floatBinding->SetValue(dstFloatProperty->Value);
       }
@@ -59,7 +59,7 @@ namespace Game
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FLOAT>* srcFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::SourceState]);
+         StateProperty<eBindingType::FloatScalar>* srcFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::SourceState]);
 
          floatBinding->SetValue(srcFloatProperty->Value);
       }
@@ -69,7 +69,7 @@ namespace Game
    {
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FLOAT>* dstFloatProperty = static_cast<StateProperty<eBindingType::FLOAT>*>(TranstionProperties[(int)StateType::DestinationState]);
+         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::DestinationState]);
 
          floatBinding->SetValue(dstFloatProperty->Value);
       }

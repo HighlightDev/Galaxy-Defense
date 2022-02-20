@@ -11,16 +11,16 @@ namespace Game
    {
       SerializeAllocatedResources Resources;
 
-      std::vector<SerializeDataActor> Actors;
+      std::vector<std::shared_ptr<SerializeDataPlayerController>> ActorControllerData;
 
-      std::unique_ptr<SerializeDataPlayerController> PlayerControllerData;
+      std::vector<SerializeDataActor> Actors;
 
       std::vector<std::shared_ptr<SerializeDataCamera>> Cameras;
 
       template <typename Archive>
       void serialize(Archive& archive)
       {
-         archive(Resources, Actors, PlayerControllerData, Cameras);
+         archive(Resources, Actors, ActorControllerData, Cameras);
       }
    };
 }

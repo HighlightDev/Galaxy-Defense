@@ -36,13 +36,21 @@ namespace Game
          std::shared_ptr<ITweenController> propertyController;
 
          const auto propertyType = dstProperty->GetStatePropertyType();
-         if (eBindingType::ANIMATION == propertyType)
+         if (eBindingType::Animation == propertyType)
          {
             propertyController = std::make_shared<AnimationTweenController>();
          }
-         else if (eBindingType::FLOAT == propertyType)
+         else if (eBindingType::FloatScalar == propertyType)
          {
             propertyController = std::make_shared<FloatTweenController>();
+         }
+         else if (eBindingType::EulerAnglesRotation == propertyType)
+         {
+
+         }
+         else
+         {
+            assert(false);
          }
 
          if (propertyController)
@@ -112,11 +120,11 @@ namespace Game
                   std::shared_ptr<ITweenController> propertyController;
 
                   const auto propertyType = srcProperty->GetStatePropertyType();
-                  if (eBindingType::ANIMATION == propertyType)
+                  if (eBindingType::Animation == propertyType)
                   {
                      propertyController = std::make_shared<AnimationTweenController>();
                   }
-                  else if (eBindingType::FLOAT == propertyType)
+                  else if (eBindingType::FloatScalar == propertyType)
                   {
                      propertyController = std::make_shared<FloatTweenController>();
                   }

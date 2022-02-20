@@ -13,10 +13,7 @@ namespace Game
 {
 
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
-       : GameObject("EngineScene"), mPhysicsWorld(new PhysicsWorld()),
-         m_interThreadMgr(interThreadMgr),
-         mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec")),
-         mActiveCameras()
+       : GameObject("EngineScene"), mPhysicsWorld(new PhysicsWorld()), m_interThreadMgr(interThreadMgr), mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec")), mActiveCameras(), mActorControllers()
    {
       RegisterGameObject(this);
       mPhysicsWorld->InitPhysicsWorld();
@@ -178,14 +175,18 @@ namespace Game
       return creatorInstance;
    }
 
-   std::shared_ptr<ActorController> Scene::GetPlayerController() const
+   const std::vector<std::shared_ptr<ActorController>> &Scene::GetActorControllers() const
    {
-      return mPlayerController;
+      return mActorControllers;
    }
 
-   void Scene::SetPlayerController(std::shared_ptr<ActorController> playerController)
+   void Scene::AddActorController(std::shared_ptr<ActorController> actorController)
    {
-      mPlayerController = playerController;
+      const auto it = std::find_if(mActorControllers.begin(), mActorControllers.end(), [&](const auto &existingController)
+                          { return existingController->GetBindedActorName() == actorController->GetBindedActorName(); });
+      assert(it == mActorControllers.end());
+
+      mActorControllers.emplace_back(actorController);
    }
 
    void Scene::ExecuteOnRenderThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const
@@ -465,9 +466,9 @@ namespace Game
          cameraPtr->Tick(delta);
       }
 
-      if (mPlayerController)
+      for (const auto &actorController : mActorControllers)
       {
-         mPlayerController->Tick(delta);
+         actorController->Tick(delta);
       }
 
       for (auto &actor : mActors)
@@ -507,7 +508,7 @@ namespace Game
          LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
       }
 
-      if (const auto& spOwner = component->GetOwner().lock())
+      if (const auto &spOwner = component->GetOwner().lock())
       {
          if ((type & ComponentType::MOVEMENT_COMPONENT) == ComponentType::MOVEMENT_COMPONENT)
          {

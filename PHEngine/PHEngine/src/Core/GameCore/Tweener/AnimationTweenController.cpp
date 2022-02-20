@@ -36,7 +36,7 @@ namespace Game
       mPropertyBinding = dstStateProperty->Binding;
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         StateProperty<eBindingType::ANIMATION>* dstAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(dstStateProperty);
+         StateProperty<eBindingType::Animation>* dstAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(dstStateProperty);
 
          animBinding->SetSrcName(dstAnimationProperty->AnimationName);
          animBinding->SetSrcTime(0.0f);
@@ -54,8 +54,8 @@ namespace Game
    {
       Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
 
-      StateProperty<eBindingType::ANIMATION>* srcAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(srcProperty);
-      StateProperty<eBindingType::ANIMATION>* dstAnimationProperty = static_cast<StateProperty<eBindingType::ANIMATION>*>(dstProperty);
+      StateProperty<eBindingType::Animation>* srcAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(srcProperty);
+      StateProperty<eBindingType::Animation>* dstAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(dstProperty);
 
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {

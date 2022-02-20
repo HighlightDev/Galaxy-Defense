@@ -6,6 +6,8 @@
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
+#include "Core/GameCore/Tweener/TweenerParser.h"
+#include "Core/GameCore/Tweener/Tweener.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -39,14 +41,14 @@ namespace Labyrinth
       Base::PreLevelInit();
    }
 
-   void IntroLevel::PostLevelInit()
+   void IntroLevel::CreateScene()
    {
       const auto &a_spaceship = mScene->GetActor("SpaceshipActor");
       assert(a_spaceship);
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);
       const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
-      mScene->SetPlayerController(spaceShipController);
+      mScene->AddActorController(spaceShipController);
 
       if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
       {
@@ -62,6 +64,20 @@ namespace Labyrinth
                                                                   eComponentMetaType::Movement>(d_movement);
       a_spaceship->AddComponent(c_movement);
 
+      TweenerParser tweenerParser;
+      const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");
+
+      a_spaceship->AttachTweener(spaceshipTweener);
+      const auto& rootComponent = a_spaceship->GetRootComponent();
+
+      const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
+      //BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
+   }
+
+   void IntroLevel::PostLevelInit()
+   {
+
+      CreateScene();
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();

@@ -2,12 +2,14 @@
 
 #include "Actor.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 
 namespace Game
 {
     class ActorController
         : public ITickable
+        , public ISerializable
     {
     protected:
         std::shared_ptr<Actor> m_playerActor;
@@ -22,6 +24,10 @@ namespace Game
         virtual void Tick(float deltaTime) = 0;
 
         std::shared_ptr<Actor> GetBindedActor() const;
+
+        std::string GetBindedActorName() const;
+
+        virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
     protected:
         virtual void InitPlayerController() = 0;

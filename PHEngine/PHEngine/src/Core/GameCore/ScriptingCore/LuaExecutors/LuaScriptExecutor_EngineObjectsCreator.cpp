@@ -213,7 +213,7 @@ namespace Game
                                      { return sceneActor->GetObjectId() == actor->GetObjectId(); });
          assert(actorIt != scene->GetActors().end());
 
-         scene->SetPlayerController(std::make_shared<HumanoidPlayerController>(camera, (*actorIt)));
+         scene->AddActorController(std::make_shared<HumanoidPlayerController>(camera, (*actorIt)));
 
          if (eCameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType())
          {

@@ -2,9 +2,11 @@
 
 #include <memory>
 #include <string>
+#include <glm/vec3.hpp>
 
 #include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 
 namespace Game
 {
@@ -24,14 +26,14 @@ namespace Game
    struct StateProperty;
 
    template <>
-   struct StateProperty<eBindingType::ANIMATION>
+   struct StateProperty<eBindingType::Animation>
       : public BaseStateProperty
    {
       std::string AnimationName;
 
       virtual eBindingType GetStatePropertyType() const override
       {
-         return eBindingType::ANIMATION;
+         return eBindingType::Animation;
       }
 
       StateProperty(const std::string& animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
@@ -42,18 +44,36 @@ namespace Game
    };
 
    template <>
-   struct StateProperty<eBindingType::FLOAT>
+   struct StateProperty<eBindingType::FloatScalar>
       : public BaseStateProperty
    {
       float Value;
 
       virtual eBindingType GetStatePropertyType() const override
       {
-         return eBindingType::FLOAT;
+         return eBindingType::FloatScalar;
       }
 
-      StateProperty(float value, std::shared_ptr<FloatPropertyBinding> animationPropertyBinding)
-         : BaseStateProperty(animationPropertyBinding)
+      StateProperty(float value, std::shared_ptr<FloatPropertyBinding> floatPropertyBinding)
+         : BaseStateProperty(floatPropertyBinding)
+         , Value(value)
+      {
+      }
+   };
+
+    template <>
+   struct StateProperty<eBindingType::EulerAnglesRotation>
+      : public BaseStateProperty
+   {
+      glm::vec3 Value;
+
+      virtual eBindingType GetStatePropertyType() const override
+      {
+         return eBindingType::EulerAnglesRotation;
+      }
+
+      StateProperty(const glm::vec3& value, std::shared_ptr<EulerAnglesRotationPropertyBinding> rotationPropertyBinding)
+         : BaseStateProperty(rotationPropertyBinding)
          , Value(value)
       {
       }

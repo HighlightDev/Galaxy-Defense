@@ -19,4 +19,6 @@ namespace EngineUtility
 	std::vector<std::string> Split(const std::string& source, char splitChar);
 
    std::string ToLower(const std::string& source);
+
+   std::string RemoveAll(const std::string &source, const char symbol);
 }

@@ -90,4 +90,13 @@ namespace EngineUtility
 
 		return result;
 	}
+
+	std::string RemoveAll(const std::string &source, const char symbol)
+	{
+		std::string result = source;
+		const auto newIt = std::remove_if(result.begin(), result.end(), [&](const auto &symb)
+										  { return symb == symbol; });
+		result.erase(newIt, result.end());
+		return result;
+	}
 }

@@ -120,7 +120,7 @@ namespace Game {
 
       virtual eBindingType GetBindingType() const override
       {
-         return eBindingType::ANIMATION;
+         return eBindingType::Animation;
       }
    };
 }

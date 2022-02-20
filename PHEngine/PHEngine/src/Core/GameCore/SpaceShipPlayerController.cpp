@@ -30,15 +30,12 @@ namespace Game
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   #include <iostream>
-
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
       assert(m_playerActor);
 
       static uint64_t i = 0;
 
-      std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
       const auto &movementComponent = m_playerActor->GetMovementComponent();
 
       if (m_playerActor->GetInputComponent())
@@ -61,31 +58,36 @@ namespace Game
          const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
          if (keyboardBindings.HasPressedKeys())
          {
+            bool bMoveCommitted = true;
+            glm::vec3 direction(0.0f);
+            
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               std::cout << "keyboardBindings.HasPressedKeys() i = " << i++<< std::endl;
-               movementComponent->SetDirection(glm::vec3(0, 0, 1));
-               movementComponent->Move();
+               direction.z = -1.0f;
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
-               movementComponent->SetDirection(glm::vec3(-1, 0, 0));
-               movementComponent->Move();
+               direction.x = -1.0f;
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
             {
-               movementComponent->SetDirection(glm::vec3(1, 0, 0));
-               movementComponent->Move();
+               direction.x = 1.0f;
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
             {
-               movementComponent->SetDirection(glm::vec3(0, 0, -1));
-               movementComponent->Move();
+               direction.z = 1.0f;
+            }
+            else
+            {
+               bMoveCommitted = false;
             }
 
-            if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
+            if (bMoveCommitted)
             {
-               // movementComponent->Jump();
+               movementComponent->SetDirection(direction);
+               movementComponent->Move();
+               const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+               PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
             }
          }
       }
