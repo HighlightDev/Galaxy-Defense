@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -25,7 +26,7 @@ namespace Game
          {
             case eBindingType::Animation:
             {
-               AnimationPropertyBinding* animationBinding = static_cast<AnimationPropertyBinding*>(binding);
+               const auto animationBinding = static_cast<AnimationPropertyBinding*>(binding);
                auto propSrcTime = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
                auto propDstTime = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("DstAnimTime"));
                auto propTransitionValue = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("AnimTransitionValue"));
@@ -38,9 +39,16 @@ namespace Game
             }
             case eBindingType::FloatScalar:
             {
-               FloatPropertyBinding* floatBinding = static_cast<FloatPropertyBinding*>(binding);
+               const auto floatBinding = static_cast<FloatPropertyBinding*>(binding);
                auto propValue = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
                floatBinding->SetValuePtr(propValue->GetValuePtr());
+               break;
+            }
+            case eBindingType::EulerAnglesRotation:
+            {
+               const auto rotationBinding = static_cast<EulerAnglesRotationPropertyBinding*>(binding);
+               auto propValue = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+               rotationBinding->SetValuePtr(propValue->GetValuePtr());
                break;
             }
             default:

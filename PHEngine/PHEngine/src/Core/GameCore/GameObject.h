@@ -28,7 +28,7 @@ namespace Game
 
       EngineGOPropertyBase* GetEnginePropertyByName(const std::string& key) const;
 
-      void AddEngineProperty(EngineGOPropertyBase* goPtr);
+      void AddEngineProperty(EngineGOPropertyBase& goPtr);
 
       std::string GetGameObjectName() const;
 

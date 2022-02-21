@@ -8,7 +8,7 @@ namespace Game
 {
 
    SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_camera()
+       : ActorController(playerActor), m_camera(), mCurrentState("")
    {
       assert((eCameraType::SECONDARY_THIRD_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_THIRD_PERSON_CAMERA);
       m_camera = std::static_pointer_cast<ThirdPersonCamera>(playerCamera);
@@ -34,7 +34,10 @@ namespace Game
    {
       assert(m_playerActor);
 
-      static uint64_t i = 0;
+      if ("" == mCurrentState)
+      {
+         mCurrentState = m_playerActor->GetTweener()->GetCurrentState()->GetStateName();
+      }
 
       const auto &movementComponent = m_playerActor->GetMovementComponent();
 
@@ -60,22 +63,46 @@ namespace Game
          {
             bool bMoveCommitted = true;
             glm::vec3 direction(0.0f);
-            
+
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
                direction.z = -1.0f;
+
+               if ("s_fly_forward" != mCurrentState)
+               {
+                  mCurrentState = "s_fly_forward";
+                  m_playerActor->ChangeState("s_fly_forward");
+               }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
                direction.x = -1.0f;
+
+               if ("s_fly_left" != mCurrentState)
+               {
+                  mCurrentState = "s_fly_left";
+                  m_playerActor->ChangeState("s_fly_left");
+               }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
             {
                direction.x = 1.0f;
+
+               if ("s_fly_right" != mCurrentState)
+               {
+                  mCurrentState = "s_fly_right";
+                  m_playerActor->ChangeState("s_fly_right");
+               }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
             {
                direction.z = 1.0f;
+
+               if ("s_fly_back" != mCurrentState)
+               {
+                  mCurrentState = "s_fly_back";
+                  m_playerActor->ChangeState("s_fly_back");
+               }
             }
             else
             {
@@ -90,7 +117,14 @@ namespace Game
                PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
             }
          }
+         else
+         {
+            if ("s_idle" != mCurrentState)
+            {
+               mCurrentState = "s_idle";
+               m_playerActor->ChangeState("s_idle");
+            }
+         }
       }
    }
-
 }

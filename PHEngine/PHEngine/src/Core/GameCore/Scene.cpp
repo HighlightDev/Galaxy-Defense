@@ -17,7 +17,7 @@ namespace Game
    {
       RegisterGameObject(this);
       mPhysicsWorld->InitPhysicsWorld();
-      ENGINE_PROPERTY(&mGameThreadDeltaSec);
+      ENGINE_PROPERTY(mGameThreadDeltaSec);
    }
 
    void Scene::PostLevelInit()

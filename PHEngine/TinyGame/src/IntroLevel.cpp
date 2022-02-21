@@ -8,6 +8,7 @@
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/Tweener/Tweener.h"
+#include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -71,7 +72,7 @@ namespace Labyrinth
       const auto& rootComponent = a_spaceship->GetRootComponent();
 
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
-      //BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
+      BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
    }
 
    void IntroLevel::PostLevelInit()

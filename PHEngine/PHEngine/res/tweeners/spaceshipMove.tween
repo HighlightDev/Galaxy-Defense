@@ -1,0 +1,112 @@
+<tweener>
+  <states>
+    <state>
+      name: "s_idle"
+    </state>
+    <state>
+      name: "s_fly_left"
+    </state>
+    <state>
+      name: "s_fly_right"
+    </state>
+     <state>
+      name: "s_fly_forward"
+    </state>
+     <state>
+      name: "s_fly_back"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_idle_to_left"
+      from_state: "s_idle"
+      to_state: "s_fly_left"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_left_to_idle"
+      from_state: "s_fly_left"
+      to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+     <transition>
+      name: "t_idle_to_right"
+      from_state: "s_idle"
+      to_state: "s_fly_right"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_right_to_idle"
+      from_state: "s_fly_right"
+      to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_idle_to_forward"
+      from_state: "s_idle"
+      to_state: "s_fly_forward"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_forward_to_idle"
+      from_state: "s_fly_forward"
+      to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_idle_to_back"
+      from_state: "s_idle"
+      to_state: "s_fly_back"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_back_to_idle"
+      from_state: "s_fly_back"
+      to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+    </binding>
+  </bindings>
+  <properties>
+    <property>
+      name: "p_idle"
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+      value: "x = 0.0;y = 0.0;z = 0.0;"
+      state: "s_idle"
+    </property>
+    <property>
+      name: "p_fly_left"
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+      value: "x=0.0;y=0.0;z=345.0;"
+      state: "s_fly_left"
+    </property>
+    <property>
+      name: "p_fly_right"
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+      value: "x=0.0;y=0.0;z=15.0;"
+      state: "s_fly_right"
+    </property>
+    <property>
+      name: "p_fly_forward"
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+      value: "x=15.0;y=0.0;z=0.0;"
+      state: "s_fly_forward"
+    </property>
+    <property>
+      name: "p_fly_back"
+      binding_name: "b_rotator"
+      type: "euler_angles_rotation"
+      value: "x=345.0;y=0.0;z=0.0;"
+      state: "s_fly_back"
+    </property>
+  </properties>
+</tweener>

@@ -25,6 +25,7 @@ endif()
 find_package(OpenGL REQUIRED)
 
 add_compile_definitions(
+    GLM_ENABLE_EXPERIMENTAL
     BT_USE_DOUBLE_PRECISION
 )
 

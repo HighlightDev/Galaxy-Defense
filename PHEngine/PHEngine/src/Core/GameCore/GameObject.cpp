@@ -1,4 +1,3 @@
-#pragma once
 #include <cstddef>
 
 #include "GameObject.h"
@@ -20,9 +19,9 @@ namespace Game
       return mObjectId;
    }
 
-   void GameObject::AddEngineProperty(EngineGOPropertyBase* goPtr) {
-      assert((!mEngineProperties.count(goPtr->Key)));
-      mEngineProperties[goPtr->Key] = goPtr;
+   void GameObject::AddEngineProperty(EngineGOPropertyBase& goPtr) {
+      assert((!mEngineProperties.count(goPtr.Key)));
+      mEngineProperties[goPtr.Key] = &goPtr;
    }
 
    EngineGOPropertyBase* GameObject::GetEnginePropertyByName(const std::string& key) const

@@ -58,6 +58,12 @@ public:
       }
    }
 
+   EngineGOProperty<Type>& operator=(const Type& value) 
+   {
+      SetValue(value);
+      return *this;
+   }
+
    operator Type() const
    {
       return *ValuePtr;

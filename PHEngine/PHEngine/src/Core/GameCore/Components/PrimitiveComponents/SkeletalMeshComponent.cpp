@@ -37,12 +37,12 @@ namespace Game
       , bTransitionEnabled(EngineGOProperty<bool>(false, "bAnimTransitionEnabled"))
    {
       /* Meta table */
-      ENGINE_PROPERTY(&SrcAnimationTime);
-      ENGINE_PROPERTY(&DstAnimationTime);
-      ENGINE_PROPERTY(&SrcAnimationName);
-      ENGINE_PROPERTY(&DstAnimationName);
-      ENGINE_PROPERTY(&TransitionValue);
-      ENGINE_PROPERTY(&bTransitionEnabled);
+      ENGINE_PROPERTY(SrcAnimationTime);
+      ENGINE_PROPERTY(DstAnimationTime);
+      ENGINE_PROPERTY(SrcAnimationName);
+      ENGINE_PROPERTY(DstAnimationName);
+      ENGINE_PROPERTY(TransitionValue);
+      ENGINE_PROPERTY(bTransitionEnabled);
       /* Meta table */
    }
 

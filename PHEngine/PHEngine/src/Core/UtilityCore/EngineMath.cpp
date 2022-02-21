@@ -67,4 +67,10 @@ namespace EngineMath
 
       return mirrorMatrix;
    }
+
+   glm::vec3 QuatToEulerAngles(const glm::quat& rotationQuat)
+   {
+      static constexpr float radToDeg = 180.f / 3.14159f;
+      return glm::eulerAngles(rotationQuat) * radToDeg;
+   }
 }

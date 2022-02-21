@@ -2,20 +2,17 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Tweener/AnimationTweenController.h"
 #include "Core/GameCore/Tweener/FloatTweenController.h"
+#include "Core/GameCore/Tweener/EulerAnglesRotationTweenController.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Actor.h"
 
 #include <algorithm>
-#include <iostream>
 
 namespace Game
 {
 
-   Tweener::Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
-      : mMyAllStates(allStates)
-      , mRelPathFSM(relPathFSM)
-      , mStateNodeInitRoot(rootNode)
-      , mCurrentStateNode(mStateNodeInitRoot)
+   Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
+       : mMyAllStates(allStates), mRelPathFSM(relPathFSM), mStateNodeInitRoot(rootNode), mCurrentStateNode(mStateNodeInitRoot)
    {
    }
 
@@ -25,11 +22,11 @@ namespace Game
 
    void Tweener::InitRootState()
    {
-      const std::string& rootStateName = mStateNodeInitRoot->GetStateName();
+      const std::string &rootStateName = mStateNodeInitRoot->GetStateName();
 
       std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = mStateNodeInitRoot->GetStateProperties();
 
-      for (auto& dstNameAndPropertyPair : dstProperties)
+      for (auto &dstNameAndPropertyPair : dstProperties)
       {
          std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
 
@@ -46,26 +43,20 @@ namespace Game
          }
          else if (eBindingType::EulerAnglesRotation == propertyType)
          {
-
-         }
-         else
-         {
-            assert(false);
+            propertyController = std::make_shared<EulerAnglesRotationTweenController>();
          }
 
-         if (propertyController)
-         {
-            propertyController->InitWithPropsInstant(dstProperty.get());
-         }
+         assert(propertyController);
+         propertyController->InitWithPropsInstant(dstProperty.get());
       }
    }
 
-   void Tweener::DoTranstionInstantly(const std::string& dstStateName)
+   void Tweener::DoTranstionInstantly(const std::string &dstStateName)
    {
       if (mCurrentActiveStateTransition)
       {
          // Finish current transition
-         for (std::shared_ptr<ITweenController>& controllerSp : CurrentActiveTransitionControllers)
+         for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
          {
             controllerSp->OnTransitionFinished();
          }
@@ -81,21 +72,21 @@ namespace Game
       }
    }
 
-   void Tweener::DoTransition(const std::string& dstStateName)
+   void Tweener::DoTransition(const std::string &dstStateName)
    {
-      const std::map<std::string /*dstStateName*/, StateTransition>& transitions = mCurrentStateNode->GetTransitions();
+      const std::map<std::string /*dstStateName*/, StateTransition> &transitions = mCurrentStateNode->GetTransitions();
 
       if (transitions.count(dstStateName))
       {
-         const StateTransition& transition = transitions.at(dstStateName);
+         const StateTransition &transition = transitions.at(dstStateName);
 
          auto spDestination = transition.StateDestination.lock();
          auto spFrom = transition.StateFrom.lock();
 
          if (spDestination && spFrom)
          {
-            State* stateTo = spDestination.get();
-            State* stateFrom = spFrom.get();
+            State *stateTo = spDestination.get();
+            State *stateFrom = spFrom.get();
 
             assert(stateFrom->GetStateName() == mCurrentStateNode->GetStateName());
 
@@ -108,9 +99,9 @@ namespace Game
             std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = stateFrom->GetStateProperties();
             std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = stateTo->GetStateProperties();
 
-            for (auto& srcNameAndPropertyPair : srcProperties)
+            for (auto &srcNameAndPropertyPair : srcProperties)
             {
-               const std::string& name = srcNameAndPropertyPair.first;
+               const std::string &name = srcNameAndPropertyPair.first;
 
                if (dstProperties.count(name))
                {
@@ -128,19 +119,21 @@ namespace Game
                   {
                      propertyController = std::make_shared<FloatTweenController>();
                   }
-
-                  if (propertyController)
+                  else if (eBindingType::EulerAnglesRotation == propertyType)
                   {
-                     CurrentActiveTransitionControllers.emplace_back(propertyController);
-                     propertyController->OnTransitionStarted(srcProperty.get(), dstProperty.get(), mTransitionDuration);
+                     propertyController = std::make_shared<EulerAnglesRotationTweenController>();
                   }
+
+                  assert(propertyController);
+                  CurrentActiveTransitionControllers.emplace_back(propertyController);
+                  propertyController->OnTransitionStarted(srcProperty.get(), dstProperty.get(), mTransitionDuration);
                }
             }
          }
       }
    }
 
-   void Tweener::ChangeState(const std::string& dstStateName)
+   void Tweener::ChangeState(const std::string &dstStateName)
    {
       if (bTransitionEnabled)
       {
@@ -153,16 +146,17 @@ namespace Game
       }
    }
 
-   void Tweener::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void Tweener::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor& actorData) { return actorData.ActorName == GetParentActor()->GetName(); });
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
+                             { return actorData.ActorName == GetParentActor()->GetName(); });
       assert(it != dataContainer.Actors.end());
 
       std::shared_ptr<SerializeDataTweener> tweenerData = std::make_shared<SerializeDataTweener>();
 
       tweenerData->TweenerRelPath = GetRelPathTweener();
 
-      for (const auto& binding : mPropertyBindings)
+      for (const auto &binding : mPropertyBindings)
       {
          SerializeDataTweener::SerializeTweenerBinding bindingData;
          bindingData.BindingName = binding.second->BindingName;
@@ -170,15 +164,17 @@ namespace Game
          bindingData.GameObjectPropertyName = binding.second->GameObjectPropertyName;
          tweenerData->Bindings.emplace_back(bindingData);
       }
-      
+
       it->TweenerData = tweenerData;
    }
 
-   void Tweener::SetParentActor(Actor* parent) {
+   void Tweener::SetParentActor(Actor *parent)
+   {
       mParent = parent;
    }
 
-   Actor* Tweener::GetParentActor() const {
+   Actor *Tweener::GetParentActor() const
+   {
       return mParent;
    }
 
@@ -191,13 +187,13 @@ namespace Game
       bTransitionEnabled = false;
    }
 
-   std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string& name) const
+   std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string &name) const
    {
       assert(mPropertyBindings.count(name));
       return mPropertyBindings.at(name);
    }
 
-   void Tweener::AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding)
+   void Tweener::AddPropertyBinding(const std::string &propBindingName, std::shared_ptr<PropertyBinding> binding)
    {
       assert(binding);
       mPropertyBindings[propBindingName] = binding;
@@ -223,7 +219,7 @@ namespace Game
                mTransitionParameter = mTransitionTime / mTransitionDuration;
             }
 
-            for (std::shared_ptr<ITweenController>& controllerSp : CurrentActiveTransitionControllers)
+            for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
             {
                if (bTransitionEnabled)
                {
@@ -258,7 +254,8 @@ namespace Game
       return mCurrentStateNode;
    }
 
-   std::string Tweener::GetRelPathTweener() const {
+   std::string Tweener::GetRelPathTweener() const
+   {
       return mRelPathFSM;
    }
 }

@@ -43,4 +43,6 @@ namespace EngineMath
 
    glm::mat4 BuildMirrorMatrix(const glm::vec4& mirrorPlane);
 
+   glm::vec3 QuatToEulerAngles(const glm::quat& rotationQuat); 
+
 }

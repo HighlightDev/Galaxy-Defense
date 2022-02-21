@@ -17,6 +17,8 @@ namespace Game
 
       std::shared_ptr<ThirdPersonCamera> m_camera;
 
+      std::string mCurrentState;
+
    public:
 
       SpaceShipPlayerController(std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor);

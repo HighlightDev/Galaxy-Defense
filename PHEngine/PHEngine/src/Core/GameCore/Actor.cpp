@@ -6,7 +6,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/UtilityCore/EngineMath.h"
 
-#include <glm/gtc/quaternion.hpp>
 #include <functional>
 
 using namespace EngineMath;
@@ -15,13 +14,22 @@ namespace Game
 {
 
    Actor::Actor(const std::string &gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
-       : GameObject(gameObjectName), m_rootComponent(rootComponent), m_physicsComponent(nullptr), mIsVisible(EngineGOProperty<bool>(true, "IsVisible", std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
-                                                                                                                                                                                                                   { SyncComponentsVisibility(visibility); }))),
-         mIsEnabled(true), m_inputComponent(), m_movementComponent(), mTweener(nullptr), m_parent()
+       : GameObject(gameObjectName),
+         m_rootComponent(rootComponent),
+         m_physicsComponent(nullptr),
+         mIsVisible(EngineGOProperty<bool>(true,
+                                           "IsVisible",
+                                           std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
+                                                                                                       { SyncComponentsVisibility(visibility); }))),
+         mIsEnabled(true),
+         m_inputComponent(),
+         m_movementComponent(),
+         mTweener(nullptr),
+         m_parent()
    {
       assert(m_rootComponent);
 
-      AddEngineProperty(&mIsVisible);
+      AddEngineProperty(mIsVisible);
 
       m_rootComponent->bIsRootComponent = true;
    }
@@ -30,7 +38,8 @@ namespace Game
    {
    }
 
-   std::weak_ptr<Actor> Actor::GetWeakFromThis() {
+   std::weak_ptr<Actor> Actor::GetWeakFromThis()
+   {
       return shared_from_this();
    }
 
@@ -43,7 +52,7 @@ namespace Game
 
       for (const auto &childWp : m_children)
       {
-         if (const auto& childSp = childWp.lock())
+         if (const auto &childSp = childWp.lock())
          {
             childSp->PostPhysicsInitialize();
          }
@@ -64,7 +73,7 @@ namespace Game
 
       for (const auto &childWp : m_children)
       {
-         if (const auto& childSp = childWp.lock())
+         if (const auto &childSp = childWp.lock())
          {
             childSp->PostLevelInit();
          }
@@ -91,7 +100,7 @@ namespace Game
       SerializeDataActor data;
       data.ActorName = GameObject::GameObjectName;
       data.RootCompTranslation = m_rootComponent->GetTranslation();
-      const glm::vec3 eulerAngles = glm::eulerAngles(m_rootComponent->GetRotator());
+      const glm::vec3 eulerAngles = EngineMath::QuatToEulerAngles(m_rootComponent->GetRotator());
 
       data.RootCompRotation = glm::vec3(RAD_TO_DEG(eulerAngles.x), RAD_TO_DEG(eulerAngles.y), RAD_TO_DEG(eulerAngles.z));
       data.RootCompScale = m_rootComponent->GetScale();
@@ -135,7 +144,7 @@ namespace Game
             // Update root component with parent transform matrix
             {
                glm::mat4 parentRelativeMatrix(1); // identity matrix
-               if (const auto& spParent  = m_parent.lock())
+               if (const auto &spParent = m_parent.lock())
                {
                   parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
                }
@@ -183,9 +192,9 @@ namespace Game
          }
       }
 
-      for (const auto& wpChild : m_children)
+      for (const auto &wpChild : m_children)
       {
-         if (const auto& spChild = wpChild.lock())
+         if (const auto &spChild = wpChild.lock())
          {
             spChild->SetIsVisible(isVisible);
          }
@@ -198,7 +207,7 @@ namespace Game
       {
          glm::mat4 parentRelativeMatrix(1); // identity matrix
 
-         if (const auto& spParent = m_parent.lock())
+         if (const auto &spParent = m_parent.lock())
          {
             parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
          }
@@ -250,7 +259,7 @@ namespace Game
 
       for (const auto &childWp : m_children)
       {
-         if (const auto& childSp = childWp.lock())
+         if (const auto &childSp = childWp.lock())
          {
             // tick all attached actors
             childSp->Tick(deltaTime);
@@ -317,7 +326,7 @@ namespace Game
       m_inputComponent = std::shared_ptr<InputComponent>(nullptr);
    }
 
-   void Actor::SetParent(const std::weak_ptr<Actor>& actor)
+   void Actor::SetParent(const std::weak_ptr<Actor> &actor)
    {
       m_parent = actor;
    }
@@ -345,13 +354,13 @@ namespace Game
 
    void Actor::DetachActor(std::shared_ptr<Actor> actor)
    {
-      const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto& childWp) {
+      const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto &childWp)
+                                        {
          if (const auto& childSp = childWp.lock())
          {
             return actor->GetName() == childSp->GetName();
          } 
-         return false;
-      });
+         return false; });
 
       if (actorIt != m_children.end())
       {
@@ -380,14 +389,14 @@ namespace Game
       {
          mIsEnabled = isEnabled;
 
-         for (const auto& component : m_allComponents)
+         for (const auto &component : m_allComponents)
          {
             component->SetIsEnabled(isEnabled);
          }
 
          for (const auto &wpChild : m_children)
          {
-            if (const auto& spChild = wpChild.lock())
+            if (const auto &spChild = wpChild.lock())
             {
                spChild->SetIsEnabled(isEnabled);
             }
@@ -410,7 +419,7 @@ namespace Game
       std::shared_ptr<const Actor> baseParent = shared_from_this();
       auto parentWp = m_parent;
 
-      while (const auto& spParent = parentWp.lock())
+      while (const auto &spParent = parentWp.lock())
       {
          baseParent = spParent;
          parentWp = spParent->GetParent();

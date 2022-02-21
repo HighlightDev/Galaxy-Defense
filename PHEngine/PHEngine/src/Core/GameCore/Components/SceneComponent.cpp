@@ -8,15 +8,17 @@ using namespace EngineMath;
 
 namespace Game
 {
-
-   SceneComponent::SceneComponent(const std::string &gameObjectName)
-       : Component(gameObjectName), bTransformationDirty(true), mTransform(std::make_shared<Transform>()), m_additionalRotationEuler(), m_relativeMatrix(1), m_sceneWP()
+   SceneComponent::SceneComponent(const std::string &gameObjectName, glm::vec3 translation = glm::vec3(0.0f),
+                                  glm::vec3 rotation = glm::vec3(0.0f),
+                                  glm::vec3 scale = glm::vec3(0.0f))
+       : Component(gameObjectName),
+         bTransformationDirty(true),
+         mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale)),
+         m_additionalRotationEuler(EngineGOProperty<glm::vec3>(glm::vec3(0.0f), "b_rotator")),
+         m_relativeMatrix(1),
+         m_sceneWP()
    {
-   }
-
-   SceneComponent::SceneComponent(const std::string &gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale)
-       : Component(gameObjectName), bTransformationDirty(true), mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale)), m_additionalRotationEuler(), m_relativeMatrix(1), m_sceneWP()
-   {
+      ENGINE_PROPERTY(m_additionalRotationEuler);
    }
 
    SceneComponent::~SceneComponent()
@@ -38,7 +40,7 @@ namespace Game
       return SCENE_COMPONENT;
    }
 
-   void SceneComponent::AddTranslation(const glm::vec3& offsetTranslation)
+   void SceneComponent::AddTranslation(const glm::vec3 &offsetTranslation)
    {
       SetTranslation(mTransform->Translation + offsetTranslation);
    }
@@ -58,8 +60,13 @@ namespace Game
 
       if (bIsRootComponent)
       {
-         glm::mat4 cameraYawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.y), AXIS_UP);
-         m_relativeMatrix *= cameraYawRotation;
+         const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().x), AXIS_RIGHT);
+         const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().y), AXIS_UP);
+         const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().z), AXIS_FORWARD);
+
+         m_relativeMatrix *= pitchRotation;
+         m_relativeMatrix *= yawRotation;
+         m_relativeMatrix *= rollRotation;
       }
 
       const auto nRotator = glm::normalize(mTransform->Rotator);
@@ -124,8 +131,7 @@ namespace Game
 
    glm::vec3 SceneComponent::GetRotationEuler() const
    {
-      constexpr float radToDeg = 180.f / 3.14159f;
-      return glm::eulerAngles(GetRotator()) * radToDeg;
+      return EngineMath::QuatToEulerAngles(GetRotator());
    }
 
    glm::vec3 SceneComponent::GetScale() const

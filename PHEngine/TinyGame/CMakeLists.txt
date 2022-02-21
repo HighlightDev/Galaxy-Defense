@@ -13,6 +13,7 @@ set(
 
 add_compile_definitions(
   DEBUG
+  GLM_ENABLE_EXPERIMENTAL
   )
 
 add_executable(TinyGame ${HEADERS} ${SOURCES})

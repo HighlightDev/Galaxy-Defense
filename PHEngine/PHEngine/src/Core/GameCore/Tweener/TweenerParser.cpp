@@ -268,12 +268,12 @@ namespace Game
             }
             else if (StartsWith(trimmedValueStr, "y="))
             {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "="));
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
                eulerAngles.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
             }
             else if (StartsWith(trimmedValueStr, "z="))
             {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "z="));
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
                eulerAngles.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
             }
             else
