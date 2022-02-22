@@ -4,15 +4,15 @@
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 #include "Core/GameCore/FramebufferImplementation/PlanarReflectionFramebuffer.h"
 
-namespace Game {
+namespace EngineCore {
    class PlanarReflectionComponent;
 }
 
-using namespace Game::FramebufferImpl;
+using namespace EngineCore::FramebufferImpl;
 
 namespace Graphics
 {
-   using Game::PlanarReflectionComponent;
+   using EngineCore::PlanarReflectionComponent;
 
    class PlanarReflectionProxy
       : public SceneProxyBase

@@ -8,7 +8,7 @@
 
 #include "Core/GraphicsCore/Mesh/AnimatedSkin.h"
 
-namespace Game
+namespace EngineCore
 {
    class AnimationTweenController;
 }
@@ -20,7 +20,7 @@ namespace Graphics
 
       class AnimationPlayer
       {
-         friend class Game::AnimationTweenController;
+         friend class EngineCore::AnimationTweenController;
 
          std::shared_ptr<AnimatedSkin> m_animatedSkin;
 

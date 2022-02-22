@@ -6,10 +6,10 @@
 namespace Event
 {
    struct MouseScrollEvent
-      : public TEvent<SingleDataEventPolicy<Game::eMouseScrollDirection>>
+      : public TEvent<SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<Game::eMouseScrollDirection>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Event_t;
    };
 
 }

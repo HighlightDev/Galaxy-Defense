@@ -10,7 +10,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 
 using namespace Resources;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

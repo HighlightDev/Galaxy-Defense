@@ -13,7 +13,7 @@
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 
-namespace Game
+namespace EngineCore
 {
 
    SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData& meshComponentData, const SkeletalMeshRenderData& renderData)

@@ -5,7 +5,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game
+namespace EngineCore
 {
 
    HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)

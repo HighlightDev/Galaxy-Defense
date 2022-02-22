@@ -5,7 +5,7 @@
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Components/MovementComponent.h"
 
-namespace Game
+namespace EngineCore
 {
     class ActorController
         : public ITickable

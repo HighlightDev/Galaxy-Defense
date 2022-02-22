@@ -1,6 +1,6 @@
 #include "ShadowFramebuffer.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace FramebufferImpl
    {

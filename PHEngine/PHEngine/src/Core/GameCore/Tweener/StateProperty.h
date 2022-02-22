@@ -13,7 +13,7 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EngineCore
 {
    struct BaseStateProperty
    {

@@ -12,7 +12,7 @@
 #include <fstream>
 #include <TinyLogger/LogInterface.h>
 
-namespace Game
+namespace EngineCore
 {
 
    Level::Level(InterThreadCommunicationMgr &interThreadMgr)

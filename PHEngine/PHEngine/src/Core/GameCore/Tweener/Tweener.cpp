@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace Game
+namespace EngineCore
 {
 
    Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)

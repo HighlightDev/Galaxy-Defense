@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <stdint.h>
 
-namespace Game
+namespace EngineCore
 {
    class InputManager
    {

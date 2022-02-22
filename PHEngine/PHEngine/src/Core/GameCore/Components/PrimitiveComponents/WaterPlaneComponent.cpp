@@ -9,7 +9,7 @@
 
 using namespace Graphics::Renderer;
 
-namespace Game
+namespace EngineCore
 {
 
    WaterPlaneComponent::WaterPlaneComponent(const WaterPlaneComponentData &data, const WaterPlaneRenderData &renderData,

@@ -4,7 +4,7 @@
 #include "PointLightComponentData.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 
-namespace Game
+namespace EngineCore
 {
 
    struct SpotlightComponentData :

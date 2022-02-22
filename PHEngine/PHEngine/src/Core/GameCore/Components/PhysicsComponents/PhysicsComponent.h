@@ -6,7 +6,7 @@
 
 #include <glm/ext/quaternion_float.hpp>
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace EnginePhysics {
 

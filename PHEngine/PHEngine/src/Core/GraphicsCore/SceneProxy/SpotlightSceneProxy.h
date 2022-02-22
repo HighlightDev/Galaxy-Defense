@@ -4,7 +4,7 @@
 #include "Core/GameCore/Components/SpotlightComponent.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

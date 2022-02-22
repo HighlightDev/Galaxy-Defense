@@ -5,7 +5,7 @@
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
    InputManager::InputManager()
        : mPrevMouseX(0), mPrevMouseY(0), mKeyboardMaskVec()

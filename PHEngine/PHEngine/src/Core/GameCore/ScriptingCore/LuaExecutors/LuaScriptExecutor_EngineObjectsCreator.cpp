@@ -14,7 +14,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    LuaScriptExecutor_EngineObjectsCreator::LuaScriptExecutor_EngineObjectsCreator(const std::string &scriptName)
@@ -115,7 +115,9 @@ namespace Game
 
       if (auto scene = mSceneWP.lock())
       {
-         auto actorSP = EngineObjectCreator::CreateActorByString(std::get<0>(actorData), std::make_shared<Game::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<1>(actorData), std::get<2>(actorData), std::get<3>(actorData)));
+         auto actorSP = EngineObjectCreator::CreateActorByString(std::get<0>(actorData),
+                                                                 std::make_shared<EngineCore::SceneComponent>(std::get<0>(actorData) + "rootComponent", std::get<1>(actorData),
+                                                                                                              std::get<2>(actorData), std::get<3>(actorData)));
          scene->AddActor(actorSP);
          createdActor = actorSP.get();
       }

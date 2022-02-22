@@ -2,7 +2,7 @@
 #include "Core/GraphicsCore/SceneProxy/BillboardSceneProxy.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    BillboardComponent::BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData)

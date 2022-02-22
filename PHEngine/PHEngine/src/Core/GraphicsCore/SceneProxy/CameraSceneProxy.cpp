@@ -3,7 +3,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/UtilityCore/EngineMath.h"
 
-using namespace Game;
+using namespace EngineCore;
 using namespace EngineMath;
 
 namespace Graphics

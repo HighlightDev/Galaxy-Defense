@@ -9,7 +9,7 @@
 #include <vector>
 #include <glm/vec3.hpp>
 
-namespace Game
+namespace EngineCore
 {
 
 	class Actor;

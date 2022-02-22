@@ -27,7 +27,7 @@ namespace Graphics
    }
 }
 
-namespace Game
+namespace EngineCore
 {
    class Scene;
 }
@@ -76,7 +76,7 @@ namespace Thread
    {
       std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> mSceneRenderer;
 
-      std::weak_ptr<Game::Scene> mScene;
+      std::weak_ptr<EngineCore::Scene> mScene;
 
       std::mutex m_gameThreadMutex;
 
@@ -101,11 +101,11 @@ namespace Thread
 
       void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> sceneRenderer);
 
-      void SetSceneWP(std::weak_ptr<Game::Scene> scene);
+      void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
 
       std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> TryGetSceneRendererWP() const;
 
-      std::weak_ptr<Game::Scene> TryGetSceneWP() const;
+      std::weak_ptr<EngineCore::Scene> TryGetSceneWP() const;
 
    private:
       void ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job &&job);

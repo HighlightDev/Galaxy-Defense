@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <cstddef>
 
-namespace Game
+namespace EngineCore
 {
    // Implementation of FNV (Fowler-Noll-Vo) hashing algorithm, version FNV-1a
    uint64_t Hash(const char* str, const size_t hVal = 0x811c9dc5);

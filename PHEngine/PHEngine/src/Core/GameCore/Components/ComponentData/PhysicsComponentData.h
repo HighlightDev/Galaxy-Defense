@@ -5,7 +5,7 @@
 
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
    struct PhysicsComponentData : public ComponentData
    {

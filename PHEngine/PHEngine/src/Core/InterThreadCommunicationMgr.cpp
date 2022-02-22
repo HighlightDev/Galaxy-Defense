@@ -6,7 +6,7 @@
 #include <iostream>
 #include <algorithm>
 
-using namespace Game;
+using namespace EngineCore;
 using namespace Graphics::Renderer;
 
 namespace Thread

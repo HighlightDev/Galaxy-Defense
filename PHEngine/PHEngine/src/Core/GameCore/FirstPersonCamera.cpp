@@ -11,7 +11,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    FirstPersonCamera::FirstPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)

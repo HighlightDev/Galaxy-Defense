@@ -10,7 +10,7 @@
 using namespace Graphics;
 using namespace EngineMath;
 
-namespace Game {
+namespace EngineCore {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData& data)
       : SceneComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale)

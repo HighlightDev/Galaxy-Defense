@@ -3,7 +3,7 @@
 #include <TinyLogger/LogInterface.h>
 
 using namespace Graphics::Mesh;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

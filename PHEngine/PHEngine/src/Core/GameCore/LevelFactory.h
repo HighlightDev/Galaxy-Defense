@@ -5,7 +5,7 @@
 
 #include "Core/InterThreadCommunicationMgr.h"
 
-namespace Game
+namespace EngineCore
 {
 
    class Level;

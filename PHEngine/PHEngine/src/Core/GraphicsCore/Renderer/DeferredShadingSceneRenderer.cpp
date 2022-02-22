@@ -26,7 +26,7 @@ using namespace Graphics::Renderer;
 using namespace Graphics::Proxy;
 using namespace Graphics::OpenGL;
 using namespace EngineUtility;
-using namespace Game;
+using namespace EngineCore;
 using namespace IO;
 
 namespace Graphics

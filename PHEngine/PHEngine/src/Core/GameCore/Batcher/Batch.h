@@ -6,7 +6,7 @@
 
 using namespace Graphics::Mesh;
 
-namespace Game {
+namespace EngineCore {
 
    class Batch
    {

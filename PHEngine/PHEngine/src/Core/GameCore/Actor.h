@@ -16,7 +16,7 @@
 
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
 
    class Scene;
@@ -58,9 +58,9 @@ namespace Game
 
    public:
 
-      std::vector<std::shared_ptr<Game::Component>> m_allComponents;
+      std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
 
-      Actor(const std::string& gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent);
+      Actor(const std::string& gameObjectName, std::shared_ptr<EngineCore::SceneComponent> rootComponent);
 
       virtual ~Actor();
 
@@ -79,7 +79,7 @@ namespace Game
 
       void AddComponent(std::shared_ptr<Component> component);
 
-      void RemoveComponent(std::shared_ptr<Game::Component> component);
+      void RemoveComponent(std::shared_ptr<EngineCore::Component> component);
 
       void RemoveMovementComponent();
 
@@ -111,9 +111,9 @@ namespace Game
 
       std::shared_ptr<Tweener> GetTweener() const;
 
-      std::shared_ptr<Game::SceneComponent> GetRootComponent() const;
+      std::shared_ptr<EngineCore::SceneComponent> GetRootComponent() const;
 
-      std::shared_ptr<Game::SceneComponent> GetBaseRootComponent() const;
+      std::shared_ptr<EngineCore::SceneComponent> GetBaseRootComponent() const;
 
       std::shared_ptr<InputComponent> GetInputComponent() const;
 

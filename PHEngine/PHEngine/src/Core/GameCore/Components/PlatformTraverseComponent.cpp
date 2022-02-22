@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-namespace Game
+namespace EngineCore
 {
 
    PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData& data)

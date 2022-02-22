@@ -4,7 +4,7 @@
 #include "Core/GameCore/Components/PointLightComponent.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

@@ -5,7 +5,7 @@
 
 #include <algorithm>
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

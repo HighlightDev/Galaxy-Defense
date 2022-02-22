@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-namespace Game
+namespace EngineCore
 {
 
    BoundingBoxBuilder::BoundingBoxBuilder()

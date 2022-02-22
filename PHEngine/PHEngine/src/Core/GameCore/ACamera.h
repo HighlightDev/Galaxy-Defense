@@ -16,7 +16,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
    class Scene;
    class PlanarReflectionComponent;

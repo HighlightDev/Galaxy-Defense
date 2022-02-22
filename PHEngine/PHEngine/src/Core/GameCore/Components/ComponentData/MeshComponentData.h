@@ -7,7 +7,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 
-namespace Game
+namespace EngineCore
 {
 	struct MeshComponentData : public ComponentData
 	{

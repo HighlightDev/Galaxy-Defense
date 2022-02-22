@@ -6,7 +6,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 
-namespace Game {
+namespace EngineCore {
 
    struct EulerAnglesRotationPropertyBinding
       : public PropertyBinding
@@ -17,7 +17,7 @@ namespace Game {
 
    public:
 
-      EulerAnglesRotationPropertyBinding(const std::string& bindingName, Game::propertyPtr_t<glm::vec3> value)
+      EulerAnglesRotationPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<glm::vec3> value)
          : PropertyBinding(bindingName)
          , Value(value)
       {
@@ -29,7 +29,7 @@ namespace Game {
       {
       }
 
-      void SetValuePtr(Game::propertyPtr_t<glm::vec3> value)
+      void SetValuePtr(EngineCore::propertyPtr_t<glm::vec3> value)
       {
          Value = value;
          bValueSet = true;

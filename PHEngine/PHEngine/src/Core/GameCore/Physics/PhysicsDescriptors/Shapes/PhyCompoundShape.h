@@ -6,7 +6,7 @@
 #include "PhysicsShapeBase.h"
 #include "Core/GameCore/Components/Transform.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace EnginePhysics
 {

@@ -7,7 +7,7 @@
 using namespace Graphics;
 using namespace Graphics::Data;
 
-namespace Game
+namespace EngineCore
 {
    struct MeshComponentData;
    class LuaWrapper;

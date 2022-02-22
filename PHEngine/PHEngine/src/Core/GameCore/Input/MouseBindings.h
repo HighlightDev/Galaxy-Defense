@@ -8,7 +8,7 @@
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
    class MouseBindings 
       : public MouseMovedEvent

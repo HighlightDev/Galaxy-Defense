@@ -5,7 +5,7 @@
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game {
+namespace EngineCore {
 
    struct FloatPropertyBinding
       : public PropertyBinding
@@ -16,7 +16,7 @@ namespace Game {
 
    public:
 
-      FloatPropertyBinding(const std::string& bindingName, Game::propertyPtr_t<float> value)
+      FloatPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<float> value)
          : PropertyBinding(bindingName)
          , Value(value)
       {
@@ -28,7 +28,7 @@ namespace Game {
       {
       }
 
-      void SetValuePtr(Game::propertyPtr_t<float> value)
+      void SetValuePtr(EngineCore::propertyPtr_t<float> value)
       {
          Value = value;
          bValueSet = true;

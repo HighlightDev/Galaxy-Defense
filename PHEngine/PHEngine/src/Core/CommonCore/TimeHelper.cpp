@@ -1,6 +1,6 @@
 #include "TimeHelper.h"
 
-namespace Game
+namespace EngineCore
 {
 
     Moment_t EngineTime::GetCurrentTime()

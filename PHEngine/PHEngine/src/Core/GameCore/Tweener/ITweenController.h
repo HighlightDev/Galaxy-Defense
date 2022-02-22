@@ -4,7 +4,7 @@
 
 #include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
 
-namespace Game
+namespace EngineCore
 {
    enum class StateType
    {

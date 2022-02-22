@@ -11,7 +11,7 @@
 #undef max
 #undef min
 
-namespace Game
+namespace EngineCore
 {
 
    ThirdPersonCamera::ThirdPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,

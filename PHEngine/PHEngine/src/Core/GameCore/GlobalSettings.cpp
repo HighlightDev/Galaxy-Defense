@@ -1,6 +1,6 @@
 #include "GlobalSettings.h"
 
-namespace Game
+namespace EngineCore
 {
 
 	std::unique_ptr<GlobalSettings> GlobalSettings::m_globalSettings;

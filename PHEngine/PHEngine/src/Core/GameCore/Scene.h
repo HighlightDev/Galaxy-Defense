@@ -31,7 +31,7 @@ namespace EnginePhysics
    class PhysicsWorld;
 }
 
-namespace Game
+namespace EngineCore
 {
    class Scene : public GameObject,
                  public std::enable_shared_from_this<Scene>

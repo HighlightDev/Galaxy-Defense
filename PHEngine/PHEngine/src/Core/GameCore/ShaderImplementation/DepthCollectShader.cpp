@@ -1,6 +1,6 @@
 #include "DepthCollectShader.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

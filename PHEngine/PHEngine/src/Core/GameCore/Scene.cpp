@@ -9,7 +9,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)

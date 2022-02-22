@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace Game
+namespace EngineCore
 {
 
     MouseBindings::MouseBindings()

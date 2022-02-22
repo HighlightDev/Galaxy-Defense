@@ -6,8 +6,8 @@
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 
-using namespace Game;
-using namespace Game::ShaderImpl;
+using namespace EngineCore;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

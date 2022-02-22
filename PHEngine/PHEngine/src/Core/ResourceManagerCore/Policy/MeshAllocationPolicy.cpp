@@ -19,7 +19,7 @@
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
 using namespace MeshLoader::Assimp;
-using namespace Game;
+using namespace EngineCore;
 using namespace IO;
 
 namespace Resources

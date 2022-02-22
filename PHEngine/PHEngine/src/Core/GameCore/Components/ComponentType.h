@@ -4,7 +4,7 @@
 #include <cstddef>
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game
+namespace EngineCore
 {
    enum ComponentType
    {

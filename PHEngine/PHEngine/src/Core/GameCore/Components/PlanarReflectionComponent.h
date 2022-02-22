@@ -13,7 +13,7 @@ namespace Graphics{
    class PlanarReflectionProxy;
 }
 
-namespace Game {
+namespace EngineCore {
 
    class ACamera;
    struct PlanarReflectionComponentData;

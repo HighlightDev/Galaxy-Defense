@@ -1,7 +1,7 @@
 #include "FloatTweenController.h"
 #include "Core/UtilityCore/EngineMath.h"
 
-namespace Game
+namespace EngineCore
 {
 
    FloatTweenController::FloatTweenController()

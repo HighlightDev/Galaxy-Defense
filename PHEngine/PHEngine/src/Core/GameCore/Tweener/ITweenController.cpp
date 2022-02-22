@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-namespace Game {
+namespace EngineCore {
 
    ITweenController::ITweenController()
    {

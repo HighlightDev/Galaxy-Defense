@@ -9,7 +9,7 @@
 
 using namespace Graphics::OpenGL;
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

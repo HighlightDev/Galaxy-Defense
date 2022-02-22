@@ -3,7 +3,7 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/BoundingBoxBuilder.h"
 
-namespace Game
+namespace EngineCore
 {
 
 	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox)

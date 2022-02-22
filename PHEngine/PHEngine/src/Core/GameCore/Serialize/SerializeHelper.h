@@ -11,7 +11,7 @@ namespace EnginePhysics {
    class PhysicsComponent;
 }
 
-namespace Game {
+namespace EngineCore {
 
    using Graphics::IMaterial;
    using EnginePhysics::PhysicsComponent;

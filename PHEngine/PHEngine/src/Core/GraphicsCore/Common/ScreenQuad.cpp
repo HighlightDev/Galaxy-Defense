@@ -11,7 +11,7 @@
 
 using namespace Common;
 using namespace Resources;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

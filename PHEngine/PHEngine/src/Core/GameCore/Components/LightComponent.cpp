@@ -3,7 +3,7 @@
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Components/ComponentData/LightComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    LightComponent::LightComponent(const LightComponentData& data)

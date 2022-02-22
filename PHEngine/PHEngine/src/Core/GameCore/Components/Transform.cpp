@@ -2,7 +2,7 @@
 
 #include <utility>
 
-namespace Game
+namespace EngineCore
 {
    TranslationTransform::TranslationTransform(const glm::vec3& translation)
       : Translation(translation)

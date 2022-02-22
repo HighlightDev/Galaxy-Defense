@@ -1,7 +1,7 @@
 #include "AnimationTweenController.h"
 #include "StateProperty.h"
 
-namespace Game
+namespace EngineCore
 {
    AnimationTweenController::AnimationTweenController()
       : ITweenController()

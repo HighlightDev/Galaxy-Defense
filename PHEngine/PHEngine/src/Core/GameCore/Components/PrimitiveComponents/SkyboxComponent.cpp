@@ -8,7 +8,7 @@
 #include <glm/vec3.hpp>
 #include <glm/gtx/quaternion.hpp>
 
-namespace Game
+namespace EngineCore
 {
 	using namespace EngineUtility;
 

@@ -15,7 +15,7 @@
 using namespace Graphics;
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
    class SceneComponent;
 

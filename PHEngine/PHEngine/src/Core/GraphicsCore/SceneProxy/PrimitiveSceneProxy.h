@@ -15,7 +15,7 @@
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

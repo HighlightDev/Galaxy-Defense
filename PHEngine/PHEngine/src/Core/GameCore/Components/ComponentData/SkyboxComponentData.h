@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace Game
+namespace EngineCore
 {
 	struct SkyboxComponentData : public ComponentData
 	{

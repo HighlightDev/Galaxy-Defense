@@ -7,7 +7,7 @@
 using namespace MeshLoader;
 using namespace MeshLoader::Assimp;
 
-namespace Game
+namespace EngineCore
 {
    struct Transform;
 }
@@ -16,7 +16,7 @@ namespace Graphics
 {
    namespace Mesh
    {
-      using Game::Transform;
+      using EngineCore::Transform;
       struct AnimatedMeshData
       {
        

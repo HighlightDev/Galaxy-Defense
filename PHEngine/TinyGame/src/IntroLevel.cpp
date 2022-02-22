@@ -14,7 +14,7 @@ using namespace Graphics;
 using namespace EnginePhysics;
 using namespace IO;
 
-namespace Labyrinth
+namespace Game
 {
 
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
@@ -85,7 +85,7 @@ namespace Labyrinth
 
       const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),
                                                       FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
-      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, Game::eComponentMetaType::Cubemap>(cubemapComponentData);
+      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
       Base::PostLevelInit();
    }

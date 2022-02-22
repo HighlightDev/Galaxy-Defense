@@ -1,7 +1,7 @@
 #include "MainCameraSceneProxy.h"
 #include "Core/GameCore/ACamera.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

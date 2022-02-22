@@ -14,7 +14,7 @@ using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
 using namespace Graphics::Proxy;
 
-namespace Game
+namespace EngineCore
 {
 	// Base class of all drawing components
 	class PrimitiveComponent :

@@ -12,7 +12,7 @@
 using namespace Common;
 using namespace EngineUtility;
 
-namespace Game
+namespace EngineCore
 {
 #define TWEENER_START_NODE_NAME "<tweener>"
 #define TWEENER_END_NODE_NAME "</tweener>"

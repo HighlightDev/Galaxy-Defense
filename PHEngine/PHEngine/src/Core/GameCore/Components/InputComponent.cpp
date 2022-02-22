@@ -2,7 +2,7 @@
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    InputComponent::InputComponent(const InputComponentData& componentData)

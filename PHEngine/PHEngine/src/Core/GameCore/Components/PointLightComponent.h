@@ -12,7 +12,7 @@ using namespace Graphics::Data;
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
    struct LightComponentData;
 

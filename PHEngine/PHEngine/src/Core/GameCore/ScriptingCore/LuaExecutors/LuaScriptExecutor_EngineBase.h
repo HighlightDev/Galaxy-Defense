@@ -6,7 +6,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
-namespace Game
+namespace EngineCore
 {
 
    class LuaScriptExecutor_EngineBase

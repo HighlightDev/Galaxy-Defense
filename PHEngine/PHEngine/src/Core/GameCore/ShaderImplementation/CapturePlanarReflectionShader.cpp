@@ -1,6 +1,6 @@
 #include "CapturePlanarReflectionShader.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

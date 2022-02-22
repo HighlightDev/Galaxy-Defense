@@ -4,7 +4,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    NoPhysicsMovementComponent::NoPhysicsMovementComponent(const MovementComponentData& movementComponentData)

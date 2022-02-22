@@ -5,7 +5,7 @@ using Clock_t = std::chrono::high_resolution_clock;
 using Duration_t = Clock_t::duration;
 using Moment_t = Clock_t::time_point;
 
-namespace Game
+namespace EngineCore
 {
     struct EngineTime
     {

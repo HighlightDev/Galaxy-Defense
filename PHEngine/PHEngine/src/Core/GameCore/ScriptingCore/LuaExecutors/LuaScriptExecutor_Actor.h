@@ -4,7 +4,7 @@
 
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
-namespace Game
+namespace EngineCore
 {
 
    class Actor;

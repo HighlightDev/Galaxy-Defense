@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/BoundingBox.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

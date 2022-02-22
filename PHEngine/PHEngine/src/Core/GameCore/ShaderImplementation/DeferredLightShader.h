@@ -8,7 +8,7 @@
 using namespace Graphics::OpenGL;
 using namespace Graphics::Proxy;
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

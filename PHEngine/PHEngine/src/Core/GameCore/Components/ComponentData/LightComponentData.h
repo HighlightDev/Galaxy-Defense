@@ -5,7 +5,7 @@
 
 #include <glm/vec3.hpp>
 
-namespace Game
+namespace EngineCore
 {
 
 	struct LightComponentData

@@ -30,7 +30,7 @@
 using namespace Graphics;
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
 
    std::shared_ptr<SerializeDataCamera> SerializeHelper::GetSerializedDataCamera(const ACamera *camera)

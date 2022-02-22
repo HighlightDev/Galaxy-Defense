@@ -3,7 +3,7 @@
 #include "Core/GameCore/Components/ComponentType.h"
 #include "LightComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
 	struct PointLightComponentData : 

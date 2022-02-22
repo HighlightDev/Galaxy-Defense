@@ -52,7 +52,7 @@ namespace Graphics
 
          TemplatedCompositeMaterialShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
             : CompositeMaterialShaderParams(
-               Game::Hash(uniqueName),
+               EngineCore::Hash(uniqueName),
                uniqueName,
                std::make_shared<typename CompositeShaderType::shader_t>(shaderParams),
                materialProxy)
@@ -68,7 +68,7 @@ namespace Graphics
 
          TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams)
             : CompositeShaderParams(
-               Game::Hash(uniqueName),
+               EngineCore::Hash(uniqueName),
                uniqueName,
                std::make_shared<typename CompositeShaderType::shader_t>(shaderParams))
          {

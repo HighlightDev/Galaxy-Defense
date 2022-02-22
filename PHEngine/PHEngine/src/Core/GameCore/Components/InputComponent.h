@@ -3,7 +3,7 @@
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
 
-namespace Game
+namespace EngineCore
 {
    struct InputComponentData;
 

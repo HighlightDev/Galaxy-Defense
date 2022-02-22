@@ -5,7 +5,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 
-namespace Game
+namespace EngineCore
 {
    struct BillboardComponentData : public ComponentData
    {

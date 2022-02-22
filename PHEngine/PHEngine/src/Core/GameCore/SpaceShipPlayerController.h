@@ -5,7 +5,7 @@
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
    class ACamera;
    

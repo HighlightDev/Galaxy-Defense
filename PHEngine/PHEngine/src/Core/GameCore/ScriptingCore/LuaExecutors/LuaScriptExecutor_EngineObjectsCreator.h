@@ -10,7 +10,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "LuaScriptExecutor_EngineBase.h"
 
-namespace Game
+namespace EngineCore
 {
 
    class LuaScriptExecutor_EngineObjectsCreator

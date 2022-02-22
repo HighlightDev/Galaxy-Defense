@@ -6,7 +6,7 @@
 using namespace Graphics::OpenGL;
 using namespace IO;
 
-namespace Game
+namespace EngineCore
 {
    template <int32_t InfluenceWeightsCount>
    class SkeletalMeshVertexFactory

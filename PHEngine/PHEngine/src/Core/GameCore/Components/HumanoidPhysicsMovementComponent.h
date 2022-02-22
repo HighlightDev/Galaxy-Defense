@@ -9,7 +9,7 @@
 using namespace Event;
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
    class MovementComponentData;
 

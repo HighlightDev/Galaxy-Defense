@@ -2,7 +2,7 @@
 #include "MovementComponent.h"
 #include "SceneComponent.h"
 
-namespace Game
+namespace EngineCore
 {
    struct MovementComponentData;
    

@@ -4,7 +4,7 @@
 
 using namespace Graphics::Data;
 
-namespace Game
+namespace EngineCore
 {
    struct WaterPlaneComponentData;
 

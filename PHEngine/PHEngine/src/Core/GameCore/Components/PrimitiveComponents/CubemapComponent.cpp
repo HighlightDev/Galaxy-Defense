@@ -2,7 +2,7 @@
 #include "Core/GraphicsCore/SceneProxy/CubemapSceneProxy.h"
 #include "Core/GameCore/Components/ComponentData/CubemapComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    CubemapComponent::CubemapComponent(const CubemapComponentData &data, const CubemapRenderData &renderData)

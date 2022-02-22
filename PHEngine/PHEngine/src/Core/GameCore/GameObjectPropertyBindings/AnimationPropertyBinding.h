@@ -3,26 +3,26 @@
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game {
+namespace EngineCore {
 
    struct AnimationPropertyBinding
       : public PropertyBinding
    {
    private:
 
-      Game::propertyPtr_t<std::string> SrcName;
-      Game::propertyPtr_t<std::string> DstName;
+      EngineCore::propertyPtr_t<std::string> SrcName;
+      EngineCore::propertyPtr_t<std::string> DstName;
 
-      Game::propertyPtr_t<float> SrcTime;
-      Game::propertyPtr_t<float> DstTime;
+      EngineCore::propertyPtr_t<float> SrcTime;
+      EngineCore::propertyPtr_t<float> DstTime;
 
-      Game::propertyPtr_t<bool> bTranstitionEnabled;
-      Game::propertyPtr_t<float> TransitionValue;
+      EngineCore::propertyPtr_t<bool> bTranstitionEnabled;
+      EngineCore::propertyPtr_t<float> TransitionValue;
 
    public:
 
-      AnimationPropertyBinding(const std::string& bindingName, Game::propertyPtr_t<std::string> srcName, Game::propertyPtr_t<std::string> dstName,
-         Game::propertyPtr_t<float> srcTime, Game::propertyPtr_t<float> dstTime, Game::propertyPtr_t<bool> isTransitionEnabled, Game::propertyPtr_t<float> transitionValue)
+      AnimationPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<std::string> srcName, EngineCore::propertyPtr_t<std::string> dstName,
+         EngineCore::propertyPtr_t<float> srcTime, EngineCore::propertyPtr_t<float> dstTime, EngineCore::propertyPtr_t<bool> isTransitionEnabled, EngineCore::propertyPtr_t<float> transitionValue)
          : PropertyBinding(bindingName)
          , SrcName(srcName)
          , DstName(dstName)
@@ -101,12 +101,12 @@ namespace Game {
       }
 
       void SetBindingProperties(
-         Game::propertyPtr_t<std::string> srcName,
-         Game::propertyPtr_t<std::string> dstName,
-         Game::propertyPtr_t<float> srcTime,
-         Game::propertyPtr_t<float> dstTime,
-         Game::propertyPtr_t<bool> isTransitionEnabled,
-         Game::propertyPtr_t<float> transitionValue)
+         EngineCore::propertyPtr_t<std::string> srcName,
+         EngineCore::propertyPtr_t<std::string> dstName,
+         EngineCore::propertyPtr_t<float> srcTime,
+         EngineCore::propertyPtr_t<float> dstTime,
+         EngineCore::propertyPtr_t<bool> isTransitionEnabled,
+         EngineCore::propertyPtr_t<float> transitionValue)
       {
          SrcName = srcName;
          DstName = dstName;

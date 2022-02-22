@@ -4,7 +4,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineBase.h"
 
-namespace Game
+namespace EngineCore
 {
    class PlatformTraverseComponent;
 

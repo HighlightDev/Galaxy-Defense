@@ -2,7 +2,7 @@
 
 #include <functional>
 
-namespace Game
+namespace EngineCore
 {
 
    template <typename Type>

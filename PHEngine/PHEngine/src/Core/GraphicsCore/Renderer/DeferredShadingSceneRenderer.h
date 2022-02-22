@@ -30,8 +30,8 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/DebugCore/TextureRenderer.h"
 
-using namespace Game::ShaderImpl;
-using namespace Game;
+using namespace EngineCore::ShaderImpl;
+using namespace EngineCore;
 using namespace Thread;
 using namespace Debug;
 using namespace EnginePhysics;

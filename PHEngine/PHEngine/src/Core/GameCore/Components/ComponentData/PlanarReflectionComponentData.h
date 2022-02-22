@@ -8,7 +8,7 @@
 #include <glm/vec3.hpp>
 #include <gl/glew.h>
 
-namespace Game
+namespace EngineCore
 {
    class ACamera;
 

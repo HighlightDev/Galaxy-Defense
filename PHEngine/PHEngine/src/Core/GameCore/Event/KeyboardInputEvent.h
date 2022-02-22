@@ -6,7 +6,7 @@
 
 #include <vector>
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Event
 {

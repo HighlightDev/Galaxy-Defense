@@ -53,7 +53,7 @@
 using namespace Resources;
 using namespace IO;
 
-namespace Game
+namespace EngineCore
 {
     enum class eComponentMetaType
     {
@@ -483,4 +483,4 @@ namespace Game
             return componentCreator->CreateComponent(data, scene);
         }
     };
-} // namespace Game
+} // namespace EngineCore

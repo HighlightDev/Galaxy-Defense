@@ -3,7 +3,7 @@
 #include "GameObject.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game
+namespace EngineCore
 {
 
    uint64_t GameObject::mTotalObjectIdCounter = 0;

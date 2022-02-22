@@ -5,7 +5,7 @@
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
 
    Keys DefaultKeyboardBindings::GetMappedWithActionKey(eKeyActionType actionType)
@@ -14,19 +14,19 @@ namespace Game
 
       switch (actionType)
       {
-      case Game::eKeyActionType::ACTION_MOVE_FORWARD:
+      case EngineCore::eKeyActionType::ACTION_MOVE_FORWARD:
          result = Keys::W;
          break;
-      case Game::eKeyActionType::ACTION_MOVE_LEFT:
+      case EngineCore::eKeyActionType::ACTION_MOVE_LEFT:
          result = Keys::A;
          break;
-      case Game::eKeyActionType::ACTION_MOVE_RIGHT:
+      case EngineCore::eKeyActionType::ACTION_MOVE_RIGHT:
          result = Keys::D;
          break;
-      case Game::eKeyActionType::ACTION_MOVE_BACK:
+      case EngineCore::eKeyActionType::ACTION_MOVE_BACK:
          result = Keys::S;
          break;
-      case Game::eKeyActionType::ACTION_JUMP:
+      case EngineCore::eKeyActionType::ACTION_JUMP:
          result = Keys::Space;
          break;
       }

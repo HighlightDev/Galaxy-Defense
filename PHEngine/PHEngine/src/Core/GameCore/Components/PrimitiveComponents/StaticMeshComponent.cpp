@@ -12,7 +12,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    StaticMeshComponent::StaticMeshComponent(const MeshComponentData& meshComponentData, const StaticMeshRenderData& renderData)

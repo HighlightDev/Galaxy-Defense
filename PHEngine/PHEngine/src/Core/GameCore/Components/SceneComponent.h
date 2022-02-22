@@ -5,7 +5,7 @@
 
 #include <glm/mat4x4.hpp>
 
-namespace Game
+namespace EngineCore
 {
    class Scene;
 

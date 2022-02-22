@@ -8,7 +8,7 @@
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Resources
 {

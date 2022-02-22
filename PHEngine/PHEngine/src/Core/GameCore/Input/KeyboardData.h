@@ -2,7 +2,7 @@
 
 #include "Keys.h"
 
-namespace Game {
+namespace EngineCore {
 
    struct KeyboardData
    {

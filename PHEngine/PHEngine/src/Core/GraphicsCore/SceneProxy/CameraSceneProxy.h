@@ -4,14 +4,14 @@
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
-namespace Game
+namespace EngineCore
 {
    class ACamera;
 }
 
 namespace Graphics
 {
-   using Game::ACamera;
+   using EngineCore::ACamera;
 
    enum class eCameraSceneProxyType
    {

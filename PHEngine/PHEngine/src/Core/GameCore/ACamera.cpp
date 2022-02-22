@@ -9,7 +9,7 @@
 using namespace EngineMath;
 using namespace IO;
 
-namespace Game
+namespace EngineCore
 {
 
    ACamera::ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)

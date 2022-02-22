@@ -10,7 +10,7 @@
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
 
-namespace Game
+namespace EngineCore
 {
    struct LightComponentData;
 

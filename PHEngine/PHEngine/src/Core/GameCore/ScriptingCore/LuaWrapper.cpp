@@ -1,7 +1,7 @@
 #include "LuaWrapper.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 
-namespace Game
+namespace EngineCore
 {
    LuaWrapper::LuaWrapper()
    {

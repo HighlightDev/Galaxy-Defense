@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 
-namespace Game
+namespace EngineCore
 {
    class Tweener 
       : public ITickable

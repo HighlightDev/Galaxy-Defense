@@ -1,6 +1,6 @@
 #include "HumanoidPlayerController.h"
 
-namespace Game
+namespace EngineCore
 {
    ActorController::ActorController(std::shared_ptr<Actor> playerActor)
        : m_playerActor(playerActor), m_movementComponent()

@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
 #include "Core/GameCore/GlobalSettings.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

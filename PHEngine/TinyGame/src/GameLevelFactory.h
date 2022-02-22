@@ -2,9 +2,9 @@
 
 #include "Core/GameCore/LevelFactory.h"
 
-using namespace Game;
+using namespace EngineCore;
 
-namespace Labyrinth
+namespace Game
 {
 
    class GameLevelFactory

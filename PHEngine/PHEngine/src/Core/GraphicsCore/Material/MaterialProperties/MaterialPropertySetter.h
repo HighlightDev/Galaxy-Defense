@@ -9,7 +9,7 @@ namespace Resources {
    struct IDeferredResourceCreator;
 }
 
-namespace Game {
+namespace EngineCore {
    class GameObject;
 }
 
@@ -18,7 +18,7 @@ namespace Graphics
    using namespace Texture;
 
    using Resources::IDeferredResourceCreator;
-   using Game::GameObject;
+   using EngineCore::GameObject;
 
    struct MaterialPropertySetter
    {

@@ -5,7 +5,7 @@
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/compatibility.hpp>
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

@@ -3,7 +3,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 
-namespace Game
+namespace EngineCore
 {
 
    SpotlightComponent::SpotlightComponent(const LightComponentData &data)

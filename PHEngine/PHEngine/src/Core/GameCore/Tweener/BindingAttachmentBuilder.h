@@ -6,7 +6,7 @@
 #include "Core/GameCore/GameObject.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game
+namespace EngineCore
 {
 
    template <typename EnginePropertyValueType>

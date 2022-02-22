@@ -10,7 +10,7 @@
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
 
-using namespace Game::ShaderImpl;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

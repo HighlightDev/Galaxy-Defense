@@ -4,7 +4,7 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EngineCore
 {
   
    LuaScriptExecutor_PlatformTraverseComponent::LuaScriptExecutor_PlatformTraverseComponent(PlatformTraverseComponent* owner, const std::string& scriptName)

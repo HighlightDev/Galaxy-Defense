@@ -7,7 +7,7 @@
 
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
    struct PlatformTraverseComponentData;
 

@@ -1,6 +1,6 @@
 #include "PointLightDepthShader.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

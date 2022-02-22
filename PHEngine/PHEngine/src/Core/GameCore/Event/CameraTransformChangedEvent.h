@@ -4,7 +4,7 @@
 #include "Policy/Policies.h"
 #include "Core/GameCore/ACamera.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Event
 {

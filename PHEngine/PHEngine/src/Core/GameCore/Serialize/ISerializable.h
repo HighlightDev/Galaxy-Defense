@@ -4,7 +4,7 @@
 
 #include "SerializeData/SerializeDataContainer.h"
 
-namespace Game
+namespace EngineCore
 {
    struct ISerializable
    {

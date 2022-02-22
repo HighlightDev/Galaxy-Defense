@@ -4,7 +4,7 @@
 
 using namespace Graphics;
 
-namespace Game {
+namespace EngineCore {
 
    namespace FramebufferImpl
    {

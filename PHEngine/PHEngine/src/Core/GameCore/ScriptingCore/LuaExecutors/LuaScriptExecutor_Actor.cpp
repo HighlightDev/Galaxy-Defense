@@ -3,7 +3,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 
-namespace Game
+namespace EngineCore
 {
 
    LuaScriptExecutor_Actor::LuaScriptExecutor_Actor(const std::string& scriptName, std::weak_ptr<Actor> parentActor)

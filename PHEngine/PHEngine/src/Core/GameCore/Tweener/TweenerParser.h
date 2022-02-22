@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-namespace Game
+namespace EngineCore
 {
 
    class TweenerParser

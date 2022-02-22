@@ -5,7 +5,7 @@
 
 using namespace EnginePhysics;
 
-namespace Game
+namespace EngineCore
 {
 
    PlatformTraverseComponentVisitorBase::PlatformTraverseComponentVisitorBase(std::weak_ptr<SceneComponent> ownerRootComponent)

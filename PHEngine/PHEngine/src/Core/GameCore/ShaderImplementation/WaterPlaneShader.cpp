@@ -1,6 +1,6 @@
 #include "WaterPlaneShader.h"
 
-namespace Game
+namespace EngineCore
 {
    namespace ShaderImpl
    {

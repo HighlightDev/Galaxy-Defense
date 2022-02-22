@@ -17,7 +17,7 @@ using namespace Graphics::Texture;
 using namespace Graphics::Proxy;
 using namespace Graphics;
 
-using namespace Game::ShaderImpl;
+using namespace EngineCore::ShaderImpl;
 
 namespace Debug
 {

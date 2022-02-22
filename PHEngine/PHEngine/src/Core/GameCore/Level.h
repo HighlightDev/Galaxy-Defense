@@ -5,7 +5,7 @@
 
 using namespace Thread;
 
-namespace Game
+namespace EngineCore
 {
 
    class Level

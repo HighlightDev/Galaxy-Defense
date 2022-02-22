@@ -3,7 +3,7 @@
 
 #include <glm/ext/quaternion_float.hpp>
 
-namespace Game
+namespace EngineCore
 {
 
    EulerAnglesRotationTweenController::EulerAnglesRotationTweenController()

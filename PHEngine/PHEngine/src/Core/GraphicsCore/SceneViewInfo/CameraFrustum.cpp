@@ -63,7 +63,7 @@ namespace Graphics
 
    bool CameraFrustum::CollidesWithBoundingBox(const BoundingBox& boundingBox) const
    {
-      return (IsIntersectionWithBox(boundingBox.GetOrigin(), boundingBox.GetHalfExtent()));
+      return IsIntersectionWithBox(boundingBox.GetOrigin(), boundingBox.GetHalfExtent());
    }
 
    CameraFrustum  CameraFrustum::GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) {

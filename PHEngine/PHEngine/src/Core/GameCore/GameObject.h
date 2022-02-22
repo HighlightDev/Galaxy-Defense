@@ -5,7 +5,7 @@
 
 #include "GameObjectProperty.h"
 
-namespace Game
+namespace EngineCore
 {
 #define ENGINE_PROPERTY(PROPERTY_PTR) AddEngineProperty(PROPERTY_PTR)
    class GameObject 

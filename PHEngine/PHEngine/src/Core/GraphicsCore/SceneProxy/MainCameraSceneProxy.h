@@ -1,7 +1,7 @@
 #pragma once
 #include "CameraSceneProxy.h"
 
-namespace Game
+namespace EngineCore
 {
    class ACamera;
 }
@@ -9,7 +9,7 @@ namespace Game
 namespace Graphics
 {
 
-   using Game::ACamera;
+   using EngineCore::ACamera;
 
    class MainCameraSceneProxy :
       public CameraSceneProxy

@@ -8,7 +8,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    PointLightComponent::PointLightComponent(const LightComponentData& lightComponentData)

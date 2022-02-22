@@ -1,5 +1,5 @@
 #include "Batch.h"
 
-namespace Game {
+namespace EngineCore {
 
 }

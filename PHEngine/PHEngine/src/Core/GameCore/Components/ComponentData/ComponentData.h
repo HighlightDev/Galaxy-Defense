@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Components/ComponentType.h"
 
-namespace Game
+namespace EngineCore
 {
    struct ComponentData
    {

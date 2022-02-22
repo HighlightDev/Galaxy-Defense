@@ -3,7 +3,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 
-namespace Game {
+namespace EngineCore {
    class Scene;
 }
 
@@ -19,7 +19,7 @@ namespace Graphics
 
       std::vector<std::shared_ptr<DynamicFloatMaterialProperty>> mDynamicProperties;
 
-      std::weak_ptr<Game::Scene> mScene;
+      std::weak_ptr<EngineCore::Scene> mScene;
 
    public:
 
@@ -31,7 +31,7 @@ namespace Graphics
 
       virtual void Tick(const float deltaTime);
 
-      void SetScene(std::weak_ptr<Game::Scene> scene);
+      void SetScene(std::weak_ptr<EngineCore::Scene> scene);
 
       void SyncDataWithRenderThread();
 

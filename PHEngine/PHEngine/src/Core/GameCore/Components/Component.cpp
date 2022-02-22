@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-namespace Game
+namespace EngineCore
 {
 
    Component::Component(const std::string &gameObjectName)

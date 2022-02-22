@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace Game
+namespace EngineCore
 {
 
    class BoundingBoxBuilder

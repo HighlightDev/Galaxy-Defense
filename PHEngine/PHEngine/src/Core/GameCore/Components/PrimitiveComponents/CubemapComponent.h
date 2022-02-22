@@ -5,10 +5,10 @@
 
 #include <glm/mat4x4.hpp>
 
-using namespace Game::ShaderImpl;
+using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
 
-namespace Game
+namespace EngineCore
 {
    struct CubemapComponentData;
 

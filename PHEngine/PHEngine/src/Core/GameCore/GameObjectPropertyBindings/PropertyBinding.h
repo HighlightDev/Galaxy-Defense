@@ -3,7 +3,7 @@
 #include <string>
 #include <memory>
 
-namespace Game {
+namespace EngineCore {
 
    enum class eBindingType
    {

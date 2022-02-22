@@ -3,8 +3,8 @@
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
 #include "Core/GameCore/ShaderImplementation/BillboardShader.h"
 
-using namespace Game;
-using namespace Game::ShaderImpl;
+using namespace EngineCore;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

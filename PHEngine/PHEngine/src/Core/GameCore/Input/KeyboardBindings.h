@@ -10,7 +10,7 @@
 
 using namespace Event;
 
-namespace Game
+namespace EngineCore
 {
    enum class eKeyActionType
    {

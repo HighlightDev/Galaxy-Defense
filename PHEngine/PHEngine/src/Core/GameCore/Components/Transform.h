@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <glm/ext/quaternion_float.hpp>
 
-namespace Game
+namespace EngineCore
 {
 
    struct TranslationTransform

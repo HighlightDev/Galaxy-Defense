@@ -7,7 +7,7 @@
 #include "Core/GameCore/BoundingBox.h"
 
 using namespace Graphics::OpenGL;
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

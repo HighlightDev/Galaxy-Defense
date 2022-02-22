@@ -2,9 +2,9 @@
 
 #include "Core/GameCore/Level.h"
 
-using namespace Game;
+using namespace EngineCore;
 
-namespace Labyrinth
+namespace Game
 {
 
    class IntroLevel :

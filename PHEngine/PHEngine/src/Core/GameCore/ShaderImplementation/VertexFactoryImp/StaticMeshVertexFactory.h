@@ -6,7 +6,7 @@
 using namespace Graphics::OpenGL;
 using namespace IO;
 
-namespace Game
+namespace EngineCore
 {
    class StaticMeshVertexFactory
        : public VertexFactoryShader

@@ -6,7 +6,7 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EngineCore
 {
    SceneComponent::SceneComponent(const std::string &gameObjectName, glm::vec3 translation = glm::vec3(0.0f),
                                   glm::vec3 rotation = glm::vec3(0.0f),

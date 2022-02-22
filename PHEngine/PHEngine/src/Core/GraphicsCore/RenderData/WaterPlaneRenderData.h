@@ -8,7 +8,7 @@
 
 using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
-using namespace Game::ShaderImpl;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

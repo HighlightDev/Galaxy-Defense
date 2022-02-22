@@ -3,7 +3,7 @@
 #include "MaterialProperty.h"
 #include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics {
 

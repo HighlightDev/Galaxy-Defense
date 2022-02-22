@@ -8,7 +8,7 @@
 #include "StateTransition.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace Game
+namespace EngineCore
 {
 
    class State

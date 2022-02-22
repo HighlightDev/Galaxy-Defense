@@ -3,7 +3,7 @@
 
 using namespace Resources;
 
-namespace Game
+namespace EngineCore
 {
    namespace FramebufferImpl
    {

@@ -9,7 +9,7 @@
 #include "Core/GameCore/FramebufferImplementation/ShadowFramebuffer.h"
 
 using namespace Graphics::Texture;
-using namespace Game::FramebufferImpl;
+using namespace EngineCore::FramebufferImpl;
 
 namespace Graphics
 {

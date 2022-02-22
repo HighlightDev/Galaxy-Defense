@@ -20,7 +20,7 @@ extern "C"
 
 #define FORCEINLINE __attribute__((always_inline))
 
-namespace Game
+namespace EngineCore
 {
    struct LuaTableBase
    {

@@ -1,7 +1,7 @@
 
 #include "StringHash.h"
 
-namespace Game
+namespace EngineCore
 {
    uint64_t Hash(const char* str, const size_t hVal)
    {

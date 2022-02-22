@@ -8,9 +8,9 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 
-using namespace Game;
-using namespace Game::FramebufferImpl;
-using namespace Game::ShaderImpl;
+using namespace EngineCore;
+using namespace EngineCore::FramebufferImpl;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

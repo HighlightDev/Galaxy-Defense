@@ -10,7 +10,7 @@ namespace EnginePhysics
    class PhysicsComponent;
 }
 
-namespace Game
+namespace EngineCore
 {
    class SceneComponent;
    using EnginePhysics::PhysicsComponent;

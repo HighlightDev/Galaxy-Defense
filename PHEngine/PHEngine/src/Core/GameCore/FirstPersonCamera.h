@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace Game
+namespace EngineCore
 {
    class Scene;
    class InputComponent;

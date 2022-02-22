@@ -2,7 +2,7 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics {
 

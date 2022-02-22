@@ -6,7 +6,7 @@
 #include <glm/mat4x4.hpp>
 #include <array>
 
-using namespace Game;
+using namespace EngineCore;
 
 namespace Graphics
 {

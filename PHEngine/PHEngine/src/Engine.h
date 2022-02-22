@@ -11,7 +11,7 @@
 #include <chrono>
 #include <atomic>
 
-using namespace Game;
+using namespace EngineCore;
 using namespace Graphics::Renderer;
 
 class Engine

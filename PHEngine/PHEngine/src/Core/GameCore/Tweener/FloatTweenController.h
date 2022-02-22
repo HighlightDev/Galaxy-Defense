@@ -2,7 +2,7 @@
 #include "ITweenController.h"
 #include "StateProperty.h"
 
-namespace Game
+namespace EngineCore
 {
 
    class FloatTweenController :

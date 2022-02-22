@@ -10,7 +10,7 @@ extern "C"
 #include <lua/lauxlib.h>
 }
 
-namespace Game
+namespace EngineCore
 {
    class LuaWrapper
    {

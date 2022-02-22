@@ -3,8 +3,8 @@
 #include "Core/GameCore/Components/PrimitiveComponents/CubemapComponent.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 
-using namespace Game;
-using namespace Game::ShaderImpl;
+using namespace EngineCore;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {

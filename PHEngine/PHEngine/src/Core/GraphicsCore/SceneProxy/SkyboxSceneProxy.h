@@ -6,8 +6,8 @@
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 
-using namespace Game::ShaderImpl;
-using namespace Game;
+using namespace EngineCore::ShaderImpl;
+using namespace EngineCore;
 
 namespace Graphics
 {

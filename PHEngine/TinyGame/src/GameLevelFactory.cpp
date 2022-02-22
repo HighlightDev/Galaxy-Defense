@@ -3,7 +3,7 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "IntroLevel.h"
 
-namespace Labyrinth
+namespace Game
 {
 
    GameLevelFactory* GameLevelFactory::mLevelFactoryInstance = nullptr;

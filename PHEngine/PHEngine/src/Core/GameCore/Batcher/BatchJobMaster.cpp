@@ -1,6 +1,6 @@
 #include "BatchJobMaster.h"
 
-namespace Game {
+namespace EngineCore {
 
    BatchJobMaster::BatchJobMaster() {
 

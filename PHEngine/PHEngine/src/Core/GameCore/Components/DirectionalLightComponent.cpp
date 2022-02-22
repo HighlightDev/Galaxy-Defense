@@ -12,7 +12,7 @@
 
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 
    DirectionalLightComponent::DirectionalLightComponent(const LightComponentData &lightComponentData)

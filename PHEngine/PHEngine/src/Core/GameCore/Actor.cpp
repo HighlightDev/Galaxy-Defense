@@ -10,10 +10,10 @@
 
 using namespace EngineMath;
 
-namespace Game
+namespace EngineCore
 {
 
-   Actor::Actor(const std::string &gameObjectName, std::shared_ptr<Game::SceneComponent> rootComponent)
+   Actor::Actor(const std::string &gameObjectName, std::shared_ptr<EngineCore::SceneComponent> rootComponent)
        : GameObject(gameObjectName),
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
@@ -282,7 +282,7 @@ namespace Game
       }
    }
 
-   void Actor::AddComponent(std::shared_ptr<Game::Component> component)
+   void Actor::AddComponent(std::shared_ptr<EngineCore::Component> component)
    {
       component->SetOwner(this->GetWeakFromThis());
 
@@ -306,7 +306,7 @@ namespace Game
       }
    }
 
-   void Actor::RemoveComponent(std::shared_ptr<Game::Component> component)
+   void Actor::RemoveComponent(std::shared_ptr<EngineCore::Component> component)
    {
       auto componentIt = std::find(m_allComponents.begin(), m_allComponents.end(), component);
       if (componentIt != m_allComponents.end())
@@ -433,7 +433,7 @@ namespace Game
       return GameObjectName;
    }
 
-   std::shared_ptr<Game::SceneComponent> Actor::GetRootComponent() const
+   std::shared_ptr<EngineCore::SceneComponent> Actor::GetRootComponent() const
    {
       return m_rootComponent;
    }

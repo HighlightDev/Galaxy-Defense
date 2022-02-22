@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
 #include "Core/GraphicsCore/Mesh/MeshAttributes.h"
 
-using namespace Game;
+using namespace EngineCore;
 using namespace Graphics::Mesh;
 
 namespace IO

@@ -7,7 +7,7 @@
 using namespace Graphics::Data;
 using namespace Graphics;
 
-namespace Game
+namespace EngineCore
 {
 	struct MeshComponentData;
 

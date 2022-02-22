@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace Game
+namespace EngineCore
 {
 
    class GlobalSettings

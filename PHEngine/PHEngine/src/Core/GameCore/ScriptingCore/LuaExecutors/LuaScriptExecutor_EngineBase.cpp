@@ -4,7 +4,7 @@
 
 using namespace IO;
 
-namespace Game
+namespace EngineCore
 {
 
    LuaScriptExecutor_EngineBase::LuaScriptExecutor_EngineBase(const std::string& scriptName)

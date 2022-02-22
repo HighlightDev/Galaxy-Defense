@@ -12,8 +12,8 @@
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Engine.h"
 
+using namespace EngineCore;
 using namespace Game;
-using namespace Labyrinth;
 using namespace IO;
 
 bool bPushFrame = false;

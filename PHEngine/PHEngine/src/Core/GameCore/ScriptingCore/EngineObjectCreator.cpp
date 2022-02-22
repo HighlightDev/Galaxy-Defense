@@ -25,7 +25,7 @@
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
 
-namespace Game
+namespace EngineCore
 {
 
    ComponentData *EngineObjectCreator::CreateSpotlightComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
@@ -110,11 +110,11 @@ namespace Game
       }
       else if ("DirectionalLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<DirectionalLightComponent, Game::eComponentMetaType::LightComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<DirectionalLightComponent, EngineCore::eComponentMetaType::LightComponent>(*componentData);
       }
       else if ("SpotlightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SpotlightComponent, Game::eComponentMetaType::LightComponent>(*componentData);
+         result = scene->CreateComponent_GameThread<SpotlightComponent, EngineCore::eComponentMetaType::LightComponent>(*componentData);
       }
       else if ("StaticMeshComponent" == componentType)
       {

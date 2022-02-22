@@ -4,7 +4,7 @@
 #include <glm/mat4x4.hpp>
 #include <array>
 
-namespace Game
+namespace EngineCore
 {
    class BoundingBox
    {
