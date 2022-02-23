@@ -21,8 +21,8 @@ namespace EngineCore
       const auto &d_directionalLight = static_cast<const DirectionalLightComponentData &>(lightComponentData);
       assert(nullptr == mLightRenderData);
       mLightRenderData = std::make_shared<DirectionalLightRenderData>(d_directionalLight.Direction, d_directionalLight.Ambient,
-                                                                  d_directionalLight.Diffuse, d_directionalLight.Specular,
-                                                                  d_directionalLight.ShadowInfo);
+                                                                      d_directionalLight.Diffuse, d_directionalLight.Specular,
+                                                                      d_directionalLight.ShadowInfo);
 
       if (mLightRenderData->ShadowInfo)
       {
@@ -56,7 +56,7 @@ namespace EngineCore
       auto &actorData = GetSerializeDataActor(dataContainer);
 
       auto lightCompData = std::make_shared<SerializeDataDirLightComponent>();
-      const auto& renderData = GetRenderData();
+      const auto &renderData = GetRenderData();
 
       lightCompData->ComponentName = GameObjectName;
       lightCompData->AmbientLight = renderData->Ambient;
@@ -127,13 +127,11 @@ namespace EngineCore
             sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
                auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
-               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
-               if (shadowInfo)
+               if (  ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo())
                {
-                  std::weak_ptr<Transform> playerTransformWP = std::get<0>(data);
-                  if (auto transform = playerTransformWP.lock())
+                  if (const auto& transformSp = std::get<0>(data).lock())
                   {
-                     shadowInfo->SetPlayerPositionOffset(transform->Translation);
+                     shadowInfo->SetPlayerPositionOffset(transformSp->Translation);
                   }
                   proxy->SetIsTransformationDirty(true);
                   shadowInfo->SetIsShadowMapDirty(true);

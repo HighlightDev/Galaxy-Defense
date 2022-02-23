@@ -12,7 +12,7 @@ namespace EngineCore
 {
 
    Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
-       : mMyAllStates(allStates), mRelPathFSM(relPathFSM), mStateNodeInitRoot(rootNode), mCurrentStateNode(mStateNodeInitRoot)
+       : mMyAllStates(allStates), mRelPathTweener(relPathFSM), mStateNodeInitRoot(rootNode), mCurrentStateNode(mStateNodeInitRoot)
    {
    }
 
@@ -256,6 +256,6 @@ namespace EngineCore
 
    std::string Tweener::GetRelPathTweener() const
    {
-      return mRelPathFSM;
+      return mRelPathTweener;
    }
 }

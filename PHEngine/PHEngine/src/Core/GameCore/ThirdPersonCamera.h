@@ -2,7 +2,6 @@
 #include "ACamera.h"
 #include "Actor.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
-#include "Core/GameCore/Input/MouseEventEnums.h"
 
 using namespace Event;
 

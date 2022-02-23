@@ -2,12 +2,16 @@ set(
 	HEADERS
 	src/GameLevelFactory.h
 	src/IntroLevel.h
+	src/Implementation/SpaceSceneCamera.h
+	src/Implementation/SpaceShipPlayerController.h
 )
 
 set(
 	SOURCES
 	src/GameLevelFactory.cpp
 	src/IntroLevel.cpp
+	src/Implementation/SpaceSceneCamera.cpp
+	src/Implementation/SpaceShipPlayerController.cpp
     main.cpp
 )
 

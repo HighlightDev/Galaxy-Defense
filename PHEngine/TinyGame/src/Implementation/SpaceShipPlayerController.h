@@ -1,21 +1,22 @@
 #pragma once
 
-#include "ActorController.h"
-#include "Core/GameCore/ThirdPersonCamera.h"
+#include "Core/GameCore/Actor.h"
+#include "Core/GameCore/ActorController.h"
+#include "Core/GameCore/FirstPersonCamera.h"
 
 using namespace Event;
+using namespace EngineCore;
 
-namespace EngineCore
+namespace Game
 {
-   class ACamera;
-   
+
    class SpaceShipPlayerController
       : public ActorController
    {
 
       using Base = Actor;
 
-      std::shared_ptr<ThirdPersonCamera> m_camera;
+      std::shared_ptr<FirstPersonCamera> m_camera;
 
       std::string mCurrentState;
 

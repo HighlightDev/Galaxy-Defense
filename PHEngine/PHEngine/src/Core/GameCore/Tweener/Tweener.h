@@ -18,7 +18,7 @@ namespace EngineCore
 
       class Actor* mParent = nullptr;
 
-      std::string mRelPathFSM;
+      std::string mRelPathTweener;
 
       /* At beginning we are here */
       std::shared_ptr<State> mStateNodeInitRoot;

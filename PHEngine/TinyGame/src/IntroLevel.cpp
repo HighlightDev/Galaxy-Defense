@@ -1,7 +1,6 @@
 #include "IntroLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
-#include "Core/GameCore/SpaceShipPlayerController.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
@@ -9,6 +8,13 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
+
+#include "Implementation/SpaceSceneCamera.h"
+#include "Implementation/SpaceShipPlayerController.h"
+
+#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -44,6 +50,15 @@ namespace Game
 
    void IntroLevel::CreateScene()
    {
+      auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
+                                                            eCameraType::MAIN_FIRST_PERSON_CAMERA,
+                                                            mScene,
+                                                            ViewPortInfo(glm::ivec4(0, 0,
+                                                                                    DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                                    DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())),
+                                                            38.88f, -2.72f, glm::vec3(5.0f, 45.0f, -40.0f));
+      mScene->RegisterMainCamera(spaceCamera);
+
       const auto &a_spaceship = mScene->GetActor("SpaceshipActor");
       assert(a_spaceship);
       const auto &mainCamera = mScene->GetMainCamera();
@@ -69,7 +84,7 @@ namespace Game
       const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");
 
       a_spaceship->AttachTweener(spaceshipTweener);
-      const auto& rootComponent = a_spaceship->GetRootComponent();
+      const auto &rootComponent = a_spaceship->GetRootComponent();
 
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");

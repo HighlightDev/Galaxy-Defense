@@ -12,23 +12,21 @@ using namespace IO;
 namespace EngineCore
 {
 
-   ACamera::ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg)
-      : GameObject(cameraName)
-      , m_rotateSensetivity(0.08f)
-      , mCameraName(cameraName)
-      , mViewPerspectiveInfo(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000)
-      , mScene(scene)
-      , mPlanarReflectionComponent(nullptr)
-      , mViewPort(viewPort)
-      , m_localSpaceRightVector(1, 0, 0)
-      , m_localSpaceUpVector(0, 1, 0)
-      , m_localSpaceForwardVector(0, 0, 1)
-      , m_eyeSpaceRightVector(1, 0, 0)
-      , m_eyeSpaceForwardVector(0, 0, 1)
-      , mPitchClampValue_min_max(-80, 80)
-      , mYaw(initYawDeg)
-      , mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y))
-      , m_cameraType(cameraType)
+   ACamera::ACamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg)
+       : GameObject(cameraName),
+         m_rotateSensetivity(0.08f),
+         mCameraName(cameraName),
+         mViewPerspectiveInfo(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000),
+         mScene(scene), mPlanarReflectionComponent(nullptr),
+         mViewPort(viewPort), m_localSpaceRightVector(1, 0, 0),
+         m_localSpaceUpVector(0, 1, 0),
+         m_localSpaceForwardVector(0, 0, 1),
+         m_eyeSpaceRightVector(1, 0, 0),
+         m_eyeSpaceForwardVector(0, 0, 1),
+         mPitchClampValue_min_max(-80, 80),
+         mPitch(std::clamp(initPitchDeg, mPitchClampValue_min_max.x, mPitchClampValue_min_max.y)),
+         mYaw(initYawDeg),
+         m_cameraType(cameraType)
    {
    }
 
@@ -93,27 +91,31 @@ namespace EngineCore
       m_eyeSpaceRightVector = totalRotateMatrix * glm::vec4(m_localSpaceRightVector, 0.0);
 
       bTransformationDirty = true;
+      std::cout << "pitch = " << mPitch << std::endl
+                << " yaw = " << mYaw << std::endl;
    }
 
-   std::string ACamera::GetCameraName() const {
+   std::string ACamera::GetCameraName() const
+   {
       return mCameraName;
    }
 
-   eCameraType ACamera::GetCameraType() const {
+   eCameraType ACamera::GetCameraType() const
+   {
       return m_cameraType;
    }
 
-   void ACamera::SetLocalSpaceUpVector(glm::vec3& upVector)
+   void ACamera::SetLocalSpaceUpVector(glm::vec3 &upVector)
    {
       m_localSpaceUpVector = upVector;
    }
 
-   void ACamera::SetLocalSpaceForwardVector(glm::vec3& forwardVector)
+   void ACamera::SetLocalSpaceForwardVector(glm::vec3 &forwardVector)
    {
       m_localSpaceForwardVector = forwardVector;
    }
 
-   void ACamera::SetLocalSpaceRightVector(glm::vec3& rightVector)
+   void ACamera::SetLocalSpaceRightVector(glm::vec3 &rightVector)
    {
       m_localSpaceRightVector = rightVector;
    }
@@ -153,11 +155,13 @@ namespace EngineCore
       return glm::lookAt(GetEyeVector(), GetTargetVector(), GetLocalSpaceUpVector());
    }
 
-   float ACamera::GetRotationYaw() const {
+   float ACamera::GetRotationYaw() const
+   {
       return mYaw;
    }
 
-   float ACamera::GetRotationPitch() const {
+   float ACamera::GetRotationPitch() const
+   {
       return mPitch;
    }
 
@@ -166,17 +170,19 @@ namespace EngineCore
       return mViewPort;
    }
 
-   ViewPerspectiveInfo ACamera::GetViewPerspectiveInfo() const 
+   ViewPerspectiveInfo ACamera::GetViewPerspectiveInfo() const
    {
       return mViewPerspectiveInfo;
    }
 
-   void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent) {
+   void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent)
+   {
       assert(!mPlanarReflectionComponent);
       mPlanarReflectionComponent = planarReflectionComponent;
    }
 
-   std::shared_ptr<PlanarReflectionComponent> ACamera::GetPlanarReflectionComponent() const {
+   std::shared_ptr<PlanarReflectionComponent> ACamera::GetPlanarReflectionComponent() const
+   {
       return mPlanarReflectionComponent;
    }
 }

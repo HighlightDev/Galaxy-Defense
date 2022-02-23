@@ -13,6 +13,7 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
+#include "Core/GameCore/Input/MouseEventEnums.h"
 
 using namespace Graphics;
 
@@ -132,6 +133,8 @@ namespace EngineCore
       ViewPerspectiveInfo GetViewPerspectiveInfo() const;
 
       void SetRotation(const int32_t deltaX, const int32_t deltaY);
+
+      virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) = 0;
 
    protected:
 

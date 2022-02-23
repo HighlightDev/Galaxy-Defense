@@ -44,6 +44,7 @@ namespace EngineCore
 
       float GetCameraMoveSpeed() const;
 
+      virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) override;
    };
 
 }

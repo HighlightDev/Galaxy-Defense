@@ -4,14 +4,14 @@
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace EngineCore
+namespace Game
 {
 
    SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
        : ActorController(playerActor), m_camera(), mCurrentState("")
    {
-      assert((eCameraType::SECONDARY_THIRD_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_THIRD_PERSON_CAMERA);
-      m_camera = std::static_pointer_cast<ThirdPersonCamera>(playerCamera);
+      assert((eCameraType::SECONDARY_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_FIRST_PERSON_CAMERA);
+      m_camera = std::static_pointer_cast<FirstPersonCamera>(playerCamera);
       InitPlayerController();
    }
 
@@ -43,14 +43,10 @@ namespace EngineCore
 
       if (m_playerActor->GetInputComponent())
       {
+         bool bMoveCommitted = true;
          const auto &inputComponent = m_playerActor->GetInputComponent();
 
          auto &mouseBindings = inputComponent->GetMouseBindings();
-         if (mouseBindings.IsMouseMoveEventDirty())
-         {
-            const auto &mouseMoveQueue = mouseBindings.FlushMouseMoveEvent();
-            m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
-         }
 
          if (mouseBindings.IsMouseScrollEventDirty())
          {
@@ -61,12 +57,12 @@ namespace EngineCore
          const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
          if (keyboardBindings.HasPressedKeys())
          {
-            bool bMoveCommitted = true;
+
             glm::vec3 direction(0.0f);
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               direction.z = -1.0f;
+               direction.z = 1.0f;
 
                if ("s_fly_forward" != mCurrentState)
                {
@@ -76,7 +72,7 @@ namespace EngineCore
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {
-               direction.x = -1.0f;
+               direction.x = 1.0f;
 
                if ("s_fly_left" != mCurrentState)
                {
@@ -86,7 +82,7 @@ namespace EngineCore
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
             {
-               direction.x = 1.0f;
+               direction.x = -1.0f;
 
                if ("s_fly_right" != mCurrentState)
                {
@@ -96,7 +92,7 @@ namespace EngineCore
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
             {
-               direction.z = 1.0f;
+               direction.z = -1.0f;
 
                if ("s_fly_back" != mCurrentState)
                {
@@ -119,11 +115,19 @@ namespace EngineCore
          }
          else
          {
+            bMoveCommitted = false;
+            
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
                m_playerActor->ChangeState("s_idle");
             }
+         }
+
+         if (!bMoveCommitted && m_playerActor->GetTweener()->IsTransitionActive())
+         {
+            const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
    }
