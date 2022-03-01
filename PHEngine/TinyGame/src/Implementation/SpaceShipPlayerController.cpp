@@ -7,23 +7,22 @@
 namespace Game
 {
 
-   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_camera(), mCurrentState("")
+   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor)
+       : ActorController(actor), m_camera(), mCurrentState("")
    {
       assert((eCameraType::SECONDARY_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_FIRST_PERSON_CAMERA);
       m_camera = std::static_pointer_cast<FirstPersonCamera>(playerCamera);
-      InitPlayerController();
    }
 
    SpaceShipPlayerController::~SpaceShipPlayerController()
    {
    }
 
-   void SpaceShipPlayerController::InitPlayerController()
+   void SpaceShipPlayerController::InitActorController()
    {
-      assert(m_playerActor);
+      ActorController::InitActorController();
 
-      const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+      const auto &rootComponent = m_actor->GetBaseRootComponent();
 
       assert(rootComponent);
 
@@ -32,19 +31,17 @@ namespace Game
 
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
-      assert(m_playerActor);
+      assert(m_actor);
 
       if ("" == mCurrentState)
       {
-         mCurrentState = m_playerActor->GetTweener()->GetCurrentState()->GetStateName();
+         mCurrentState = m_actor->GetTweener()->GetCurrentState()->GetStateName();
       }
 
-      const auto &movementComponent = m_playerActor->GetMovementComponent();
-
-      if (m_playerActor->GetInputComponent())
+      if (m_actor->GetInputComponent())
       {
          bool bMoveCommitted = true;
-         const auto &inputComponent = m_playerActor->GetInputComponent();
+         const auto &inputComponent = m_actor->GetInputComponent();
 
          auto &mouseBindings = inputComponent->GetMouseBindings();
 
@@ -67,7 +64,7 @@ namespace Game
                if ("s_fly_forward" != mCurrentState)
                {
                   mCurrentState = "s_fly_forward";
-                  m_playerActor->ChangeState("s_fly_forward");
+                  m_actor->ChangeState("s_fly_forward");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
@@ -77,7 +74,7 @@ namespace Game
                if ("s_fly_left" != mCurrentState)
                {
                   mCurrentState = "s_fly_left";
-                  m_playerActor->ChangeState("s_fly_left");
+                  m_actor->ChangeState("s_fly_left");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
@@ -87,7 +84,7 @@ namespace Game
                if ("s_fly_right" != mCurrentState)
                {
                   mCurrentState = "s_fly_right";
-                  m_playerActor->ChangeState("s_fly_right");
+                  m_actor->ChangeState("s_fly_right");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
@@ -97,7 +94,7 @@ namespace Game
                if ("s_fly_back" != mCurrentState)
                {
                   mCurrentState = "s_fly_back";
-                  m_playerActor->ChangeState("s_fly_back");
+                  m_actor->ChangeState("s_fly_back");
                }
             }
             else
@@ -107,9 +104,9 @@ namespace Game
 
             if (bMoveCommitted)
             {
-               movementComponent->SetDirection(direction);
-               movementComponent->Move();
-               const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+               m_movementComponent->SetDirection(direction);
+               m_movementComponent->Move();
+               const auto &rootComponent = m_actor->GetBaseRootComponent();
                PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
             }
          }
@@ -120,13 +117,13 @@ namespace Game
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
-               m_playerActor->ChangeState("s_idle");
+               m_actor->ChangeState("s_idle");
             }
          }
 
-         if (!bMoveCommitted && m_playerActor->GetTweener()->IsTransitionActive())
+         if (!bMoveCommitted && m_actor->GetTweener()->IsTransitionActive())
          {
-            const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+            const auto &rootComponent = m_actor->GetBaseRootComponent();
             PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }

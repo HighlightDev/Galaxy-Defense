@@ -29,6 +29,24 @@
       to_state: "s_idle"
       duration: "1.2"
     </transition>
+    <transition>
+      name: "t_left_to_right"
+      from_state: "s_fly_left"
+      to_state: "s_fly_right"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_left_to_forward"
+      from_state: "s_fly_left"
+      to_state: "s_fly_forward"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_left_to_back"
+      from_state: "s_fly_left"
+      to_state: "s_fly_back"
+      duration: "1.2"
+    </transition>
      <transition>
       name: "t_idle_to_right"
       from_state: "s_idle"
@@ -39,6 +57,24 @@
       name: "t_right_to_idle"
       from_state: "s_fly_right"
       to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_right_to_left"
+      from_state: "s_fly_right"
+      to_state: "s_fly_left"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_right_to_forward"
+      from_state: "s_fly_right"
+      to_state: "s_fly_forward"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_right_to_back"
+      from_state: "s_fly_right"
+      to_state: "s_fly_back"
       duration: "1.2"
     </transition>
     <transition>
@@ -54,6 +90,24 @@
       duration: "1.2"
     </transition>
     <transition>
+      name: "t_forward_to_left"
+      from_state: "s_fly_forward
+      to_state: "s_fly_left"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_forward_to_right"
+      from_state: "s_fly_forward"
+      to_state: "s_fly_right"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_forward_to_back"
+      from_state: "s_fly_forward"
+      to_state: "s_fly_back"
+      duration: "1.2"
+    </transition>
+    <transition>
       name: "t_idle_to_back"
       from_state: "s_idle"
       to_state: "s_fly_back"
@@ -63,6 +117,24 @@
       name: "t_back_to_idle"
       from_state: "s_fly_back"
       to_state: "s_idle"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_back_to_left"
+      from_state: "s_fly_back"
+      to_state: "s_fly_left"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_back_to_right"
+      from_state: "s_fly_back"
+      to_state: "s_fly_back"
+      duration: "1.2"
+    </transition>
+    <transition>
+      name: "t_back_to_forward"
+      from_state: "s_fly_back"
+      to_state: "s_fly_forward"
       duration: "1.2"
     </transition>
   </transitions>

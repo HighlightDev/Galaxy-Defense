@@ -10,7 +10,6 @@ namespace EngineCore
 
    class Level
    {
-
    protected:
 
       std::shared_ptr<Scene> mScene;

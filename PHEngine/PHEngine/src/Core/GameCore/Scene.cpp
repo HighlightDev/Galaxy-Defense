@@ -186,6 +186,7 @@ namespace EngineCore
                           { return existingController->GetBindedActorName() == actorController->GetBindedActorName(); });
       assert(it == mActorControllers.end());
 
+      actorController->InitActorController();
       mActorControllers.emplace_back(actorController);
    }
 

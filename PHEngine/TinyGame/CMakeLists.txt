@@ -4,6 +4,9 @@ set(
 	src/IntroLevel.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/SpaceShipPlayerController.h
+	src/Implementation/AiBrain.h
+	src/Implementation/EnemySceneController.h
+	src/Implementation/AiActorController.h
 )
 
 set(
@@ -12,6 +15,9 @@ set(
 	src/IntroLevel.cpp
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/SpaceShipPlayerController.cpp
+	src/Implementation/AiBrain.cpp
+	src/Implementation/EnemySceneController.cpp
+	src/Implementation/AiActorController.cpp
     main.cpp
 )
 

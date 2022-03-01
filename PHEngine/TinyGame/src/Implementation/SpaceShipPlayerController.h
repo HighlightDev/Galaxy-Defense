@@ -22,15 +22,13 @@ namespace Game
 
    public:
 
-      SpaceShipPlayerController(std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor);
+      SpaceShipPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor);
 
       virtual ~SpaceShipPlayerController();
 
       virtual void Tick(float deltaTime) override;
-
-   protected:
-
-      virtual void InitPlayerController() override;
+      
+      virtual void InitActorController() override;
    };
 
 }

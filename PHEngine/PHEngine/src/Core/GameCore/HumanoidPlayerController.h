@@ -23,7 +23,7 @@ namespace EngineCore
 
    public:
 
-      HumanoidPlayerController(std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor);
+      HumanoidPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor);
 
       virtual ~HumanoidPlayerController();
 
@@ -31,9 +31,7 @@ namespace EngineCore
 
       virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
 
-   protected:
-
-      virtual void InitPlayerController() override;
+      virtual void InitActorController() override;
    };
 
 }

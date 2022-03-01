@@ -12,12 +12,12 @@ namespace EngineCore
         , public ISerializable
     {
     protected:
-        std::shared_ptr<Actor> m_playerActor;
+        std::shared_ptr<Actor> m_actor;
 
         std::shared_ptr<MovementComponent> m_movementComponent;
 
     public:
-        ActorController(std::shared_ptr<Actor> playerActor);
+        ActorController(const std::shared_ptr<Actor>& actor);
 
         virtual ~ActorController();
 
@@ -29,8 +29,7 @@ namespace EngineCore
 
         virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-    protected:
-        virtual void InitPlayerController() = 0;
+        virtual void InitActorController();
     };
 
 }

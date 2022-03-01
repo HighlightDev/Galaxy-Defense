@@ -8,10 +8,9 @@
 namespace EngineCore
 {
 
-   HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera> playerCamera, std::shared_ptr<Actor> playerActor)
-       : ActorController(playerActor), m_camera(playerCamera), m_inputComponent()
+   HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor)
+       : ActorController(actor), m_camera(playerCamera), m_inputComponent()
    {
-      InitPlayerController();
       PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
    }
 
@@ -20,17 +19,14 @@ namespace EngineCore
       PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
-   void HumanoidPlayerController::InitPlayerController()
+   void HumanoidPlayerController::InitActorController()
    {
-      assert(m_playerActor);
+      ActorController::InitActorController();
 
-      const auto &rootComponent = m_playerActor->GetBaseRootComponent();
+      const auto &rootComponent = m_actor->GetBaseRootComponent();
       assert(rootComponent);
 
-      m_movementComponent = m_playerActor->GetMovementComponent();
-      assert(m_movementComponent);
-
-      m_inputComponent = m_playerActor->GetInputComponent();
+      m_inputComponent = m_actor->GetInputComponent();
       assert(m_inputComponent);
 
       PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
@@ -40,11 +36,11 @@ namespace EngineCore
    {
       const std::string& actorName = std::move(std::get<0>(data));
 
-      assert(m_playerActor);
+      assert(m_actor);
 
-      if (m_playerActor->GetName() == actorName)
+      if (m_actor->GetName() == actorName)
       {
-         if (auto rootComponent = m_playerActor->GetBaseRootComponent())
+         if (auto rootComponent = m_actor->GetBaseRootComponent())
          {
             PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
@@ -53,13 +49,13 @@ namespace EngineCore
 
    void HumanoidPlayerController::Tick(float deltaTime)
    {
-      assert(m_playerActor);
+      assert(m_actor);
 
-      std::shared_ptr<SceneComponent> rootComponent = m_playerActor->GetBaseRootComponent();
+      std::shared_ptr<SceneComponent> rootComponent = m_actor->GetBaseRootComponent();
 
-      if (m_playerActor->GetInputComponent())
+      if (m_actor->GetInputComponent())
       {
-         const auto &inputComponent = m_playerActor->GetInputComponent();
+         const auto &inputComponent = m_actor->GetInputComponent();
 
          auto &mouseBindings = inputComponent->GetMouseBindings();
          if (mouseBindings.IsMouseMoveEventDirty())
@@ -100,7 +96,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFrameReleasedKeys.end())
             {
-               m_playerActor->ChangeState("Idle");
+               m_actor->ChangeState("Idle");
             }
          }
 
@@ -110,7 +106,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFramePressedKeys.end())
             {
-               m_playerActor->ChangeState("Walking");
+               m_actor->ChangeState("Walking");
             }
          }
       }
