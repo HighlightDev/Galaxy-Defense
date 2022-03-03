@@ -7,7 +7,7 @@
 namespace Game
 {
 
-   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor)
+   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> &playerCamera, const std::shared_ptr<Actor> &actor)
        : ActorController(actor), m_camera(), mCurrentState("")
    {
       assert((eCameraType::SECONDARY_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_FIRST_PERSON_CAMERA);
@@ -106,14 +106,12 @@ namespace Game
             {
                m_movementComponent->SetDirection(direction);
                m_movementComponent->Move();
-               const auto &rootComponent = m_actor->GetBaseRootComponent();
-               PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
             }
          }
          else
          {
             bMoveCommitted = false;
-            
+
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
@@ -121,7 +119,7 @@ namespace Game
             }
          }
 
-         if (!bMoveCommitted && m_actor->GetTweener()->IsTransitionActive())
+         if (bMoveCommitted || m_actor->GetTweener()->IsTransitionActive())
          {
             const auto &rootComponent = m_actor->GetBaseRootComponent();
             PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());

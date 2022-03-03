@@ -9,7 +9,7 @@ namespace Game
 
     void AiActorController::Tick(const float deltaTime)
     {
-        m_movementComponent->SetDirection(glm::vec3(0.0f, 0.0f, 1.0f * deltaTime));
+        m_movementComponent->SetDirection(glm::vec3(0.0f, 0.0f, -1.0f));
         m_movementComponent->Move();
     }
 

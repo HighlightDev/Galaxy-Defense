@@ -25,6 +25,7 @@ namespace Game
 
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
        : Level(threadMgr)
+       , mEnemySceneController(std::make_shared<EnemySceneController>(mScene))
    {
    }
 
@@ -61,15 +62,6 @@ namespace Game
 
       const auto &a_spaceship = mScene->GetActor("SpaceshipActor");
       assert(a_spaceship);
-      const auto &mainCamera = mScene->GetMainCamera();
-      assert(mainCamera);
-      const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
-      mScene->AddActorController(spaceShipController);
-
-      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
-      {
-         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
-      }
 
       InputComponentData d_input = InputComponentData("SpaceshipInputComponent");
       const auto &c_input = mScene->CreateComponent_GameThread<InputComponent, eComponentMetaType::Input>(d_input);
@@ -80,6 +72,16 @@ namespace Game
                                                                   eComponentMetaType::Movement>(d_movement);
       a_spaceship->AddComponent(c_movement);
 
+      const auto &mainCamera = mScene->GetMainCamera();
+      assert(mainCamera);
+      const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
+      mScene->AddActorController(spaceShipController);
+
+      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
+      {
+         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
+      }
+
       TweenerParser tweenerParser;
       const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");
 
@@ -88,6 +90,8 @@ namespace Game
 
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
+
+      mEnemySceneController->SpawnEnemySpaceShip(glm::vec3(0, 0, 50), glm::vec3(), glm::vec3(1));
    }
 
    void IntroLevel::PostLevelInit()

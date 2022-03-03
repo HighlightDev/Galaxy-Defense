@@ -1,20 +1,21 @@
 #pragma once
 
 #include "Core/GameCore/Level.h"
+#include "Implementation/EnemySceneController.h"
 
 using namespace EngineCore;
 
 namespace Game
 {
 
-   class IntroLevel :
-      public Level
+   class IntroLevel : public Level
    {
       using Base = Level;
 
-   public:
+      std::shared_ptr<EnemySceneController> mEnemySceneController;
 
-      IntroLevel(InterThreadCommunicationMgr& threadMgr);
+   public:
+      IntroLevel(InterThreadCommunicationMgr &threadMgr);
 
       virtual ~IntroLevel();
 
@@ -27,9 +28,7 @@ namespace Game
       void RunLuaBuildLevelScript();
 
    private:
-
       void CreateScene();
    };
 
 }
-

@@ -19,8 +19,9 @@ namespace Game
 
         std::vector<std::weak_ptr<AiActorController>> mEnemyActorControllers;
 
-    public:
+        size_t enemyShipCounter = 0;
 
+    public:
         EnemySceneController(const std::weak_ptr<Scene> &scene);
 
         virtual void PreInit();
@@ -28,5 +29,11 @@ namespace Game
         virtual void PostInit();
 
         virtual void Tick(const float deltaTime) override;
+
+        void SpawnEnemySpaceShip(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
+
+    private:
+        std::shared_ptr<Actor> CreateEnemySpaceShip(const std::shared_ptr<Scene> &scene, const glm::vec3 &translation,
+                                                    const glm::vec3 &rotation, const glm::vec3 &scale);
     };
 }
