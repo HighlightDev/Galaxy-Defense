@@ -1,5 +1,3 @@
-#pragma once
-
 #include "AiBrain.h"
 
 namespace Game

@@ -151,6 +151,11 @@ namespace EngineCore
          mActors.erase(it);
    }
 
+   void Scene::AddExternalTickableObject(const std::shared_ptr<ITickable>& externalTickableObject)
+   {
+      mExternalTickableObjects.emplace_back(externalTickableObject);
+   }
+
    GameObject *Scene::GetGameObjectByName(const std::string &name) const
    {
       GameObject *go = nullptr;
@@ -480,6 +485,11 @@ namespace EngineCore
       for (auto &dynamicMaterial : mDynamicMaterials)
       {
          dynamicMaterial->Tick(delta);
+      }
+
+      for (auto &externalTickable : mExternalTickableObjects)
+      {
+         externalTickable->Tick(delta);
       }
 
 #if DEBUG

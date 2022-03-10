@@ -30,7 +30,7 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
-        void SpawnEnemySpaceShip(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
+        void SpawnEnemySpaceship(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
 
     private:
         std::shared_ptr<Actor> CreateEnemySpaceShip(const std::shared_ptr<Scene> &scene, const glm::vec3 &translation,

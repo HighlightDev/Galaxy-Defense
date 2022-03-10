@@ -27,6 +27,8 @@ namespace EngineCore
 
       virtual void Jump() override;
 
+      virtual void Teleport(const glm::vec3& teleportPosition) override;
+
       virtual void PostLevelInit() override;
 
       glm::vec3 GetVelocity() const;

@@ -47,6 +47,7 @@ namespace Game
    void IntroLevel::PreLevelInit()
    {
       Base::PreLevelInit();
+      mEnemySceneController->PreInit();
    }
 
    void IntroLevel::CreateScene()
@@ -91,13 +92,14 @@ namespace Game
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
-      mEnemySceneController->SpawnEnemySpaceShip(glm::vec3(0, 0, 50), glm::vec3(), glm::vec3(1));
+      mScene->AddExternalTickableObject(mEnemySceneController);
    }
 
    void IntroLevel::PostLevelInit()
    {
-
       CreateScene();
+      mEnemySceneController->PostInit();
+
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();

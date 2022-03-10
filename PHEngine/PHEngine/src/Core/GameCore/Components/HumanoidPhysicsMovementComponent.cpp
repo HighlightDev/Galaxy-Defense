@@ -47,6 +47,10 @@ namespace EngineCore
       }
    }
 
+   void HumanoidPhysicsMovementComponent::Teleport(const glm::vec3& teleportPosition)
+   {
+   }
+
    void HumanoidPhysicsMovementComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       auto &actorData = GetSerializeDataActor(dataContainer);

@@ -34,6 +34,8 @@ namespace EngineCore
 
       virtual void Jump() = 0;
 
+      virtual void Teleport(const glm::vec3& teleportPosition) = 0;
+
       float GetSpeed() const;
 
       void SetSpeed(const float speed);

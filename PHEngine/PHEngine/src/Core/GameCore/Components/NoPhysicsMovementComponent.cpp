@@ -48,6 +48,11 @@ namespace EngineCore
    {
    }
 
+   void NoPhysicsMovementComponent::Teleport(const glm::vec3& teleportPosition)
+   {
+      m_actorRootComponent->SetTranslation(teleportPosition);
+   }
+
    glm::vec3 NoPhysicsMovementComponent::GetVelocity() const
    {
       return mDirection * mSpeed;

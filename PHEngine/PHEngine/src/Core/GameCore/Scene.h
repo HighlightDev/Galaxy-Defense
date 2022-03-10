@@ -15,15 +15,18 @@
 
 using namespace Thread;
 
-class Graphics::Proxy::LightSceneProxy;
-class Graphics::Proxy::PrimitiveSceneProxy;
-class Graphics::MaterialProxy;
-class Graphics::PlanarReflectionProxy;
-
 namespace Graphics
 {
    class IMaterial;
    class DynamicMaterial;
+   class MaterialProxy;
+   class PlanarReflectionProxy;
+
+   namespace Proxy
+   {
+      class LightSceneProxy;
+      class PrimitiveSceneProxy;
+   }
 }
 
 namespace EnginePhysics
@@ -59,21 +62,22 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
+      std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
+
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
 
       ~Scene();
 
       template <typename ComponentType, eComponentMetaType componentMetaType>
-      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<Component>>::type CreateComponent_GameThread(const ComponentData &componentData)
+      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<ComponentType>>::type CreateComponent_GameThread(const ComponentData &componentData)
       {
          ComponentCreatorFactory<ComponentType, componentMetaType> componentFactory;
          std::shared_ptr<Component> component = componentFactory.CreateComponent(componentData, this);
          RegisterComponentSceneProxy(component);
          RegisterGameObject(component.get());
          component->OnPostInitialized();
-
-         return component;
+         return std::static_pointer_cast<ComponentType>(component);
       }
 
       void PostLevelInit();
@@ -113,6 +117,8 @@ namespace EngineCore
       void AddActor(std::shared_ptr<Actor> actor);
 
       void RemoveActor(std::shared_ptr<Actor> actor);
+
+      void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
 
       void Tick_GameThread(float delta);
 
