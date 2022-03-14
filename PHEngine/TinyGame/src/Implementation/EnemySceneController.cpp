@@ -9,6 +9,9 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 
 #include <random>
+#include <utility>
+#include <vector>
+#include <iostream>
 
 using namespace Graphics;
 
@@ -22,8 +25,14 @@ namespace Game
         return dis(e);
     }
 
+    std::vector<std::pair<GameObject *, EngineGOProperty<float>>> gameObjects;
+    float mDeltaTime = 1.0f;
+
     EnemySceneController::EnemySceneController(const std::weak_ptr<Scene> &scene)
-        : mScene(scene), mEnemies(), mEnemyActorControllers()
+        : mScene(scene),
+          mEnemies(),
+          mEnemyActorControllers(),
+          m_keyboardBindings(std::make_shared<DefaultKeyboardBindings>())
     {
     }
 
@@ -52,8 +61,37 @@ namespace Game
         }
     }
 
+    bool bTrigger = false;
+
+    void EnemySceneController::Trigger()
+    {
+        bTrigger = true;
+    }
+
     void EnemySceneController::Tick(const float deltaTime)
     {
+        if (!bTrigger && m_keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP) == KeyState::PRESSED)
+        {
+            Trigger();
+        }
+
+        if (bTrigger)
+        {
+            mDeltaTime += deltaTime * 50;
+
+            if (mDeltaTime > 1.0f)
+            {
+                mDeltaTime = 0.0f;
+                bTrigger = false;
+            }
+
+            for (auto &goPair : gameObjects)
+            {
+                EngineGOProperty<float> &prop = goPair.second;
+                prop.SetValue(mDeltaTime);
+            }
+        }
+
         for (const auto &enemy : mEnemies)
         {
             if (const auto &enemySp = enemy.lock())
@@ -93,7 +131,7 @@ namespace Game
         scene->AddActor(a_enemySpaceship);
 
         MaterialParser materialParser;
-        const auto &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        const auto &pbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
 
         const std::string albedoName = "spaceship_albedo.jpg";
         const std::string normalName = "spaceship_normal.jpg";
@@ -111,6 +149,12 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "roughnessMap", roughness_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
+
+        GameObject *testGO = new GameObject("testGameObject_" + enemyShipIndexStr);
+        gameObjects.emplace_back(std::make_pair(testGO, EngineGOProperty<float>(0.0f, "property_damageEffect")));
+        testGO->AddEngineProperty(gameObjects.back().second);
+
+        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, testGO, "property_damageEffect", "damageTime");
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        glm::vec3(0), glm::vec3(9), "", pbs_mat);

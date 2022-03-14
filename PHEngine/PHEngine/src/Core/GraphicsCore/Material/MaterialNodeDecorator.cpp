@@ -5,6 +5,7 @@
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinaryDivOperationNode.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialBinarySubOperationNode.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialUnaryIncrementNode.h"
+#include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialUnaryNoOperationNode.h"
 
 namespace Graphics
 {
@@ -52,6 +53,10 @@ namespace Graphics
       {
          operationNode = std::make_shared<MaterialUnaryIncrementNode>();
       }
+      else if (EngineUtility::StartsWith(nodeName, UNARY_NO_OP_START))
+      {
+         operationNode = std::make_shared<MaterialUnaryNoOperationNode>();
+      }
       else if (EngineUtility::StartsWith(nodeName, BINARY_ADD_OP_START))
       {
          operationNode = std::make_shared<MaterialBinaryAddOperationNode>();
@@ -60,6 +65,7 @@ namespace Graphics
       {
          operationNode = std::make_shared<MaterialBinaryMulOperationNode>();
       }
+
       return operationNode;
    }
 

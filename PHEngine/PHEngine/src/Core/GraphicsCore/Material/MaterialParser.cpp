@@ -23,18 +23,18 @@
 
 namespace Graphics
 {
-#define GENERAL_START_NODE_NAME     "<general>"
-#define GENERAL_END_NODE_NAME       "</general>"
-#define PROPERTIES_START_NODE_NAME  "<properties>"
-#define PROPERTIES_END_NODE_NAME    "</properties>"
-#define PROPERTY_START_NODE_NAME    "<property>"
-#define PROPERTY_END_NODE_NAME      "</property>"
-#define DYNAMIC_PROPERTY_START_NODE_NAME  "<dynamic_property>"
-#define DYNAMIC_PROPERTY_END_NODE_NAME  "</dynamic_property>"
+#define GENERAL_START_NODE_NAME "<general>"
+#define GENERAL_END_NODE_NAME "</general>"
+#define PROPERTIES_START_NODE_NAME "<properties>"
+#define PROPERTIES_END_NODE_NAME "</properties>"
+#define PROPERTY_START_NODE_NAME "<property>"
+#define PROPERTY_END_NODE_NAME "</property>"
+#define DYNAMIC_PROPERTY_START_NODE_NAME "<dynamic_property>"
+#define DYNAMIC_PROPERTY_END_NODE_NAME "</dynamic_property>"
 #define DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME "<operation>"
 #define DYNAMIC_PROPERTY_OPERATION_END_NODE_NAME "</operation>"
 
-   std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string& propertyType, const std::string& propertyName)
+   std::shared_ptr<MaterialProperty> CreatePropertyByType(const std::string &propertyType, const std::string &propertyName)
    {
       std::shared_ptr<MaterialProperty> resultProperty;
 
@@ -62,7 +62,7 @@ namespace Graphics
       return resultProperty;
    }
 
-   std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt)
+   std::shared_ptr<MaterialProperty> GetMaterialPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt, const XMLParserHelper::iterator_t &propertiesEndIt)
    {
       auto propertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_START_NODE_NAME);
       auto propertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, PROPERTY_END_NODE_NAME);
@@ -74,7 +74,7 @@ namespace Graphics
       ++propertyStartNode;
       for (auto it = propertyStartNode; it != propertyEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
@@ -91,9 +91,9 @@ namespace Graphics
       return CreatePropertyByType(propertyType, propertyName);
    }
 
-   IMaterial* MaterialParser::ParseMaterialDescriptor(const std::string& materialFileName)
+   IMaterial *MaterialParser::ParseMaterialDescriptor(const std::string &materialFileName)
    {
-      const std::string& absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
+      const std::string &absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
       FileFacade fileWorker(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
@@ -111,7 +111,7 @@ namespace Graphics
       ++generalStartNode;
       for (auto it = generalStartNode; it != generalEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          if (EngineUtility::StartsWith(currentNodeStr, "name"))
          {
@@ -127,7 +127,7 @@ namespace Graphics
          }
       }
 
-      IMaterial* parsedMaterial = nullptr;
+      IMaterial *parsedMaterial = nullptr;
 
       if ("dynamic" == materialType)
       {
@@ -137,16 +137,17 @@ namespace Graphics
       {
          parsedMaterial = ParseStaticMaterial(fileSource, materialName, materialShaderName);
       }
-      else {
+      else
+      {
          assert(false);
       }
 
       return parsedMaterial;
    }
 
-   IMaterial* MaterialParser::ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath)
+   IMaterial *MaterialParser::ParseStaticMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
    {
-      IMaterial* material = new IMaterial(materialName, materialShaderPath);
+      IMaterial *material = new IMaterial(materialName, materialShaderPath);
 
       auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
       auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
@@ -161,8 +162,8 @@ namespace Graphics
       return material;
    }
 
-   XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string& propertyType, std::shared_ptr<MaterialNode> node,
-      XMLParserHelper::iterator_t& propertiesBeginIt, const XMLParserHelper::iterator_t& propertiesEndIt, std::vector<std::shared_ptr<MaterialProperty>>& innerDynamicMaterialProperties)
+   XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string &propertyType, std::shared_ptr<MaterialNode> node,
+                                                                      XMLParserHelper::iterator_t &propertiesBeginIt, const XMLParserHelper::iterator_t &propertiesEndIt, std::vector<std::shared_ptr<MaterialProperty>> &innerDynamicMaterialProperties)
    {
       XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
 
@@ -172,7 +173,11 @@ namespace Graphics
          next++;
 
          bool bOperation = false, bValue = false;
-         auto nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(lastProcessedIt, next, UNARY_INCR_OP_START, BINARY_ADD_OP_START, BINARY_MUL_OP_START);
+         auto nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(lastProcessedIt, next,
+                                                                   UNARY_INCR_OP_START,
+                                                                   UNARY_NO_OP_START,
+                                                                   BINARY_ADD_OP_START,
+                                                                   BINARY_MUL_OP_START);
          bOperation = nodeIt != next;
 
          if (!bOperation)
@@ -183,7 +188,7 @@ namespace Graphics
 
          if (bOperation)
          {
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*nodeIt);
+            const std::string &currentNodeStr = EngineUtility::TrimStart(*nodeIt);
 
             std::shared_ptr<MaterialNode> operationNode = mMaterialNodeDecorator.CreateMaterialNode(currentNodeStr);
             node->AttachInputNode(operationNode);
@@ -193,19 +198,19 @@ namespace Graphics
          }
          else if (bValue)
          {
-            const std::string& currentNodeStr = EngineUtility::TrimStart(*nodeIt);
+            const std::string &currentNodeStr = EngineUtility::TrimStart(*nodeIt);
             auto currentNodeIt = nodeIt;
             lastProcessedIt = ++nodeIt;
 
             std::shared_ptr<MaterialNode> valueNode = nullptr;
-           
+
             if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
             {
                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt);
                valueNode = std::make_shared<MaterialValuePropertyNode>(materialProperty);
                innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
             }
-            else 
+            else
             {
                valueNode = mMaterialNodeDecorator.CreateValueNode(currentNodeStr, *lastProcessedIt);
             }
@@ -223,8 +228,8 @@ namespace Graphics
       return lastProcessedIt;
    }
 
-   std::shared_ptr<DynamicFloatMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t& propertiesBeginIt,
-      const XMLParserHelper::iterator_t& propertiesEndIt)
+   std::shared_ptr<DynamicFloatMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
+                                                                                                              const XMLParserHelper::iterator_t &propertiesEndIt)
    {
       auto dynamicPropertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
       auto dynamicPropertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_END_NODE_NAME);
@@ -240,12 +245,12 @@ namespace Graphics
       std::vector<std::shared_ptr<MaterialProperty>> innerDynamicMaterialProperties;
       while (dynamicPropertyStartNode != dynamicPropertyEndNode)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*dynamicPropertyStartNode);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*dynamicPropertyStartNode);
 
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME))
          {
             dynamicPropertyStartNode = ProcessDynamicProperty(propertyType, operation, ++dynamicPropertyStartNode, dynamicPropertyEndNode, innerDynamicMaterialProperties);
-         } 
+         }
          else
          {
             if (EngineUtility::StartsWith(currentNodeStr, "name"))
@@ -282,10 +287,9 @@ namespace Graphics
       return dynamicMaterialPropery;
    }
 
-
-   IMaterial* MaterialParser::ParseDynamicMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath)
+   IMaterial *MaterialParser::ParseDynamicMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
    {
-      DynamicMaterial* material = new DynamicMaterial(materialName, materialShaderPath);
+      DynamicMaterial *material = new DynamicMaterial(materialName, materialShaderPath);
 
       auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
       auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
@@ -293,7 +297,7 @@ namespace Graphics
       ++propertiesStartNode;
       for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
       {
-         const std::string& currentNodeStr = EngineUtility::TrimStart(*it);
+         const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
 
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_START_NODE_NAME))
          {
@@ -310,10 +314,10 @@ namespace Graphics
       return material;
    }
 
-#undef GENERAL_START_NODE_NAME    
-#undef GENERAL_END_NODE_NAME      
-#undef PROPERTIES_START_NODE_NAME 
-#undef PROPERTIES_END_NODE_NAME   
-#undef PROPERTY_START_NODE_NAME   
-#undef PROPERTY_END_NODE_NAME    
+#undef GENERAL_START_NODE_NAME
+#undef GENERAL_END_NODE_NAME
+#undef PROPERTIES_START_NODE_NAME
+#undef PROPERTIES_END_NODE_NAME
+#undef PROPERTY_START_NODE_NAME
+#undef PROPERTY_END_NODE_NAME
 }

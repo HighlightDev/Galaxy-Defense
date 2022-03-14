@@ -11,6 +11,8 @@ namespace Graphics
 
 #define UNARY_INCR_OP_START "<increment>"
 #define UNARY_INCR_OP_END "</increment>"
+#define UNARY_NO_OP_START "<no_op>"
+#define UNARY_NO_OP_END "<no_op/>"
 #define BINARY_ADD_OP_START "<add>"
 #define BINARY_ADD_OP_END "</add>"
 #define BINARY_MUL_OP_START "<mul>"

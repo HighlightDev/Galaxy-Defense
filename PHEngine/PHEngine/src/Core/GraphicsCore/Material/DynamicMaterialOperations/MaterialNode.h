@@ -20,6 +20,7 @@ namespace Graphics
          NONE,
          UNARY_INCREMENT,
          UNARY_DECREMENT,
+         UNARY_NO_OPERATION,
          BINARY_ADD,
          BINARY_MUL,
          BINARY_SUB,

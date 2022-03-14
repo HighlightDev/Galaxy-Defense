@@ -4,6 +4,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Actor.h"
 #include "AiActorController.h"
+#include "Core/GameCore/Input/KeyboardBindings.h"
 
 #include <memory>
 
@@ -21,6 +22,8 @@ namespace Game
 
         size_t enemyShipCounter = 0;
 
+        KeyboardBindings m_keyboardBindings;
+
     public:
         EnemySceneController(const std::weak_ptr<Scene> &scene);
 
@@ -31,6 +34,8 @@ namespace Game
         virtual void Tick(const float deltaTime) override;
 
         void SpawnEnemySpaceship(const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
+
+        void Trigger();
 
     private:
         std::shared_ptr<Actor> CreateEnemySpaceShip(const std::shared_ptr<Scene> &scene, const glm::vec3 &translation,

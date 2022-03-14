@@ -91,8 +91,6 @@ namespace EngineCore
       m_eyeSpaceRightVector = totalRotateMatrix * glm::vec4(m_localSpaceRightVector, 0.0);
 
       bTransformationDirty = true;
-      std::cout << "pitch = " << mPitch << std::endl
-                << " yaw = " << mYaw << std::endl;
    }
 
    std::string ACamera::GetCameraName() const
