@@ -31,6 +31,8 @@ namespace IO {
 
       bool TryGetResource(Resource*& outResource, const std::string& key);
 
+      void UploadLoadedResourcesToPool();
+
       static ResourceMap* GetInstance()
       {
          if (!mInstance)

@@ -26,8 +26,6 @@ namespace EngineCore
 
       virtual ComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) = 0;
-
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
       virtual void Move() = 0;

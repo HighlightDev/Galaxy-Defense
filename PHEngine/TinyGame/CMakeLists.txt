@@ -5,8 +5,10 @@ set(
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/SpaceShipPlayerController.h
 	src/Implementation/AiBrain.h
-	src/Implementation/EnemySceneController.h
+	src/Implementation/SceneController.h
 	src/Implementation/AiActorController.h
+	src/Implementation/Events/MainPlayerActionEvent.h
+	src/Implementation/MainPlayerActionEnum.h
 )
 
 set(
@@ -16,8 +18,9 @@ set(
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/SpaceShipPlayerController.cpp
 	src/Implementation/AiBrain.cpp
-	src/Implementation/EnemySceneController.cpp
+	src/Implementation/SceneController.cpp
 	src/Implementation/AiActorController.cpp
+	src/Implementation/Events/MainPlayerActionEvent.cpp
     main.cpp
 )
 
@@ -30,6 +33,7 @@ add_executable(TinyGame ${HEADERS} ${SOURCES})
 
 set_target_properties(TinyGame PROPERTIES LINKER_LANGUAGE CXX)
 
+set(GAME_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/TinyGame/src/)
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
 set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
@@ -40,6 +44,7 @@ set(BULLET_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Bullet
 set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
 
 target_include_directories(TinyGame
+PUBLIC ${GAME_SRC_INCLUDE}
 PUBLIC ${ENGINE_CORE_INCLUDE}
 PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
 PUBLIC ${GLFW_DEPENDENCE_INCLUDE}

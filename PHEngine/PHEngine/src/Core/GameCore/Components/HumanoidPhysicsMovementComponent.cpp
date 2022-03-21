@@ -17,6 +17,8 @@ namespace EngineCore
 
    void HumanoidPhysicsMovementComponent::PostLevelInit()
    {
+      MovementComponent::PostLevelInit();
+      
       if (const auto &spOwner = GetOwner().lock())
       {
          m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());

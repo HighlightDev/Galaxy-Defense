@@ -4,18 +4,14 @@
 #include <tuple>
 #include <algorithm>
 
+#include "IEvent.h"
 #include "Policy/Policies.h"
 
 namespace Event
 {
-   enum ExecutionOrder
-   {
-      PRE_EXECUTION = 0,
-      POST_EXECUTION = 1
-   };
 
    template <typename EventHandlePolicy>
-   class TEvent
+   class TEvent : public IEvent
    {
    public:
 
@@ -51,7 +47,7 @@ namespace Event
          mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
       }
 
-      void ProcessCachedEvents(const ExecutionOrder currentOrder)
+      virtual void ProcessCachedEvents(const ExecutionOrder currentOrder) override
       {
          while (mPolicy[currentOrder].HasData())
          {

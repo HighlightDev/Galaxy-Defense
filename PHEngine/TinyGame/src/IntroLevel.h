@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Level.h"
-#include "Implementation/EnemySceneController.h"
+#include "Implementation/SceneController.h"
 
 using namespace EngineCore;
 
@@ -12,7 +12,7 @@ namespace Game
    {
       using Base = Level;
 
-      std::shared_ptr<EnemySceneController> mEnemySceneController;
+      std::shared_ptr<SceneController> mEnemySceneController;
 
    public:
       IntroLevel(InterThreadCommunicationMgr &threadMgr);

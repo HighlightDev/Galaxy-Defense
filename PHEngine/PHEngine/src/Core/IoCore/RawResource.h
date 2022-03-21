@@ -9,7 +9,7 @@ namespace IO
 
    struct Resource {
 
-      RESOURCE_TYPE ResourceType = RESOURCE_TYPE::UNDEFINED_TYPE;
+      eResourceType ResourceType = eResourceType::UNDEFINED_TYPE;
 
       void* DATA;
 
@@ -27,7 +27,7 @@ namespace IO
       TextureResource()
          : Resource()
       {
-         ResourceType = RESOURCE_TYPE::TEXTURE;
+         ResourceType = eResourceType::TEXTURE;
       }
 
       virtual void Clear() override {
@@ -41,7 +41,7 @@ namespace IO
       MeshResource()
          : Resource()
       {
-         ResourceType = RESOURCE_TYPE::MESH;
+         ResourceType = eResourceType::MESH;
       }
 
       virtual void Clear() override

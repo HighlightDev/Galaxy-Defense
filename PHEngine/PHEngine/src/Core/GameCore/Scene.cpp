@@ -472,14 +472,14 @@ namespace EngineCore
          cameraPtr->Tick(delta);
       }
 
-      for (const auto &actorController : mActorControllers)
-      {
-         actorController->Tick(delta);
-      }
-
       for (auto &actor : mActors)
       {
          actor->Tick(delta);
+      }
+
+      for (const auto &actorController : mActorControllers)
+      {
+         actorController->Tick(delta);
       }
 
       for (auto &dynamicMaterial : mDynamicMaterials)

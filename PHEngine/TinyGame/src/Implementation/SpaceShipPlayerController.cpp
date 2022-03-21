@@ -3,7 +3,9 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Events/MainPlayerActionEvent.h"
 
+#include <iostream>
 namespace Game
 {
 
@@ -96,6 +98,11 @@ namespace Game
                   mCurrentState = "s_fly_back";
                   m_actor->ChangeState("s_fly_back");
                }
+            }
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
+            {
+               bMoveCommitted = false;
+               MainPlayerActionEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
             }
             else
             {

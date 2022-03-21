@@ -27,6 +27,8 @@ namespace EngineCore
 
    void SceneComponent::Tick(const float deltaTime)
    {
+      Component::Tick(deltaTime);
+      
       if (!mIsEnabled)
          return;
    }

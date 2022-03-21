@@ -37,7 +37,7 @@ namespace EngineCore
 
    void StaticMeshComponent::PostLevelInit()
    {
-      
+      PrimitiveComponent::PostLevelInit();
    }
 
    std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const

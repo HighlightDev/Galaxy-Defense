@@ -4,6 +4,8 @@
 #include "AsyncDataProxy.h"
 #include "Core/IoCore/ResourceExtensionsInfo.h"
 #include "Core/IoCore/AsyncLoaderCore/AsyncJob.h"
+#include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -13,35 +15,37 @@
 #define GET_REL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetDirectoryRelativePathByFileName(fileName))
 #define GET_FUL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetPathToExeFile() + GET_REL_PATH_TO_FILE(fileName))
 
-namespace IO {
+using namespace Resources;
 
-   ResourceMap* ResourceMap::mInstance = nullptr;
+namespace IO
+{
+
+   ResourceMap *ResourceMap::mInstance = nullptr;
 
    ResourceMap::ResourceMap()
-      : ReadyToReadResources()
-      , mAsyncDataProxy(new AsyncDataProxy())
+       : ReadyToReadResources(), mAsyncDataProxy(new AsyncDataProxy())
    {
    }
 
    ResourceMap::~ResourceMap()
    {
-     const bool bResourceWasntLoaded = std::any_of(ReadyToReadResources.begin(), ReadyToReadResources.end(), [this](const auto& resourcePair) {
-         return !mAsyncDataProxy->ResourcesMap.count(resourcePair.first); });
+      const bool bResourceWasntLoaded = std::any_of(ReadyToReadResources.begin(), ReadyToReadResources.end(), [this](const auto &resourcePair)
+                                                    { return !mAsyncDataProxy->ResourcesMap.count(resourcePair.first); });
 
-     assert(!bResourceWasntLoaded);
+      assert(!bResourceWasntLoaded);
 
-     for (auto& pair : ReadyToReadResources)
-     {
-        Resource* res = pair.second;
-        res->Clear();
-        delete res;
-     }
+      for (auto &pair : ReadyToReadResources)
+      {
+         Resource *res = pair.second;
+         res->Clear();
+         delete res;
+      }
 
       delete mAsyncDataProxy;
       mAsyncDataProxy = nullptr;
    }
 
-   bool ResourceMap::TryGetResource(Resource*& outResource, const std::string& key)
+   bool ResourceMap::TryGetResource(Resource *&outResource, const std::string &key)
    {
       const bool bValid = ReadyToReadResources.count(key) > 0;
 
@@ -53,7 +57,8 @@ namespace IO {
       return bValid;
    }
 
-   void ResourceMap::AllocateAsync(const std::string& key) {
+   void ResourceMap::AllocateAsync(const std::string &key)
+   {
 
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
@@ -61,31 +66,31 @@ namespace IO {
          return;
       }
 
-      const RESOURCE_TYPE resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
-      const std::string& fileFullPath = GET_FUL_PATH_TO_FILE(key);
+      const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
+      const std::string &fileFullPath = GET_FUL_PATH_TO_FILE(key);
 
       switch (resType)
       {
-         case RESOURCE_TYPE::TEXTURE:
-         {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartAsync(fileFullPath);
-            mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
-            break;
-         }
-         case RESOURCE_TYPE::MESH:
-         {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartAsync(fileFullPath);
-            mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
-            break;
-         }
-         default:
-            break;
+      case eResourceType::TEXTURE:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
+         mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
+         break;
+      }
+      case eResourceType::MESH:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
+         mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
+         break;
+      }
+      default:
+         break;
       }
    }
 
-   void ResourceMap::AllocateSync(const std::string& key) 
+   void ResourceMap::AllocateSync(const std::string &key)
    {
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
@@ -93,27 +98,46 @@ namespace IO {
          return;
       }
 
-      const RESOURCE_TYPE resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
-      const std::string& fileFullPath = GET_FUL_PATH_TO_FILE(key);
+      const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
+      const std::string &fileFullPath = GET_FUL_PATH_TO_FILE(key);
 
       switch (resType)
       {
-         case RESOURCE_TYPE::TEXTURE:
+      case eResourceType::TEXTURE:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartDeferred(fileFullPath);
+         ReadyToReadResources[key] = futureResult.get();
+         break;
+      }
+      case eResourceType::MESH:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartDeferred(fileFullPath);
+         ReadyToReadResources[key] = futureResult.get();
+         break;
+      }
+      default:
+         break;
+      }
+   }
+
+   void ResourceMap::UploadLoadedResourcesToPool()
+   {
+      for (auto &resource : ReadyToReadResources)
+      {
+         switch (resource.second->ResourceType)
          {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartDeferred(fileFullPath);
-            ReadyToReadResources[key] = futureResult.get();
+         case eResourceType::MESH:
+            MeshPool::GetInstance()->GetOrAllocateResource(resource.first);
             break;
-         }
-         case RESOURCE_TYPE::MESH:
-         {
-            AsyncJob<Resource*, const std::string&> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
-            std::future<Resource*> futureResult = job.StartDeferred(fileFullPath);
-            ReadyToReadResources[key] = futureResult.get();
+         case eResourceType::TEXTURE:
+            TexturePool::GetInstance()->GetOrAllocateResource(resource.first);
             break;
-         }
          default:
+            assert(false); // undefined type
             break;
+         }
       }
    }
 
@@ -121,12 +145,12 @@ namespace IO {
    {
       try
       {
-         for (auto& resource : mAsyncDataProxy->ResourcesMap)
+         for (auto &resource : mAsyncDataProxy->ResourcesMap)
          {
             ReadyToReadResources[resource.first] = resource.second.get();
          }
       }
-      catch (const std::exception& e)
+      catch (const std::exception &e)
       {
          throw e.what();
       }

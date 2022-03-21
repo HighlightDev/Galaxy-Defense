@@ -20,6 +20,8 @@ namespace EngineCore
 
    void PlatformTraverseComponent::PostLevelInit()
    {
+      Component::PostLevelInit();
+
       if (const auto &spOwner = GetOwner().lock())
       {
          const auto &rootComponent = spOwner->GetRootComponent();
@@ -94,6 +96,8 @@ namespace EngineCore
 
    void PlatformTraverseComponent::Tick(const float deltaTime)
    {
+      Component::Tick(deltaTime);
+
       mScriptExecutor.OnUpdate(deltaTime);
 
       if (mDestinationPoint != "NO")

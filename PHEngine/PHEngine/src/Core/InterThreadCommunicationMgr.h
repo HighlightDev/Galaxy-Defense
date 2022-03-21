@@ -63,7 +63,7 @@ namespace Thread
       alignas(hardware_destructive_interference_size) std::deque<Job> Jobs1;
       alignas(hardware_destructive_interference_size) std::deque<Job> Jobs2;
 
-      std::deque<Job> &GetDequeByIndex(uint8_t index)
+      inline std::deque<Job> &GetDequeByIndex(uint8_t index)
       {
          if (0 == index)
             return Jobs1;

@@ -7,7 +7,7 @@ namespace EngineCore
 {
 
    Component::Component(const std::string &gameObjectName)
-       : GameObject(gameObjectName), m_owner(), mIsEnabled(true)
+       : GameObject(gameObjectName), m_owner(), mIsEnabled(true), mIsPostLevelInitialized(false)
    {
    }
 
@@ -30,6 +30,16 @@ namespace EngineCore
       return COMPONENT;
    }
 
+   void Component::Tick(const float deltaTime)
+   {
+      if (!mIsPostLevelInitialized)
+      {
+         // this call is necessary to resolve issue which could be observed in case component
+         // had been created AFTER level was initialized
+         PostLevelInit();
+      }
+   }
+
    std::weak_ptr<Actor> Component::GetBaseOwner() const
    {
       std::weak_ptr<Actor> base = m_owner;
@@ -41,7 +51,7 @@ namespace EngineCore
          if (auto spBase = base.lock())
          {
             auto parent = spBase->GetParent();
-            if (const auto& spParent = parent.lock())
+            if (const auto &spParent = parent.lock())
             {
                base = spParent->GetParent();
             }
@@ -61,18 +71,19 @@ namespace EngineCore
 
    void Component::PostLevelInit()
    {
+      mIsPostLevelInitialized = true;
    }
 
    SerializeDataActor &Component::GetSerializeDataActor(SerializeDataContainer &dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData) {
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
+                             {
          bool bFindResult = false;
          if (const auto& spOwner = GetOwner().lock())
          {
             bFindResult = actorData.ActorName == spOwner->GetName();
          }
-         return bFindResult;
-      });
+         return bFindResult; });
       assert(it != dataContainer.Actors.end());
       return *it;
    }

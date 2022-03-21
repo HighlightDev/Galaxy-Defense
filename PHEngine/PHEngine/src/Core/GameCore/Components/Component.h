@@ -27,6 +27,8 @@ namespace EngineCore
 
       bool mIsEnabled;
 
+      bool mIsPostLevelInitialized;
+
 	public:
 
       Component(const std::string& gameObjectName);
@@ -44,6 +46,8 @@ namespace EngineCore
       std::weak_ptr<Actor> GetBaseOwner() const;
 
       bool IsEnabled() const;
+
+      virtual void Tick(const float deltaTime) override;
 
       virtual void SetIsEnabled(const bool bEnabled);
 

@@ -5,7 +5,7 @@
 
 namespace IO
 {
-   enum class RESOURCE_TYPE 
+   enum class eResourceType 
    {
       UNDEFINED_TYPE,
       TEXTURE,
@@ -15,12 +15,12 @@ namespace IO
 
    struct ResourceExtensionsInfo
    {
-      static RESOURCE_TYPE GetResourceTypeByFileExtension(const std::string& filePath);
+      static eResourceType GetResourceTypeByFileExtension(const std::string& filePath);
 
    private:
 
-      static std::map<std::string, RESOURCE_TYPE> Extensions;
+      static std::map<std::string, eResourceType> Extensions;
 
-      static RESOURCE_TYPE GetResourceType(const std::string& extensionName);
+      static eResourceType GetResourceType(const std::string& extensionName);
    };
 }

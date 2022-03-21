@@ -5,13 +5,7 @@
 #include <TinyLogger/LogInterface.h>
 
 Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
-    : m_interThreadMgr(interThreadMgr)
-    , mInputManager(std::make_shared<InputManager>())
-    , mLastRenderThreadPulseTime(EngineTime::GetCurrentTime())
-    , mRenderThreadDeltaTimeSeconds()
-    , mLastGameThreadPulseTime(EngineTime::GetCurrentTime())
-    , mGameThreadDeltaTimeSeconds()
-    , mGameThreadSumDeltaTimeSec()
+    : m_interThreadMgr(interThreadMgr), mInputManager(std::make_shared<InputManager>()), mLastRenderThreadPulseTime(EngineTime::GetCurrentTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetCurrentTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec()
 {
 }
 
@@ -55,6 +49,8 @@ InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
 
 void Engine::PreLevelInit()
 {
+   EventDispatcher::GetInstance()->RegisterEventsByType<CameraTransformChangedEvent, PlayerMovedEvent, PhysicsSimulationUpdatedEvent, KeyboardButtonDownEvent, KinematicBodyMovedEvent, TextureAtlasGeneratedEvent, MouseMovedEvent, MouseScrollEvent>();
+
    m_level->PreLevelInit();
 }
 
@@ -109,19 +105,17 @@ void Engine::GameThreadPulse()
 
 void Engine::ProcessEvents(Event::ExecutionOrder order)
 {
-   Event::EngineEventDispatcher::ProcessEvents(order);
+   Event::EventDispatcher::GetInstance()->ProcessEvents(order);
 }
-
-#include <iostream>
 
 void Engine::RenderThreadPulse()
 {
    /* RENDER THREAD */
    {
-      //mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
+      // mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
       m_interThreadMgr.SpinRenderThreadJobs();
       m_sceneRenderer->RenderScene_RenderThread();
-      //mLastRenderThreadPulseTime = EngineTime::GetCurrentTime();
+      // mLastRenderThreadPulseTime = EngineTime::GetCurrentTime();
    }
 }
 

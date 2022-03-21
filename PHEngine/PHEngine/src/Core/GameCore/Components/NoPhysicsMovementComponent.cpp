@@ -15,6 +15,8 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::PostLevelInit()
    {
+      MovementComponent::PostLevelInit();
+       
       if (const auto &spOwner = GetOwner().lock())
       {
          m_actorRootComponent = spOwner->GetRootComponent();
@@ -33,6 +35,7 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::Tick(const float deltaTime)
    {
+      MovementComponent::Tick(deltaTime);
    }
 
    void NoPhysicsMovementComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)

@@ -6,22 +6,22 @@ using namespace EngineUtility;
 namespace IO
 {
 
-   std::map<std::string, RESOURCE_TYPE> ResourceExtensionsInfo::Extensions = std::map<std::string, RESOURCE_TYPE>(
+   std::map<std::string, eResourceType> ResourceExtensionsInfo::Extensions = std::map<std::string, eResourceType>(
    {
-      std::pair("png", RESOURCE_TYPE::TEXTURE),
-      std::pair("bmp", RESOURCE_TYPE::TEXTURE),
-      std::pair("jpg", RESOURCE_TYPE::TEXTURE),
-      std::pair("obj", RESOURCE_TYPE::MESH),
-      std::pair("dae", RESOURCE_TYPE::MESH),
-      std::pair("fbx", RESOURCE_TYPE::MESH),
+      std::pair("png", eResourceType::TEXTURE),
+      std::pair("bmp", eResourceType::TEXTURE),
+      std::pair("jpg", eResourceType::TEXTURE),
+      std::pair("obj", eResourceType::MESH),
+      std::pair("dae", eResourceType::MESH),
+      std::pair("fbx", eResourceType::MESH),
    });
 
-   RESOURCE_TYPE ResourceExtensionsInfo::GetResourceTypeByFileExtension(const std::string& filePath) 
+   eResourceType ResourceExtensionsInfo::GetResourceTypeByFileExtension(const std::string& filePath) 
    {
       const size_t extensionStartIndex = LastIndexOf(filePath, ".");
 
       if (std::string::npos == extensionStartIndex)
-         return RESOURCE_TYPE::UNDEFINED_TYPE;
+         return eResourceType::UNDEFINED_TYPE;
 
       std::string extension = filePath.substr(extensionStartIndex + 1);
 
@@ -30,7 +30,7 @@ namespace IO
       return GetResourceType(extension);
    }
 
-   RESOURCE_TYPE ResourceExtensionsInfo::GetResourceType(const std::string& extensionName)
+   eResourceType ResourceExtensionsInfo::GetResourceType(const std::string& extensionName)
    {
       return Extensions[extensionName];
    }

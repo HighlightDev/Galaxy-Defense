@@ -52,6 +52,8 @@ namespace EngineCore
 
    void SkeletalMeshComponent::PostLevelInit() 
    {
+      PrimitiveComponent::PostLevelInit();
+
       if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
       {
          mTimeIncreaseMultiply = LuaGetGlobal<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);

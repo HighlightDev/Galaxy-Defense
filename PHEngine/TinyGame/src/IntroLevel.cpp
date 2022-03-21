@@ -9,9 +9,11 @@
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/GameCore/Event/EventDispatcher.h"
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/SpaceShipPlayerController.h"
+#include "Implementation/Events/MainPlayerActionEvent.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -24,9 +26,9 @@ namespace Game
 {
 
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
-       : Level(threadMgr)
-       , mEnemySceneController(std::make_shared<EnemySceneController>(mScene))
+       : Level(threadMgr), mEnemySceneController(std::make_shared<SceneController>(mScene))
    {
+      Event::EventDispatcher::GetInstance()->RegisterEventByType<Event::MainPlayerActionEvent>();
    }
 
    IntroLevel::~IntroLevel()
@@ -71,6 +73,8 @@ namespace Game
       MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
       const auto &c_movement = mScene->CreateComponent_GameThread<NoPhysicsMovementComponent,
                                                                   eComponentMetaType::Movement>(d_movement);
+
+      c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);
 
       const auto &mainCamera = mScene->GetMainCamera();
@@ -93,6 +97,7 @@ namespace Game
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
       mScene->AddExternalTickableObject(mEnemySceneController);
+      mEnemySceneController->SetPlayerShipActor(a_spaceship);
    }
 
    void IntroLevel::PostLevelInit()

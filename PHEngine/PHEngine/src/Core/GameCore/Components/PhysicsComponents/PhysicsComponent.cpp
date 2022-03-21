@@ -30,6 +30,8 @@ namespace EnginePhysics
 
    void PhysicsComponent::Tick(const float deltaTime)
    {
+      Component::Tick(deltaTime);
+
       if (mDescriptor->GetMotionState())
       {
          bool bIsDirty;

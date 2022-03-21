@@ -9,56 +9,74 @@
 #include "MouseMovedEvent.h"
 #include "MouseScrollEvent.h"
 
-namespace Event {
+#include <type_traits>
 
-   namespace EventDispatcherCore
-   {
-      template <typename ParentEventDispatcher, size_t eventIndex>
-      struct EventsIterator
-      {
-         static void IterateParentEventDispatcher(ExecutionOrder order)
-         {
-            using event_t = typename std::tuple_element<eventIndex, typename ParentEventDispatcher::EventTypes_t>::type;
-            event_t::GetInstance()->ProcessCachedEvents(order);
-
-            EventsIterator<ParentEventDispatcher, eventIndex - 1>::IterateParentEventDispatcher(order);
-         }
-      };
-
-      template <typename ParentEventDispatcher>
-      struct EventsIterator<ParentEventDispatcher, 0>
-      {
-         static void IterateParentEventDispatcher(ExecutionOrder order)
-         {
-            using event_t = typename std::tuple_element<0, typename ParentEventDispatcher::EventTypes_t>::type;
-            event_t::GetInstance()->ProcessCachedEvents(order);
-         }
-      };
-   }
+namespace Event
+{
 
    template <typename... EventTypes>
-   struct EventDispatcher
+   struct EventIterator;
+
+
+   template <>
+   struct EventIterator<>
    {
-      using EventTypes_t = std::tuple<EventTypes...>;
-
-      static constexpr size_t registeredEventsCount = std::tuple_size<EventTypes_t>::value;
-
-      static void ProcessEvents(ExecutionOrder order) {
-
-         EventDispatcherCore::EventsIterator<EventDispatcher<EventTypes...>, registeredEventsCount - 1>::IterateParentEventDispatcher(order);
+      static void IterateRegisterEvent()
+      {
       }
    };
-   
-   using EngineEventDispatcher = EventDispatcher<
-      CameraTransformChangedEvent,
-      PlayerMovedEvent,
-      PhysicsSimulationUpdatedEvent,
-      KeyboardButtonDownEvent,
-      KinematicBodyMovedEvent,
-      TextureAtlasGeneratedEvent,
-      MouseMovedEvent,
-      MouseScrollEvent
-   >;
 
+   struct EventDispatcher
+   {
+   private:
+      std::vector<IEvent *> m_eventInstances;
+
+   public:
+      static EventDispatcher *GetInstance()
+      {
+         static EventDispatcher m_instance = EventDispatcher();
+         return &m_instance;
+      }
+
+      template <typename EventType>
+      typename std::enable_if<std::is_base_of<IEvent, EventType>::value, void>::type RegisterEventByType()
+      {
+         m_eventInstances.emplace_back(EventType::GetInstance());
+      }
+
+      template <typename... EventTypes>
+      void RegisterEventsByType()
+      {
+         EventIterator<EventTypes...>::IterateRegisterEvent();
+      }
+
+      void UnregisterEvents()
+      {
+         m_eventInstances.clear();
+      }
+
+      void ProcessEvents(ExecutionOrder order)
+      {
+         for (const auto &eventInstance : m_eventInstances)
+         {
+            eventInstance->ProcessCachedEvents(order);
+         }
+      }
+
+   private:
+      EventDispatcher()
+          : m_eventInstances()
+      {
+      }
+   };
+
+   template <typename EventType, typename... EventTypes>
+   struct EventIterator<EventType, EventTypes...>
+   {
+      static void IterateRegisterEvent()
+      {
+         EventDispatcher::GetInstance()->RegisterEventByType<EventType>();
+         EventIterator<EventTypes...>::IterateRegisterEvent();
+      }
+   };
 }
-
