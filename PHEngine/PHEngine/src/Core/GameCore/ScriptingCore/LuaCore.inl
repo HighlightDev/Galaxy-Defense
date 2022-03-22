@@ -18,7 +18,11 @@ extern "C"
 #include "Core/CommonCore/Assertion.h"
 #include "LuaWrapper.h"
 
+#ifdef _WIN32
+#define FORCEINLINE __forceinline
+#elif __linux__ 
 #define FORCEINLINE __attribute__((always_inline))
+#endif
 
 namespace EngineCore
 {

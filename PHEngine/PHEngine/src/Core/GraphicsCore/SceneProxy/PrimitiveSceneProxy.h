@@ -38,6 +38,9 @@ namespace Graphics
          : public SceneProxyBase
          , public AProxyVisibilityController
       {
+
+         bool bTransformInitialized;
+
       protected:
 
          glm::mat4 m_relativeMatrix;
@@ -78,6 +81,8 @@ namespace Graphics
          virtual bool IsDeferred() const = 0;
 
          virtual eMeshFacing GetMeshFrontFace() const = 0;
+
+         virtual bool IsTransformIntialized() const; 
 
       };
 

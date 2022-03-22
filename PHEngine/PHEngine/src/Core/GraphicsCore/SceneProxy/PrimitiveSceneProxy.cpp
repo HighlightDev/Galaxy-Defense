@@ -6,16 +6,16 @@ namespace Graphics
    {
 
       PrimitiveSceneProxy::PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin,
-         std::shared_ptr<IShader> materialShader,
-         std::shared_ptr<IShader> planarReflectionShader,
-         std::shared_ptr<MaterialProxy> materialProxy)
-         : SceneProxyBase()
-         , AProxyVisibilityController(isVisible)
-         , m_relativeMatrix(relativeMatrix)
-         , m_skin(skin)
-         , m_shader(materialShader)
-         , m_planarReflectionShader(planarReflectionShader)
-         , mMaterialProxy(materialProxy)
+                                               std::shared_ptr<IShader> materialShader,
+                                               std::shared_ptr<IShader> planarReflectionShader,
+                                               std::shared_ptr<MaterialProxy> materialProxy)
+          : SceneProxyBase(), AProxyVisibilityController(isVisible),
+            bTransformInitialized(false),
+            m_relativeMatrix(relativeMatrix),
+            m_skin(skin),
+            m_shader(materialShader),
+            m_planarReflectionShader(planarReflectionShader),
+            mMaterialProxy(materialProxy)
       {
       }
 
@@ -32,8 +32,9 @@ namespace Graphics
          return m_relativeMatrix;
       }
 
-      void PrimitiveSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatrix)
+      void PrimitiveSceneProxy::SetTransformationMatrix(const glm::mat4 &relativeMatrix)
       {
+         bTransformInitialized = true;
          m_relativeMatrix = relativeMatrix;
       }
 
@@ -50,6 +51,11 @@ namespace Graphics
       bool PrimitiveSceneProxy::IsFrustumCullTestNeeded() const
       {
          return true;
+      }
+
+      bool PrimitiveSceneProxy::IsTransformIntialized() const
+      {
+         return bTransformInitialized;
       }
 
    }

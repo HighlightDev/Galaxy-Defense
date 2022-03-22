@@ -11,7 +11,7 @@
 #include <random>
 #include <utility>
 #include <vector>
-#include <iostream>
+#include <ctime>
 
 using namespace Graphics;
 
@@ -79,7 +79,7 @@ namespace Game
                                               glm::vec3(1.0));
 
             std::srand(std::time(nullptr));
-            for (size_t i = 0; i < 0; i++)
+            for (size_t i = 0; i < 10; i++)
             {
                 static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 10.0f;

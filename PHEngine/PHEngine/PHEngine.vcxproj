@@ -344,12 +344,20 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\CommonCore\TimeHelper.h" />
     <ClInclude Include="src\Core\GameCore\ActorController.h" />
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\NoPhysicsMovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\IEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\MouseScrollEvent.h" />
+    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
+    <ClInclude Include="src\Core\GameCore\Input\MouseEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h" />
+    <ClInclude Include="src\Core\GameCore\Tweener\EulerAnglesRotationTweenController.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryNoOperationNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShaderModule.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShaderModule.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.h" />
@@ -868,11 +876,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\CommonCore\StringHash.cpp" />
+    <ClCompile Include="src\Core\CommonCore\TimeHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\ActorController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\NoPhysicsMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\MouseBindings.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp" />
+    <ClCompile Include="src\Core\GameCore\Tweener\EulerAnglesRotationTweenController.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryNoOperationNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShaderModule.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShaderModule.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialConstantFloatValueNode.cpp" />
