@@ -28,7 +28,7 @@ namespace EngineCore
    public:
       bool bIsRootComponent = false;
 
-      SceneComponent(const std::string &gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale);
+      SceneComponent(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
 
       ~SceneComponent();
 

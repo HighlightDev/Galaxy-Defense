@@ -6,33 +6,40 @@
 namespace EngineCore
 {
 
-	PrimitiveComponent::PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox)
-		: SceneComponent(gameObjectName, translation, rotation, scale)
-      , mBoundingBox(boundingBox)
-      , mIsVisible(EngineGOProperty<bool>(true, "IsVisible"))
-	{
+   PrimitiveComponent::PrimitiveComponent(const std::string &gameObjectName,
+                                          const glm::vec3 &translation,
+                                          const glm::vec3 &rotation,
+                                          const glm::vec3 &scale,
+                                          const BoundingBox &boundingBox)
+       : SceneComponent(gameObjectName,
+                        translation,
+                        rotation,
+                        scale),
+         mBoundingBox(boundingBox),
+         mIsVisible(EngineGOProperty<bool>(true, "IsVisible"))
+   {
       /******  HOOKS ****/
       ENGINE_PROPERTY(mIsVisible);
       /******  HOOKS ****/
-	}
+   }
 
-	PrimitiveComponent::~PrimitiveComponent()
-	{
-	}
+   PrimitiveComponent::~PrimitiveComponent()
+   {
+   }
 
    ComponentType PrimitiveComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }
 
-   void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix)
+   void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
       // Update primitives proxy transform
       static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
       }
@@ -44,7 +51,7 @@ namespace EngineCore
 
       // Update primitives proxy enabled
       static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
       }
@@ -59,7 +66,7 @@ namespace EngineCore
       }
    }
 
-   bool PrimitiveComponent::IsVisible() const 
+   bool PrimitiveComponent::IsVisible() const
    {
       return mIsVisible;
    }
@@ -68,13 +75,13 @@ namespace EngineCore
    {
       static const uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
 
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
       }
    }
 
-   BoundingBox PrimitiveComponent::GetBoundingBox() const 
+   BoundingBox PrimitiveComponent::GetBoundingBox() const
    {
       return mBoundingBox;
    }

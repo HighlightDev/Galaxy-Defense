@@ -26,7 +26,7 @@ namespace Game
 {
 
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
-       : Level(threadMgr), mEnemySceneController(std::make_shared<SceneController>(mScene))
+       : Level(threadMgr), mSceneController(std::make_shared<SceneController>(mScene))
    {
       Event::EventDispatcher::GetInstance()->RegisterEventByType<Event::MainPlayerActionEvent>();
    }
@@ -49,7 +49,7 @@ namespace Game
    void IntroLevel::PreLevelInit()
    {
       Base::PreLevelInit();
-      mEnemySceneController->PreInit();
+      mSceneController->PreInit();
    }
 
    void IntroLevel::CreateScene()
@@ -96,14 +96,15 @@ namespace Game
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
-      mScene->AddExternalTickableObject(mEnemySceneController);
-      mEnemySceneController->SetPlayerShipActor(a_spaceship);
+      mScene->AddExternalTickableObject(mSceneController);
+      mSceneController->SetPlayerShipActor(a_spaceship);
+      mSceneController->SetPlayeActorController(spaceShipController);
    }
 
    void IntroLevel::PostLevelInit()
    {
       CreateScene();
-      mEnemySceneController->PostInit();
+      mSceneController->PostInit();
 
       /*const auto groundActor = mScene->GetActor("Ground");
       const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();

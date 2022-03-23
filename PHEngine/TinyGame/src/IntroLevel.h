@@ -12,7 +12,7 @@ namespace Game
    {
       using Base = Level;
 
-      std::shared_ptr<SceneController> mEnemySceneController;
+      std::shared_ptr<SceneController> mSceneController;
 
    public:
       IntroLevel(InterThreadCommunicationMgr &threadMgr);

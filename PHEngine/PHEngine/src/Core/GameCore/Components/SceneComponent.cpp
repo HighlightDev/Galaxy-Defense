@@ -8,12 +8,15 @@ using namespace EngineMath;
 
 namespace EngineCore
 {
-   SceneComponent::SceneComponent(const std::string &gameObjectName, glm::vec3 translation = glm::vec3(0.0f),
-                                  glm::vec3 rotation = glm::vec3(0.0f),
-                                  glm::vec3 scale = glm::vec3(0.0f))
+   SceneComponent::SceneComponent(const std::string &gameObjectName,
+                                  const glm::vec3 &translation = glm::vec3(0.0f),
+                                  const glm::vec3 &rotation = glm::vec3(0.0f),
+                                  const glm::vec3 &scale = glm::vec3(0.0f))
        : Component(gameObjectName),
          bTransformationDirty(true),
-         mTransform(std::make_shared<Transform>(translation, glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))), scale)),
+         mTransform(std::make_shared<Transform>(translation,
+                                                glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))),
+                                                scale)),
          m_additionalRotationEuler(EngineGOProperty<glm::vec3>(glm::vec3(0.0f), "b_rotator")),
          m_relativeMatrix(1),
          m_sceneWP()
@@ -28,7 +31,7 @@ namespace EngineCore
    void SceneComponent::Tick(const float deltaTime)
    {
       Component::Tick(deltaTime);
-      
+
       if (!mIsEnabled)
          return;
    }

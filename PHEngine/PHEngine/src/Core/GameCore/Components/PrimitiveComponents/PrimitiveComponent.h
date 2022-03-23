@@ -16,45 +16,44 @@ using namespace Graphics::Proxy;
 
 namespace EngineCore
 {
-	// Base class of all drawing components
-	class PrimitiveComponent :
-		public SceneComponent
-	{
-	protected:
+      // Base class of all drawing components
+      class PrimitiveComponent
+          : public SceneComponent
+      {
+      protected:
+            using Base = SceneComponent;
 
-		using Base = SceneComponent;
+            BoundingBox mBoundingBox;
 
-      BoundingBox mBoundingBox;
+            EngineGOProperty<bool> mIsVisible;
 
-      EngineGOProperty<bool> mIsVisible;
+      public:
+            size_t SceneProxyId = 0;
 
-	public:
+            PrimitiveComponent(const std::string &gameObjectName,
+                               const glm::vec3& translation,
+                               const glm::vec3& rotation,
+                               const glm::vec3&  scale,
+                               const BoundingBox& boundingBox);
 
-      size_t SceneProxyId = 0;
+            virtual ~PrimitiveComponent();
 
-		PrimitiveComponent(const std::string& gameObjectName, glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, BoundingBox boundingBox);
+            void SetIsVisible(bool isVisible);
 
-		virtual ~PrimitiveComponent();
+            bool IsVisible() const;
 
-      void SetIsVisible(bool isVisible);
+            virtual void SetIsEnabled(const bool bEnabled) override;
 
-      bool IsVisible() const;
+            virtual ComponentType GetComponentType() const override;
 
-      virtual void SetIsEnabled(const bool bEnabled) override;
+            virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
-      virtual ComponentType GetComponentType() const override;
+            virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
 
-      virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
+            virtual void OnVisibilityChanged();
 
-      virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+            BoundingBox GetBoundingBox() const;
 
-      virtual void OnVisibilityChanged();
-
-      BoundingBox GetBoundingBox() const;
-
-      BoundingBox GetTransformedBoundingBox() const;
-
-	};
-
+            BoundingBox GetTransformedBoundingBox() const;
+      };
 }
-

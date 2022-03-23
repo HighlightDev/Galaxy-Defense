@@ -32,7 +32,8 @@ namespace Game
         : mScene(scene),
           mEnemies(),
           mEnemyActorControllers(),
-          mDummyBullet()
+          mDummyBullet(),
+          mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50)))
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
     }
@@ -79,18 +80,19 @@ namespace Game
                                               glm::vec3(1.0));
 
             std::srand(std::time(nullptr));
-            for (size_t i = 0; i < 10; i++)
+            for (size_t i = 0; i < 4; i++)
             {
-                static constexpr float x_axisHalfWidth = 20.0f;
-                static constexpr float y_axisHalfHeight = 10.0f;
-                const float x = get_random(1.0f, 10.0f);
+                static constexpr float x_axisHalfWidth = 50.0f;
+                static constexpr float y_axisHalfHeight = 30.0f;
+                const float x = get_random(0.5f, 10.0f);
+                const float scale = glm::clamp(x, 0.5f, 3.0f);
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
                                         ((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
                                         50 + (i * i) + 2);
                 const auto &a_enemyShip = CreateEnemySpaceShip(sceneSp,
                                                                startPosition,
                                                                glm::vec3(),
-                                                               glm::vec3(glm::clamp(glm::vec3(static_cast<float>(i)), 0.1f, 5.0f)));
+                                                               glm::vec3(scale));
 
                 mEnemies.emplace_back(a_enemyShip);
             }
@@ -100,6 +102,14 @@ namespace Game
     void SceneController::SetPlayerShipActor(const std::weak_ptr<Actor> &mainPlayerShip)
     {
         mMainPlayerShip = mainPlayerShip;
+    }
+
+    void SceneController::SetPlayeActorController(const std::weak_ptr<SpaceShipPlayerController> &mainPlayerActorController)
+    {
+        mMainPlayerActorController = mainPlayerActorController;
+        const auto &playerActorControllerSp = mMainPlayerActorController.lock();
+        assert(playerActorControllerSp);
+        playerActorControllerSp->SetLevelBounds(mLevelBounds);
     }
 
     void SceneController::Tick(const float deltaTime)

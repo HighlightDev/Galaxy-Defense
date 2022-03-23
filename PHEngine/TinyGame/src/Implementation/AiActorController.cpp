@@ -39,7 +39,7 @@ namespace Game
         const auto &actualDirectionName = greatestDot->first;
         if (actualDirectionName != mCurrentState)
         {
-            m_actor->ChangeState(actualDirectionName);
+            m_actor->ChangeTweenState(actualDirectionName);
             mCurrentState = actualDirectionName;
         }
     }

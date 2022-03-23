@@ -5,6 +5,8 @@
 #include "Core/GameCore/Actor.h"
 #include "AiActorController.h"
 #include "Events/MainPlayerActionEvent.h"
+#include "Core/GameCore/BoundingBox.h"
+#include "SpaceShipPlayerController.h"
 
 #include <memory>
 
@@ -19,6 +21,8 @@ namespace Game
 
         std::weak_ptr<Actor> mMainPlayerShip;
 
+        std::weak_ptr<SpaceShipPlayerController> mMainPlayerActorController;
+
         std::vector<std::weak_ptr<Actor>> mEnemies;
 
         std::vector<std::weak_ptr<AiActorController>> mEnemyActorControllers;
@@ -31,8 +35,11 @@ namespace Game
 
         std::shared_ptr<Actor> mDummyBullet;
 
-        float mCoolDownTime = 0.5f;
+        float mCoolDownTime = 0.2f;
+
         bool bIsCoolDownInProgress = false;
+
+        BoundingBox mLevelBounds;
 
     public:
         SceneController(const std::weak_ptr<Scene> &scene);
@@ -46,6 +53,8 @@ namespace Game
         virtual void Tick(const float deltaTime) override;
 
         void SetPlayerShipActor(const std::weak_ptr<Actor> &mainPlayerShip);
+
+        void SetPlayeActorController(const std::weak_ptr<SpaceShipPlayerController>& mainPlayerActorController);
 
     protected:
         virtual void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;

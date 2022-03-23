@@ -233,7 +233,7 @@ namespace EngineCore
       }
    }
 
-   void Actor::ChangeState(const std::string &stateName)
+   void Actor::ChangeTweenState(const std::string &stateName)
    {
       if (mTweener)
          mTweener->ChangeState(stateName);

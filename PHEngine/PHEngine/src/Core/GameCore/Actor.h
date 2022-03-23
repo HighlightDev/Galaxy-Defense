@@ -73,7 +73,7 @@ namespace EngineCore
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual void ChangeState(const std::string& stateName);
+      virtual void ChangeTweenState(const std::string& stateName);
 
       virtual void PostLevelInit();
 

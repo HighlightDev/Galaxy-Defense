@@ -96,7 +96,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFrameReleasedKeys.end())
             {
-               m_actor->ChangeState("Idle");
+               m_actor->ChangeTweenState("Idle");
             }
          }
 
@@ -106,7 +106,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFramePressedKeys.end())
             {
-               m_actor->ChangeState("Walking");
+               m_actor->ChangeTweenState("Walking");
             }
          }
       }
