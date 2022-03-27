@@ -10,6 +10,10 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
+#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/SpaceShipPlayerController.h"
@@ -76,6 +80,12 @@ namespace Game
 
       c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);
+
+      GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
+      mScene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+      PhysicsComponentData physData("c_spaceShipPhysicsComponent", ghostController);
+      const auto& c_ghostPhysics = mScene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
+      a_spaceship->AddComponent(c_ghostPhysics);
 
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);

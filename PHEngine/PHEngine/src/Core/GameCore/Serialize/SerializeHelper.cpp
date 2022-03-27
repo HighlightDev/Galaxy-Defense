@@ -29,6 +29,7 @@
 
 using namespace Graphics;
 using namespace EnginePhysics;
+using namespace TinyLogger;
 
 namespace EngineCore
 {
@@ -488,7 +489,7 @@ namespace EngineCore
       }
       }
 
-      TinyLogger::LogProxy::LogMessages("Deserialize component, type:", std::string(logCompType));
+      Logger::Out("Deserialize component, type:", logCompType);
 
       return result;
    }

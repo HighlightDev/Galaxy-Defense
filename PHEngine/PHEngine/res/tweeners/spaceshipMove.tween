@@ -128,7 +128,7 @@
     <transition>
       name: "t_back_to_right"
       from_state: "s_fly_back"
-      to_state: "s_fly_back"
+      to_state: "s_fly_right"
       duration: "0.5"
     </transition>
     <transition>
@@ -156,28 +156,28 @@
       name: "p_fly_left"
       binding_name: "b_rotator"
       type: "euler_angles_rotation"
-      value: "x=0.0;y=0.0;z=345.0;"
+      value: "x=0.0;y=0.0;z=275.0;"
       state: "s_fly_left"
     </property>
     <property>
       name: "p_fly_right"
       binding_name: "b_rotator"
       type: "euler_angles_rotation"
-      value: "x=0.0;y=0.0;z=15.0;"
+      value: "x=0.0;y=0.0;z=45.0;"
       state: "s_fly_right"
     </property>
     <property>
       name: "p_fly_forward"
       binding_name: "b_rotator"
       type: "euler_angles_rotation"
-      value: "x=15.0;y=0.0;z=0.0;"
+      value: "x=45.0;y=0.0;z=0.0;"
       state: "s_fly_forward"
     </property>
     <property>
       name: "p_fly_back"
       binding_name: "b_rotator"
       type: "euler_angles_rotation"
-      value: "x=345.0;y=0.0;z=0.0;"
+      value: "x=275.0;y=0.0;z=0.0;"
       state: "s_fly_back"
     </property>
   </properties>

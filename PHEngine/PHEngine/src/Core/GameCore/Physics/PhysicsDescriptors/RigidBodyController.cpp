@@ -45,7 +45,7 @@ namespace EnginePhysics
       mMotionState->setWorldTransform(worldTransform);
    }
 
-   void RigidBodyController::CompleteRigidBodyConstruction()
+   void RigidBodyController::CompletePhysicsDescriptorConstruction()
    {
       btRigidBody::btRigidBodyConstructionInfo info(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
       mRigidBody = new btRigidBody(info);

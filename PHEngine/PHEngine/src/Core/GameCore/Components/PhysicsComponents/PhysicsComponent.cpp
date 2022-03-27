@@ -76,7 +76,7 @@ namespace EnginePhysics
       const glm::quat& rotator = spOwner->GetRootComponent()->GetRotator();
 
       mDescriptor->SetMotionStateWorldTransform(Converter::glmToBullet(rotator), Converter::glmToBullet(translation));
-      mDescriptor->CompleteRigidBodyConstruction();
+      mDescriptor->CompletePhysicsDescriptorConstruction();
    }
 
    glm::vec3 PhysicsComponent::GetWorldTranslation() const

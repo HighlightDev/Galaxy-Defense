@@ -2,5 +2,5 @@
 
 namespace TinyLogger
 {
-   size_t LogProxy::index = 0;
+   size_t Logger::index = 0;
 }

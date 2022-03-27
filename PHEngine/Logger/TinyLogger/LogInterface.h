@@ -21,6 +21,18 @@ namespace TinyLogger
 
    namespace LogHelp
    {
+      template <typename T>
+      static typename std::enable_if<!std::is_same<typename std::decay<T>::type, const char *>::value, T>::type CompressMessage(T &&arg)
+      {
+         return std::forward<T>(arg);
+      }
+
+      template <typename T>
+      static typename std::enable_if<std::is_same<typename std::decay<T>::type, const char *>::value, std::string>::type CompressMessage(const char *arg)
+      {
+         return std::string(arg);
+      }
+
       struct FalseType
       {
          enum
@@ -112,9 +124,11 @@ namespace TinyLogger
       {
          static void Collect(std::vector<std::string> &result, TupleT &tuple)
          {
-            using arg_t = typename std::tuple_element<index, TupleT>::type;
+            using tuple_arg_t = typename std::tuple_element<index, TupleT>::type;
+            auto argument = CompressMessage<tuple_arg_t>(std::forward<tuple_arg_t>(std::get<index>(tuple)));
+            using compressed_arg_t = decltype(argument);
 
-            result.push_back(CastTypeToString<arg_t>::Do(std::forward<arg_t>(std::get<index>(tuple))));
+            result.push_back(CastTypeToString<compressed_arg_t>::Do(std::forward<compressed_arg_t>(argument)));
             IterateTuple<TupleT, max_index, index + 1>::Collect(result, tuple);
          }
       };
@@ -140,11 +154,11 @@ namespace TinyLogger
       using type = std::string;
    };
 
-   struct LogProxy
+   struct Logger
    {
       static size_t index;
       template <typename LogArg, typename... LogArgs>
-      static void LogMessages(LogArg &&arg, LogArgs &&...args)
+      static void Out(LogArg &&arg, LogArgs &&...args)
       {
          static std::hash<std::thread::id> hasher;
          const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -155,35 +169,24 @@ namespace TinyLogger
          localtime_s(&timeinfo, &currentTime);
          asctime_s(str, sizeof str, &timeinfo);
 #elif __linux__
-         const std::string& str =std::asctime(std::localtime(&currentTime));
+         const std::string &str = std::asctime(std::localtime(&currentTime));
 #endif
          std::string timeFileWasChanged = str;
          timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
 
-         auto argument = CompressMessage<LogArg>(std::forward<LogArg>(arg));
+         auto argument = LogHelp::CompressMessage<LogArg>(std::forward<LogArg>(arg));
          using argument_t = typename GetCompressedMessageType<typename std::decay<LogArg>::type>::type;
-         using tuple_t = std::tuple<argument_t, LogArgs...>;
-         tuple_t argTuple = std::make_tuple<argument_t, LogArgs...>(std::forward<argument_t>(argument),
-                                                                    std::forward<LogArgs>(args)...);
+         auto argTuple = std::make_tuple(std::forward<argument_t>(argument),
+                                         std::forward<LogArgs>(args)...);
+
+         using tuple_t = decltype(argTuple);
 
          std::vector<std::string> result{std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id()))};
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
 
-         Logger::GetInstance_()->EnqueuLogMessage(LogMessage(result));
-      }
-
-      template <typename T>
-      static typename std::enable_if<!std::is_same<typename std::decay<T>::type, const char *>::value, T>::type CompressMessage(T &&arg)
-      {
-         return std::forward<T>(arg);
-      }
-
-      template <typename T>
-      static typename std::enable_if<std::is_same<typename std::decay<T>::type, const char *>::value, std::string>::type CompressMessage(const char *arg)
-      {
-         return std::string(arg);
+         LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(result));
       }
 
 #define LOG_INFO (AT)
@@ -197,13 +200,13 @@ namespace TinyLogger
       template <typename LoggerClient, typename... Args>
       static void InitLog(LoggerClient *loggerClient, Args &&...clients)
       {
-         Logger::GetInstance_()->AddLoggerClient(loggerClient);
+         LoggerServer::GetInstance_()->AddLoggerClient(loggerClient);
          InitLog(std::move(clients)...);
       }
 
       static void StartLogThread()
       {
-         Logger::GetInstance_()->StartLogThread();
+         LoggerServer::GetInstance_()->StartLogThread();
       }
    };
 }

@@ -7,6 +7,11 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
+#include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
+#include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
 
 #include <random>
 #include <utility>
@@ -14,6 +19,7 @@
 #include <ctime>
 
 using namespace Graphics;
+using namespace EnginePhysics;
 
 namespace Game
 {
@@ -87,12 +93,12 @@ namespace Game
                 const float x = get_random(0.5f, 10.0f);
                 const float scale = glm::clamp(x, 0.5f, 3.0f);
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        ((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                        0,//((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
                                         50 + (i * i) + 2);
                 const auto &a_enemyShip = CreateEnemySpaceShip(sceneSp,
                                                                startPosition,
                                                                glm::vec3(),
-                                                               glm::vec3(scale));
+                                                               glm::vec3(9));
 
                 mEnemies.emplace_back(a_enemyShip);
             }
@@ -143,7 +149,7 @@ namespace Game
                     static constexpr float y_axisHalfHeight = 20.0f;
                     const float x = get_random(1.0f, 10.0f);
                     glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                            ((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                            0.0f,//((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
                                             60.0f);
                     const auto &c_movement = enemySp->GetMovementComponent();
                     c_movement->Teleport(startPosition);
@@ -157,7 +163,7 @@ namespace Game
     {
         const auto &enemyShipIndexStr = std::to_string(enemyShipCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_enemyShip_rootComponent_" + enemyShipIndexStr,
-                                                                                 translation, rotation, scale);
+                                                                                 translation, glm::vec3(0), glm::vec3(1));
         const auto &a_enemySpaceship = std::make_shared<Actor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
         scene->AddActor(a_enemySpaceship);
 
@@ -188,7 +194,7 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, testGO, "property_damageEffect", "damageTime");
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
-                                       glm::vec3(0), glm::vec3(9), "", pbs_mat);
+                                       rotation, scale, "", pbs_mat);
 
         const auto &c_mesh = scene->CreateComponent_GameThread<StaticMeshComponent, eComponentMetaType::StaticMesh>(d_mesh);
         a_enemySpaceship->AddComponent(c_mesh);
@@ -199,6 +205,12 @@ namespace Game
         c_movement->SetSpeed(0.005f);
 
         a_enemySpaceship->AddComponent(c_movement);
+
+        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
+        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+        PhysicsComponentData physData("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
+        a_enemySpaceship->AddComponent(c_ghostPhysics);
 
         const auto &enemyController = std::make_shared<AiActorController>(a_enemySpaceship);
         scene->AddActorController(enemyController);

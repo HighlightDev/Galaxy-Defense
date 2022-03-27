@@ -16,6 +16,7 @@
 #define GET_FUL_PATH_TO_FILE(fileName) (IO::FolderManager::GetInstance()->GetPathToExeFile() + GET_REL_PATH_TO_FILE(fileName))
 
 using namespace Resources;
+using namespace TinyLogger;
 
 namespace IO
 {
@@ -62,7 +63,7 @@ namespace IO
 
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         TinyLogger::LogProxy::LogMessages("WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", std::string(key));
+         Logger::Out("WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
          return;
       }
 
@@ -94,7 +95,7 @@ namespace IO
    {
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         TinyLogger::LogProxy::LogMessages("WARN! ResourceMap::AllocateSync invoked for existing key! key = ", std::string(key));
+         Logger::Out("WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
          return;
       }
 

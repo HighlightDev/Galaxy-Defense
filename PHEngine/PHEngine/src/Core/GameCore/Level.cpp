@@ -12,6 +12,8 @@
 #include <fstream>
 #include <TinyLogger/LogInterface.h>
 
+using namespace TinyLogger;
+
 namespace EngineCore
 {
 
@@ -26,12 +28,12 @@ namespace EngineCore
 
    void Level::PreLevelInit()
    {
-      TinyLogger::LogProxy::LogMessages("Level::PreLevelInit");
+      Logger::Out("Level::PreLevelInit");
    }
 
    void Level::PostLevelInit()
    {
-      TinyLogger::LogProxy::LogMessages("Level::PostLevelInit");
+      Logger::Out("Level::PostLevelInit");
       mScene->PostLevelInit();
 
       ResourceMap::DeleteInstance();
@@ -97,7 +99,7 @@ namespace EngineCore
 
    void Level::CollectAllocatedResourcesForSerialization(SerializeDataContainer &container)
    {
-      TinyLogger::LogProxy::LogMessages("CollectAllocatedResourcesForSerialization");
+      Logger::Out("CollectAllocatedResourcesForSerialization");
 
       std::vector<std::string> loadedTextureNames = TexturePool::GetInstance()->GetAllKeys();
       std::vector<std::string> loadedModelNames = MeshPool::GetInstance()->GetAllKeys();
@@ -116,7 +118,7 @@ namespace EngineCore
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
    {
-      TinyLogger::LogProxy::LogMessages("InstantiateLevelFromSerializedContainer");
+      Logger::Out("InstantiateLevelFromSerializedContainer");
 
       const std::vector<std::string> &resourceNames = SerializeHelper::GetSerializedAllocatedResources(container.Resources);
       for (const auto &resName : resourceNames)
@@ -151,13 +153,13 @@ namespace EngineCore
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         TinyLogger::LogProxy::LogMessages("Actor name: ", actor->GetName());
+         Logger::Out("Actor name: ", actor->GetName());
 
          for (const auto &componentData : actorData.ComponentsData)
          {
             const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            TinyLogger::LogProxy::LogMessages("Component name: ", component->GetGameObjectName());
+            Logger::Out("Component name: ", component->GetGameObjectName());
 
             if (component)
             {

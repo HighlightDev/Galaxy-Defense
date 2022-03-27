@@ -15,6 +15,7 @@
 using namespace EngineCore;
 using namespace Game;
 using namespace IO;
+using namespace TinyLogger;
 
 bool bPushFrame = false;
 bool bShaderRecompile = false;
@@ -39,7 +40,8 @@ void mouse_scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
   if (std::abs(yoffset) > 0.0000001)
   {
-    engineInputManager->TriggeOnMouseScroll(yoffset < -0.00001 ? eMouseScrollDirection::ZoomOut : yoffset > 0.00001 ? eMouseScrollDirection::ZoomIn                                                                                                          : eMouseScrollDirection::Undefined);
+    engineInputManager->TriggeOnMouseScroll(yoffset < -0.00001 ? eMouseScrollDirection::ZoomOut : yoffset > 0.00001 ? eMouseScrollDirection::ZoomIn
+                                                                                                                    : eMouseScrollDirection::Undefined);
   }
 }
 
@@ -144,9 +146,8 @@ int32_t main(int32_t argc, char **argv)
 {
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-  // TinyLogger::LogProxy::InitLog(new TinyLogger::LoggerClientConsole());
-  TinyLogger::LogProxy::InitLog(new TinyLogger::LoggerClientFile());
-  TinyLogger::LogProxy::StartLogThread();
+  Logger::InitLog(new LoggerClientConsole());
+  Logger::StartLogThread();
 
   GLFWwindow *window;
   // Initialize the library
@@ -157,8 +158,11 @@ int32_t main(int32_t argc, char **argv)
   get_screen_rezolution();
   // auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
   // auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
-  //  window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
-  window = glfwCreateWindow(1200, 900, "PHEngine", NULL, NULL);
+
+  auto width = 1200;
+  auto height = 900;
+  window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
+  Logger::Out("glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)
   {

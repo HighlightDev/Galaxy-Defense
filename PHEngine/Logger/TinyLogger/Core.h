@@ -24,7 +24,7 @@ namespace TinyLogger
       std::string GetLog() const;
    };
 
-   class Logger
+   class LoggerServer
    {
       std::mutex mWriteToFileMutex;
       std::thread mLogThread;
@@ -34,11 +34,11 @@ namespace TinyLogger
 
       bool mLogThreadStarted;
 
-      Logger();
+      LoggerServer();
 
    public:
 
-      static Logger* GetInstance_();
+      static LoggerServer* GetInstance_();
 
       void AddLoggerClient(LoggerClientBase* clientBase);
 

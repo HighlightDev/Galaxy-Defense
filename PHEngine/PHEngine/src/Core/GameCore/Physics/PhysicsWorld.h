@@ -38,6 +38,8 @@ namespace EnginePhysics
 
       void Tick(const float deltaTime);
 
+      void PostPhysicsSimulationUpdate();
+
       void InitPhysicsWorld();
 
       void AddPhysDescriptor(PhysicsDescriptor* inDescriptor);

@@ -5,7 +5,6 @@
 #include "Core/GameCore/Components/Transform.h"
 
 #include <glm/gtx/projection.hpp>
-#include <iostream>
 
 namespace EnginePhysics
 {
@@ -73,7 +72,7 @@ namespace EnginePhysics
       mMotionState->setWorldTransform(worldTransform);
    }
 
-   void DynamicCharacterController::CompleteRigidBodyConstruction()
+   void DynamicCharacterController::CompletePhysicsDescriptorConstruction()
    {
       btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
 
@@ -103,9 +102,6 @@ namespace EnginePhysics
       mGhostObject->setCollisionShape(mShape->GetCollisionShape());
       mGhostObject->setUserPointer(static_cast<PhysicsDescriptor*>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
-
-
-
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
    }
 
@@ -161,7 +157,7 @@ namespace EnginePhysics
    {
       btManifoldArray manifoldArray;
       btBroadphasePairArray &pairArray = mGhostObject->getOverlappingPairCache()->getOverlappingPairArray();
-      int numPairs = pairArray.size();
+      const int numPairs = pairArray.size();
 
       // Set false now, may be set true in test
       mHittingWall = false;

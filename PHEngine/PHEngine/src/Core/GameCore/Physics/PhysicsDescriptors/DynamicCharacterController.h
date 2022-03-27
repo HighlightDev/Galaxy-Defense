@@ -48,7 +48,7 @@ namespace EnginePhysics
 
       virtual ~DynamicCharacterController();
 
-      virtual void CompleteRigidBodyConstruction() override;
+      virtual void CompletePhysicsDescriptorConstruction() override;
 
       virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 

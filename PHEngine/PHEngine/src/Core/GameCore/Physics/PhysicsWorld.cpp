@@ -7,12 +7,12 @@ namespace EnginePhysics
 {
 
    PhysicsWorld::PhysicsWorld()
-       : Event::PhysicsDescriptorRemovedEvent()
-       , mBroadphase(nullptr)
-       , mCollisionConfiguration(nullptr)
-       , mDispatcher(nullptr)
-       , mSolver(nullptr)
-       , mWorld(nullptr)
+       : Event::PhysicsDescriptorRemovedEvent(),
+         mBroadphase(nullptr),
+         mCollisionConfiguration(nullptr),
+         mDispatcher(nullptr),
+         mSolver(nullptr),
+         mWorld(nullptr)
 #if DEBUG
          ,
          mDebugRenderer(new BulletDebugRenderer())
@@ -83,11 +83,19 @@ namespace EnginePhysics
       {
          mWorld->stepSimulation(deltaTime);
 
+         PostPhysicsSimulationUpdate();
+
 #if DEBUG
          mDebugRenderer->ClearLinesBuffer();
          mWorld->debugDrawWorld();
 #endif
       }
+   }
+
+   void PhysicsWorld::PostPhysicsSimulationUpdate()
+   {
+      std::for_each(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [](const auto &descriptor)
+                    { descriptor->PostPhysicsSimulationUpdate(); });
    }
 
 #if DEBUG

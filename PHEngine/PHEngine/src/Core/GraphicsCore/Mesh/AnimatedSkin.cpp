@@ -2,6 +2,8 @@
 
 #include <TinyLogger/LogInterface.h>
 
+using namespace TinyLogger;
+
 namespace Graphics
 {
 	namespace Mesh
@@ -10,12 +12,12 @@ namespace Graphics
 		AnimatedSkin::AnimatedSkin(const VertexArrayObject &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox &boundingBox)
 			: Skin(vao, boundingBox), m_animatedMeshData(animatedMeshData)
 		{
-			TinyLogger::LogProxy::LogMessages("AnimatedSkin::ctor. RootNode name=", std::string(animatedMeshData->RootNode->Name));
+			Logger::Out("AnimatedSkin::ctor. RootNode name=", animatedMeshData->RootNode->Name);
 		}
 
 		AnimatedSkin::~AnimatedSkin()
 		{
-			TinyLogger::LogProxy::LogMessages("AnimatedSkin::dtor");
+			Logger::Out("AnimatedSkin::dtor");
 		}
 
 		void AnimatedSkin::CleanUp()

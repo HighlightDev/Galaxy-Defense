@@ -4,6 +4,8 @@
 
 #include <TinyLogger/LogInterface.h>
 
+using namespace TinyLogger;
+
 Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
     : m_interThreadMgr(interThreadMgr), mInputManager(std::make_shared<InputManager>()), mLastRenderThreadPulseTime(EngineTime::GetCurrentTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetCurrentTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec()
 {
@@ -97,7 +99,7 @@ void Engine::GameThreadPulse()
 
          if (memoryAfterExe > 0)
          {
-            TinyLogger::LogProxy::LogMessages("Engine::GameThread execution. Memory consumption : ", (uint64_t)memoryAfterExe);
+            Logger::Out("Engine::GameThread execution. Memory consumption : ", (uint64_t)memoryAfterExe);
          }*/
       }
    }

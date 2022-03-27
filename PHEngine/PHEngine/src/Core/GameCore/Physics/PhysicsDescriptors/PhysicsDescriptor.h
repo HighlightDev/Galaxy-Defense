@@ -63,11 +63,13 @@ namespace EnginePhysics
 
       virtual ~PhysicsDescriptor();
 
-      virtual void CompleteRigidBodyConstruction() = 0;
+      virtual void CompletePhysicsDescriptorConstruction() = 0;
 
       virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) = 0;
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
+
+      virtual void PostPhysicsSimulationUpdate();
 
       PhysicsShapeBase* GetShape() const;
 

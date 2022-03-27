@@ -23,40 +23,40 @@ namespace TinyLogger
       return result;
    }
 
-   Logger::Logger()
+   LoggerServer::LoggerServer()
       : mLogThreadStarted(false)
    {
 
    }
 
-   Logger* Logger::GetInstance_()
+   LoggerServer* LoggerServer::GetInstance_()
    {
-      static Logger loggerInstance;
+      static LoggerServer loggerInstance;
       return &loggerInstance;
    }
 
-   void Logger::AddLoggerClient(LoggerClientBase* clientBase)
+   void LoggerServer::AddLoggerClient(LoggerClientBase* clientBase)
    {
       mLoggerClients.push_back(clientBase);
    }
 
-   void Logger::StartLogThread()
+   void LoggerServer::StartLogThread()
    {
       if (!mLogThreadStarted)
       {
-         mLogThread = std::thread(std::bind(&Logger::WriteLogMessages, this));
+         mLogThread = std::thread(std::bind(&LoggerServer::WriteLogMessages, this));
          mLogThread.detach();
          mLogThreadStarted = true;
       }
    }
 
-   void Logger::EnqueuLogMessage(LogMessage&& message)
+   void LoggerServer::EnqueuLogMessage(LogMessage&& message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
       mMessageQueue.emplace(message);
    }
 
-   std::string Logger::ConcatMessages()
+   std::string LoggerServer::ConcatMessages()
    {
       std::string result = "";
 
@@ -71,7 +71,7 @@ namespace TinyLogger
       return result;
    }
 
-   void Logger::WriteLogMessages()
+   void LoggerServer::WriteLogMessages()
    {
       while (true)
       {

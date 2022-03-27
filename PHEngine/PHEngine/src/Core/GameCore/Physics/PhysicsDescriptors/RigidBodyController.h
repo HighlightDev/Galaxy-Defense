@@ -16,7 +16,7 @@ namespace EnginePhysics
 
       virtual ~RigidBodyController();
 
-      virtual void CompleteRigidBodyConstruction() override;
+      virtual void CompletePhysicsDescriptorConstruction() override;
 
       virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
