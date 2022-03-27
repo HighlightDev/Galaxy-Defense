@@ -7,7 +7,10 @@
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
 
+#include <TinyLogger/LogInterface.h>
+
 using namespace Graphics;
+using namespace TinyLogger;
 
 namespace EngineCore
 {
@@ -15,6 +18,8 @@ namespace EngineCore
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
        : GameObject("EngineScene"), mPhysicsWorld(new PhysicsWorld()), m_interThreadMgr(interThreadMgr), mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec")), mActiveCameras(), mActorControllers()
    {
+      Logger::Out("Scene::ctor");
+
       RegisterGameObject(this);
       mPhysicsWorld->InitPhysicsWorld();
       ENGINE_PROPERTY(mGameThreadDeltaSec);
@@ -22,6 +27,8 @@ namespace EngineCore
 
    void Scene::PostLevelInit()
    {
+      Logger::Out("Scene::PostLevelInit");
+
       for (auto &actor : mActors)
       {
          actor->SetScene(shared_from_this());
@@ -36,6 +43,8 @@ namespace EngineCore
 
    void Scene::PostPhysicsInitialize()
    {
+      Logger::Out("Scene::PostPhysicsInitialize");
+
       for (auto &actor : mActors)
       {
          actor->PostPhysicsInitialize();
@@ -44,6 +53,8 @@ namespace EngineCore
 
    void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
    {
+      Logger::Out("Scene::RegisterMainCamera; name = ", camera->GetCameraName());
+
       assert(!mMainCamera);
       mMainCamera = camera;
       RegisterCamera(camera);
@@ -51,6 +62,8 @@ namespace EngineCore
 
    void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
    {
+      Logger::Out("Scene::RegisterCamera; name = ", camera->GetCameraName());
+
       mActiveCameras.emplace_back(camera);
       RegisterGameObject(camera.get());
       auto cameraProxyPtr = camera->CreateSceneProxy();
@@ -60,6 +73,8 @@ namespace EngineCore
 
    std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
    {
+      Logger::Out("Scene::RegisterMaterialInstance; name = ", material->MaterialName);
+
       mMaterials.push_back(material);
 
       if (material->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
@@ -151,7 +166,7 @@ namespace EngineCore
          mActors.erase(it);
    }
 
-   void Scene::AddExternalTickableObject(const std::shared_ptr<ITickable>& externalTickableObject)
+   void Scene::AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject)
    {
       mExternalTickableObjects.emplace_back(externalTickableObject);
    }
@@ -188,7 +203,7 @@ namespace EngineCore
    void Scene::AddActorController(std::shared_ptr<ActorController> actorController)
    {
       const auto it = std::find_if(mActorControllers.begin(), mActorControllers.end(), [&](const auto &existingController)
-                          { return existingController->GetBindedActorName() == actorController->GetBindedActorName(); });
+                                   { return existingController->GetBindedActorName() == actorController->GetBindedActorName(); });
       assert(it == mActorControllers.end());
 
       actorController->InitActorController();
@@ -384,6 +399,8 @@ namespace EngineCore
 
    void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
    {
+      Logger::Out("Scene::MaterialProxyAdded_OnRenderThread; material name = ", materialProxy->MaterialName);
+
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
 
@@ -391,7 +408,9 @@ namespace EngineCore
       {
          m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->MaterialProxiesMap[materialProxyIndex] = materialProxy; }));
+                                                     { 
+                                                        Logger::Out("MaterialProxyAdded_OnRenderThread::Job material name = ", materialProxy->MaterialName);
+                                                        sceneRenderer->MaterialProxiesMap[materialProxyIndex] = materialProxy; }));
       }
    }
 
@@ -540,6 +559,8 @@ namespace EngineCore
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
+      Logger::Out("Scene::RegisterComponentSceneProxy; componentName = ", component->GetGameObjectName());
+
       ComponentType type = component->GetComponentType();
       if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
       {

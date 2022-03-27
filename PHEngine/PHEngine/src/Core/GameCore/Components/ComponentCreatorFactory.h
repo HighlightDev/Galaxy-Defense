@@ -77,12 +77,14 @@ namespace EngineCore
                          const ShaderParams &shaderParams,
                          std::shared_ptr<MaterialProxy> materialProxy)
     {
-        TemplatedCompositeMaterialShaderParams<
-            VertexFactoryMaterialCompositeShader<VertexFactoryType, BaseShaderType>>
-            compositeParams(compositeShaderName, shaderParams, materialProxy);
+        TemplatedCompositeMaterialShaderParams compositeParams(compositeShaderName,
+                                                               shaderParams,
+                                                               materialProxy);
+
         return CompositeShaderPool::GetInstance()
             ->template GetOrAllocateResource<VertexFactoryMaterialCompositeShader<
-                VertexFactoryType, BaseShaderType>>(compositeParams);
+                VertexFactoryType,
+                BaseShaderType>>(compositeParams);
     }
 
     std::shared_ptr<MaterialProxy> RegisterMaterialOnScene(class Scene *const scene,

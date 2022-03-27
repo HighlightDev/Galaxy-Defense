@@ -1,7 +1,9 @@
 #include "PhysicsWorld.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 
-#include <iostream>
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
 
 namespace EnginePhysics
 {
@@ -18,11 +20,15 @@ namespace EnginePhysics
          mDebugRenderer(new BulletDebugRenderer())
 #endif
    {
+      Logger::Out("PhysicsWorld::ctor");
+
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(this);
    }
 
    PhysicsWorld::~PhysicsWorld()
    {
+      Logger::Out("PhysicsWorld::dctor");
+
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(this);
 
       for (size_t i = 0; i < mPhysicsDescriptors.size(); ++i)
@@ -66,11 +72,14 @@ namespace EnginePhysics
 
    void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor *inDescriptor)
    {
+      Logger::Out("PhysicsWorld::AddPhysDescriptor; descriptor id = ", inDescriptor->GetId());
+
       mPhysicsDescriptors.push_back(inDescriptor);
    }
 
    void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor)
    {
+      Logger::Out("PhysicsWorld::RemovePhysDescriptorFromSimulation; descriptor id = ", descriptor->GetId());
       // !!! ATTENTION !!!
       // this is the only place,
       // where descriptor could be deleted.

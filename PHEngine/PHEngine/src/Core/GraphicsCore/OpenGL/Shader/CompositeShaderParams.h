@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/GraphicsCore/OpenGL/Shader/ShaderParams.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 
 #include <memory>
@@ -12,67 +12,64 @@ namespace Graphics
    {
       struct CompositeShaderParams
       {
-
-         std::shared_ptr<Shader> mShader;
+         ShaderParams mShaderParams;
          std::string mShaderName;
 
          const uint64_t HASH;
 
-         CompositeShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader)
-            : mShader(shader)
-            , mShaderName(shaderName)
-            , HASH(hash)
+         CompositeShaderParams(const uint64_t hash, const std::string &shaderName, const ShaderParams &shaderParams)
+             : mShaderParams(shaderParams),
+               mShaderName(shaderName),
+               HASH(hash)
          {
          }
 
-         bool operator==(const CompositeShaderParams& other) const {
+         bool operator==(const CompositeShaderParams &other) const
+         {
 
-            return this->mShaderName == other.mShaderName
-               && this->HASH == other.HASH;
+            return this->mShaderName == other.mShaderName && this->HASH == other.HASH;
          }
       };
 
       struct CompositeMaterialShaderParams
-         : public CompositeShaderParams
+          : public CompositeShaderParams
       {
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-         CompositeMaterialShaderParams(const uint64_t hash, const std::string& shaderName, const std::shared_ptr<Shader>& shader, std::shared_ptr<MaterialProxy> materialProxy)
-            : CompositeShaderParams(hash, shaderName, shader)
-            , mMaterialProxy(materialProxy)
+         CompositeMaterialShaderParams(const uint64_t hash,
+                                       const std::string &shaderName,
+                                       const ShaderParams &shaderParams,
+                                       std::shared_ptr<MaterialProxy> materialProxy)
+             : CompositeShaderParams(hash, shaderName, shaderParams), mMaterialProxy(materialProxy)
          {
          }
       };
 
-      template <typename CompositeShaderType>
       struct TemplatedCompositeMaterialShaderParams
-         : public CompositeMaterialShaderParams
+          : public CompositeMaterialShaderParams
       {
 
-         TemplatedCompositeMaterialShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
-            : CompositeMaterialShaderParams(
-               EngineCore::Hash(uniqueName),
-               uniqueName,
-               std::make_shared<typename CompositeShaderType::shader_t>(shaderParams),
-               materialProxy)
+         TemplatedCompositeMaterialShaderParams(const std::string &uniqueName, const ShaderParams &shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
+             : CompositeMaterialShaderParams(
+                   EngineCore::Hash(uniqueName),
+                   uniqueName,
+                   shaderParams,
+                   materialProxy)
          {
-
          }
       };
 
-      template <typename CompositeShaderType>
       struct TemplatedCompositeShaderParams
-         : public CompositeShaderParams
+          : public CompositeShaderParams
       {
 
-         TemplatedCompositeShaderParams(const std::string& uniqueName, const ShaderParams& shaderParams)
-            : CompositeShaderParams(
-               EngineCore::Hash(uniqueName),
-               uniqueName,
-               std::make_shared<typename CompositeShaderType::shader_t>(shaderParams))
+         TemplatedCompositeShaderParams(const std::string &uniqueName, const ShaderParams &shaderParams)
+             : CompositeShaderParams(
+                   EngineCore::Hash(uniqueName),
+                   uniqueName,
+                   shaderParams)
          {
-
          }
       };
    }
@@ -82,14 +79,12 @@ namespace std
 {
    using namespace Graphics::OpenGL;
 
-   template<>
+   template <>
    struct hash<CompositeShaderParams>
    {
-      std::uint64_t operator()(const CompositeShaderParams& k) const
+      std::uint64_t operator()(const CompositeShaderParams &k) const
       {
          return k.HASH;
       }
    };
 }
-
-

@@ -36,10 +36,12 @@ namespace Graphics
 
       bool AVertexFactoryMaterialShaderModule::AssembleShaderSource()
       {
+         assert(GetBaseShader());
+
          const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
          const std::string materialShaderSource = mMaterialShader->GetShaderSource();
-
-         ShaderParams shaderParams = mShader->GetShaderParams();
+         
+         ShaderParams shaderParams = GetBaseShader()->GetShaderParams();
 
          std::string vsSourcePath = shaderParams.VertexShaderFile;
          std::string fsSourcePath = shaderParams.FragmentShaderFile;

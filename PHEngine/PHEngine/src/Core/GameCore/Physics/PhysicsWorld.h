@@ -7,34 +7,33 @@
 
 namespace EnginePhysics
 {
-   class PhysicsWorld 
-      : public ITickable
-      , public Event::PhysicsDescriptorRemovedEvent
+   class PhysicsWorld
+       : public ITickable,
+         public Event::PhysicsDescriptorRemovedEvent
    {
-      btBroadphaseInterface* mBroadphase;
+      btBroadphaseInterface *mBroadphase;
 
-      btDefaultCollisionConfiguration*        mCollisionConfiguration;
+      btDefaultCollisionConfiguration *mCollisionConfiguration;
 
-      btCollisionDispatcher*                  mDispatcher;
+      btCollisionDispatcher *mDispatcher;
 
-      btSequentialImpulseConstraintSolver*    mSolver;
+      btSequentialImpulseConstraintSolver *mSolver;
 
-      btDiscreteDynamicsWorld*                mWorld;
+      btDiscreteDynamicsWorld *mWorld;
 
    private:
-      std::vector<PhysicsDescriptor*> mPhysicsDescriptors;
+      std::vector<PhysicsDescriptor *> mPhysicsDescriptors;
 
 #if DEBUG
-      BulletDebugRenderer* mDebugRenderer;
+      BulletDebugRenderer *mDebugRenderer;
 #endif
 
    public:
-
       PhysicsWorld();
 
       ~PhysicsWorld();
 
-      btDiscreteDynamicsWorld* GetWorld() const;
+      btDiscreteDynamicsWorld *GetWorld() const;
 
       void Tick(const float deltaTime);
 
@@ -42,17 +41,15 @@ namespace EnginePhysics
 
       void InitPhysicsWorld();
 
-      void AddPhysDescriptor(PhysicsDescriptor* inDescriptor);
+      void AddPhysDescriptor(PhysicsDescriptor *inDescriptor);
 
-      void RemovePhysDescriptorFromSimulation(PhysicsDescriptor* descriptor);
+      void RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor);
 
 #if DEBUG
-      const DebugPhysicsRenderData& GetDebugPhysicsRenderData() const;
+      const DebugPhysicsRenderData &GetDebugPhysicsRenderData() const;
 #endif
 
    protected:
-
-      virtual void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t& data) override;
-
+      virtual void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t &data) override;
    };
 }

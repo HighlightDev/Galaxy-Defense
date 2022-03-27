@@ -27,8 +27,7 @@ namespace EnginePhysics
 
    void GhostController::CompletePhysicsDescriptorConstruction()
    {
-      btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
-
+      /*btRigidBody::btRigidBodyConstructionInfo rigidBodyCI(mMass, mMotionState, mShape->GetCollisionShape(), mInertia);
       // No friction, this is done manually
       rigidBodyCI.m_friction = 0.0f;
       rigidBodyCI.m_restitution = 0.0f;
@@ -39,23 +38,22 @@ namespace EnginePhysics
       mRigidBody->setAngularFactor(0.0f);
       mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));
 
-      mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
+      mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);*/
 
       // Ghost object that is synchronized with rigid body
       mGhostObject = new btPairCachingGhostObject();
 
       mGhostObject->setCollisionShape(mShape->GetCollisionShape());
       mGhostObject->setUserPointer(static_cast<PhysicsDescriptor *>(this));
-      mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+      mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
 
-      //mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, btBroadphaseProxy::AllFilter,
-       //                                             btBroadphaseProxy::AllFilter);
+      mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject);
    }
 
    void GhostController::UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime)
    {
       // Sync ghost with actually object
-      mRigidBody->setWorldTransform(mMotionTransform);
+      //mRigidBody->setWorldTransform(mMotionTransform);
       mGhostObject->setWorldTransform(mMotionTransform);
       bIsWorldTransformDiry = false;
    }

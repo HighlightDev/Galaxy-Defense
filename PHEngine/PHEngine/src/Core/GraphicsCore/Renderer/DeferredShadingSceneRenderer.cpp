@@ -18,6 +18,7 @@
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
+#include <TinyLogger/LogInterface.h>
 
 using namespace Resources;
 using namespace Common;
@@ -28,6 +29,7 @@ using namespace Graphics::OpenGL;
 using namespace EngineUtility;
 using namespace EngineCore;
 using namespace IO;
+using namespace TinyLogger;
 
 namespace Graphics
 {
@@ -35,11 +37,20 @@ namespace Graphics
    {
 
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
-          : SceneViewsMap(), bLightProxiesDirty(false), bProxiesDirty(false), bPlanarReflectionProxiesDirty(false), SceneProxiesMap(), LightProxiesMap(), m_interThreadMgr(interThreadMgr), m_gbuffer(
-                                                                                                                                                                                                std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
-                                                                                                                                                                                                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-                                                                                                                                                                                                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+          : SceneViewsMap(),
+            bLightProxiesDirty(false),
+            bProxiesDirty(false),
+            bPlanarReflectionProxiesDirty(false),
+            SceneProxiesMap(),
+            LightProxiesMap(),
+            m_interThreadMgr(interThreadMgr),
+            m_gbuffer(
+                std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
+                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
       {
+         Logger::Out("DeferredShadingSceneRenderer::ctor");
+
          const auto &folderManager = FolderManager::GetInstance();
 
          const ShaderParams depthCollectShaderParams("DepthCollectShader",
@@ -51,14 +62,14 @@ namespace Graphics
                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
 
-         TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> staticMeshParams(
+         TemplatedCompositeShaderParams staticMeshParams(
              "StaticMeshVertexFactory_DepthCollectShader", depthCollectShaderParams);
-         TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> skeletalMeshParams(
+         TemplatedCompositeShaderParams skeletalMeshParams(
              "SkeletalMeshVertexFactory<4>_DepthCollectShader", depthCollectShaderParams);
 
-         TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> staticMeshCompositeParams(
+         TemplatedCompositeShaderParams staticMeshCompositeParams(
              "StaticMeshVertexFactory_PointLightDepthCollectShader", plDepthCollectShaderParams);
-         TemplatedCompositeShaderParams<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> skeletalMeshCompositeParams(
+         TemplatedCompositeShaderParams skeletalMeshCompositeParams(
              "SkeletalMeshVertexFactory<4>_PointLightDepthCollectShader", plDepthCollectShaderParams);
 
          mDepthCollectShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

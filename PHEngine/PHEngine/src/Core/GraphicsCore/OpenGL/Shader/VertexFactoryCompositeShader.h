@@ -7,26 +7,29 @@ namespace Graphics
    {
       template <typename VertexFactoryShaderType, typename ShaderType>
       class VertexFactoryCompositeShader
-         : public AVertexFactoryShaderModule
+          : public AVertexFactoryShaderModule
       {
-      public:
-
-         using vertexFactoryShader_t = VertexFactoryShaderType;
-         using shader_t = ShaderType;
+      protected:
+         std::shared_ptr<Shader> mBaseShader;
 
       public:
-
-         VertexFactoryCompositeShader(const CompositeShaderParams& shaderParams)
-            : AVertexFactoryShaderModule(
-               shaderParams,
-               std::make_shared<vertexFactoryShader_t>())
+         VertexFactoryCompositeShader(const CompositeShaderParams &compositeShaderParams)
+             : AVertexFactoryShaderModule(
+                   compositeShaderParams,
+                   std::make_shared<VertexFactoryShaderType>()),
+               mBaseShader(std::make_shared<ShaderType>(compositeShaderParams.mShaderParams))
          {
             Init();
          }
 
          std::shared_ptr<ShaderType> GetShader() const
          {
-            return std::static_pointer_cast<ShaderType>(mShader);
+            return std::static_pointer_cast<ShaderType>(mBaseShader);
+         }
+
+         virtual std::shared_ptr<Shader> GetBaseShader() const override
+         {
+            return mBaseShader;
          }
 
          std::shared_ptr<VertexFactoryShaderType> GetVertexFactoryShader() const
@@ -36,4 +39,3 @@ namespace Graphics
       };
    }
 }
-

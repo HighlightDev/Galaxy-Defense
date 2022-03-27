@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "IShader.h"
 #include "Core/IoCore/FolderManager.h"
@@ -8,25 +8,29 @@
 #include <fstream>
 #include <algorithm>
 #include <set>
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
 
 namespace Graphics
 {
    namespace OpenGL
    {
-      IShader::IShader(const std::string& shaderName)
-         : m_vertexShaderID(-1)
-         , m_fragmentShaderID(-1)
-         , m_geometryShaderID(-1)
-         , m_shaderProgramID(-1)
-         , mShaderName(shaderName)
+      IShader::IShader(const std::string &shaderName)
+          : m_vertexShaderID(-1),
+            m_fragmentShaderID(-1),
+            m_geometryShaderID(-1),
+            m_shaderProgramID(-1),
+            mShaderName(shaderName)
       {
+         Logger::Out("IShader::ctor; shaderName = ", shaderName);
       }
-   
+
       IShader::~IShader()
       {
       }
 
-      Uniform IShader::GetUniform(const std::string& uniformName, uint32_t shaderProgramID) const
+      Uniform IShader::GetUniform(const std::string &uniformName, uint32_t shaderProgramID) const
       {
          try
          {
@@ -34,14 +38,12 @@ namespace Graphics
          }
          catch (std::invalid_argument innerEx)
          {
-            std::string message;
-            EngineUtility::StringStreamWrapper::ToString("Shader with name", mShaderName, " could not bind uniform(s);", "Inner exception message :", '\n', innerEx.what());
-
-            throw std::invalid_argument(EngineUtility::StringStreamWrapper::FlushString());
+            Logger::Out("IShader::GetUniform; shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
+            throw std::invalid_argument("IShader::GetUniform could not bind uniform");
          }
       }
 
-      UniformArray IShader::GetUniformArray(const std::string& uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const
+      UniformArray IShader::GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const
       {
          try
          {
@@ -49,14 +51,12 @@ namespace Graphics
          }
          catch (std::invalid_argument innerEx)
          {
-            std::string message;
-            EngineUtility::StringStreamWrapper::ToString("Shader with name", mShaderName, " could not bind uniform(s);", "Inner exception message :", '\n', innerEx.what());
-
-            throw std::invalid_argument(EngineUtility::StringStreamWrapper::FlushString());
+            Logger::Out("IShader::GetUniform; shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
+            throw std::invalid_argument("IShader::GetUniform could not bind uniform");
          }
       }
 
-      std::vector<std::string> IShader::LoadShaderSrcVector(const std::string& pathToShader) const
+      std::vector<std::string> IShader::LoadShaderSrcVector(const std::string &pathToShader) const
       {
          std::ifstream stream(pathToShader);
          std::string line;
@@ -74,7 +74,7 @@ namespace Graphics
          return code;
       }
 
-      bool IShader::ProcessShaderIncludes(std::string& shaderSource)
+      bool IShader::ProcessShaderIncludes(std::string &shaderSource)
       {
          bool bProcessInclude = false;
 
@@ -104,7 +104,7 @@ namespace Graphics
                         includes.insert(name);
                         name.erase(std::remove(name.begin(), name.end(), '\"'), name.end()); // remove quotes
 
-                        const std::string& absolutePath = IO::FolderManager::GetInstance()->GetShaderCommonPath() + name;
+                        const std::string &absolutePath = IO::FolderManager::GetInstance()->GetShaderCommonPath() + name;
                         includingSources += LoadShaderSource(absolutePath) + "\n";
                      }
                      it = sourceVector.erase(it);
@@ -128,8 +128,9 @@ namespace Graphics
          return bProcessInclude;
       }
 
-      bool IShader::SendToGpuSingleShaderSource(int32_t shaderId, const std::string& shaderSource) const
+      bool IShader::SendToGpuSingleShaderSource(int32_t shaderId, const std::string &shaderSource) const
       {
+         Logger::Out("IShader::SendToGpuSingleShaderSource; shaderId = ", shaderId);
          bool bLoadResult = false;
 
          try
@@ -141,13 +142,12 @@ namespace Graphics
          }
          catch (...)
          {
-
          }
 
          return bLoadResult;
       }
 
-      std::string IShader::LoadShaderSource(const std::string& pathToShader) const
+      std::string IShader::LoadShaderSource(const std::string &pathToShader) const
       {
          std::string result = "";
 
@@ -168,7 +168,7 @@ namespace Graphics
          return result;
       }
 
-      bool IShader::SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource)
+      bool IShader::SendToGpuShadersSources(std::string &vsSource, std::string &gsSource, std::string &fsSource)
       {
          bool bVertexShaderLoaded = true, bFragmentShaderLoaded = true, bGeometryShaderLoaded = true;
 
@@ -196,15 +196,14 @@ namespace Graphics
          return bVertexShaderLoaded && bFragmentShaderLoaded && bGeometryShaderLoaded;
       }
 
-      void IShader::WriteShaderSrc(const std::string& pathToShader, const std::string& src) const
+      void IShader::WriteShaderSrc(const std::string &pathToShader, const std::string &src) const
       {
          std::ofstream writeStream(pathToShader);
          writeStream << src;
       }
 
-      std::string IShader::GetPredefinedSource(std::vector<std::string>& shaderSourceVector, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const
+      std::string IShader::GetPredefinedSource(std::vector<std::string> &shaderSourceVector, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
       {
-
          // src only with macros
          std::vector<ShaderGenericDefineConstant> existingConstantDefines;
          std::vector<ShaderGenericDefine> existingDefines;
@@ -217,7 +216,7 @@ namespace Graphics
                size_t indexValue = EngineUtility::IndexOf(*it, " ", indexName + 1);
 
                const std::string name = it->substr(indexName + 1, indexValue - indexName - 1);
-              
+
                if (std::string::npos == indexValue)
                {
                   existingDefines.emplace_back(name, true);
@@ -321,7 +320,7 @@ namespace Graphics
 
          for (std::vector<std::string>::iterator it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it)
          {
-            std::string& str = *it;
+            std::string &str = *it;
             str = EngineUtility::TrimEnd(str);
 
             if (shaderSourceVector.end() - 1 != it)
@@ -333,21 +332,21 @@ namespace Graphics
          return codeResult;
       }
 
-      void IShader::ProcessPredefineToSource(std::string& shaderSource, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const
+      void IShader::ProcessPredefineToSource(std::string &shaderSource, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
       {
          auto shaderSrc = EngineUtility::Split(shaderSource, '\n');
 
          shaderSource = GetPredefinedSource(shaderSrc, constantDefines, defines);
       }
 
-      void IShader::ProcessPredefineToFile(const std::string& pathToShader, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const
+      void IShader::ProcessPredefineToFile(const std::string &pathToShader, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
       {
          if (pathToShader == "")
             return;
 
          auto shaderSrc = LoadShaderSrcVector(pathToShader);
 
-         const std::string& result = GetPredefinedSource(shaderSrc, constantDefines, defines);
+         const std::string &result = GetPredefinedSource(shaderSrc, constantDefines, defines);
 
          WriteShaderSrc(pathToShader, result);
       }
@@ -358,7 +357,6 @@ namespace Graphics
          glCompileShader(m_fragmentShaderID);
          glCompileShader(m_geometryShaderID);
       }
-
 
       void IShader::LinkShaders() const
       {
@@ -414,7 +412,6 @@ namespace Graphics
             }
          }
 
-
          GLint geometry_compiled = 0;
          /*Geometry shader log info*/
          if (m_geometryShaderID != -1)
@@ -439,7 +436,7 @@ namespace Graphics
 
       std::string IShader::GetLinkLogInfo() const
       {
-         std::string  linkLog;
+         std::string linkLog;
          EngineUtility::StringStreamWrapper::FlushString(); // Just to clear stream
          GLint isLinked = 0;
          glGetProgramiv(m_shaderProgramID, GL_LINK_STATUS, &isLinked);
@@ -486,6 +483,7 @@ namespace Graphics
 
       void IShader::CleanUp(bool bDeleteShaderProgram)
       {
+         Logger::Out("IShader::CleanUp; bDeleteShaderProgram = ", bDeleteShaderProgram);
          StopShader();
          glDetachShader(m_shaderProgramID, m_vertexShaderID);
          glDetachShader(m_shaderProgramID, m_fragmentShaderID);

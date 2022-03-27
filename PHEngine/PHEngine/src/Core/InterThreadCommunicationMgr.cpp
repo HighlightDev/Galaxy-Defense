@@ -3,11 +3,12 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/Assertion.h"
 
-#include <iostream>
 #include <algorithm>
+#include <TinyLogger/LogInterface.h>
 
 using namespace EngineCore;
 using namespace Graphics::Renderer;
+using namespace TinyLogger;
 
 namespace Thread
 {
@@ -15,10 +16,12 @@ namespace Thread
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
        : mRenderThreadSwapChain()
    {
+      Logger::Out("InterThreadCommunicationMgr::ctor");
    }
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()
    {
+      Logger::Out("InterThreadCommunicationMgr::dctor");
    }
 
    void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<DeferredShadingSceneRenderer> sceneRenderer)
@@ -92,7 +95,8 @@ namespace Thread
          const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
                                                [&](const Job &collectionJob)
                                                {
-                                                  return (collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId() && collectionJob.GetFunctionId() == job.GetFunctionId());
+                                                  return ((collectionJob.GetCreatorObjectId() == job.GetCreatorObjectId()) &&
+                                                          (collectionJob.GetFunctionId() == job.GetFunctionId()));
                                                });
 
          if (jobs.end() == duplicateIt)
