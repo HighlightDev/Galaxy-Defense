@@ -11,7 +11,8 @@ namespace EnginePhysics
    {
       STATIC,  // deactivates when velocity is 0
       DYNAMIC, // never deactivates
-      KINEMATIC // deactivates + cannot be applied linear velocity to body
+      KINEMATIC, // deactivates + cannot be applied linear velocity to body
+      GHOST
    };
 
    struct MotionModifiers
@@ -69,7 +70,7 @@ namespace EnginePhysics
 
       virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) = 0;
 
-      virtual void PostPhysicsSimulationUpdate();
+      virtual void PostPhysicsSimulationUpdate(const float deltaTime);
 
       PhysicsShapeBase* GetShape() const;
 

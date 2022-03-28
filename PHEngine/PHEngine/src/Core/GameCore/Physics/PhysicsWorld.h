@@ -37,7 +37,7 @@ namespace EnginePhysics
 
       void Tick(const float deltaTime);
 
-      void PostPhysicsSimulationUpdate();
+      void PostPhysicsSimulationUpdate(const float deltaTime);
 
       void InitPhysicsWorld();
 

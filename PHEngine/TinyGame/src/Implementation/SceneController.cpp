@@ -86,7 +86,7 @@ namespace Game
                                               glm::vec3(1.0));
 
             std::srand(std::time(nullptr));
-            for (size_t i = 0; i < 4; i++)
+            for (size_t i = 0; i < 1; i++)
             {
                 static constexpr float x_axisHalfWidth = 50.0f;
                 static constexpr float y_axisHalfHeight = 30.0f;

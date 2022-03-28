@@ -39,7 +39,7 @@ namespace EnginePhysics
       delete mMotionState;
    }
 
-   void PhysicsDescriptor::PostPhysicsSimulationUpdate()
+   void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTime)
    {
 
    }

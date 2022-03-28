@@ -92,7 +92,7 @@ namespace EnginePhysics
       {
          mWorld->stepSimulation(deltaTime);
 
-         PostPhysicsSimulationUpdate();
+         PostPhysicsSimulationUpdate(deltaTime);
 
 #if DEBUG
          mDebugRenderer->ClearLinesBuffer();
@@ -101,10 +101,10 @@ namespace EnginePhysics
       }
    }
 
-   void PhysicsWorld::PostPhysicsSimulationUpdate()
+   void PhysicsWorld::PostPhysicsSimulationUpdate(const float deltaTime)
    {
-      std::for_each(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [](const auto &descriptor)
-                    { descriptor->PostPhysicsSimulationUpdate(); });
+      std::for_each(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [=](const auto &descriptor)
+                    { descriptor->PostPhysicsSimulationUpdate(deltaTime); });
    }
 
 #if DEBUG

@@ -32,5 +32,10 @@ namespace Graphics
 		{
 			return nullptr;
 		}
+
+		size_t VertexBufferObjectBase::GetDescriptor() const
+		{
+			return m_descriptor;
+		}
 	}
 }

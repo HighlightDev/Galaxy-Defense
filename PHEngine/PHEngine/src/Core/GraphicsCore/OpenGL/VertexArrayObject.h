@@ -28,7 +28,7 @@ namespace Graphics
          VertexBufferObjectBase* GetVboByIndex(const size_t index) const;
 
 			template <typename Arg, typename ...Args>
-			void AddVBO(Arg&& p_vbo, Args... p_vbos)
+			void AddVBO(Arg&& p_vbo, Args&&... p_vbos)
 			{
 				if (p_vbo != nullptr)
 				{

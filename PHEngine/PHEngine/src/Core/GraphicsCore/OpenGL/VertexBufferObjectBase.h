@@ -37,6 +37,8 @@ namespace Graphics
 			virtual void CleanUp() = 0;
 
 			virtual void* GetData();
+
+			size_t GetDescriptor() const;
 		};
 	}
 }
