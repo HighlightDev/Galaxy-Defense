@@ -11,7 +11,7 @@ using namespace EnginePhysics;
 
 namespace EngineCore
 {
-   class MovementComponentData;
+   struct MovementComponentData;
 
    class HumanoidPhysicsMovementComponent
        : public MovementComponent,

@@ -7,7 +7,7 @@
 using namespace TinyLogger;
 
 Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
-    : m_interThreadMgr(interThreadMgr), mInputManager(std::make_shared<InputManager>()), mLastRenderThreadPulseTime(EngineTime::GetCurrentTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetCurrentTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec()
+    : m_interThreadMgr(interThreadMgr), mInputManager(std::make_shared<InputManager>()), mLastRenderThreadPulseTime(EngineTime::GetNowTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetNowTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec()
 {
 }
 
@@ -88,7 +88,7 @@ void Engine::GameThreadPulse()
          {
             // This should be executed on game thread
             m_level->TickLevel(static_cast<float>(mGameThreadDeltaTimeSeconds));
-            mLastGameThreadPulseTime = EngineTime::GetCurrentTime();
+            mLastGameThreadPulseTime = EngineTime::GetNowTime();
             mGameThreadSumDeltaTimeSec = 0.0;
          }
 
@@ -117,7 +117,7 @@ void Engine::RenderThreadPulse()
       // mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
       m_interThreadMgr.SpinRenderThreadJobs();
       m_sceneRenderer->RenderScene_RenderThread();
-      // mLastRenderThreadPulseTime = EngineTime::GetCurrentTime();
+      // mLastRenderThreadPulseTime = EngineTime::GetNowTime();
    }
 }
 

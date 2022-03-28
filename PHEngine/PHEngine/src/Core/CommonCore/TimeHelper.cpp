@@ -3,14 +3,14 @@
 namespace EngineCore
 {
 
-    Moment_t EngineTime::GetCurrentTime()
+    Moment_t EngineTime::GetNowTime()
     {
         return Clock_t::now();
     }
 
     Duration_t EngineTime::GetPassedDuration(const Moment_t &lastTime)
     {
-        return GetCurrentTime() - lastTime;
+        return GetNowTime() - lastTime;
     }
 
     double EngineTime::GetSecondsFromDuration(const Duration_t &duration)

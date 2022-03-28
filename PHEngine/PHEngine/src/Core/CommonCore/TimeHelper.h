@@ -9,7 +9,7 @@ namespace EngineCore
 {
     struct EngineTime
     {
-        static Moment_t GetCurrentTime();
+        static Moment_t GetNowTime();
 
         static Duration_t GetPassedDuration(const Moment_t &lastTime);
 
