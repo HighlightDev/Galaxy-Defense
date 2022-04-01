@@ -42,7 +42,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
                proxyPtr->SetMoveFactor(m_moveFactor); });
@@ -76,7 +76,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
@@ -95,7 +95,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
@@ -129,7 +129,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
                                            {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
@@ -148,7 +148,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
                                            {
 
                WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());

@@ -38,8 +38,8 @@ void Engine::PlayLevel(std::shared_ptr<Level> level)
    m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
    PostLevelInit();
-
    PostPhysicsInitialize();
+   PostPlayLevelFinished();
 
    m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
 }
@@ -51,7 +51,7 @@ InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
 
 void Engine::PreLevelInit()
 {
-   EventDispatcher::GetInstance()->RegisterEventsByType<CameraTransformChangedEvent, PlayerMovedEvent, PhysicsSimulationUpdatedEvent, KeyboardButtonDownEvent, KinematicBodyMovedEvent, TextureAtlasGeneratedEvent, MouseMovedEvent, MouseScrollEvent>();
+   EventDispatcher::GetInstance()->RegisterEventsByType<CameraTransformChangedEvent, PlayerMovedEvent, PhysicsComponentUpdatedEvent, KeyboardButtonDownEvent, KinematicBodyMovedEvent, TextureAtlasGeneratedEvent, MouseMovedEvent, MouseScrollEvent>();
 
    m_level->PreLevelInit();
 }
@@ -67,6 +67,11 @@ void Engine::PostPhysicsInitialize()
    m_level->PostPhysicsInitialize();
 }
 
+void Engine::PostPlayLevelFinished()
+{
+   m_level->PostPlayLevelFinished();
+}
+
 void Engine::GameThreadPulse()
 {
    while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst))
@@ -79,7 +84,7 @@ void Engine::GameThreadPulse()
          mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
 
          /* Events: pre execution */
-         ProcessEvents(Event::ExecutionOrder::PRE_EXECUTION);
+         ProcessEvents(Event::eExecutionOrder::PRE_EXECUTION);
 
          /* Work Jobs */
          m_interThreadMgr.SpinGameThreadJobs();
@@ -93,7 +98,7 @@ void Engine::GameThreadPulse()
          }
 
          /* Events: post execution */
-         ProcessEvents(Event::ExecutionOrder::POST_EXECUTION);
+         ProcessEvents(Event::eExecutionOrder::POST_EXECUTION);
 
          /*const uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemorySize();
 
@@ -105,7 +110,7 @@ void Engine::GameThreadPulse()
    }
 }
 
-void Engine::ProcessEvents(Event::ExecutionOrder order)
+void Engine::ProcessEvents(Event::eExecutionOrder order)
 {
    Event::EventDispatcher::GetInstance()->ProcessEvents(order);
 }

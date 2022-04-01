@@ -32,7 +32,7 @@ namespace Game
 
       const auto &rootComponent = m_actor->GetBaseRootComponent();
       assert(rootComponent);
-      PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+      PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
 
       const auto &primitiveComponents = m_actor->GetComponentsByType<PrimitiveComponent>();
       assert(primitiveComponents.size());
@@ -58,6 +58,9 @@ namespace Game
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
       assert(m_actor);
+
+      if (!m_actor->IsEnabled())
+         return;
 
       if ("" == mCurrentState)
       {
@@ -148,7 +151,7 @@ namespace Game
 
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
             {
-               MainPlayerActionEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
+               MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
             }
 
             if (bMoveCommitted)
@@ -171,7 +174,7 @@ namespace Game
          if (bMoveCommitted || m_actor->GetTweener()->IsTransitionActive())
          {
             const auto &rootComponent = m_actor->GetBaseRootComponent();
-            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+            PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
    }

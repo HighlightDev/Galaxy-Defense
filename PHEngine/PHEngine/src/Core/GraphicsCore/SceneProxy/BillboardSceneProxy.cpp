@@ -5,10 +5,16 @@ namespace Graphics
    namespace Proxy
    {
 
-      BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent* component)
-         : PrimitiveSceneProxy(component->IsVisible(), component->GetRelativeMatrix(), component->GetRenderData().m_skin, nullptr, nullptr, nullptr)
-         , m_billboardShader(std::static_pointer_cast<BillboardShader>(component->GetRenderData().m_shader))
-         , m_billboardTexture(component->GetRenderData().m_texture)
+      BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent *component)
+          : PrimitiveSceneProxy(component->IsEnabled(),
+                                component->IsVisible(),
+                                component->GetRelativeMatrix(),
+                                component->GetRenderData().m_skin,
+                                nullptr,
+                                nullptr,
+                                nullptr),
+            m_billboardShader(std::static_pointer_cast<BillboardShader>(component->GetRenderData().m_shader)),
+            m_billboardTexture(component->GetRenderData().m_texture)
       {
       }
 
@@ -16,7 +22,7 @@ namespace Graphics
       {
       }
 
-      void BillboardSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void BillboardSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          auto billboardShader = m_billboardShader;
 
@@ -31,12 +37,13 @@ namespace Graphics
          billboardShader->StopShader();
       }
 
-      bool BillboardSceneProxy::IsDeferred() const 
+      bool BillboardSceneProxy::IsDeferred() const
       {
          return false;
       }
 
-      eMeshFacing BillboardSceneProxy::GetMeshFrontFace() const {
+      eMeshFacing BillboardSceneProxy::GetMeshFrontFace() const
+      {
          return eMeshFacing::COUNTER_CLOCK_WISE;
       }
 

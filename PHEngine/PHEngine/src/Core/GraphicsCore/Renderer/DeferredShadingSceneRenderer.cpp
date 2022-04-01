@@ -89,7 +89,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PostLevelInit()
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(EnqueueJobPolicy::PUSH_ANYWAY,
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(0, 0, [=]()
                                                      {
             for (auto& lightProxy : LightProxiesMap)

@@ -1,6 +1,7 @@
 #include "PhysicsDescriptor.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
 using namespace EngineMath;
 
@@ -18,7 +19,7 @@ namespace EnginePhysics
 
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers &motionModifier)
+   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers &motionModifier)
        : mBodyType(bodyType), mPhysicsWorld(pPhysicsWorld), mCurrentId(PhysicsDescriptor::mTotalIds++), mShape(shape), mMotionState(new btDefaultMotionState()), mMass(mass), mInertia(), mRigidBody(nullptr), mRotator(), mTranslation(), mVelocity(), mPrevTransform(), mMotionModifier(motionModifier)
    {
       if (!CompareFloats(mass, 0.0f))
@@ -41,15 +42,14 @@ namespace EnginePhysics
 
    void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTime)
    {
-
    }
-
+   void SetCollisionEnabled(const bool isEnabled);
    float PhysicsDescriptor::GetMass() const
    {
       return mMass;
    }
 
-   PhysicsBodyType PhysicsDescriptor::GetPhysicsBodyType() const
+   ePhysicsBodyType PhysicsDescriptor::GetPhysicsBodyType() const
    {
       return mBodyType;
    }
@@ -115,5 +115,14 @@ namespace EnginePhysics
       assert(mRigidBody);
       btTransform &worldTransform = mRigidBody->getWorldTransform();
       worldTransform.setRotation(rotator);
+   }
+
+   void PhysicsDescriptor::SetIsCollisionEnabled(const bool isCollisionEnabled)
+   {
+      assert(mRigidBody);
+      const int collisionMask = isCollisionEnabled
+                                    ? mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE
+                                    : mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE;
+      mRigidBody->setCollisionFlags(collisionMask);
    }
 }

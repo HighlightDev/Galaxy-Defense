@@ -37,7 +37,7 @@ namespace EngineCore
          it->State = key.State;
       }
 
-      KeyboardButtonDownEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, mKeyboardMaskVec);
+      KeyboardButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mKeyboardMaskVec);
    }
 
    void InputManager::TriggerOnMouseMove(const int32_t x, const int32_t y)
@@ -48,12 +48,12 @@ namespace EngineCore
       mPrevMouseX = x;
       mPrevMouseY = y;
 
-      MouseMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
+      MouseMovedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
    }
 
    void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection)
    {
-      MouseScrollEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, scrollDirection);
+      MouseScrollEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
    }
 
 }

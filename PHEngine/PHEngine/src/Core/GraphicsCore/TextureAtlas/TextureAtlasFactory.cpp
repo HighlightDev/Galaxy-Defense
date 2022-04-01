@@ -159,8 +159,8 @@ namespace Graphics
 
       std::for_each(mTextureAtlasHandlers.begin(), mTextureAtlasHandlers.end(), [](const auto& texAtlasHandlerPair) { texAtlasHandlerPair.second->NotifyTextureAtlasBuilded(); });
 
-      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, TextureType::TEXTURE_2D);
-      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, TextureType::TEXTURE_CUBE);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_2D);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_CUBE);
 
    }
 
@@ -174,7 +174,7 @@ namespace Graphics
    {
       for (auto& atlas : m_textureAtlases)
       {
-         if (atlas->GetType() == TextureType::TEXTURE_2D)
+         if (atlas->GetType() == eTextureType::TEXTURE_2D)
          {
             TextureAtlas2D* ptr = static_cast<TextureAtlas2D*>(atlas.get());
             std::map<size_t, TextureAtlasCell>::const_iterator it = ptr->Cells.find(requestId);
@@ -197,7 +197,7 @@ namespace Graphics
                break;
             }
          }
-         else if (atlas->GetType() == TextureType::TEXTURE_CUBE)
+         else if (atlas->GetType() == eTextureType::TEXTURE_CUBE)
          {
             TextureAtlasCube* ptr = static_cast<TextureAtlasCube*>(atlas.get());
             if (ptr->m_sizes.first == requestId)

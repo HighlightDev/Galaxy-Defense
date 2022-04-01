@@ -2,7 +2,7 @@
 
 #include "PlayerMovedEvent.h"
 #include "CameraTransformChangedEvent.h"
-#include "PhysicsSimulationUpdatedEvent.h"
+#include "PhysicsComponentUpdatedEvent.h"
 #include "KeyboardInputEvent.h"
 #include "KinematicBodyMovedEvent.h"
 #include "TextureAtlasGeneratedEvent.h"
@@ -55,7 +55,7 @@ namespace Event
          m_eventInstances.clear();
       }
 
-      void ProcessEvents(ExecutionOrder order)
+      void ProcessEvents(eExecutionOrder order)
       {
          for (const auto &eventInstance : m_eventInstances)
          {

@@ -30,6 +30,8 @@ namespace EngineCore
 
       virtual void PostLevelInit();
 
+      virtual void PostPlayLevelFinished();
+
       virtual void TickLevel(const float deltaTime);
 
       virtual void LoadLevel();

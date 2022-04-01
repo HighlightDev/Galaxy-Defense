@@ -3,7 +3,7 @@
 #include "LightComponent.h"
 #include "Core/GraphicsCore/RenderData/DirectionalLightRenderData.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
-#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
@@ -16,7 +16,7 @@ namespace EngineCore
    class DirectionalLightComponent 
       : public LightComponent
       , public PlayerMovedEvent
-      , public PhysicsSimulationUpdatedEvent
+      , public PhysicsComponentUpdatedEvent
    {
 
       using Base = LightComponent;
@@ -42,7 +42,7 @@ namespace EngineCore
    protected:
 
       virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 
    private:
 

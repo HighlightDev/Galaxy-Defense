@@ -3,6 +3,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 
 #include <iostream>
 
@@ -114,7 +115,7 @@ namespace EngineCore
             if (auto physCompSP = spOwner->GetPhysicsComponent())
             {
                const auto physDescriptor = physCompSP->GetDescriptor();
-               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, physDescriptor, transform);
+               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
             }
          }
       }

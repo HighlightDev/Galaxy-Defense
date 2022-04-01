@@ -154,7 +154,7 @@ function CreateTestLevel(host)
 		local shape = _CreatePhysicsBoxShape(host, 50, 1, 50)
 		local floorPhysDesc = _CreateRigidBodyController(host, shape, "STATIC_BODY", 0.0)
 		local physData = _CreatePhysicsComponentData(host, "FloorPhysicsComp", floorPhysDesc)
-		local phyComponent = _CreateComponent(host, "PhysicsComponent", physData)
+		local phyComponent = _CreateComponent(host, "RigidBodyPhysicsComponent", physData)
 		_AttachComponentToActor(host, "Ground", phyComponent)
 	end
 
@@ -208,7 +208,7 @@ function CreateTestLevel(host)
 		local shape2 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 		local floorPhysDesc2 = _CreateRigidBodyController(host, shape2, "STATIC_BODY", 0.0)
 		local physData2 = _CreatePhysicsComponentData(host, "smallFloorPhysComp1", floorPhysDesc2)
-		local phyComponent2 = _CreateComponent(host, "PhysicsComponent", physData2)
+		local phyComponent2 = _CreateComponent(host, "RigidBodyPhysicsComponent", physData2)
 		_AttachComponentToActor(host, "SmallGround1", phyComponent2)
 	end
 
@@ -274,7 +274,7 @@ function CreateTestLevel(host)
 		_AddCompoundChildShape(host, compoundShape, _CreatePhysicsSphereShape(host, 5), 4, 0, 0, 0 ,0 ,0)
 		local testDesc = _CreateRigidBodyController(host, compoundShape, "DYNAMIC_BODY", 1000.0)
 		local testCompData = _CreatePhysicsComponentData(host, "testPhyComp", testDesc)
-		_AttachComponentToActor(host, "test",  _CreateComponent(host, "PhysicsComponent", testCompData))
+		_AttachComponentToActor(host, "test",  _CreateComponent(host, "RigidBodyPhysicsComponent", testCompData))
 	end
 
 	-- ***************************SKYBOX******************** --

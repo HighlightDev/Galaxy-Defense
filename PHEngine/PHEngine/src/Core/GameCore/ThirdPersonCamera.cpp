@@ -37,7 +37,7 @@ namespace EngineCore
    void ThirdPersonCamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
    {
       ACamera::UpdateRotationMatrix(deltaX, deltaY);
-      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::PRE_EXECUTION, this);
+      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
    }
 
    void ThirdPersonCamera::PostLevelInit()

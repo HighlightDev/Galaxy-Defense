@@ -1,7 +1,7 @@
 #include "PointLightComponent.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Components/ComponentData/PointLightComponentData.h"
@@ -22,7 +22,7 @@ namespace EngineCore
 
       if (mLightRenderData->ShadowInfo)
       {
-         PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
          KinematicBodyMovedEvent::GetInstance()->AddListener(this);
          PlayerMovedEvent::GetInstance()->AddListener(this);
       }
@@ -32,7 +32,7 @@ namespace EngineCore
    {
       if (mLightRenderData->ShadowInfo)
       {
-         PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
          KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
          PlayerMovedEvent::GetInstance()->RemoveListener(this);
       }
@@ -89,7 +89,7 @@ namespace EngineCore
       actorData.ComponentsData.emplace_back(lightCompData);
    }
 
-   void PointLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
@@ -116,7 +116,7 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
                auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
                ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();

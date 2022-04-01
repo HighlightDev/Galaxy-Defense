@@ -392,7 +392,7 @@ struct SerializeDataPhysicsComponent
 {
    std::shared_ptr<SerializeDataPhysicsShape> PhysicsShape;
 
-   PhysicsBodyType BodyType;
+   ePhysicsBodyType BodyType;
    /*Motion modifiers*/
    glm::vec3 LinearFactor;
    glm::vec3 AngularFactor;

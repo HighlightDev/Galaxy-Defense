@@ -31,11 +31,11 @@ namespace Graphics
       for (const auto &attachmentToTexture : mRenderTextures)
       {
          const auto &renderTexture = attachmentToTexture.second;
-         if (renderTexture->GetTextureType() == TextureType::TEXTURE_2D)
+         if (renderTexture->GetTextureType() == eTextureType::TEXTURE_2D)
          {
             glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentToTexture.first, GL_TEXTURE_2D, renderTexture->GetTextureDescriptor(), 0);
          }
-         else if (renderTexture->GetTextureType() == TextureType::TEXTURE_CUBE)
+         else if (renderTexture->GetTextureType() == eTextureType::TEXTURE_CUBE)
          {
             glFramebufferTexture(GL_FRAMEBUFFER, attachmentToTexture.first, renderTexture->GetTextureDescriptor(), 0);
          }

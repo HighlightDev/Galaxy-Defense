@@ -53,7 +53,7 @@ namespace Graphics
 
          virtual float GetTextureAspectRatio() const override;
 
-         virtual TextureType GetTextureType() const override;
+         virtual eTextureType GetTextureType() const override;
 
 		private:
 

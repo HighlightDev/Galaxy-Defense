@@ -19,7 +19,7 @@ namespace EngineMath
       return (dst - src) * factor + src;
    }
 
-   glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3& position1, const glm::vec3& position2)
+   glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3 &position1, const glm::vec3 &position2)
    {
       glm::vec3 resultPosition = glm::vec3(0);
 
@@ -33,42 +33,53 @@ namespace EngineMath
       return resultPosition;
    }
 
-   glm::quat SLerpQuat(float t, const glm::quat& src, const glm::quat& dst)
+   glm::quat SLerpQuat(float t, const glm::quat &src, const glm::quat &dst)
    {
       return glm::lerp(src, dst, t);
    }
 
-   float GetDistancePlaneToPointVec3(const glm::vec3& point, const glm::vec4& plane, float w)
+   float GetDistancePlaneToPointVec3(const glm::vec3 &point, const glm::vec4 &plane, float w)
    {
-      const glm::vec3& normal = glm::vec3(plane);
+      const glm::vec3 &normal = glm::vec3(plane);
       const float distance = glm::dot(point, normal) + w;
       return distance;
    }
 
-   void TestAABBPlane(const glm::vec3& origin, const glm::vec3& extent, const glm::vec4& plane, float& outDistanceOriginToPlane, float& outAbsExtentOnNormalProjected) 
+   void TestAABBPlane(const glm::vec3 &origin, const glm::vec3 &extent, const glm::vec4 &plane, float &outDistanceOriginToPlane, float &outAbsExtentOnNormalProjected)
    {
-      const glm::vec3& planeNormal = glm::vec3(plane);
-      const glm::vec3& absNormal = glm::abs(planeNormal);
+      const glm::vec3 &planeNormal = glm::vec3(plane);
+      const glm::vec3 &absNormal = glm::abs(planeNormal);
       outAbsExtentOnNormalProjected = glm::abs(glm::dot(extent, absNormal));
       outDistanceOriginToPlane = glm::dot(planeNormal, origin) + plane.w;
    }
 
-   glm::quat EulerAnglesToQuat(const glm::vec3& eulerAngles)
+   bool TestPointInAABB(const glm::vec3 &aabbMin, const glm::vec3 &aabbMax, const glm::vec3 &point)
+   {
+      if ((point.x < aabbMin.x || point.y < aabbMin.y || point.z < aabbMin.z) ||
+          (point.x > aabbMax.x || point.y > aabbMax.y || point.z > aabbMax.z))
+      {
+         return false;
+      }
+      return true;
+   }
+
+   glm::quat EulerAnglesToQuat(const glm::vec3 &eulerAngles)
    {
       return glm::quat(glm::vec3(DEG_TO_RAD(eulerAngles.x), DEG_TO_RAD(eulerAngles.y), DEG_TO_RAD(eulerAngles.z)));
    }
 
-   glm::mat4 BuildMirrorMatrix(const glm::vec4& mirrorPlane) {
+   glm::mat4 BuildMirrorMatrix(const glm::vec4 &mirrorPlane)
+   {
       const glm::mat4 mirrorMatrix(
-         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.x + 1.f, -2.f*mirrorPlane.y*mirrorPlane.x, -2.f*mirrorPlane.z*mirrorPlane.x, 0.f),
-         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.y, -2.f*mirrorPlane.y*mirrorPlane.y + 1.f, -2.f*mirrorPlane.z*mirrorPlane.y, 0.f),
-         glm::vec4(-2.f*mirrorPlane.x*mirrorPlane.z, -2.f*mirrorPlane.y*mirrorPlane.z, -2.f*mirrorPlane.z*mirrorPlane.z + 1.f, 0.f),
-         glm::vec4(2.f*mirrorPlane.x*mirrorPlane.w, 2.f*mirrorPlane.y*mirrorPlane.w, 2.f*mirrorPlane.z*mirrorPlane.w, 1.f));
+          glm::vec4(-2.f * mirrorPlane.x * mirrorPlane.x + 1.f, -2.f * mirrorPlane.y * mirrorPlane.x, -2.f * mirrorPlane.z * mirrorPlane.x, 0.f),
+          glm::vec4(-2.f * mirrorPlane.x * mirrorPlane.y, -2.f * mirrorPlane.y * mirrorPlane.y + 1.f, -2.f * mirrorPlane.z * mirrorPlane.y, 0.f),
+          glm::vec4(-2.f * mirrorPlane.x * mirrorPlane.z, -2.f * mirrorPlane.y * mirrorPlane.z, -2.f * mirrorPlane.z * mirrorPlane.z + 1.f, 0.f),
+          glm::vec4(2.f * mirrorPlane.x * mirrorPlane.w, 2.f * mirrorPlane.y * mirrorPlane.w, 2.f * mirrorPlane.z * mirrorPlane.w, 1.f));
 
       return mirrorMatrix;
    }
 
-   glm::vec3 QuatToEulerAngles(const glm::quat& rotationQuat)
+   glm::vec3 QuatToEulerAngles(const glm::quat &rotationQuat)
    {
       static constexpr float radToDeg = 180.f / 3.14159f;
       return glm::eulerAngles(rotationQuat) * radToDeg;

@@ -27,13 +27,13 @@ namespace Graphics
 
       std::shared_ptr<ITexture> m_atlasTexture;
 
-      TextureType m_type = TextureType::UNDEFINED;
+      eTextureType m_type = eTextureType::UNDEFINED;
 
    public:
 
       ~TextureAtlas() = default;
 
-      TextureType GetType() const;
+      eTextureType GetType() const;
    };
 
    class TextureAtlas2D : public TextureAtlas

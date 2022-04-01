@@ -2,7 +2,7 @@
 
 #include "LightComponent.h"
 #include "Core/GraphicsCore/RenderData/PointLightRenderData.h"
-#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 
@@ -18,7 +18,7 @@ namespace EngineCore
 
    class PointLightComponent
       : public LightComponent
-      , public PhysicsSimulationUpdatedEvent
+      , public PhysicsComponentUpdatedEvent
       , public KinematicBodyMovedEvent
       , public PlayerMovedEvent
    {
@@ -42,7 +42,7 @@ namespace EngineCore
 
    protected:
 
-      virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
       virtual void ProcessEvent(const typename KinematicBodyMovedEvent::EventData_t& data) override;
       virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
 

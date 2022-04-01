@@ -25,6 +25,8 @@ namespace Game
 
       virtual void PostLevelInit();
 
+      virtual void PostPlayLevelFinished() override;
+
       void RunLuaBuildLevelScript();
 
    private:

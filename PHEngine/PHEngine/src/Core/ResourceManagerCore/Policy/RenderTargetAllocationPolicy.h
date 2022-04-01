@@ -14,10 +14,10 @@ namespace Resources
    {
    public:
 
-      template <typename TextureType = Texture2d, typename TextureParamsModel>
+      template <typename eTextureType = Texture2d, typename TextureParamsModel>
       static inline std::shared_ptr<ITexture> AllocateMemory(const TextureParamsModel& texParams)
       {
-         return std::make_shared<TextureType>(texParams);
+         return std::make_shared<eTextureType>(texParams);
       }
 
       static inline void DeallocateMemory(std::shared_ptr<ITexture> arg)

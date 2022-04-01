@@ -8,15 +8,15 @@
 namespace EngineCore
 {
 
-   HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor)
+   HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera> &playerCamera, const std::shared_ptr<Actor> &actor)
        : ActorController(actor), m_camera(playerCamera), m_inputComponent()
    {
-      PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+      PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
    }
 
    HumanoidPlayerController::~HumanoidPlayerController()
    {
-      PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
    void HumanoidPlayerController::InitActorController()
@@ -29,12 +29,12 @@ namespace EngineCore
       m_inputComponent = m_actor->GetInputComponent();
       assert(m_inputComponent);
 
-      PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+      PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   void HumanoidPlayerController::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
+   void HumanoidPlayerController::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
    {
-      const std::string& actorName = std::move(std::get<0>(data));
+      const std::string &actorName = std::move(std::get<0>(data));
 
       assert(m_actor);
 
@@ -42,7 +42,7 @@ namespace EngineCore
       {
          if (auto rootComponent = m_actor->GetBaseRootComponent())
          {
-            PlayerMovedEvent::GetInstance()->SendEvent(ExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
+            PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
    }
@@ -50,6 +50,9 @@ namespace EngineCore
    void HumanoidPlayerController::Tick(float deltaTime)
    {
       assert(m_actor);
+
+      if (!m_actor->IsEnabled())
+         return;
 
       std::shared_ptr<SceneComponent> rootComponent = m_actor->GetBaseRootComponent();
 

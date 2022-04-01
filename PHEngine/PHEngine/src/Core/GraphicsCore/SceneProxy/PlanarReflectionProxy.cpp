@@ -7,7 +7,7 @@ using namespace EngineCore;
 namespace Graphics {
 
    PlanarReflectionProxy::PlanarReflectionProxy(PlanarReflectionComponent const* planarReflectionComponent)
-      : SceneProxyBase()
+      : SceneProxyBase(planarReflectionComponent->IsEnabled())
       , mRenderTargetViewPortInfo(planarReflectionComponent->GetRenderTargetViewPortInfo())
       , mReflectionPlane(planarReflectionComponent->GetReflectionPlane())
       , mPlanarReflectionFBO(std::make_unique<PlanarReflectionFramebuffer>(mRenderTargetViewPortInfo))

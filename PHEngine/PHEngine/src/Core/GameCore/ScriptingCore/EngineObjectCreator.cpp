@@ -17,7 +17,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+#include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
@@ -124,9 +124,9 @@ namespace EngineCore
       {
          result = scene->CreateComponent_GameThread<SkeletalMeshComponent, eComponentMetaType::SkeletalMesh>(*componentData);
       }
-      else if ("PhysicsComponent" == componentType)
+      else if ("RigidBodyPhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PhysicsComponent, eComponentMetaType::Physics>(*componentData);
+         result = scene->CreateComponent_GameThread<RigidBodyPhysicsComponent, eComponentMetaType::Physics>(*componentData);
       }
       else if ("CharacterPhysicsComponent" == componentType)
       {
@@ -228,12 +228,12 @@ namespace EngineCore
    PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape,
                                                                      const std::string &bodyType, const float mass)
    {
-      const PhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? PhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? PhysicsBodyType::KINEMATIC
-                                                                                                                              : PhysicsBodyType::DYNAMIC;
+      const ePhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? ePhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? ePhysicsBodyType::KINEMATIC
+                                                                                                                              : ePhysicsBodyType::DYNAMIC;
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 
-   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const PhysicsBodyType &bodyType, const float mass)
+   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const ePhysicsBodyType &bodyType, const float mass)
    {
       return new RigidBodyController(physWorld, phyShape, bodyType, mass);
    }

@@ -4,9 +4,9 @@ namespace Graphics
 {
    size_t SceneProxyBase::SceneProxyIdCounter = 0;
 
-   SceneProxyBase::SceneProxyBase()
+   SceneProxyBase::SceneProxyBase(const bool isEnabled)
       : mSceneProxyId(SceneProxyIdCounter)
-      , mIsEnabled(true)
+      , mIsEnabled(isEnabled)
    {
       SceneProxyIdCounter++;
    }

@@ -59,6 +59,10 @@ namespace EngineCore
       }
    }
 
+   void Actor::PostPlayLevelFinished()
+   {
+   }
+
    void Actor::PostLevelInit()
    {
       if (mTweener)
@@ -244,17 +248,23 @@ namespace EngineCore
       UpdateRootComponentTransform();
 
       // Update physics
-      if (m_physicsComponent)
+      if (m_physicsComponent && m_physicsComponent->IsEnabled())
       {
          m_physicsComponent->Tick(deltaTime);
       }
 
-      m_rootComponent->Tick(deltaTime);
+      if (m_rootComponent && m_rootComponent->IsEnabled())
+      {
+         m_rootComponent->Tick(deltaTime);
+      }
 
       for (auto &component : m_allComponents)
       {
-         // tick all children components
-         component->Tick(deltaTime);
+         if (component->IsEnabled())
+         {
+            // tick all children components
+            component->Tick(deltaTime);
+         }
       }
 
       for (const auto &childWp : m_children)
@@ -266,17 +276,17 @@ namespace EngineCore
          }
       }
 
-      if (m_inputComponent)
+      if (m_inputComponent && m_inputComponent->IsEnabled())
       {
          m_inputComponent->Tick(deltaTime);
       }
 
-      if (m_movementComponent)
+      if (m_movementComponent && m_movementComponent->IsEnabled())
       {
          m_movementComponent->Tick(deltaTime);
       }
 
-      if (mTweener)
+      if (mTweener && mIsEnabled)
       {
          mTweener->Tick(deltaTime);
       }
@@ -392,6 +402,21 @@ namespace EngineCore
          for (const auto &component : m_allComponents)
          {
             component->SetIsEnabled(isEnabled);
+         }
+
+         if (m_inputComponent)
+         {
+            m_inputComponent->SetIsEnabled(isEnabled);
+         }
+
+         if (m_movementComponent)
+         {
+            m_movementComponent->SetIsEnabled(isEnabled);
+         }
+
+         if (m_physicsComponent)
+         {
+            m_physicsComponent->SetIsEnabled(isEnabled);
          }
 
          for (const auto &wpChild : m_children)

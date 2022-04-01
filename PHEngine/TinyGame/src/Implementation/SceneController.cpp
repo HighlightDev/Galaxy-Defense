@@ -12,6 +12,8 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <random>
 #include <utility>
@@ -53,6 +55,43 @@ namespace Game
     {
     }
 
+    void SceneController::PostInit()
+    {
+        if (const auto &sceneSp = mScene.lock())
+        {
+            CreateWeaponBulletPool(5, sceneSp);
+
+            std::srand(std::time(nullptr));
+            for (size_t i = 0; i < 1; i++)
+            {
+                static constexpr float x_axisHalfWidth = 50.0f;
+                static constexpr float y_axisHalfHeight = 30.0f;
+                const float x = get_random(0.5f, 10.0f);
+                const float scale = glm::clamp(x, 0.5f, 3.0f);
+                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
+                                        0, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                        50 + (i * i) + 2);
+                const auto &a_enemyShip = CreateEnemySpaceShip(sceneSp,
+                                                               startPosition,
+                                                               glm::vec3(),
+                                                               glm::vec3(9));
+
+                mEnemies.emplace_back(a_enemyShip);
+            }
+        }
+    }
+
+    void SceneController::PostPlayLevelFinished()
+    {
+        for (const auto &bulletPair : mWeaponBulletsPool)
+        {
+            if (const auto &bulletSp = bulletPair.first.lock())
+            {
+                bulletSp->SetIsEnabled(false); // disable all bullets at level start
+            }
+        }
+    }
+
     void SceneController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
     {
         if (!bIsCoolDownInProgress)
@@ -63,44 +102,8 @@ namespace Game
             {
                 if (const auto &mainPlayerSp = mMainPlayerShip.lock())
                 {
-                    const auto &playerTranslation = mainPlayerSp->GetRootComponent()->GetTranslation();
-                    const auto &a_bulletShip = CreateWeaponBullet(sceneSp,
-                                                                  playerTranslation,
-                                                                  glm::vec3(),
-                                                                  glm::vec3(1.0));
-
-                    mWeaponBulletsPool.emplace_back(a_bulletShip);
+                    ShootBullet(mainPlayerSp->GetRootComponent()->GetTranslation());
                 }
-            }
-        }
-    }
-
-    void SceneController::PostInit()
-    {
-        if (const auto &sceneSp = mScene.lock())
-        {
-            // due to resource lazy upload to pool - create dummy bullet with all necessary resources, which will be used further
-            mDummyBullet = CreateWeaponBullet(sceneSp,
-                                              glm::vec3(10000000000),
-                                              glm::vec3(),
-                                              glm::vec3(1.0));
-
-            std::srand(std::time(nullptr));
-            for (size_t i = 0; i < 1; i++)
-            {
-                static constexpr float x_axisHalfWidth = 50.0f;
-                static constexpr float y_axisHalfHeight = 30.0f;
-                const float x = get_random(0.5f, 10.0f);
-                const float scale = glm::clamp(x, 0.5f, 3.0f);
-                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0,//((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
-                                        50 + (i * i) + 2);
-                const auto &a_enemyShip = CreateEnemySpaceShip(sceneSp,
-                                                               startPosition,
-                                                               glm::vec3(),
-                                                               glm::vec3(9));
-
-                mEnemies.emplace_back(a_enemyShip);
             }
         }
     }
@@ -120,6 +123,9 @@ namespace Game
 
     void SceneController::Tick(const float deltaTime)
     {
+        // Test bullets if they are still inside level bounds
+        FlushToPoolUsedBullets();
+
         if (bIsCoolDownInProgress)
         {
             mDeltaTime += deltaTime;
@@ -149,7 +155,7 @@ namespace Game
                     static constexpr float y_axisHalfHeight = 20.0f;
                     const float x = get_random(1.0f, 10.0f);
                     glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                            0.0f,//((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                            0.0f, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
                                             60.0f);
                     const auto &c_movement = enemySp->GetMovementComponent();
                     c_movement->Teleport(startPosition);
@@ -271,9 +277,74 @@ namespace Game
 
         a_bullet->AddComponent(c_movement);
 
+        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
+        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+        PhysicsComponentData physData("c_bulletPhysicsComponent_" + shipBulletIndexStr, ghostController);
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
+        a_bullet->AddComponent(c_ghostPhysics);
+
         const auto &bulletActorController = std::make_shared<AiActorController>(a_bullet);
         scene->AddActorController(bulletActorController);
 
         return a_bullet;
+    }
+
+    void SceneController::CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp)
+    {
+        for (size_t i = 0; i < poolSize; ++i)
+        {
+            const auto &a_shipBullet = CreateWeaponBullet(sceneSp,
+                                                          glm::vec3(0),
+                                                          glm::vec3(),
+                                                          glm::vec3(1.0));
+
+            mWeaponBulletsPool.emplace_back(std::make_pair(a_shipBullet, eBulletState::IDLE));
+        }
+    }
+
+    void SceneController::ShootBullet(const glm::vec3 &bulletStartPosition)
+    {
+        auto idleBulletIt = std::find_if(mWeaponBulletsPool.begin(), mWeaponBulletsPool.end(), [](const auto &bulletPair)
+                                         { return bulletPair.second == eBulletState::IDLE; });
+
+        if (idleBulletIt == mWeaponBulletsPool.end())
+        {
+            Logger::Out("SceneController::ShootBullet. Error - no idle bullets in the pool");
+            return;
+        }
+
+        if (const auto &bulletSp = idleBulletIt->first.lock())
+        {
+            bulletSp->SetIsEnabled(true);
+            bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
+            idleBulletIt->second = eBulletState::ACTIVE;
+            Logger::Out("SceneController::ShootBuller. Successfull shoot.");
+        }
+    }
+
+    void SceneController::FlushToPoolUsedBullets()
+    {
+        for (auto &weaponPair : mWeaponBulletsPool)
+        {
+            if (auto weaponSP = weaponPair.first.lock())
+            {
+                const auto &bulletPosition = weaponSP->GetRootComponent()->GetTranslation();
+                const bool bBulletInsideLevel = EngineMath::TestPointInAABB(mLevelBounds.GetMin(), mLevelBounds.GetMax(), bulletPosition);
+
+                if (!bBulletInsideLevel)
+                {
+                    weaponSP->SetIsEnabled(false);
+                    weaponSP->GetRootComponent()->SetTranslation(glm::vec3(0));
+                    weaponPair.second = eBulletState::IDLE;
+
+                    Logger::Out("SceneController::FlushToPoolUsedBullets. Flush bullet to pool. Position = ",
+                                bulletPosition, " . Actor name = ", weaponSP->GetName());
+                }
+            }
+            else
+            {
+                Logger::Out("SceneController::FlushToPoolUsedBullets. Error: Bullet was destroyed!");
+            }
+        }
     }
 }

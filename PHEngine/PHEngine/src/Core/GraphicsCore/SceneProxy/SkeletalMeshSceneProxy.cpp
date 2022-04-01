@@ -10,14 +10,16 @@ namespace Graphics
    namespace Proxy
    {
 
-      SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent* component)
-         : PrimitiveSceneProxy(component->IsVisible()
-            , component->GetRelativeMatrix()
-            , component->GetRenderData().m_skin
-            , component->GetRenderData().m_materialShader
-            , component->GetRenderData().m_planarReflectionShader
-            , component->GetRenderData().mMaterialProxy)
-         , mAnimationPlayer(nullptr)
+      SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent *component)
+          : PrimitiveSceneProxy(
+                component->IsEnabled(),
+                component->IsVisible(),
+                component->GetRelativeMatrix(),
+                component->GetRenderData().m_skin,
+                component->GetRenderData().m_materialShader,
+                component->GetRenderData().m_planarReflectionShader,
+                component->GetRenderData().mMaterialProxy),
+            mAnimationPlayer(nullptr)
       {
          std::shared_ptr<AnimatedSkin> spt_AnimatedSkin = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
 
@@ -40,9 +42,9 @@ namespace Graphics
          return std::static_pointer_cast<SkeletalMeshSceneProxy::PlanarReflectionShaderType>(m_planarReflectionShader);
       }
 
-      void SkeletalMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SkeletalMeshSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& shader = GetShader();
+         const auto &shader = GetShader();
 
          shader->ExecuteShader();
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
@@ -52,9 +54,9 @@ namespace Graphics
          shader->StopShader();
       }
 
-      void SkeletalMeshSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SkeletalMeshSceneProxy::RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& planarReflectionShader = GetPlanarReflectionShader();
+         const auto &planarReflectionShader = GetPlanarReflectionShader();
 
          planarReflectionShader->ExecuteShader();
          planarReflectionShader->GetShader()->SetClipPlane(plane);
@@ -66,19 +68,19 @@ namespace Graphics
       }
 
       void SkeletalMeshSceneProxy::UpdateAnimationData(bool transtionEnabled, const float transitionValue,
-         const float srcAnimationTime, const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName)
+                                                       const float srcAnimationTime, const float dstAnimationTime, const std::string &srcAnimationName, const std::string &dstAnimationName)
       {
          mAnimationPlayer->SetSrcAnimationName(srcAnimationName);
          mAnimationPlayer->SetDstAnimationName(dstAnimationName);
          mAnimationPlayer->SetSrcAnimationTime(srcAnimationTime);
          mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
          mAnimationPlayer->SetTransitionParameter(transtionEnabled, transitionValue);
-      
+
          bAnimationDataIsDirty = true;
       }
 
       void SkeletalMeshSceneProxy::UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
-         const float dstAnimationTime, const size_t srcAnimationIndex, const size_t dstAnimationIndex)
+                                                       const float dstAnimationTime, const size_t srcAnimationIndex, const size_t dstAnimationIndex)
       {
          mAnimationPlayer->SetSrcAnimationTime(srcAnimationTime);
          mAnimationPlayer->SetDstAnimationTime(dstAnimationTime);
@@ -94,7 +96,7 @@ namespace Graphics
          return ePrimitiveProxyType::SKELETAL_MESH_PROXY;
       }
 
-      const std::vector<glm::mat4>& SkeletalMeshSceneProxy::GetSkinningMatrices() const
+      const std::vector<glm::mat4> &SkeletalMeshSceneProxy::GetSkinningMatrices() const
       {
          if (bAnimationDataIsDirty)
          {

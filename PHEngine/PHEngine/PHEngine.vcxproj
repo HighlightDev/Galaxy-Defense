@@ -508,7 +508,7 @@
     <ClInclude Include="src\Core\CommonCore\VariableWrapper.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\CubemapComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.h" />
-    <ClInclude Include="src\Core\GameCore\Event\PhysicsSimulationUpdatedEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsComponentUpdatedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PlayerMovedEvent.h" />
     <ClInclude Include="src\Core\GameCore\GameObject.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CubemapShader.h" />

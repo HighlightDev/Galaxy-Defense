@@ -7,18 +7,20 @@ namespace Graphics
    namespace Proxy
    {
 
-      WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent* component)
-         : PrimitiveSceneProxy(component->IsVisible()
-            , component->GetRelativeMatrix()
-            , component->GetRenderData().m_skin
-            , component->GetRenderData().m_materialShader
-            , nullptr
-            , component->GetRenderData().mMaterialProxy)
-         , m_moveFactor(component->GetMoveFactor())
-         , m_waveStrength(component->GetWaveStrength())
-         , m_transparencyDepth(component->GetTransparencyDepth())
-         , m_nearClipPlane(component->GetNearClipPlane())
-         , m_farClipPlane(component->GetFarClipPlane())
+      WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent *component)
+          : PrimitiveSceneProxy(
+                component->IsEnabled(),
+                component->IsVisible(),
+                component->GetRelativeMatrix(),
+                component->GetRenderData().m_skin,
+                component->GetRenderData().m_materialShader,
+                nullptr,
+                component->GetRenderData().mMaterialProxy),
+            m_moveFactor(component->GetMoveFactor()),
+            m_waveStrength(component->GetWaveStrength()),
+            m_transparencyDepth(component->GetTransparencyDepth()),
+            m_nearClipPlane(component->GetNearClipPlane()),
+            m_farClipPlane(component->GetFarClipPlane())
       {
          Init();
       }
@@ -37,7 +39,7 @@ namespace Graphics
          // m_waterPlaneFramebuffer = std::make_unique<WaterPlaneFramebuffer>();
       }
 
-      void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor) 
+      void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor)
       {
          m_moveFactor = moveFactor;
       }
@@ -77,9 +79,9 @@ namespace Graphics
          return false;
       }
 
-      void WaterPlaneSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void WaterPlaneSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& shader = GetShader();
+         const auto &shader = GetShader();
 
          shader->ExecuteShader();
          shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);

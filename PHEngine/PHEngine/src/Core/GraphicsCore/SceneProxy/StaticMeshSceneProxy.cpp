@@ -5,13 +5,14 @@ namespace Graphics
    namespace Proxy
    {
 
-      StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent* component)
-         : PrimitiveSceneProxy(component->IsVisible()
-            , component->GetRelativeMatrix()
-            , component->GetRenderData().m_skin
-            , component->GetRenderData().m_materialShader
-            , component->GetRenderData().m_planarReflectionShader
-            , component->GetRenderData().mMaterialProxy)
+      StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent *component)
+          : PrimitiveSceneProxy(
+                component->IsEnabled(), component->IsVisible(),
+                component->GetRelativeMatrix(),
+                component->GetRenderData().m_skin,
+                component->GetRenderData().m_materialShader,
+                component->GetRenderData().m_planarReflectionShader,
+                component->GetRenderData().mMaterialProxy)
       {
       }
 
@@ -29,9 +30,9 @@ namespace Graphics
          return std::static_pointer_cast<StaticMeshSceneProxy::PlanarReflectionShaderType>(m_planarReflectionShader);
       }
 
-      void StaticMeshSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void StaticMeshSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& shader = GetShader();
+         const auto &shader = GetShader();
 
          shader->ExecuteShader();
          shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
@@ -40,9 +41,9 @@ namespace Graphics
          shader->StopShader();
       }
 
-      void StaticMeshSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void StaticMeshSceneProxy::RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& planarReflectionShader = GetPlanarReflectionShader();
+         const auto &planarReflectionShader = GetPlanarReflectionShader();
 
          planarReflectionShader->ExecuteShader();
          planarReflectionShader->GetShader()->SetClipPlane(plane);

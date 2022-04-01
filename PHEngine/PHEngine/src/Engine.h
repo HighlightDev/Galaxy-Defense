@@ -55,7 +55,9 @@ public:
 
    void PostPhysicsInitialize();
 
-   void ProcessEvents(Event::ExecutionOrder order);
+   void PostPlayLevelFinished();
+
+   void ProcessEvents(Event::eExecutionOrder order);
 
    void GameThreadPulse();
 

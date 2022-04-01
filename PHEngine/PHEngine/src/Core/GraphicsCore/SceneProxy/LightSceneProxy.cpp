@@ -5,13 +5,18 @@ namespace Graphics
    namespace Proxy
    {
 
-      LightSceneProxy::LightSceneProxy(glm::mat4 relativeMatrix, glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, ProjectedShadowInfo* shadowInfo)
-         : SceneProxyBase()
-         , m_relativeMatrix(relativeMatrix)
-         , m_shadowInfo(shadowInfo)
-         , AmbientColor(ambientColor)
-         , DiffuseColor(diffuseColor)
-         , SpecularColor(specularColor)
+      LightSceneProxy::LightSceneProxy(const bool isEnabled,
+                                       const glm::mat4 &relativeMatrix,
+                                       const glm::vec3 &ambientColor,
+                                       const glm::vec3 &diffuseColor,
+                                       const glm::vec3 &specularColor,
+                                       ProjectedShadowInfo *shadowInfo)
+          : SceneProxyBase(isEnabled),
+            m_relativeMatrix(relativeMatrix),
+            m_shadowInfo(shadowInfo),
+            AmbientColor(ambientColor),
+            DiffuseColor(diffuseColor),
+            SpecularColor(specularColor)
       {
       }
 
@@ -24,7 +29,7 @@ namespace Graphics
       {
       }
 
-      void LightSceneProxy::SetTransformationMatrix(const glm::mat4& relativeMatrix)
+      void LightSceneProxy::SetTransformationMatrix(const glm::mat4 &relativeMatrix)
       {
          m_relativeMatrix = relativeMatrix;
          SetIsTransformationDirty(true);
@@ -40,7 +45,8 @@ namespace Graphics
          bTransformationDirty = value;
       }
 
-      ProjectedShadowInfo* LightSceneProxy::GetShadowInfo() {
+      ProjectedShadowInfo *LightSceneProxy::GetShadowInfo()
+      {
 
          return m_shadowInfo;
       }

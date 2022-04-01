@@ -79,7 +79,7 @@ namespace EngineCore
 
       static PhysicsDescriptor *CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const std::string &bodyType,
                                                           const float mass);
-      static PhysicsDescriptor *CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const PhysicsBodyType &bodyType,
+      static PhysicsDescriptor *CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const ePhysicsBodyType &bodyType,
                                                           const float mass);
       static PhysicsDescriptor *CreateDynamicCharacterController(PhysicsWorld *physWorld, float capsuleRadius, float capsuleHeight,
                                                                  float mass, float stepHeight);

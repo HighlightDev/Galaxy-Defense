@@ -23,13 +23,13 @@ namespace Graphics
 
       std::shared_ptr<ITexture> m_atlasResource;
 
-      TextureType m_texType;
+      eTextureType m_texType;
 
    public:
 
       TextureAtlasHandler(const std::shared_ptr<ITexture>& resource)
          : m_atlasResource(resource)
-         , m_texType(TextureType::UNDEFINED)
+         , m_texType(eTextureType::UNDEFINED)
       {
       }
 
@@ -38,7 +38,7 @@ namespace Graphics
          return m_atlasResource;
       }
 
-      inline TextureType GetTextureType() const
+      inline eTextureType GetTextureType() const
       {
          return m_texType;
       }
@@ -58,7 +58,7 @@ namespace Graphics
          : TextureAtlasHandler(resource)
          , m_atlasCell(cell)
       {
-         m_texType = TextureType::TEXTURE_2D;
+         m_texType = eTextureType::TEXTURE_2D;
       }
 
       inline TextureAtlasCell GetAtlasCell() const
@@ -104,7 +104,7 @@ namespace Graphics
       TextureCubeAtlasHandler(const std::shared_ptr<ITexture>& resource)
          : TextureAtlasHandler(resource)
       {
-         m_texType = TextureType::TEXTURE_CUBE;
+         m_texType = eTextureType::TEXTURE_CUBE;
       }
 
       virtual void NotifyTextureAtlasBuilded() override

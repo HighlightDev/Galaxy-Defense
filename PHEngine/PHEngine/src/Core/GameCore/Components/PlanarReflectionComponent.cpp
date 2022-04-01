@@ -64,7 +64,7 @@ namespace EngineCore {
          {
             if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
             {
-               sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
                   PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
                   auto resourceTexture = proxyPtr->GetPlanarReflectionTexture();
@@ -125,7 +125,7 @@ namespace EngineCore {
       {
          if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
 
                PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
                proxyPtr->SetReflectionPlane(mReflectionPlane);

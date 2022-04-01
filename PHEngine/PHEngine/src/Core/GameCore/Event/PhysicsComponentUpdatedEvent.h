@@ -8,7 +8,7 @@
 namespace Event
 {
 
-   class PhysicsSimulationUpdatedEvent
+   class PhysicsComponentUpdatedEvent
       : public TEvent<SingleDataEventPolicy<std::string>>
    {
    public:

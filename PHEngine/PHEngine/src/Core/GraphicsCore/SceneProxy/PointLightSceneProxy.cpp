@@ -12,6 +12,7 @@ namespace Graphics
 
       PointLightSceneProxy::PointLightSceneProxy(const PointLightComponent* component)
          : LightSceneProxy(
+            component->IsEnabled(),
             component->GetRelativeMatrix(),
             component->GetRenderData()->Ambient,
             component->GetRenderData()->Diffuse,

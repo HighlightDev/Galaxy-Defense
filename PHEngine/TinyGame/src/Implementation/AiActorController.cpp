@@ -16,6 +16,9 @@ namespace Game
 
     void AiActorController::Tick(const float deltaTime)
     {
+        if (!m_actor->IsEnabled())
+            return;
+            
         m_movementComponent->Move();
 
         const auto &moveDirection = m_movementComponent->GetDirection();

@@ -1,20 +1,12 @@
 #pragma once
 
 #include "Shapes/PhysicsShapeBase.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
 #include <BulletPhys/btBulletDynamicsCommon.h>
 
 namespace EnginePhysics
 {
-
-   enum class PhysicsBodyType
-   {
-      STATIC,  // deactivates when velocity is 0
-      DYNAMIC, // never deactivates
-      KINEMATIC, // deactivates + cannot be applied linear velocity to body
-      GHOST
-   };
-
    struct MotionModifiers
    {
       btVector3 LinearFactor;
@@ -31,7 +23,7 @@ namespace EnginePhysics
 
       static size_t mTotalIds;
 
-      const PhysicsBodyType mBodyType;
+      const ePhysicsBodyType mBodyType;
 
       size_t mCurrentId;
 
@@ -60,7 +52,7 @@ namespace EnginePhysics
 
    public:
 
-      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const PhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
+      PhysicsDescriptor(class PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const ePhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers& motionModifier = MotionModifiers());
 
       virtual ~PhysicsDescriptor();
 
@@ -78,7 +70,7 @@ namespace EnginePhysics
 
       float GetMass() const;
 
-      PhysicsBodyType GetPhysicsBodyType() const;
+      ePhysicsBodyType GetPhysicsBodyType() const;
 
       MotionModifiers GetMotionModifiers() const;
 
@@ -97,6 +89,8 @@ namespace EnginePhysics
       void SetTranslation(const btVector3& translation);
 
       void SetRotator(const btQuaternion& rotator);
+
+      virtual void SetIsCollisionEnabled(const bool isEnabled);
    };
 
 }

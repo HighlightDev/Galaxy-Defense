@@ -10,14 +10,15 @@ using namespace EngineCore;
 
 namespace EnginePhysics {
 
-   class GhostPhysicsComponent 
+   class RigidBodyPhysicsComponent 
       : public PhysicsComponent
    {
+
    public:
 
-      GhostPhysicsComponent(const PhysicsComponentData& data);
+      RigidBodyPhysicsComponent(const PhysicsComponentData& data);
 
-      virtual ~GhostPhysicsComponent();
+      virtual ~RigidBodyPhysicsComponent();
 
       virtual void Tick(const float deltaTime) override;
 

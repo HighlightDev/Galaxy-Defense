@@ -34,7 +34,7 @@ namespace EngineCore
 
 namespace Thread
 {
-   enum class EnqueueJobPolicy
+   enum class eEnqueueJobPolicy
    {
       IF_DUPLICATE_NO_PUSH,
       IF_DUPLICATE_REPLACE_AND_PUSH,
@@ -89,9 +89,9 @@ namespace Thread
 
       ~InterThreadCommunicationMgr();
 
-      void EmplaceGameThreadJob(const EnqueueJobPolicy, Job &&job);
+      void EmplaceGameThreadJob(const eEnqueueJobPolicy, Job &&job);
 
-      void EmplaceRenderThreadJob(const EnqueueJobPolicy, Job &&job);
+      void EmplaceRenderThreadJob(const eEnqueueJobPolicy, Job &&job);
 
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();
@@ -108,11 +108,11 @@ namespace Thread
       std::weak_ptr<EngineCore::Scene> TryGetSceneWP() const;
 
    private:
-      void ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job &&job);
+      void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 
-      void ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job &&job);
+      void ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 
-      void ProcessPushJob(const EnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs);
+      void ProcessPushJob(const eEnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs);
 
       void SwapRenderThreadChain();
    };

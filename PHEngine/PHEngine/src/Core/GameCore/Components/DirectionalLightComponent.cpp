@@ -27,7 +27,7 @@ namespace EngineCore
       if (mLightRenderData->ShadowInfo)
       {
          PlayerMovedEvent::GetInstance()->AddListener(this);
-         PhysicsSimulationUpdatedEvent::GetInstance()->AddListener(this);
+         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
       }
    }
 
@@ -36,7 +36,7 @@ namespace EngineCore
       if (mLightRenderData->ShadowInfo)
       {
          PlayerMovedEvent::GetInstance()->RemoveListener(this);
-         PhysicsSimulationUpdatedEvent::GetInstance()->RemoveListener(this);
+         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
       }
    }
 
@@ -104,7 +104,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
                auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
                ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
@@ -124,7 +124,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 
-            sceneSP->ExecuteOnRenderThread(EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
                auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
                if (  ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo())
@@ -140,7 +140,7 @@ namespace EngineCore
       }
    }
 
-   void DirectionalLightComponent::ProcessEvent(const PhysicsSimulationUpdatedEvent::EventData_t &data)
+   void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
    {
       ForceUpdateShadowMap();
    }

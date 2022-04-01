@@ -3,6 +3,7 @@
 #include "Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/Transform.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
 #include <glm/gtx/projection.hpp>
 
@@ -34,7 +35,7 @@ namespace EnginePhysics
 
    DynamicCharacterController::DynamicCharacterController(
       PhysicsWorld* pPhysicsWorld, float radius, float height, float mass, float stepHeight)
-      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), PhysicsBodyType::DYNAMIC, mass)
+      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), ePhysicsBodyType::DYNAMIC, mass)
       , mGhostObject(nullptr)
       , mOnGround(false)
       , mHittingWall(false)

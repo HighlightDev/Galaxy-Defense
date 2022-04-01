@@ -2,24 +2,29 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/Transform.h"
+#include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
 
 #include <glm/gtx/projection.hpp>
 #include <TinyLogger/LogInterface.h>
 
 using namespace TinyLogger;
+using namespace Event;
 
 namespace EnginePhysics
 {
    GhostController::GhostController(
-       PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const float mass)
-       : PhysicsDescriptor(pPhysicsWorld, shape, PhysicsBodyType::GHOST, mass),
+       PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape,
+       const float mass,
+       const int32_t collisionFilterGroup,
+       const int32_t collisionFilterMask)
+       : PhysicsDescriptor(pPhysicsWorld, shape, ePhysicsBodyType::GHOST, mass),
          btCollisionWorld::ContactResultCallback(),
          mGhostObject(nullptr),
          mMotionTransform(),
          mCollisionCooldown(0.0f)
    {
-      m_collisionFilterGroup = btBroadphaseProxy::DefaultFilter;
-      m_collisionFilterMask = btBroadphaseProxy::StaticFilter;
+      m_collisionFilterGroup = collisionFilterGroup;
+      m_collisionFilterMask = collisionFilterMask;
    }
 
    GhostController::~GhostController()
@@ -41,7 +46,16 @@ namespace EnginePhysics
       mGhostObject->setUserPointer(static_cast<PhysicsDescriptor *>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
 
-      mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject);
+      mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, m_collisionFilterGroup, m_collisionFilterMask);
+   }
+
+   void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
+   {
+      assert(mGhostObject);
+      const int collisionMask = isCollisionEnabled
+                                    ? mGhostObject->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE
+                                    : mGhostObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE;
+      mGhostObject->setCollisionFlags(collisionMask);
    }
 
    void GhostController::UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime)
@@ -67,7 +81,11 @@ namespace EnginePhysics
       if (mGhostObject == collidedObject)
          return 1.0f;
 
-      PhysicsDescriptor *collidedObjDescriptor = reinterpret_cast<PhysicsDescriptor *>(collidedObject->getUserPointer());
+      const auto &collidedObjDescriptor = reinterpret_cast<PhysicsDescriptor *>(collidedObject->getUserPointer());
+
+      PhysicsCollisionOccuredEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                             ePhysicsBodyType::GHOST,
+                                                             mCurrentId, collidedObjDescriptor->GetId());
 
       Logger::Out("Collision detected; my descriptor = ", mCurrentId, " collided object descriptor = ", collidedObjDescriptor->GetId());
       return 0;

@@ -1623,7 +1623,7 @@
     <ClInclude Include="src\Core\GameCore\Components\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Event\PhysicsSimulationUpdatedEvent.h">
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsComponentUpdatedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyBoxShape.h">

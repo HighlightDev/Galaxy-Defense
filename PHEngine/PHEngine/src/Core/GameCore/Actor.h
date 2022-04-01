@@ -66,8 +66,6 @@ namespace EngineCore
 
       std::weak_ptr<Actor> GetWeakFromThis();
 
-      void PostPhysicsInitialize();
-
       // Tick is executed on game thread
       virtual void Tick(const float deltaTime) override;
 
@@ -76,6 +74,10 @@ namespace EngineCore
       virtual void ChangeTweenState(const std::string& stateName);
 
       virtual void PostLevelInit();
+
+      virtual void PostPhysicsInitialize();
+
+      virtual void PostPlayLevelFinished();
 
       void AddComponent(std::shared_ptr<Component> component);
 

@@ -20,7 +20,7 @@ namespace Event
    template class TEvent<SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>;
    template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>;
 
-   template class TEvent<MultipleDataEventPolicy<TextureType>>;
+   template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
 }

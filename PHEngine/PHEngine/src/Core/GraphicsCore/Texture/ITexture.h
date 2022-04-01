@@ -9,17 +9,16 @@ namespace Graphics
 {
 	namespace Texture
 	{
-      enum class TextureType
-      {
-         UNDEFINED,
-         TEXTURE_2D,
-         TEXTURE_CUBE
-      };
+		enum class eTextureType
+		{
+			UNDEFINED,
+			TEXTURE_2D,
+			TEXTURE_CUBE
+		};
 
 		class ITexture
 		{
 		protected:
-
 			uint32_t m_texDescriptor;
 
 		public:
@@ -33,8 +32,8 @@ namespace Graphics
 			virtual uint32_t GetTextureDescriptor() const = 0;
 			virtual glm::ivec2 GetTextureRezolution() const = 0;
 			virtual TexParams GetTextureParameters() const = 0;
-         virtual float GetTextureAspectRatio() const = 0;
-         virtual TextureType GetTextureType() const = 0;
+			virtual float GetTextureAspectRatio() const = 0;
+			virtual eTextureType GetTextureType() const = 0;
 		};
 	}
 }

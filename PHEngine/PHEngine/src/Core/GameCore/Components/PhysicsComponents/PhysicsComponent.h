@@ -8,30 +8,29 @@
 
 using namespace EngineCore;
 
-namespace EnginePhysics {
+namespace EnginePhysics
+{
 
-   class PhysicsComponent 
-      : public Component
+   class PhysicsComponent
+       : public Component
    {
    protected:
+      PhysicsDescriptor *mDescriptor;
 
-      PhysicsDescriptor* mDescriptor;
-      
       bool bIsTransformationDirty;
 
    public:
-
-      PhysicsComponent(const PhysicsComponentData& data);
+      PhysicsComponent(const PhysicsComponentData &data);
 
       virtual ~PhysicsComponent();
 
-      virtual void Tick(const float deltaTime) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      virtual void PostPhysicsInit();
 
-      void PostPhysicsInit();
+      virtual void SetIsEnabled(const bool isEnabled) override;
 
-      PhysicsDescriptor* GetDescriptor() const;
+      PhysicsDescriptor *GetDescriptor() const;
 
       bool IsTransformDirty() const;
 
@@ -41,9 +40,8 @@ namespace EnginePhysics {
 
       glm::quat GetWorldRotator() const;
 
-      void SetWorldTranslation(const glm::vec3& translation) const;
+      void SetWorldTranslation(const glm::vec3 &translation) const;
 
-      void SetWorldRotator(const glm::quat& rotator) const;
+      void SetWorldRotator(const glm::quat &rotator) const;
    };
 }
-

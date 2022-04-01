@@ -84,6 +84,8 @@ namespace EngineCore
 
       void PostPhysicsInitialize();
 
+      void PostPlayLevelFinished();
+
       void RegisterCamera(std::shared_ptr<ACamera> camera);
 
       void RegisterMainCamera(std::shared_ptr<ACamera> camera);
@@ -135,9 +137,9 @@ namespace EngineCore
 
       void RemoveComponent(std::shared_ptr<Component> component);
 
-      void ExecuteOnRenderThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const;
+      void ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const;
 
-      void ExecuteOnGameThread(EnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const;
+      void ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const;
 
       void CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
 

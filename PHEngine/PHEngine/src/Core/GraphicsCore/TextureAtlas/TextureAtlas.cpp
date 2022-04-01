@@ -12,7 +12,7 @@ using namespace Graphics::Texture;
 namespace Graphics
 {
    // ***************** TextureAtlas *****************//
-   TextureType TextureAtlas::GetType() const
+   eTextureType TextureAtlas::GetType() const
    {
       return m_type;
    }
@@ -38,7 +38,7 @@ namespace Graphics
 
    TextureAtlas2D::TextureAtlas2D()
    {
-      m_type = TextureType::TEXTURE_2D;
+      m_type = eTextureType::TEXTURE_2D;
    }
 
    TextureAtlas2D::~TextureAtlas2D()
@@ -83,7 +83,7 @@ namespace Graphics
 
    TextureAtlasCube::TextureAtlasCube(size_t requestId, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2> sizes)
    {
-      m_type = TextureType::TEXTURE_CUBE;
+      m_type = eTextureType::TEXTURE_CUBE;
       m_sizes = std::make_pair(requestId, sizes);
       auto size = std::get<0>(m_sizes.second);
       shadow_map_size = size.x;

@@ -131,9 +131,9 @@ namespace Graphics
          return (static_cast<float>(m_textureParams.TexBufferWidth) / static_cast<float>(m_textureParams.TexBufferHeight));
       }
 
-      TextureType Texture2d::GetTextureType() const
+      eTextureType Texture2d::GetTextureType() const
       {
-         return TextureType::TEXTURE_2D;
+         return eTextureType::TEXTURE_2D;
       }
    }
 }

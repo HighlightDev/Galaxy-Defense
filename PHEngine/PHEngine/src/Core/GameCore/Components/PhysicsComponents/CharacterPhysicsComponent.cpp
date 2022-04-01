@@ -1,4 +1,4 @@
-#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/GameCore/Actor.h"
 
@@ -32,7 +32,7 @@ namespace EnginePhysics
          if (const auto& spOwner = GetOwner().lock())
          {
             spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
-            Event::PhysicsSimulationUpdatedEvent::GetInstance()->SendEvent(Event::ExecutionOrder::POST_EXECUTION, spOwner->GetName());
+            Event::PhysicsComponentUpdatedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, spOwner->GetName());
          }
       }
    }

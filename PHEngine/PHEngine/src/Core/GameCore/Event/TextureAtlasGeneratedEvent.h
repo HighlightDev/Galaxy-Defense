@@ -10,10 +10,10 @@ namespace Event
 {
 
    class TextureAtlasGeneratedEvent
-      : public TEvent<MultipleDataEventPolicy<TextureType>>
+      : public TEvent<MultipleDataEventPolicy<eTextureType>>
    {
    public:
-      using Event_t = TEvent<MultipleDataEventPolicy<TextureType>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<eTextureType>>::Event_t;
    };
 
 }

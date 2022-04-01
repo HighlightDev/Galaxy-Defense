@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ActorController.h"
-#include "Core/GameCore/Event/PhysicsSimulationUpdatedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Components/InputComponent.h"
 
 using namespace Event;
@@ -12,7 +12,7 @@ namespace EngineCore
    
    class HumanoidPlayerController
       : public ActorController
-      , public PhysicsSimulationUpdatedEvent
+      , public PhysicsComponentUpdatedEvent
    {
 
       using Base = Actor;
@@ -29,7 +29,7 @@ namespace EngineCore
 
       virtual void Tick(float deltaTime) override;
 
-      virtual void ProcessEvent(const typename PhysicsSimulationUpdatedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 
       virtual void InitActorController() override;
    };

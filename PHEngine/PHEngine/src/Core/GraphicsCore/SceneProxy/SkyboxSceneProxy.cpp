@@ -5,13 +5,15 @@ namespace Graphics
    namespace Proxy
    {
 
-      SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent* component)
-         : PrimitiveSceneProxy(component->IsVisible()
-            , component->GetRelativeMatrix()
-            , component->GetRenderData().m_skin
-            , component->GetRenderData().m_materialShader
-            , component->GetRenderData().m_planarReflectionShader
-            , component->GetRenderData().mMaterialProxy)
+      SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent *component)
+          : PrimitiveSceneProxy(
+                component->IsEnabled(),
+                component->IsVisible(),
+                component->GetRelativeMatrix(),
+                component->GetRenderData().m_skin,
+                component->GetRenderData().m_materialShader,
+                component->GetRenderData().m_planarReflectionShader,
+                component->GetRenderData().mMaterialProxy)
       {
       }
 
@@ -21,7 +23,6 @@ namespace Graphics
 
       void SkyboxSceneProxy::PostConstructorInitialize()
       {
-
       }
 
       std::shared_ptr<SkyboxSceneProxy::ShaderType> SkyboxSceneProxy::GetShader() const
@@ -39,7 +40,7 @@ namespace Graphics
          return ePrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
-      void SkyboxSceneProxy::Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SkyboxSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);
@@ -53,9 +54,9 @@ namespace Graphics
          shaderPtr->StopShader();
       }
 
-      void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void SkyboxSceneProxy::RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& planarReflectionShader = GetPlanarReflectionShader();
+         const auto &planarReflectionShader = GetPlanarReflectionShader();
 
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);

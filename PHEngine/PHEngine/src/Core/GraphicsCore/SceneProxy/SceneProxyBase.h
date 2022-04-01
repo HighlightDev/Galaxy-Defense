@@ -16,13 +16,13 @@ namespace Graphics {
 
    public:
 
-      SceneProxyBase();
+      SceneProxyBase(const bool isEnabled);
 
       virtual ~SceneProxyBase();
 
       size_t GetSceneProxyId() const;
 
-      void SetEnabled(const bool bEnabled); //todo: make set enabled not only for primitive components but also for other components (cameras, planar refl component)
+      void SetEnabled(const bool bEnabled);
 
       bool IsEnabled() const;
 

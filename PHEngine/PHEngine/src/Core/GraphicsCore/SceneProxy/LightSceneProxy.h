@@ -21,23 +21,26 @@ namespace Graphics
       };
 
       class LightSceneProxy
-         : public SceneProxyBase
+          : public SceneProxyBase
       {
       protected:
-
          glm::mat4 m_relativeMatrix;
 
-         ProjectedShadowInfo* m_shadowInfo = nullptr;
+         ProjectedShadowInfo *m_shadowInfo = nullptr;
 
          bool bTransformationDirty = true;
-        
-      public:
 
+      public:
          glm::vec3 AmbientColor;
          glm::vec3 DiffuseColor;
          glm::vec3 SpecularColor;
 
-         LightSceneProxy(glm::mat4 relativeMatrix, glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, ProjectedShadowInfo* shadowInfo = nullptr);
+         LightSceneProxy(const bool isEnabled,
+                         const glm::mat4& relativeMatrix,
+                         const glm::vec3& ambientColor,
+                         const glm::vec3& diffuseColor,
+                         const glm::vec3& specularColor,
+                         ProjectedShadowInfo *shadowInfo = nullptr);
 
          virtual ~LightSceneProxy();
 
@@ -45,16 +48,14 @@ namespace Graphics
 
          virtual void PostLevelInit();
 
-         void SetTransformationMatrix(const glm::mat4& relativeMatrix);
+         void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
 
          bool IsTransformationDirty() const;
 
          void SetIsTransformationDirty(bool value);
 
-         virtual ProjectedShadowInfo* GetShadowInfo();
-
+         virtual ProjectedShadowInfo *GetShadowInfo();
       };
 
    }
 }
-

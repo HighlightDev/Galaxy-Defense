@@ -1,6 +1,5 @@
 #pragma once
 #include "SceneComponent.h"
-#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_PlatformTraverseComponent.h"
 #include "PlatformTraverseComponentVisitor.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"

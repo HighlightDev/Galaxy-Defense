@@ -2,7 +2,7 @@
 
 namespace Event
 {
-    enum ExecutionOrder
+    enum eExecutionOrder
     {
         PRE_EXECUTION = 0,
         POST_EXECUTION = 1
@@ -11,6 +11,6 @@ namespace Event
     class IEvent
     {
     public:
-        virtual void ProcessCachedEvents(const ExecutionOrder currentOrder) = 0;
+        virtual void ProcessCachedEvents(const eExecutionOrder currentOrder) = 0;
     };
 }

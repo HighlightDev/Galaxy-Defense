@@ -21,7 +21,7 @@ namespace Graphics
 
    void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data)
    {
-      if (TextureType::TEXTURE_CUBE == std::get<0>(data))
+      if (eTextureType::TEXTURE_CUBE == std::get<0>(data))
       {
          mShadowmapHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(mShadowmapAtlasRequest.MyRequestId);
       }

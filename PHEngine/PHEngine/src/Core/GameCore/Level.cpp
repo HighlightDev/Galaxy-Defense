@@ -40,6 +40,12 @@ namespace EngineCore
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
+   void Level::PostPlayLevelFinished()
+   {
+      Logger::Out("Level::PostPlayLevelFinished");
+      mScene->PostPlayLevelFinished();
+   }
+
    void Level::PostPhysicsInitialize()
    {
       mScene->PostPhysicsInitialize();

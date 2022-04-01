@@ -27,7 +27,7 @@ namespace EnginePhysics
       }
    };
 
-   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const PhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
+   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
       : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier)
       , mLastRayCastObjectResult(nullptr)
    {
@@ -35,7 +35,7 @@ namespace EnginePhysics
 
    RigidBodyController::~RigidBodyController()
    {
-      if (PhysicsBodyType::DYNAMIC == mBodyType)
+      if (ePhysicsBodyType::DYNAMIC == mBodyType)
          Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
    }
 
@@ -56,14 +56,14 @@ namespace EnginePhysics
 
       switch (mBodyType)
       {
-         case PhysicsBodyType::DYNAMIC: 
+         case ePhysicsBodyType::DYNAMIC: 
          {
             mRigidBody->setActivationState(DISABLE_DEACTIVATION); 
             Event::KinematicBodyMovedEvent::GetInstance()->AddListener(this);
             break;
          }
-         case PhysicsBodyType::KINEMATIC: mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); break;
-         case PhysicsBodyType::STATIC: assert(EngineMath::CompareFloats(mMass, 0.0f)); break;
+         case ePhysicsBodyType::KINEMATIC: mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); break;
+         case ePhysicsBodyType::STATIC: assert(EngineMath::CompareFloats(mMass, 0.0f)); break;
       }
 
       mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));

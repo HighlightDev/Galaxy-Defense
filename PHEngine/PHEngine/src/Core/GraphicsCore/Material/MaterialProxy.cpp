@@ -9,7 +9,7 @@
 namespace Graphics
 {
    MaterialProxy::MaterialProxy(const IMaterial* material)
-      : SceneProxyBase()
+      : SceneProxyBase(true)
       , MaterialName(material->MaterialName)
       , MaterialShaderName(material->MaterialShaderName)
       , MaterialShaderRelativePath(material->MaterialShaderRelativePath)

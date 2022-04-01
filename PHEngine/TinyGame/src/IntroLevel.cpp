@@ -81,11 +81,11 @@ namespace Game
       c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);
 
-      GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
+      /*GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
       mScene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
       PhysicsComponentData physData("c_spaceShipPhysicsComponent", ghostController);
       const auto& c_ghostPhysics = mScene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
-      a_spaceship->AddComponent(c_ghostPhysics);
+      a_spaceship->AddComponent(c_ghostPhysics);*/
 
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);
@@ -125,6 +125,12 @@ namespace Game
       const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
       Base::PostLevelInit();
+   }
+
+   void IntroLevel::PostPlayLevelFinished()
+   {
+      Base::PostPlayLevelFinished();
+      mSceneController->PostPlayLevelFinished();
    }
 
    void IntroLevel::LoadLevel()

@@ -44,38 +44,38 @@ namespace Thread
       return mScene;
    }
 
-   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const EnqueueJobPolicy policy, Job &&job)
+   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       ProcessPushGameThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const EnqueueJobPolicy policy, Job &&job)
+   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       ProcessPushRenderThreadJob(policy, std::move(job));
    }
 
-   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const EnqueueJobPolicy policy, Job &&job)
+   void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
       ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.WriteChainType.load())));
    }
 
-   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const EnqueueJobPolicy policy, Job &&job)
+   void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
    }
 
-   void InterThreadCommunicationMgr::ProcessPushJob(const EnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs)
+   void InterThreadCommunicationMgr::ProcessPushJob(const eEnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs)
    {
       switch (policy)
       {
-      case EnqueueJobPolicy::PUSH_ANYWAY:
+      case eEnqueueJobPolicy::PUSH_ANYWAY:
       {
          jobs.emplace_back(std::move(job));
          break;
       }
-      case EnqueueJobPolicy::IF_DUPLICATE_NO_PUSH:
+      case eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH:
       {
          const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
                                                [&](const Job &collectionJob)
@@ -90,7 +90,7 @@ namespace Thread
 
          break;
       }
-      case EnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH:
+      case eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH:
       {
          const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
                                                [&](const Job &collectionJob)

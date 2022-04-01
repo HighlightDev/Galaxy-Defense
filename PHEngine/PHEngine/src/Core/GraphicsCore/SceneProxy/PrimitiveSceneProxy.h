@@ -35,14 +35,13 @@ namespace Graphics
       };
 
       class PrimitiveSceneProxy
-         : public SceneProxyBase
-         , public AProxyVisibilityController
+          : public SceneProxyBase,
+            public AProxyVisibilityController
       {
 
          bool bTransformInitialized;
 
       protected:
-
          glm::mat4 m_relativeMatrix;
 
          std::shared_ptr<Skin> m_skin;
@@ -54,15 +53,17 @@ namespace Graphics
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
-
-         PrimitiveSceneProxy(bool isVisible, glm::mat4 relativeMatrix, std::shared_ptr<Skin> skin,
-            std::shared_ptr<IShader> materialShader,
-            std::shared_ptr<IShader> planarReflectionShader,
-            std::shared_ptr<MaterialProxy> materialProxy);
+         PrimitiveSceneProxy(const bool isEnabled,
+                             const bool isVisible,
+                             const glm::mat4 &relativeMatrix,
+                             const std::shared_ptr<Skin> &skin,
+                             const std::shared_ptr<IShader> &materialShader,
+                             const std::shared_ptr<IShader> &planarReflectionShader,
+                             const std::shared_ptr<MaterialProxy> &materialProxy);
 
          virtual ~PrimitiveSceneProxy();
 
-         void SetTransformationMatrix(const glm::mat4& relativeMatrix);
+         void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
 
          virtual glm::mat4 GetMatrix() const;
 
@@ -74,18 +75,16 @@ namespace Graphics
 
          virtual bool IsFrustumCullTestNeeded() const override;
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) = 0;
+         virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) = 0;
 
-         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) { }
+         virtual void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) {}
 
          virtual bool IsDeferred() const = 0;
 
          virtual eMeshFacing GetMeshFrontFace() const = 0;
 
-         virtual bool IsTransformIntialized() const; 
-
+         virtual bool IsTransformIntialized() const;
       };
 
    }
 }
-

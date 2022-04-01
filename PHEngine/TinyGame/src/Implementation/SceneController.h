@@ -9,11 +9,18 @@
 #include "SpaceShipPlayerController.h"
 
 #include <memory>
+#include <utility>
 
 using namespace EngineCore;
 
 namespace Game
 {
+    enum class eBulletState
+    {
+        IDLE,
+        ACTIVE,   
+    };
+
     class SceneController : public ITickable,
                             public MainPlayerActionEvent
     {
@@ -27,7 +34,7 @@ namespace Game
 
         std::vector<std::weak_ptr<AiActorController>> mEnemyActorControllers;
 
-        std::vector<std::weak_ptr<Actor>> mWeaponBulletsPool;
+        std::vector<std::pair<std::weak_ptr<Actor>, eBulletState>> mWeaponBulletsPool;
 
         size_t enemyShipCounter = 0;
 
@@ -50,6 +57,8 @@ namespace Game
 
         virtual void PostInit();
 
+        virtual void PostPlayLevelFinished();
+
         virtual void Tick(const float deltaTime) override;
 
         void SetPlayerShipActor(const std::weak_ptr<Actor> &mainPlayerShip);
@@ -65,5 +74,11 @@ namespace Game
 
         std::shared_ptr<Actor> CreateWeaponBullet(const std::shared_ptr<Scene> &scene, const glm::vec3 &translation,
                                                   const glm::vec3 &rotation, const glm::vec3 &scale);
+
+        void CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene>& sceneSp);
+
+        void ShootBullet(const glm::vec3& bulletStartPosition);
+
+        void FlushToPoolUsedBullets();
     };
 }

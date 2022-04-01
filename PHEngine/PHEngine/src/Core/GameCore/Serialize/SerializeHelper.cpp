@@ -458,7 +458,7 @@ namespace EngineCore
          auto physShape = CreatePhysicsShape(serData->PhysicsShape.get());
          auto compController = EngineObjectCreator::CreateRigidBodyController(scene->GetPhysicsWorld(), physShape, serData->BodyType, serData->Mass);
          const auto &compData = EngineObjectCreator::CreatePhysicsComponentData(serData->ComponentName, compController);
-         result = EngineObjectCreator::CreateComponentByString("PhysicsComponent", compData, scene);
+         result = EngineObjectCreator::CreateComponentByString("RigidBodyPhysicsComponent", compData, scene);
          break;
       }
       case SerializeDataBase::SerializeDataType::CharacterPhysics:
