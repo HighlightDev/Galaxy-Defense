@@ -17,10 +17,10 @@ namespace EngineCore
        : GameObject(gameObjectName),
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
-         mIsVisible(EngineGOProperty<bool>(true,
-                                           "IsVisible",
-                                           std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
-                                                                                                       { SyncComponentsVisibility(visibility); }))),
+         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
+                                                             "IsVisible",
+                                                             std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
+                                                                                                                         { SyncComponentsVisibility(visibility); }))),
          mIsEnabled(true),
          m_inputComponent(),
          m_movementComponent(),
@@ -181,7 +181,7 @@ namespace EngineCore
 
    void Actor::SetIsVisible(bool isVisible)
    {
-      mIsVisible.SetValue(isVisible);
+      mIsVisible->SetValue(isVisible);
    }
 
    void Actor::SyncComponentsVisibility(bool isVisible)
@@ -431,7 +431,7 @@ namespace EngineCore
 
    bool Actor::GetIsVisible() const
    {
-      return mIsVisible;
+      return mIsVisible->GetValue();
    }
 
    bool Actor::IsEnabled() const

@@ -17,11 +17,11 @@ namespace EngineCore
          mTransform(std::make_shared<Transform>(translation,
                                                 glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))),
                                                 scale)),
-         m_additionalRotationEuler(EngineGOProperty<glm::vec3>(glm::vec3(0.0f), "b_rotator")),
+         m_additionalRotationEuler(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(0.0f), "b_rotator")),
          m_relativeMatrix(1),
          m_sceneWP()
    {
-      ENGINE_PROPERTY(m_additionalRotationEuler);
+      AddEngineProperty(m_additionalRotationEuler);
    }
 
    SceneComponent::~SceneComponent()
@@ -65,9 +65,9 @@ namespace EngineCore
 
       if (bIsRootComponent)
       {
-         const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().x), AXIS_RIGHT);
-         const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().y), AXIS_UP);
-         const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler.GetValue().z), AXIS_FORWARD);
+         const glm::mat4 pitchRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().x), AXIS_RIGHT);
+         const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().y), AXIS_UP);
+         const glm::mat4 rollRotation = glm::rotate(identityMatrix, DEG_TO_RAD(m_additionalRotationEuler->GetValue().z), AXIS_FORWARD);
 
          m_relativeMatrix *= pitchRotation;
          m_relativeMatrix *= yawRotation;
@@ -110,7 +110,7 @@ namespace EngineCore
 
    void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationEuler, const bool bTriggerTransformUpdateEvent)
    {
-      m_additionalRotationEuler = rotationEuler;
+      m_additionalRotationEuler->SetValue(rotationEuler);
       SetIsTransformationDirty(true);
    }
 

@@ -25,16 +25,16 @@ namespace EngineCore
 
             BoundingBox mBoundingBox;
 
-            EngineGOProperty<bool> mIsVisible;
+            std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
       public:
             size_t SceneProxyId = 0;
 
             PrimitiveComponent(const std::string &gameObjectName,
-                               const glm::vec3& translation,
-                               const glm::vec3& rotation,
-                               const glm::vec3&  scale,
-                               const BoundingBox& boundingBox);
+                               const glm::vec3 &translation,
+                               const glm::vec3 &rotation,
+                               const glm::vec3 &scale,
+                               const BoundingBox &boundingBox);
 
             virtual ~PrimitiveComponent();
 

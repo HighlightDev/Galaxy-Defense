@@ -34,7 +34,7 @@ namespace EngineCore
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
       // Makes all primitive components visible or not
-      EngineGOProperty<bool> mIsVisible;
+      std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
    protected:
 

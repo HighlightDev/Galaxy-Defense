@@ -16,33 +16,34 @@ using namespace Graphics::Renderer;
 namespace EngineCore
 {
 
-   SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData& meshComponentData, const SkeletalMeshRenderData& renderData)
-      : PrimitiveComponent(meshComponentData.GameObjectName
-      , meshComponentData.m_translation
-      , meshComponentData.m_eulerRotationDegrees
-      , meshComponentData.m_scale
-      , renderData.m_skin->GetBoundingBox())
-      , m_renderData(renderData)
-      , mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() + meshComponentData.m_luaScriptPath)
-      , mLuaInstance(std::make_unique<LuaWrapper>())
-      , mUpdateDataResetTimeCounter(0.0f)
-      , update_data_reset_time(0.015f)
-      , mTimeIncreaseMultiply(1.0f)
-      , LuaScriptName(meshComponentData.m_luaScriptPath)
-      , SrcAnimationTime(EngineGOProperty<float>(0.0f, "SrcAnimTime"))
-      , DstAnimationTime(EngineGOProperty<float>(0.0f, "DstAnimTime"))
-      , SrcAnimationName(EngineGOProperty<std::string>("", "SrcAnimName"))
-      , DstAnimationName(EngineGOProperty<std::string>("", "DstAnimName"))
-      , TransitionValue(EngineGOProperty<float>(0.0f, "AnimTransitionValue"))
-      , bTransitionEnabled(EngineGOProperty<bool>(false, "bAnimTransitionEnabled"))
+   SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData)
+       : PrimitiveComponent(meshComponentData.GameObjectName,
+                            meshComponentData.m_translation,
+                            meshComponentData.m_eulerRotationDegrees,
+                            meshComponentData.m_scale,
+                            renderData.m_skin->GetBoundingBox()),
+         m_renderData(renderData),
+         mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() +
+                           meshComponentData.m_luaScriptPath),
+         mLuaInstance(std::make_unique<LuaWrapper>()),
+         mUpdateDataResetTimeCounter(0.0f),
+         update_data_reset_time(0.015f),
+         mTimeIncreaseMultiply(1.0f),
+         LuaScriptName(meshComponentData.m_luaScriptPath),
+         SrcAnimationTime(std::make_shared<EngineGOProperty<float>>(0.0f, "SrcAnimTime")),
+         DstAnimationTime(std::make_shared<EngineGOProperty<float>>(0.0f, "DstAnimTime")),
+         SrcAnimationName(std::make_shared<EngineGOProperty<std::string>>("", "SrcAnimName")),
+         DstAnimationName(std::make_shared<EngineGOProperty<std::string>>("", "DstAnimName")),
+         TransitionValue(std::make_shared<EngineGOProperty<float>>(0.0f, "AnimTransitionValue")),
+         bTransitionEnabled(std::make_shared<EngineGOProperty<bool>>(false, "bAnimTransitionEnabled"))
    {
       /* Meta table */
-      ENGINE_PROPERTY(SrcAnimationTime);
-      ENGINE_PROPERTY(DstAnimationTime);
-      ENGINE_PROPERTY(SrcAnimationName);
-      ENGINE_PROPERTY(DstAnimationName);
-      ENGINE_PROPERTY(TransitionValue);
-      ENGINE_PROPERTY(bTransitionEnabled);
+      AddEngineProperty(SrcAnimationTime);
+      AddEngineProperty(DstAnimationTime);
+      AddEngineProperty(SrcAnimationName);
+      AddEngineProperty(DstAnimationName);
+      AddEngineProperty(TransitionValue);
+      AddEngineProperty(bTransitionEnabled);
       /* Meta table */
    }
 
@@ -50,7 +51,7 @@ namespace EngineCore
    {
    }
 
-   void SkeletalMeshComponent::PostLevelInit() 
+   void SkeletalMeshComponent::PostLevelInit()
    {
       PrimitiveComponent::PostLevelInit();
 
@@ -64,7 +65,7 @@ namespace EngineCore
    {
       // get from scene corresponding to material proxy material instance
       std::shared_ptr<IMaterial> materialResult = nullptr;
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
       }
@@ -79,7 +80,7 @@ namespace EngineCore
 
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
-      SrcAnimationTime += deltaTime * mTimeIncreaseMultiply;
+      SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
       mUpdateDataResetTimeCounter += deltaTime;
 
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
@@ -90,9 +91,9 @@ namespace EngineCore
       }
    }
 
-   void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void SkeletalMeshComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+      auto &actorData = GetSerializeDataActor(dataContainer);
 
       auto staticCompData = SerializeHelper::GetSerializedDataSkeletalMesh(this);
       actorData.ComponentsData.emplace_back(staticCompData);
@@ -103,16 +104,21 @@ namespace EngineCore
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
       static const uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            SrcAnimationTime.SetValue(fmod(SrcAnimationTime, 100000.0f));
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
-
-               SkeletalMeshSceneProxy* proxyPtr = static_cast<SkeletalMeshSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->UpdateAnimationData(bTransitionEnabled, TransitionValue, SrcAnimationTime, DstAnimationTime, SrcAnimationName, DstAnimationName);
-            });
+            SrcAnimationTime->SetValue(fmod(SrcAnimationTime->GetValue(), 100000.0f));
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+                                           { 
+                              SkeletalMeshSceneProxy *proxyPtr 
+                              = static_cast<SkeletalMeshSceneProxy *>(sceneRenderer->SceneProxiesMap[SceneProxyId].get()); 
+                                    proxyPtr->UpdateAnimationData(bTransitionEnabled->GetValue(),
+                                    TransitionValue->GetValue(),
+                                    SrcAnimationTime->GetValue(),
+                                    DstAnimationTime->GetValue(),
+                                    SrcAnimationName->GetValue(),
+                                    DstAnimationName->GetValue()); });
          }
       }
    }

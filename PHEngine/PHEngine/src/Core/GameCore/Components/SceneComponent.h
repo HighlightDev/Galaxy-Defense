@@ -19,7 +19,7 @@ namespace EngineCore
 
       std::shared_ptr<Transform> mTransform;
 
-      EngineGOProperty<glm::vec3> m_additionalRotationEuler; // TODO: move to quat
+      std::shared_ptr<EngineGOProperty<glm::vec3>> m_additionalRotationEuler;
 
       glm::mat4 m_relativeMatrix;
 

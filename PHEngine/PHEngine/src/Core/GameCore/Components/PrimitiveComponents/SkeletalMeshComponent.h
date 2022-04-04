@@ -38,20 +38,20 @@ namespace EngineCore
       std::string LuaScriptName;
 
       /* src is the main animation time counter*/
-      EngineGOProperty<float> SrcAnimationTime;
+      std::shared_ptr<EngineGOProperty<float>> SrcAnimationTime;
 
       /* dst time is used when blending of animations is being calculated*/
-      EngineGOProperty<float> DstAnimationTime;
+      std::shared_ptr<EngineGOProperty<float>> DstAnimationTime;
 
       /* src is the main animation name*/
-      EngineGOProperty<std::string> SrcAnimationName;
+      std::shared_ptr<EngineGOProperty<std::string>> SrcAnimationName;
 
       /* dst animation name is used when blending of animations is being occurred*/
-      EngineGOProperty<std::string> DstAnimationName;
+      std::shared_ptr<EngineGOProperty<std::string>> DstAnimationName;
 
-      EngineGOProperty<bool> bTransitionEnabled;
+      std::shared_ptr<EngineGOProperty<bool>> bTransitionEnabled;
 
-      EngineGOProperty<float> TransitionValue;
+      std::shared_ptr<EngineGOProperty<float>>TransitionValue;
 
    public:
 

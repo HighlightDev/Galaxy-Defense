@@ -16,10 +16,10 @@ namespace EngineCore
                         rotation,
                         scale),
          mBoundingBox(boundingBox),
-         mIsVisible(EngineGOProperty<bool>(true, "IsVisible"))
+         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true, "IsVisible"))
    {
       /******  HOOKS ****/
-      ENGINE_PROPERTY(mIsVisible);
+      AddEngineProperty(mIsVisible);
       /******  HOOKS ****/
    }
 
@@ -59,16 +59,16 @@ namespace EngineCore
 
    void PrimitiveComponent::SetIsVisible(bool isVisible)
    {
-      if (isVisible != mIsVisible)
+      if (isVisible != mIsVisible->GetValue())
       {
-         mIsVisible.SetValue(isVisible);
+         mIsVisible->SetValue(isVisible);
          OnVisibilityChanged();
       }
    }
 
    bool PrimitiveComponent::IsVisible() const
    {
-      return mIsVisible;
+      return mIsVisible->GetValue();
    }
 
    void PrimitiveComponent::OnVisibilityChanged()
@@ -77,7 +77,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible);
+         sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible->GetValue());
       }
    }
 

@@ -72,7 +72,7 @@ namespace EngineCore
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      const auto& property = static_cast<EngineGOProperty<float>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      const auto& property = std::static_pointer_cast<EngineGOProperty<float>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
       assert(property);
       return property->GetValue();
    }
@@ -82,7 +82,7 @@ namespace EngineCore
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      const auto& property = static_cast<EngineGOProperty<int32_t>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      const auto& property = std::static_pointer_cast<EngineGOProperty<int32_t>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
       assert(property);
       return property->GetValue();
    }
@@ -92,7 +92,7 @@ namespace EngineCore
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      auto property = static_cast<EngineGOProperty<glm::vec3>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      auto property = std::static_pointer_cast<EngineGOProperty<glm::vec3>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
       assert(property);
       property->SetValue(std::get<2>(data));
    }
@@ -102,7 +102,7 @@ namespace EngineCore
    {
       GameObject* gameObject = std::get<0>(data);
       assert(gameObject != nullptr);
-      auto property = static_cast<EngineGOProperty<bool>*>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+      auto property = std::static_pointer_cast<EngineGOProperty<bool>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
       assert(property);
       property->SetValue(static_cast<bool>(std::get<2>(data)));
    }

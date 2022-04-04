@@ -2,12 +2,12 @@
 #include <cstddef>
 #include <unordered_map>
 #include <string>
+#include <memory>
 
 #include "GameObjectProperty.h"
 
 namespace EngineCore
 {
-#define ENGINE_PROPERTY(PROPERTY_PTR) AddEngineProperty(PROPERTY_PTR)
    class GameObject 
    {
       static uint64_t mTotalObjectIdCounter;
@@ -16,7 +16,9 @@ namespace EngineCore
 
       uint64_t mObjectId;
 
-      std::unordered_map<std::string, EngineGOPropertyBase*> mEngineProperties;
+      //std::unordered_map<std::string, EngineGOPropertyBase*> mEngineProperties;
+
+      std::unordered_map<std::string, std::shared_ptr<EngineGOPropertyBase>> mEngineProperties;
 
       std::string GameObjectName;
 
@@ -26,9 +28,9 @@ namespace EngineCore
 
       uint64_t GetObjectId() const;
 
-      EngineGOPropertyBase* GetEnginePropertyByName(const std::string& key) const;
+      const std::shared_ptr<EngineGOPropertyBase>& GetEnginePropertyByName(const std::string& key) const;
 
-      void AddEngineProperty(EngineGOPropertyBase& goPtr);
+      void AddEngineProperty(const std::shared_ptr<EngineGOPropertyBase>& goPtr);
 
       std::string GetGameObjectName() const;
 

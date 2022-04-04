@@ -225,10 +225,8 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-        static std::vector<EngineGOProperty<float>> props;
-
-        props.emplace_back(EngineGOProperty<float>(0.0f, "property_damageEffect"));
-        a_enemySpaceship->AddEngineProperty(props.back());
+        const auto& damagePropSp = std::make_shared<EngineGOProperty<float>>(0.0f, "property_damageEffect");
+        a_enemySpaceship->AddEngineProperty(damagePropSp);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, a_enemySpaceship.get(), "property_damageEffect", "damageTime");
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),

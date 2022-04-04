@@ -10,9 +10,9 @@ namespace EngineCore
 {
 
    template <typename EnginePropertyValueType>
-   EngineGOProperty<EnginePropertyValueType>* CastBasePropertyToType(EngineGOPropertyBase* goProperty)
+   std::shared_ptr<EngineGOProperty<EnginePropertyValueType>> CastBasePropertyToType(const std::shared_ptr<EngineGOPropertyBase>& goProperty)
    {
-      return static_cast<EngineGOProperty<EnginePropertyValueType>*>(goProperty);
+      return std::static_pointer_cast<EngineGOProperty<EnginePropertyValueType>>(goProperty);
    }
 
    struct BindingAttachmentBuilder

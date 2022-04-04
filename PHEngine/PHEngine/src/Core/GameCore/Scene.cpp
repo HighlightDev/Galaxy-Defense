@@ -16,13 +16,18 @@ namespace EngineCore
 {
 
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
-       : GameObject("EngineScene"), mPhysicsWorld(new PhysicsWorld()), m_interThreadMgr(interThreadMgr), mGameThreadDeltaSec(EngineGOProperty<float>(0.0f, "GT_DeltaSec")), mActiveCameras(), mActorControllers()
+       : GameObject("EngineScene"),
+         mPhysicsWorld(new PhysicsWorld()),
+         m_interThreadMgr(interThreadMgr),
+         mGameThreadDeltaSec(std::make_shared<EngineGOProperty<float>>(0.0f, "GT_DeltaSec")),
+         mActiveCameras(),
+         mActorControllers()
    {
       Logger::Out("Scene::ctor");
 
       RegisterGameObject(this);
+      AddEngineProperty(mGameThreadDeltaSec);
       mPhysicsWorld->InitPhysicsWorld();
-      ENGINE_PROPERTY(mGameThreadDeltaSec);
    }
 
    void Scene::PostLevelInit()
@@ -149,7 +154,7 @@ namespace EngineCore
       return *foundActor;
    }
 
-    std::shared_ptr<Actor> Scene::GetActorById(const uint64_t id) const
+   std::shared_ptr<Actor> Scene::GetActorById(const uint64_t id) const
    {
       auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto &actor)
                                      { return actor->GetObjectId() == id; });
@@ -573,7 +578,7 @@ namespace EngineCore
       constexpr float inv_PhysicsStep = 1.0f / 260.0f;
       const float physTickStep = delta * (inv_PhysicsStep / delta);
 
-      mGameThreadDeltaSec.SetValue(delta);
+      mGameThreadDeltaSec->SetValue(delta);
 
       mPhysicsWorld->Tick(physTickStep);
 
