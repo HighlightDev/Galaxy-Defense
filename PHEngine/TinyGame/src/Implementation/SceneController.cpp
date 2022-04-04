@@ -34,21 +34,23 @@ namespace Game
     }
 
     std::vector<std::pair<GameObject *, EngineGOProperty<float>>> gameObjects;
-    float mDeltaTime = 1.0f;
+    float mDeltaTime = 0.0f;
+    float mDamageDeltaTime = 0.0f;
 
     SceneController::SceneController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
           mEnemies(),
           mEnemyActorControllers(),
-          mDummyBullet(),
           mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50)))
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
+        PhysicsCollisionOccuredEvent::GetInstance()->AddListener(this);
     }
 
     SceneController::~SceneController()
     {
         MainPlayerActionEvent::GetInstance()->RemoveListener(this);
+        PhysicsCollisionOccuredEvent::GetInstance()->RemoveListener(this);
     }
 
     void SceneController::PreInit()
@@ -59,7 +61,7 @@ namespace Game
     {
         if (const auto &sceneSp = mScene.lock())
         {
-            CreateWeaponBulletPool(5, sceneSp);
+            CreateWeaponBulletPool(4, sceneSp);
 
             std::srand(std::time(nullptr));
             for (size_t i = 0; i < 1; i++)
@@ -85,7 +87,7 @@ namespace Game
     {
         for (const auto &bulletPair : mWeaponBulletsPool)
         {
-            if (const auto &bulletSp = bulletPair.first.lock())
+            if (const auto &bulletSp = bulletPair.first)
             {
                 bulletSp->SetIsEnabled(false); // disable all bullets at level start
             }
@@ -103,6 +105,38 @@ namespace Game
                 if (const auto &mainPlayerSp = mMainPlayerShip.lock())
                 {
                     ShootBullet(mainPlayerSp->GetRootComponent()->GetTranslation());
+                }
+            }
+        }
+    }
+
+    void SceneController::ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data)
+    {
+        const ePhysicsBodyType physBodyType = std::get<0>(data);
+        const auto this_actor_id = std::get<2>(data);
+        const auto that_actor_id = std::get<4>(data);
+
+        if (ePhysicsBodyType::GHOST == physBodyType)
+        {
+            if (const auto &sceneSp = mScene.lock())
+            {
+                const auto &a_thisEnemyShip = FindEnemyShipById(this_actor_id);
+                auto a_thisBulletIt = FindBulletById(this_actor_id);
+
+                const auto &a_thatEnemyShip = FindEnemyShipById(that_actor_id);
+                auto a_thatBulletIt = FindBulletById(that_actor_id);
+
+                const std::shared_ptr<Actor> &a_enemyShip = a_thisEnemyShip ? a_thisEnemyShip : a_thatEnemyShip;
+                auto a_bulletIt = a_thisBulletIt != mWeaponBulletsPool.end() ? a_thisBulletIt : a_thatBulletIt;
+
+                    if (a_enemyShip && a_bulletIt != mWeaponBulletsPool.end())
+                {
+                    //      EngineGOProperty<float>* materialDamageProperty =
+                    //       static_cast<EngineGOProperty<float>*>(
+                    //           a_enemyShip->GetEnginePropertyByName("property_damageEffect"));
+                    //  materialDamageProperty.SetValue(mDamageDeltaTime);
+                    a_bulletIt->first->SetIsEnabled(false);
+                    a_bulletIt->second = eBulletState::IDLE;
                 }
             }
         }
@@ -132,6 +166,7 @@ namespace Game
 
             if (mDeltaTime > mCoolDownTime)
             {
+                Logger::Out("SceneController::Tick. Cooldown!");
                 mDeltaTime = 0.0f;
                 bIsCoolDownInProgress = false;
             }
@@ -143,23 +178,20 @@ namespace Game
             // }
         }
 
-        for (const auto &enemy : mEnemies)
+        for (const auto &enemySp : mEnemies)
         {
-            if (const auto &enemySp = enemy.lock())
+            const auto &enemyTranslation = enemySp->GetRootComponent()->GetTranslation();
+            if (glm::length(enemyTranslation) > 70.0f)
             {
-                const auto &enemyTranslation = enemySp->GetRootComponent()->GetTranslation();
-                if (glm::length(enemyTranslation) > 70.0f)
-                {
-                    std::srand(std::time(nullptr));
-                    static constexpr float x_axisHalfWidth = 40.0f;
-                    static constexpr float y_axisHalfHeight = 20.0f;
-                    const float x = get_random(1.0f, 10.0f);
-                    glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                            0.0f, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
-                                            60.0f);
-                    const auto &c_movement = enemySp->GetMovementComponent();
-                    c_movement->Teleport(startPosition);
-                }
+                std::srand(std::time(nullptr));
+                static constexpr float x_axisHalfWidth = 40.0f;
+                static constexpr float y_axisHalfHeight = 20.0f;
+                const float x = get_random(1.0f, 10.0f);
+                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
+                                        0.0f, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                        60.0f);
+                const auto &c_movement = enemySp->GetMovementComponent();
+                c_movement->Teleport(startPosition);
             }
         }
     }
@@ -193,11 +225,11 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-        GameObject *testGO = new GameObject("testGameObject_" + enemyShipIndexStr);
-        gameObjects.emplace_back(std::make_pair(testGO, EngineGOProperty<float>(0.0f, "property_damageEffect")));
-        testGO->AddEngineProperty(gameObjects.back().second);
+        static std::vector<EngineGOProperty<float>> props;
 
-        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, testGO, "property_damageEffect", "damageTime");
+        props.emplace_back(EngineGOProperty<float>(0.0f, "property_damageEffect"));
+        a_enemySpaceship->AddEngineProperty(props.back());
+        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, a_enemySpaceship.get(), "property_damageEffect", "damageTime");
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        rotation, scale, "", pbs_mat);
@@ -313,7 +345,7 @@ namespace Game
             return;
         }
 
-        if (const auto &bulletSp = idleBulletIt->first.lock())
+        if (const auto &bulletSp = idleBulletIt->first)
         {
             bulletSp->SetIsEnabled(true);
             bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
@@ -326,7 +358,7 @@ namespace Game
     {
         for (auto &weaponPair : mWeaponBulletsPool)
         {
-            if (auto weaponSP = weaponPair.first.lock())
+            if (auto weaponSP = weaponPair.first)
             {
                 const auto &bulletPosition = weaponSP->GetRootComponent()->GetTranslation();
                 const bool bBulletInsideLevel = EngineMath::TestPointInAABB(mLevelBounds.GetMin(), mLevelBounds.GetMax(), bulletPosition);
@@ -346,5 +378,62 @@ namespace Game
                 Logger::Out("SceneController::FlushToPoolUsedBullets. Error: Bullet was destroyed!");
             }
         }
+    }
+
+    std::shared_ptr<Actor> SceneController::FindEnemyShipByName(const std::string &actorName) const
+    {
+        std::shared_ptr<Actor> result;
+
+        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(),
+                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &enemyActor)
+                                    {
+                                        return actorName == enemyActor->GetName();
+                                    });
+
+        if (foundIt != mEnemies.end())
+        {
+            result = *foundIt;
+        }
+
+        return result;
+    }
+
+    std::shared_ptr<Actor> SceneController::FindEnemyShipById(const uint64_t actorId) const
+    {
+        std::shared_ptr<Actor> result;
+
+        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyActor)
+                                    { return actorId == enemyActor->GetObjectId(); });
+
+        if (foundIt != mEnemies.end())
+        {
+            result = *foundIt;
+        }
+
+        return result;
+    }
+
+    typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator
+    SceneController::FindBulletByName(const std::string &actorName)
+    {
+         typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator foundIt = std::find_if(mWeaponBulletsPool.begin(),
+                                    mWeaponBulletsPool.end(),
+                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &bulletPair)
+                                    {
+                                        return actorName == bulletPair.first->GetName();
+                                    });
+        return foundIt;
+    }
+
+    typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator
+    SceneController::FindBulletById(const uint64_t actorId)
+    {
+         typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator foundIt = std::find_if(mWeaponBulletsPool.begin(),
+                                    mWeaponBulletsPool.end(),
+                                    [=](const auto &bulletPair)
+                                    {
+                                        return actorId == bulletPair.first->GetObjectId();
+                                    });
+        return foundIt;
     }
 }

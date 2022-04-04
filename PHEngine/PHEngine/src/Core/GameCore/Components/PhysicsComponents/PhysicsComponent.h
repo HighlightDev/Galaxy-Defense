@@ -8,6 +8,11 @@
 
 using namespace EngineCore;
 
+namespace EngineCore
+{
+   class Actor;
+};
+
 namespace EnginePhysics
 {
 
@@ -29,6 +34,8 @@ namespace EnginePhysics
       virtual void PostPhysicsInit();
 
       virtual void SetIsEnabled(const bool isEnabled) override;
+
+      virtual void SetOwner(const std::weak_ptr<Actor> &ownerActor) override;
 
       PhysicsDescriptor *GetDescriptor() const;
 

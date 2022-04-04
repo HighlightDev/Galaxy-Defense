@@ -199,7 +199,7 @@ namespace EngineCore
       if (auto sceneSp = mScene.lock())
       {
          assert(mThirdPersonTargetGOName != "");
-         const auto &actor = sceneSp->GetActor(mThirdPersonTargetGOName);
+         const auto &actor = sceneSp->GetActorByName(mThirdPersonTargetGOName);
          bThirdPersonTargetDeferredDirty = false;
          SetThirdPersonTarget(actor);
       }

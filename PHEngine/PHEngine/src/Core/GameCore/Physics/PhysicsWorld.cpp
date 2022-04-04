@@ -103,8 +103,27 @@ namespace EnginePhysics
 
    void PhysicsWorld::PostPhysicsSimulationUpdate(const float deltaTime)
    {
-      std::for_each(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [=](const auto &descriptor)
-                    { descriptor->PostPhysicsSimulationUpdate(deltaTime); });
+      for (const auto &physicsDescriptor : mPhysicsDescriptors)
+      {
+         if (physicsDescriptor->GetIsCollisionEnabled())
+         {
+            physicsDescriptor->PostPhysicsSimulationUpdate(deltaTime);
+         }
+      }
+   }
+
+   PhysicsDescriptor *PhysicsWorld::GetPhysicsDescriptorById(const size_t descriptorId) const
+   {
+      PhysicsDescriptor *result = nullptr;
+      auto foundDescriptorIt = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [=](const auto &physDescriptor)
+                                            { return physDescriptor->GetId() == descriptorId; });
+
+      if (foundDescriptorIt != mPhysicsDescriptors.end())
+      {
+         result = *foundDescriptorIt;
+      }
+      
+      return result;
    }
 
 #if DEBUG

@@ -16,6 +16,8 @@ namespace EnginePhysics
    {
    private:
       btPairCachingGhostObject *mGhostObject;
+      int32_t mSavedCollisionFilterGroup;
+      int32_t mSavedCollisionFilterMask;
 
       btTransform mMotionTransform;
 

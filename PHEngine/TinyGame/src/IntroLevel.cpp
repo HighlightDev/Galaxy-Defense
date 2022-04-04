@@ -67,7 +67,7 @@ namespace Game
                                                             38.88f, -2.72f, glm::vec3(5.0f, 45.0f, -40.0f));
       mScene->RegisterMainCamera(spaceCamera);
 
-      const auto &a_spaceship = mScene->GetActor("SpaceshipActor");
+      const auto &a_spaceship = mScene->GetActorByName("SpaceshipActor");
       assert(a_spaceship);
 
       InputComponentData d_input = InputComponentData("SpaceshipInputComponent");
@@ -116,8 +116,8 @@ namespace Game
       CreateScene();
       mSceneController->PostInit();
 
-      /*const auto groundActor = mScene->GetActor("Ground");
-      const auto pointLightComponents = mScene->GetActor("MainLightActor")->GetComponentsByType<PointLightComponent>();
+      /*const auto groundActor = mScene->GetActorByName("Ground");
+      const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();
 
       const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),

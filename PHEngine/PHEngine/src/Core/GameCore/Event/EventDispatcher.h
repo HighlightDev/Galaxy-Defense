@@ -8,6 +8,7 @@
 #include "TextureAtlasGeneratedEvent.h"
 #include "MouseMovedEvent.h"
 #include "MouseScrollEvent.h"
+#include "PhysicsCollisionOccuredEvent.h"
 
 #include <type_traits>
 

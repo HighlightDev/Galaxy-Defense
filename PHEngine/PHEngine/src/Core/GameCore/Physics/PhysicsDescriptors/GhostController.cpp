@@ -25,11 +25,16 @@ namespace EnginePhysics
    {
       m_collisionFilterGroup = collisionFilterGroup;
       m_collisionFilterMask = collisionFilterMask;
+      mSavedCollisionFilterGroup = collisionFilterGroup;
+      mSavedCollisionFilterMask = collisionFilterMask;
    }
 
    GhostController::~GhostController()
    {
-      mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+      if (mIsCollisionEnabled)
+      {
+         mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+      }
       delete mGhostObject;
    }
 
@@ -45,17 +50,31 @@ namespace EnginePhysics
       mGhostObject->setCollisionShape(mShape->GetCollisionShape());
       mGhostObject->setUserPointer(static_cast<PhysicsDescriptor *>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
-
       mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject, m_collisionFilterGroup, m_collisionFilterMask);
    }
 
    void GhostController::SetIsCollisionEnabled(const bool isCollisionEnabled)
    {
       assert(mGhostObject);
-      const int collisionMask = isCollisionEnabled
-                                    ? mGhostObject->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE
-                                    : mGhostObject->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE;
-      mGhostObject->setCollisionFlags(collisionMask);
+
+      if (isCollisionEnabled != mIsCollisionEnabled)
+      {
+         if (isCollisionEnabled)
+         {
+            m_collisionFilterGroup = mSavedCollisionFilterGroup;
+            m_collisionFilterMask = mSavedCollisionFilterMask;
+            mGhostObject->setCollisionFlags(btCollisionObject::CF_DYNAMIC_OBJECT);
+            mPhysicsWorld->GetWorld()->addCollisionObject(mGhostObject);
+         }
+         else
+         {
+            m_collisionFilterGroup = btBroadphaseProxy::DefaultFilter;
+            m_collisionFilterMask = btBroadphaseProxy::SensorTrigger;
+            mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
+            mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+         }
+         mIsCollisionEnabled = isCollisionEnabled;
+      }
    }
 
    void GhostController::UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime)
@@ -78,17 +97,18 @@ namespace EnginePhysics
                                              int index1)
    {
       const auto &collidedObject = colObj1->getCollisionObject();
-      if (mGhostObject == collidedObject)
-         return 1.0f;
-
       const auto &collidedObjDescriptor = reinterpret_cast<PhysicsDescriptor *>(collidedObject->getUserPointer());
+      if (mGhostObject == collidedObject ||
+          !collidedObjDescriptor->GetIsCollisionEnabled())
+         return 1.0f;
 
       PhysicsCollisionOccuredEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                              ePhysicsBodyType::GHOST,
-                                                             mCurrentId, collidedObjDescriptor->GetId());
-
-      Logger::Out("Collision detected; my descriptor = ", mCurrentId, " collided object descriptor = ", collidedObjDescriptor->GetId());
-      return 0;
+                                                             mCurrentId,
+                                                             mOwnerActorGameObjectId,
+                                                             collidedObjDescriptor->GetId(),
+                                                             collidedObjDescriptor->GetOwnerActorGameObjectId());
+      return 0.0f;
    }
 
    void GhostController::ParseGhostContacts()

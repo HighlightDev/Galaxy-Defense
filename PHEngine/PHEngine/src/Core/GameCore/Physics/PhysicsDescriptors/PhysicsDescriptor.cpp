@@ -3,7 +3,11 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
+#include <limits>
+#include <TinyLogger/LogInterface.h>
+
 using namespace EngineMath;
+using namespace TinyLogger;
 
 namespace EnginePhysics
 {
@@ -19,9 +23,30 @@ namespace EnginePhysics
 
    size_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers &motionModifier)
-       : mBodyType(bodyType), mPhysicsWorld(pPhysicsWorld), mCurrentId(PhysicsDescriptor::mTotalIds++), mShape(shape), mMotionState(new btDefaultMotionState()), mMass(mass), mInertia(), mRigidBody(nullptr), mRotator(), mTranslation(), mVelocity(), mPrevTransform(), mMotionModifier(motionModifier)
+   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld,
+                                        PhysicsShapeBase *shape,
+                                        const ePhysicsBodyType bodyType,
+                                        const float mass,
+                                        const MotionModifiers &motionModifier)
+       : mBodyType(bodyType),
+         mPhysicsWorld(pPhysicsWorld),
+         mCurrentId(PhysicsDescriptor::mTotalIds++),
+         mOwnerComponentGameObjectId(std::numeric_limits<uint64_t>::max()),
+         mOwnerActorGameObjectId(std::numeric_limits<uint64_t>::max()),
+         mShape(shape),
+         mMotionState(new btDefaultMotionState()),
+         mMass(mass),
+         mInertia(),
+         mRigidBody(nullptr),
+         mRotator(),
+         mTranslation(),
+         mVelocity(),
+         mPrevTransform(),
+         mMotionModifier(motionModifier),
+         mIsCollisionEnabled(true)
    {
+      Logger::Out("PhysicsDescriptor::ctor. my descriptor id=", mCurrentId);
+
       if (!CompareFloats(mass, 0.0f))
       {
          mShape->GetCollisionShape()->calculateLocalInertia(mass, mInertia);
@@ -30,6 +55,8 @@ namespace EnginePhysics
 
    PhysicsDescriptor::~PhysicsDescriptor()
    {
+      Logger::Out("PhysicsDescriptor::dctor. my descriptor id=", mCurrentId);
+
       if (mRigidBody)
       {
          mPhysicsWorld->GetWorld()->removeCollisionObject(mRigidBody);
@@ -43,7 +70,7 @@ namespace EnginePhysics
    void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTime)
    {
    }
-   void SetCollisionEnabled(const bool isEnabled);
+
    float PhysicsDescriptor::GetMass() const
    {
       return mMass;
@@ -120,9 +147,46 @@ namespace EnginePhysics
    void PhysicsDescriptor::SetIsCollisionEnabled(const bool isCollisionEnabled)
    {
       assert(mRigidBody);
-      const int collisionMask = isCollisionEnabled
-                                    ? mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE
-                                    : mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE;
-      mRigidBody->setCollisionFlags(collisionMask);
+      if (mIsCollisionEnabled != isCollisionEnabled)
+      {
+         if (isCollisionEnabled)
+         {
+            mPhysicsWorld->GetWorld()->addCollisionObject(mRigidBody);
+            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() & ~btCollisionObject::CF_NO_CONTACT_RESPONSE);
+         }
+         else
+         {
+            mPhysicsWorld->GetWorld()->removeCollisionObject(mRigidBody);
+            mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
+         }
+         mIsCollisionEnabled = isCollisionEnabled;
+      }
+   }
+
+   bool PhysicsDescriptor::GetIsCollisionEnabled() const
+   {
+      return mIsCollisionEnabled;
+   }
+
+   void PhysicsDescriptor::SetOwnerComponentGameObjectId(const uint64_t ownerComponentGameObjectId)
+   {
+      Logger::Out("PhysicsDescriptor::SetOwnerComponentGameObjectId. my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
+      mOwnerComponentGameObjectId = ownerComponentGameObjectId;
+   }
+
+   uint64_t PhysicsDescriptor::GetOwnerComponentGameObjectId() const
+   {
+      return mOwnerComponentGameObjectId;
+   }
+
+   void PhysicsDescriptor::SetOwnerActorGameObjectId(const uint64_t ownerActorGameObjectId)
+   {
+      Logger::Out("PhysicsDescriptor::SetOwnerActorGameObjectId. my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
+      mOwnerActorGameObjectId = ownerActorGameObjectId;
+   }
+
+   uint64_t PhysicsDescriptor::GetOwnerActorGameObjectId() const
+   {
+      return mOwnerActorGameObjectId;
    }
 }

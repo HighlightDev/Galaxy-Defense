@@ -45,6 +45,8 @@ namespace EnginePhysics
 
       void RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor);
 
+      PhysicsDescriptor *GetPhysicsDescriptorById(const size_t descriptorId) const;
+
 #if DEBUG
       const DebugPhysicsRenderData &GetDebugPhysicsRenderData() const;
 #endif

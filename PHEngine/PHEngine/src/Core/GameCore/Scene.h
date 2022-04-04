@@ -42,7 +42,7 @@ namespace EngineCore
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      std::unordered_map<std::string, GameObject *> GameObjects;
+      std::vector<GameObject*> GameObjects;
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -94,6 +94,8 @@ namespace EngineCore
 
       GameObject *GetGameObjectByName(const std::string &name) const;
 
+      GameObject *GetGameObjectById(const uint64_t id) const;
+
       IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 
       const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
@@ -104,7 +106,9 @@ namespace EngineCore
 
       const std::vector<std::shared_ptr<Actor>> &GetActors() const;
 
-      std::shared_ptr<Actor> GetActor(const std::string &name) const;
+      std::shared_ptr<Actor> GetActorByName(const std::string &name) const;
+
+      std::shared_ptr<Actor> GetActorById(const uint64_t id) const;
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 

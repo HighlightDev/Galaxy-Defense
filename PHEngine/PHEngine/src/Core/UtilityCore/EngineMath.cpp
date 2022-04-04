@@ -19,7 +19,7 @@ namespace EngineMath
       return (dst - src) * factor + src;
    }
 
-   glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3 &position1, const glm::vec3 &position2)
+   glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2)
    {
       glm::vec3 resultPosition = glm::vec3(0);
 
@@ -38,9 +38,9 @@ namespace EngineMath
       return glm::lerp(src, dst, t);
    }
 
-   float GetDistancePlaneToPointVec3(const glm::vec3 &point, const glm::vec4 &plane, float w)
+   float GetDistancePlaneToPointVec3(const glm::vec3 &point, const glm::vec4 &plane, const float w)
    {
-      const glm::vec3 &normal = glm::vec3(plane);
+      const glm::vec3 normal(plane);
       const float distance = glm::dot(point, normal) + w;
       return distance;
    }

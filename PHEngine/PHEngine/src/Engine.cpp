@@ -51,7 +51,16 @@ InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
 
 void Engine::PreLevelInit()
 {
-   EventDispatcher::GetInstance()->RegisterEventsByType<CameraTransformChangedEvent, PlayerMovedEvent, PhysicsComponentUpdatedEvent, KeyboardButtonDownEvent, KinematicBodyMovedEvent, TextureAtlasGeneratedEvent, MouseMovedEvent, MouseScrollEvent>();
+   EventDispatcher ::GetInstance()
+       ->RegisterEventsByType<CameraTransformChangedEvent,
+                              PlayerMovedEvent,
+                              PhysicsComponentUpdatedEvent,
+                              KeyboardButtonDownEvent,
+                              KinematicBodyMovedEvent,
+                              TextureAtlasGeneratedEvent,
+                              MouseMovedEvent,
+                              MouseScrollEvent,
+                              PhysicsCollisionOccuredEvent>();
 
    m_level->PreLevelInit();
 }

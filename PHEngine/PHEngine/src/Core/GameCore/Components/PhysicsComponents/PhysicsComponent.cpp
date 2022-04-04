@@ -8,18 +8,35 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
+#include <TinyLogger/LogInterface.h>
+
 using namespace EngineMath;
+using namespace TinyLogger;
 
 namespace EnginePhysics
 {
    PhysicsComponent::PhysicsComponent(const PhysicsComponentData &data)
-       : Component(data.GameObjectName), mDescriptor(data.mPhysicsDescriptor), bIsTransformationDirty(true)
+       : Component(data.GameObjectName),
+         mDescriptor(data.mPhysicsDescriptor),
+         bIsTransformationDirty(true)
    {
+      mDescriptor->SetOwnerComponentGameObjectId(GetObjectId());
    }
 
    PhysicsComponent::~PhysicsComponent()
    {
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mDescriptor->GetId());
+   }
+
+   void PhysicsComponent::SetOwner(const std::weak_ptr<Actor> &ownerActor)
+   {
+      Logger::Out("PhysicsComponent::SetOwner");
+
+      Component::SetOwner(ownerActor);
+      const auto &ownerActorSp = ownerActor.lock();
+      assert(ownerActorSp);
+
+      mDescriptor->SetOwnerActorGameObjectId(ownerActorSp->GetObjectId());
    }
 
    PhysicsDescriptor *PhysicsComponent::GetDescriptor() const

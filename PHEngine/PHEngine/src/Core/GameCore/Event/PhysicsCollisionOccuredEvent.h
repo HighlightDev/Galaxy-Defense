@@ -10,13 +10,16 @@ using namespace EnginePhysics;
 
 namespace Event
 {
-   using ParentEvent_t = TEvent<SingleDataEventPolicy<ePhysicsBodyType, uint32_t, uint32_t>>;
+   using ParentEvent_t = TEvent<SingleDataEventPolicy<ePhysicsBodyType,
+                                                      uint32_t /*this_phys_descriptor_id*/,
+                                                      uint32_t /*this_actor_id*/,
+                                                      uint32_t /*that_phys_descriptor_id*/,
+                                                      uint32_t /*that_actor_id*/>>;
 
    class PhysicsCollisionOccuredEvent
-      : public ParentEvent_t
+       : public ParentEvent_t
    {
    public:
       using Event = ParentEvent_t::Event_t;
-         
    };
 }

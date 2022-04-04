@@ -134,7 +134,7 @@ namespace EngineCore
       const auto &spScene = mSceneWP.lock();
       assert(spScene);
 
-      const auto &actor = spScene->GetActor(actorName);
+      const auto &actor = spScene->GetActorByName(actorName);
       assert((actor && component, "Actor or component is null"));
 
       const bool componentExists = mActiveComponents.count(component->GetObjectId());

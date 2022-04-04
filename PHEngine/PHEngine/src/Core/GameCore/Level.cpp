@@ -178,7 +178,7 @@ namespace EngineCore
 
       for (const auto &actorControllerData : container.ActorControllerData)
       {
-         const auto &bindedActor = mScene->GetActor(actorControllerData->BindedActorName);
+         const auto &bindedActor = mScene->GetActorByName(actorControllerData->BindedActorName);
          mScene->AddActorController(std::make_shared<HumanoidPlayerController>(mScene->GetMainCamera(), bindedActor));
       }
 

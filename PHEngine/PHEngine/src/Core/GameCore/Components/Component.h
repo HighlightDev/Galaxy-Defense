@@ -37,7 +37,7 @@ namespace EngineCore
 
       virtual ComponentType GetComponentType() const;
 
-		void SetOwner(const std::weak_ptr<Actor>& ownerActor);
+		virtual void SetOwner(const std::weak_ptr<Actor>& ownerActor);
 
       void RemoveOwner();
 
