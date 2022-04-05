@@ -4,11 +4,16 @@ set(
 	src/IntroLevel.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/SpaceShipPlayerController.h
+	src/Implementation/CombatController.h
 	src/Implementation/AiBrain.h
 	src/Implementation/SceneController.h
 	src/Implementation/AiActorController.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/MainPlayerActionEnum.h
+	src/Implementation/Factories/ISpaceShipFactory.h
+	src/Implementation/Factories/IWeaponBulletFactory.h
+	src/Implementation/Factories/WeakSpaceShipFactory.h
+	src/Implementation/Factories/WeakBulletFactory.h
 )
 
 set(
@@ -17,10 +22,13 @@ set(
 	src/IntroLevel.cpp
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/SpaceShipPlayerController.cpp
+	src/Implementation/CombatController.cpp
 	src/Implementation/AiBrain.cpp
 	src/Implementation/SceneController.cpp
 	src/Implementation/AiActorController.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
+	src/Implementation/Factories/WeakSpaceShipFactory.cpp
+	src/Implementation/Factories/WeakBulletFactory.cpp
     main.cpp
 )
 

@@ -107,8 +107,7 @@ namespace Game
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
       mScene->AddExternalTickableObject(mSceneController);
-      mSceneController->SetPlayerShipActor(a_spaceship);
-      mSceneController->SetPlayeActorController(spaceShipController);
+      mSceneController->SetPlayerActorController(spaceShipController);
    }
 
    void IntroLevel::PostLevelInit()
