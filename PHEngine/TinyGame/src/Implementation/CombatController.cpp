@@ -12,7 +12,6 @@ using namespace EnginePhysics;
 
 namespace Game
 {
-
     float get_random(float min, float max)
     {
         static std::default_random_engine e;
@@ -21,8 +20,6 @@ namespace Game
     }
 
     float mDeltaTime = 0.0f;
-    float mDamageDeltaTime = 0.0f;
-    bool bDamageReceived = false;
 
     CombatController::CombatController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
@@ -67,7 +64,7 @@ namespace Game
                                                                            glm::vec3(),
                                                                            glm::vec3(9));
 
-                mEnemies.emplace_back(a_enemyShip);
+                mEnemies.emplace_back(CombatEntity(a_enemyShip));
             }
         }
     }
@@ -106,20 +103,21 @@ namespace Game
         {
             if (const auto &sceneSp = mScene.lock())
             {
-                const auto &a_thisEnemyShip = FindEnemyShipById(this_actor_id);
+                const auto &a_thisEnemyShipIt = FindEnemyShipById(this_actor_id);
                 auto a_thisBulletIt = FindBulletById(this_actor_id);
 
-                const auto &a_thatEnemyShip = FindEnemyShipById(that_actor_id);
+                const auto &a_thatEnemyShipIt = FindEnemyShipById(that_actor_id);
                 auto a_thatBulletIt = FindBulletById(that_actor_id);
 
-                const std::shared_ptr<Actor> &a_enemyShip = a_thisEnemyShip ? a_thisEnemyShip : a_thatEnemyShip;
+                auto a_enemyShipIt = a_thisEnemyShipIt != mEnemies.end() ? a_thisEnemyShipIt : a_thatEnemyShipIt;
                 auto a_bulletIt = a_thisBulletIt != mWeaponBulletsPool.end() ? a_thisBulletIt : a_thatBulletIt;
 
-                if (a_enemyShip && a_bulletIt != mWeaponBulletsPool.end())
+                if (a_enemyShipIt != mEnemies.end() &&
+                    a_bulletIt != mWeaponBulletsPool.end())
                 {
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
-                    bDamageReceived = true;
+                    a_enemyShipIt->SetIsDamageReceived(true);
                 }
             }
         }
@@ -139,21 +137,23 @@ namespace Game
         // Test bullets if they are still inside level bounds
         FlushToPoolUsedBullets();
 
-        if (bDamageReceived)
+        for (auto &enemyContainer : mEnemies)
         {
-            mDamageDeltaTime += deltaTime * 10;
-            if (mDamageDeltaTime > 1.0f)
+            if (enemyContainer.GetIsDamageReceived())
             {
-                mDamageDeltaTime = 0.0f;
-                bDamageReceived = false;
-            }
+                float dmgTime = enemyContainer.GetDamageDeltaTime();
+                dmgTime += deltaTime * 10.0f;
+                if (dmgTime > 1.0f)
+                {
+                    dmgTime = 0.0f;
+                    enemyContainer.SetIsDamageReceived(false);
+                }
+                enemyContainer.SetDamageDeltaTime(dmgTime);
 
-            for (const auto &a_enemyShip : mEnemies)
-            {
                 const auto &materialDamageProperty =
                     std::static_pointer_cast<EngineGOProperty<float>>(
-                        a_enemyShip->GetEnginePropertyByName("property_damageEffect"));
-                materialDamageProperty->SetValue(mDamageDeltaTime);
+                        enemyContainer.GetSpaceShipActor()->GetEnginePropertyByName("property_damageEffect"));
+                materialDamageProperty->SetValue(dmgTime);
             }
         }
 
@@ -169,9 +169,9 @@ namespace Game
             }
         }
 
-        for (const auto &enemySp : mEnemies)
+        for (const auto &enemyContainer : mEnemies)
         {
-            const auto &enemyTranslation = enemySp->GetRootComponent()->GetTranslation();
+            const auto &enemyTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
             if (glm::length(enemyTranslation) > 70.0f)
             {
                 std::srand(std::time(nullptr));
@@ -181,7 +181,7 @@ namespace Game
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
                                         0.0f, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
                                         60.0f);
-                const auto &c_movement = enemySp->GetMovementComponent();
+                const auto &c_movement = enemyContainer.GetSpaceShipActor()->GetMovementComponent();
                 c_movement->Teleport(startPosition);
             }
         }
@@ -193,9 +193,9 @@ namespace Game
         for (size_t i = 0; i < poolSize; ++i)
         {
             const auto &a_shipBullet = bulletFactory.CreateWeaponBullet(sceneSp,
-                                                          glm::vec3(0),
-                                                          glm::vec3(),
-                                                          glm::vec3(1.0));
+                                                                        glm::vec3(0),
+                                                                        glm::vec3(),
+                                                                        glm::vec3(1.0));
 
             mWeaponBulletsPool.emplace_back(std::make_pair(a_shipBullet, eBulletState::IDLE));
         }
@@ -247,37 +247,23 @@ namespace Game
         }
     }
 
-    std::shared_ptr<Actor> CombatController::FindEnemyShipByName(const std::string &actorName) const
+    typename std::vector<CombatEntity>::iterator
+    CombatController::FindEnemyShipByName(const std::string &actorName)
     {
-        std::shared_ptr<Actor> result;
-
         auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(),
-                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &enemyActor)
+                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &enemyContainer)
                                     {
-                                        return actorName == enemyActor->GetName();
+                                        return actorName == enemyContainer.GetSpaceShipActor()->GetName();
                                     });
-
-        if (foundIt != mEnemies.end())
-        {
-            result = *foundIt;
-        }
-
-        return result;
+        return foundIt;
     }
 
-    std::shared_ptr<Actor> CombatController::FindEnemyShipById(const uint64_t actorId) const
+    typename std::vector<CombatEntity>::iterator
+    CombatController::FindEnemyShipById(const uint64_t actorId)
     {
-        std::shared_ptr<Actor> result;
-
-        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyActor)
-                                    { return actorId == enemyActor->GetObjectId(); });
-
-        if (foundIt != mEnemies.end())
-        {
-            result = *foundIt;
-        }
-
-        return result;
+        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyContainer)
+                                    { return actorId == enemyContainer.GetSpaceShipActor()->GetObjectId(); });
+        return foundIt;
     }
 
     typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator

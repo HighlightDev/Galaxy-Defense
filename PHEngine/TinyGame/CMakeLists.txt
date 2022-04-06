@@ -8,6 +8,7 @@ set(
 	src/Implementation/AiBrain.h
 	src/Implementation/SceneController.h
 	src/Implementation/AiActorController.h
+	src/Implementation/CombatEntity.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
@@ -26,6 +27,7 @@ set(
 	src/Implementation/AiBrain.cpp
 	src/Implementation/SceneController.cpp
 	src/Implementation/AiActorController.cpp
+	src/Implementation/CombatEntity.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/WeakBulletFactory.cpp

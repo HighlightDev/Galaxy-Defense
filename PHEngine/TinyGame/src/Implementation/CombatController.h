@@ -4,6 +4,7 @@
 #include "Events/MainPlayerActionEvent.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
+#include "CombatEntity.h"
 
 #include <memory>
 #include <utility>
@@ -37,7 +38,7 @@ namespace Game
 
         std::shared_ptr<SpaceShipPlayerController> mMainPlayerActorController;
 
-        std::vector<std::shared_ptr<Actor>> mEnemies;
+        std::vector<CombatEntity> mEnemies;
 
         std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>> mWeaponBulletsPool;
 
@@ -78,9 +79,9 @@ namespace Game
 
         void FlushToPoolUsedBullets();
 
-        std::shared_ptr<Actor> FindEnemyShipByName(const std::string &actorName) const;
+        typename std::vector<CombatEntity>::iterator FindEnemyShipByName(const std::string &actorName);
 
-        std::shared_ptr<Actor> FindEnemyShipById(const uint64_t actorId) const;
+        typename std::vector<CombatEntity>::iterator FindEnemyShipById(const uint64_t actorId);
 
         typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator FindBulletByName(const std::string &actorName);
 
