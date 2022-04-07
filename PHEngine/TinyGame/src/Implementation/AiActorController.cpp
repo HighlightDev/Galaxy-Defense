@@ -10,7 +10,8 @@ using namespace EngineMath;
 namespace Game
 {
     AiActorController::AiActorController(const std::shared_ptr<Actor> &actor)
-        : ActorController(actor), mCurrentState("s_idle")
+        : ActorController(actor),
+          mCurrentState("s_idle")
     {
     }
 
@@ -18,7 +19,7 @@ namespace Game
     {
         if (!m_actor->IsEnabled())
             return;
-            
+
         m_movementComponent->Move();
 
         const auto &moveDirection = m_movementComponent->GetDirection();

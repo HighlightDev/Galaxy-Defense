@@ -117,7 +117,14 @@ namespace Game
                 {
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
-                    a_enemyShipIt->SetIsDamageReceived(true);
+                    if (a_enemyShipIt->CheckIsAliveAfterDamage(1))
+                    {
+                        a_enemyShipIt->SetIsDamageReceived(true);
+                    }
+                    else
+                    {
+                        a_enemyShipIt->GetSpaceShipActor()->SetIsEnabled(false);
+                    }
                 }
             }
         }

@@ -15,12 +15,16 @@ namespace Game
 
         bool mIsDamageReceived;
 
+        size_t mLifePoints;
+
         std::shared_ptr<::EngineCore::Actor> mSpaceShipActor;
 
     public:
         CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor);
 
         const std::shared_ptr<::EngineCore::Actor> &GetSpaceShipActor() const;
+
+        bool CheckIsAliveAfterDamage(const float dmg);
 
         void SetDamageDeltaTime(const float deltaTime);
 

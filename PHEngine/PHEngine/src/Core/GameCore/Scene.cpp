@@ -512,7 +512,7 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                                                  Job(creatorObjectId, functionId, [=]() mutable
                                                      { sceneRenderer->MaterialProxiesMap.at(materialProxyIndex)->UpdateProperties(std::move(properties)); }));
       }

@@ -8,6 +8,7 @@ namespace Game
     CombatEntity::CombatEntity(const std::shared_ptr<Actor> &spaceShipActor)
         : mDamageDeltaTime(0.0f),
           mIsDamageReceived(false),
+          mLifePoints(2),
           mSpaceShipActor(spaceShipActor)
     {
     }
@@ -15,6 +16,12 @@ namespace Game
     const std::shared_ptr<Actor> &CombatEntity::GetSpaceShipActor() const
     {
         return mSpaceShipActor;
+    }
+
+    bool CombatEntity::CheckIsAliveAfterDamage(const float dmg)
+    {
+        mLifePoints = mLifePoints >= dmg ? mLifePoints - dmg : 0;
+        return 0 != mLifePoints;
     }
 
     void CombatEntity::SetDamageDeltaTime(const float deltaTime)
