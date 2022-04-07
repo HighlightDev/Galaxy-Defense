@@ -154,7 +154,10 @@ namespace Graphics
                               mDepthCollectShaderSkeletal->ExecuteShader();
                               for (auto &proxy : mSkeletalProxiesVec)
                               {
-                                 if (proxy->IsEnabled() && proxy->IsVisible() && dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox()))
+                                 const bool bShouldRender = proxy->IsEnabled() &&
+                                                            proxy->IsVisible() &&
+                                                            dirLightShadowOrthoBound.IsIntersectionWithBox(proxy->GetTransformedBoundingBox());
+                                 if (bShouldRender)
                                  {
                                     const auto &worldMatrix = proxy->GetMatrix();
                                     const auto &viewMatrix = dirLightPtr->GetProjectedDirShadowInfo()->GetShadowViewMatrix();
@@ -190,10 +193,11 @@ namespace Graphics
                               mDepthCollectShaderNonSkeletal->GetShader()->SetWriteDepthLinearly(true);
                               for (auto &proxy : mNonSkeletalProxiesVec)
                               {
-                                 if (proxy->IsTransformIntialized() &&
-                                     proxy->IsEnabled() &&
-                                     proxy->IsVisible() &&
-                                     sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                                 const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                                            proxy->IsEnabled() &&
+                                                            proxy->IsVisible() &&
+                                                            sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                                 if (bShouldRender)
                                  {
                                     const auto &worldMatrix = proxy->GetMatrix();
                                     const auto &viewMatrix = shadowInfo->GetShadowViewMatrix();
@@ -215,10 +219,12 @@ namespace Graphics
 
                               for (auto &proxy : mSkeletalProxiesVec)
                               {
-                                 if (proxy->IsTransformIntialized() &&
-                                     proxy->IsEnabled() &&
-                                     proxy->IsVisible() &&
-                                     sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                                 const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                                            proxy->IsEnabled() &&
+                                                            proxy->IsVisible() &&
+                                                            sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+
+                                 if (bShouldRender)
                                  {
                                     SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
 
@@ -259,10 +265,11 @@ namespace Graphics
                               mDepthCollectPointLightShaderNonSkeletal->ExecuteShader();
                               for (auto &proxy : mNonSkeletalProxiesVec)
                               {
-                                 if (proxy->IsTransformIntialized() &&
-                                     proxy->IsEnabled() &&
-                                     proxy->IsVisible() &&
-                                     sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                                 const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                                            proxy->IsEnabled() &&
+                                                            proxy->IsVisible() &&
+                                                            sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                                 if (bShouldRender)
                                  {
                                     const auto &worldMatrix = proxy->GetMatrix();
                                     const auto &viewMatrices = shadowInfo->GetShadowViewMatrices();
@@ -283,10 +290,11 @@ namespace Graphics
                               mDepthCollectPointLightShaderSkeletal->ExecuteShader();
                               for (auto &proxy : mSkeletalProxiesVec)
                               {
-                                 if (proxy->IsTransformIntialized() &&
-                                     proxy->IsEnabled() &&
-                                     proxy->IsVisible() &&
-                                     sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+                                 const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                                            proxy->IsEnabled() &&
+                                                            proxy->IsVisible() &&
+                                                            sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+                                 if (bShouldRender)
                                  {
                                     SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
 
@@ -339,10 +347,11 @@ namespace Graphics
          {
             for (auto &proxy : mSkeletalProxiesVec)
             {
-               if (proxy->IsTransformIntialized() &&
-                   proxy->IsEnabled() &&
-                   proxy->IsVisible() &&
-                   sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+               const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                          proxy->IsEnabled() &&
+                                          proxy->IsVisible() &&
+                                          sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+               if (bShouldRender)
                {
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
                }
@@ -353,10 +362,11 @@ namespace Graphics
          {
             for (auto &proxy : mNonSkeletalProxiesVec)
             {
-               if (proxy->IsTransformIntialized() &&
-                   proxy->IsEnabled() &&
-                   proxy->IsVisible() &&
-                   sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+               const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                          proxy->IsEnabled() &&
+                                          proxy->IsVisible() &&
+                                          sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+               if (bShouldRender)
                {
                   proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
                }
@@ -477,10 +487,11 @@ namespace Graphics
 
          for (const auto &proxy : mForwardRenderingProxiesVec)
          {
-            if (proxy->IsTransformIntialized() &&
-                proxy->IsEnabled() &&
-                proxy->IsVisible() &&
-                sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId()))
+            const bool bShouldRender = proxy->IsTransformIntialized() &&
+                                       proxy->IsEnabled() &&
+                                       proxy->IsVisible() &&
+                                       sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
+            if (bShouldRender)
             {
                proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
