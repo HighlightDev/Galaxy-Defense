@@ -13,10 +13,6 @@ namespace EngineCore
        : public ACamera,
          public PlayerMovedEvent
    {
-
-      // todo: maybe something better
-      bool bIsMainCamera;
-
    protected:
       float m_distanceFromTargetToCamera;
 

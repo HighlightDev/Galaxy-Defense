@@ -16,42 +16,41 @@ using namespace Graphics;
 namespace EngineCore
 {
 	struct SkyboxComponentData;
-	
-	class SkyboxComponent :
-		public PrimitiveComponent
+
+	class SkyboxComponent : public PrimitiveComponent
 	{
 	private:
-
 		float m_rotateSpeed;
 
-      SkyboxRenderData m_renderData;
+		SkyboxRenderData m_renderData;
 
 	protected:
-
 		using Base = PrimitiveComponent;
 
 	public:
-
-		SkyboxComponent(const SkyboxComponentData& data, const SkyboxRenderData& renderData);
+		SkyboxComponent(const SkyboxComponentData &data, const SkyboxRenderData &renderData);
 
 		virtual ~SkyboxComponent();
 
+		virtual void SetIsEnabled(const bool bEnabled) override;
+
+		virtual void SetIsVisible(bool isVisible) override;
+
 		virtual void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+		virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual ComponentType GetComponentType() const override;
+		virtual ComponentType GetComponentType() const override;
 
-      virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+		virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      void SetRotateSpeed(float rotateSpeed);
+		void SetRotateSpeed(float rotateSpeed);
 
-      float GetRotateSpeed() const;
+		float GetRotateSpeed() const;
 
-      const SkyboxRenderData& GetRenderData() const;
+		const SkyboxRenderData &GetRenderData() const;
 
-      std::shared_ptr<IMaterial> GetMaterial() const;
+		std::shared_ptr<IMaterial> GetMaterial() const;
 	};
 
 }
-

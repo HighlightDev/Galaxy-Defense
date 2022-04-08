@@ -44,4 +44,9 @@ namespace Graphics
    {
       return std::make_shared<MaterialProxy>(this);
    }
+
+   void IMaterial::SetIsEnabled(const bool bIsEnabled)
+   {
+      // for static material do nothing
+   }
 }

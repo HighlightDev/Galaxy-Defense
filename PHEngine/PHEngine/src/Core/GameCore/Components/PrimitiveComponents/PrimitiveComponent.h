@@ -38,7 +38,7 @@ namespace EngineCore
 
             virtual ~PrimitiveComponent();
 
-            void SetIsVisible(bool isVisible);
+            virtual void SetIsVisible(bool isVisible);
 
             bool IsVisible() const;
 

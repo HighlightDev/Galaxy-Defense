@@ -505,7 +505,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> properties)
+   void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties)
    {
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
@@ -513,7 +513,7 @@ namespace EngineCore
       if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
-                                                 Job(creatorObjectId, functionId, [=]() mutable
+                                                 Job(creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
                                                      { sceneRenderer->MaterialProxiesMap.at(materialProxyIndex)->UpdateProperties(std::move(properties)); }));
       }
    }

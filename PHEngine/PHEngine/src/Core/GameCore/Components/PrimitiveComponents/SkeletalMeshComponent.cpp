@@ -61,6 +61,28 @@ namespace EngineCore
       }
    }
 
+   void SkeletalMeshComponent::SetIsEnabled(const bool bEnabled)
+   {
+      PrimitiveComponent::SetIsEnabled(bEnabled);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(bEnabled);
+      }
+   }
+
+   void SkeletalMeshComponent::SetIsVisible(bool isVisible)
+   {
+      PrimitiveComponent::SetIsVisible(isVisible);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(isVisible);
+      }
+   }
+
    std::shared_ptr<IMaterial> SkeletalMeshComponent::GetMaterial() const
    {
       // get from scene corresponding to material proxy material instance

@@ -12,14 +12,12 @@ namespace EngineCore
    struct MeshComponentData;
    class LuaWrapper;
 
-   class SkeletalMeshComponent :
-      public PrimitiveComponent
+   class SkeletalMeshComponent
+       : public PrimitiveComponent
    {
-
       using Base = PrimitiveComponent;
 
    protected:
-
       // todo: should do something with render data on game thread.....
       SkeletalMeshRenderData m_renderData;
 
@@ -34,7 +32,6 @@ namespace EngineCore
       float mTimeIncreaseMultiply;
 
    public:
-
       std::string LuaScriptName;
 
       /* src is the main animation time counter*/
@@ -51,25 +48,29 @@ namespace EngineCore
 
       std::shared_ptr<EngineGOProperty<bool>> bTransitionEnabled;
 
-      std::shared_ptr<EngineGOProperty<float>>TransitionValue;
+      std::shared_ptr<EngineGOProperty<float>> TransitionValue;
 
    public:
-
-      SkeletalMeshComponent(const MeshComponentData& meshComponentData, const SkeletalMeshRenderData& renderData);
+      SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData);
 
       virtual ~SkeletalMeshComponent();
 
       virtual void PostLevelInit() override;
 
+      virtual void SetIsEnabled(const bool bEnabled) override;
+
+      virtual void SetIsVisible(bool isVisible) override;
+
       virtual ComponentType GetComponentType() const override;
 
       virtual void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-      inline const SkeletalMeshRenderData& GetRenderData() const {
+      inline const SkeletalMeshRenderData &GetRenderData() const
+      {
 
          return m_renderData;
       }
@@ -77,9 +78,7 @@ namespace EngineCore
       std::shared_ptr<IMaterial> GetMaterial() const;
 
    protected:
-
       void SyncDataWithRenderThread();
-
    };
 
 }

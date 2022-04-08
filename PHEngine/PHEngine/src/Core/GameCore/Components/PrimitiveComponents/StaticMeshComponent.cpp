@@ -15,24 +15,40 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   StaticMeshComponent::StaticMeshComponent(const MeshComponentData& meshComponentData, const StaticMeshRenderData& renderData)
-      : PrimitiveComponent(meshComponentData.GameObjectName
-      , meshComponentData.m_translation
-      , meshComponentData.m_eulerRotationDegrees
-      , meshComponentData.m_scale
-      , renderData.m_skin->GetBoundingBox())
-      , m_renderData(renderData)
+   StaticMeshComponent::StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData)
+       : PrimitiveComponent(meshComponentData.GameObjectName, meshComponentData.m_translation, meshComponentData.m_eulerRotationDegrees, meshComponentData.m_scale, renderData.m_skin->GetBoundingBox()), m_renderData(renderData)
    {
    }
 
    StaticMeshComponent::~StaticMeshComponent()
    {
-
    }
 
    void StaticMeshComponent::Tick(const float deltaTime)
    {
       Base::Tick(deltaTime);
+   }
+
+   void StaticMeshComponent::SetIsEnabled(const bool bEnabled)
+   {
+      PrimitiveComponent::SetIsEnabled(bEnabled);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(bEnabled);
+      }
+   }
+
+   void StaticMeshComponent::SetIsVisible(bool isVisible)
+   {
+      PrimitiveComponent::SetIsVisible(isVisible);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(isVisible);
+      }
    }
 
    void StaticMeshComponent::PostLevelInit()
@@ -43,7 +59,7 @@ namespace EngineCore
    std::shared_ptr<IMaterial> StaticMeshComponent::GetMaterial() const
    {
       std::shared_ptr<IMaterial> materialResult = nullptr;
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
       }
@@ -51,9 +67,9 @@ namespace EngineCore
       return materialResult;
    }
 
-   void StaticMeshComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void StaticMeshComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+      auto &actorData = GetSerializeDataActor(dataContainer);
 
       auto staticCompData = SerializeHelper::GetSerializedDataStaticMesh(this);
       actorData.ComponentsData.emplace_back(staticCompData);

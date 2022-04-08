@@ -20,11 +20,15 @@ namespace EngineCore
 		StaticMeshRenderData m_renderData;
 
 	public:
-		StaticMeshComponent(const MeshComponentData& meshComponentData, const StaticMeshRenderData &renderData);
+		StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData);
 
 		virtual ~StaticMeshComponent();
 
 		virtual ComponentType GetComponentType() const override;
+
+		virtual void SetIsEnabled(const bool bEnabled) override;
+
+		virtual void SetIsVisible(bool isVisible) override;
 
 		virtual void Tick(const float deltaTime) override;
 

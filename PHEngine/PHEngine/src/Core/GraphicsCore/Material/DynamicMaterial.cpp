@@ -9,8 +9,8 @@ using namespace EngineCore;
 
 namespace Graphics
 {
-   DynamicMaterial::DynamicMaterial(const std::string& materialName, const std::string& materialShaderName)
-      : IMaterial(materialName, materialShaderName)
+   DynamicMaterial::DynamicMaterial(const std::string &materialName, const std::string &materialShaderName)
+       : IMaterial(materialName, materialShaderName), mIsEnabled(true)
    {
    }
 
@@ -23,20 +23,29 @@ namespace Graphics
       mScene = scene;
    }
 
-   IMaterial::eMaterialType DynamicMaterial::GetMaterialType() const {
+   IMaterial::eMaterialType DynamicMaterial::GetMaterialType() const
+   {
       return IMaterial::eMaterialType::DYNAMIC;
    }
 
-   void DynamicMaterial::SyncDataWithRenderThread() {
+   void DynamicMaterial::SetIsEnabled(const bool bIsEnabled)
+   {
+      mIsEnabled = bIsEnabled;
+   }
 
+   void DynamicMaterial::SyncDataWithRenderThread()
+   {
       if (auto sceneSP = mScene.lock())
       {
-         sceneSP->MaterialPropertiesUpdated_OnRenderThread(MaterialProxyId, mDirtyProperties);
+         sceneSP->MaterialPropertiesUpdated_OnRenderThread(MaterialProxyId, std::move(mDirtyProperties));
       }
    }
 
    void DynamicMaterial::Tick(const float deltaTime)
    {
+      if (!mIsEnabled)
+         return;
+
       for (auto dynProp : mDynamicProperties)
       {
          // Get proxy of dynamic property
@@ -53,31 +62,33 @@ namespace Graphics
       if (mDirtyProperties.size())
       {
          SyncDataWithRenderThread();
+         mDirtyProperties.clear();
       }
-
-      mDirtyProperties.clear();
    }
 
-   void DynamicMaterial::PushDynamicProperty(std::shared_ptr<DynamicFloatMaterialProperty> dynamicProperty) {
+   void DynamicMaterial::PushDynamicProperty(std::shared_ptr<DynamicFloatMaterialProperty> dynamicProperty)
+   {
 
-      const auto& propertyName = dynamicProperty->GetPropertyName();
+      const auto &propertyName = dynamicProperty->GetPropertyName();
 
       auto propertyIt = std::find_if(mDynamicProperties.begin(), mDynamicProperties.end(),
-         [&](const auto& dynamicProperty) { return propertyName == dynamicProperty->GetPropertyName(); });
+                                     [&](const auto &dynamicProperty)
+                                     { return propertyName == dynamicProperty->GetPropertyName(); });
       assert(propertyIt == mDynamicProperties.end());
 
-      // Add proxy of dynamic property 
+      // Add proxy of dynamic property
       std::shared_ptr<FloatMaterialProperty> proxyProperty = std::make_shared<FloatMaterialProperty>(propertyName);
       PushMaterialProperty(proxyProperty);
 
       mDynamicProperties.emplace_back(std::move(dynamicProperty));
    }
 
-   std::shared_ptr<MaterialProperty> DynamicMaterial::TryGetAnyMaterialPropertyByName(const std::string& propertyName) const
+   std::shared_ptr<MaterialProperty> DynamicMaterial::TryGetAnyMaterialPropertyByName(const std::string &propertyName) const
    {
       std::shared_ptr<MaterialProperty> result = nullptr;
 
-      for (const auto& dynamicProperty : mDynamicProperties) {
+      for (const auto &dynamicProperty : mDynamicProperties)
+      {
          auto property = dynamicProperty->TryGetInternalMaterialPropertyByName(propertyName);
          if (property)
          {
@@ -94,11 +105,13 @@ namespace Graphics
       return result;
    }
 
-   std::shared_ptr<DynamicFloatMaterialProperty> DynamicMaterial::TryGetDynamicPropertyByName(const std::string& propertyName) const
+   std::shared_ptr<DynamicFloatMaterialProperty> DynamicMaterial::TryGetDynamicPropertyByName(const std::string &propertyName) const
    {
       auto propertyIt = std::find_if(mDynamicProperties.begin(), mDynamicProperties.end(),
-         [&](const auto& dynamicProperty) { return propertyName == dynamicProperty->GetPropertyName(); });
-      if (propertyIt != mDynamicProperties.end()) {
+                                     [&](const auto &dynamicProperty)
+                                     { return propertyName == dynamicProperty->GetPropertyName(); });
+      if (propertyIt != mDynamicProperties.end())
+      {
          return *propertyIt;
       }
 

@@ -10,30 +10,49 @@
 
 namespace EngineCore
 {
-	using namespace EngineUtility;
+   using namespace EngineUtility;
 
-	SkyboxComponent::SkyboxComponent(const SkyboxComponentData& data, const SkyboxRenderData& renderData)
-		: PrimitiveComponent(data.GameObjectName, glm::vec3(), glm::vec3(), data.m_scale, renderData.m_skin->GetBoundingBox())
-		, m_rotateSpeed(2.0f)
-      , m_renderData(renderData)
-	{
-	}
-
-	SkyboxComponent::~SkyboxComponent()
-	{
-
-	}
-
-	void SkyboxComponent::Tick(const float deltaTime)
-	{
-		Base::Tick(deltaTime);
-		
-      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP));
-	}
-
-   void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   SkyboxComponent::SkyboxComponent(const SkyboxComponentData &data, const SkyboxRenderData &renderData)
+       : PrimitiveComponent(data.GameObjectName, glm::vec3(), glm::vec3(), data.m_scale, renderData.m_skin->GetBoundingBox()), m_rotateSpeed(2.0f), m_renderData(renderData)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+   }
+
+   SkyboxComponent::~SkyboxComponent()
+   {
+   }
+
+   void SkyboxComponent::SetIsEnabled(const bool bEnabled)
+   {
+      PrimitiveComponent::SetIsEnabled(bEnabled);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(bEnabled);
+      }
+   }
+
+   void SkyboxComponent::SetIsVisible(bool isVisible)
+   {
+      PrimitiveComponent::SetIsVisible(isVisible);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(isVisible);
+      }
+   }
+
+   void SkyboxComponent::Tick(const float deltaTime)
+   {
+      Base::Tick(deltaTime);
+
+      SetRotator(mTransform->Rotator * glm::angleAxis(DEG_TO_RAD(deltaTime * m_rotateSpeed), AXIS_UP));
+   }
+
+   void SkyboxComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
+   {
+      auto &actorData = GetSerializeDataActor(dataContainer);
 
       std::shared_ptr<SerializeDataSkyboxComponent> skyboxCompData = std::make_shared<SerializeDataSkyboxComponent>();
 
@@ -63,7 +82,8 @@ namespace EngineCore
       return m_rotateSpeed;
    }
 
-   const SkyboxRenderData& SkyboxComponent::GetRenderData() const {
+   const SkyboxRenderData &SkyboxComponent::GetRenderData() const
+   {
 
       return m_renderData;
    }
@@ -71,7 +91,7 @@ namespace EngineCore
    std::shared_ptr<IMaterial> SkyboxComponent::GetMaterial() const
    {
       std::shared_ptr<IMaterial> materialResult = nullptr;
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
       }
