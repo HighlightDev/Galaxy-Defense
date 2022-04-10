@@ -166,7 +166,11 @@
     <ClCompile Include="src\GameLevelFactory.cpp" />
     <ClCompile Include="src\Implementation\AiActorController.cpp" />
     <ClCompile Include="src\Implementation\AiBrain.cpp" />
+    <ClCompile Include="src\Implementation\CombatController.cpp" />
+    <ClCompile Include="src\Implementation\CombatEntity.cpp" />
     <ClCompile Include="src\Implementation\Events\MainPlayerActionEvent.cpp" />
+    <ClCompile Include="src\Implementation\Factories\WeakBulletFactory.cpp" />
+    <ClCompile Include="src\Implementation\Factories\WeakSpaceShipFactory.cpp" />
     <ClCompile Include="src\Implementation\SceneController.cpp" />
     <ClCompile Include="src\Implementation\SpaceSceneCamera.cpp" />
     <ClCompile Include="src\Implementation\SpaceShipPlayerController.cpp" />
@@ -176,7 +180,13 @@
     <ClInclude Include="src\GameLevelFactory.h" />
     <ClInclude Include="src\Implementation\AiActorController.h" />
     <ClInclude Include="src\Implementation\AiBrain.h" />
+    <ClInclude Include="src\Implementation\CombatController.h" />
+    <ClInclude Include="src\Implementation\CombatEntity.h" />
     <ClInclude Include="src\Implementation\Events\MainPlayerActionEvent.h" />
+    <ClInclude Include="src\Implementation\Factories\ISpaceShipFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\IWeaponBulletFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\WeakBulletFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\WeakSpaceShipFactory.h" />
     <ClInclude Include="src\Implementation\MainPlayerActionEnum.h" />
     <ClInclude Include="src\Implementation\SceneController.h" />
     <ClInclude Include="src\Implementation\SpaceSceneCamera.h" />

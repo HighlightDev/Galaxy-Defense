@@ -348,13 +348,17 @@
     <ClInclude Include="src\Core\GameCore\ActorController.h" />
     <ClInclude Include="src\Core\GameCore\Components\MovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\NoPhysicsMovementComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ParticleComponents\ParticleSystemComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\GhostPhysicsComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\RigidBodyPhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\IEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseScrollEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionOccuredEvent.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\GhostController.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsBodyType.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h" />
@@ -882,7 +886,9 @@
     <ClCompile Include="src\Core\GameCore\ActorController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\MovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\NoPhysicsMovementComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\ParticleComponents\ParticleSystemComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\GhostPhysicsComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\RigidBodyPhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\MouseBindings.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\GhostController.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />
