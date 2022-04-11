@@ -18,6 +18,7 @@
 #include "PrimitiveComponents/SkyboxComponent.h"
 #include "PrimitiveComponents/StaticMeshComponent.h"
 #include "PrimitiveComponents/WaterPlaneComponent.h"
+#include "ParticleComponents/ParticleSystemComponent.h"
 
 #include "ComponentData/BillboardComponentData.h"
 #include "ComponentData/ComponentData.h"
@@ -32,6 +33,7 @@
 #include "ComponentData/SpotlightComponentData.h"
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/InputComponentData.h"
+#include "ComponentData/ParticleSystemComponentData.h"
 
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
@@ -68,7 +70,8 @@ namespace EngineCore
         Movement,
         PlatformTraverse,
         Physics,
-        PlanarReflection
+        PlanarReflection,
+        ParticleSystem
     };
 
     template <typename VertexFactoryType, typename BaseShaderType>
@@ -403,86 +406,115 @@ namespace EngineCore
         }
     };
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::LightComponent, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType>
+    struct ParticleSystemComponentCreator : public IComponentCreator
+    {
+        std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
+        {
+            const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
+            return std::make_shared<ComponentType>(mData);
+        }
+    };
+
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::LightComponent, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<LightComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Skybox, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Skybox, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<SkyboxComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::StaticMesh, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::StaticMesh, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<StaticMeshComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::WaterPlane, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::WaterPlane, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<WaterPlaneComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::SkeletalMesh, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::SkeletalMesh, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<SkeletalMeshComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Cubemap, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Cubemap, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<CubemapComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Billboard, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Billboard, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<BillboardComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Input, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Input, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<InputComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Movement, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Movement, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<MovementComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::PlatformTraverse, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::PlatformTraverse, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<PlatformTraverseComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::Physics, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::Physics, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<PhysicsComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
-    typename std::enable_if<componentMetaType == eComponentMetaType::PlanarReflection, std::unique_ptr<IComponentCreator>>::type CreateComponentCreatorInstance()
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::PlanarReflection, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
     {
         return std::make_unique<PlanarReflectionComponentCreator<ComponentType>>();
     }
 
-    template <typename ComponentType, eComponentMetaType componentMetaType>
+    template <typename ComponentType, eComponentMetaType c_metaType>
+    typename std::enable_if<c_metaType == eComponentMetaType::ParticleSystem, std::unique_ptr<IComponentCreator>>::type
+    CreateComponentCreatorInstance()
+    {
+        return std::make_unique<ParticleSystemComponentCreator<ComponentType>>();
+    }
+
     struct ComponentCreatorFactory
     {
-        std::shared_ptr<Component> CreateComponent(const ComponentData &data,
-                                                   class Scene *const scene)
+        template <typename ComponentType, eComponentMetaType c_metaType>
+        std::shared_ptr<ComponentType> CreateComponent(const ComponentData &data,
+                                                       class Scene *const scene)
         {
-            const auto &componentCreator = CreateComponentCreatorInstance<ComponentType, componentMetaType>();
-            return componentCreator->CreateComponent(data, scene);
+            const auto &componentCreator = CreateComponentCreatorInstance<ComponentType, c_metaType>();
+            return std::static_pointer_cast<ComponentType>(componentCreator->CreateComponent(data, scene));
         }
     };
 } // namespace EngineCore

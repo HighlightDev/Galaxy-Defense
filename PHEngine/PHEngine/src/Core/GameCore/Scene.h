@@ -42,7 +42,7 @@ namespace EngineCore
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      std::vector<GameObject*> GameObjects;
+      std::vector<GameObject *> GameObjects;
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -69,15 +69,16 @@ namespace EngineCore
 
       ~Scene();
 
-      template <typename ComponentType, eComponentMetaType componentMetaType>
-      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<ComponentType>>::type CreateComponent_GameThread(const ComponentData &componentData)
+      template <typename ComponentType, eComponentMetaType c_metaType>
+      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<ComponentType>>::type
+      CreateComponent_GameThread(const ComponentData &componentData)
       {
-         ComponentCreatorFactory<ComponentType, componentMetaType> componentFactory;
-         std::shared_ptr<Component> component = componentFactory.CreateComponent(componentData, this);
+         ComponentCreatorFactory componentFactory;
+         const std::shared_ptr<ComponentType> &component = componentFactory.CreateComponent<ComponentType, c_metaType>(componentData, this);
          RegisterComponentSceneProxy(component);
          RegisterGameObject(component.get());
          component->OnPostInitialized();
-         return std::static_pointer_cast<ComponentType>(component);
+         return component;
       }
 
       void PostLevelInit();
@@ -161,7 +162,7 @@ namespace EngineCore
 
       void MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy);
 
-      void MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties);
+      void MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
 
       void PlanarReflectionSceneProxyAdded_OnRenderThread(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy);
 

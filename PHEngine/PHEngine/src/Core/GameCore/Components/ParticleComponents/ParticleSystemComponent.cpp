@@ -5,13 +5,16 @@
 
 namespace EngineCore
 {
-    ParticleSystemComponent::ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData, const ParticleSystemRenderData &renderData)
-        : PrimitiveComponent("gameObjectName",
+    ParticleSystemComponent::ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData
+                                                    /* const ParticleSystemRenderData &renderData*/)
+        : PrimitiveComponent(meshComponentData.GameObjectName,
+                             meshComponentData.m_translation,
                              glm::vec3(),
-                             glm::vec3(),
-                             glm::vec3(1),
-                             BoundingBox())
+                             glm::vec3(1.0f),
+                             BoundingBox()),
+          mParticlesPool()
     {
+        mParticlesPool.resize(100);
     }
 
     ParticleSystemComponent::~ParticleSystemComponent()
@@ -29,6 +32,10 @@ namespace EngineCore
 
     void ParticleSystemComponent::Tick(const float deltaTime)
     {
+        for (const auto& module : mParticleModules)
+        {
+            module->Tick(deltaTime);
+        }
     }
 
     void ParticleSystemComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
@@ -38,5 +45,18 @@ namespace EngineCore
     std::shared_ptr<PrimitiveSceneProxy> ParticleSystemComponent::CreateSceneProxy() const
     {
         return nullptr;
+    }
+
+    void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule)
+    {
+        mParticleModules.emplace_back(particleModule);
+    }
+
+    void ParticleSystemComponent::EmitParticles(const std::vector<ParticleProperties> &particleProperties)
+    {
+    }
+
+    void ParticleSystemComponent::InitParticlePool()
+    {
     }
 }

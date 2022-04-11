@@ -6,7 +6,12 @@ namespace EngineCore
 {
 
    BillboardComponent::BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData)
-       : PrimitiveComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale, renderData.m_skin->GetBoundingBox()), m_renderData(renderData)
+       : PrimitiveComponent(data.GameObjectName,
+                            data.m_translation,
+                            data.m_eulerRotationDegrees,
+                            data.m_scale,
+                            renderData.m_skin->GetBoundingBox()),
+         m_renderData(renderData)
    {
    }
 
