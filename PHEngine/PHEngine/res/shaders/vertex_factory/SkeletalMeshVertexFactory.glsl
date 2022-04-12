@@ -16,38 +16,6 @@ uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 bonesMatrices[MaxBones];
 
-struct TRANSFORM_MATRICES
-{
-	mat4 WORLD;
-	mat4 VIEW;
-	mat4 PROJECTION;
-};
-
-struct VERTEX_FACTORY_INPUT
-{
-	vec3 VertexPosition;
-	vec3 VertexNormal;
-	vec2 VertexTexCoords;
-	vec3 VertexColor;
-	vec3 VertexTangent;
-	vec3 VertexBitangent;
-	vec4 VertexBlendWeights;
-	ivec4 VertexBlendIndices;
-} Input;
-
-VERTEX_FACTORY_INPUT GetVertexFactoryInput()
-{
-	Input.VertexPosition = VertexPosition;
-	Input.VertexNormal = VertexNormal;
-	Input.VertexTexCoords = VertexTexCoords;
-	Input.VertexColor = VertexColor;
-	Input.VertexTangent = VertexTangent;
-	Input.VertexBitangent = VertexBitangent;
-	Input.VertexBlendWeights = VertexBlendWeights;
-	Input.VertexBlendIndices = VertexBlendIndices;
-	return Input;
-}
-
 vec4 ApplySkinningToVec(vec4 vector)
 {
 	vec4 skinnedVec = vec4(0);
@@ -96,16 +64,6 @@ vec2 GetLocalTexCoords()
 vec3 GetVertexColor()
 {
 	return VertexColor;
-}
-
-TRANSFORM_MATRICES GetTransformMatrices()
-{
-	TRANSFORM_MATRICES mat;
-	mat.WORLD = worldMatrix;
-	mat.VIEW = viewMatrix;
-	mat.PROJECTION = projectionMatrix;
-
-	return mat;
 }
 
 MATERIAL_VS_OUTPUT VertexFactoryGetMaterialOutput()

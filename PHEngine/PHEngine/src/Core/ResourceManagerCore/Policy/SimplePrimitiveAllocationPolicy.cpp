@@ -77,6 +77,16 @@ namespace Resources
                   -1.0f,  1.0f, -1.0f // top-left
                   });
                break;
+               case SimplePrimitiveType::QUAD:
+               vertices = std::vector<float>({
+                  -1.0f, -1.0f,  0.0f, // bottom-left
+                   1.0f, -1.0f,  0.0f, // bottom-right
+                   1.0f,  1.0f,  0.0f, // top-right
+                   1.0f,  1.0f,  0.0f, // top-right
+                  -1.0f,  1.0f,  0.0f, // top-left
+                  -1.0f, -1.0f,  0.0f, // bottom-left
+               });
+               break;
             case SimplePrimitiveType::CUBE:
                vertices = std::vector<float>({
                   // back face

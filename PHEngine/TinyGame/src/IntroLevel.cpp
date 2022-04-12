@@ -83,9 +83,9 @@ namespace Game
       c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);
 
-      ParticleSystemComponentData d_particle("c_particleSystemComponent", glm::vec3(10));
+      /*ParticleSystemComponentData d_particle("c_particleSystemComponent", glm::vec3(10));
       const auto &c_particleSystemComponent = mScene->CreateComponent_GameThread<ParticleSystemComponent,
-                                                                                 eComponentMetaType::ParticleSystem>(d_particle);
+                                                                                 eComponentMetaType::ParticleSystem>(d_particle);*/
 
       /*GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
       mScene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);

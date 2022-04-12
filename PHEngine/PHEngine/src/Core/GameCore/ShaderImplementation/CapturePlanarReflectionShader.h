@@ -5,7 +5,6 @@
 
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
-#include "ShaderCommon.h"
 
 using namespace Graphics::OpenGL;
 

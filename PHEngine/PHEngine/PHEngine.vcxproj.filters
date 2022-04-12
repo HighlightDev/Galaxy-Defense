@@ -1866,9 +1866,6 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\ShaderCommon.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>

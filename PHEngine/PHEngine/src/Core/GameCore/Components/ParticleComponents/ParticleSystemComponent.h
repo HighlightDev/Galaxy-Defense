@@ -2,9 +2,13 @@
 
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
+#include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 #include "Core/GameCore/Particles/Particle.h"
 #include "Core/GameCore/Particles/ParticleProperties.h"
+#include "Core/GameCore/Particles/ParticleProxyProperties.h"
 #include "Core/GameCore/Particles/ParticleModule.h"
+
+using namespace Graphics::Data;
 
 namespace EngineCore
 {
@@ -15,13 +19,15 @@ namespace EngineCore
         : public PrimitiveComponent
     {
         std::vector<Particle> mParticlesPool;
+        std::vector<ParticleProxyProperties> mParticleProxyPropertiesPool;
 
         std::vector<std::shared_ptr<ParticleModule>> mParticleModules;
 
-        std::shared_ptr<ParticleEmitter*> mParticleEmitter;
+        std::shared_ptr<ParticleEmitter *> mParticleEmitter;
 
     public:
-        ParticleSystemComponent(const ParticleSystemComponentData& meshComponentData/*, const ParticleSystemRenderData& renderData*/);
+        ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
+                                const ParticleSystemRenderData &renderData);
 
         virtual ~ParticleSystemComponent();
 
@@ -35,11 +41,12 @@ namespace EngineCore
 
         virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-        void AddParticleModule(const std::shared_ptr<ParticleModule>& particleModule);
+        void AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule);
 
-        void EmitParticles(const std::vector<ParticleProperties>& particleProperties);
+        void EmitParticles(const std::vector<ParticleProperties> &particleProperties);
 
-        private:
+    private:
+        void SyncDataWithRenderThread();
 
         void InitParticlePool();
     };

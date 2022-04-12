@@ -412,7 +412,17 @@ namespace EngineCore
         std::shared_ptr<Component> CreateComponent(const ComponentData &data, class Scene *const scene) const override
         {
             const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
-            return std::make_shared<ComponentType>(mData);
+
+            const int32_t primitive = (int32_t)SimplePrimitiveType::QUAD;
+            SimplePrimitivePool::sharedValue_t skin =
+                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
+            /* ShaderParams shaderParams("Particles_Shader", mData.m_vsShaderPath,
+                                        mData.m_fsShaderPath);*/
+            /* ShaderPool::sharedValue_t shader =
+                 ShaderPool::GetInstance()
+                     ->template GetOrAllocateResource<ParticleSystemShader>(shaderParams);*/
+
+            return std::make_shared<ComponentType>(mData, ParticleSystemRenderData(skin, nullptr));
         }
     };
 

@@ -17,8 +17,8 @@ namespace Graphics
    namespace Proxy
    {
 
-      class SkeletalMeshSceneProxy :
-         public PrimitiveSceneProxy
+      class SkeletalMeshSceneProxy
+          : public PrimitiveSceneProxy
       {
          using ShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
@@ -29,29 +29,40 @@ namespace Graphics
          mutable bool bAnimationDataIsDirty = true;
 
       private:
-
          std::shared_ptr<ShaderType> GetShader() const;
 
          std::shared_ptr<PlanarReflectionShaderType> GetPlanarReflectionShader() const;
 
       public:
-         SkeletalMeshSceneProxy(const SkeletalMeshComponent* component);
+         SkeletalMeshSceneProxy(const SkeletalMeshComponent *component);
 
          virtual ~SkeletalMeshSceneProxy();
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         virtual void Render(const glm::mat4 &viewMatrix,
+                             const glm::mat4 &projectionMatrix) override;
 
-         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         virtual void RenderPlanarReflection(const glm::vec4 &plane,
+                                             const glm::mat4 &mirrorMatrix,
+                                             const glm::mat4 &viewMatrix,
+                                             const glm::mat4 &projectionMatrix) override;
 
-         void UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
-            const float dstAnimationTime, const std::string& srcAnimationName, const std::string& dstAnimationName);
+         void UpdateAnimationData(bool transtionEnabled,
+                                  const float transitionValue,
+                                  const float srcAnimationTime,
+                                  const float dstAnimationTime,
+                                  const std::string &srcAnimationName,
+                                  const std::string &dstAnimationName);
 
-         void UpdateAnimationData(bool transtionEnabled, const float transitionValue, const float srcAnimationTime,
-            const float dstAnimationTime, const size_t srcAnimationIndex, const size_t dstAnimationIndex);
+         void UpdateAnimationData(bool transtionEnabled,
+                                  const float transitionValue,
+                                  const float srcAnimationTime,
+                                  const float dstAnimationTime,
+                                  const size_t srcAnimationIndex,
+                                  const size_t dstAnimationIndex);
 
          virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
-         const std::vector<glm::mat4>& GetSkinningMatrices() const;
+         const std::vector<glm::mat4> &GetSkinningMatrices() const;
 
          virtual bool IsDeferred() const;
 
