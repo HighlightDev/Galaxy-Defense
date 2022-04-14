@@ -4,6 +4,10 @@
 #include <gl/glew.h>
 #include <fstream>
 
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
+
 namespace Graphics
 {
 	namespace OpenGL
@@ -37,6 +41,10 @@ namespace Graphics
             m_shaderProgramID = glCreateProgram();
             LinkShaders();
             AccessAllUniformLocations(m_shaderProgramID);
+         }
+         else
+         {
+            Logger::Out("Shader::ShaderInit. Shader source loading failed");
          }
       }
 

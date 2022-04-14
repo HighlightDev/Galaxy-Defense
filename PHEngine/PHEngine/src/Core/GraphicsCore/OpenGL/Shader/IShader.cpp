@@ -156,6 +156,8 @@ namespace Graphics
             std::ifstream stream(pathToShader);
             std::string line;
 
+            assert(stream.is_open());
+
             while (stream.is_open() && getline(stream, line))
             {
                result += line + "\n";

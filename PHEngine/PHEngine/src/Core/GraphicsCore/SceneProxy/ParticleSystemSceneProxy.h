@@ -3,10 +3,12 @@
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Particles/ParticleProxyProperties.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
+#include "Core/IoCore/FolderManager.h"
 
 #include <vector>
 
 using namespace EngineCore;
+using namespace IO;
 
 namespace EngineCore
 {
@@ -20,13 +22,12 @@ namespace Graphics
 
     private:
         Uniform u_worldMatrix, u_viewMatrix, u_projectionMatrix;
+        Uniform u_color;
+        Uniform u_particleSize;
 
     public:
-        ParticleShader()
-            : Shader(ShaderParams{
-                  .ShaderName = "ParticleShader",
-                  .VertexShaderFile = "",
-                  .FragmentShaderFile = ""})
+        ParticleShader(const ShaderParams& shaderParams)
+            : Shader(shaderParams)
         {
             ShaderInit();
         }
@@ -38,8 +39,18 @@ namespace Graphics
         void SetTransformMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
         {
             u_worldMatrix.LoadUniform(worldMatrix);
-            u_worldMatrix.LoadUniform(viewMatrix);
-            u_worldMatrix.LoadUniform(projectionMatrix);
+            u_viewMatrix.LoadUniform(viewMatrix);
+            u_projectionMatrix.LoadUniform(projectionMatrix);
+        }
+
+        void SetColor(const glm::vec4& color)
+        {
+            u_color.LoadUniform(color);
+        }
+
+        void SetParticleSize(const float particleSize)
+        {
+            u_particleSize.LoadUniform(particleSize);
         }
 
     protected:
@@ -50,6 +61,8 @@ namespace Graphics
             u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
             u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
             u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
+            u_color = GetUniform("color", shaderProgramID);
+            u_particleSize = GetUniform("particleSize", shaderProgramID);
         }
 
         virtual void SetShaderPredefine() override
@@ -61,9 +74,6 @@ namespace Graphics
     {
         class ParticleSystemSceneProxy : public PrimitiveSceneProxy
         {
-
-            // std::shared_ptr<BillboardShader> m_billboardShader;
-
             std::vector<ParticleProxyProperties> mParticles;
 
             std::shared_ptr<ParticleShader> mShader;

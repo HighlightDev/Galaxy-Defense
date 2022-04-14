@@ -413,7 +413,7 @@ namespace EngineCore
         {
             const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
 
-            const int32_t primitive = (int32_t)SimplePrimitiveType::QUAD;
+            const int32_t primitive = (int32_t)SimplePrimitiveType::POINT;
             SimplePrimitivePool::sharedValue_t skin =
                 SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
             /* ShaderParams shaderParams("Particles_Shader", mData.m_vsShaderPath,

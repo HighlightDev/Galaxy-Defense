@@ -61,7 +61,12 @@ namespace Graphics
 
 		public:
 			VertexBufferObject(const std::vector<DataType> &data, int32_t bufferTarget, int32_t vertexAttribIndex, DataCarryFlag flag)
-				: VertexBufferObjectBase(bufferTarget), m_data(std::move(data)), m_totalDataLength(m_data.size()), m_countOfIndices(m_totalDataLength / m_vectorSize), m_vertexAttribIndex(vertexAttribIndex), m_dataCarryFlag(flag)
+				: VertexBufferObjectBase(bufferTarget),
+				  m_data(std::move(data)),
+				  m_totalDataLength(m_data.size()),
+				  m_countOfIndices(m_totalDataLength / m_vectorSize),
+				  m_vertexAttribIndex(vertexAttribIndex),
+				  m_dataCarryFlag(flag)
 			{
 				Logger::Out("VertexBufferObject::ctor");
 			}
@@ -128,6 +133,7 @@ namespace Graphics
 			virtual void CleanUp() override
 			{
 				Logger::Out("VertexBufferObject::CleanUp; descriptor = ", m_descriptor);
+				UnbindVBO();
 				glDeleteBuffers(1, &m_descriptor);
 			}
 		};

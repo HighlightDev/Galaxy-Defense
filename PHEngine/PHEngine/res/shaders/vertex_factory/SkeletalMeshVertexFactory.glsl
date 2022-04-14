@@ -9,7 +9,7 @@ layout (location = 5) in vec3 VertexBitangent;
 layout(location = 6) in vec4 VertexBlendWeights;
 layout(location = 7) in ivec4 VertexBlendIndices;
 
-#include "materialCommon.glsl"
+#include "materialCommon.incl"
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;

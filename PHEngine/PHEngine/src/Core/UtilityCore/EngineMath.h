@@ -17,7 +17,7 @@ namespace EngineMath
    /*                       Convert from degrees to radians                */
    /************************************************************************/
 
-#define DEG_TO_RAD(X) (glm::radians<float>(X ))
+#define DEG_TO_RAD(X) (glm::radians<float>(X))
 
    /************************************************************************/
    /*                       Convert from radians to degrees                */

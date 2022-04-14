@@ -4,21 +4,13 @@
 #include "Factories/WeakSpaceShipFactory.h"
 #include "Factories/WeakBulletFactory.h"
 #include "SpaceShipPlayerController.h"
-
-#include <random>
+#include "Core/CommonCore/Random.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
 
 namespace Game
 {
-    float get_random(float min, float max)
-    {
-        static std::default_random_engine e;
-        static std::uniform_real_distribution<> dis(min, max);
-        return dis(e);
-    }
-
     float mDeltaTime = 0.0f;
 
     CombatController::CombatController(const std::weak_ptr<Scene> &scene)
@@ -48,16 +40,16 @@ namespace Game
 
             WeakSpaceShipFactory spaceShipFactory;
 
-            std::srand(std::time(nullptr));
-            for (size_t i = 0; i < 2; i++)
+            for (size_t i = 0; i < 2; ++i)
             {
                 static constexpr float x_axisHalfWidth = 50.0f;
                 static constexpr float y_axisHalfHeight = 30.0f;
-                const float x = get_random(0.5f, 10.0f);
+
+                const float x = Random::Float() * 10.0f;
                 const float scale = glm::clamp(x, 0.5f, 3.0f);
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
-                                        80 + (i * i) + 2);
+                                        0,
+                                        80 + (i * i * i) + 2);
 
                 const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,
                                                                            startPosition,
@@ -181,12 +173,11 @@ namespace Game
             const auto &enemyTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
             if (glm::length(enemyTranslation) > 70.0f)
             {
-                std::srand(std::time(nullptr));
                 static constexpr float x_axisHalfWidth = 40.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
-                const float x = get_random(1.0f, 10.0f);
+                const float x = Random::Float() * 10.0f;
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0.0f, //((y_axisHalfHeight / x) * 2) - y_axisHalfHeight,
+                                        0.0f,
                                         60.0f);
                 const auto &c_movement = enemyContainer.GetSpaceShipActor()->GetMovementComponent();
                 c_movement->Teleport(startPosition);

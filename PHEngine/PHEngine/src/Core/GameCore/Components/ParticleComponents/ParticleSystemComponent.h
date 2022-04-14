@@ -13,17 +13,19 @@ using namespace Graphics::Data;
 namespace EngineCore
 {
     struct ParticleEmitter;
-    struct ParticleSystemRenderData;
 
     class ParticleSystemComponent
         : public PrimitiveComponent
     {
+
         std::vector<Particle> mParticlesPool;
         std::vector<ParticleProxyProperties> mParticleProxyPropertiesPool;
 
         std::vector<std::shared_ptr<ParticleModule>> mParticleModules;
 
         std::shared_ptr<ParticleEmitter *> mParticleEmitter;
+
+        ParticleSystemRenderData mRenderData;
 
     public:
         ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
@@ -44,6 +46,11 @@ namespace EngineCore
         void AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule);
 
         void EmitParticles(const std::vector<ParticleProperties> &particleProperties);
+
+        inline const ParticleSystemRenderData& GetRenderData() const
+        {
+            return mRenderData;
+        }
 
     private:
         void SyncDataWithRenderThread();

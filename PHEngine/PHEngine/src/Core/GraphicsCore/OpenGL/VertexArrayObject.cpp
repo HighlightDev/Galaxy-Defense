@@ -91,6 +91,8 @@ namespace Graphics
 		{
 			Logger::Out("VertexArrayObject::CleanUp; descriptor = ", m_descriptor);
 
+			glBindVertexArray(0);
+
 			if (m_ibo)
 				m_ibo->CleanUp();
 
@@ -101,7 +103,8 @@ namespace Graphics
 
 			glDeleteVertexArrays(1, &m_descriptor);
 
-			for (size_t i = 0; i < m_vbos.size(); ++i)
+			const size_t vbos_size = m_vbos.size();
+			for (size_t i = 0; i < vbos_size; ++i)
 			{
 				delete m_vbos[i];
 			}

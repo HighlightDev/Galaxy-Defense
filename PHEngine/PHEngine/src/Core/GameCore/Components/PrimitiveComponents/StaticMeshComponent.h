@@ -40,7 +40,6 @@ namespace EngineCore
 
 		inline const StaticMeshRenderData &GetRenderData() const
 		{
-
 			return m_renderData;
 		}
 

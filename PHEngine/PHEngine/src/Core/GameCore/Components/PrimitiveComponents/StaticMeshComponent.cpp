@@ -16,7 +16,12 @@ namespace EngineCore
 {
 
    StaticMeshComponent::StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData)
-       : PrimitiveComponent(meshComponentData.GameObjectName, meshComponentData.m_translation, meshComponentData.m_eulerRotationDegrees, meshComponentData.m_scale, renderData.m_skin->GetBoundingBox()), m_renderData(renderData)
+       : PrimitiveComponent(meshComponentData.GameObjectName,
+                            meshComponentData.m_translation,
+                            meshComponentData.m_eulerRotationDegrees,
+                            meshComponentData.m_scale,
+                            renderData.m_skin->GetBoundingBox()),
+         m_renderData(renderData)
    {
    }
 

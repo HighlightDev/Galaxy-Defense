@@ -1,6 +1,11 @@
 #include "ParticleSystemSceneProxy.h"
 
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+
+using namespace EngineMath;
+using namespace Resources;
 
 namespace Graphics
 {
@@ -11,13 +16,17 @@ namespace Graphics
             : PrimitiveSceneProxy(component->IsEnabled(),
                                   component->IsVisible(),
                                   component->GetRelativeMatrix(),
-                                  nullptr, /*component->GetRenderData().m_skin,*/
+                                  component->GetRenderData().m_skin,
                                   nullptr,
                                   nullptr,
                                   nullptr),
               mParticles()
         {
-            mShader = std::make_shared<ParticleShader>();
+            mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
+                  .ShaderName = "ParticleShader",
+                  .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
+                  .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
+                  .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"});
         }
 
         ParticleSystemSceneProxy::~ParticleSystemSceneProxy()
@@ -28,18 +37,23 @@ namespace Graphics
         {
             if (!mParticles.size())
                 return;
-            // enable blending
+
             mShader->ExecuteShader();
+            mShader->SetColor(glm::vec4(1.0f, .0f, .0f, 1.0f));
             for (const auto &particle : mParticles)
             {
-                glm::mat4 translation = glm::translate(glm::mat4(1), particle.Position);
-                glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(particle.Size, particle.Size, 1.0f));
-                glm::mat4 rotation  = glm::rotate(glm::mat4(1), particle.Rotation, glm::vec3(0, 0, 1));
-                mShader->SetTransformMatrices(scale * translation * rotation, viewMatrix, projectionMatrix);
-                // skin render
+                const glm::mat4 identityMatrix(1);
+                glm::mat4 transformMatrix = identityMatrix;
+                transformMatrix *= m_relativeMatrix;
+                transformMatrix *= glm::translate(glm::mat4(1), particle.Position);
+                transformMatrix *= glm::rotate(glm::mat4(1), DEG_TO_RAD(particle.Rotation), glm::vec3(0, 0, 1));
+
+                mShader->SetParticleSize(particle.Size);
+                mShader->SetTransformMatrices(transformMatrix, viewMatrix, projectionMatrix);
+
+                m_skin->GetBuffer()->RenderVAO(GL_POINTS);
             }
             mShader->StopShader();
-            // unbind shader
         }
 
         bool ParticleSystemSceneProxy::IsDeferred() const

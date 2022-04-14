@@ -7,7 +7,7 @@ layout (location = 3) in vec3 VertexColor;
 layout (location = 4) in vec3 VertexTangent;
 layout (location = 5) in vec3 VertexBitangent;
 
-#include "materialCommon.glsl"
+#include "materialCommon.incl"
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;
