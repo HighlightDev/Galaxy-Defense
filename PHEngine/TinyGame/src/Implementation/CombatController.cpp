@@ -5,6 +5,7 @@
 #include "Factories/WeakBulletFactory.h"
 #include "SpaceShipPlayerController.h"
 #include "Core/CommonCore/Random.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -74,7 +75,13 @@ namespace Game
 
     void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
     {
-        if (!bIsCoolDownInProgress)
+
+        const auto& playerAction = std::get<0>(data);
+
+        auto c_particle = mPlayerShip->GetComponentsByType<ParticleSystemComponent>().back();
+        c_particle->InitParticlePool();
+
+        if (eMainPlayerActionEnum::SHOOT == playerAction && !bIsCoolDownInProgress)
         {
             bIsCoolDownInProgress = true;
             const auto &playerAction = std::get<0>(data);

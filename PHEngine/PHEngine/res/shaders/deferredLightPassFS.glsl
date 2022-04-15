@@ -1,5 +1,6 @@
 #version 400
 
+#define GAMMA_CORRECTION
 #define SHADING_MODEL_PBR
 #define MAX_DIR_LIGHT_COUNT 5
 #define MAX_POINT_LIGHT_COUNT 50

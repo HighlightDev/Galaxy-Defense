@@ -55,14 +55,35 @@ namespace EngineCore
 
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
-            mParticlesPool[i].Position = mParticlesPool[i].Position + (mParticlesPool[i].Velocity * 100.0f * deltaTime);
+            auto &particle = mParticlesPool[i];
+
+            if (!particle.isActive)
+                continue;
+
+            if ((particle.LifeRemaining - deltaTime) <= 0.0f)
+            {
+                particle.isActive = false;
+            }
+            else
+            {
+                particle.LifeRemaining -= deltaTime;
+            }
+
+            particle.Position = particle.Position + (particle.Velocity * 100.0f * deltaTime);
+            particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
+
+            const float invLife = particle.LifeTime - particle.LifeRemaining;
+
             mParticleProxyPropertiesPool[i] = ParticleProxyProperties{
-                .Position = mParticlesPool[i].Position,
-                .Color = mParticlesPool[i].ColorEnd,
-                .Rotation = mParticlesPool[i].Rotation,
-                .Size = mParticlesPool[i].SizeBegin,
-                .isActive = mParticlesPool[i].isActive,
-            };
+                .Position = particle.Position,
+                .Color = EngineMath::LerpVec4(invLife,
+                                              0.0f,
+                                              particle.LifeTime,
+                                              particle.ColorBegin,
+                                              particle.ColorEnd),
+                .Rotation = particle.Rotation,
+                .Size = EngineMath::LerpFloat(particle.SizeBegin, particle.SizeEnd, invLife),
+                .isActive = particle.isActive};
         }
 
         SyncDataWithRenderThread();
@@ -91,7 +112,8 @@ namespace EngineCore
         static constexpr float radius = 20.0f;
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
-            const float random_radius = (Random::Float() * radius) - 10.0f;
+            const float random_radius = 1.0f;
+            //(Random::Float() * radius) - 10.0f;
             const float random_theta_rad = Random::Float() * EngineMath::PI * 2;
             const float random_phi_rad = Random::Float() * EngineMath::PI;
 
@@ -108,12 +130,13 @@ namespace EngineCore
                 return (Random::Float() * 2.0f) - 1.0f;
             };
 
-            p.Velocity = glm::vec3(randomNdcValue(), randomNdcValue(), randomNdcValue());
+            p.Velocity = glm::vec3(randomNdcValue() * 2.0f, randomNdcValue() * 2.0f, randomNdcValue() * 2.0f);
 
-            p.ColorBegin = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-            p.ColorEnd = glm::vec4(1.0f);
+            p.ColorBegin = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+            p.ColorEnd = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
             p.SizeBegin = 0.5f;
             p.SizeEnd = 0.1f;
+            p.LifeRemaining = p.LifeTime;
 
             p.isActive = true;
         }

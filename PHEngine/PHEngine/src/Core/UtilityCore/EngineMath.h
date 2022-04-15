@@ -12,6 +12,8 @@ namespace EngineMath
 #define AXIS_UP	       glm::vec3(0, 1, 0)
 #define AXIS_FORWARD   glm::vec3(0, 0, 1)
 
+   constexpr auto G = 9.8f;
+
    constexpr auto PI = 3.14f;
    /************************************************************************/
    /*                       Convert from degrees to radians                */
@@ -31,7 +33,8 @@ namespace EngineMath
    
    float LerpFloat(const float src, const float dst, const float factor);
 
-   glm::vec3 LerpVec3(float t, float t1, float t2, const glm::vec3& position1, const glm::vec3& position2);
+   glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2);
+   glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4 &position1, const glm::vec4 &position2);
 
    glm::quat SLerpQuat(float t, const glm::quat& src, const glm::quat& dst);
 

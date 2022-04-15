@@ -51,10 +51,11 @@ namespace EngineCore
         {
             return mRenderData;
         }
+        
+        void InitParticlePool();
 
     private:
         void SyncDataWithRenderThread();
 
-        void InitParticlePool();
     };
 }

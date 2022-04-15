@@ -21,7 +21,7 @@ namespace EngineMath
 
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2)
    {
-      glm::vec3 resultPosition = glm::vec3(0);
+      glm::vec3 resultPosition;
 
       float x_delta = t2 - t1;
       float x_zero_offset = t - t1;
@@ -29,6 +29,21 @@ namespace EngineMath
       resultPosition.x = ((position2.x - position1.x) / x_delta) * x_zero_offset + position1.x;
       resultPosition.y = ((position2.y - position1.y) / x_delta) * x_zero_offset + position1.y;
       resultPosition.z = ((position2.z - position1.z) / x_delta) * x_zero_offset + position1.z;
+
+      return resultPosition;
+   }
+
+   glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4 &position1, const glm::vec4 &position2)
+   {
+      glm::vec4 resultPosition;
+
+      float x_delta = t2 - t1;
+      float x_zero_offset = t - t1;
+
+      resultPosition.x = ((position2.x - position1.x) / x_delta) * x_zero_offset + position1.x;
+      resultPosition.y = ((position2.y - position1.y) / x_delta) * x_zero_offset + position1.y;
+      resultPosition.z = ((position2.z - position1.z) / x_delta) * x_zero_offset + position1.z;
+      resultPosition.w = ((position2.w - position1.w) / x_delta) * x_zero_offset + position1.w;
 
       return resultPosition;
    }

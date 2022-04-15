@@ -23,10 +23,10 @@ namespace Graphics
               mParticles()
         {
             mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
-                  .ShaderName = "ParticleShader",
-                  .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
-                  .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
-                  .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"});
+                .ShaderName = "ParticleShader",
+                .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
+                .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
+                .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"});
         }
 
         ParticleSystemSceneProxy::~ParticleSystemSceneProxy()
@@ -39,15 +39,18 @@ namespace Graphics
                 return;
 
             mShader->ExecuteShader();
-            mShader->SetColor(glm::vec4(1.0f, .0f, .0f, 1.0f));
             for (const auto &particle : mParticles)
             {
+                if (!particle.isActive)
+                    continue;
+
                 const glm::mat4 identityMatrix(1);
                 glm::mat4 transformMatrix = identityMatrix;
                 transformMatrix *= m_relativeMatrix;
                 transformMatrix *= glm::translate(glm::mat4(1), particle.Position);
                 transformMatrix *= glm::rotate(glm::mat4(1), DEG_TO_RAD(particle.Rotation), glm::vec3(0, 0, 1));
 
+                mShader->SetColor(particle.Color);
                 mShader->SetParticleSize(particle.Size);
                 mShader->SetTransformMatrices(transformMatrix, viewMatrix, projectionMatrix);
 
