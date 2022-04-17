@@ -10,6 +10,8 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <cmath>
+#include <algorithm>
+#include <iterator>
 
 using namespace Graphics::Proxy;
 using namespace Graphics;
@@ -53,6 +55,8 @@ namespace EngineCore
             module->Tick(deltaTime);
         }
 
+        size_t activeParticlesCount = 0;
+
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
             auto &particle = mParticlesPool[i];
@@ -60,33 +64,34 @@ namespace EngineCore
             if (!particle.isActive)
                 continue;
 
-            if ((particle.LifeRemaining - deltaTime) <= 0.0f)
+            if ((particle.LifeRemaining - deltaTime) > 0.0f)
             {
-                particle.isActive = false;
+                particle.Position = particle.Position + (particle.Velocity * 100.0f * deltaTime);
+                particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
+                particle.LifeRemaining -= deltaTime;
+
+                const float invLife = particle.LifeTime - particle.LifeRemaining;
+                mParticleProxyPropertiesPool[activeParticlesCount++] = ParticleProxyProperties{
+                    .Position = particle.Position,
+                    .Color = EngineMath::LerpVec4(invLife,
+                                                  0.0f,
+                                                  particle.LifeTime,
+                                                  particle.ColorBegin,
+                                                  particle.ColorEnd),
+                    .Rotation = particle.Rotation,
+                    .Size = EngineMath::LerpFloat(particle.SizeBegin, particle.SizeEnd, invLife)};
             }
             else
             {
-                particle.LifeRemaining -= deltaTime;
+                particle.isActive = false;
             }
-
-            particle.Position = particle.Position + (particle.Velocity * 100.0f * deltaTime);
-            particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
-
-            const float invLife = particle.LifeTime - particle.LifeRemaining;
-
-            mParticleProxyPropertiesPool[i] = ParticleProxyProperties{
-                .Position = particle.Position,
-                .Color = EngineMath::LerpVec4(invLife,
-                                              0.0f,
-                                              particle.LifeTime,
-                                              particle.ColorBegin,
-                                              particle.ColorEnd),
-                .Rotation = particle.Rotation,
-                .Size = EngineMath::LerpFloat(particle.SizeBegin, particle.SizeEnd, invLife),
-                .isActive = particle.isActive};
         }
 
-        SyncDataWithRenderThread();
+        if (activeParticlesCount || mPrevActiveParticles > 0)
+        {
+            SyncDataWithRenderThread(activeParticlesCount);
+            mPrevActiveParticles = activeParticlesCount;
+        }
     }
 
     void ParticleSystemComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
@@ -142,7 +147,7 @@ namespace EngineCore
         }
     }
 
-    void ParticleSystemComponent::SyncDataWithRenderThread()
+    void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)
     {
         static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
         if (const auto &sceneSP = m_sceneWP.lock())
@@ -152,11 +157,15 @@ namespace EngineCore
                 sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                                                GetObjectId(),
                                                functionId,
-                                               [=, particleProperties = mParticleProxyPropertiesPool]() mutable
+                                               [=]() mutable
                                                {
+                std::vector<ParticleProxyProperties> copyParticlesProps;
+                const auto endIt = std::next(mParticleProxyPropertiesPool.begin(), activeParticlesCount);
+                std::copy(mParticleProxyPropertiesPool.begin(), endIt, std::back_inserter(copyParticlesProps));
+
                ParticleSystemSceneProxy* proxyPtr = static_cast<ParticleSystemSceneProxy*>
                (sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetParticleProxyProperties(std::move(particleProperties)); });
+               proxyPtr->SetParticleProxyProperties(std::move(copyParticlesProps)); });
             }
         }
     }

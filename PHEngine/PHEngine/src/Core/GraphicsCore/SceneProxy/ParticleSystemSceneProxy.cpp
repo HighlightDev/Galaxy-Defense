@@ -41,9 +41,6 @@ namespace Graphics
             mShader->ExecuteShader();
             for (const auto &particle : mParticles)
             {
-                if (!particle.isActive)
-                    continue;
-
                 const glm::mat4 identityMatrix(1);
                 glm::mat4 transformMatrix = identityMatrix;
                 transformMatrix *= m_relativeMatrix;

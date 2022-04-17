@@ -11,6 +11,5 @@ namespace EngineCore
         glm::vec4 Color;
         float Rotation = 0.0f;
         float Size;
-        bool isActive = false;
     };
 }

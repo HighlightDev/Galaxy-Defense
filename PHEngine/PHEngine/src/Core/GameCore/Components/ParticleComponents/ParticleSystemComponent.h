@@ -20,6 +20,7 @@ namespace EngineCore
 
         std::vector<Particle> mParticlesPool;
         std::vector<ParticleProxyProperties> mParticleProxyPropertiesPool;
+        size_t mPrevActiveParticles = 0;
 
         std::vector<std::shared_ptr<ParticleModule>> mParticleModules;
 
@@ -55,7 +56,7 @@ namespace EngineCore
         void InitParticlePool();
 
     private:
-        void SyncDataWithRenderThread();
+        void SyncDataWithRenderThread(const size_t activeParticlesCount);
 
     };
 }
