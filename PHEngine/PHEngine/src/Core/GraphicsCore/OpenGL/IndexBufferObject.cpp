@@ -9,8 +9,8 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		IndexBufferObject::IndexBufferObject(const std::vector<uint32_t>& data, DataCarryFlag dataCarryFlag)
-			: VertexBufferObjectBase(GL_ELEMENT_ARRAY_BUFFER)
+		IndexBufferObject::IndexBufferObject(const std::vector<uint32_t>& data, eDataCarryFlag dataCarryFlag)
+			: VertexBufferObjectBase(eAttribArrayIndexName::POSITION_INDICES, GL_ELEMENT_ARRAY_BUFFER)
 			, m_data(std::move(data))
 			, m_dataCarryFlag(dataCarryFlag)
 			, m_countOfIndices(m_data.size())
@@ -44,7 +44,7 @@ namespace Graphics
 			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
-			if (m_dataCarryFlag == DataCarryFlag::Invalidate)
+			if (m_dataCarryFlag == eDataCarryFlag::Invalidate)
 			{
 				m_data.clear();
 			}

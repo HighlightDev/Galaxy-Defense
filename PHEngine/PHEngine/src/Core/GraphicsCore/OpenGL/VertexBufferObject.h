@@ -15,14 +15,18 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		template <typename DataType, size_t vector_size, int32_t gl_type = GL_FLOAT>
+		template <typename DataType, size_t vector_size, int32_t gl_type = GL_FLOAT, int32_t buffer_usage = GL_STATIC_DRAW>
 		class VertexBufferObject : public VertexBufferObjectBase
 		{
 		private:
 			static constexpr size_t m_vectorSize = vector_size;
 			static constexpr int32_t m_glType = gl_type;
 
-			void SetVertexAttribPointer(int32_t index, int32_t size, bool normalized, int32_t stride, int32_t pointer_offset) const
+			void SetVertexAttribPointer(const int32_t index,
+										const int32_t size,
+										const bool normalized,
+										const int32_t stride,
+										const int32_t pointer_offset) const
 			{
 				if (m_glType == GL_INT ||
 					m_glType == GL_UNSIGNED_BYTE ||
@@ -57,15 +61,18 @@ namespace Graphics
 			size_t m_totalDataLength;
 			int32_t m_countOfIndices;
 			int32_t m_vertexAttribIndex;
-			DataCarryFlag m_dataCarryFlag;
+			eDataCarryFlag m_dataCarryFlag;
 
 		public:
-			VertexBufferObject(const std::vector<DataType> &data, int32_t bufferTarget, int32_t vertexAttribIndex, DataCarryFlag flag)
-				: VertexBufferObjectBase(bufferTarget),
+			VertexBufferObject(const std::vector<DataType> &data,
+							   const eAttribArrayIndexName attribArrayIndexName,
+							   const int32_t bufferTarget,
+							   const eDataCarryFlag flag)
+				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
 				  m_data(std::move(data)),
 				  m_totalDataLength(m_data.size()),
 				  m_countOfIndices(m_totalDataLength / m_vectorSize),
-				  m_vertexAttribIndex(vertexAttribIndex),
+				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
 				Logger::Out("VertexBufferObject::ctor");
@@ -94,12 +101,12 @@ namespace Graphics
 
 				Logger::Out("VertexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
 
-				glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
+				glBufferData(m_bufferTarget, bufferSize, m_data.data(), buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
 
 				// If data on CPU is unnecessary
-				if (m_dataCarryFlag == DataCarryFlag::Invalidate)
+				if (m_dataCarryFlag == eDataCarryFlag::Invalidate)
 				{
 					m_data.clear();
 				}

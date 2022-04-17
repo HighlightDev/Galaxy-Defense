@@ -4,6 +4,7 @@
 
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/GameObjectProperty.h"
 
 namespace EngineCore {
 
@@ -12,36 +13,31 @@ namespace EngineCore {
    {
    private:
       
-      propertyPtr_t<float> Value;
+      std::shared_ptr<EngineGOProperty<float>> mGoProperty;
 
    public:
 
-      FloatPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<float> value)
-         : PropertyBinding(bindingName)
-         , Value(value)
-      {
-      }
-
       FloatPropertyBinding(const std::string& bindingName)
          : PropertyBinding(bindingName)
-         , Value(nullptr)
+         , mGoProperty()
       {
       }
 
-      void SetValuePtr(EngineCore::propertyPtr_t<float> value)
+      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<float>> gameObjectProperty)
       {
-         Value = value;
+         assert(gameObjectProperty);
+         mGoProperty = gameObjectProperty;
          bValueSet = true;
       }
 
       void SetValue(float value) {
-         *Value = value;
-         bValueSet = true;
+         assert(bValueSet);
+         mGoProperty->SetValue(value);
       }
 
       float GetValue() const {
          assert(bValueSet);
-         return *Value;
+         return mGoProperty->GetValue();
       }
 
       virtual eBindingType GetBindingType() const override

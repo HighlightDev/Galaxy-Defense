@@ -1,4 +1,7 @@
 #pragma once
+
+#include "eAttribArrayIndexName.h"
+
 #include <cstddef>
 #include <stdint.h>
 #include <gl/glew.h>
@@ -12,10 +15,13 @@ namespace Graphics
 		protected:
 
 			uint32_t m_descriptor;
+
 			int32_t m_bufferTarget;
 
+			eAttribArrayIndexName mAttribArrayIndexName;
+
 		public:
-			VertexBufferObjectBase(int32_t bufferTarget = GL_ARRAY_BUFFER);
+			VertexBufferObjectBase(const eAttribArrayIndexName attribArrayIndexName, const int32_t bufferTarget = GL_ARRAY_BUFFER);
 			virtual ~VertexBufferObjectBase();
 
 			void GenBuffer();
@@ -39,6 +45,8 @@ namespace Graphics
 			virtual void* GetData();
 
 			size_t GetDescriptor() const;
+
+			eAttribArrayIndexName GetAttribArrayIndexName() const;
 		};
 	}
 }

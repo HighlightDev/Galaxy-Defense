@@ -48,15 +48,16 @@ namespace EngineCore
 
         void EmitParticles(const std::vector<ParticleProperties> &particleProperties);
 
-        inline const ParticleSystemRenderData& GetRenderData() const
+        inline const ParticleSystemRenderData &GetRenderData() const
         {
             return mRenderData;
         }
-        
+
         void InitParticlePool();
+
+        virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
 
     private:
         void SyncDataWithRenderThread(const size_t activeParticlesCount);
-
     };
 }

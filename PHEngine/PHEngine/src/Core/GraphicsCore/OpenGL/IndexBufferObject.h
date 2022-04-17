@@ -17,14 +17,14 @@ namespace Graphics
 		private:
 
 			std::vector<uint32_t> m_data;
-			DataCarryFlag m_dataCarryFlag;
+			eDataCarryFlag m_dataCarryFlag;
 
 			size_t m_countOfIndices;
 			size_t m_countOfTotalLengthOfData;
 
 		public:
 
-			IndexBufferObject(const std::vector<uint32_t>& indicesData, DataCarryFlag dataCarryFlag = DataCarryFlag::Invalidate);
+			IndexBufferObject(const std::vector<uint32_t>& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::Invalidate);
 
 			virtual ~IndexBufferObject();
 

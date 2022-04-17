@@ -12,9 +12,6 @@ namespace EngineCore {
       Animation,
    };
 
-   template <typename PtrType>
-   using propertyPtr_t = std::shared_ptr<PtrType>;
-
    struct PropertyBinding
    {
    protected:

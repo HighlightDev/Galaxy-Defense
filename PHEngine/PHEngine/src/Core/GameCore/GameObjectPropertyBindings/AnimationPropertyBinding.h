@@ -1,112 +1,116 @@
 #pragma once
 
 #include "PropertyBinding.h"
+#include "Core/GameCore/GameObjectProperty.h"
 #include "Core/CommonCore/Assertion.h"
 
-namespace EngineCore {
+namespace EngineCore
+{
 
    struct AnimationPropertyBinding
-      : public PropertyBinding
+       : public PropertyBinding
    {
    private:
+      std::shared_ptr<EngineGOProperty<std::string>> SrcName;
+      std::shared_ptr<EngineGOProperty<std::string>> DstName;
 
-      EngineCore::propertyPtr_t<std::string> SrcName;
-      EngineCore::propertyPtr_t<std::string> DstName;
+      std::shared_ptr<EngineGOProperty<float>> SrcTime;
+      std::shared_ptr<EngineGOProperty<float>> DstTime;
 
-      EngineCore::propertyPtr_t<float> SrcTime;
-      EngineCore::propertyPtr_t<float> DstTime;
-
-      EngineCore::propertyPtr_t<bool> bTranstitionEnabled;
-      EngineCore::propertyPtr_t<float> TransitionValue;
+      std::shared_ptr<EngineGOProperty<bool>> bTranstitionEnabled;
+      std::shared_ptr<EngineGOProperty<float>> TransitionValue;
 
    public:
-
-      AnimationPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<std::string> srcName, EngineCore::propertyPtr_t<std::string> dstName,
-         EngineCore::propertyPtr_t<float> srcTime, EngineCore::propertyPtr_t<float> dstTime, EngineCore::propertyPtr_t<bool> isTransitionEnabled, EngineCore::propertyPtr_t<float> transitionValue)
-         : PropertyBinding(bindingName)
-         , SrcName(srcName)
-         , DstName(dstName)
-         , SrcTime(srcTime)
-         , DstTime(dstTime)
-         , bTranstitionEnabled(isTransitionEnabled)
-         , TransitionValue(transitionValue)
+      AnimationPropertyBinding(const std::string &bindingName)
+          : PropertyBinding(bindingName),
+            SrcName(),
+            DstName(),
+            SrcTime(),
+            DstTime(),
+            bTranstitionEnabled(),
+            TransitionValue()
       {
       }
 
-      AnimationPropertyBinding(const std::string& bindingName)
-         : PropertyBinding(bindingName)
-         , SrcName(nullptr)
-         , DstName(nullptr)
-         , SrcTime(nullptr)
-         , DstTime(nullptr)
-         , bTranstitionEnabled(nullptr)
-         , TransitionValue(nullptr)
+      void SetSrcName(const std::string &name)
       {
-      }
-
-      void SetSrcName(const std::string& name) {
-         *SrcName = name;
-      }
-
-      void SetDstName(const std::string& name) const {
-         *DstName = name;
-      }
-
-      void SetSrcTime(const float value) {
-         *SrcTime = value;
-      }
-
-      void SetDstTime(const float value) {
-         *DstTime = value;
-      }
-
-      void SetIsTransitionEnabled(bool bEnabled) {
-         *bTranstitionEnabled = bEnabled;
-      }
-
-      void SetTransitionValue(float transitionValue) {
-         *TransitionValue = transitionValue;
-      }
-
-      std::string GetSrcName() const {
          assert(bValueSet);
-         return *SrcName;
+         SrcName->SetValue(name);
       }
 
-      std::string GetDstName() const {
+      void SetDstName(const std::string &name) const
+      {
          assert(bValueSet);
-         return *DstName;
+         DstName->SetValue(name);
       }
 
-      float GetSrcTime() const {
+      void SetSrcTime(const float value)
+      {
+         assert(bValueSet);
+         SrcTime->SetValue(value);
+      }
+
+      void SetDstTime(const float value)
+      {
+         assert(bValueSet);
+         DstTime->SetValue(value);
+      }
+
+      void SetIsTransitionEnabled(bool bEnabled)
+      {
+         assert(bValueSet);
+         bTranstitionEnabled->SetValue(bEnabled);
+      }
+
+      void SetTransitionValue(float transitionValue)
+      {
+         assert(bValueSet);
+         TransitionValue->SetValue(transitionValue);
+      }
+
+      std::string GetSrcName() const
+      {
+         assert(bValueSet);
+         return SrcName->GetValue();
+      }
+
+      std::string GetDstName() const
+      {
+         assert(bValueSet);
+         return DstName->GetValue();
+      }
+
+      float GetSrcTime() const
+      {
          assert(bValueSet);
 
-         return *SrcTime;
+         return SrcTime->GetValue();
       }
 
-      float GetDstTime() const {
+      float GetDstTime() const
+      {
          assert(bValueSet);
-
-         return *DstTime;
+         return DstTime->GetValue();
       }
 
-      bool GetIsTransitionEnabled() const {
+      bool GetIsTransitionEnabled() const
+      {
          assert(bValueSet);
-         return *bTranstitionEnabled;
+         return bTranstitionEnabled->GetValue();
       }
 
-      float GetTransitionValue() const {
+      float GetTransitionValue() const
+      {
          assert(bValueSet);
-         return *TransitionValue;
+         return TransitionValue->GetValue();
       }
 
-      void SetBindingProperties(
-         EngineCore::propertyPtr_t<std::string> srcName,
-         EngineCore::propertyPtr_t<std::string> dstName,
-         EngineCore::propertyPtr_t<float> srcTime,
-         EngineCore::propertyPtr_t<float> dstTime,
-         EngineCore::propertyPtr_t<bool> isTransitionEnabled,
-         EngineCore::propertyPtr_t<float> transitionValue)
+      void SetBindingProperties(const std::shared_ptr<EngineGOProperty<std::string>> &srcName,
+                                const std::shared_ptr<EngineGOProperty<std::string>> &dstName,
+                                const std::shared_ptr<EngineGOProperty<float>> &srcTime,
+                                const std::shared_ptr<EngineGOProperty<float>> &dstTime,
+                                const std::shared_ptr<EngineGOProperty<bool>> &isTransitionEnabled,
+                                const std::shared_ptr<EngineGOProperty<float>> &transitionValue)
       {
          SrcName = srcName;
          DstName = dstName;

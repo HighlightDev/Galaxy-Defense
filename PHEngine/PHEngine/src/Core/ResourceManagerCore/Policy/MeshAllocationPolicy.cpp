@@ -45,29 +45,91 @@ namespace Resources
 
 			IndexBufferObject *ibo = nullptr;
 
-			VertexBufferObjectBase *normalsVBO = nullptr, *texCoordsVBO = nullptr, *tangentsVBO = nullptr, *bitangentsVBO = nullptr, *blendWeightsVBO = nullptr, *blendIndicesVBO = nullptr;
+			VertexBufferObjectBase *normalsVBO = nullptr,
+								   *texCoordsVBO = nullptr,
+								   *tangentsVBO = nullptr,
+								   *bitangentsVBO = nullptr,
+								   *blendWeightsVBO = nullptr,
+								   *blendIndicesVBO = nullptr;
 
 			if (meshAttributes->VertexIndices.size())
-				ibo = new IndexBufferObject(meshAttributes->VertexIndices, DataCarryFlag::Invalidate);
+				ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::Invalidate);
 
-			VertexBufferObject<float, 3, GL_FLOAT> *vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Positions, GL_ARRAY_BUFFER, 0, DataCarryFlag::Store);
+			auto *vertexVBO = new VertexBufferObject<float,
+													 3,
+													 GL_FLOAT,
+													 GL_STATIC_DRAW>(meshAttributes->Positions,
+																	 eAttribArrayIndexName::POSITION,
+																	 GL_ARRAY_BUFFER,
+																	 eDataCarryFlag::Store);
 
 			if (meshAttributes->Normals.size())
-				normalsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->Normals, GL_ARRAY_BUFFER, 1, DataCarryFlag::Invalidate);
+			{
+				normalsVBO = new VertexBufferObject<float,
+													3,
+													GL_FLOAT,
+													GL_STATIC_DRAW>(meshAttributes->Normals,
+																	eAttribArrayIndexName::NORMAL,
+																	GL_ARRAY_BUFFER,
+																	eDataCarryFlag::Invalidate);
+			}
 			if (meshAttributes->TextureCoordinates.size())
-				texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT>(meshAttributes->TextureCoordinates, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
+			{
+				texCoordsVBO = new VertexBufferObject<float,
+													  2,
+													  GL_FLOAT,
+													  GL_STATIC_DRAW>(meshAttributes->TextureCoordinates,
+																	  eAttribArrayIndexName::TEXTURE_COORDINATES,
+																	  GL_ARRAY_BUFFER,
+																	  eDataCarryFlag::Invalidate);
+			}
 			if (meshAttributes->TangentNormals.size())
-				tangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->TangentNormals, GL_ARRAY_BUFFER, 4, DataCarryFlag::Invalidate);
+			{
+				tangentsVBO = new VertexBufferObject<float,
+													 3,
+													 GL_FLOAT,
+													 GL_STATIC_DRAW>(meshAttributes->TangentNormals,
+																	 eAttribArrayIndexName::TANGENT,
+																	 GL_ARRAY_BUFFER,
+																	 eDataCarryFlag::Invalidate);
+			}
 			if (meshAttributes->BitangetNormals.size())
-				bitangentsVBO = new VertexBufferObject<float, 3, GL_FLOAT>(meshAttributes->BitangetNormals, GL_ARRAY_BUFFER, 5, DataCarryFlag::Invalidate);
+			{
+				bitangentsVBO = new VertexBufferObject<float,
+													   3,
+													   GL_FLOAT,
+													   GL_STATIC_DRAW>(meshAttributes->BitangetNormals,
+																	   eAttribArrayIndexName::BITANGENT,
+																	   GL_ARRAY_BUFFER,
+																	   eDataCarryFlag::Invalidate);
+			}
 
 			if (meshAttributes->BoneIndices.size() && meshAttributes->BoneWeights.size())
 			{
-				blendWeightsVBO = new VertexBufferObject<float, countOfBonesInfluencingOnVertex, GL_FLOAT>(meshAttributes->BoneWeights, GL_ARRAY_BUFFER, 6, DataCarryFlag::Invalidate);
-				blendIndicesVBO = new VertexBufferObject<int32_t, countOfBonesInfluencingOnVertex, GL_FLOAT>(meshAttributes->BoneIndices, GL_ARRAY_BUFFER, 7, DataCarryFlag::Invalidate);
+				blendWeightsVBO = new VertexBufferObject<float,
+														 countOfBonesInfluencingOnVertex,
+														 GL_FLOAT,
+														 GL_STATIC_DRAW>(meshAttributes->BoneWeights,
+																		 eAttribArrayIndexName::BONE_INDEX,
+																		 GL_ARRAY_BUFFER,
+																		 eDataCarryFlag::Invalidate);
+
+				blendIndicesVBO = new VertexBufferObject<int32_t,
+														 countOfBonesInfluencingOnVertex,
+														 GL_FLOAT,
+														 GL_STATIC_DRAW>(meshAttributes->BoneIndices,
+																		 eAttribArrayIndexName::BONE_WEIGHT,
+																		 GL_ARRAY_BUFFER,
+																		 eDataCarryFlag::Invalidate);
 			}
 
-			vao.AddVBO(vertexVBO, normalsVBO, texCoordsVBO, tangentsVBO, bitangentsVBO, blendWeightsVBO, blendIndicesVBO);
+			vao.AddVBO(vertexVBO,
+					   normalsVBO,
+					   texCoordsVBO,
+					   tangentsVBO,
+					   bitangentsVBO,
+					   blendWeightsVBO,
+					   blendIndicesVBO);
 
 			vao.AddIndexBuffer(ibo);
 			vao.BindBuffersToVao();

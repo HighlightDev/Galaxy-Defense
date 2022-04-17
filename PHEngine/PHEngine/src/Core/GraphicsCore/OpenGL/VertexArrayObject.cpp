@@ -25,10 +25,10 @@ namespace Graphics
 
 		VertexBufferObjectBase *VertexArrayObject::GetVboByIndex(const size_t index) const
 		{
-			return m_vbos[index];
+			return m_vbos[index].first;
 		}
 
-		const std::vector<VertexBufferObjectBase *> &VertexArrayObject::GetVertexBufferObjects() const
+		const std::vector<std::pair<VertexBufferObjectBase *, eAttribArrayIndexName>> &VertexArrayObject::GetVertexBufferObjects() const
 		{
 			return m_vbos;
 		}
@@ -48,7 +48,9 @@ namespace Graphics
 			}
 			else
 			{
-				glDrawArrays(primitiveMode, 0, m_vbos.front()->GetCountOfIndices());
+				VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+				assert(positionVBO);
+				glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
 			}
 			glBindVertexArray(0);
 		}
@@ -71,7 +73,7 @@ namespace Graphics
 
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{
-				(*it)->SendDataToGPU();
+				it->first->SendDataToGPU();
 			}
 			glBindVertexArray(0);
 			DisableVertexAttribArrays();
@@ -83,7 +85,7 @@ namespace Graphics
 			VertexBufferObjectBase::UnbindVBO();
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{
-				glDisableVertexAttribArray((*it)->GetVertexAttribIndex());
+				glDisableVertexAttribArray(it->first->GetVertexAttribIndex());
 			}
 		}
 
@@ -98,7 +100,7 @@ namespace Graphics
 
 			for (auto it = m_vbos.begin(); it != m_vbos.end(); ++it)
 			{
-				(*it)->CleanUp();
+				it->first->CleanUp();
 			}
 
 			glDeleteVertexArrays(1, &m_descriptor);
@@ -106,7 +108,7 @@ namespace Graphics
 			const size_t vbos_size = m_vbos.size();
 			for (size_t i = 0; i < vbos_size; ++i)
 			{
-				delete m_vbos[i];
+				delete m_vbos[i].first;
 			}
 			m_vbos.clear();
 

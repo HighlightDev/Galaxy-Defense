@@ -15,7 +15,7 @@ namespace EngineCore
 
       ~BoundingBoxBuilder();
 
-      BoundingBox Build(const std::vector<float> meshPositions);
+      BoundingBox Build(const std::vector<float>& meshPositions);
 
       static BoundingBox GetTransformedBoundingBox(const BoundingBox& localSpaceBb, const glm::mat4& transformMatrix);
    };

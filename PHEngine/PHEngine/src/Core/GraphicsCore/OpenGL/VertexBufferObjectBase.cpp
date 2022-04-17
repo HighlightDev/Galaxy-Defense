@@ -4,8 +4,10 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		VertexBufferObjectBase::VertexBufferObjectBase(int32_t bufferTarget)
+		VertexBufferObjectBase::VertexBufferObjectBase(const eAttribArrayIndexName attribArrayIndexName,
+													   const int32_t bufferTarget)
 			: m_bufferTarget(bufferTarget)
+			, mAttribArrayIndexName(attribArrayIndexName)
 		{
 		}
 
@@ -28,7 +30,7 @@ namespace Graphics
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 		}
 
-		void* VertexBufferObjectBase::GetData()
+		void *VertexBufferObjectBase::GetData()
 		{
 			return nullptr;
 		}
@@ -36,6 +38,11 @@ namespace Graphics
 		size_t VertexBufferObjectBase::GetDescriptor() const
 		{
 			return m_descriptor;
+		}
+
+		eAttribArrayIndexName VertexBufferObjectBase::GetAttribArrayIndexName() const
+		{
+			return mAttribArrayIndexName;
 		}
 	}
 }

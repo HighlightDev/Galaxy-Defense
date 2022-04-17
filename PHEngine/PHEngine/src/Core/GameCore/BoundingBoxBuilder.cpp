@@ -13,7 +13,7 @@ namespace EngineCore
    {
    }
 
-   BoundingBox BoundingBoxBuilder::Build(const std::vector<float> meshPositions)
+   BoundingBox BoundingBoxBuilder::Build(const std::vector<float>& meshPositions)
    {
       const size_t positionsNum = meshPositions.size();
 

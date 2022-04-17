@@ -2,47 +2,43 @@
 
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/GameObjectProperty.h"
 
 #include <string>
 #include <glm/vec3.hpp>
 
-namespace EngineCore {
+namespace EngineCore
+{
 
    struct EulerAnglesRotationPropertyBinding
-      : public PropertyBinding
+       : public PropertyBinding
    {
    private:
-      
-      propertyPtr_t<glm::vec3> Value;
+      std::shared_ptr<EngineGOProperty<glm::vec3>> mGoProperty;
 
    public:
-
-      EulerAnglesRotationPropertyBinding(const std::string& bindingName, EngineCore::propertyPtr_t<glm::vec3> value)
-         : PropertyBinding(bindingName)
-         , Value(value)
+      EulerAnglesRotationPropertyBinding(const std::string &bindingName)
+          : PropertyBinding(bindingName), mGoProperty()
       {
       }
 
-      EulerAnglesRotationPropertyBinding(const std::string& bindingName)
-         : PropertyBinding(bindingName)
-         , Value(nullptr)
+      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<glm::vec3>> &engineGoProperty)
       {
-      }
-
-      void SetValuePtr(EngineCore::propertyPtr_t<glm::vec3> value)
-      {
-         Value = value;
+         assert(engineGoProperty);
+         mGoProperty = engineGoProperty;
          bValueSet = true;
       }
 
-      void SetValue(const glm::vec3& value) {
-         *Value = value;
-         bValueSet = true;
-      }
-
-      glm::vec3 GetValue() const {
+      void SetValue(const glm::vec3 &value)
+      {
          assert(bValueSet);
-         return *Value;
+         mGoProperty->SetValue(value);
+      }
+
+      glm::vec3 GetValue() const
+      {
+         assert(bValueSet);
+         return mGoProperty->GetValue();
       }
 
       virtual eBindingType GetBindingType() const override

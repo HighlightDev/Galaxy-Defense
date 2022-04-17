@@ -16,45 +16,56 @@ using namespace EngineCore;
 namespace Graphics
 {
 
-	ScreenQuad* ScreenQuad::m_instance = nullptr;
+	ScreenQuad *ScreenQuad::m_instance = nullptr;
 
 	ScreenQuad::ScreenQuad()
-      : m_vao(new VertexArrayObject())
+		: m_vao(new VertexArrayObject())
 	{
 		Init();
 	}
 
 	ScreenQuad::~ScreenQuad()
 	{
-      delete m_vao;
+		delete m_vao;
 	}
 
-   VertexArrayObject* ScreenQuad::GetBuffer() const
-   {
-      return m_vao;
-   }
+	VertexArrayObject *ScreenQuad::GetBuffer() const
+	{
+		return m_vao;
+	}
 
 	void ScreenQuad::Init()
 	{
-      const auto folderManager = IO::FolderManager::GetInstance();
+		const auto folderManager = IO::FolderManager::GetInstance();
 
 		/*Screen fill quad*/
-		std::vector<float> vertices = { -1.0f, -1.0f, 0.0f ,
-			 1.0f, -1.0f, 0.0f ,
-			 1.0f, 1.0f, 0.0f ,
-			 1.0f, 1.0f, 0.0f ,
-			-1.0f, 1.0f, 0.0f ,
-			-1.0f, -1.0f, 0.0f };
+		std::vector<float> vertices = {-1.0f, -1.0f, 0.0f,
+									   1.0f, -1.0f, 0.0f,
+									   1.0f, 1.0f, 0.0f,
+									   1.0f, 1.0f, 0.0f,
+									   -1.0f, 1.0f, 0.0f,
+									   -1.0f, -1.0f, 0.0f};
 
-		std::vector<float> texCoords = { 0, 1 ,
-			 1, 1 ,
-			 1, 0 ,
-			 1, 0 ,
-			 0, 0 ,
-			 0, 1 };
+		std::vector<float> texCoords = {0, 1,
+										1, 1,
+										1, 0,
+										1, 0,
+										0, 0,
+										0, 1};
 
-      VertexBufferObject< float, 3, GL_FLOAT>* verticesVBO = new VertexBufferObject< float, 3, GL_FLOAT>(vertices, GL_ARRAY_BUFFER, 0, DataCarryFlag::Invalidate);
-		VertexBufferObjectBase* texCoordsVBO = new VertexBufferObject< float, 2, GL_FLOAT>(texCoords, GL_ARRAY_BUFFER, 2, DataCarryFlag::Invalidate);
+		VertexBufferObject<float, 3, GL_FLOAT> *verticesVBO =
+			new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(
+				vertices,
+				eAttribArrayIndexName::POSITION,
+				GL_ARRAY_BUFFER,
+				eDataCarryFlag::Invalidate);
+
+		VertexBufferObjectBase *texCoordsVBO =
+			new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(
+				texCoords,
+				eAttribArrayIndexName::TEXTURE_COORDINATES,
+				GL_ARRAY_BUFFER,
+				eDataCarryFlag::Invalidate);
 
 		m_vao->AddVBO(verticesVBO, texCoordsVBO);
 

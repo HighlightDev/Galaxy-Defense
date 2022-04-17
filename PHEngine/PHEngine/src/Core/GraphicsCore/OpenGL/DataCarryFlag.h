@@ -4,7 +4,7 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		enum class DataCarryFlag
+		enum class eDataCarryFlag
 		{
 			//buffer data becomes unavailable after it is sent on a gpu
 			Invalidate = 0,

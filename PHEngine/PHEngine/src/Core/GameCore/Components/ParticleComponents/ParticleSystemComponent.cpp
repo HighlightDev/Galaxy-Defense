@@ -147,6 +147,39 @@ namespace EngineCore
         }
     }
 
+    void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
+    {
+        if (!mIsEnabled)
+            return;
+
+        if (const auto &ownerSp = GetOwner().lock())
+        {
+            const auto &ownerTranslation = ownerSp->GetRootComponent()->GetTranslation();
+            const auto &ownerScale = ownerSp->GetRootComponent()->GetScale();
+
+            // Update current relative matrix
+
+            const glm::mat4 identityMatrix(1);
+            m_relativeMatrix = glm::mat4(1);
+            m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
+            m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
+
+            SetIsTransformationDirty(false);
+
+            // Update primitives proxy transform
+            static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
+
+            if (const auto &sceneSP = m_sceneWP.lock())
+            {
+                sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
+                                                                          GetObjectId(),
+                                                                          functionId,
+                                                                          m_relativeMatrix,
+                                                                          GetTransformedBoundingBox());
+            }
+        }
+    }
+
     void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)
     {
         static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
