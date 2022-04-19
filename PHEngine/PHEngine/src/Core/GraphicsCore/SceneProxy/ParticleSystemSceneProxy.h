@@ -2,6 +2,7 @@
 
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Particles/ParticleProxyData.h"
+#include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/IoCore/FolderManager.h"
 
@@ -76,6 +77,8 @@ namespace Graphics
         {
             std::vector<ParticleProxyData> mParticles;
 
+            ParticlesRawDataHandler mParticlesRawDataHandler;
+
             std::shared_ptr<ParticleShader> mShader;
 
             using Base = PrimitiveSceneProxy;
@@ -94,6 +97,8 @@ namespace Graphics
             virtual bool IsFrustumCullTestNeeded() const override;
 
             void SetParticleProxyProperties(std::vector<ParticleProxyData> &&properties);
+
+            void CopyParticlesRawData(const void* particlesRawData, const size_t byteChunkSize);
 
             private:
 

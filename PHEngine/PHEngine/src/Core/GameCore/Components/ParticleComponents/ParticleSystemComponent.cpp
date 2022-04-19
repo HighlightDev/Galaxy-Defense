@@ -30,9 +30,10 @@ namespace EngineCore
                              BoundingBox()),
           mParticlesPool(),
           mParticleProxyPropertiesPool(),
+          mParticlesRawDataHandler(1000 * sizeof(float) * 3),
           mRenderData(renderData)
     {
-        mParticlesPool.resize(10000);
+        mParticlesPool.resize(1000);
         mParticleProxyPropertiesPool.resize(mParticlesPool.size());
         InitParticlePool();
     }
@@ -58,6 +59,7 @@ namespace EngineCore
         }
 
         size_t activeParticlesCount = 0;
+        size_t particleTranslationByteOffset = 0;
 
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
@@ -69,6 +71,10 @@ namespace EngineCore
             if ((particle.LifeRemaining - deltaTime) > 0.0f)
             {
                 particle.Position = particle.Position + (particle.Velocity * 100.0f * deltaTime);
+
+                mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particle.Position);
+                particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
+
                 particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
                 particle.LifeRemaining -= deltaTime;
 
@@ -89,12 +95,10 @@ namespace EngineCore
             }
         }
 
+        mParticlesRawDataHandler.SetActiveDataChunkSize(particleTranslationByteOffset);
+
         if (activeParticlesCount || mPrevActiveParticles > 0)
         {
-            if (activeParticlesCount == 0 && mPrevActiveParticles > 0)
-            {
-                Logger::Out("activeParticlesCount == 0 && mPrevActiveParticles > 0");
-            }
             SyncDataWithRenderThread(activeParticlesCount);
             mPrevActiveParticles = activeParticlesCount;
         }
@@ -121,6 +125,9 @@ namespace EngineCore
     void ParticleSystemComponent::InitParticlePool()
     {
         static constexpr float radius = 20.0f;
+
+        size_t particleTranslationByteOffset = 0;
+
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
             const float random_radius = 1.0f;
@@ -135,6 +142,9 @@ namespace EngineCore
                 random_radius * std::sin(random_theta_rad) * std::sin(random_theta_rad),
                 random_radius * std::cos(random_phi_rad));
             p.Rotation = Random::Float() * EngineMath::PI * 2;
+
+            mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, p.Position);
+            particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
 
             const auto randomNdcValue = []()
             {
@@ -152,6 +162,8 @@ namespace EngineCore
 
             p.isActive = true;
         }
+
+        mParticlesRawDataHandler.SetActiveDataChunkSize(particleTranslationByteOffset);
     }
 
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
@@ -207,6 +219,7 @@ namespace EngineCore
                                                        const auto endIt = std::next(mParticleProxyPropertiesPool.begin(), activeParticlesCount);
                                                        std::copy(mParticleProxyPropertiesPool.begin(), endIt, std::back_inserter(copyParticlesProps));
                                                        proxyPtr->SetParticleProxyProperties(std::move(copyParticlesProps));
+                                                       proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(), mParticlesRawDataHandler.GetActiveDataChunkSize());
                                                    }
                                                    else
                                                    {

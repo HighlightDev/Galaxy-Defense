@@ -25,7 +25,8 @@ namespace Graphics
                                   nullptr,
                                   nullptr,
                                   nullptr),
-              mParticles()
+              mParticles(),
+              mParticlesRawDataHandler(1000 * sizeof(float) * 3)
         {
             mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
                 .ShaderName = "ParticleShader",
@@ -76,30 +77,40 @@ namespace Graphics
             mParticles = std::move(properties);
         }
 
+        void ParticleSystemSceneProxy::CopyParticlesRawData(const void *particlesRawData, const size_t byteChunkSize)
+        {
+            if (byteChunkSize > 0)
+            {
+                mParticlesRawDataHandler.CopyToMeActiveTranslationData(particlesRawData, 0, byteChunkSize);
+                mParticlesRawDataHandler.SetActiveDataChunkSize(byteChunkSize);
+            }
+        }
+
         void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
         {
             auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
 
             assert(particlesTransformVBO);
 
-            const size_t subBufferSize = mParticles.size() * 3 * sizeof(float);
+            const size_t subBufferSize = mParticlesRawDataHandler.GetActiveDataChunkSize();
+            // mParticles.size() * 3 * sizeof(float);
 
-            float *transformBuffer = (float *)malloc(subBufferSize);
+            // float *transformBuffer = (float *)malloc(subBufferSize);
 
-            size_t bufferIndex = 0;
-            for (const auto &particle : mParticles)
-            {
-                transformBuffer[bufferIndex++] = particle.Position[0];
-                transformBuffer[bufferIndex++] = particle.Position[1];
-                transformBuffer[bufferIndex++] = particle.Position[2];
-            }
+            // size_t bufferIndex = 0;
+            // for (const auto &particle : mParticles)
+            // {
+            //     transformBuffer[bufferIndex++] = particle.Position[0];
+            //     transformBuffer[bufferIndex++] = particle.Position[1];
+            //     transformBuffer[bufferIndex++] = particle.Position[2];
+            // }
 
             Logger::Out("ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer => subBufferSize: ", subBufferSize);
             particlesTransformVBO->BindVBO();
-            particlesTransformVBO->BufferSubData(0, subBufferSize, (void *)transformBuffer);
+            particlesTransformVBO->BufferSubData(0, subBufferSize, mParticlesRawDataHandler.GetTranslationData());
             particlesTransformVBO->UnbindVBO();
 
-            free(transformBuffer);
+            // free(transformBuffer);
         }
     }
 }
