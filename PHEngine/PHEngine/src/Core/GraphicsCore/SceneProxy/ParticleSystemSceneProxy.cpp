@@ -25,8 +25,8 @@ namespace Graphics
                                   nullptr,
                                   nullptr,
                                   nullptr),
-              mParticles(),
-              mParticlesRawDataHandler(1000 * sizeof(float) * 3)
+              mParticlesRawDataHandler(1000),
+              mActiveParticlesCount(0)
         {
             mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
                 .ShaderName = "ParticleShader",
@@ -41,19 +41,16 @@ namespace Graphics
 
         void ParticleSystemSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
         {
-            const auto particleCount = mParticles.size();
-            if (!particleCount)
+            if (!mActiveParticlesCount)
                 return;
 
             PrepareParticlesInstancedBuffer();
 
             mShader->ExecuteShader();
-            mShader->SetColor(mParticles.back().Color);
-            mShader->SetParticleSize(mParticles.back().Size);
+            mShader->SetColor(glm::vec4(1, 1, 0, 1));
             mShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
 
-            Logger::Out("ParticleSystemSceneProxy::Render => particleCount: ", particleCount);
-            m_skin->GetBuffer()->RenderInstanced(GL_POINTS, particleCount);
+            m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
             mShader->StopShader();
         }
 
@@ -72,45 +69,45 @@ namespace Graphics
             return false;
         }
 
-        void ParticleSystemSceneProxy::SetParticleProxyProperties(std::vector<ParticleProxyData> &&properties)
+        void ParticleSystemSceneProxy::SetActiveParticlesCount(const size_t activeParticlesCount)
         {
-            mParticles = std::move(properties);
+            mActiveParticlesCount = activeParticlesCount;
         }
 
-        void ParticleSystemSceneProxy::CopyParticlesRawData(const void *particlesRawData, const size_t byteChunkSize)
+        void ParticleSystemSceneProxy::CopyParticlesRawData(const void *translationBuffer,
+                                                            const size_t translationByteChunkSize,
+                                                            const void *rotationSizeBuffer,
+                                                            const size_t rotationByteChunkSize)
         {
-            if (byteChunkSize > 0)
+            if (translationByteChunkSize > 0)
             {
-                mParticlesRawDataHandler.CopyToMeActiveTranslationData(particlesRawData, 0, byteChunkSize);
-                mParticlesRawDataHandler.SetActiveDataChunkSize(byteChunkSize);
+                mParticlesRawDataHandler.CopyToMeActiveTranslationData(translationBuffer, 0, translationByteChunkSize);
+                mParticlesRawDataHandler.SetTranslationActiveDataChunkSize(translationByteChunkSize);
+            }
+
+            if (rotationByteChunkSize > 0)
+            {
+                mParticlesRawDataHandler.CopyToMeActiveRotationSizeData(rotationSizeBuffer, 0, rotationByteChunkSize);
+                mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(rotationByteChunkSize);
             }
         }
 
         void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
         {
             auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
+            auto *const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_1);
 
-            assert(particlesTransformVBO);
+            assert(particlesTransformVBO && particlesRotationSizeVBO);
 
-            const size_t subBufferSize = mParticlesRawDataHandler.GetActiveDataChunkSize();
-            // mParticles.size() * 3 * sizeof(float);
-
-            // float *transformBuffer = (float *)malloc(subBufferSize);
-
-            // size_t bufferIndex = 0;
-            // for (const auto &particle : mParticles)
-            // {
-            //     transformBuffer[bufferIndex++] = particle.Position[0];
-            //     transformBuffer[bufferIndex++] = particle.Position[1];
-            //     transformBuffer[bufferIndex++] = particle.Position[2];
-            // }
-
-            Logger::Out("ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer => subBufferSize: ", subBufferSize);
+            const size_t translationSubBufferSize = mParticlesRawDataHandler.GetTranslationActiveDataChunkSize();
+            const size_t rotationSizeSubBufferSize = mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize();
             particlesTransformVBO->BindVBO();
-            particlesTransformVBO->BufferSubData(0, subBufferSize, mParticlesRawDataHandler.GetTranslationData());
-            particlesTransformVBO->UnbindVBO();
+            particlesTransformVBO->BufferSubData(0, translationSubBufferSize, mParticlesRawDataHandler.GetTranslationData());
 
-            // free(transformBuffer);
+            particlesRotationSizeVBO->BindVBO();
+            particlesTransformVBO->BufferSubData(0, rotationSizeSubBufferSize, mParticlesRawDataHandler.GetRotationSizeData());
+            
+            particlesTransformVBO->UnbindVBO();
         }
     }
 }

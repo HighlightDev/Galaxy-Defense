@@ -29,12 +29,10 @@ namespace EngineCore
                              glm::vec3(1.0f),
                              BoundingBox()),
           mParticlesPool(),
-          mParticleProxyPropertiesPool(),
-          mParticlesRawDataHandler(1000 * sizeof(float) * 3),
+          mParticlesRawDataHandler(1000),
           mRenderData(renderData)
     {
         mParticlesPool.resize(1000);
-        mParticleProxyPropertiesPool.resize(mParticlesPool.size());
         InitParticlePool();
     }
 
@@ -60,6 +58,7 @@ namespace EngineCore
 
         size_t activeParticlesCount = 0;
         size_t particleTranslationByteOffset = 0;
+        size_t particleRotationSizeByteOffset = 0;
 
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
@@ -71,15 +70,20 @@ namespace EngineCore
             if ((particle.LifeRemaining - deltaTime) > 0.0f)
             {
                 particle.Position = particle.Position + (particle.Velocity * 100.0f * deltaTime);
-
-                mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particle.Position);
-                particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
-
                 particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
                 particle.LifeRemaining -= deltaTime;
 
-                const float invLife = particle.LifeTime - (particle.LifeTime - particle.LifeRemaining);
-                mParticleProxyPropertiesPool[activeParticlesCount++] = ParticleProxyData{
+                const float invLife = particle.LifeTime - particle.LifeRemaining;
+
+                mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particle.Position);
+                particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
+                mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset,
+                                                             particle.Rotation,
+                                                             EngineMath::LerpFloat(invLife, 0.0f, particle.LifeTime, particle.SizeBegin, particle.SizeEnd));
+                particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
+
+                ++activeParticlesCount;
+                /*mParticleProxyPropertiesPool[activeParticlesCount++] = ParticleProxyData{
                     .Position = particle.Position,
                     .Color = EngineMath::LerpVec4(invLife,
                                                   0.0f,
@@ -87,7 +91,7 @@ namespace EngineCore
                                                   particle.ColorBegin,
                                                   particle.ColorEnd),
                     .Rotation = particle.Rotation,
-                    .Size = EngineMath::LerpFloat(invLife, 0.0f, particle.LifeTime, particle.SizeBegin, particle.SizeEnd)};
+                    .Size = EngineMath::LerpFloat(invLife, 0.0f, particle.LifeTime, particle.SizeBegin, particle.SizeEnd)};*/
             }
             else
             {
@@ -95,7 +99,7 @@ namespace EngineCore
             }
         }
 
-        mParticlesRawDataHandler.SetActiveDataChunkSize(particleTranslationByteOffset);
+        mParticlesRawDataHandler.SetTranslationActiveDataChunkSize(particleTranslationByteOffset);
 
         if (activeParticlesCount || mPrevActiveParticles > 0)
         {
@@ -126,12 +130,9 @@ namespace EngineCore
     {
         static constexpr float radius = 20.0f;
 
-        size_t particleTranslationByteOffset = 0;
-
         for (size_t i = 0; i < mParticlesPool.size(); ++i)
         {
             const float random_radius = 1.0f;
-            //(Random::Float() * radius) - 10.0f;
             const float random_theta_rad = Random::Float() * EngineMath::PI * 2;
             const float random_phi_rad = Random::Float() * EngineMath::PI;
 
@@ -143,27 +144,22 @@ namespace EngineCore
                 random_radius * std::cos(random_phi_rad));
             p.Rotation = Random::Float() * EngineMath::PI * 2;
 
-            mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, p.Position);
-            particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
-
-            const auto randomNdcValue = []()
+            const auto randomNormalizedValue = []()
             {
                 return (Random::Float() * 2.0f) - 1.0f;
             };
 
-            p.Velocity = glm::vec3(randomNdcValue() * 2.0f, randomNdcValue() * 2.0f, randomNdcValue() * 2.0f);
+            p.Velocity = glm::vec3(randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f);
 
             p.ColorBegin = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
             p.ColorEnd = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-            p.SizeBegin = 0.5f;
+            p.SizeBegin = 2.0f;
             p.SizeEnd = 0.1f;
-            p.LifeTime = (float)i / 1000.0f;
+            p.LifeTime = 1.0f;
             p.LifeRemaining = p.LifeTime;
 
             p.isActive = true;
         }
-
-        mParticlesRawDataHandler.SetActiveDataChunkSize(particleTranslationByteOffset);
     }
 
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
@@ -215,16 +211,13 @@ namespace EngineCore
 
                                                    if (activeParticlesCount > 0)
                                                    {
-                                                       std::vector<ParticleProxyData> copyParticlesProps;
-                                                       const auto endIt = std::next(mParticleProxyPropertiesPool.begin(), activeParticlesCount);
-                                                       std::copy(mParticleProxyPropertiesPool.begin(), endIt, std::back_inserter(copyParticlesProps));
-                                                       proxyPtr->SetParticleProxyProperties(std::move(copyParticlesProps));
-                                                       proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(), mParticlesRawDataHandler.GetActiveDataChunkSize());
+                                                       proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
+                                                                                      mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
+                                                                                      mParticlesRawDataHandler.GetRotationSizeData(),
+                                                                                      mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize());
                                                    }
-                                                   else
-                                                   {
-                                                       proxyPtr->SetParticleProxyProperties(std::vector<ParticleProxyData>());
-                                                   }
+
+                                                   proxyPtr->SetActiveParticlesCount(activeParticlesCount);
                                                });
             }
         }

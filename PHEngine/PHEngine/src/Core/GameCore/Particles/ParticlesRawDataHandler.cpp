@@ -8,13 +8,16 @@
 namespace EngineCore
 {
 
-    ParticlesRawDataHandler::ParticlesRawDataHandler(const size_t dataSize)
+    ParticlesRawDataHandler::ParticlesRawDataHandler(const size_t particlesCount)
         : mTranslationData(nullptr),
-          mTranslationDataSize(dataSize),
-          mActiveDataChunkSize(dataSize)
+          mTranslationDataSize(GetTranslationVectorByteDataOffset() * particlesCount),
+          mTranslationActiveDataChunkSize(GetTranslationVectorByteDataOffset() * particlesCount),
+          mRotationSizeData(nullptr),
+          mRotationSizeDataSize(GetRotationSizeByteDataOffset() * particlesCount),
+          mRotationSizeActiveDataChunkSize(GetRotationSizeByteDataOffset() * particlesCount)
     {
-        assert(dataSize);
-        AllocatePoolMemory(mTranslationDataSize);
+        assert(particlesCount);
+        AllocatePoolMemory();
     }
 
     ParticlesRawDataHandler::~ParticlesRawDataHandler()
@@ -35,7 +38,7 @@ namespace EngineCore
 
     void *ParticlesRawDataHandler::CopyToDstActiveTranslationData(void *dst)
     {
-        return memcpy(dst, mTranslationData, mActiveDataChunkSize);
+        return memcpy(dst, mTranslationData, mTranslationActiveDataChunkSize);
     }
 
     void ParticlesRawDataHandler::CopyToMeActiveTranslationData(const void *src, const size_t offset, const size_t byteChunkSize)
@@ -44,10 +47,10 @@ namespace EngineCore
         (void)memcpy((void *)((char *)mTranslationData + offset), src, byteChunkSize);
     }
 
-    void ParticlesRawDataHandler::SetActiveDataChunkSize(const size_t activeDataChunkSize)
+    void ParticlesRawDataHandler::SetTranslationActiveDataChunkSize(const size_t activeDataChunkSize)
     {
         assert(activeDataChunkSize <= mTranslationDataSize);
-        mActiveDataChunkSize = activeDataChunkSize;
+        mTranslationActiveDataChunkSize = activeDataChunkSize;
     }
 
     size_t ParticlesRawDataHandler::GetTranslationDataSize() const
@@ -55,9 +58,9 @@ namespace EngineCore
         return mTranslationDataSize;
     }
 
-    size_t ParticlesRawDataHandler::GetActiveDataChunkSize() const
+    size_t ParticlesRawDataHandler::GetTranslationActiveDataChunkSize() const
     {
-        return mActiveDataChunkSize;
+        return mTranslationActiveDataChunkSize;
     }
 
     void *ParticlesRawDataHandler::GetTranslationData() const
@@ -65,14 +68,60 @@ namespace EngineCore
         return mTranslationData;
     }
 
-    void ParticlesRawDataHandler::AllocatePoolMemory(const size_t dataSize)
+    void ParticlesRawDataHandler::SubRotationSizeData(const size_t byteDataOffset, const float rotation, const float size)
     {
-        mTranslationData = malloc(dataSize);
+        assert(mRotationSizeData);
+        assert(byteDataOffset <= (mRotationSizeDataSize - GetRotationSizeByteDataOffset()));
+
+        float *f_data = (float *)((char *)mRotationSizeData + byteDataOffset);
+        f_data[0] = rotation;
+        f_data[1] = size;
+    }
+
+    void ParticlesRawDataHandler::SetRotationSizeActiveDataChunkSize(const size_t activeDataChunkSize)
+    {
+        assert(activeDataChunkSize <= mRotationSizeDataSize);
+        mRotationSizeActiveDataChunkSize = activeDataChunkSize;
+    }
+
+    size_t ParticlesRawDataHandler::GetRotationSizeDataSize() const
+    {
+        return mRotationSizeDataSize;
+    }
+
+    size_t ParticlesRawDataHandler::GetRotationSizeActiveDataChunkSize() const
+    {
+        return mRotationSizeActiveDataChunkSize;
+    }
+
+    void *ParticlesRawDataHandler::GetRotationSizeData() const
+    {
+        return mRotationSizeData;
+    }
+
+    void *ParticlesRawDataHandler::CopyToDstActiveRotationSizeData(void *dst)
+    {
+        return memcpy(dst, mRotationSizeData, mRotationSizeActiveDataChunkSize);
+    }
+
+    void ParticlesRawDataHandler::CopyToMeActiveRotationSizeData(const void *src, const size_t offset, const size_t byteChunkSize)
+    {
+        assert(mRotationSizeDataSize >= (byteChunkSize - offset));
+        (void)memcpy((void *)((char *)mRotationSizeData + offset), src, byteChunkSize);
+    }
+
+    void ParticlesRawDataHandler::AllocatePoolMemory()
+    {
+        mTranslationData = malloc(mTranslationDataSize);
+        mRotationSizeData = malloc(mRotationSizeDataSize);
     }
 
     void ParticlesRawDataHandler::DeallocatePoolMemory()
     {
         if (mTranslationData)
             free(mTranslationData);
+
+        if (mRotationSizeData)
+            free(mRotationSizeData);
     }
 }

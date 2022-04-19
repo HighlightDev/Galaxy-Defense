@@ -1,7 +1,6 @@
 #pragma once
 
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Particles/ParticleProxyData.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/IoCore/FolderManager.h"
@@ -27,7 +26,7 @@ namespace Graphics
         Uniform u_particleSize;
 
     public:
-        ParticleShader(const ShaderParams& shaderParams)
+        ParticleShader(const ShaderParams &shaderParams)
             : Shader(shaderParams)
         {
             ShaderInit();
@@ -44,14 +43,9 @@ namespace Graphics
             u_projectionMatrix.LoadUniform(projectionMatrix);
         }
 
-        void SetColor(const glm::vec4& color)
+        void SetColor(const glm::vec4 &color)
         {
             u_color.LoadUniform(color);
-        }
-
-        void SetParticleSize(const float particleSize)
-        {
-            u_particleSize.LoadUniform(particleSize);
         }
 
     protected:
@@ -63,7 +57,6 @@ namespace Graphics
             u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
             u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
             u_color = GetUniform("color", shaderProgramID);
-            u_particleSize = GetUniform("particleSize", shaderProgramID);
         }
 
         virtual void SetShaderPredefine() override
@@ -75,9 +68,8 @@ namespace Graphics
     {
         class ParticleSystemSceneProxy : public PrimitiveSceneProxy
         {
-            std::vector<ParticleProxyData> mParticles;
-
             ParticlesRawDataHandler mParticlesRawDataHandler;
+            size_t mActiveParticlesCount;
 
             std::shared_ptr<ParticleShader> mShader;
 
@@ -96,12 +88,14 @@ namespace Graphics
 
             virtual bool IsFrustumCullTestNeeded() const override;
 
-            void SetParticleProxyProperties(std::vector<ParticleProxyData> &&properties);
+            void SetActiveParticlesCount(const size_t activeParticlesCount);
 
-            void CopyParticlesRawData(const void* particlesRawData, const size_t byteChunkSize);
+            void CopyParticlesRawData(const void *translationBuffer,
+                                      const size_t translationByteChunkSize,
+                                      const void *rotationSizeBuffer,
+                                      const size_t rotationByteChunkSize);
 
-            private:
-
+        private:
             void PrepareParticlesInstancedBuffer();
         };
     }

@@ -5,7 +5,6 @@
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 #include "Core/GameCore/Particles/Particle.h"
 #include "Core/GameCore/Particles/ParticleProperties.h"
-#include "Core/GameCore/Particles/ParticleProxyData.h"
 #include "Core/GameCore/Particles/ParticleModule.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 
@@ -20,7 +19,6 @@ namespace EngineCore
     {
 
         std::vector<Particle> mParticlesPool;
-        std::vector<ParticleProxyData> mParticleProxyPropertiesPool;
 
         ParticlesRawDataHandler mParticlesRawDataHandler;
 
