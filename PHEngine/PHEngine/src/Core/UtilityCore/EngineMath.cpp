@@ -13,10 +13,15 @@ namespace EngineMath
       return bResult;
    }
 
-   float LerpFloat(const float src, const float dst, const float factor)
+   float LerpNormalizedFloat(const float src, const float dst, const float factor)
    {
       assert(factor <= 1 && factor >= 0);
       return (dst - src) * factor + src;
+   }
+
+   float LerpFloat(const float x, const float x1, const float x2, const float y1, const float y2)
+   {
+      return (((y2 - y1) / (x2 - x1)) * (x - x1)) + y1;
    }
 
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2)

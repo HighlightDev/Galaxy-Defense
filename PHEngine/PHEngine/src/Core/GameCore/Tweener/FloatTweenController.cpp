@@ -35,7 +35,7 @@ namespace EngineCore
          StateProperty<eBindingType::FloatScalar>* srcFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::SourceState]);
          StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::DestinationState]);
 
-         floatBinding->SetValue(EngineMath::LerpFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter));
+         floatBinding->SetValue(EngineMath::LerpNormalizedFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter));
       }
    }
 

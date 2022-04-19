@@ -58,14 +58,14 @@ namespace Graphics
 				vertices,
 				eAttribArrayIndexName::POSITION,
 				GL_ARRAY_BUFFER,
-				eDataCarryFlag::Invalidate);
+				eDataCarryFlag::INVALIDATE);
 
 		VertexBufferObjectBase *texCoordsVBO =
 			new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(
 				texCoords,
 				eAttribArrayIndexName::TEXTURE_COORDINATES,
 				GL_ARRAY_BUFFER,
-				eDataCarryFlag::Invalidate);
+				eDataCarryFlag::INVALIDATE);
 
 		m_vao->AddVBO(verticesVBO, texCoordsVBO);
 

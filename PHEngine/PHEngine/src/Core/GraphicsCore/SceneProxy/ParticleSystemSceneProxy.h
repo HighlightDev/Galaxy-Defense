@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Particles/ParticleProxyProperties.h"
+#include "Core/GameCore/Particles/ParticleProxyData.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/IoCore/FolderManager.h"
 
@@ -74,7 +74,7 @@ namespace Graphics
     {
         class ParticleSystemSceneProxy : public PrimitiveSceneProxy
         {
-            std::vector<ParticleProxyProperties> mParticles;
+            std::vector<ParticleProxyData> mParticles;
 
             std::shared_ptr<ParticleShader> mShader;
 
@@ -93,7 +93,11 @@ namespace Graphics
 
             virtual bool IsFrustumCullTestNeeded() const override;
 
-            void SetParticleProxyProperties(std::vector<ParticleProxyProperties> &&properties);
+            void SetParticleProxyProperties(std::vector<ParticleProxyData> &&properties);
+
+            private:
+
+            void PrepareParticlesInstancedBuffer();
         };
     }
 }

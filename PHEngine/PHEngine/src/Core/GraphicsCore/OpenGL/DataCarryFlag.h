@@ -7,9 +7,9 @@ namespace Graphics
 		enum class eDataCarryFlag
 		{
 			//buffer data becomes unavailable after it is sent on a gpu
-			Invalidate = 0,
+			INVALIDATE = 0,
 			//buffer data is available
-			Store = 1
+			STORE = 1
 		};
 	}
 }

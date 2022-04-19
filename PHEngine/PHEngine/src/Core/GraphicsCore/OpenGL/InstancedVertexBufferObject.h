@@ -15,8 +15,12 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		template <typename DataType, size_t vector_size, int32_t gl_type = GL_FLOAT, int32_t buffer_usage = GL_STATIC_DRAW>
-		class VertexBufferObject : public VertexBufferObjectBase
+		template <typename DataType,
+				  size_t vector_size,
+				  int32_t gl_type = GL_FLOAT,
+				  int32_t buffer_usage = GL_STREAM_DRAW,
+				  int32_t attrib_divisor = 1>
+		class InstancedVertexBufferObject : public VertexBufferObjectBase
 		{
 		private:
 			static constexpr size_t m_vectorSize = vector_size;
@@ -64,10 +68,10 @@ namespace Graphics
 			eDataCarryFlag m_dataCarryFlag;
 
 		public:
-			VertexBufferObject(const std::vector<DataType> &data,
-							   const eAttribArrayIndexName attribArrayIndexName,
-							   const int32_t bufferTarget,
-							   const eDataCarryFlag flag)
+			InstancedVertexBufferObject(const std::vector<DataType> &data,
+										const eAttribArrayIndexName attribArrayIndexName,
+										const int32_t bufferTarget,
+										const eDataCarryFlag flag)
 				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
 				  m_data(std::move(data)),
 				  m_totalDataLength(m_data.size()),
@@ -75,12 +79,26 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("VertexBufferObject::ctor");
+				Logger::Out("InstancedVertexBufferObject::ctor");
 			}
 
-			virtual ~VertexBufferObject()
+			InstancedVertexBufferObject(
+				const size_t indicesCount,
+				const eAttribArrayIndexName attribArrayIndexName,
+				const int32_t bufferTarget)
+				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
+				  m_data(),
+				  m_totalDataLength(indicesCount * GetVectorElementByteSize()),
+				  m_countOfIndices(indicesCount),
+				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
+				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
 			{
-				Logger::Out("VertexBufferObject::~dctor");
+				Logger::Out("InstancedVertexBufferObject::ctor for empty VBO");
+			}
+
+			virtual ~InstancedVertexBufferObject()
+			{
+				Logger::Out("InstancedVertexBufferObject::~dctor");
 			}
 
 			virtual void *GetData()
@@ -99,14 +117,15 @@ namespace Graphics
 				GenBuffer();
 				BindVBO();
 
-				Logger::Out("VertexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
+				Logger::Out("InstancedVertexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
 
-				glBufferData(m_bufferTarget, bufferSize, m_data.data(), buffer_usage);
+				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
+				glVertexAttribDivisor(m_vertexAttribIndex, attrib_divisor);
 
 				// If data on CPU is unnecessary
-				if (m_dataCarryFlag == eDataCarryFlag::INVALIDATE)
+				if (m_data.size() && m_dataCarryFlag == eDataCarryFlag::INVALIDATE)
 				{
 					m_data.clear();
 				}
@@ -114,7 +133,10 @@ namespace Graphics
 
 			void InvalidateData()
 			{
-				m_data.clear();
+				if (m_data.size())
+				{
+					m_data.clear();
+				}
 			}
 
 			virtual size_t GetCountOfIndices() const override
@@ -139,7 +161,7 @@ namespace Graphics
 
 			virtual void CleanUp() override
 			{
-				Logger::Out("VertexBufferObject::CleanUp; descriptor = ", m_descriptor);
+				Logger::Out("InstancedVertexBufferObject::CleanUp; descriptor = ", m_descriptor);
 				UnbindVBO();
 				glDeleteBuffers(1, &m_descriptor);
 			}

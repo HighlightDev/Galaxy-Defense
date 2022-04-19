@@ -1,6 +1,7 @@
 #version 400
 
 layout (location = 0) in vec3 position;
+layout (location = 8) in vec3 relative_translation;
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;
@@ -13,8 +14,8 @@ out float vs_out_particle_size;
 
 void main()
 {
-    vs_out_color = color;
     vs_out_particle_size = particleSize;
-    gl_Position = viewMatrix * worldMatrix * vec4(position, 1.0);
+    vs_out_color = color;
+    gl_Position = viewMatrix * worldMatrix * vec4(relative_translation, 1.0);
 }
 

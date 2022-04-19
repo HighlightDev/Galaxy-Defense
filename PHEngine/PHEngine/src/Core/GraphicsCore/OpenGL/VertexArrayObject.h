@@ -68,6 +68,8 @@ namespace Graphics
 
 			void RenderVAO(int32_t primitiveMode = GL_TRIANGLES);
 
+			void RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount);
+
 			void AddIndexBuffer(IndexBufferObject *ibo);
 
 			void BindBuffersToVao();

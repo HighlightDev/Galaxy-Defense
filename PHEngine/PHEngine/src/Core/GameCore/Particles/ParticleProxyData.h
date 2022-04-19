@@ -5,7 +5,7 @@
 
 namespace EngineCore
 {
-    struct ParticleProxyProperties
+    struct ParticleProxyData
     {
         glm::vec3 Position;
         glm::vec4 Color;

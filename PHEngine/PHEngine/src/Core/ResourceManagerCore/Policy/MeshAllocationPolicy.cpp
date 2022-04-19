@@ -53,7 +53,7 @@ namespace Resources
 								   *blendIndicesVBO = nullptr;
 
 			if (meshAttributes->VertexIndices.size())
-				ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::Invalidate);
+				ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::INVALIDATE);
 
 			auto *vertexVBO = new VertexBufferObject<float,
 													 3,
@@ -61,7 +61,7 @@ namespace Resources
 													 GL_STATIC_DRAW>(meshAttributes->Positions,
 																	 eAttribArrayIndexName::POSITION,
 																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::Store);
+																	 eDataCarryFlag::STORE);
 
 			if (meshAttributes->Normals.size())
 			{
@@ -71,7 +71,7 @@ namespace Resources
 													GL_STATIC_DRAW>(meshAttributes->Normals,
 																	eAttribArrayIndexName::NORMAL,
 																	GL_ARRAY_BUFFER,
-																	eDataCarryFlag::Invalidate);
+																	eDataCarryFlag::INVALIDATE);
 			}
 			if (meshAttributes->TextureCoordinates.size())
 			{
@@ -81,7 +81,7 @@ namespace Resources
 													  GL_STATIC_DRAW>(meshAttributes->TextureCoordinates,
 																	  eAttribArrayIndexName::TEXTURE_COORDINATES,
 																	  GL_ARRAY_BUFFER,
-																	  eDataCarryFlag::Invalidate);
+																	  eDataCarryFlag::INVALIDATE);
 			}
 			if (meshAttributes->TangentNormals.size())
 			{
@@ -91,7 +91,7 @@ namespace Resources
 													 GL_STATIC_DRAW>(meshAttributes->TangentNormals,
 																	 eAttribArrayIndexName::TANGENT,
 																	 GL_ARRAY_BUFFER,
-																	 eDataCarryFlag::Invalidate);
+																	 eDataCarryFlag::INVALIDATE);
 			}
 			if (meshAttributes->BitangetNormals.size())
 			{
@@ -101,7 +101,7 @@ namespace Resources
 													   GL_STATIC_DRAW>(meshAttributes->BitangetNormals,
 																	   eAttribArrayIndexName::BITANGENT,
 																	   GL_ARRAY_BUFFER,
-																	   eDataCarryFlag::Invalidate);
+																	   eDataCarryFlag::INVALIDATE);
 			}
 
 			if (meshAttributes->BoneIndices.size() && meshAttributes->BoneWeights.size())
@@ -112,7 +112,7 @@ namespace Resources
 														 GL_STATIC_DRAW>(meshAttributes->BoneWeights,
 																		 eAttribArrayIndexName::BONE_INDEX,
 																		 GL_ARRAY_BUFFER,
-																		 eDataCarryFlag::Invalidate);
+																		 eDataCarryFlag::INVALIDATE);
 
 				blendIndicesVBO = new VertexBufferObject<int32_t,
 														 countOfBonesInfluencingOnVertex,
@@ -120,7 +120,7 @@ namespace Resources
 														 GL_STATIC_DRAW>(meshAttributes->BoneIndices,
 																		 eAttribArrayIndexName::BONE_WEIGHT,
 																		 GL_ARRAY_BUFFER,
-																		 eDataCarryFlag::Invalidate);
+																		 eDataCarryFlag::INVALIDATE);
 			}
 
 			vao.AddVBO(vertexVBO,

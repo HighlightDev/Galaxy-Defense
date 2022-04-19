@@ -34,12 +34,14 @@
 #include "ComponentData/WaterPlaneComponentData.h"
 #include "ComponentData/InputComponentData.h"
 #include "ComponentData/ParticleSystemComponentData.h"
+#include "Core/GameCore/Particles/ParticlePoolParameters.h"
 
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
 
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
@@ -413,16 +415,17 @@ namespace EngineCore
         {
             const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
 
-            const int32_t primitive = (int32_t)SimplePrimitiveType::POINT;
-            SimplePrimitivePool::sharedValue_t skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
+            ParticlesPool::sharedValue_t particlesSkin =
+                ParticlesPool::GetInstance()->GetOrAllocateResource(ParticlePoolParameters{
+                    .mParticleComponentName = mData.GameObjectName,
+                    .mParticleCount = 10000});
             /* ShaderParams shaderParams("Particles_Shader", mData.m_vsShaderPath,
                                         mData.m_fsShaderPath);*/
             /* ShaderPool::sharedValue_t shader =
                  ShaderPool::GetInstance()
                      ->template GetOrAllocateResource<ParticleSystemShader>(shaderParams);*/
 
-            return std::make_shared<ComponentType>(mData, ParticleSystemRenderData(skin, nullptr));
+            return std::make_shared<ComponentType>(mData, ParticleSystemRenderData(particlesSkin, nullptr));
         }
     };
 

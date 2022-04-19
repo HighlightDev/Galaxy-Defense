@@ -3,9 +3,14 @@
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <stdlib.h>
+#include <TinyLogger/LogInterface.h>
 
 using namespace EngineMath;
 using namespace Resources;
+using namespace TinyLogger;
 
 namespace Graphics
 {
@@ -35,24 +40,19 @@ namespace Graphics
 
         void ParticleSystemSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
         {
-            if (!mParticles.size())
+            const auto particleCount = mParticles.size();
+            if (!particleCount)
                 return;
 
+            PrepareParticlesInstancedBuffer();
+
             mShader->ExecuteShader();
-            for (const auto &particle : mParticles)
-            {
-                const glm::mat4 identityMatrix(1);
-                glm::mat4 transformMatrix = identityMatrix;
-                transformMatrix *= m_relativeMatrix;
-                transformMatrix *= glm::translate(glm::mat4(1), particle.Position);
-                transformMatrix *= glm::rotate(glm::mat4(1), DEG_TO_RAD(particle.Rotation), glm::vec3(0, 0, 1));
+            mShader->SetColor(mParticles.back().Color);
+            mShader->SetParticleSize(mParticles.back().Size);
+            mShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
 
-                mShader->SetColor(particle.Color);
-                mShader->SetParticleSize(particle.Size);
-                mShader->SetTransformMatrices(transformMatrix, viewMatrix, projectionMatrix);
-
-                m_skin->GetBuffer()->RenderVAO(GL_POINTS);
-            }
+            Logger::Out("ParticleSystemSceneProxy::Render => particleCount: ", particleCount);
+            m_skin->GetBuffer()->RenderInstanced(GL_POINTS, particleCount);
             mShader->StopShader();
         }
 
@@ -71,9 +71,35 @@ namespace Graphics
             return false;
         }
 
-        void ParticleSystemSceneProxy::SetParticleProxyProperties(std::vector<ParticleProxyProperties> &&properties)
+        void ParticleSystemSceneProxy::SetParticleProxyProperties(std::vector<ParticleProxyData> &&properties)
         {
             mParticles = std::move(properties);
+        }
+
+        void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
+        {
+            auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
+
+            assert(particlesTransformVBO);
+
+            const size_t subBufferSize = mParticles.size() * 3 * sizeof(float);
+
+            float *transformBuffer = (float *)malloc(subBufferSize);
+
+            size_t bufferIndex = 0;
+            for (const auto &particle : mParticles)
+            {
+                transformBuffer[bufferIndex++] = particle.Position[0];
+                transformBuffer[bufferIndex++] = particle.Position[1];
+                transformBuffer[bufferIndex++] = particle.Position[2];
+            }
+
+            Logger::Out("ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer => subBufferSize: ", subBufferSize);
+            particlesTransformVBO->BindVBO();
+            particlesTransformVBO->BufferSubData(0, subBufferSize, (void *)transformBuffer);
+            particlesTransformVBO->UnbindVBO();
+
+            free(transformBuffer);
         }
     }
 }

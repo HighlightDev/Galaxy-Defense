@@ -13,7 +13,6 @@ namespace Graphics
 		class VertexBufferObjectBase
 		{
 		protected:
-
 			uint32_t m_descriptor;
 
 			int32_t m_bufferTarget;
@@ -40,14 +39,17 @@ namespace Graphics
 
 			virtual size_t GetVertexAttribIndex() const = 0;
 
+			virtual void BufferSubData(const int32_t offset, const size_t bufferSize, const void *data) const;
+
 			virtual void CleanUp() = 0;
 
-			virtual void* GetData();
+			virtual void *GetData();
 
 			size_t GetDescriptor() const;
 
 			eAttribArrayIndexName GetAttribArrayIndexName() const;
+
+			int32_t GetBufferTarget() const;
 		};
 	}
 }
-

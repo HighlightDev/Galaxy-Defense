@@ -48,10 +48,19 @@ namespace Graphics
 			}
 			else
 			{
-				VertexBufferObjectBase* positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+				VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
 				assert(positionVBO);
 				glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
 			}
+			glBindVertexArray(0);
+		}
+
+		void VertexArrayObject::RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount)
+		{
+			glBindVertexArray(m_descriptor);
+			VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+			assert(positionVBO);
+			glDrawArraysInstanced(primitiveMode, 0, positionVBO->GetCountOfIndices(), primitivesCount);
 			glBindVertexArray(0);
 		}
 

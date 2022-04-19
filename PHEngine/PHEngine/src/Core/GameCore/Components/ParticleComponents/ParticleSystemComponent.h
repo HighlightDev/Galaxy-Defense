@@ -5,7 +5,7 @@
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 #include "Core/GameCore/Particles/Particle.h"
 #include "Core/GameCore/Particles/ParticleProperties.h"
-#include "Core/GameCore/Particles/ParticleProxyProperties.h"
+#include "Core/GameCore/Particles/ParticleProxyData.h"
 #include "Core/GameCore/Particles/ParticleModule.h"
 
 using namespace Graphics::Data;
@@ -19,7 +19,7 @@ namespace EngineCore
     {
 
         std::vector<Particle> mParticlesPool;
-        std::vector<ParticleProxyProperties> mParticleProxyPropertiesPool;
+        std::vector<ParticleProxyData> mParticleProxyPropertiesPool;
         size_t mPrevActiveParticles = 0;
 
         std::vector<std::shared_ptr<ParticleModule>> mParticleModules;

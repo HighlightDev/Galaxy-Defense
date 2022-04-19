@@ -44,7 +44,7 @@ namespace Graphics
 			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
-			if (m_dataCarryFlag == eDataCarryFlag::Invalidate)
+			if (m_dataCarryFlag == eDataCarryFlag::INVALIDATE)
 			{
 				m_data.clear();
 			}

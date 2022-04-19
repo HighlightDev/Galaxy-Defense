@@ -12,10 +12,12 @@
 #include <cmath>
 #include <algorithm>
 #include <iterator>
+#include <TinyLogger/LogInterface.h>
 
 using namespace Graphics::Proxy;
 using namespace Graphics;
 using namespace EngineMath;
+using namespace TinyLogger;
 
 namespace EngineCore
 {
@@ -30,7 +32,7 @@ namespace EngineCore
           mParticleProxyPropertiesPool(),
           mRenderData(renderData)
     {
-        mParticlesPool.resize(1000);
+        mParticlesPool.resize(10000);
         mParticleProxyPropertiesPool.resize(mParticlesPool.size());
         InitParticlePool();
     }
@@ -70,8 +72,8 @@ namespace EngineCore
                 particle.Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
                 particle.LifeRemaining -= deltaTime;
 
-                const float invLife = particle.LifeTime - particle.LifeRemaining;
-                mParticleProxyPropertiesPool[activeParticlesCount++] = ParticleProxyProperties{
+                const float invLife = particle.LifeTime - (particle.LifeTime - particle.LifeRemaining);
+                mParticleProxyPropertiesPool[activeParticlesCount++] = ParticleProxyData{
                     .Position = particle.Position,
                     .Color = EngineMath::LerpVec4(invLife,
                                                   0.0f,
@@ -79,7 +81,7 @@ namespace EngineCore
                                                   particle.ColorBegin,
                                                   particle.ColorEnd),
                     .Rotation = particle.Rotation,
-                    .Size = EngineMath::LerpFloat(particle.SizeBegin, particle.SizeEnd, invLife)};
+                    .Size = EngineMath::LerpFloat(invLife, 0.0f, particle.LifeTime, particle.SizeBegin, particle.SizeEnd)};
             }
             else
             {
@@ -89,6 +91,10 @@ namespace EngineCore
 
         if (activeParticlesCount || mPrevActiveParticles > 0)
         {
+            if (activeParticlesCount == 0 && mPrevActiveParticles > 0)
+            {
+                Logger::Out("activeParticlesCount == 0 && mPrevActiveParticles > 0");
+            }
             SyncDataWithRenderThread(activeParticlesCount);
             mPrevActiveParticles = activeParticlesCount;
         }
@@ -141,6 +147,7 @@ namespace EngineCore
             p.ColorEnd = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
             p.SizeBegin = 0.5f;
             p.SizeEnd = 0.1f;
+            p.LifeTime = (float)i / 1000.0f;
             p.LifeRemaining = p.LifeTime;
 
             p.isActive = true;
@@ -192,13 +199,20 @@ namespace EngineCore
                                                functionId,
                                                [=]() mutable
                                                {
-                std::vector<ParticleProxyProperties> copyParticlesProps;
-                const auto endIt = std::next(mParticleProxyPropertiesPool.begin(), activeParticlesCount);
-                std::copy(mParticleProxyPropertiesPool.begin(), endIt, std::back_inserter(copyParticlesProps));
+                                                   ParticleSystemSceneProxy *proxyPtr = static_cast<ParticleSystemSceneProxy *>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
 
-               ParticleSystemSceneProxy* proxyPtr = static_cast<ParticleSystemSceneProxy*>
-               (sceneRenderer->SceneProxiesMap[SceneProxyId].get());
-               proxyPtr->SetParticleProxyProperties(std::move(copyParticlesProps)); });
+                                                   if (activeParticlesCount > 0)
+                                                   {
+                                                       std::vector<ParticleProxyData> copyParticlesProps;
+                                                       const auto endIt = std::next(mParticleProxyPropertiesPool.begin(), activeParticlesCount);
+                                                       std::copy(mParticleProxyPropertiesPool.begin(), endIt, std::back_inserter(copyParticlesProps));
+                                                       proxyPtr->SetParticleProxyProperties(std::move(copyParticlesProps));
+                                                   }
+                                                   else
+                                                   {
+                                                       proxyPtr->SetParticleProxyProperties(std::vector<ParticleProxyData>());
+                                                   }
+                                               });
             }
         }
     }

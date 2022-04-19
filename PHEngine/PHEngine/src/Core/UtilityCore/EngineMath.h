@@ -31,7 +31,8 @@ namespace EngineMath
 
    bool CompareFloats(const float X, const float Y);
    
-   float LerpFloat(const float src, const float dst, const float factor);
+   float LerpNormalizedFloat(const float src, const float dst, const float factor);
+   float LerpFloat(const float x, const float x1, const float x2, const float y1, const float y2);
 
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2);
    glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4 &position1, const glm::vec4 &position2);
