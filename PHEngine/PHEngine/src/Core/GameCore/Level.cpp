@@ -3,7 +3,6 @@
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
-#include "Core/GameCore/GlobalSettings.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/GameCore/HumanoidPlayerController.h"
 

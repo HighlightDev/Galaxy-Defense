@@ -16,6 +16,8 @@ namespace EngineUtility
 
 	std::string TrimEnd(const std::string& source);
 
+	std::string Trim(const std::string& source);
+
 	std::vector<std::string> Split(const std::string& source, char splitChar);
 
    std::string ToLower(const std::string& source);

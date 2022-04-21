@@ -1,6 +1,10 @@
 #include "LuaWrapper.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
+
 namespace EngineCore
 {
    LuaWrapper::LuaWrapper()
@@ -24,7 +28,7 @@ namespace EngineCore
 
       if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
       {
-         std::cout << GetErrorMessageAt(-1) << std::endl;
+         Logger::Out(GetErrorMessageAt(-1));
          return false;
       }
 

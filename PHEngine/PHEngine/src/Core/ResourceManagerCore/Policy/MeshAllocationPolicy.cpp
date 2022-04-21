@@ -26,8 +26,6 @@ namespace Resources
 {
 	std::shared_ptr<Skin> MeshAllocationPolicy::AllocateMemory(const std::string &arg)
 	{
-		const int32_t countOfBonesInfluencingOnVertex = GlobalSettings::GetCountBonesPerVertexForAnimation();
-
 		std::shared_ptr<Skin> resultSkin;
 
 		{
@@ -107,7 +105,7 @@ namespace Resources
 			if (meshAttributes->BoneIndices.size() && meshAttributes->BoneWeights.size())
 			{
 				blendWeightsVBO = new VertexBufferObject<float,
-														 countOfBonesInfluencingOnVertex,
+														 4,
 														 GL_FLOAT,
 														 GL_STATIC_DRAW>(meshAttributes->BoneWeights,
 																		 eAttribArrayIndexName::BONE_INDEX,
@@ -115,7 +113,7 @@ namespace Resources
 																		 eDataCarryFlag::INVALIDATE);
 
 				blendIndicesVBO = new VertexBufferObject<int32_t,
-														 countOfBonesInfluencingOnVertex,
+														 4,
 														 GL_FLOAT,
 														 GL_STATIC_DRAW>(meshAttributes->BoneIndices,
 																		 eAttribArrayIndexName::BONE_WEIGHT,

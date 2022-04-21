@@ -2,9 +2,11 @@
 
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 using namespace Graphics::OpenGL;
 using namespace IO;
+using namespace EngineUtility;
 
 namespace EngineCore
 {
@@ -18,13 +20,14 @@ namespace EngineCore
       Uniform u_projectionMatrix;
       UniformArray u_boneMatrices;
 
-      static constexpr int32_t MaxBones = 155;
+      const int32_t MaxBones;
       static constexpr int32_t MaxWeightsIndices = InfluenceWeightsCount;
 
   public:
 
      SkeletalMeshVertexFactory()
         : VertexFactoryShader("SkeletalMeshVertexFactory")
+        , MaxBones(EngineConfigHolder::GetInstance()->GetEngineConfig().MaxSkeletBones)
      {
         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkeletalMeshVertexFactory.glsl");
      }

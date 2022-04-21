@@ -1,0 +1,89 @@
+#include "EngineConfigHolder.h"
+
+#include "Core/CommonCore/Assertion.h"
+#include "Core/IoCore/FileFacade.h"
+#include "StringExtendedFunctions.h"
+
+#include <functional>
+#include <sstream>
+
+namespace EngineUtility
+{
+    EngineConfigHolder::EngineConfigHolder()
+        : bSettingsLoaded(false),
+          mEngineConfig()
+    {
+    }
+
+    void EngineConfigHolder::LoadSettings(const std::string &pathToSettings)
+    {
+        assert(!bSettingsLoaded);
+        FileFacade fileLoader(pathToSettings);
+        const auto &configFileLines = fileLoader.GetFileSrc();
+        FillEngineConfig(configFileLines);
+        bSettingsLoaded = true;
+    }
+
+    void EngineConfigHolder::FillEngineConfig(const std::list<std::string> &configLines)
+    {
+        const auto parseUInt = [](const std::string &valueStr) -> size_t
+        {
+            std::istringstream iss(valueStr);
+            size_t value;
+            iss >> value;
+            return value;
+        };
+
+        const auto parseFloat = [](const std::string &valueStr) -> float
+        {
+            return stof(valueStr);
+        };
+
+        std::unordered_map<std::string, std::function<void(const std::string &valueStr)>> config_values_map =
+        {
+            std::make_pair("max_skeletal_mesh_bones",               std::function([=](const std::string &valueStr) { mEngineConfig.MaxSkeletBones                   = parseUInt(valueStr); })),
+            std::make_pair("max_dir_light_count",                   std::function([=](const std::string &valueStr) { mEngineConfig.MaxDirLightCount                 = parseUInt(valueStr); })),
+            std::make_pair("max_dir_light_shadow_map_count",        std::function([=](const std::string &valueStr) { mEngineConfig.MaxDirLightShadowMapCount        = parseUInt(valueStr); })),
+            std::make_pair("max_point_light_count",                 std::function([=](const std::string &valueStr) { mEngineConfig.MaxPointLightCount               = parseUInt(valueStr); })),
+            std::make_pair("max_point_light_shadow_map_count",      std::function([=](const std::string &valueStr) { mEngineConfig.MaxPointLightShadowMapCount      = parseUInt(valueStr); })),
+            std::make_pair("max_spotlight_count",                   std::function([=](const std::string &valueStr) { mEngineConfig.MaxSpotlightCount                = parseUInt(valueStr); })),
+            std::make_pair("max_spotlight_shadow_map_count",        std::function([=](const std::string &valueStr) { mEngineConfig.MaxSpotlightShadowMapCount       = parseUInt(valueStr); })),
+            std::make_pair("dir_light_PCF_samples_count",           std::function([=](const std::string &valueStr) { mEngineConfig.DirLightPCFSamplesCount          = parseUInt(valueStr); })),
+            std::make_pair("point_light_PCF_samples_count",         std::function([=](const std::string &valueStr) { mEngineConfig.PointLightPCFSamplesCount        = parseUInt(valueStr); })),
+            std::make_pair("spotlight_PCF_samples_count",           std::function([=](const std::string &valueStr) { mEngineConfig.SpotlightPCFSamplesCount         = parseUInt(valueStr); })),
+            std::make_pair("shadow_ortho_projection_half_extent",   std::function([=](const std::string &valueStr) { mEngineConfig.ShadowOrthoProjectionHalfExtent  = parseFloat(valueStr); })),
+            std::make_pair("shadow_map_bias_dir_light",             std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasDirLight            = parseFloat(valueStr); })),
+            std::make_pair("shadow_map_bias_point_light",           std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasPointLight          = parseFloat(valueStr); })),
+            std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); }))
+        };
+
+        size_t config_prop_count = 0;
+
+        for (const auto &line : configLines)
+        {
+            if ("" != Trim(line) && !StartsWith(line, "#"))
+            {
+                const auto [key, value] = GetKeyValueConfigFromLine(line);
+                assert(config_values_map.count(key));
+                const auto fn = config_values_map[key];
+                fn(value);
+                ++config_prop_count;
+            }
+        }
+
+        assert(config_prop_count == config_values_map.size());
+    }
+
+    std::pair<std::string, std::string> EngineConfigHolder::GetKeyValueConfigFromLine(const std::string &line) const
+    {
+        const auto &splitKeyValue = Split(line, ':');
+        assert(splitKeyValue.size() == 2);
+        return std::make_pair(Trim(splitKeyValue[0]), Trim(splitKeyValue[1]));
+    }
+
+    const EngineConfig &EngineConfigHolder::GetEngineConfig() const
+    {
+        assert(bSettingsLoaded);
+        return mEngineConfig;
+    }
+} // namespace name

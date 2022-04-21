@@ -10,31 +10,28 @@ using namespace TinyLogger;
 
 namespace Graphics
 {
-	namespace OpenGL
-	{
+   namespace OpenGL
+   {
 
-      Shader::Shader(const ShaderParams& params)
-         : IShader(params.ShaderName)
-         , m_shaderParams(params)
-         , m_defineConstantParameters()
-         , m_defines()
+      Shader::Shader(const ShaderParams &params)
+          : IShader(params.ShaderName), m_shaderParams(params), m_defineConstantParameters(), m_defines()
       {
       }
 
-		Shader::~Shader()
-		{
-		}
+      Shader::~Shader()
+      {
+      }
 
-		void Shader::ShaderInit()
-		{
+      void Shader::ShaderInit()
+      {
          std::string vsSourcePath = m_shaderParams.VertexShaderFile;
          std::string fsSourcePath = m_shaderParams.FragmentShaderFile;
          std::string gsSourcePath = m_shaderParams.GeometryShaderFile;
 
-			SetShaderPredefine(); // start precompile shader customization
+         SetShaderPredefine(); // start precompile shader customization
          ProcessAllPredefines();
 
-			const bool bShaderLoadedSuccessfully = LoadShadersSourceToGpu();
+         const bool bShaderLoadedSuccessfully = LoadShadersSourceToGpu();
          if (bShaderLoadedSuccessfully)
          {
             CompileShaders();
@@ -70,11 +67,11 @@ namespace Graphics
          return SendToGpuShadersSources(vsSource, gsSource, fsSource);
       }
 
-		void Shader::ProcessAllPredefines()
-		{
+      void Shader::ProcessAllPredefines()
+      {
          std::vector<ShaderGenericDefineConstant> vertexConstantPredefine, fragmentConstantPredefine, geometryConstantPredefine;
          std::vector<ShaderGenericDefine> vertexPredefine, fragmentPredefine, geometryPredefine;
-         
+
          if (m_defineConstantParameters.size() > 0 || m_defines.size() > 0)
          {
             for (auto define_it = m_defineConstantParameters.begin(); define_it != m_defineConstantParameters.end(); ++define_it)
@@ -110,69 +107,69 @@ namespace Graphics
             }
          }
 
-			if (vertexConstantPredefine.size() > 0 || vertexPredefine.size() > 0)
-			{
-				if (m_shaderParams.VertexShaderFile != "")
-				{
+         if (vertexConstantPredefine.size() > 0 || vertexPredefine.size() > 0)
+         {
+            if (m_shaderParams.VertexShaderFile != "")
+            {
                ProcessPredefineToFile(m_shaderParams.VertexShaderFile, vertexConstantPredefine, vertexPredefine);
-				}
-			}
-			if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0)
-			{
-				if (m_shaderParams.FragmentShaderFile != "")
-				{
+            }
+         }
+         if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0)
+         {
+            if (m_shaderParams.FragmentShaderFile != "")
+            {
                ProcessPredefineToFile(m_shaderParams.FragmentShaderFile, fragmentConstantPredefine, fragmentPredefine);
-				}
-			}
-			if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0)
-			{
-				if (m_shaderParams.GeometryShaderFile != "")
-				{
+            }
+         }
+         if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0)
+         {
+            if (m_shaderParams.GeometryShaderFile != "")
+            {
                ProcessPredefineToFile(m_shaderParams.GeometryShaderFile, geometryConstantPredefine, geometryPredefine);
-				}
-			}
-		}
+            }
+         }
+      }
 
-		int32_t Shader::GetSubroutineIndex(ShaderType shaderType, const std::string& subroutineName) const
-		{
-			return glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
-		}
+      int32_t Shader::GetSubroutineIndex(ShaderType shaderType, const std::string &subroutineName) const
+      {
+         return glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
+      }
 
-		void Shader::LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t* subroutineIndices) const
-		{
-			glUniformSubroutinesuiv((int32_t)shaderType, countIndices, subroutineIndices);
-		}
+      void Shader::LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t *subroutineIndices) const
+      {
+         glUniformSubroutinesuiv((int32_t)shaderType, countIndices, subroutineIndices);
+      }
 
 #if DEBUG
 
-		void Shader::RecompileShader()
-		{
-			CleanUp(false);
+      void Shader::RecompileShader()
+      {
+         CleanUp(false);
          const bool bLoaded = LoadShadersSourceToGpu();
 
-			if (bLoaded)
-			{
+         if (bLoaded)
+         {
             CompileShaders();
-				LinkShaders();
-				AccessAllUniformLocations(m_shaderProgramID);
-			}
+            LinkShaders();
+            AccessAllUniformLocations(m_shaderProgramID);
+         }
 
          const bool bCompiledSuccesfully = IsShaderCompiled();
-         std::cout << "Shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled") << std::endl;
-		}
+         Logger::Out("Shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
+      }
 
 #endif
 
-      void Shader::Define(ShaderType shaderType, const std::string& name)
+      void Shader::Define(ShaderType shaderType, const std::string &name)
       {
          m_defines.emplace_back(ShaderDefine(name, true, shaderType));
       }
 
-      void Shader::Undefine(ShaderType shaderType, const std::string& name)
+      void Shader::Undefine(ShaderType shaderType, const std::string &name)
       {
          m_defines.emplace_back(ShaderDefine(name, false, shaderType));
       }
 
-	}
+   }
 
 }

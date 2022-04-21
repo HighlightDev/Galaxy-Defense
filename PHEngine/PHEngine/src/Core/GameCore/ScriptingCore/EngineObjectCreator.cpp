@@ -2,7 +2,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/GlobalSettings.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
 #include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
@@ -24,6 +23,9 @@
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+
+using namespace EngineUtility;
 
 namespace EngineCore
 {
@@ -175,13 +177,13 @@ namespace EngineCore
       else if (lightType == "direct_light")
       {
          auto directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
-         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
          shadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTAR, orthoHalfExtent);
       }
       else if (lightType == "spotlight")
       {
          auto spotlightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
-         const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
          shadowProjInfo = new ProjectedSpotlightShadowInfo(spotlightTAR);
       }
       else
@@ -229,7 +231,7 @@ namespace EngineCore
                                                                      const std::string &bodyType, const float mass)
    {
       const ePhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? ePhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? ePhysicsBodyType::KINEMATIC
-                                                                                                                              : ePhysicsBodyType::DYNAMIC;
+                                                                                                                                : ePhysicsBodyType::DYNAMIC;
       return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
    }
 

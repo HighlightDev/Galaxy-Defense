@@ -197,9 +197,9 @@ namespace IO
 		return GetResPath() + "texture" + SLASH;
 	}
 
-	std::string FolderManager::GetIniPath() const
+	std::string FolderManager::GetConfigPath() const
 	{
-		return GetResPath() + "ini" + SLASH;
+		return GetResPath() + "config" + SLASH;
 	}
 
 	std::string FolderManager::GetGrassTexturePath() const

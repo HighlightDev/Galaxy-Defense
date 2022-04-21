@@ -3,10 +3,8 @@
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/ComponentData/InputComponentData.h"
-#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
-#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
@@ -81,12 +79,7 @@ namespace Game
                                                                   eComponentMetaType::Movement>(d_movement);
 
       c_movement->SetSpeed(0.02f);
-      a_spaceship->AddComponent(c_movement);
-
-      ParticleSystemComponentData d_particle("c_particleSystemComponent", glm::vec3(0));
-      const auto &c_particleSystemComponent = mScene->CreateComponent_GameThread<ParticleSystemComponent,
-                                                                                 eComponentMetaType::ParticleSystem>(d_particle);
-      a_spaceship->AddComponent(c_particleSystemComponent);                                                                 
+      a_spaceship->AddComponent(c_movement);                                                     
 
       /*GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
       mScene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);

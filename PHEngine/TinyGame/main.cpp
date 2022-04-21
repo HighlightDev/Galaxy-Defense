@@ -1,6 +1,5 @@
 #include <gl/glew.h>
 #include <glfw/glfw3.h>
-#include <iostream>
 #include <stdint.h>
 #include <TinyLogger/LogInterface.h>
 
@@ -183,7 +182,7 @@ int32_t main(int32_t argc, char **argv)
 
   if (initResult != GLEW_OK)
   {
-    std::cout << "Something is wrong" << std::endl;
+    Logger::Out("GLEW is NOK");
     glfwTerminate();
   }
 

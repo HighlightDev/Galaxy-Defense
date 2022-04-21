@@ -16,7 +16,7 @@ public:
 
    FileFacade(const std::string& pathToFile);
 
-   size_t GetFileSourceSize() const;
+   size_t GetFileSourceLinesCount() const;
 
    void AppendToTheSrcEnd(const std::string& line);
    void AppendAtTheSrcBiginning(const std::string& line);

@@ -68,6 +68,11 @@ namespace EngineUtility
 		return str;
 	}
 
+	std::string Trim(const std::string& source)
+	{
+		return TrimEnd(TrimStart(source));
+	}
+
 	std::vector<std::string> Split(const std::string &source, char splitChar)
 	{
 		std::stringstream test(source);

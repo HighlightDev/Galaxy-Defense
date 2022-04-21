@@ -7,7 +7,7 @@ function CreateTestLevel(host)
 	,dayBottom.jpg
 	,dayBack.jpg
 	,dayFront.jpg
-    	,nightRight.jpg
+	,nightRight.jpg
 	,nightLeft.jpg
 	,nightTop.jpg
 	,nightBottom.jpg
@@ -96,7 +96,7 @@ function CreateTestLevel(host)
 		local d_spaceship = _CreateMeshComponentData(host, "spaceshipMeshComponent", "spaceship.obj",
 		0, 0, 0,
 		0, 180, 0,
-		9, 9, 9, 
+		5, 5, 5, 
 		"",
 		mat)
 

@@ -43,14 +43,12 @@ namespace Game
 
             for (size_t i = 0; i < 2; ++i)
             {
-                static constexpr float x_axisHalfWidth = 50.0f;
-                static constexpr float y_axisHalfHeight = 30.0f;
-
+                 static constexpr float x_axisHalfWidth = 20.0f;
+                static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
-                const float scale = glm::clamp(x, 0.5f, 3.0f);
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0,
-                                        80 + (i * i * i) + 2);
+                                        0.0f,
+                                        30.0f);
 
                 const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,
                                                                            startPosition,
@@ -75,11 +73,7 @@ namespace Game
 
     void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
     {
-
-        const auto& playerAction = std::get<0>(data);
-
-        auto c_particle = mPlayerShip->GetComponentsByType<ParticleSystemComponent>().back();
-        c_particle->InitParticlePool();
+        const auto &playerAction = std::get<0>(data);
 
         if (eMainPlayerActionEnum::SHOOT == playerAction && !bIsCoolDownInProgress)
         {
@@ -119,6 +113,9 @@ namespace Game
                     if (a_enemyShipIt->CheckIsAliveAfterDamage(1))
                     {
                         a_enemyShipIt->SetIsDamageReceived(true);
+
+                        auto c_particle = a_enemyShipIt->GetSpaceShipActor()->GetComponentsByType<ParticleSystemComponent>().back();
+                        c_particle->InitParticlePool();
                     }
                     else
                     {
@@ -178,14 +175,14 @@ namespace Game
         for (const auto &enemyContainer : mEnemies)
         {
             const auto &enemyTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
-            if (glm::length(enemyTranslation) > 70.0f)
+            if (glm::length(enemyTranslation) > 50.0f)
             {
-                static constexpr float x_axisHalfWidth = 40.0f;
+                static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
                                         0.0f,
-                                        60.0f);
+                                        30.0f);
                 const auto &c_movement = enemyContainer.GetSpaceShipActor()->GetMovementComponent();
                 c_movement->Teleport(startPosition);
             }

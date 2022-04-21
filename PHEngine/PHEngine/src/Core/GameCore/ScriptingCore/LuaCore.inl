@@ -7,6 +7,7 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <algorithm>
 #include <utility>
+#include <TinyLogger/LogInterface.h>
 
 extern "C"
 {
@@ -23,6 +24,8 @@ extern "C"
 #elif __linux__ 
 #define FORCEINLINE __attribute__((always_inline))
 #endif
+
+using namespace TinyLogger;
 
 namespace EngineCore
 {
@@ -50,7 +53,7 @@ namespace EngineCore
          {
             if (LUA_OK != luaCallResult)
             {
-               std::cout << instanceWrapper.GetErrorMessageAt(-1) << std::endl;
+               Logger::Out(instanceWrapper.GetErrorMessageAt(-1));
                return false;
             }
 

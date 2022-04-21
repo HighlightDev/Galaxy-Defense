@@ -1,10 +1,14 @@
 #include "Engine.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
+#include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <TinyLogger/LogInterface.h>
 
 using namespace TinyLogger;
+using namespace IO;
+using namespace EngineUtility;
 
 Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
     : m_interThreadMgr(interThreadMgr), mInputManager(std::make_shared<InputManager>()), mLastRenderThreadPulseTime(EngineTime::GetNowTime()), mRenderThreadDeltaTimeSeconds(), mLastGameThreadPulseTime(EngineTime::GetNowTime()), mGameThreadDeltaTimeSeconds(), mGameThreadSumDeltaTimeSec()
@@ -29,11 +33,11 @@ void Engine::StopGameThreadExecution()
 void Engine::PlayLevel(std::shared_ptr<Level> level)
 {
    m_level = level;
-   m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
-   m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
 
    PreLevelInit();
-
+   m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
+   m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
+   
    m_level->InitLevel();
    m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
@@ -61,6 +65,8 @@ void Engine::PreLevelInit()
                               MouseMovedEvent,
                               MouseScrollEvent,
                               PhysicsCollisionOccuredEvent>();
+
+   EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
    m_level->PreLevelInit();
 }

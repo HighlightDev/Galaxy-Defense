@@ -8,7 +8,7 @@ namespace Game
     CombatEntity::CombatEntity(const std::shared_ptr<Actor> &spaceShipActor)
         : mDamageDeltaTime(0.0f),
           mIsDamageReceived(false),
-          mLifePoints(2),
+          mLifePoints(4),
           mSpaceShipActor(spaceShipActor)
     {
     }

@@ -36,7 +36,7 @@ namespace Resources
 																		  1>(arg.mParticleCount,
 																			 eAttribArrayIndexName::CUSTOM_0,
 																			 GL_ARRAY_BUFFER);
-																			 
+
 			auto *instancedRotationSizeVBO = new InstancedVertexBufferObject<float,
 																			 2,
 																			 GL_FLOAT,
@@ -45,7 +45,19 @@ namespace Resources
 																				eAttribArrayIndexName::CUSTOM_1,
 																				GL_ARRAY_BUFFER);
 
-			vao.AddVBO(vertexVBO, instancedTransformVBO, instancedRotationSizeVBO);
+			auto *instancedColorVBO = new InstancedVertexBufferObject<float,
+																	  4,
+																	  GL_FLOAT,
+																	  GL_STREAM_DRAW,
+																	  1>(arg.mParticleCount,
+																		 eAttribArrayIndexName::CUSTOM_2,
+																		 GL_ARRAY_BUFFER);
+
+			vao.AddVBO(vertexVBO,
+					   instancedTransformVBO,
+					   instancedRotationSizeVBO,
+					   instancedColorVBO);
+					   
 			vao.BindBuffersToVao();
 
 			resultSkin = std::make_shared<Skin>(vao, BoundingBox());

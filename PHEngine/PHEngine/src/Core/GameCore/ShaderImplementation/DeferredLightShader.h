@@ -66,10 +66,6 @@ namespace EngineCore
          Uniform u_gBuffer_MetallicRoughness;
 #endif
 
-         const int32_t MAX_POINT_LIGHT_COUNT;
-         const int32_t MAX_DIR_LIGHT_COUNT;
-         const int32_t MAX_SPOTLIGHT_COUNT;
-
       public:
 
          DeferredLightShader(const ShaderParams& params);

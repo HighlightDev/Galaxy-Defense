@@ -76,7 +76,7 @@ namespace EngineCore
 
    void KeyboardBindings::ProcessEvent(const KeyboardButtonDownEvent::EventData_t &eventData)
    {
-      mKeyboardMaskVec = std::move(std::get<0>(eventData));
+      mKeyboardMaskVec = std::get<0>(eventData);
 
       UpdateKyboardState();
    }

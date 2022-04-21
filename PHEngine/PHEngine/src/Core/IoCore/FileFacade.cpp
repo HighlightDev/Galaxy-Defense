@@ -1,12 +1,13 @@
 #include "FileFacade.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <iterator>
 
 FileFacade::FileFacade(const std::string& pathToFile)
    : mPathToFile(pathToFile)
 {
-   LoadFile(pathToFile);
+   assert(LoadFile(pathToFile));
 }
 
 const std::list<std::string> FileFacade::GetFileSrc() const
@@ -27,7 +28,7 @@ bool FileFacade::LoadFile(const std::string& pathToFile)
    return mFileSrc.size() > 0;
 }
 
-size_t FileFacade::GetFileSourceSize() const
+size_t FileFacade::GetFileSourceLinesCount() const
 {
    return mFileSrc.size();
 }

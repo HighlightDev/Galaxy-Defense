@@ -465,7 +465,6 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.h" />
     <ClInclude Include="src\Core\CommonCore\Assertion.h" />
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
-    <ClInclude Include="src\Core\GameCore\GlobalSettings.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
@@ -959,7 +958,6 @@
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\Transform.cpp" />
     <ClCompile Include="src\Core\IoCore\DisplayDeviceDataProvider.cpp" />
-    <ClCompile Include="src\Core\GameCore\GlobalSettings.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\Batch.cpp" />
     <ClCompile Include="src\Core\GameCore\Batcher\BatchJobMaster.cpp" />

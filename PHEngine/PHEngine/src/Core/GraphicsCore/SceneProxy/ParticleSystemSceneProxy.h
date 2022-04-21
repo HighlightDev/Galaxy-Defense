@@ -23,7 +23,6 @@ namespace Graphics
     private:
         Uniform u_worldMatrix, u_viewMatrix, u_projectionMatrix;
         Uniform u_color;
-        Uniform u_particleSize;
 
     public:
         ParticleShader(const ShaderParams &shaderParams)
@@ -93,7 +92,9 @@ namespace Graphics
             void CopyParticlesRawData(const void *translationBuffer,
                                       const size_t translationByteChunkSize,
                                       const void *rotationSizeBuffer,
-                                      const size_t rotationByteChunkSize);
+                                      const size_t rotationByteChunkSize,
+                                      const void *colorBuffer,
+                                      const size_t colorByteChunkSize);
 
         private:
             void PrepareParticlesInstancedBuffer();

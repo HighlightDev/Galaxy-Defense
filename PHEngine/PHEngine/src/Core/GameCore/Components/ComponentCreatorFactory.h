@@ -418,7 +418,7 @@ namespace EngineCore
             ParticlesPool::sharedValue_t particlesSkin =
                 ParticlesPool::GetInstance()->GetOrAllocateResource(ParticlePoolParameters{
                     .mParticleComponentName = mData.GameObjectName,
-                    .mParticleCount = 1000});
+                    .mParticleCount = 200});
             /* ShaderParams shaderParams("Particles_Shader", mData.m_vsShaderPath,
                                         mData.m_fsShaderPath);*/
             /* ShaderPool::sharedValue_t shader =

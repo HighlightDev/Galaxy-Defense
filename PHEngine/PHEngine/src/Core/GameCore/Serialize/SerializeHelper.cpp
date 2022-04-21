@@ -16,7 +16,6 @@
 #include "Core/GameCore/Tweener/TweenerParser.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
@@ -24,11 +23,13 @@
 #include "Core/GameCore/FirstPersonCamera.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/IoCore/FolderManager.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <TinyLogger/LogInterface.h>
 
 using namespace Graphics;
 using namespace EnginePhysics;
+using namespace EngineUtility;
 using namespace TinyLogger;
 
 namespace EngineCore
@@ -358,7 +359,7 @@ namespace EngineCore
          ProjectedShadowInfo *dirShadowProjInfo = nullptr;
          if (dirLightSerData->bHasShadowMap)
          {
-            const float orthoHalfExtent = GlobalSettings::GetInstance()->GetShadowOrthoProjectionHalfExtent();
+            const float orthoHalfExtent = EngineConfigHolder::GetInstance()->GetEngineConfig().ShadowOrthoProjectionHalfExtent;
 
             const auto &rezolution = glm::ivec2(dirLightSerData->ShadowMapSize, dirLightSerData->ShadowMapSize);
             const auto &directionalLightTextureAtlasRequest = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(rezolution);

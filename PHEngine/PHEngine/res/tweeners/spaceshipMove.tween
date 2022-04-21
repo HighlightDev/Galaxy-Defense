@@ -177,7 +177,7 @@
       name: "p_fly_back"
       binding_name: "b_rotator"
       type: "euler_angles_rotation"
-      value: "x=275.0;y=0.0;z=0.0;"
+      value: "x=335.0;y=0.0;z=0.0;"
       state: "s_fly_back"
     </property>
   </properties>

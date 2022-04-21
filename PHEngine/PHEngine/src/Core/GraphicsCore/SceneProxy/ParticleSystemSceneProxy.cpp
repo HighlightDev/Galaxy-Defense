@@ -25,7 +25,7 @@ namespace Graphics
                                   nullptr,
                                   nullptr,
                                   nullptr),
-              mParticlesRawDataHandler(1000),
+              mParticlesRawDataHandler(200),
               mActiveParticlesCount(0)
         {
             mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
@@ -77,7 +77,9 @@ namespace Graphics
         void ParticleSystemSceneProxy::CopyParticlesRawData(const void *translationBuffer,
                                                             const size_t translationByteChunkSize,
                                                             const void *rotationSizeBuffer,
-                                                            const size_t rotationByteChunkSize)
+                                                            const size_t rotationByteChunkSize,
+                                                            const void *colorBuffer,
+                                                            const size_t colorByteChunkSize)
         {
             if (translationByteChunkSize > 0)
             {
@@ -90,23 +92,34 @@ namespace Graphics
                 mParticlesRawDataHandler.CopyToMeActiveRotationSizeData(rotationSizeBuffer, 0, rotationByteChunkSize);
                 mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(rotationByteChunkSize);
             }
+
+            if (colorByteChunkSize > 0)
+            {
+                mParticlesRawDataHandler.CopyToMeActiveColorData(colorBuffer, 0, colorByteChunkSize);
+                mParticlesRawDataHandler.SetColorActiveDataChunkSize(colorByteChunkSize);
+            }
         }
 
         void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
         {
             auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
             auto *const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_1);
+            auto *const particlesColorVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_2);
 
-            assert(particlesTransformVBO && particlesRotationSizeVBO);
+            assert(particlesTransformVBO && particlesRotationSizeVBO && particlesColorVBO);
 
             const size_t translationSubBufferSize = mParticlesRawDataHandler.GetTranslationActiveDataChunkSize();
             const size_t rotationSizeSubBufferSize = mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize();
+            const size_t colorBufferSize = mParticlesRawDataHandler.GetColorActiveDataChunkSize();
             particlesTransformVBO->BindVBO();
             particlesTransformVBO->BufferSubData(0, translationSubBufferSize, mParticlesRawDataHandler.GetTranslationData());
 
             particlesRotationSizeVBO->BindVBO();
             particlesTransformVBO->BufferSubData(0, rotationSizeSubBufferSize, mParticlesRawDataHandler.GetRotationSizeData());
-            
+
+            particlesColorVBO->BindVBO();
+            particlesColorVBO->BufferSubData(0, colorBufferSize, mParticlesRawDataHandler.GetColorData());
+
             particlesTransformVBO->UnbindVBO();
         }
     }

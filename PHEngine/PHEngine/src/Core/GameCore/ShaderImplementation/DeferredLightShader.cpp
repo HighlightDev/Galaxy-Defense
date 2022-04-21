@@ -2,7 +2,9 @@
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
-#include "Core/GameCore/GlobalSettings.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+
+using namespace EngineUtility;
 
 namespace EngineCore
 {
@@ -10,7 +12,7 @@ namespace EngineCore
    {
 
       DeferredLightShader::DeferredLightShader(const ShaderParams &params)
-          : Shader(params), MAX_POINT_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxPointLightCount()), MAX_DIR_LIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxDirLightCount()), MAX_SPOTLIGHT_COUNT(GlobalSettings::GetInstance()->GetMaxSpotlightCount())
+          : Shader(params)
       {
          ShaderInit();
       }
@@ -22,6 +24,7 @@ namespace EngineCore
       void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          Base::AccessAllUniformLocations(shaderProgramId);
+         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
 
          u_CameraWorldPosition = GetUniform("CameraWorldPosition", shaderProgramId);
 
@@ -33,38 +36,38 @@ namespace EngineCore
 #endif
 
 #ifndef NO_LIT
-         u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-         u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-         u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", MAX_POINT_LIGHT_COUNT, shaderProgramId);
+         u_PointLightDiffuseColor = GetUniformArray("PointLightDiffuseColor", cfg.MaxPointLightCount, shaderProgramId);
+         u_PointLightSpecularColor = GetUniformArray("PointLightSpecularColor", cfg.MaxPointLightCount, shaderProgramId);
+         u_PointLightAttenuation = GetUniformArray("PointLightAttenuation", cfg.MaxPointLightCount, shaderProgramId);
 
-         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
-         u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", MAX_POINT_LIGHT_COUNT, shaderProgramId);
-         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount(), shaderProgramId);
+         u_PointLightShadowMaps = GetUniformArray("PointLightShadowMaps", cfg.MaxPointLightShadowMapCount, shaderProgramId);
+         u_PointLightPositionWorld = GetUniformArray("PointLightPositionWorld", cfg.MaxPointLightCount, shaderProgramId);
+         u_PointLightShadowProjectionFarPlane = GetUniformArray("PointLightShadowProjectionFarPlane", cfg.MaxPointLightShadowMapCount, shaderProgramId);
          u_PointLightShadowMapCount = GetUniform("PointLightShadowMapCount", shaderProgramId);
          u_PointLightCount = GetUniform("PointLightCount", shaderProgramId);
 
-         u_DirLightAmbientColor = GetUniformArray("DirLightAmbientColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
-         u_DirLightDiffuseColor = GetUniformArray("DirLightDiffuseColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
-         u_DirLightSpecularColor = GetUniformArray("DirLightSpecularColor", MAX_DIR_LIGHT_COUNT, shaderProgramId);
-         u_DirLightDirection = GetUniformArray("DirLightDirection", MAX_DIR_LIGHT_COUNT, shaderProgramId);
+         u_DirLightAmbientColor = GetUniformArray("DirLightAmbientColor", cfg.MaxDirLightCount, shaderProgramId);
+         u_DirLightDiffuseColor = GetUniformArray("DirLightDiffuseColor", cfg.MaxDirLightCount, shaderProgramId);
+         u_DirLightSpecularColor = GetUniformArray("DirLightSpecularColor", cfg.MaxDirLightCount, shaderProgramId);
+         u_DirLightDirection = GetUniformArray("DirLightDirection", cfg.MaxDirLightCount, shaderProgramId);
 
-         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
-         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
-         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount(), shaderProgramId);
+         u_DirectionalLightShadowMaps = GetUniformArray("DirLightShadowMaps", cfg.MaxDirLightShadowMapCount, shaderProgramId);
+         u_DirectionalLightShadowMatrices = GetUniformArray("DirLightShadowMatrices", cfg.MaxDirLightShadowMapCount, shaderProgramId);
+         u_DirectionalLightAtlasOffset = GetUniformArray("DirLightShadowAtlasOffset", cfg.MaxDirLightShadowMapCount, shaderProgramId);
          u_DirectionalLightShadowMapCount = GetUniform("DirLightShadowMapCount", shaderProgramId);
          u_DirectionalLightCount = GetUniform("DirLightCount", shaderProgramId);
 
-         u_SpotlightAmbientColor = GetUniformArray("SpotlightAmbientColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightDiffuseColor = GetUniformArray("SpotlightDiffuseColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightSpecularColor = GetUniformArray("SpotlightSpecularColor", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightDirection = GetUniformArray("SpotlightDirection", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightPosition = GetUniformArray("SpotlightPosition", MAX_SPOTLIGHT_COUNT, shaderProgramId);
-         u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", MAX_SPOTLIGHT_COUNT, shaderProgramId);
+         u_SpotlightAmbientColor = GetUniformArray("SpotlightAmbientColor", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightDiffuseColor = GetUniformArray("SpotlightDiffuseColor", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightSpecularColor = GetUniformArray("SpotlightSpecularColor", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightDirection = GetUniformArray("SpotlightDirection", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightPosition = GetUniformArray("SpotlightPosition", cfg.MaxSpotlightCount, shaderProgramId);
+         u_SpotlightCutoff = GetUniformArray("SpotlightCutoff", cfg.MaxSpotlightCount, shaderProgramId);
 
-         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
-         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
-         u_SpotlightShadowMatrices = GetUniformArray("SpotlightShadowMatrices", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
-         u_SpotlightAtlasOffset = GetUniformArray("SpotlightShadowAtlasOffset", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount(), shaderProgramId);
+         u_SpotlightShadowMaps = GetUniformArray("SpotlightShadowMaps", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
+         u_SpotlightShadowProjectionFarPlane = GetUniformArray("SpotlightShadowProjectionFarPlane", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
+         u_SpotlightShadowMatrices = GetUniformArray("SpotlightShadowMatrices", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
+         u_SpotlightAtlasOffset = GetUniformArray("SpotlightShadowAtlasOffset", cfg.MaxSpotlightShadowMapCount, shaderProgramId);
          u_SpotlightShadowMapCount = GetUniform("SpotlightShadowMapCount", shaderProgramId);
          u_SpotlightCount = GetUniform("SpotlightCount", shaderProgramId);
 #endif
@@ -72,18 +75,20 @@ namespace EngineCore
 
       void DeferredLightShader::SetShaderPredefine()
       {
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_COUNT", GlobalSettings::GetInstance()->GetMaxSpotlightCount());
-         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasDirLight());
-         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasPointLight());
-         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_SPOTLIGHT", GlobalSettings::GetInstance()->GetShadowMapBiasSpotlight());
-         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", GlobalSettings::GetInstance()->GetDirLightPCFSamplesCount());
-         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", GlobalSettings::GetInstance()->GetPointLightPCFSamplesCount());
-         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_SPOTLIGHT", GlobalSettings::GetInstance()->GetSpotlightPCFSamplesCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxDirLightShadowMapCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxPointLightShadowMapCount());
-         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_SHADOW_MAP_COUNT", GlobalSettings::GetInstance()->GetMaxSpotlightShadowMapCount());
+         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", cfg.MaxDirLightCount);
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", cfg.MaxPointLightCount);
+         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_COUNT", cfg.MaxSpotlightCount);
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_DIR_LIGHT", cfg.ShadowMapBiasDirLight);
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_POINT_LIGHT", cfg.ShadowMapBiasPointLight);
+         DefineConstant<float>(FragmentShader, "SHADOWMAP_BIAS_SPOTLIGHT", cfg.ShadowMapBiasSpotlight);
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_DIR_LIGHT", cfg.DirLightPCFSamplesCount);
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_POINT_LIGHT", cfg.PointLightPCFSamplesCount);
+         DefineConstant<int32_t>(FragmentShader, "PCF_SAMPLES_SPOTLIGHT", cfg.SpotlightPCFSamplesCount);
+         DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_SHADOW_MAP_COUNT", cfg.MaxDirLightShadowMapCount);
+         DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_SHADOW_MAP_COUNT", cfg.MaxPointLightShadowMapCount);
+         DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_SHADOW_MAP_COUNT", cfg.MaxSpotlightShadowMapCount);
 
          Define(FragmentShader, "GAMMA_CORRECTION");
 #ifdef NO_LIT
@@ -193,12 +198,14 @@ namespace EngineCore
 
       void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> &lightsProxies)
       {
+         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         
          // Directional lights
          int32_t dirLightProxyIndex = 0;
          for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < MAX_DIR_LIGHT_COUNT)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < cfg.MaxDirLightCount)
             {
                DirectionalLightSceneProxy *dirLProxyPtr = static_cast<DirectionalLightSceneProxy *>(lightProxy.get());
                u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->AmbientColor);
@@ -216,7 +223,7 @@ namespace EngineCore
          for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && pointLightProxyIndex < MAX_POINT_LIGHT_COUNT)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && pointLightProxyIndex < cfg.MaxPointLightCount)
             {
                PointLightSceneProxy *pointLProxyPtr = static_cast<PointLightSceneProxy *>(lightProxy.get());
                u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->DiffuseColor);
@@ -234,7 +241,7 @@ namespace EngineCore
          for (const auto &lightProxyPair : lightsProxies)
          {
             auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < MAX_SPOTLIGHT_COUNT)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < cfg.MaxSpotlightCount)
             {
                SpotlightSceneProxy *spotlightProxyPtr = static_cast<SpotlightSceneProxy *>(lightProxy.get());
                u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->AmbientColor);

@@ -96,7 +96,7 @@ namespace Graphics
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
       FileFacade fileWorker(absolutePath);
 
-      const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
+      const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
       assert(sizeOfSrc > 0);
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();

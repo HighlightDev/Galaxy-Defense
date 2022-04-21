@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/GlobalSettings.h"
 #include "Core/GraphicsCore/Mesh/AnimatedMeshData.h"
 #include "Core/GraphicsCore/Mesh/MeshAttributes.h"
 

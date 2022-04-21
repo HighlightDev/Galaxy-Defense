@@ -478,8 +478,7 @@ namespace Graphics
       {
          m_shaderProgramID = shaderProgramId;
 #if DEBUG
-         std::cout << GetCompileLogInfo();
-         std::cout << GetLinkLogInfo();
+         Logger::Out("DEBUG: ", GetCompileLogInfo(), "\n", GetLinkLogInfo());
 #endif
       }
 

@@ -34,9 +34,9 @@ namespace Graphics
          int32_t GetSubroutineIndex(ShaderType shaderType, const std::string& subroutineName) const;
 
          template <typename ValueType>
-         void DefineConstant(ShaderType shaderType, const std::string& name, ValueType&& value)
+         void DefineConstant(ShaderType shaderType, const std::string& name, const ValueType& value)
          {
-            std::string formatedValue = MacroConverter<ValueType>::GetValue(std::forward<ValueType>(value));
+            std::string formatedValue = MacroConverter<ValueType>::GetValue(value);
             m_defineConstantParameters.emplace_back(ShaderDefineConstant(name, formatedValue, shaderType));
          }
 

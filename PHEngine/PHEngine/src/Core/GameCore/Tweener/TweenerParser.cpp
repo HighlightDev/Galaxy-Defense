@@ -155,7 +155,7 @@ namespace EngineCore
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetTweenerPath() + tweenerName;
 
       FileFacade fileWorker(absolutePath);
-      const size_t sizeOfSrc = fileWorker.GetFileSourceSize();
+      const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
       assert(sizeOfSrc > 0);
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();

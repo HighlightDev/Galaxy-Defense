@@ -7,9 +7,6 @@
 
 #include <cstddef>
 #include <string>
-#if DEBUG
-#include <iostream>
-#endif
 
 namespace Graphics
 {

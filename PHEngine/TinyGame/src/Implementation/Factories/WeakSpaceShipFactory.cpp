@@ -4,6 +4,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Implementation/AiActorController.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
@@ -29,7 +31,7 @@ namespace Game
                                           const glm::vec3 &rotation,
                                           const glm::vec3 &scale)
     {
-       const auto &enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
+        const auto &enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_enemyShip_rootComponent_" + enemyShipIndexStr,
                                                                                  translation, glm::vec3(0), glm::vec3(1));
         const auto &a_enemySpaceship = std::make_shared<Actor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
@@ -77,6 +79,11 @@ namespace Game
         PhysicsComponentData physData("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
         a_enemySpaceship->AddComponent(c_ghostPhysics);
+
+        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0));
+        const auto &c_particleSystemComponent = scene->CreateComponent_GameThread<ParticleSystemComponent,
+                                                                                  eComponentMetaType::ParticleSystem>(d_particle);
+        a_enemySpaceship->AddComponent(c_particleSystemComponent);
 
         scene->AddActorController(std::make_shared<AiActorController>(a_enemySpaceship));
 

@@ -163,7 +163,10 @@ namespace Game
          else
          {
             bMoveCommitted = false;
+         }
 
+         if (!bMoveCommitted)
+         {
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
