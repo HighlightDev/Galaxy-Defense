@@ -31,9 +31,23 @@ namespace MeshLoader
          }
       }
 
-      MeshDataCollector::MeshDataCollector(const aiScene* scene)
-         : mScene(scene)
-         , GlobalInverseTransform(1)
+      MeshDataCollector::MeshDataCollector(const aiScene *scene)
+          : mScene(scene),
+            MeshNodeMapping(),
+            meshRootNode(nullptr),
+            BoneMapping(),
+            GlobalInverseTransform(1),
+            AnimationMapping(),
+            AnimationIndices(),
+            BoneWeights(),
+            BoneIndices(),
+            VertexIndices(),
+            Positions(),
+            TextureCoordinates(),
+            Normals(),
+            TangentNormals(),
+            BitangetNormals(),
+            BoneIndexMapping()
       {
       }
 
@@ -44,7 +58,7 @@ namespace MeshLoader
 
          // Node structure
          {
-            aiNode* rootNode = mScene->mRootNode;
+            aiNode *rootNode = mScene->mRootNode;
 
             meshRootNode = new MeshNode();
             meshRootNode->Name = rootNode->mName.data;
@@ -86,6 +100,12 @@ namespace MeshLoader
             verticesCount += mScene->mMeshes[i]->mNumVertices;
          }
 
+         Positions.reserve(verticesCount * 3);
+         TextureCoordinates.reserve(verticesCount * 2);
+         Normals.reserve(verticesCount * 3);
+         TangentNormals.reserve(verticesCount * 3);
+         BitangetNormals.reserve(verticesCount * 3);
+
          std::vector<VertexBoneData> vertexBoneData;
          vertexBoneData.resize(verticesCount);
 
@@ -97,28 +117,25 @@ namespace MeshLoader
             currentMeshBaseVertexIndex += mScene->mMeshes[i]->mNumVertices;
          }
 
-         const size_t boneAttribCountPerVertex = verticesCount * MAX_BONES_PER_VERT;
-         BoneWeights.resize(boneAttribCountPerVertex);
-         BoneIndices.resize(boneAttribCountPerVertex);
+         if (mScene->HasAnimations())
+         {
+            const size_t boneAttribCountPerVertex = verticesCount * MAX_BONES_PER_VERT;
+            BoneWeights.resize(boneAttribCountPerVertex);
+            BoneIndices.resize(boneAttribCountPerVertex);
 
-         Positions.reserve(verticesCount * 3);
-         TextureCoordinates.reserve(verticesCount * 2);
-         Normals.reserve(verticesCount * 3);
-         TangentNormals.reserve(verticesCount * 3);
-         BitangetNormals.reserve(verticesCount * 3);
-
-         // Store data into array
-         StoreVertexBoneData(vertexBoneData);
+            // Store data into array
+            StoreVertexBoneData(vertexBoneData);
+         }
       }
 
-      void MeshDataCollector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh* pMesh)
+      void MeshDataCollector::StoreIndices(size_t meshBaseVertexIndex, const aiMesh *pMesh)
       {
          const size_t lastIndexPerMesh = VertexIndices.size();
          const size_t countOfFaces = pMesh->mNumFaces;
 
          for (size_t faceIndex = 0; faceIndex < countOfFaces; faceIndex++)
          {
-            const aiFace& face = pMesh->mFaces[faceIndex];
+            const aiFace &face = pMesh->mFaces[faceIndex];
             assert(face.mNumIndices == 3);
             VertexIndices.emplace_back(face.mIndices[0] + meshBaseVertexIndex);
             VertexIndices.emplace_back(face.mIndices[1] + meshBaseVertexIndex);
@@ -126,7 +143,7 @@ namespace MeshLoader
          }
       }
 
-      void MeshDataCollector::StoreVertexData(const aiMesh* pMesh)
+      void MeshDataCollector::StoreVertexData(const aiMesh *pMesh)
       {
          const bool bCollectNormals = pMesh->HasNormals();
          const bool bCollectTexCoords = pMesh->HasTextureCoords(0);
@@ -162,11 +179,11 @@ namespace MeshLoader
          }
       }
 
-      void MeshDataCollector::StoreVertexBoneData(const std::vector<VertexBoneData>& vertexBoneData)
+      void MeshDataCollector::StoreVertexBoneData(const std::vector<VertexBoneData> &vertexBoneData)
       {
          for (size_t i = 0; i < vertexBoneData.size(); ++i)
          {
-            const VertexBoneData& vertexBoneDataItem = vertexBoneData[i];
+            const VertexBoneData &vertexBoneDataItem = vertexBoneData[i];
 
             for (size_t j = 0; j < MAX_BONES_PER_VERT; ++j)
             {
@@ -176,14 +193,16 @@ namespace MeshLoader
          }
       }
 
-      void MeshDataCollector::VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh* pMesh, std::vector<VertexBoneData>& vertexBoneData)
+      void MeshDataCollector::VertexDataIterate(size_t meshBaseVertexIndex, const aiMesh *pMesh, std::vector<VertexBoneData> &vertexBoneData)
       {
-         for (size_t i = 0; i < pMesh->mNumBones; ++i) {
+         for (size_t i = 0; i < pMesh->mNumBones; ++i)
+         {
 
             std::string boneName(pMesh->mBones[i]->mName.data);
             size_t BoneIndex = BoneIndexMapping[boneName];
 
-            for (size_t j = 0; j < pMesh->mBones[i]->mNumWeights; ++j) {
+            for (size_t j = 0; j < pMesh->mBones[i]->mNumWeights; ++j)
+            {
                size_t VertexID = meshBaseVertexIndex + pMesh->mBones[i]->mWeights[j].mVertexId;
                float Weight = pMesh->mBones[i]->mWeights[j].mWeight;
                vertexBoneData[VertexID].AddBoneData(BoneIndex, Weight);
@@ -196,11 +215,11 @@ namespace MeshLoader
 
       void MeshDataCollector::CollectAnimation()
       {
-         aiNode* rootNode = mScene->mRootNode;
+         aiNode *rootNode = mScene->mRootNode;
 
          for (size_t i = 0; i < mScene->mNumAnimations; ++i)
          {
-            const aiAnimation* pAnimation = mScene->mAnimations[i];
+            const aiAnimation *pAnimation = mScene->mAnimations[i];
 
             std::string animationName(pAnimation->mName.data);
             AnimationMapping[animationName].AnimationDuration = (float)pAnimation->mDuration;
@@ -210,13 +229,13 @@ namespace MeshLoader
          }
       }
 
-      aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::string& nodeName);
+      aiNodeAnim *FindAnimationNodeByName(const aiAnimation *pAnimation, const std::string &nodeName);
 
-      void MeshDataCollector::AnimationIterateNodes(const aiAnimation* pAnimation, const aiNode* pNode, AnimationMappingData::NodeAnimationBinding_t& nodeAnimationBindings)
+      void MeshDataCollector::AnimationIterateNodes(const aiAnimation *pAnimation, const aiNode *pNode, AnimationMappingData::NodeAnimationBinding_t &nodeAnimationBindings)
       {
          std::string nodeName(pNode->mName.data);
 
-         aiNodeAnim* pNodeAnim = FindAnimationNodeByName(pAnimation, nodeName);
+         aiNodeAnim *pNodeAnim = FindAnimationNodeByName(pAnimation, nodeName);
 
          if (pNodeAnim)
          {
@@ -247,7 +266,7 @@ namespace MeshLoader
 
          for (size_t i = 0; i < pNode->mNumChildren; ++i)
          {
-            aiNode* child = pNode->mChildren[i];
+            aiNode *child = pNode->mChildren[i];
 
             if (child)
             {
@@ -256,13 +275,13 @@ namespace MeshLoader
          }
       }
 
-      aiNodeAnim* FindAnimationNodeByName(const aiAnimation* pAnimation, const std::string& nodeName)
+      aiNodeAnim *FindAnimationNodeByName(const aiAnimation *pAnimation, const std::string &nodeName)
       {
-         aiNodeAnim* result = nullptr;
+         aiNodeAnim *result = nullptr;
 
          for (size_t i = 0; i < pAnimation->mNumChannels; ++i)
          {
-            aiNodeAnim* pNodeAnim = pAnimation->mChannels[i];
+            aiNodeAnim *pNodeAnim = pAnimation->mChannels[i];
 
             if (std::string(pNodeAnim->mNodeName.data) == nodeName)
             {
@@ -282,12 +301,12 @@ namespace MeshLoader
 
          for (size_t i = 0; i < meshCount; ++i)
          {
-            aiMesh* mesh = mScene->mMeshes[i];
+            aiMesh *mesh = mScene->mMeshes[i];
 
             for (size_t j = 0; j < mesh->mNumBones; ++j)
             {
-               aiBone* boneInfo = mesh->mBones[j];
-               const std::string& boneName = std::string(boneInfo->mName.data);
+               aiBone *boneInfo = mesh->mBones[j];
+               const std::string &boneName = std::string(boneInfo->mName.data);
                if (BoneMapping.find(boneName) == BoneMapping.end())
                {
                   MeshBoneInfo meshBoneInfo;
@@ -301,15 +320,15 @@ namespace MeshLoader
          }
       }
 
-      void MeshDataCollector::CollectNodeHierarchy(const aiNode* pNode, MeshNode* meshNode)
+      void MeshDataCollector::CollectNodeHierarchy(const aiNode *pNode, MeshNode *meshNode)
       {
          if (!pNode)
             return;
 
          for (size_t i = 0; i < pNode->mNumChildren; ++i)
          {
-            aiNode* pChildNode = pNode->mChildren[i];
-            MeshNode* meshChildNode = new MeshNode();
+            aiNode *pChildNode = pNode->mChildren[i];
+            MeshNode *meshChildNode = new MeshNode();
             meshChildNode->Name = pChildNode->mName.data;
             meshChildNode->NodeTransformation = AssimpToGlmConverter::ConvertAssimpMatrix4x4ToGlmMat4(pChildNode->mTransformation);
             meshNode->Children.push_back(meshChildNode);

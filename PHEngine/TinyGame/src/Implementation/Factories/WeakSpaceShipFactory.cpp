@@ -80,7 +80,7 @@ namespace Game
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
-        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0));
+        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0), 200);
         const auto &c_particleSystemComponent = scene->CreateComponent_GameThread<ParticleSystemComponent,
                                                                                   eComponentMetaType::ParticleSystem>(d_particle);
         a_enemySpaceship->AddComponent(c_particleSystemComponent);

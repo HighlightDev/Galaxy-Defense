@@ -4,7 +4,6 @@ layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 uniform mat4 projectionMatrix;
-uniform vec4 color;
 
 in vec2 vs_out_rotation_size[];
 in vec4 vs_out_particle_color[];

@@ -17,7 +17,7 @@ namespace EngineCore
       Uniform u_projectionMatrix;
 
    public:
-      StaticMeshVertexFactory()
+      InstancedStaticMeshVertexFactory()
           : VertexFactoryShader("InstancedStaticMeshVertexFactory")
       {
          InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "InstancedStaticMeshVertexFactory.glsl");

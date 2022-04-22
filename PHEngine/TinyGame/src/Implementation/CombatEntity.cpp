@@ -43,4 +43,9 @@ namespace Game
     {
         return mIsDamageReceived;
     }
+
+    void CombatEntity::RestoreLife()
+    {
+        mLifePoints = 4;
+    }
 }

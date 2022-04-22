@@ -77,6 +77,8 @@ namespace Game
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
+        void ReSpawnEnemyShip(CombatEntity& spaceShip, const glm::vec3& shipStartPosition);
+
         void FlushToPoolUsedBullets();
 
         typename std::vector<CombatEntity>::iterator FindEnemyShipByName(const std::string &actorName);

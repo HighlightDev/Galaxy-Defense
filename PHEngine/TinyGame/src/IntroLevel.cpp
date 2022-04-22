@@ -81,12 +81,6 @@ namespace Game
       c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);                                                     
 
-      /*GhostController* ghostController = new GhostController(mScene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
-      mScene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-      PhysicsComponentData physData("c_spaceShipPhysicsComponent", ghostController);
-      const auto& c_ghostPhysics = mScene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
-      a_spaceship->AddComponent(c_ghostPhysics);*/
-
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);
       const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);

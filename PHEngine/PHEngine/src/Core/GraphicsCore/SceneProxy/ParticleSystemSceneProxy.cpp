@@ -22,17 +22,12 @@ namespace Graphics
                                   component->IsVisible(),
                                   component->GetRelativeMatrix(),
                                   component->GetRenderData().m_skin,
-                                  nullptr,
+                                  component->GetRenderData().m_shader,
                                   nullptr,
                                   nullptr),
               mParticlesRawDataHandler(200),
               mActiveParticlesCount(0)
         {
-            mShader = ShaderPool::GetInstance()->GetOrAllocateResource<ParticleShader>(ShaderParams{
-                .ShaderName = "ParticleShader",
-                .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
-                .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
-                .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"});
         }
 
         ParticleSystemSceneProxy::~ParticleSystemSceneProxy()
@@ -44,14 +39,13 @@ namespace Graphics
             if (!mActiveParticlesCount)
                 return;
 
+            const std::shared_ptr<ParticleSystemSceneProxy::ParticleShader_t>& shader = std::static_pointer_cast<ParticleSystemSceneProxy::ParticleShader_t>(m_shader);
+
             PrepareParticlesInstancedBuffer();
-
-            mShader->ExecuteShader();
-            mShader->SetColor(glm::vec4(1, 1, 0, 1));
-            mShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
-
+            shader->ExecuteShader();
+            shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
             m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
-            mShader->StopShader();
+            shader->StopShader();
         }
 
         bool ParticleSystemSceneProxy::IsDeferred() const

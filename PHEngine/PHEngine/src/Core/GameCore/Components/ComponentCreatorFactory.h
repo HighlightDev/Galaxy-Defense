@@ -45,6 +45,7 @@
 
 #include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryCompositeShader.h"
 
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/CubemapShader.h"
@@ -53,6 +54,7 @@
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkeletalMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
 
 using namespace Resources;
 using namespace IO;
@@ -418,14 +420,20 @@ namespace EngineCore
             ParticlesPool::sharedValue_t particlesSkin =
                 ParticlesPool::GetInstance()->GetOrAllocateResource(ParticlePoolParameters{
                     .mParticleComponentName = mData.GameObjectName,
-                    .mParticleCount = 200});
-            /* ShaderParams shaderParams("Particles_Shader", mData.m_vsShaderPath,
-                                        mData.m_fsShaderPath);*/
-            /* ShaderPool::sharedValue_t shader =
-                 ShaderPool::GetInstance()
-                     ->template GetOrAllocateResource<ParticleSystemShader>(shaderParams);*/
+                    .mParticleCount = mData.m_particlesCount});
 
-            return std::make_shared<ComponentType>(mData, ParticleSystemRenderData(particlesSkin, nullptr));
+            const auto &particlesShaderParams = ShaderParams{
+                .ShaderName = "ParticleShader",
+                .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
+                .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
+                .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"};
+
+            TemplatedCompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader", particlesShaderParams);
+
+             const typename CompositeShaderPool::sharedValue_t& shader =
+                CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>>(particlesCompositeShaderParams);
+
+            return std::make_shared<ComponentType>(mData, ParticleSystemRenderData(particlesSkin, shader));
         }
     };
 

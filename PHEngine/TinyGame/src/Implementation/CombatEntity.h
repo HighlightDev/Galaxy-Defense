@@ -33,6 +33,8 @@ namespace Game
         void SetIsDamageReceived(const bool isDamageReceived);
 
         bool GetIsDamageReceived() const;
+
+        void RestoreLife();
     };
 
 }

@@ -43,7 +43,7 @@ namespace Game
 
             for (size_t i = 0; i < 2; ++i)
             {
-                 static constexpr float x_axisHalfWidth = 20.0f;
+                static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
@@ -119,7 +119,11 @@ namespace Game
                     }
                     else
                     {
-                        a_enemyShipIt->GetSpaceShipActor()->SetIsEnabled(false);
+                        static constexpr float x_axisHalfWidth = 20.0f;
+                        static constexpr float y_axisHalfHeight = 20.0f;
+                        const float x = Random::Float() * 10.0f;
+                        glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 70.0f);
+                        ReSpawnEnemyShip(*a_enemyShipIt, startPosition);
                     }
                 }
             }
@@ -172,19 +176,16 @@ namespace Game
             }
         }
 
-        for (const auto &enemyContainer : mEnemies)
+        for (auto &enemyContainer : mEnemies)
         {
             const auto &enemyTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
-            if (glm::length(enemyTranslation) > 50.0f)
+            if (enemyTranslation.z < -10.0f)
             {
                 static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
-                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0.0f,
-                                        30.0f);
-                const auto &c_movement = enemyContainer.GetSpaceShipActor()->GetMovementComponent();
-                c_movement->Teleport(startPosition);
+                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 70.0f);
+                ReSpawnEnemyShip(enemyContainer, startPosition);
             }
         }
     }
@@ -221,6 +222,13 @@ namespace Game
             idleBulletIt->second = eBulletState::ACTIVE;
             Logger::Out("CombatController::ShootBuller. Successfull shoot.");
         }
+    }
+
+    void CombatController::ReSpawnEnemyShip(CombatEntity &spaceShip, const glm::vec3 &shipStartPosition)
+    {
+        spaceShip.RestoreLife();
+        const auto &c_movement = spaceShip.GetSpaceShipActor()->GetMovementComponent();
+        c_movement->Teleport(shipStartPosition);
     }
 
     void CombatController::FlushToPoolUsedBullets()
