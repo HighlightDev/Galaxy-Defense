@@ -18,6 +18,7 @@
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
+#include <algorithm>
 #include <TinyLogger/LogInterface.h>
 
 using namespace Resources;
@@ -37,12 +38,12 @@ namespace Graphics
    {
 
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
-          : SceneViewsMap(),
+          : SceneViewsVector(),
             bLightProxiesDirty(false),
             bProxiesDirty(false),
             bPlanarReflectionProxiesDirty(false),
-            SceneProxiesMap(),
-            LightProxiesMap(),
+            PrimitiveProxiesVector(),
+            LightProxiesVector(),
             m_interThreadMgr(interThreadMgr),
             m_gbuffer(
                 std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
@@ -92,9 +93,9 @@ namespace Graphics
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(0, 0, [=]()
                                                      {
-            for (auto& lightProxy : LightProxiesMap)
+            for (auto& lightProxy : LightProxiesVector)
             {
-               lightProxy.second->PostLevelInit();
+               lightProxy->PostLevelInit();
             } }));
       }
 
@@ -459,7 +460,7 @@ namespace Graphics
 #endif
 
 #ifndef NO_LIT
-         m_deferredLightShader->SetLightsInfo(LightProxiesMap);
+         m_deferredLightShader->SetLightsInfo(LightProxiesVector);
 #endif
          ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
          m_deferredLightShader->StopShader();
@@ -594,9 +595,9 @@ namespace Graphics
             mSkeletalProxiesVec.clear();
             mNonSkeletalProxiesVec.clear();
 
-            for (auto &proxy : SceneProxiesMap)
+            for (auto &proxy : PrimitiveProxiesVector)
             {
-               PrimitiveSceneProxy *proxyPtr = proxy.second.get();
+               PrimitiveSceneProxy *proxyPtr = proxy.get();
 
                if (proxyPtr->IsDeferred())
                {
@@ -619,23 +620,21 @@ namespace Graphics
             mPointLightProxiesVec.clear();
             mSpotlightProxiesVec.clear();
 
-            for (auto &proxy : LightProxiesMap)
+            for (auto &proxy : LightProxiesVector)
             {
-               LightSceneProxy *proxyPtr = proxy.second.get();
-
-               const LightSceneProxyType &lightType = proxyPtr->GetLightProxyType();
+               const LightSceneProxyType &lightType = proxy->GetLightProxyType();
 
                if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
-                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy *>(proxyPtr));
+                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy*>(proxy.get()));
                }
                else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
-                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy *>(proxyPtr));
+                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy*>(proxy.get()));
                }
                else if (lightType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy *>(proxyPtr));
+                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy*>(proxy.get()));
                }
             }
 
@@ -646,9 +645,9 @@ namespace Graphics
 
          if (bPlanarReflectionProxiesDirty)
          {
-            for (auto &proxy : PlanarReflectionProxiesMap)
+            for (auto &proxy : PlanarReflectionProxiesVector)
             {
-               PlanarReflectionProxy *proxyPtr = proxy.second.get();
+               PlanarReflectionProxy *proxyPtr = proxy.get();
                auto findIt = std::find_if(mPlanarReflectionProxiesVec.begin(), mPlanarReflectionProxiesVec.end(),
                                           [=](const auto &existingProxy)
                                           { return proxyPtr->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
@@ -666,26 +665,30 @@ namespace Graphics
       void DeferredShadingSceneRenderer::GroupLightsByShadowMap()
       {
          mGroupedByShadowAtlasLights.clear();
-         for (auto &lProxy : LightProxiesMap)
+         for (auto &proxy : LightProxiesVector)
          {
-            if (auto shadowInfo = lProxy.second->GetShadowInfo())
+            if (auto shadowInfo = proxy->GetShadowInfo())
             {
                if (auto atlasResource = shadowInfo->GetAtlasResource())
                {
                   auto lastDesc = atlasResource->GetTextureDescriptor();
-                  if (mGroupedByShadowAtlasLights.count(lastDesc) == 0)
+
+                  const auto groupIt = std::find_if(mGroupedByShadowAtlasLights.begin(), mGroupedByShadowAtlasLights.end(), [=](const auto &lightGroupPair)
+                                                    { return lightGroupPair.first == lastDesc; });
+
+                  if (groupIt == mGroupedByShadowAtlasLights.end())
                   {
                      std::vector<LightSceneProxy *> result;
 
-                     for (const auto &seekLProxy : LightProxiesMap)
+                     for (const auto &proxy : LightProxiesVector)
                      {
-                        if (seekLProxy.second->GetShadowInfo() && seekLProxy.second->GetShadowInfo()->GetAtlasResource())
+                        if (proxy->GetShadowInfo() && proxy->GetShadowInfo()->GetAtlasResource())
                         {
-                           if (seekLProxy.second->GetShadowInfo()->GetAtlasResource()->GetTextureDescriptor() == lastDesc)
-                              result.emplace_back(seekLProxy.second.get());
+                           if (proxy->GetShadowInfo()->GetAtlasResource()->GetTextureDescriptor() == lastDesc)
+                              result.emplace_back(proxy.get());
                         }
                      }
-                     mGroupedByShadowAtlasLights[lastDesc] = result;
+                     mGroupedByShadowAtlasLights.emplace_back(std::make_pair(lastDesc, result));
                   }
                }
             }
@@ -696,9 +699,8 @@ namespace Graphics
       {
          PrepareSceneProxiesForRender();
 
-         for (const auto &sceneViewPair : SceneViewsMap)
+         for (const auto &sceneView : SceneViewsVector)
          {
-            auto sceneView = sceneViewPair.second;
             auto cameraProxy = sceneView->GetCameraProxy();
 
             sceneView->DoVisibilityTest();
@@ -745,6 +747,110 @@ namespace Graphics
       void DeferredShadingSceneRenderer::SetPlanarReflectionProxiesAreDirty(const bool bDirty)
       {
          bPlanarReflectionProxiesDirty = bDirty;
+      }
+
+      std::shared_ptr<SceneView> DeferredShadingSceneRenderer::GetSceneViewByProxyId(const size_t proxyId) const
+      {
+         std::shared_ptr<SceneView> result = nullptr;
+
+         const auto foundSceneIt = std::find_if(SceneViewsVector.begin(), SceneViewsVector.end(), [=](const auto& sceneView) {
+            return proxyId == sceneView->GetCameraProxy()->GetSceneProxyId(); 
+            });
+
+         if (foundSceneIt != SceneViewsVector.end())
+         {
+            result = *foundSceneIt;
+         }
+
+         return result;
+      }
+
+      std::shared_ptr<PrimitiveSceneProxy> DeferredShadingSceneRenderer::GetPrimitiveProxyByProxyId(const size_t proxyId) const
+      {
+         std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
+
+         const auto foundPrimitiveProxyIt = std::find_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
+            return proxyId == primitiveProxy->GetSceneProxyId(); });
+
+         if (foundPrimitiveProxyIt != PrimitiveProxiesVector.end())
+         {
+            result = *foundPrimitiveProxyIt;
+         }
+
+         return result;
+      }
+
+      std::shared_ptr<LightSceneProxy> DeferredShadingSceneRenderer::GetLightProxyByProxyId(const size_t proxyId) const
+      {
+         std::shared_ptr<LightSceneProxy> result = nullptr;
+
+         const auto foundLightProxyIt = std::find_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto& lightProxy) {
+            return proxyId == lightProxy->GetSceneProxyId(); });
+
+         if (foundLightProxyIt != LightProxiesVector.end())
+         {
+            result = *foundLightProxyIt;
+         }
+
+         return result;
+      }
+
+      std::shared_ptr<MaterialProxy> DeferredShadingSceneRenderer::GetMaterialProxyByProxyId(const size_t proxyId) const
+      {
+         std::shared_ptr<MaterialProxy> result = nullptr;
+
+         const auto foundMaterialProxyIt = std::find_if(MaterialProxiesVector.begin(), MaterialProxiesVector.end(), [=](const auto& materialProxy) {
+            return proxyId == materialProxy->GetSceneProxyId(); });
+
+         if (foundMaterialProxyIt != MaterialProxiesVector.end())
+         {
+            result = *foundMaterialProxyIt;
+         }
+
+         return result;
+      }
+
+      std::shared_ptr<PlanarReflectionProxy> DeferredShadingSceneRenderer::GetPlanarReflectionProxyByProxyId(const size_t proxyId) const
+      {
+         std::shared_ptr<PlanarReflectionProxy> result = nullptr;
+
+         const auto foundPlanarProxyIt = std::find_if(PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [=](const auto& planarProxy) {
+            return proxyId == planarProxy->GetSceneProxyId(); });
+
+         if (foundPlanarProxyIt != PlanarReflectionProxiesVector.end())
+         {
+            result = *foundPlanarProxyIt;
+         }
+
+         return result;
+      }
+
+      bool DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const size_t proxyId)
+      {
+          auto removeIt = std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
+            return proxyId == primitiveProxy->GetSceneProxyId(); });
+
+          if (removeIt != PrimitiveProxiesVector.end())
+          {
+             PrimitiveProxiesVector.erase(removeIt);
+             return true;
+          }
+
+          return false;
+      }
+
+      bool DeferredShadingSceneRenderer::RemoveLightProxyByProxyId(const size_t proxyId)
+      {
+         auto removeIt = std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto& lightProxy) {
+            return proxyId == lightProxy->GetSceneProxyId(); });
+
+          if (removeIt != LightProxiesVector.end())
+          {
+             LightProxiesVector.erase(removeIt);
+             return true;
+          }
+
+          return false;
       }
 
 #if DEBUG
@@ -853,11 +959,11 @@ namespace Graphics
                glEnd();
             }
 
-            for (auto& proxy : SceneProxiesMap)
+            for (auto& proxy : PrimitiveProxiesVector)
             {
-               if (proxy.second->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY || proxy.second->GetPrimitiveProxyType() == ePrimitiveProxyType::STATIC_MESH_PROXY)
+               if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY || proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::STATIC_MESH_PROXY)
                {
-                  const auto bb = proxy.second->GetTransformedBoundingBox();
+                  const auto bb = proxy->GetTransformedBoundingBox();
                   const auto& positions = bb.GetBoundPositions();
 
                   std::vector<glm::vec3> points =

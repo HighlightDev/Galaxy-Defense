@@ -196,16 +196,13 @@ namespace EngineCore
          u_SpotlightShadowMatrices.LoadUniform(index, shadowMatrix);
       }
 
-      void DeferredLightShader::SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> &lightsProxies)
+      void DeferredLightShader::SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>> &lightsProxies)
       {
-         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-         
          // Directional lights
          int32_t dirLightProxyIndex = 0;
-         for (const auto &lightProxyPair : lightsProxies)
+         for (const auto &lightProxy : lightsProxies)
          {
-            auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT && dirLightProxyIndex < cfg.MaxDirLightCount)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
             {
                DirectionalLightSceneProxy *dirLProxyPtr = static_cast<DirectionalLightSceneProxy *>(lightProxy.get());
                u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->AmbientColor);
@@ -220,10 +217,9 @@ namespace EngineCore
 
          // Point lights
          int32_t pointLightProxyIndex = 0;
-         for (const auto &lightProxyPair : lightsProxies)
+         for (const auto &lightProxy : lightsProxies)
          {
-            auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT && pointLightProxyIndex < cfg.MaxPointLightCount)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
             {
                PointLightSceneProxy *pointLProxyPtr = static_cast<PointLightSceneProxy *>(lightProxy.get());
                u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->DiffuseColor);
@@ -238,10 +234,9 @@ namespace EngineCore
 
          // Spotlights
          int32_t spotlightProxyIndex = 0;
-         for (const auto &lightProxyPair : lightsProxies)
+         for (const auto &lightProxy : lightsProxies)
          {
-            auto lightProxy = lightProxyPair.second;
-            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT && spotlightProxyIndex < cfg.MaxSpotlightCount)
+            if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT)
             {
                SpotlightSceneProxy *spotlightProxyPtr = static_cast<SpotlightSceneProxy *>(lightProxy.get());
                u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->AmbientColor);

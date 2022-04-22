@@ -44,7 +44,9 @@ namespace EngineCore
 
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+               assert(primitiveProxySp);                                              
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
                proxyPtr->SetMoveFactor(m_moveFactor); });
          }
       }
@@ -79,7 +81,9 @@ namespace EngineCore
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+               assert(primitiveProxySp);                                              
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
                proxyPtr->SetWaveStrength(m_waveStrength); });
          }
       }
@@ -98,7 +102,9 @@ namespace EngineCore
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+               assert(primitiveProxySp);                                              
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
                proxyPtr->SetTransparencyDepth(m_transparencyDepth); });
          }
       }
@@ -132,7 +138,9 @@ namespace EngineCore
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
                                            {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+               assert(primitiveProxySp);                                              
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
                proxyPtr->SetNearClipPlane(m_nearClipPlane); });
          }
       }
@@ -151,7 +159,9 @@ namespace EngineCore
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, functionId, GetObjectId(), [=]()
                                            {
 
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+               assert(primitiveProxySp);                                              
+               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
                proxyPtr->SetFarClipPlane(m_farClipPlane); });
          }
       }

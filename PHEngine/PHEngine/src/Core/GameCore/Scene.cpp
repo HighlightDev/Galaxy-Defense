@@ -269,9 +269,10 @@ namespace EngineCore
              Job(creatorObjectId,
                  functionId, [=]()
                  {
-                  if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
+                  const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                  if (primitiveSp)
                   {
-                     sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetEnabled(bEnabled);
+                     primitiveSp->SetEnabled(bEnabled);
                   }
                   else {
                        Logger::Out("Scene::UpdatePrimitiveComponentEnable_OnRenderThread."
@@ -290,9 +291,10 @@ namespace EngineCore
              Job(creatorObjectId,
                  functionId, [=]()
                  {
-                  if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
+                    const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                  if (primitiveProxySp)
                   {
-                     sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex]->SetVisibility(visibility);
+                     primitiveProxySp->SetVisibility(visibility);
                   }
                   else {
                        Logger::Out("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread."
@@ -311,11 +313,11 @@ namespace EngineCore
                                                  Job(creatorObjectId,
                                                      functionId, [=]()
                                                      {
-            if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
+           const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                  if (primitiveProxySp)
             {
-               auto &sceneProxy = sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex];
-               sceneProxy->SetTransformationMatrix(newRelativeMatrix);
-               sceneProxy->SetTransformedBoundingBox(newTransformedBoundingBox);
+               primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
+               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox);
             }
             else
             {
@@ -329,24 +331,22 @@ namespace EngineCore
    {
       if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {
-         if (sceneRenderer->SceneViewsMap.count(sceneProxyId))
+         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
+         if (sceneViewSp)
          {
             m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                                                     Job(creatorObjectId,
                                                         functionId, [=]()
                                                         {
-               if (sceneRenderer->SceneViewsMap.count(sceneProxyId))
-               {
-                  auto sceneView = sceneRenderer->SceneViewsMap[sceneProxyId];
-                  sceneView->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
-                  sceneView->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix());
-               }
-               else
-               {
-                  Logger::Out("Scene::UpdateCameraSceneProxyData_OnRenderThread."
-                              "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                              sceneProxyId);
-               } }));
+
+                  sceneViewSp->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
+                  sceneViewSp->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix()); }));
+         }
+         else
+         {
+            Logger::Out("Scene::UpdateCameraSceneProxyData_OnRenderThread."
+                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                        sceneProxyId);
          }
       }
    }
@@ -359,9 +359,10 @@ namespace EngineCore
                                                  Job(creatorObjectId,
                                                      functionId, [=]()
                                                      {
-               if (sceneRenderer->LightProxiesMap.count(lightSceneProxyIndex))
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);  
+               if (lightProxySp)
                {
-                 sceneRenderer->LightProxiesMap[lightSceneProxyIndex]->SetTransformationMatrix(newRelativeMatrix);
+                 lightProxySp->SetTransformationMatrix(newRelativeMatrix);
                }
                else
                {
@@ -381,9 +382,9 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
-               if (sceneRenderer->SceneProxiesMap.count(primitiveSceneProxyIndex))
+               const bool bRemoved = sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+                  if (bRemoved)
                {
-                  sceneRenderer->SceneProxiesMap.erase(primitiveSceneProxyIndex);
                   sceneRenderer->SetProxiesAreDirty(true);
                }
                else 
@@ -418,9 +419,9 @@ namespace EngineCore
                                                  Job(creatorObjectId,
                                                      functionId, [=]()
                                                      {
-               if (sceneRenderer->LightProxiesMap.count(lightSceneProxyIndex))
+               const bool bRemoved = sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
+               if (bRemoved)
                {
-                  sceneRenderer->LightProxiesMap.erase(lightSceneProxyIndex);
                   sceneRenderer->SetLightProxiesAreDirty(true); 
                }
                else
@@ -453,7 +454,7 @@ namespace EngineCore
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->SceneViewsMap.emplace(cameraSceneProxy->GetSceneProxyId(), std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->SceneProxiesMap)); }));
+                                                     { sceneRenderer->SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->PrimitiveProxiesVector)); }));
       }
    }
 
@@ -467,12 +468,14 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
-            sceneRenderer->SceneProxiesMap[primitiveSceneProxyIndex] = primitiveSceneProxy;
+            const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            assert(!primitiveProxySp);
+            sceneRenderer->PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
             sceneRenderer->SetProxiesAreDirty(true); }));
       }
    }
 
-   void Scene::LightSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy)
+   void Scene::LightSceneProxyAdded_OnRenderThread(size_t lightSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy)
    {
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
@@ -483,7 +486,9 @@ namespace EngineCore
                                                  Job(creatorObjectId,
                                                      functionId, [=]()
                                                      {
-         sceneRenderer->LightProxiesMap[primitiveSceneProxyIndex] = lightSceneProxy;
+         const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);  
+         assert(!lightProxySp);
+         sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
          sceneRenderer->SetLightProxiesAreDirty(true); }));
       }
    }
@@ -500,12 +505,14 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      { 
+                                                        const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
+                                                        assert(!materialProxySp);
                                                         Logger::Out("MaterialProxyAdded_OnRenderThread::Job material name = ", materialProxy->MaterialName);
-                                                        sceneRenderer->MaterialProxiesMap[materialProxyIndex] = materialProxy; }));
+                                                        sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); }));
       }
    }
 
-   void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>>&& properties)
+   void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
    {
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
@@ -514,7 +521,16 @@ namespace EngineCore
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
                                                  Job(creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
-                                                     { sceneRenderer->MaterialProxiesMap.at(materialProxyIndex)->UpdateProperties(std::move(properties)); }));
+                                                     { 
+                                                      const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
+                                                      if (materialProxySp)
+                                                      {
+                                                         materialProxySp->UpdateProperties(std::move(properties)); 
+                                                      }
+                                                      else{
+                                                         Logger::Out("Scene::MaterialPropertiesUpdated_OnRenderThread."
+                                                            "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
+                                                      } }));
       }
    }
 
@@ -528,7 +544,9 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
-            sceneRenderer->PlanarReflectionProxiesMap[planarReflectionSceneProxyId] = proxy;
+            const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
+            assert(!reflectionProxySp);
+            sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
             sceneRenderer->SetPlanarReflectionProxiesAreDirty(true); }));
       }
    }
@@ -545,10 +563,10 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
-            const auto& sceneViews = sceneRenderer->SceneViewsMap;
-            if (sceneViews.count(proxyId))
+         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(proxyId);
+         if (sceneViewSp)
             {
-               planarReflectionProxy->SetSceneViewWeakPtr(sceneViews.at(proxyId));
+               planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
             }
              else
             {

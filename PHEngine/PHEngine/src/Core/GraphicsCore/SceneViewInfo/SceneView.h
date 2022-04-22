@@ -14,13 +14,13 @@ namespace Graphics
    {
       std::shared_ptr<CameraSceneProxy> mCameraProxy;
 
-      const std::unordered_map<size_t, std::shared_ptr<PrimitiveSceneProxy>>& mPrimitiveProxies;
+      const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& mPrimitiveProxies;
 
       std::unordered_map<size_t/*proxy id*/, bool> mVisibilityMap;
 
    public:
 
-      SceneView(std::shared_ptr<CameraSceneProxy> cameraProxy, const std::unordered_map<size_t, std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
+      SceneView(const std::shared_ptr<CameraSceneProxy>& cameraProxy, const std::vector<std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies);
 
       ~SceneView();
 

@@ -10,14 +10,11 @@
 using namespace Graphics;
 using namespace EngineMath;
 
-namespace EngineCore {
+namespace EngineCore
+{
 
-   PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData& data)
-      : SceneComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale)
-      , mReflectionPlane()
-      , mOwnerCamera(data.m_ownerCamera)
-      , mRenderTargetViewPortInfo(data.m_fboViewPortInfo)
-      , mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
+   PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData &data)
+       : SceneComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale), mReflectionPlane(), mOwnerCamera(data.m_ownerCamera), mRenderTargetViewPortInfo(data.m_fboViewPortInfo), mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
    {
    }
 
@@ -35,7 +32,8 @@ namespace EngineCore {
       mReflectionPlane = glm::vec4(glm::vec3(normal), d);
    }
 
-   ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const {
+   ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const
+   {
 
       return mRenderTargetViewPortInfo;
    }
@@ -47,7 +45,7 @@ namespace EngineCore {
 
    void PlanarReflectionComponent::OnPostInitialized()
    {
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
          sceneSP->RegisterDeferredResourceCreator(this, GetGameObjectName());
       }
@@ -58,19 +56,21 @@ namespace EngineCore {
       SceneComponent::PostLevelInit();
 
       static const uint64_t functionId = Hash("PlanarReflectionComponent: PostLevelInit");
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+            if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
             {
-               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
+               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+                                              {
 
-                  PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
+                  const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
+                  assert(reflectionSp);
+                  PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(reflectionSp.get());
                   auto resourceTexture = proxyPtr->GetPlanarReflectionTexture();
                   mPlanarReflectionDeferredController->GetDeferredResource(); // Just in case deferred resource wasn't initialized
-                  mPlanarReflectionDeferredController->SetResource(resourceTexture);
-               });
+                  mPlanarReflectionDeferredController->SetResource(resourceTexture); });
             }
          }
       }
@@ -89,7 +89,7 @@ namespace EngineCore {
       }
    }
 
-   ACamera* PlanarReflectionComponent::GetOwnerCamera() const
+   ACamera *PlanarReflectionComponent::GetOwnerCamera() const
    {
       return mOwnerCamera;
    }
@@ -109,7 +109,8 @@ namespace EngineCore {
       mPlanarReflectionSceneProxyId = sceneProxyId;
    }
 
-   ComponentType PlanarReflectionComponent::GetComponentType() const {
+   ComponentType PlanarReflectionComponent::GetComponentType() const
+   {
       return PLANAR_REFLECTION_COMPONENT;
    }
 
@@ -121,15 +122,16 @@ namespace EngineCore {
    void PlanarReflectionComponent::SyncDataWithRenderThread()
    {
       static const uint64_t functionId = Hash("PlanarReflectionComponent: SyncDataWithRenderThread");
-      if (const auto& sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto& sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
          {
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]() {
-
-               PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(sceneRenderer->PlanarReflectionProxiesMap[mPlanarReflectionSceneProxyId].get());
-               proxyPtr->SetReflectionPlane(mReflectionPlane);
-            });
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+                                           {
+               const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
+               assert(reflectionSp);
+               PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(reflectionSp.get());
+               proxyPtr->SetReflectionPlane(mReflectionPlane); });
          }
       }
    }

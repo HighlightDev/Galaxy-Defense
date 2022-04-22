@@ -30,6 +30,8 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/DebugCore/TextureRenderer.h"
 
+#include <utility>
+
 using namespace EngineCore::ShaderImpl;
 using namespace EngineCore;
 using namespace Thread;
@@ -50,15 +52,15 @@ namespace Graphics
 
       public:
 
-         std::unordered_map<size_t /*camera proxy id*/, std::shared_ptr<SceneView>> SceneViewsMap;
+         std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
 
-         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<PrimitiveSceneProxy>> SceneProxiesMap;
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
 
-         std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>> LightProxiesMap;
+         std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
 
-         std::unordered_map<size_t /*material proxy id*/, std::shared_ptr<MaterialProxy>> MaterialProxiesMap;
+         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
 
-         std::unordered_map<size_t /*planar reflection proxy id*/, std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesMap;
+         std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
 
       private:
 
@@ -103,7 +105,7 @@ namespace Graphics
 
          std::vector<PlanarReflectionProxy*> mPlanarReflectionProxiesVec;
 
-         std::unordered_map<uint32_t, std::vector<LightSceneProxy*>> mGroupedByShadowAtlasLights;
+         std::vector<std::pair<size_t, std::vector<LightSceneProxy*>>> mGroupedByShadowAtlasLights;
 
       private:
 
@@ -131,6 +133,14 @@ namespace Graphics
 
          void RenderScene_RenderThread();
 
+         std::shared_ptr<SceneView> GetSceneViewByProxyId(const size_t proxyId) const;
+         std::shared_ptr<PrimitiveSceneProxy> GetPrimitiveProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const size_t proxyId) const;
+
+         bool RemovePrimitiveProxyByProxyId(const size_t proxyId);
+         bool RemoveLightProxyByProxyId(const size_t proxyId);
 
          void SetProxiesAreDirty(const bool bDirty);
 

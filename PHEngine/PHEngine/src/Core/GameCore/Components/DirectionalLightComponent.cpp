@@ -106,8 +106,9 @@ namespace EngineCore
 
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
-               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
-               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+               assert(lightProxySp);                                       
+               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->SetIsShadowMapDirty(true);
@@ -126,14 +127,16 @@ namespace EngineCore
 
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            {
-               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
-               if (  ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo())
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+               assert(lightProxySp);                                       
+               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
+               if (shadowInfo)
                {
                   if (const auto& transformSp = std::get<0>(data).lock())
                   {
                      shadowInfo->SetPlayerPositionOffset(transformSp->Translation);
                   }
-                  proxy->SetIsTransformationDirty(true);
+                  lightProxySp->SetIsTransformationDirty(true);
                   shadowInfo->SetIsShadowMapDirty(true);
                } });
          }

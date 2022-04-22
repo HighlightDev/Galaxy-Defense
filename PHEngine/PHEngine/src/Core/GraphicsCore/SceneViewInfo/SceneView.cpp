@@ -4,9 +4,10 @@
 
 namespace Graphics
 {
-   SceneView::SceneView(std::shared_ptr<CameraSceneProxy> cameraProxy, const std::unordered_map<size_t, std::shared_ptr<PrimitiveSceneProxy>>& primitiveProxies)
-      : mCameraProxy(cameraProxy)
-      , mPrimitiveProxies(primitiveProxies)
+   SceneView::SceneView(const std::shared_ptr<CameraSceneProxy> &cameraProxy, const std::vector<std::shared_ptr<PrimitiveSceneProxy>> &primitiveProxies)
+       : mCameraProxy(cameraProxy),
+         mPrimitiveProxies(primitiveProxies),
+         mVisibilityMap()
    {
    }
 
@@ -16,18 +17,16 @@ namespace Graphics
 
    void SceneView::DoVisibilityTest()
    {
-      for (const auto& primitiveProxyPair : mPrimitiveProxies)
+      for (const auto &proxy : mPrimitiveProxies)
       {
-         auto proxy = primitiveProxyPair.second;
-
          bool bProxyVisible = true;
 
          if (proxy->IsFrustumCullTestNeeded())
          {
-             bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
+            bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
          }
 
-         mVisibilityMap[primitiveProxyPair.first] = bProxyVisible;
+         mVisibilityMap[proxy->GetSceneProxyId()] = bProxyVisible;
       }
    }
 
@@ -36,7 +35,7 @@ namespace Graphics
       return mCameraProxy;
    }
 
-   bool SceneView::IsPrimitiveVisible(const size_t proxyId) const 
+   bool SceneView::IsPrimitiveVisible(const size_t proxyId) const
    {
       assert(mVisibilityMap.count(proxyId));
       return mVisibilityMap.at(proxyId);

@@ -118,8 +118,8 @@ namespace EngineCore
          {
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
-               auto proxy = sceneRenderer->LightProxiesMap[LightSceneProxyId];
-               ProjectedShadowInfo* shadowInfo = proxy->GetShadowInfo();
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->SetIsShadowMapDirty(true);

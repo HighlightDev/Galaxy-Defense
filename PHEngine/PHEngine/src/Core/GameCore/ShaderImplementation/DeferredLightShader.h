@@ -83,7 +83,7 @@ namespace EngineCore
 #endif
 
 #ifndef NO_LIT
-         void SetLightsInfo(const std::unordered_map<size_t /*proxy id*/, std::shared_ptr<LightSceneProxy>>& lightsProxies);
+         void SetLightsInfo(const std::vector<std::shared_ptr<LightSceneProxy>> &lightsProxies);
 
          void SetDirectionalLightShadowMapSlot(size_t index, int32_t slot);
          void SetDirectionalLightShadowMapSlot(size_t index, int32_t slot, const glm::vec4& atlasOffset);

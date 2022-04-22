@@ -133,8 +133,10 @@ namespace EngineCore
             SrcAnimationTime->SetValue(fmod(SrcAnimationTime->GetValue(), 100000.0f));
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
                                            { 
+                              const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+                              assert(primitiveProxySp);
                               SkeletalMeshSceneProxy *proxyPtr 
-                              = static_cast<SkeletalMeshSceneProxy *>(sceneRenderer->SceneProxiesMap[SceneProxyId].get()); 
+                              = static_cast<SkeletalMeshSceneProxy *>(primitiveProxySp.get()); 
                                     proxyPtr->UpdateAnimationData(bTransitionEnabled->GetValue(),
                                     TransitionValue->GetValue(),
                                     SrcAnimationTime->GetValue(),

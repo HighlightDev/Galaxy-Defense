@@ -210,8 +210,10 @@ namespace EngineCore
                                                functionId,
                                                [=]() mutable
                                                {
+                                                   const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+                                                   assert(primitiveProxySp);
                                                    ParticleSystemSceneProxy *const proxyPtr =
-                                                       static_cast<ParticleSystemSceneProxy *>(sceneRenderer->SceneProxiesMap[SceneProxyId].get());
+                                                       static_cast<ParticleSystemSceneProxy *>(primitiveProxySp.get());
 
                                                    if (activeParticlesCount > 0)
                                                    {
