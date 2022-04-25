@@ -50,6 +50,11 @@ namespace TinyLogger
       }
    }
 
+   void LoggerServer::StopLogThread()
+   {
+      mIsThreadRunning.store(false, std::memory_order::memory_order_seq_cst);
+   }
+
    void LoggerServer::EnqueuLogMessage(LogMessage&& message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
@@ -73,7 +78,7 @@ namespace TinyLogger
 
    void LoggerServer::WriteLogMessages()
    {
-      while (true)
+      while (mIsThreadRunning.load(std::memory_order::memory_order_seq_cst))
       {
          std::unique_lock<std::mutex> uLock(mWriteToFileMutex);
          if (!mMessageQueue.empty())

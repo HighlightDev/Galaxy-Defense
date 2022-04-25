@@ -7,6 +7,7 @@
 #include "Core/GameCore/Particles/ParticleProperties.h"
 #include "Core/GameCore/Particles/ParticleModule.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
+#include "Core/GameCore/Particles/Emitters/IEmitter.h"
 
 using namespace Graphics::Data;
 
@@ -17,6 +18,7 @@ namespace EngineCore
     class ParticleSystemComponent
         : public PrimitiveComponent
     {
+        friend class IEmitter;
 
         std::vector<Particle> mParticlesPool;
 
@@ -26,7 +28,7 @@ namespace EngineCore
 
         std::vector<std::shared_ptr<ParticleModule>> mParticleModules;
 
-        std::shared_ptr<ParticleEmitter *> mParticleEmitter;
+        std::shared_ptr<IEmitter> mParticleEmitter;
 
         ParticleSystemRenderData mRenderData;
 
@@ -48,16 +50,18 @@ namespace EngineCore
 
         void AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule);
 
-        void EmitParticles(const std::vector<ParticleProperties> &particleProperties);
+        void EmitParticles(const size_t particlesCount = 0);
 
         inline const ParticleSystemRenderData &GetRenderData() const
         {
             return mRenderData;
         }
 
-        void InitParticlePool();
+        size_t GetParticlesCount() const;
 
         virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
+        
+        void SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter);
 
     private:
         void SyncDataWithRenderThread(const size_t activeParticlesCount);

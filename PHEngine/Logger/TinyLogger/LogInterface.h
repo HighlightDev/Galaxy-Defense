@@ -208,5 +208,10 @@ namespace TinyLogger
       {
          LoggerServer::GetInstance_()->StartLogThread();
       }
+
+      static void StopLogThread()
+      {
+         LoggerServer::GetInstance_()->StopLogThread();
+      }
    };
 }

@@ -115,7 +115,7 @@ namespace Game
                         a_enemyShipIt->SetIsDamageReceived(true);
 
                         auto c_particle = a_enemyShipIt->GetSpaceShipActor()->GetComponentsByType<ParticleSystemComponent>().back();
-                        c_particle->InitParticlePool();
+                        c_particle->EmitParticles();
                     }
                     else
                     {

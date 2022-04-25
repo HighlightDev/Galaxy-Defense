@@ -25,7 +25,7 @@ namespace Graphics
                                   component->GetRenderData().m_shader,
                                   nullptr,
                                   nullptr),
-              mParticlesRawDataHandler(200),
+              mParticlesRawDataHandler(component->GetParticlesCount()),
               mActiveParticlesCount(0)
         {
         }

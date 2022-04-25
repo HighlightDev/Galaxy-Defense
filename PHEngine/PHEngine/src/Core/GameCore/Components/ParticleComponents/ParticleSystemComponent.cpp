@@ -29,10 +29,10 @@ namespace EngineCore
                              glm::vec3(1.0f),
                              BoundingBox()),
           mParticlesPool(),
-          mParticlesRawDataHandler(200),
+          mParticlesRawDataHandler(meshComponentData.m_particlesCount),
           mRenderData(renderData)
     {
-        mParticlesPool.resize(200);
+        mParticlesPool.resize(meshComponentData.m_particlesCount);
     }
 
     ParticleSystemComponent::~ParticleSystemComponent()
@@ -125,44 +125,9 @@ namespace EngineCore
         mParticleModules.emplace_back(particleModule);
     }
 
-    void ParticleSystemComponent::EmitParticles(const std::vector<ParticleProperties> &particleProperties)
+    void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
     {
-    }
-
-    void ParticleSystemComponent::InitParticlePool()
-    {
-        static constexpr float radius = 20.0f;
-
-        for (size_t i = 0; i < mParticlesPool.size(); ++i)
-        {
-            const float random_radius = 1.0f;
-            const float random_theta_rad = Random::Float() * EngineMath::PI * 2;
-            const float random_phi_rad = Random::Float() * EngineMath::PI;
-
-            Particle &p = mParticlesPool[i];
-
-            p.Position = glm::vec3(
-                random_radius * std::cos(random_theta_rad) * std::sin(random_phi_rad),
-                random_radius * std::sin(random_theta_rad) * std::sin(random_theta_rad),
-                random_radius * std::cos(random_phi_rad));
-            p.Rotation = Random::Float() * EngineMath::PI * 2;
-
-            const auto randomNormalizedValue = []()
-            {
-                return (Random::Float() * 2.0f) - 1.0f;
-            };
-
-            p.Velocity = glm::vec3(randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f);
-
-            p.ColorBegin = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-            p.ColorEnd = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
-            p.SizeBegin = 0.5f;
-            p.SizeEnd = 0.1f;
-            p.LifeTime = 1.0f;
-            p.LifeRemaining = p.LifeTime;
-
-            p.isActive = true;
-        }
+       mParticleEmitter->EmitParticles(particlesCount);
     }
 
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
@@ -182,8 +147,6 @@ namespace EngineCore
             m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
             m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
 
-            SetIsTransformationDirty(false);
-
             // Update primitives proxy transform
             static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
 
@@ -195,7 +158,20 @@ namespace EngineCore
                                                                           m_relativeMatrix,
                                                                           GetTransformedBoundingBox());
             }
+            
+            SetIsTransformationDirty(false);
         }
+    }
+
+    size_t ParticleSystemComponent::GetParticlesCount() const
+    {
+       return mParticlesPool.size();
+    }
+
+    void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
+    {
+       assert(!mParticleEmitter);
+       mParticleEmitter = emitter;
     }
 
     void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)

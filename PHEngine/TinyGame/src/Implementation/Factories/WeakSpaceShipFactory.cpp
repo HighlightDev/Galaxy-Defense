@@ -17,6 +17,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 
 using namespace EngineCore;
 using namespace Graphics;
@@ -83,6 +84,13 @@ namespace Game
         ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0), 200);
         const auto &c_particleSystemComponent = scene->CreateComponent_GameThread<ParticleSystemComponent,
                                                                                   eComponentMetaType::ParticleSystem>(d_particle);
+        auto emitter = std::make_shared<ParticleExplosionEmitter>();
+        emitter->SetOwner(c_particleSystemComponent);
+        emitter->SetColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f), glm::vec4(0.5f, 1.0f, 0.3f, 1.0f));
+        emitter->SetSize(0.4f, 0.1f);
+        emitter->SetLifeTime(0.5f);
+        c_particleSystemComponent->SetParticleEmitter(emitter);
+
         a_enemySpaceship->AddComponent(c_particleSystemComponent);
 
         scene->AddActorController(std::make_shared<AiActorController>(a_enemySpaceship));

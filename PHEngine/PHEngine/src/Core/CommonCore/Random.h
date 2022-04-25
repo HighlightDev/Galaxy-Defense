@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <cstdint>
 
+#undef max
+
 class Random
 {
 public:

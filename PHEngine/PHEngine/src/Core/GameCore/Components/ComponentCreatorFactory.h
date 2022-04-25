@@ -417,16 +417,17 @@ namespace EngineCore
         {
             const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
 
-            ParticlesPool::sharedValue_t particlesSkin =
-                ParticlesPool::GetInstance()->GetOrAllocateResource(ParticlePoolParameters{
-                    .mParticleComponentName = mData.GameObjectName,
-                    .mParticleCount = mData.m_particlesCount});
+            ParticlePoolParameters params;
+            params.mParticleComponentName = mData.GameObjectName;
+            params.mParticleCount = mData.m_particlesCount;
 
-            const auto &particlesShaderParams = ShaderParams{
-                .ShaderName = "ParticleShader",
-                .VertexShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
-                .FragmentShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
-                .GeometryShaderFile = FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl"};
+            ParticlesPool::sharedValue_t particlesSkin =
+                ParticlesPool::GetInstance()->GetOrAllocateResource(params);
+            ShaderParams particlesShaderParams(
+               "ParticleShader",
+               FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
+               FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
 
             TemplatedCompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader", particlesShaderParams);
 

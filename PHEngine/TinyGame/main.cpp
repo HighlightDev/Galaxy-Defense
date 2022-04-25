@@ -101,6 +101,7 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
     else if (key == ESCAPE_KEY)
     {
       bPollEvents = false;
+      Logger::StopLogThread();
     }
 
     else if (key == 'M' || key == 'm')

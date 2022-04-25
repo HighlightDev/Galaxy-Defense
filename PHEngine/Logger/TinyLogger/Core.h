@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include <mutex>
 #include <thread>
+#include <atomic>
 
 #include "LoggerClient.h"
 
@@ -28,6 +29,7 @@ namespace TinyLogger
    {
       std::mutex mWriteToFileMutex;
       std::thread mLogThread;
+      std::atomic<bool> mIsThreadRunning{ true };
 
       std::queue<LogMessage> mMessageQueue;
       std::vector<LoggerClientBase*> mLoggerClients;
@@ -43,6 +45,8 @@ namespace TinyLogger
       void AddLoggerClient(LoggerClientBase* clientBase);
 
       void StartLogThread();
+
+      void StopLogThread();
 
       void EnqueuLogMessage(LogMessage&& message);
 

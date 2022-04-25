@@ -245,6 +245,9 @@ namespace EngineCore
 
    void Actor::Tick(const float deltaTime)
    {
+      if (!mIsEnabled)
+         return;
+
       UpdateRootComponentTransform();
 
       // Update physics
