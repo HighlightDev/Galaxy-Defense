@@ -18,6 +18,8 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
+#include "Core/GameCore/Particles/Modules/SimpleVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/ExplosionInitialVelocityModule.h"
 
 using namespace EngineCore;
 using namespace Graphics;
@@ -86,10 +88,20 @@ namespace Game
                                                                                   eComponentMetaType::ParticleSystem>(d_particle);
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);
-        emitter->SetColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f), glm::vec4(0.5f, 1.0f, 0.3f, 1.0f));
+        emitter->SetColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f), glm::vec4(1.0f, 3.0f, 0.3f, 1.0f));
         emitter->SetSize(0.4f, 0.1f);
         emitter->SetLifeTime(0.5f);
         c_particleSystemComponent->SetParticleEmitter(emitter);
+
+        auto initialVelocityModule = std::make_shared<ExplosionInitialVelocityModule>();
+        initialVelocityModule->SetOwner(c_particleSystemComponent);
+        c_particleSystemComponent->AddParticleModule(initialVelocityModule);
+
+        auto velocityModule = std::make_shared<SimpleVelocityModule>();
+        velocityModule->SetOwner(c_particleSystemComponent);
+        velocityModule->SetVelocityDirection(glm::vec3(0, -25.0f, 0));
+        velocityModule->SetVelocityDeviation(glm::vec3(2.0f, 0.0f, 2.0f));
+        c_particleSystemComponent->AddParticleModule(velocityModule);
 
         a_enemySpaceship->AddComponent(c_particleSystemComponent);
 

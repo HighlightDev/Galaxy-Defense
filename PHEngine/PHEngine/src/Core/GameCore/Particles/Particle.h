@@ -8,6 +8,7 @@ namespace EngineCore
     struct Particle
     {
         glm::vec3 Position;
+        glm::vec3 InitialVelocity;
         glm::vec3 Velocity;
         glm::vec4 ColorBegin, ColorEnd;
         float Rotation = 0.0f;

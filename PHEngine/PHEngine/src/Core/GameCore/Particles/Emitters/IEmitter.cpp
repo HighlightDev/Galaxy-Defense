@@ -1,5 +1,4 @@
 #include "IEmitter.h"
-
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 
 namespace EngineCore

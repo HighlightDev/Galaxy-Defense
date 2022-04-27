@@ -2088,9 +2088,6 @@
     <ClInclude Include="src\Core\GameCore\Particles\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Particles\ParticleModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Particles\ParticlePoolParameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2128,6 +2125,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Particles\Emitters\ParticleExplosionEmitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\SimpleVelocityModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\IVelocityModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\IParticleModule.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\ExplosionInitialVelocityModule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2687,9 +2696,6 @@
     <ClCompile Include="src\Core\CommonCore\Random.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Particles\ParticleModule.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Core\GameCore\Particles\ParticlesRawDataHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2709,6 +2715,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Particles\Emitters\ParticleExplosionEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\SimpleVelocityModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\IVelocityModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\IParticleModule.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\ExplosionInitialVelocityModule.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

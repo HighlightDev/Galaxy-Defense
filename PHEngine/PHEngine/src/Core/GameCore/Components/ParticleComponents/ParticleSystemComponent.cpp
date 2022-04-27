@@ -50,9 +50,11 @@ namespace EngineCore
 
     void ParticleSystemComponent::Tick(const float deltaTime)
     {
+       const float delta_time = deltaTime * 100.0f;
+
         for (const auto &module : mParticleModules)
         {
-            module->Tick(deltaTime);
+            module->Tick(delta_time);
         }
 
         size_t activeParticlesCount = 0;
@@ -67,8 +69,7 @@ namespace EngineCore
 
             if ((particleIt->LifeRemaining - deltaTime) > 0.0f)
             {
-                particleIt->Position = particleIt->Position + (particleIt->Velocity * 100.0f * deltaTime);
-                particleIt->Velocity += (EngineMath::G * -AXIS_UP) * deltaTime * 2.0f;
+                particleIt->Position += (particleIt->InitialVelocity * delta_time + particleIt->Velocity * delta_time);
                 particleIt->LifeRemaining -= deltaTime;
 
                 const float invLife = particleIt->LifeTime - particleIt->LifeRemaining;
@@ -120,14 +121,23 @@ namespace EngineCore
         return std::make_shared<ParticleSystemSceneProxy>(this);
     }
 
-    void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule)
+    void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule)
     {
-        mParticleModules.emplace_back(particleModule);
+      const auto& newModuleType = particleModule->GetParticleModuleType();
+      auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(),
+          [=](const auto& particleModule) { return particleModule->GetParticleModuleType() == newModuleType; });
+      assert(foundSameModuleIt == mParticleModules.end());
+      mParticleModules.emplace_back(particleModule);
     }
 
     void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
     {
        mParticleEmitter->EmitParticles(particlesCount);
+       
+       for (const auto& particleModule : mParticleModules)
+       {
+          particleModule->OnEmitParticles();
+       }
     }
 
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)

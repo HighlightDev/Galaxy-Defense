@@ -35,13 +35,6 @@ namespace EngineCore
             random_radius * std::cos(random_phi_rad));
          p.Rotation = Random::Float() * EngineMath::PI * 2;
 
-         const auto randomNormalizedValue = []()
-         {
-            return (Random::Float() * 2.0f) - 1.0f;
-         };
-
-         p.Velocity = glm::vec3(randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f, randomNormalizedValue() * 2.0f);
-
          p.ColorBegin = mColorBegin;
          p.ColorEnd = mColorEnd;
          p.SizeBegin = mSizeBegin;

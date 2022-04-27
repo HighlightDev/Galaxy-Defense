@@ -361,8 +361,11 @@
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseEventEnums.h" />
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\ExplosionInitialVelocityModule.h" />
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\SimpleVelocityModule.h" />
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\IVelocityModule.h" />
     <ClInclude Include="src\Core\GameCore\Particles\Particle.h" />
-    <ClInclude Include="src\Core\GameCore\Particles\ParticleModule.h" />
+    <ClInclude Include="src\Core\GameCore\Particles\Modules\IParticleModule.h" />
     <ClInclude Include="src\Core\GameCore\Particles\ParticlePoolParameters.h" />
     <ClInclude Include="src\Core\GameCore\Particles\ParticleProperties.h" />
     <ClInclude Include="src\Core\GameCore\Particles\ParticlesRawDataHandler.h" />
@@ -908,7 +911,10 @@
     <ClCompile Include="src\Core\GameCore\Particles\Emitters\ParticleExplosionEmitter.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PhysicsComponents\RigidBodyPhysicsComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Input\MouseBindings.cpp" />
-    <ClCompile Include="src\Core\GameCore\Particles\ParticleModule.cpp" />
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\ExplosionInitialVelocityModule.cpp" />
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\SimpleVelocityModule.cpp" />
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\IVelocityModule.cpp" />
+    <ClCompile Include="src\Core\GameCore\Particles\Modules\IParticleModule.cpp" />
     <ClCompile Include="src\Core\GameCore\Particles\ParticlesRawDataHandler.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\GhostController.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />

@@ -5,7 +5,7 @@
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 #include "Core/GameCore/Particles/Particle.h"
 #include "Core/GameCore/Particles/ParticleProperties.h"
-#include "Core/GameCore/Particles/ParticleModule.h"
+#include "Core/GameCore/Particles/Modules/IParticleModule.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GameCore/Particles/Emitters/IEmitter.h"
 
@@ -19,6 +19,7 @@ namespace EngineCore
         : public PrimitiveComponent
     {
         friend class IEmitter;
+        friend class IParticleModule;
 
         std::vector<Particle> mParticlesPool;
 
@@ -26,7 +27,7 @@ namespace EngineCore
 
         size_t mPrevActiveParticles = 0;
 
-        std::vector<std::shared_ptr<ParticleModule>> mParticleModules;
+        std::vector<std::shared_ptr<IParticleModule>> mParticleModules;
 
         std::shared_ptr<IEmitter> mParticleEmitter;
 
@@ -48,7 +49,7 @@ namespace EngineCore
 
         virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-        void AddParticleModule(const std::shared_ptr<ParticleModule> &particleModule);
+        void AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule);
 
         void EmitParticles(const size_t particlesCount = 0);
 
