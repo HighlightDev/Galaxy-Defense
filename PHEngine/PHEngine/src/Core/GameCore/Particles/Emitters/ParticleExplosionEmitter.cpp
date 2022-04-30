@@ -11,14 +11,14 @@ namespace EngineCore
 {
    void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
    {
-      const auto& ownerSp = mOwner.lock();
+      const auto &ownerSp = mOwner.lock();
       assert(ownerSp);
 
-      auto& particlePool = GetParticlesPool();
-      const auto& poolSize = particlePool.size();
+      auto &particlePool = GetParticlesPool();
+      const auto &poolSize = particlePool.size();
 
       const size_t particlesEmitCount = particlesCount <= poolSize ? particlesCount == 0 ? poolSize : particlesCount : poolSize;
-      
+
       static constexpr float radius = 20.0f;
 
       for (size_t i = 0; i < particlesEmitCount; ++i)
@@ -30,19 +30,10 @@ namespace EngineCore
          Particle &p = particlePool[i];
 
          p.Position = glm::vec3(
-            random_radius * std::cos(random_theta_rad) * std::sin(random_phi_rad),
-            random_radius * std::sin(random_theta_rad) * std::sin(random_theta_rad),
-            random_radius * std::cos(random_phi_rad));
+             random_radius * std::cos(random_theta_rad) * std::sin(random_phi_rad),
+             random_radius * std::sin(random_theta_rad) * std::sin(random_theta_rad),
+             random_radius * std::cos(random_phi_rad));
          p.Rotation = Random::Float() * EngineMath::PI * 2;
-
-         p.ColorBegin = mColorBegin;
-         p.ColorEnd = mColorEnd;
-         p.SizeBegin = mSizeBegin;
-         p.SizeEnd = mSizeEnd;
-         p.LifeTime = mLifeTime;
-         p.LifeRemaining = p.LifeTime;
-
-         p.isActive = true;
       }
    }
 }

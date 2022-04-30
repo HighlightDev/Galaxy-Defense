@@ -130,6 +130,7 @@ namespace Thread
    {
       auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.ReadChainType.load()));
       auto countRenderThreadJobs = renderThreadChain.size();
+
       while (countRenderThreadJobs)
       {
          auto jobIt = renderThreadChain.begin();

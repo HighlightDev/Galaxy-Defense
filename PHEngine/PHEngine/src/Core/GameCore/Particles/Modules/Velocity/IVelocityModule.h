@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Particles/Modules/IParticleModule.h"
 
 namespace EngineCore

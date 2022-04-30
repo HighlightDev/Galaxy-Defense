@@ -13,7 +13,7 @@ namespace EngineCore
       return eParticleModuleType::INITIAL_VELOCITY;
    }
 
-   void ExplosionInitialVelocityModule::Tick(const float deltaTime)
+   void ExplosionInitialVelocityModule::Update(Particle& particle, const float deltaTime)
    {
    }
 

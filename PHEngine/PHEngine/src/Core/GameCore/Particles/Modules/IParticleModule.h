@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Particles/Particle.h"
 
 #include <vector>
@@ -9,33 +8,34 @@
 
 namespace EngineCore
 {
-   enum class eParticleModuleType
-   {
-      INITIAL_VELOCITY,
-      VELOCITY
-   };
+    enum class eParticleModuleType : uint8_t
+    {
+        LIFETIME,
+        INITIAL_VELOCITY,
+        VELOCITY,
+        COLOR,
+        SIZE
+    };
 
     class ParticleSystemComponent;
 
     class IParticleModule
-        : public ITickable
     {
     protected:
         std::weak_ptr<ParticleSystemComponent> mOwner;
 
     public:
-       IParticleModule();
+        IParticleModule();
 
-       virtual eParticleModuleType GetParticleModuleType() const = 0;
+        virtual eParticleModuleType GetParticleModuleType() const = 0;
 
-        virtual void Tick(const float deltaTime) = 0;
+        virtual void Update(Particle &particle, const float deltaTime) = 0;
 
         virtual void OnEmitParticles() = 0;
 
         void SetOwner(const std::weak_ptr<ParticleSystemComponent> &owner);
 
     protected:
-
-       std::vector<Particle>& GetParticlesPool();
+        std::vector<Particle> &GetParticlesPool();
     };
 }

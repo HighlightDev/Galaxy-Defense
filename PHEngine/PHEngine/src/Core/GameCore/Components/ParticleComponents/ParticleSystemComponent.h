@@ -7,13 +7,12 @@
 #include "Core/GameCore/Particles/ParticleProperties.h"
 #include "Core/GameCore/Particles/Modules/IParticleModule.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
-#include "Core/GameCore/Particles/Emitters/IEmitter.h"
 
 using namespace Graphics::Data;
 
 namespace EngineCore
 {
-    struct ParticleEmitter;
+    class IEmitter;
 
     class ParticleSystemComponent
         : public PrimitiveComponent

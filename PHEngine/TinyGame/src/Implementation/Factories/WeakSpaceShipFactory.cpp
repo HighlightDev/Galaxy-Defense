@@ -18,8 +18,11 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
-#include "Core/GameCore/Particles/Modules/SimpleVelocityModule.h"
-#include "Core/GameCore/Particles/Modules/ExplosionInitialVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
+#include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
+#include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 
 using namespace EngineCore;
 using namespace Graphics;
@@ -88,10 +91,18 @@ namespace Game
                                                                                   eComponentMetaType::ParticleSystem>(d_particle);
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);
-        emitter->SetColor(glm::vec4(1.0f, 1.0f, 0.3f, 1.0f), glm::vec4(1.0f, 3.0f, 0.3f, 1.0f));
-        emitter->SetSize(0.4f, 0.1f);
-        emitter->SetLifeTime(0.5f);
         c_particleSystemComponent->SetParticleEmitter(emitter);
+
+        auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
+        lifeTimeModule->SetOwner(c_particleSystemComponent);
+        lifeTimeModule->SetLifeTime(50.0f);
+        c_particleSystemComponent->AddParticleModule(lifeTimeModule);
+
+        auto sizeModule = std::make_shared<SimpleSizeModule>();
+        sizeModule->SetOwner(c_particleSystemComponent);
+        sizeModule->SetSizeBegin(0.4f);
+        sizeModule->SetSizeEnd(0.1f);
+        c_particleSystemComponent->AddParticleModule(sizeModule);
 
         auto initialVelocityModule = std::make_shared<ExplosionInitialVelocityModule>();
         initialVelocityModule->SetOwner(c_particleSystemComponent);
@@ -102,6 +113,12 @@ namespace Game
         velocityModule->SetVelocityDirection(glm::vec3(0, -25.0f, 0));
         velocityModule->SetVelocityDeviation(glm::vec3(2.0f, 0.0f, 2.0f));
         c_particleSystemComponent->AddParticleModule(velocityModule);
+
+        auto colorModule = std::make_shared<SimpleColorModule>();
+        colorModule->SetOwner(c_particleSystemComponent);
+        colorModule->SetColorBegin(glm::vec4(1.0f, 0.7f, 0.2f, 1.0f));
+        colorModule->SetColorEnd(glm::vec4(1.0f, 0.2f, 0.02f, 1.0f));
+        c_particleSystemComponent->AddParticleModule(colorModule);
 
         a_enemySpaceship->AddComponent(c_particleSystemComponent);
 

@@ -6,6 +6,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Particles/Emitters/IEmitter.h"
 
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -50,11 +51,14 @@ namespace EngineCore
 
     void ParticleSystemComponent::Tick(const float deltaTime)
     {
-       const float delta_time = deltaTime * 100.0f;
+        const float delta_time = deltaTime * 100.0f;
 
-        for (const auto &module : mParticleModules)
+        for (auto &particle : mParticlesPool)
         {
-            module->Tick(delta_time);
+            for (const auto &module : mParticleModules)
+            {
+                module->Update(particle, delta_time);
+            }
         }
 
         size_t activeParticlesCount = 0;
@@ -72,26 +76,15 @@ namespace EngineCore
                 particleIt->Position += (particleIt->InitialVelocity * delta_time + particleIt->Velocity * delta_time);
                 particleIt->LifeRemaining -= deltaTime;
 
-                const float invLife = particleIt->LifeTime - particleIt->LifeRemaining;
-
                 mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
                 particleTranslationByteOffset += mParticlesRawDataHandler.GetTranslationVectorByteDataOffset();
 
                 mParticlesRawDataHandler.SubRotationSizeData(particleRotationSizeByteOffset,
                                                              particleIt->Rotation,
-                                                             EngineMath::LerpFloat(invLife,
-                                                                                   0.0f,
-                                                                                   particleIt->LifeTime,
-                                                                                   particleIt->SizeBegin,
-                                                                                   particleIt->SizeEnd));
+                                                             particleIt->Size);
                 particleRotationSizeByteOffset += mParticlesRawDataHandler.GetRotationSizeByteDataOffset();
 
-                mParticlesRawDataHandler.SubColorData(particleColorByteOffset,
-                                                      EngineMath::LerpVec4(invLife,
-                                                                           0.0f,
-                                                                           particleIt->LifeTime,
-                                                                           particleIt->ColorBegin,
-                                                                           particleIt->ColorEnd));
+                mParticlesRawDataHandler.SubColorData(particleColorByteOffset, particleIt->Color);
                 particleColorByteOffset += mParticlesRawDataHandler.GetColorByteDataOffset();
                 ++activeParticlesCount;
             }
@@ -123,21 +116,24 @@ namespace EngineCore
 
     void ParticleSystemComponent::AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule)
     {
-      const auto& newModuleType = particleModule->GetParticleModuleType();
-      auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(),
-          [=](const auto& particleModule) { return particleModule->GetParticleModuleType() == newModuleType; });
-      assert(foundSameModuleIt == mParticleModules.end());
-      mParticleModules.emplace_back(particleModule);
+        const auto &newModuleType = particleModule->GetParticleModuleType();
+        auto foundSameModuleIt = std::find_if(mParticleModules.begin(), mParticleModules.end(),
+                                              [=](const auto &particleModule)
+                                              { return particleModule->GetParticleModuleType() == newModuleType; });
+        assert(foundSameModuleIt == mParticleModules.end());
+        mParticleModules.emplace_back(particleModule);
+        std::sort(mParticleModules.begin(), mParticleModules.end(), [](const auto &leftModule, const auto &rightModule)
+                  { return (uint8_t)leftModule->GetParticleModuleType() < (uint8_t)leftModule->GetParticleModuleType(); });
     }
 
     void ParticleSystemComponent::EmitParticles(const size_t particlesCount)
     {
-       mParticleEmitter->EmitParticles(particlesCount);
-       
-       for (const auto& particleModule : mParticleModules)
-       {
-          particleModule->OnEmitParticles();
-       }
+        mParticleEmitter->EmitParticles(particlesCount);
+
+        for (const auto &particleModule : mParticleModules)
+        {
+            particleModule->OnEmitParticles();
+        }
     }
 
     void ParticleSystemComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
@@ -168,20 +164,20 @@ namespace EngineCore
                                                                           m_relativeMatrix,
                                                                           GetTransformedBoundingBox());
             }
-            
+
             SetIsTransformationDirty(false);
         }
     }
 
     size_t ParticleSystemComponent::GetParticlesCount() const
     {
-       return mParticlesPool.size();
+        return mParticlesPool.size();
     }
 
-    void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter)
+    void ParticleSystemComponent::SetParticleEmitter(const std::shared_ptr<IEmitter> &emitter)
     {
-       assert(!mParticleEmitter);
-       mParticleEmitter = emitter;
+        assert(!mParticleEmitter);
+        mParticleEmitter = emitter;
     }
 
     void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)
@@ -196,7 +192,7 @@ namespace EngineCore
                                                functionId,
                                                [=]() mutable
                                                {
-                                                   const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+                                                   const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
                                                    assert(primitiveProxySp);
                                                    ParticleSystemSceneProxy *const proxyPtr =
                                                        static_cast<ParticleSystemSceneProxy *>(primitiveProxySp.get());
