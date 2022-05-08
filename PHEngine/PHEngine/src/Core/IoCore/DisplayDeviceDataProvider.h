@@ -66,6 +66,14 @@ namespace IO
          m_windowPosY = posY;
       }
 
+      inline float GetHeightToWidthRatio() const {
+         return (float)m_screenHeight / (float)m_screenWidth;
+      }
+
+        inline float GetWidthToHeightRatio() const {
+         return (float)m_screenWidth / (float)m_screenHeight;
+      }
+
       inline int32_t GetWindowPosX() const {
 
          return m_windowPosX;

@@ -1,8 +1,12 @@
 #pragma once
 
-#include "Core/IoCore/FileFacade.h"
+#include "Character.h"
 
 #include <string>
+#include <unordered_map>
+#include <vector>
+#include <list>
+#include <optional>
 
 namespace EngineCore
 {
@@ -12,93 +16,51 @@ namespace EngineCore
      */
     class FontMetaFile
     {
-        static const int32_t PAD_TOP = 0;
-        static const int32_t PAD_LEFT = 1;
-        static const int32_t PAD_BOTTOM = 2;
-        static const int32_t PAD_RIGHT = 3;
+        static constexpr int32_t PAD_TOP = 0;
+        static constexpr int32_t PAD_LEFT = 1;
+        static constexpr int32_t PAD_BOTTOM = 2;
+        static constexpr int32_t PAD_RIGHT = 3;
 
-        static const int32_t DESIRED_PADDING = 3;
+        static constexpr int32_t DESIRED_PADDING = 3;
 
-        const std::string SPLITTER = " ";
-        const std::string NUMBER_SEPARATOR = ",";
+        static constexpr float LINE_HEIGHT = 0.03f;
+        static constexpr int32_t SPACE_ASCII = 32;
 
-        float aspectRatio;
+        static constexpr char SPLITTER = ' ';
+        static constexpr char NUMBER_SEPARATOR = ',';
 
-        float verticalPerPixelSize;
-        float horizontalPerPixelSize;
-        float spaceWidth;
-        int[] padding;
-        int paddingWidth;
-        int paddingHeight;
+        float mAspectRatio;
+        float mVerticalPerPixelSize;
+        float mHorizontalPerPixelSize;
+        float mSpaceWidth;
+        std::vector<int32_t> mPadding;
+        int32_t mPaddingWidth;
+        int32_t mPaddingHeight;
 
-        Map<Integer, Character> metaData = new HashMap<Integer, Character>();
+        std::unordered_map<int32_t, Character> mMetaData;
+        std::unordered_map<std::string, std::string> mValues;
 
-    private
-        BufferedReader reader;
-    private
-        Map<String, String> values = new HashMap<String, String>();
+        std::list<std::string> mFileSrc;
 
+    public:
         /**
          * Opens a font file in preparation for reading.
          *
-         * @param file
+         * @param pathToFile
          *            - the font file.
          */
-    protected
-        MetaFile(File file)
-        {
-            this.aspectRatio = (double)Display.getWidth() / (double)Display.getHeight();
-            openFile(file);
-            loadPaddingData();
-            loadLineSizes();
-            int imageWidth = getValueOfVariable("scaleW");
-            loadCharacterData(imageWidth);
-            close();
-        }
+        FontMetaFile(const std::string &pathToFile);
 
-    protected
-        double getSpaceWidth()
-        {
-            return spaceWidth;
-        }
+        float GetSpaceWidth() const;
 
-    protected
-        Character getCharacter(int ascii)
-        {
-            return metaData.get(ascii);
-        }
+        Character GetCharacter(const int32_t ascii) const;
 
         /**
          * Read in the next line and store the variable values.
          *
          * @return {@code true} if the end of the file hasn't been reached.
          */
-    private
-        boolean processNextLine()
-        {
-            values.clear();
-            String line = null;
-            try
-            {
-                line = reader.readLine();
-            }
-            catch (IOException e1)
-            {
-            }
-            if (line == null)
-            {
-                return false;
-            }
-            for (String part : line.split(SPLITTER))
-            {
-                String[] valuePairs = part.split("=");
-                if (valuePairs.length == 2)
-                {
-                    values.put(valuePairs[0], valuePairs[1]);
-                }
-            }
-            return true;
-        }
+        bool TryProcessNextLine();
 
         /**
          * Gets the {@code int} value of the variable with a certain name on the
@@ -108,11 +70,7 @@ namespace EngineCore
          *            - the name of the variable.
          * @return The value of the variable.
          */
-    private
-        int getValueOfVariable(String variable)
-        {
-            return Integer.parseInt(values.get(variable));
-        }
+        int32_t GetValueOfVariable(const std::string &variable) const;
 
         /**
          * Gets the array of ints associated with a variable on the current line.
@@ -121,33 +79,12 @@ namespace EngineCore
          *            - the name of the variable.
          * @return The int array of values associated with the variable.
          */
-    private
-        int[] getValuesOfVariable(String variable)
-        {
-            String[] numbers = values.get(variable).split(NUMBER_SEPARATOR);
-            int[] actualValues = new int[numbers.length];
-            for (int i = 0; i < actualValues.length; i++)
-            {
-                actualValues[i] = Integer.parseInt(numbers[i]);
-            }
-            return actualValues;
-        }
+        std::vector<int32_t> GetValuesOfVariable(const std::string &variable) const;
 
         /**
          * Closes the font file after finishing reading.
          */
-    private
-        void close()
-        {
-            try
-            {
-                reader.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        }
+        void Close();
 
         /**
          * Opens the font file, ready for reading.
@@ -155,46 +92,20 @@ namespace EngineCore
          * @param file
          *            - the font file.
          */
-    private
-        void openFile(File file)
-        {
-            try
-            {
-                reader = new BufferedReader(new FileReader(file));
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                System.err.println("Couldn't read font meta file!");
-            }
-        }
+        void OpenFile(const std::string &pathToFile);
 
         /**
          * Loads the data about how much padding is used around each character in
          * the texture atlas.
          */
-    private
-        void loadPaddingData()
-        {
-            processNextLine();
-            this.padding = getValuesOfVariable("padding");
-            this.paddingWidth = padding[PAD_LEFT] + padding[PAD_RIGHT];
-            this.paddingHeight = padding[PAD_TOP] + padding[PAD_BOTTOM];
-        }
+        void LoadPaddingData();
 
         /**
          * Loads information about the line height for this font in pixels, and uses
          * this as a way to find the conversion rate between pixels in the texture
          * atlas and screen-space.
          */
-    private
-        void loadLineSizes()
-        {
-            processNextLine();
-            int lineHeightPixels = getValueOfVariable("lineHeight") - paddingHeight;
-            verticalPerPixelSize = TextMeshCreator.LINE_HEIGHT / (double)lineHeightPixels;
-            horizontalPerPixelSize = verticalPerPixelSize / aspectRatio;
-        }
+        void LoadLineSizes();
 
         /**
          * Loads in data about each character and stores the data in the
@@ -203,20 +114,7 @@ namespace EngineCore
          * @param imageWidth
          *            - the width of the texture atlas in pixels.
          */
-    private
-        void loadCharacterData(int imageWidth)
-        {
-            processNextLine();
-            processNextLine();
-            while (processNextLine())
-            {
-                Character c = loadCharacter(imageWidth);
-                if (c != null)
-                {
-                    metaData.put(c.getId(), c);
-                }
-            }
-        }
+        void LoadCharacterData(const int32_t imageWidth);
 
         /**
          * Loads all the data about one character in the texture atlas and converts
@@ -227,27 +125,6 @@ namespace EngineCore
          *            - the size of the texture atlas in pixels.
          * @return The data about the character.
          */
-    private
-        Character loadCharacter(int imageSize)
-        {
-            int id = getValueOfVariable("id");
-            if (id == TextMeshCreator.SPACE_ASCII)
-            {
-                this.spaceWidth = (getValueOfVariable("xadvance") - paddingWidth) * horizontalPerPixelSize;
-                return null;
-            }
-            double xTex = ((double)getValueOfVariable("x") + (padding[PAD_LEFT] - DESIRED_PADDING)) / imageSize;
-            double yTex = ((double)getValueOfVariable("y") + (padding[PAD_TOP] - DESIRED_PADDING)) / imageSize;
-            int width = getValueOfVariable("width") - (paddingWidth - (2 * DESIRED_PADDING));
-            int height = getValueOfVariable("height") - ((paddingHeight) - (2 * DESIRED_PADDING));
-            double quadWidth = width * horizontalPerPixelSize;
-            double quadHeight = height * verticalPerPixelSize;
-            double xTexSize = (double)width / imageSize;
-            double yTexSize = (double)height / imageSize;
-            double xOff = (getValueOfVariable("xoffset") + padding[PAD_LEFT] - DESIRED_PADDING) * horizontalPerPixelSize;
-            double yOff = (getValueOfVariable("yoffset") + (padding[PAD_TOP] - DESIRED_PADDING)) * verticalPerPixelSize;
-            double xAdvance = (getValueOfVariable("xadvance") - paddingWidth) * horizontalPerPixelSize;
-            return new Character(id, xTex, yTex, xTexSize, yTexSize, xOff, yOff, quadWidth, quadHeight, xAdvance);
-        }
+        std::optional<Character> TryLoadCharacter(const int32_t imageSize);
     };
 }
