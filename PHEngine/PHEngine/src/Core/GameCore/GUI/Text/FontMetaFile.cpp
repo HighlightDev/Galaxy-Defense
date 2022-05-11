@@ -27,7 +27,6 @@ namespace EngineCore
         LoadLineSizes();
         const auto imageWidth = GetValueOfVariable("scaleW");
         LoadCharacterData(imageWidth);
-        Close();
     }
 
     float FontMetaFile::GetSpaceWidth() const

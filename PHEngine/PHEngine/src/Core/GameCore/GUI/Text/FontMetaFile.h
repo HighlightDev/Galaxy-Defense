@@ -82,11 +82,6 @@ namespace EngineCore
         std::vector<int32_t> GetValuesOfVariable(const std::string &variable) const;
 
         /**
-         * Closes the font file after finishing reading.
-         */
-        void Close();
-
-        /**
          * Opens the font file, ready for reading.
          *
          * @param file

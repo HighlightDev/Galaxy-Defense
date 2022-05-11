@@ -4,7 +4,9 @@ namespace EngineCore
 {
     Line::Line(const float spaceWidth, const float fontSize, const float maxLength)
         : mSpaceSize(spaceWidth * fontSize),
-          mMaxLength(maxLength)
+          mMaxLength(maxLength), 
+          mWords(),
+          mCurrentLineLength(0.0f)
     {
     }
 
