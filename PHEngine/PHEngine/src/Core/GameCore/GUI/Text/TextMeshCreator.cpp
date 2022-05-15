@@ -66,7 +66,8 @@ namespace EngineCore
 		{
 			if (text.IsCentered())
 			{
-				curserX = (line.GetMaxLength() - line.GetLineLength()) / 2;
+				const auto& lineMaxLengthInScreenCoords = line.GetMaxLength();
+				curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
 			}
 
 			for (const auto &word : line.GetWords())

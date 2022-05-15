@@ -15,6 +15,11 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Scene.h"
 
+#include "Core/GameCore/GUI/Text/GUIText.h"
+#include "Core/GameCore/GUI/Text/FontType.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
@@ -626,15 +631,15 @@ namespace Graphics
 
                if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
-                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy*>(proxy.get()));
+                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy *>(proxy.get()));
                }
                else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
-                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy*>(proxy.get()));
+                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy *>(proxy.get()));
                }
                else if (lightType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy*>(proxy.get()));
+                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy *>(proxy.get()));
                }
             }
 
@@ -718,6 +723,8 @@ namespace Graphics
 
                if (mForwardRenderingProxiesVec.size())
                   ForwardBasePass_RenderThread(sceneView);
+
+               DebugRenderText();
             }
             else
             {
@@ -753,9 +760,8 @@ namespace Graphics
       {
          std::shared_ptr<SceneView> result = nullptr;
 
-         const auto foundSceneIt = std::find_if(SceneViewsVector.begin(), SceneViewsVector.end(), [=](const auto& sceneView) {
-            return proxyId == sceneView->GetCameraProxy()->GetSceneProxyId(); 
-            });
+         const auto foundSceneIt = std::find_if(SceneViewsVector.begin(), SceneViewsVector.end(), [=](const auto &sceneView)
+                                                { return proxyId == sceneView->GetCameraProxy()->GetSceneProxyId(); });
 
          if (foundSceneIt != SceneViewsVector.end())
          {
@@ -769,8 +775,8 @@ namespace Graphics
       {
          std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
 
-         const auto foundPrimitiveProxyIt = std::find_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
-            return proxyId == primitiveProxy->GetSceneProxyId(); });
+         const auto foundPrimitiveProxyIt = std::find_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto &primitiveProxy)
+                                                         { return proxyId == primitiveProxy->GetSceneProxyId(); });
 
          if (foundPrimitiveProxyIt != PrimitiveProxiesVector.end())
          {
@@ -784,8 +790,8 @@ namespace Graphics
       {
          std::shared_ptr<LightSceneProxy> result = nullptr;
 
-         const auto foundLightProxyIt = std::find_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto& lightProxy) {
-            return proxyId == lightProxy->GetSceneProxyId(); });
+         const auto foundLightProxyIt = std::find_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto &lightProxy)
+                                                     { return proxyId == lightProxy->GetSceneProxyId(); });
 
          if (foundLightProxyIt != LightProxiesVector.end())
          {
@@ -799,8 +805,8 @@ namespace Graphics
       {
          std::shared_ptr<MaterialProxy> result = nullptr;
 
-         const auto foundMaterialProxyIt = std::find_if(MaterialProxiesVector.begin(), MaterialProxiesVector.end(), [=](const auto& materialProxy) {
-            return proxyId == materialProxy->GetSceneProxyId(); });
+         const auto foundMaterialProxyIt = std::find_if(MaterialProxiesVector.begin(), MaterialProxiesVector.end(), [=](const auto &materialProxy)
+                                                        { return proxyId == materialProxy->GetSceneProxyId(); });
 
          if (foundMaterialProxyIt != MaterialProxiesVector.end())
          {
@@ -814,8 +820,8 @@ namespace Graphics
       {
          std::shared_ptr<PlanarReflectionProxy> result = nullptr;
 
-         const auto foundPlanarProxyIt = std::find_if(PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [=](const auto& planarProxy) {
-            return proxyId == planarProxy->GetSceneProxyId(); });
+         const auto foundPlanarProxyIt = std::find_if(PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [=](const auto &planarProxy)
+                                                      { return proxyId == planarProxy->GetSceneProxyId(); });
 
          if (foundPlanarProxyIt != PlanarReflectionProxiesVector.end())
          {
@@ -827,30 +833,30 @@ namespace Graphics
 
       bool DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const size_t proxyId)
       {
-          auto removeIt = std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto& primitiveProxy) {
-            return proxyId == primitiveProxy->GetSceneProxyId(); });
+         auto removeIt = std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto &primitiveProxy)
+                                        { return proxyId == primitiveProxy->GetSceneProxyId(); });
 
-          if (removeIt != PrimitiveProxiesVector.end())
-          {
-             PrimitiveProxiesVector.erase(removeIt);
-             return true;
-          }
+         if (removeIt != PrimitiveProxiesVector.end())
+         {
+            PrimitiveProxiesVector.erase(removeIt);
+            return true;
+         }
 
-          return false;
+         return false;
       }
 
       bool DeferredShadingSceneRenderer::RemoveLightProxyByProxyId(const size_t proxyId)
       {
-         auto removeIt = std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto& lightProxy) {
-            return proxyId == lightProxy->GetSceneProxyId(); });
+         auto removeIt = std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto &lightProxy)
+                                        { return proxyId == lightProxy->GetSceneProxyId(); });
 
-          if (removeIt != LightProxiesVector.end())
-          {
-             LightProxiesVector.erase(removeIt);
-             return true;
-          }
+         if (removeIt != LightProxiesVector.end())
+         {
+            LightProxiesVector.erase(removeIt);
+            return true;
+         }
 
-          return false;
+         return false;
       }
 
 #if DEBUG
@@ -862,9 +868,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugFramePanelsPass()
       {
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
-                     BlendingState<false>>
-             renderState;
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          m_textureRenderer.RenderFrames(m_gbuffer);
@@ -873,6 +877,82 @@ namespace Graphics
       void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {
          mDebugPhysicsRenderData = debugPhysicsRenderData;
+      }
+
+      void DeferredShadingSceneRenderer::DebugRenderText()
+      {
+         static struct TempTextStructure
+         {
+            FontType font;
+            GUIText text;
+            TextMeshData meshData;
+
+            std::shared_ptr<Skin> mSkin;
+
+            std::shared_ptr<ITexture> mFontTexture;
+
+            TempTextStructure()
+                : font(FontType(0, FolderManager::GetInstance()->GetResPath() + "fonts/arial.fnt")),
+                  text(GUIText("335", 5, font, glm::vec2(0.5f, 0.5f), 0.5, true))
+            {
+               meshData = font.CreateTextMeshData(text);
+               VertexArrayObject vao;
+               VertexBufferObject<float, 2> *positionVBO = new VertexBufferObject<float, 2>(meshData.GetVertexPositions(),
+                                                                                            eAttribArrayIndexName::POSITION,
+                                                                                            GL_ARRAY_BUFFER,
+                                                                                            eDataCarryFlag::INVALIDATE);
+               VertexBufferObject<float, 2> *textureVBO = new VertexBufferObject<float, 2>(meshData.GetTextureCoords(),
+                                                                                           eAttribArrayIndexName::TEXTURE_COORDINATES,
+                                                                                           GL_ARRAY_BUFFER,
+                                                                                           eDataCarryFlag::INVALIDATE);
+               vao.AddVBO(positionVBO, textureVBO);
+               vao.BindBuffersToVao();
+               mSkin = std::make_shared<Skin>(vao, BoundingBox());
+               mFontTexture = TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
+            }
+         } textMaster;
+
+         static struct TextShader : public Shader
+         {
+            Uniform u_fontAtlas;
+            Uniform u_position;
+            Uniform u_color;
+
+            TextShader()
+                : Shader(ShaderParams("fontShader",
+                                      FolderManager::GetInstance()->GetShadersPath() + "fontVS.glsl",
+                                      FolderManager::GetInstance()->GetShadersPath() + "fontFS.glsl"))
+            {
+               ShaderInit();
+            }
+
+            virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override
+            {
+               u_fontAtlas = GetUniform("fontAtlas", shaderProgramID);
+               u_position = GetUniform("position", shaderProgramID);
+               u_color = GetUniform("color", shaderProgramID);
+            }
+
+            virtual void SetShaderPredefine() override
+            {
+            }
+
+         } shader;
+
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
+                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
+             renderState;
+         renderState.BindRenderState();
+
+         textMaster.mFontTexture->BindTexture(0);
+         shader.ExecuteShader();
+         shader.u_fontAtlas.LoadUniform(0);
+         shader.u_position.LoadUniform(textMaster.text.GetPosition());
+         shader.u_color.LoadUniform(glm::vec3(1, 0, 0));
+         textMaster.mSkin->GetBuffer()->RenderVAO(GL_TRIANGLES);
+         shader.StopShader();
+
+         glDisable(GL_BLEND);
       }
 
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)

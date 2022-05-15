@@ -16,6 +16,9 @@ namespace EngineCore
 		std::vector<float> mTextureCoords;
 
 	public:
+
+		TextMeshData();
+
 		TextMeshData(const std::vector<float> &vertexPositions, const std::vector<float> &textureCoords);
 
 		const std::vector<float> &GetVertexPositions() const;

@@ -34,6 +34,16 @@ namespace EngineCore
         return mSpaceWidth;
     }
 
+    float FontMetaFile::GetHorizontalPerPixelSize() const
+    {
+        return mHorizontalPerPixelSize;
+    }
+
+    float FontMetaFile::GetVerticalPerPixelSize() const
+    {
+        return mVerticalPerPixelSize;
+    }
+
     Character FontMetaFile::GetCharacter(const int32_t ascii) const
     {
         assert(mMetaData.count(ascii));

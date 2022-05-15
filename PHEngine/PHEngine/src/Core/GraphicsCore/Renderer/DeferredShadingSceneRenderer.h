@@ -158,6 +158,8 @@ namespace Graphics
          void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
          void DebugFramePanelsPass();
+
+         void DebugRenderText();
 #endif
 		};
 

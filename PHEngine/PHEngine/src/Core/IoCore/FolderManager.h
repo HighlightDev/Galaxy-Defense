@@ -44,6 +44,7 @@ namespace IO
 		std::string GetCollisionPath() const;
 		std::string GetTexturesPath() const;
 		std::string GetConfigPath() const;
+		std::string GetFontsPath() const;
 
 		std::string GetMaterialTexturesPath() const;
 		std::string GetGrassTexturePath() const;
@@ -65,6 +66,7 @@ namespace IO
 		std::string GetShortShaderCommonPath() const;
 		std::string GetShortCollisionPath() const;
 		std::string GetShortTexturesPath() const;
+		std::string GetShortFontsPath() const;
 		std::string GetShortIniPath() const;
 		std::string GetShortMaterialTexturesPath() const;
 		std::string GetShortGrassTexturePath() const;

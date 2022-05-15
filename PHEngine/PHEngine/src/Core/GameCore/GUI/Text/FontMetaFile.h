@@ -121,5 +121,9 @@ namespace EngineCore
          * @return The data about the character.
          */
         std::optional<Character> TryLoadCharacter(const int32_t imageSize);
+
+        float GetHorizontalPerPixelSize() const;
+        
+        float GetVerticalPerPixelSize() const;
     };
 }

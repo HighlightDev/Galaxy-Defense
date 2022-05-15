@@ -79,7 +79,7 @@ namespace Game
                                                                   eComponentMetaType::Movement>(d_movement);
 
       c_movement->SetSpeed(0.02f);
-      a_spaceship->AddComponent(c_movement);                                                     
+      a_spaceship->AddComponent(c_movement);
 
       const auto &mainCamera = mScene->GetMainCamera();
       assert(mainCamera);
@@ -102,6 +102,8 @@ namespace Game
 
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
+
+      static std::shared_ptr<ITexture> tempTex = TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
 
    void IntroLevel::PostLevelInit()
