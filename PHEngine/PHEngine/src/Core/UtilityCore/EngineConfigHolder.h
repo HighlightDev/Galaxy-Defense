@@ -26,6 +26,8 @@ namespace EngineUtility
         float ShadowMapBiasDirLight = 0.0f;
         float ShadowMapBiasPointLight = 0.0f;
         float ShadowMapBiasSpotlight = 0.0f;
+
+        size_t MaxFontCharactersCount = 0;
     };
 
     class EngineConfigHolder

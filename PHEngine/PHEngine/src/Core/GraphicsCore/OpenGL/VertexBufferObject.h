@@ -64,7 +64,7 @@ namespace Graphics
 			eDataCarryFlag m_dataCarryFlag;
 
 		public:
-			VertexBufferObject(const std::vector<DataType> &data,
+			VertexBufferObject(std::vector<DataType> &&data,
 							   const eAttribArrayIndexName attribArrayIndexName,
 							   const int32_t bufferTarget,
 							   const eDataCarryFlag flag)
@@ -75,7 +75,21 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("VertexBufferObject::ctor");
+				Logger::Out("VertexBufferObject::ctor 1");
+			}
+
+			VertexBufferObject(
+				const size_t indicesCount,
+				const eAttribArrayIndexName attribArrayIndexName,
+				const int32_t bufferTarget)
+				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
+				  m_data(),
+				  m_totalDataLength(indicesCount * GetVectorElementByteSize()),
+				  m_countOfIndices(indicesCount),
+				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
+				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
+			{
+				Logger::Out("VertexBufferObject::ctor 2");
 			}
 
 			virtual ~VertexBufferObject()
@@ -101,7 +115,7 @@ namespace Graphics
 
 				Logger::Out("VertexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
 
-				glBufferData(m_bufferTarget, bufferSize, m_data.data(), buffer_usage);
+				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
 				this->SetVertexAttribPointerWithSpecificParams();
 

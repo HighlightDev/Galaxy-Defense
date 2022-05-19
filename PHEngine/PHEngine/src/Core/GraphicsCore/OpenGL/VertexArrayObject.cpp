@@ -39,7 +39,7 @@ namespace Graphics
 			Logger::Out("VertexArrayObject::GenVAO; descriptor = ", m_descriptor);
 		}
 
-		void VertexArrayObject::RenderVAO(int32_t primitiveMode)
+		void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
 		{
 			glBindVertexArray(m_descriptor);
 			if (HasIBO())
@@ -51,6 +51,20 @@ namespace Graphics
 				VertexBufferObjectBase *positionVBO = GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
 				assert(positionVBO);
 				glDrawArrays(primitiveMode, 0, positionVBO->GetCountOfIndices());
+			}
+			glBindVertexArray(0);
+		}
+
+		void VertexArrayObject::RenderVAO(const size_t count, const int32_t primitiveMode)
+		{
+			glBindVertexArray(m_descriptor);
+			if (HasIBO())
+			{
+				glDrawElements(primitiveMode, count, GL_UNSIGNED_INT, 0);
+			}
+			else
+			{
+				glDrawArrays(primitiveMode, 0, count);
 			}
 			glBindVertexArray(0);
 		}

@@ -54,7 +54,8 @@ namespace EngineUtility
             std::make_pair("shadow_ortho_projection_half_extent",   std::function([=](const std::string &valueStr) { mEngineConfig.ShadowOrthoProjectionHalfExtent  = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_dir_light",             std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasDirLight            = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_point_light",           std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasPointLight          = parseFloat(valueStr); })),
-            std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); }))
+            std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); })),
+            std::make_pair("max_font_characters_count",             std::function([=](const std::string &valueStr) { mEngineConfig.MaxFontCharactersCount           = parseUInt(valueStr); }))
         };
 
         size_t config_prop_count = 0;

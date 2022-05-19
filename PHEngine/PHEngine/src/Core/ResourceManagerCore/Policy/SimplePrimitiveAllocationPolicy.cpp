@@ -171,18 +171,18 @@ namespace Resources
 
          VertexBufferObjectBase *vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
 
-         vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(vertices,
+         vertexVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(std::move(vertices),
                                                                                 eAttribArrayIndexName::POSITION,
                                                                                 GL_ARRAY_BUFFER,
                                                                                 eDataCarryFlag::INVALIDATE);
 
          if (normals.size() > 0 && texCoords.size() > 0)
          {
-            normalVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(normals,
+            normalVBO = new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(std::move(normals),
                                                                                    eAttribArrayIndexName::NORMAL,
                                                                                    GL_ARRAY_BUFFER,
                                                                                    eDataCarryFlag::INVALIDATE);
-            texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(texCoords,
+            texCoordsVBO = new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(std::move(texCoords),
                                                                                       eAttribArrayIndexName::TEXTURE_COORDINATES,
                                                                                       GL_ARRAY_BUFFER,
                                                                                       eDataCarryFlag::INVALIDATE);

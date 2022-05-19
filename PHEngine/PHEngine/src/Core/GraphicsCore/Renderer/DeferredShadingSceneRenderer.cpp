@@ -897,11 +897,11 @@ namespace Graphics
             {
                meshData = font.CreateTextMeshData(text);
                VertexArrayObject vao;
-               VertexBufferObject<float, 2> *positionVBO = new VertexBufferObject<float, 2>(meshData.GetVertexPositions(),
+               VertexBufferObject<float, 2> *positionVBO = new VertexBufferObject<float, 2>(std::move(meshData.mVertexPositions),
                                                                                             eAttribArrayIndexName::POSITION,
                                                                                             GL_ARRAY_BUFFER,
                                                                                             eDataCarryFlag::INVALIDATE);
-               VertexBufferObject<float, 2> *textureVBO = new VertexBufferObject<float, 2>(meshData.GetTextureCoords(),
+               VertexBufferObject<float, 2> *textureVBO = new VertexBufferObject<float, 2>(std::move(meshData.mTextureCoords),
                                                                                            eAttribArrayIndexName::TEXTURE_COORDINATES,
                                                                                            GL_ARRAY_BUFFER,
                                                                                            eDataCarryFlag::INVALIDATE);

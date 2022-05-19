@@ -13,19 +13,4 @@ namespace EngineCore
 		  mTextureCoords(textureCoords)
 	{
 	}
-
-	const std::vector<float> &TextMeshData::GetVertexPositions() const
-	{
-		return mVertexPositions;
-	}
-
-	const std::vector<float> &TextMeshData::GetTextureCoords() const
-	{
-		return mTextureCoords;
-	}
-
-	size_t TextMeshData::GetVertexCount() const
-	{
-		return mVertexPositions.size() / 2;
-	}
 }

@@ -19,6 +19,9 @@
 #include "Implementation/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 
+#include "Core/GameCore/GUI/Text/FontHandler.h"
+#include "Core/GameCore/GUI/Text/FontParams.h"
+
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
@@ -103,7 +106,10 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      static std::shared_ptr<ITexture> tempTex = TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
+      FontHandler fontHandler;
+      FontParams fontParams(FolderManager::GetInstance()->GetFontsPath() + "arial.fnt" ,"arial.png");
+      fontHandler.RegisterFont(fontParams);
+      TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
 
    void IntroLevel::PostLevelInit()

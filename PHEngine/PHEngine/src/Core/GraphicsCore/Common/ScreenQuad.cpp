@@ -55,14 +55,14 @@ namespace Graphics
 
 		VertexBufferObject<float, 3, GL_FLOAT> *verticesVBO =
 			new VertexBufferObject<float, 3, GL_FLOAT, GL_STATIC_DRAW>(
-				vertices,
+				std::move(vertices),
 				eAttribArrayIndexName::POSITION,
 				GL_ARRAY_BUFFER,
 				eDataCarryFlag::INVALIDATE);
 
 		VertexBufferObjectBase *texCoordsVBO =
 			new VertexBufferObject<float, 2, GL_FLOAT, GL_STATIC_DRAW>(
-				texCoords,
+				std::move(texCoords),
 				eAttribArrayIndexName::TEXTURE_COORDINATES,
 				GL_ARRAY_BUFFER,
 				eDataCarryFlag::INVALIDATE);

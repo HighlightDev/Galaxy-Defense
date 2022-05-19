@@ -51,12 +51,12 @@ namespace Resources
 								   *blendIndicesVBO = nullptr;
 
 			if (meshAttributes->VertexIndices.size())
-				ibo = new IndexBufferObject(meshAttributes->VertexIndices, eDataCarryFlag::INVALIDATE);
+				ibo = new IndexBufferObject(std::move(meshAttributes->VertexIndices), eDataCarryFlag::INVALIDATE);
 
 			auto *vertexVBO = new VertexBufferObject<float,
 													 3,
 													 GL_FLOAT,
-													 GL_STATIC_DRAW>(meshAttributes->Positions,
+													 GL_STATIC_DRAW>(std::move(meshAttributes->Positions),
 																	 eAttribArrayIndexName::POSITION,
 																	 GL_ARRAY_BUFFER,
 																	 eDataCarryFlag::STORE);
@@ -66,7 +66,7 @@ namespace Resources
 				normalsVBO = new VertexBufferObject<float,
 													3,
 													GL_FLOAT,
-													GL_STATIC_DRAW>(meshAttributes->Normals,
+													GL_STATIC_DRAW>(std::move(meshAttributes->Normals),
 																	eAttribArrayIndexName::NORMAL,
 																	GL_ARRAY_BUFFER,
 																	eDataCarryFlag::INVALIDATE);
@@ -76,7 +76,7 @@ namespace Resources
 				texCoordsVBO = new VertexBufferObject<float,
 													  2,
 													  GL_FLOAT,
-													  GL_STATIC_DRAW>(meshAttributes->TextureCoordinates,
+													  GL_STATIC_DRAW>(std::move(meshAttributes->TextureCoordinates),
 																	  eAttribArrayIndexName::TEXTURE_COORDINATES,
 																	  GL_ARRAY_BUFFER,
 																	  eDataCarryFlag::INVALIDATE);
@@ -86,7 +86,7 @@ namespace Resources
 				tangentsVBO = new VertexBufferObject<float,
 													 3,
 													 GL_FLOAT,
-													 GL_STATIC_DRAW>(meshAttributes->TangentNormals,
+													 GL_STATIC_DRAW>(std::move(meshAttributes->TangentNormals),
 																	 eAttribArrayIndexName::TANGENT,
 																	 GL_ARRAY_BUFFER,
 																	 eDataCarryFlag::INVALIDATE);
@@ -96,7 +96,7 @@ namespace Resources
 				bitangentsVBO = new VertexBufferObject<float,
 													   3,
 													   GL_FLOAT,
-													   GL_STATIC_DRAW>(meshAttributes->BitangetNormals,
+													   GL_STATIC_DRAW>(std::move(meshAttributes->BitangetNormals),
 																	   eAttribArrayIndexName::BITANGENT,
 																	   GL_ARRAY_BUFFER,
 																	   eDataCarryFlag::INVALIDATE);
@@ -107,7 +107,7 @@ namespace Resources
 				blendWeightsVBO = new VertexBufferObject<float,
 														 4,
 														 GL_FLOAT,
-														 GL_STATIC_DRAW>(meshAttributes->BoneWeights,
+														 GL_STATIC_DRAW>(std::move(meshAttributes->BoneWeights),
 																		 eAttribArrayIndexName::BONE_INDEX,
 																		 GL_ARRAY_BUFFER,
 																		 eDataCarryFlag::INVALIDATE);
@@ -115,7 +115,7 @@ namespace Resources
 				blendIndicesVBO = new VertexBufferObject<int32_t,
 														 4,
 														 GL_FLOAT,
-														 GL_STATIC_DRAW>(meshAttributes->BoneIndices,
+														 GL_STATIC_DRAW>(std::move(meshAttributes->BoneIndices),
 																		 eAttribArrayIndexName::BONE_WEIGHT,
 																		 GL_ARRAY_BUFFER,
 																		 eDataCarryFlag::INVALIDATE);

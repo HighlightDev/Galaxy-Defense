@@ -9,7 +9,7 @@ namespace Graphics
 {
 	namespace OpenGL
 	{
-		IndexBufferObject::IndexBufferObject(const std::vector<uint32_t>& data, eDataCarryFlag dataCarryFlag)
+		IndexBufferObject::IndexBufferObject(std::vector<uint32_t>&& data, eDataCarryFlag dataCarryFlag)
 			: VertexBufferObjectBase(eAttribArrayIndexName::POSITION_INDICES, GL_ELEMENT_ARRAY_BUFFER)
 			, m_data(std::move(data))
 			, m_dataCarryFlag(dataCarryFlag)

@@ -10,21 +10,13 @@ namespace EngineCore
 	 * @author Karl
 	 *
 	 */
-	class TextMeshData
+	struct TextMeshData
 	{
 		std::vector<float> mVertexPositions;
 		std::vector<float> mTextureCoords;
 
-	public:
-
 		TextMeshData();
 
 		TextMeshData(const std::vector<float> &vertexPositions, const std::vector<float> &textureCoords);
-
-		const std::vector<float> &GetVertexPositions() const;
-
-		const std::vector<float> &GetTextureCoords() const;
-
-		size_t GetVertexCount() const;
 	};
 }
