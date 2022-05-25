@@ -72,14 +72,14 @@ namespace EnginePhysics
 
    void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor *inDescriptor)
    {
-      Logger::Out("PhysicsWorld::AddPhysDescriptor; descriptor id = ", inDescriptor->GetId());
+      Logger::Out("PhysicsWorld::AddPhysDescriptor => descriptor id = ", inDescriptor->GetId());
 
       mPhysicsDescriptors.push_back(inDescriptor);
    }
 
    void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor)
    {
-      Logger::Out("PhysicsWorld::RemovePhysDescriptorFromSimulation; descriptor id = ", descriptor->GetId());
+      Logger::Out("PhysicsWorld::RemovePhysDescriptorFromSimulation => descriptor id = ", descriptor->GetId());
       // !!! ATTENTION !!!
       // this is the only place,
       // where descriptor could be deleted.

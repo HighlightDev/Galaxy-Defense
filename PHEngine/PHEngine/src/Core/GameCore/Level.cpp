@@ -123,7 +123,7 @@ namespace EngineCore
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
    {
-      Logger::Out("InstantiateLevelFromSerializedContainer");
+      Logger::Out("Level::InstantiateLevelFromSerializedContainer");
 
       const std::vector<std::string> &resourceNames = SerializeHelper::GetSerializedAllocatedResources(container.Resources);
       for (const auto &resName : resourceNames)
@@ -158,13 +158,13 @@ namespace EngineCore
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         Logger::Out("Actor name: ", actor->GetName());
+         Logger::Out("Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
 
          for (const auto &componentData : actorData.ComponentsData)
          {
             const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            Logger::Out("Component name: ", component->GetGameObjectName());
+            Logger::Out("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
 
             if (component)
             {

@@ -45,7 +45,7 @@ namespace EnginePhysics
          mMotionModifier(motionModifier),
          mIsCollisionEnabled(true)
    {
-      Logger::Out("PhysicsDescriptor::ctor. my descriptor id=", mCurrentId);
+      Logger::Out("PhysicsDescriptor::ctor => my descriptor id=", mCurrentId);
 
       if (!CompareFloats(mass, 0.0f))
       {
@@ -55,7 +55,7 @@ namespace EnginePhysics
 
    PhysicsDescriptor::~PhysicsDescriptor()
    {
-      Logger::Out("PhysicsDescriptor::dctor. my descriptor id=", mCurrentId);
+      Logger::Out("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
 
       if (mRigidBody)
       {
@@ -170,7 +170,7 @@ namespace EnginePhysics
 
    void PhysicsDescriptor::SetOwnerComponentGameObjectId(const uint64_t ownerComponentGameObjectId)
    {
-      Logger::Out("PhysicsDescriptor::SetOwnerComponentGameObjectId. my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
+      Logger::Out("PhysicsDescriptor::SetOwnerComponentGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
       mOwnerComponentGameObjectId = ownerComponentGameObjectId;
    }
 
@@ -181,7 +181,7 @@ namespace EnginePhysics
 
    void PhysicsDescriptor::SetOwnerActorGameObjectId(const uint64_t ownerActorGameObjectId)
    {
-      Logger::Out("PhysicsDescriptor::SetOwnerActorGameObjectId. my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
+      Logger::Out("PhysicsDescriptor::SetOwnerActorGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
       mOwnerActorGameObjectId = ownerActorGameObjectId;
    }
 

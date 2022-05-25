@@ -10,6 +10,7 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
+#include "TextHandler.h"
 
 #include <type_traits>
 
@@ -63,6 +64,8 @@ namespace EngineCore
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
       std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
+
+      TextHandler mTextHandler;
 
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);

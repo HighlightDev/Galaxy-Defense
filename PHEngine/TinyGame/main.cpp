@@ -162,7 +162,7 @@ int32_t main(int32_t argc, char **argv)
   auto width = 1200;
   auto height = 900;
   window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
-  Logger::Out("glfwWindow create with size: width = ", width, " height = ", height);
+  Logger::Out("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)
   {
@@ -183,7 +183,7 @@ int32_t main(int32_t argc, char **argv)
 
   if (initResult != GLEW_OK)
   {
-    Logger::Out("GLEW is NOK");
+    Logger::Out("main => GLEW is NOK");
     glfwTerminate();
   }
 

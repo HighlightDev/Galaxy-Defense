@@ -170,7 +170,7 @@ namespace Game
 
             if (mDeltaTime > mCoolDownTime)
             {
-                Logger::Out("CombatController::Tick. Cooldown!");
+                Logger::Out("CombatController::Tick => Cooldown!");
                 mDeltaTime = 0.0f;
                 bIsCoolDownInProgress = false;
             }
@@ -211,7 +211,7 @@ namespace Game
 
         if (idleBulletIt == mWeaponBulletsPool.end())
         {
-            Logger::Out("CombatController::ShootBullet. Error - no idle bullets in the pool");
+            Logger::Out("CombatController::ShootBullet => Error - no idle bullets in the pool");
             return;
         }
 
@@ -220,7 +220,7 @@ namespace Game
             bulletSp->SetIsEnabled(true);
             bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
             idleBulletIt->second = eBulletState::ACTIVE;
-            Logger::Out("CombatController::ShootBuller. Successfull shoot.");
+            Logger::Out("CombatController::ShootBuller => Successfull shoot.");
         }
     }
 
@@ -246,13 +246,13 @@ namespace Game
                     weaponSP->GetRootComponent()->SetTranslation(glm::vec3(0));
                     weaponPair.second = eBulletState::IDLE;
 
-                    Logger::Out("CombatController::FlushToPoolUsedBullets. Flush bullet to pool. Position = ",
+                    Logger::Out("CombatController::FlushToPoolUsedBullets => Flush bullet to pool. Position = ",
                                 bulletPosition, " . Actor name = ", weaponSP->GetName());
                 }
             }
             else
             {
-                Logger::Out("CombatController::FlushToPoolUsedBullets. Error: Bullet was destroyed!");
+                Logger::Out("CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
             }
         }
     }

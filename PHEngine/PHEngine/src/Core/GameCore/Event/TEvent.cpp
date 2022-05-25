@@ -7,6 +7,8 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
+#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/Event/TextEvent.h"
 
 using namespace Graphics::Texture;
 
@@ -23,4 +25,5 @@ namespace Event
    template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
+   template class TEvent<SingleDataEventPolicy<TextField *, eRegisterType>>;
 }

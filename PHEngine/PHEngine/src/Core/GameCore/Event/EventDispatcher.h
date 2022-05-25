@@ -9,6 +9,7 @@
 #include "MouseMovedEvent.h"
 #include "MouseScrollEvent.h"
 #include "PhysicsCollisionOccuredEvent.h"
+#include "TextEvent.h"
 
 #include <type_traits>
 

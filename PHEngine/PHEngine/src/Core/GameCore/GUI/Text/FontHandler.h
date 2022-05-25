@@ -3,11 +3,14 @@
 #include "TextMesh.h"
 #include "FontParams.h"
 #include "FontMetaFile.h"
+#include "TextFieldProxy.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
+using namespace Graphics;
 using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
 
@@ -32,6 +35,7 @@ namespace EngineCore
     class FontHandler
     {
         std::unordered_map<FontParams, std::shared_ptr<FontRenderData>> mFontMeshMap;
+        std::unordered_map<FontParams, std::vector<TextFieldProxy>> mTextFields;
 
     public:
         FontHandler();

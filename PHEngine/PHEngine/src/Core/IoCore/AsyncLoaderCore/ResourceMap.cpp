@@ -63,7 +63,7 @@ namespace IO
 
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         Logger::Out("WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
+         Logger::Out("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
          return;
       }
 
@@ -95,7 +95,7 @@ namespace IO
    {
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         Logger::Out("WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+         Logger::Out("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
          return;
       }
 

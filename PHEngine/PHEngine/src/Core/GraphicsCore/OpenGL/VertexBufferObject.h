@@ -75,7 +75,7 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("VertexBufferObject::ctor 1");
+				Logger::Out("VertexBufferObject::ctor => #1");
 			}
 
 			VertexBufferObject(
@@ -89,7 +89,7 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
 			{
-				Logger::Out("VertexBufferObject::ctor 2");
+				Logger::Out("VertexBufferObject::ctor => #2");
 			}
 
 			virtual ~VertexBufferObject()
@@ -113,7 +113,7 @@ namespace Graphics
 				GenBuffer();
 				BindVBO();
 
-				Logger::Out("VertexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
+				Logger::Out("VertexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
 
 				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
@@ -153,7 +153,7 @@ namespace Graphics
 
 			virtual void CleanUp() override
 			{
-				Logger::Out("VertexBufferObject::CleanUp; descriptor = ", m_descriptor);
+				Logger::Out("VertexBufferObject::CleanUp => descriptor = ", m_descriptor);
 				UnbindVBO();
 				glDeleteBuffers(1, &m_descriptor);
 			}

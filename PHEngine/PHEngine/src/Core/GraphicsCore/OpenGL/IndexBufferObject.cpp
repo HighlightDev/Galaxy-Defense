@@ -40,7 +40,7 @@ namespace Graphics
 			BindIndexBuffer();
 			size_t bufferSize = sizeof(size_t) * GetTotalLengthOfData();
 
-			Logger::Out("IndexBufferObject::SendDataToGPU; bufferSize = ", bufferSize);
+			Logger::Out("IndexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
 			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
@@ -57,7 +57,7 @@ namespace Graphics
 
 		void IndexBufferObject::CleanUp()
 		{
-			Logger::Out("IndexBufferObject::CleanUp; descriptor = ", m_descriptor);
+			Logger::Out("IndexBufferObject::CleanUp => descriptor = ", m_descriptor);
 			glDeleteBuffers(1, &m_descriptor);
 		}
 

@@ -36,7 +36,7 @@ namespace Graphics
 		void VertexArrayObject::GenVAO()
 		{
 			glGenVertexArrays(1, &m_descriptor);
-			Logger::Out("VertexArrayObject::GenVAO; descriptor = ", m_descriptor);
+			Logger::Out("VertexArrayObject::GenVAO => descriptor = ", m_descriptor);
 		}
 
 		void VertexArrayObject::RenderVAO(const int32_t primitiveMode)
@@ -80,14 +80,14 @@ namespace Graphics
 
 		void VertexArrayObject::AddIndexBuffer(IndexBufferObject *ibo)
 		{
-			Logger::Out("VertexArrayObject::AddIndexBuffer; descriptor = ", m_descriptor,
+			Logger::Out("VertexArrayObject::AddIndexBuffer => descriptor = ", m_descriptor,
 						"IBO descriptor = ", ibo->GetDescriptor());
 			m_ibo = ibo;
 		}
 
 		void VertexArrayObject::BindBuffersToVao()
 		{
-			Logger::Out("VertexArrayObject::BindBuffersToVao; descriptor = ", m_descriptor);
+			Logger::Out("VertexArrayObject::BindBuffersToVao => descriptor = ", m_descriptor);
 
 			glBindVertexArray(m_descriptor);
 
@@ -114,7 +114,7 @@ namespace Graphics
 
 		void VertexArrayObject::CleanUp()
 		{
-			Logger::Out("VertexArrayObject::CleanUp; descriptor = ", m_descriptor);
+			Logger::Out("VertexArrayObject::CleanUp => descriptor = ", m_descriptor);
 
 			glBindVertexArray(0);
 

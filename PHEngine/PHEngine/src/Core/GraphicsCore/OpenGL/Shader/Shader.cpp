@@ -41,7 +41,7 @@ namespace Graphics
          }
          else
          {
-            Logger::Out("Shader::ShaderInit. Shader source loading failed");
+            Logger::Out("Shader::ShaderInit => Shader source loading failed");
          }
       }
 
@@ -155,7 +155,7 @@ namespace Graphics
          }
 
          const bool bCompiledSuccesfully = IsShaderCompiled();
-         Logger::Out("Shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
+         Logger::Out("Shader::RecompileShader => shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
       }
 
 #endif

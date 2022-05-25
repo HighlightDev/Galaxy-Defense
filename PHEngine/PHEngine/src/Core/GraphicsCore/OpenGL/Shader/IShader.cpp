@@ -23,7 +23,7 @@ namespace Graphics
             m_shaderProgramID(-1),
             mShaderName(shaderName)
       {
-         Logger::Out("IShader::ctor; shaderName = ", shaderName);
+         Logger::Out("IShader::ctor => shaderName = ", shaderName);
       }
 
       IShader::~IShader()
@@ -38,7 +38,7 @@ namespace Graphics
          }
          catch (std::invalid_argument innerEx)
          {
-            Logger::Out("IShader::GetUniform; shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
+            Logger::Out("IShader::GetUniform => shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
             throw std::invalid_argument("IShader::GetUniform could not bind uniform");
          }
       }
@@ -51,7 +51,7 @@ namespace Graphics
          }
          catch (std::invalid_argument innerEx)
          {
-            Logger::Out("IShader::GetUniform; shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
+            Logger::Out("IShader::GetUniform => shaderName = ", mShaderName, " could not bind uniform. Inner exception message : \n", innerEx.what());
             throw std::invalid_argument("IShader::GetUniform could not bind uniform");
          }
       }
@@ -130,7 +130,7 @@ namespace Graphics
 
       bool IShader::SendToGpuSingleShaderSource(int32_t shaderId, const std::string &shaderSource) const
       {
-         Logger::Out("IShader::SendToGpuSingleShaderSource; shaderId = ", shaderId);
+         Logger::Out("IShader::SendToGpuSingleShaderSource => shaderId = ", shaderId);
          bool bLoadResult = false;
 
          try
@@ -478,13 +478,13 @@ namespace Graphics
       {
          m_shaderProgramID = shaderProgramId;
 #if DEBUG
-         Logger::Out("DEBUG: ", GetCompileLogInfo(), "\n", GetLinkLogInfo());
+         Logger::Out("IShader::AccessAllUniformLocations => ", GetCompileLogInfo(), "\n", GetLinkLogInfo());
 #endif
       }
 
       void IShader::CleanUp(bool bDeleteShaderProgram)
       {
-         Logger::Out("IShader::CleanUp; bDeleteShaderProgram = ", bDeleteShaderProgram);
+         Logger::Out("IShader::CleanUp => bDeleteShaderProgram = ", bDeleteShaderProgram);
          StopShader();
          glDetachShader(m_shaderProgramID, m_vertexShaderID);
          glDetachShader(m_shaderProgramID, m_fragmentShaderID);

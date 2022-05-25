@@ -68,7 +68,7 @@ namespace EngineCore
 
    void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
    {
-      Logger::Out("Scene::RegisterMainCamera; name = ", camera->GetCameraName());
+      Logger::Out("Scene::RegisterMainCamera => name = ", camera->GetCameraName());
 
       assert(!mMainCamera);
       mMainCamera = camera;
@@ -77,7 +77,7 @@ namespace EngineCore
 
    void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
    {
-      Logger::Out("Scene::RegisterCamera; name = ", camera->GetCameraName());
+      Logger::Out("Scene::RegisterCamera => name = ", camera->GetCameraName());
 
       mActiveCameras.emplace_back(camera);
       RegisterGameObject(camera.get());
@@ -88,7 +88,7 @@ namespace EngineCore
 
    std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
    {
-      Logger::Out("Scene::RegisterMaterialInstance; name = ", material->MaterialName);
+      Logger::Out("Scene::RegisterMaterialInstance => name = ", material->MaterialName);
 
       mMaterials.push_back(material);
 
@@ -275,7 +275,7 @@ namespace EngineCore
                      primitiveSp->SetEnabled(bEnabled);
                   }
                   else {
-                       Logger::Out("Scene::UpdatePrimitiveComponentEnable_OnRenderThread."
+                       Logger::Out("Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
                                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                                                                 primitiveSceneProxyIndex);
                   } }));
@@ -297,7 +297,7 @@ namespace EngineCore
                      primitiveProxySp->SetVisibility(visibility);
                   }
                   else {
-                       Logger::Out("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread."
+                       Logger::Out("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
                                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                                                                 primitiveSceneProxyIndex);
                   } }));
@@ -321,7 +321,7 @@ namespace EngineCore
             }
             else
             {
-               Logger::Out("Scene::UpdatePrimitiveComponentTransform_OnRenderThread."
+               Logger::Out("Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
                               "Error !Current proxy index doesn't exist on RT. Proxy index = " , primitiveSceneProxyIndex);
             } }));
       }
@@ -344,7 +344,7 @@ namespace EngineCore
          }
          else
          {
-            Logger::Out("Scene::UpdateCameraSceneProxyData_OnRenderThread."
+            Logger::Out("Scene::UpdateCameraSceneProxyData_OnRenderThread => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                         sceneProxyId);
          }
@@ -366,7 +366,7 @@ namespace EngineCore
                }
                else
                {
-                  Logger::Out("Scene::UpdateLightComponentTransform_OnRenderThread."
+                  Logger::Out("Scene::UpdateLightComponentTransform_OnRenderThread => "
                               "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
                } }));
       }
@@ -389,7 +389,7 @@ namespace EngineCore
                }
                else 
                {
-                   Logger::Out("Scene::PrimitiveSceneProxyDeleted_OnRenderThread."
+                   Logger::Out("Scene::PrimitiveSceneProxyDeleted_OnRenderThread => "
                                "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
                } }));
       }
@@ -426,7 +426,7 @@ namespace EngineCore
                }
                else
                {
-                  Logger::Out("Scene::LightSceneProxyDeleted_OnRenderThread."
+                  Logger::Out("Scene::LightSceneProxyDeleted_OnRenderThread => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
                } }));
       }
@@ -495,7 +495,7 @@ namespace EngineCore
 
    void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
    {
-      Logger::Out("Scene::MaterialProxyAdded_OnRenderThread; material name = ", materialProxy->MaterialName);
+      Logger::Out("Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName);
 
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
@@ -507,7 +507,7 @@ namespace EngineCore
                                                      { 
                                                         const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
                                                         assert(!materialProxySp);
-                                                        Logger::Out("MaterialProxyAdded_OnRenderThread::Job material name = ", materialProxy->MaterialName);
+                                                        Logger::Out("MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
                                                         sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); }));
       }
    }
@@ -528,7 +528,7 @@ namespace EngineCore
                                                          materialProxySp->UpdateProperties(std::move(properties)); 
                                                       }
                                                       else{
-                                                         Logger::Out("Scene::MaterialPropertiesUpdated_OnRenderThread."
+                                                         Logger::Out("Scene::MaterialPropertiesUpdated_OnRenderThread => "
                                                             "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
                                                       } }));
       }
@@ -570,7 +570,7 @@ namespace EngineCore
             }
              else
             {
-               Logger::Out("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread."
+               Logger::Out("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
                      "Error! Current proxy index doesn't exist on RT. Proxy index = ", proxyId);
             } }));
       }
@@ -673,7 +673,7 @@ namespace EngineCore
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
-      Logger::Out("Scene::RegisterComponentSceneProxy; componentName = ", component->GetGameObjectName());
+      Logger::Out("Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
 
       ComponentType type = component->GetComponentType();
       if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)

@@ -490,7 +490,7 @@ namespace EngineCore
       }
       }
 
-      Logger::Out("Deserialize component, type:", logCompType);
+      Logger::Out("SerializeHelper::CreateComponentFromSerializedData => Deserialize component, type:", logCompType);
 
       return result;
    }
