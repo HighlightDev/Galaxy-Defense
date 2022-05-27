@@ -34,7 +34,7 @@ namespace EngineCore
 
     class FontHandler
     {
-        std::unordered_map<FontParams, std::shared_ptr<FontRenderData>> mFontMeshMap;
+        std::unordered_map<std::string, std::shared_ptr<FontRenderData>> mFontMeshMap;
         std::unordered_map<FontParams, std::vector<TextFieldProxy>> mTextFields;
 
     public:

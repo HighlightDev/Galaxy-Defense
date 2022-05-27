@@ -8,18 +8,20 @@ namespace EngineCore
 {
     struct FontParams
     {
+        std::string FontName;
         std::string FontDescriptorFile;
         std::string FontTextureAtlas;
 
-        explicit FontParams(const std::string &fontDescriptorFile,
+        explicit FontParams(const std::string &fontName,
+                            const std::string &fontDescriptorFile,
                             const std::string &fontTextureAtlas);
 
         friend struct std::hash<FontParams>;
 
         bool operator==(const FontParams &other) const
         {
-
-            return this->FontDescriptorFile == other.FontDescriptorFile &&
+            return this->FontName == other.FontName &&
+                   this->FontDescriptorFile == other.FontDescriptorFile &&
                    this->FontTextureAtlas == other.FontTextureAtlas;
         }
     };
@@ -33,7 +35,8 @@ namespace std
     {
         std::size_t operator()(const FontParams &k) const
         {
-            return hash<std::string>()(k.FontDescriptorFile) ^
+            return hash<std::string>()(k.FontName) ^
+                   hash<std::string>()(k.FontDescriptorFile) ^
                    hash<std::string>()(k.FontTextureAtlas);
         }
     };

@@ -110,9 +110,6 @@ namespace Game
       const auto textFieldSp = std::make_shared<TextField>("arial", 15, glm::vec3(1), glm::vec2(), 5, 5, true);
       textFieldSp->RegisterText();
 
-      FontHandler fontHandler;
-      FontParams fontParams(FolderManager::GetInstance()->GetFontsPath() + "arial.fnt" ,"arial.png");
-      fontHandler.RegisterFont(fontParams);
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
 

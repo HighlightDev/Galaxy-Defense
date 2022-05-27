@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace EngineUtility
 {
@@ -28,6 +29,8 @@ namespace EngineUtility
         float ShadowMapBiasSpotlight = 0.0f;
 
         size_t MaxFontCharactersCount = 0;
+
+        std::vector<std::string> FontsVector = std::vector<std::string>();
     };
 
     class EngineConfigHolder

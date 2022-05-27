@@ -2,13 +2,12 @@
 
 namespace EngineCore
 {
-    std::string FontDescriptorFile;
-    std::string FontTextureAtlas;
-
-    FontParams::FontParams(const std::string &fontDescriptorFile,
-                           const std::string &fontTextureAtlas)
-        : FontDescriptorFile(fontDescriptorFile),
-          FontTextureAtlas(fontTextureAtlas)
-    {
-    }
+  FontParams::FontParams(const std::string &fontName,
+                         const std::string &fontDescriptorFile,
+                         const std::string &fontTextureAtlas)
+      : FontName(fontName),
+        FontDescriptorFile(fontDescriptorFile),
+        FontTextureAtlas(fontTextureAtlas)
+  {
+  }
 }

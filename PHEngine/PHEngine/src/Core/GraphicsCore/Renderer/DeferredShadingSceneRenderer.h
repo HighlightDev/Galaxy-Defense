@@ -29,13 +29,14 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/DebugCore/TextureRenderer.h"
+#include "Core/GameCore/GUI/Text/FontHandler.h"
 
 #include <utility>
 
-using namespace EngineCore::ShaderImpl;
-using namespace EngineCore;
-using namespace Thread;
 using namespace Debug;
+using namespace Thread;
+using namespace EngineCore;
+using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
 
 namespace Graphics
@@ -107,6 +108,8 @@ namespace Graphics
 
          std::vector<std::pair<size_t, std::vector<LightSceneProxy*>>> mGroupedByShadowAtlasLights;
 
+         FontHandler mFontHandler;
+
       private:
 
          void PrepareSceneProxiesForRender();
@@ -122,6 +125,8 @@ namespace Graphics
          void DepthPass(std::shared_ptr<SceneView> sceneView);
 
          void PlanarReflectionPass();
+
+         void RegisterFonts();
 
       public:
 

@@ -25,5 +25,5 @@ namespace Event
    template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
-   template class TEvent<SingleDataEventPolicy<TextField *, eRegisterType>>;
+   template class TEvent<SingleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>;
 }

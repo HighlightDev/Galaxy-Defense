@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "TEvent.h"
 #include "Policy/Policies.h"
 #include "Core/GameCore/GUI/Text/TextField.h"
@@ -15,9 +17,9 @@ namespace Event
    };
 
    class TextRegisterEvent
-       : public TEvent<SingleDataEventPolicy<TextField *, eRegisterType>>
+       : public TEvent<SingleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<TextField *, eRegisterType>>::Event_t;
+      using Event_t = TEvent<SingleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>::Event_t;
    };
 }

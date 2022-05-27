@@ -13,6 +13,7 @@
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/Scene.h"
 
 #include "Core/GameCore/GUI/Text/GUIText.h"
@@ -102,6 +103,19 @@ namespace Graphics
             {
                lightProxy->PostLevelInit();
             } }));
+
+         RegisterFonts();
+      }
+
+      void DeferredShadingSceneRenderer::RegisterFonts()
+      {
+         const auto &fonts = EngineConfigHolder::GetInstance()->GetEngineConfig().FontsVector;
+
+         for (const auto &font : fonts)
+         {
+            FontParams fontParams(font, font + ".fnt", font + ".png");
+            mFontHandler.RegisterFont(fontParams);
+         }
       }
 
       void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView)

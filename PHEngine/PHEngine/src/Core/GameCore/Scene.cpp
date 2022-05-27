@@ -18,10 +18,18 @@ namespace EngineCore
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
        : GameObject("EngineScene"),
          mPhysicsWorld(new PhysicsWorld()),
+         GameObjects(),
          m_interThreadMgr(interThreadMgr),
          mGameThreadDeltaSec(std::make_shared<EngineGOProperty<float>>(0.0f, "GT_DeltaSec")),
+         mDeferredResourceCreators(),
+         mActors(),
+         mMainCamera(),
          mActiveCameras(),
-         mActorControllers()
+         mActorControllers(),
+         mMaterials(),
+         mDynamicMaterials(),
+         mExternalTickableObjects(),
+         mTextHandler()
    {
       Logger::Out("Scene::ctor");
 
@@ -33,6 +41,8 @@ namespace EngineCore
    void Scene::PostLevelInit()
    {
       Logger::Out("Scene::PostLevelInit");
+
+      mTextHandler.SetScene(shared_from_this());
 
       for (auto &actor : mActors)
       {

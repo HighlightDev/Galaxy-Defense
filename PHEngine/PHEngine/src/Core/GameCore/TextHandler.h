@@ -10,6 +10,7 @@ using namespace Event;
 
 namespace EngineCore
 {
+    class Scene;
 
     class TextHandler : public TextRegisterEvent::Event_t
     {
@@ -19,7 +20,11 @@ namespace EngineCore
 
         ~TextHandler();
 
+        std::weak_ptr<Scene> mSceneWp;
+
         std::vector<std::shared_ptr<TextField>> mTextFields;
+
+        void SetScene(const std::weak_ptr<Scene>& sceneWp);
 
     protected:
         virtual void ProcessEvent(const TextRegisterEvent::EventData_t &data) override;

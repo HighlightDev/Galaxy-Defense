@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <sstream>
+#include <algorithm>
 
 namespace EngineUtility
 {
@@ -39,6 +40,14 @@ namespace EngineUtility
             return stof(valueStr);
         };
 
+        const auto parseStringVector = [](const std::string& valueStr) -> std::vector<std::string>
+        {
+            auto vectorItems = Split(valueStr, ';');
+            assert(vectorItems.size());
+            std::transform(vectorItems.begin(), vectorItems.end(), vectorItems.begin(), [](const auto& item) -> std::string { return Trim(item); });
+            return vectorItems;
+        };
+
         std::unordered_map<std::string, std::function<void(const std::string &valueStr)>> config_values_map =
         {
             std::make_pair("max_skeletal_mesh_bones",               std::function([=](const std::string &valueStr) { mEngineConfig.MaxSkeletBones                   = parseUInt(valueStr); })),
@@ -55,7 +64,8 @@ namespace EngineUtility
             std::make_pair("shadow_map_bias_dir_light",             std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasDirLight            = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_point_light",           std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasPointLight          = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); })),
-            std::make_pair("max_font_characters_count",             std::function([=](const std::string &valueStr) { mEngineConfig.MaxFontCharactersCount           = parseUInt(valueStr); }))
+            std::make_pair("max_font_characters_count",             std::function([=](const std::string &valueStr) { mEngineConfig.MaxFontCharactersCount           = parseUInt(valueStr); })),
+            std::make_pair("fonts",                                 std::function([=](const std::string &valueStr) { mEngineConfig.FontsVector                      = parseStringVector(valueStr); }))
         };
 
         size_t config_prop_count = 0;

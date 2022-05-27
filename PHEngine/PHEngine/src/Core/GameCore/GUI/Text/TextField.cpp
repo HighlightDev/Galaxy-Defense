@@ -35,7 +35,7 @@ namespace EngineCore
     assert(!mIsRegistered);
     mTextFieldId = s_TotalTextFieldId++;
     mIsRegistered = true;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, this, eRegisterType::REGISTER);
+    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER);
 
     Logger::Out("TextField::RegisterText => Registered text with id = ", mTextFieldId);
   }
@@ -44,7 +44,7 @@ namespace EngineCore
   {
     assert(mIsRegistered);
     mIsRegistered = false;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, this, eRegisterType::UNREGISTER);
+    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER);
 
     Logger::Out("TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
   }
