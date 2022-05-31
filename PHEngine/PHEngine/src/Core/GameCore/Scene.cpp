@@ -6,6 +6,7 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
+#include "Core/GameCore/GUI/Text/TextFieldProxy.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -519,6 +520,32 @@ namespace EngineCore
                                                         assert(!materialProxySp);
                                                         Logger::Out("MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
                                                         sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); }));
+      }
+   }
+
+   void Scene::RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField)
+   {
+      Logger::Out("Scene::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static const uint64_t functionId = Hash("Scene::RegisterText_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
+                                                      TextFieldProxy textFieldProxy;
+                                                      textFieldProxy.mTextFieldId = textField->GetTextFieldId();
+                                                      textFieldProxy.mText = textField->GetText();
+                                                      textFieldProxy.mFontName = textField->GetFontName();
+                                                      textFieldProxy.mPosition = textField->GetPosition();
+                                                      textFieldProxy.mColor = textField->GetColor();
+                                                      textFieldProxy.mFontSize = textField->GetFontSize();
+                                                      textFieldProxy.mIsCenteredText = textField->GetIsCentered();
+                                                      textFieldProxy.mLineMaxSize = textField->GetLineMaxSize();
+                                                      textFieldProxy.mNumberOfLines = textField->GetNumberOfLines();
+                                                      sceneRenderer->RegisterText(textFieldProxy); }));
       }
    }
 

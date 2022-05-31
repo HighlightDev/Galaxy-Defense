@@ -4,7 +4,6 @@ namespace EngineCore
 {
 	GUIText::GUIText(const std::string &text,
 					 const float fontSize,
-					 const FontType &font,
 					 const glm::vec2 &position,
 					 const float maxLineLength,
 					 const bool isCentered)
@@ -16,7 +15,6 @@ namespace EngineCore
 		  mPosition(position),
 		  mLineMaxSize(maxLineLength),
 		  mNumberOfLines(0),
-		  mFont(font),
 		  mIsCenteredText(isCentered)
 	{
 		// load text
@@ -25,11 +23,6 @@ namespace EngineCore
 	void GUIText::Remove()
 	{
 		// remove text
-	}
-
-	const FontType &GUIText::GetFont() const
-	{
-		return mFont;
 	}
 
 	void GUIText::SetColor(const glm::vec3 &color)

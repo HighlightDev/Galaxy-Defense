@@ -30,8 +30,6 @@ namespace EngineCore
 
 		int mNumberOfLines;
 
-		FontType mFont;
-
 		bool mIsCenteredText;
 
 	public:
@@ -44,8 +42,6 @@ namespace EngineCore
 		 * @param fontSize
 		 *            - the font size of the text, where a font size of 1 is the
 		 *            default size.
-		 * @param font
-		 *            - the font that this text should use.
 		 * @param position
 		 *            - the position on the screen where the top left corner of the
 		 *            text should be rendered. The top left corner of the screen is
@@ -62,7 +58,6 @@ namespace EngineCore
 		 */
 		GUIText(const std::string &text,
 				const float fontSize,
-				const FontType &font,
 				const glm::vec2 &position,
 				const float maxLineLength,
 				const bool isCentered);
@@ -71,11 +66,6 @@ namespace EngineCore
 		 * Remove the text from the screen.
 		 */
 		void Remove();
-
-		/**
-		 * @return The font used by this text.
-		 */
-		const FontType &GetFont() const;
 
 		/**
 		 * Set the color of the text.

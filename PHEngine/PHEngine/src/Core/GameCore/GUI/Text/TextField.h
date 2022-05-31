@@ -17,6 +17,8 @@ namespace EngineCore
 
         std::string mFontName;
 
+        std::string mText;
+
         float mFontSize;
 
         glm::vec3 mColor;
@@ -34,6 +36,7 @@ namespace EngineCore
     public:
         TextField(const std::string &fontName,
                   const float fontSize,
+                  const std::string& text,
                   const glm::vec3 &color,
                   const glm::vec2 &position,
                   const float lineMaxSize,
@@ -51,6 +54,8 @@ namespace EngineCore
         std::string GetFontName() const;
 
         float GetFontSize() const;
+
+        std::string GetText() const;
 
         glm::vec3 GetColor() const;
 

@@ -9,6 +9,11 @@ namespace EngineCore
 	{
 	}
 
+	TextMeshCreator::TextMeshCreator(const FontMetaFile &metaData)
+		: mMetaData(metaData)
+	{
+	}
+
 	TextMeshData TextMeshCreator::CreateTextMesh(GUIText &text)
 	{
 		return CreateQuadVertices(text, CreateStructure(text));
@@ -66,7 +71,7 @@ namespace EngineCore
 		{
 			if (text.IsCentered())
 			{
-				const auto& lineMaxLengthInScreenCoords = line.GetMaxLength();
+				const auto &lineMaxLengthInScreenCoords = line.GetMaxLength();
 				curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
 			}
 

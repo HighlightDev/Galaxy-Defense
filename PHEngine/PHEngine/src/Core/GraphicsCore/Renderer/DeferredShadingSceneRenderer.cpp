@@ -873,6 +873,11 @@ namespace Graphics
          return false;
       }
 
+      void DeferredShadingSceneRenderer::RegisterText(const TextFieldProxy textFieldProxy)
+      {
+         mFontHandler.RegisterText(textFieldProxy);
+      }
+
 #if DEBUG
 
       void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
@@ -907,7 +912,7 @@ namespace Graphics
 
             TempTextStructure()
                 : font(FontType(0, FolderManager::GetInstance()->GetResPath() + "fonts/arial.fnt")),
-                  text(GUIText("335", 5, font, glm::vec2(0.5f, 0.5f), 0.5, true))
+                  text(GUIText("335", 5, glm::vec2(0.5f, 0.5f), 0.5, true))
             {
                meshData = font.CreateTextMeshData(text);
                VertexArrayObject vao;
@@ -953,18 +958,24 @@ namespace Graphics
 
          } shader;
 
+         const auto& renderDataMap = mFontHandler.GetFontRenderDataMap();
+
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
                      BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
              renderState;
          renderState.BindRenderState();
 
-         textMaster.mFontTexture->BindTexture(0);
-         shader.ExecuteShader();
-         shader.u_fontAtlas.LoadUniform(0);
-         shader.u_position.LoadUniform(textMaster.text.GetPosition());
-         shader.u_color.LoadUniform(glm::vec3(1, 0, 0));
-         textMaster.mSkin->GetBuffer()->RenderVAO(GL_TRIANGLES);
-         shader.StopShader();
+         for (const auto& renderData : renderDataMap)
+         {
+            const auto& renderDataSp = renderData.second;
+            renderDataSp->mFontTextureAtlas->BindTexture(0);
+            shader.ExecuteShader();
+            shader.u_fontAtlas.LoadUniform(0);
+            shader.u_position.LoadUniform(textMaster.text.GetPosition());
+            shader.u_color.LoadUniform(glm::vec3(1, 0, 0));
+            renderDataSp->mTextMesh->GetBuffer()->RenderVAO(renderDataSp->mVerticesCount, GL_TRIANGLES);
+            shader.StopShader();
+         }
 
          glDisable(GL_BLEND);
       }

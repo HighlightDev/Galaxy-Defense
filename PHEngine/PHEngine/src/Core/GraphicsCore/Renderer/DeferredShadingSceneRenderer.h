@@ -153,6 +153,8 @@ namespace Graphics
 
          void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
+         void RegisterText(const TextFieldProxy textFieldProxy);
+
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
 

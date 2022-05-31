@@ -17,9 +17,9 @@ namespace Event
    };
 
    class TextRegisterEvent
-       : public TEvent<SingleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>
+       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>::Event_t;
    };
 }

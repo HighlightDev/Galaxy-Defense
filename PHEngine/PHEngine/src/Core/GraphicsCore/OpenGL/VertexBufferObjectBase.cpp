@@ -45,9 +45,9 @@ namespace Graphics
 			return mAttribArrayIndexName;
 		}
 
-		void VertexBufferObjectBase::BufferSubData(const int32_t offset, const size_t bufferSize, const void *data) const
+		void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void *data) const
 		{
-			glBufferSubData(m_bufferTarget, offset, bufferSize, data);
+			glBufferSubData(m_bufferTarget, offset, size, data);
 		}
 
 		int32_t VertexBufferObjectBase::GetBufferTarget() const

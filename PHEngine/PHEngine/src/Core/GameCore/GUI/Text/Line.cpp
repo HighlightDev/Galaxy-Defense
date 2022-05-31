@@ -1,4 +1,5 @@
 #include "Line.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
 {
@@ -29,6 +30,8 @@ namespace EngineCore
             mCurrentLineLength += additionalLength;
             return true;
         }
+
+        assert(false);
 
         return false;
     }

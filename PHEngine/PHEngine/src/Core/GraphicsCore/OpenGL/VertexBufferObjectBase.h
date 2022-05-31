@@ -39,7 +39,7 @@ namespace Graphics
 
 			virtual size_t GetVertexAttribIndex() const = 0;
 
-			virtual void BufferSubData(const int32_t offset, const size_t bufferSize, const void *data) const;
+			virtual void BufferSubData(const size_t offset, const size_t size, const void *data) const;
 
 			virtual void CleanUp() = 0;
 

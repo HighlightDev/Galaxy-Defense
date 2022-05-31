@@ -13,6 +13,7 @@ namespace EngineCore
 
   TextField::TextField(const std::string &fontName,
                        const float fontSize,
+                       const std::string& text,
                        const glm::vec3 &color,
                        const glm::vec2 &position,
                        const float lineMaxSize,
@@ -21,6 +22,7 @@ namespace EngineCore
       : mTextFieldId(-1),
         mFontName(fontName),
         mFontSize(fontSize),
+        mText(text),
         mColor(color),
         mPosition(position),
         mLineMaxSize(lineMaxSize),
@@ -47,6 +49,11 @@ namespace EngineCore
     TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER);
 
     Logger::Out("TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
+  }
+
+  std::string TextField::GetText() const
+  {
+    return mText;
   }
 
   int32_t TextField::GetTextFieldId() const

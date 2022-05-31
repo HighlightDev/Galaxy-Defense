@@ -21,6 +21,8 @@ namespace EngineCore
 	public:
 		TextMeshCreator(const std::string &fontFilePath);
 
+		TextMeshCreator(const FontMetaFile& metaData);
+
 		TextMeshData CreateTextMesh(GUIText &text);
 
 		std::vector<Line> CreateStructure(GUIText &text);

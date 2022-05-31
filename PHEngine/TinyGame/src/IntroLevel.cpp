@@ -107,8 +107,10 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      const auto textFieldSp = std::make_shared<TextField>("arial", 15, glm::vec3(1), glm::vec2(), 5, 5, true);
+      const auto textFieldSp = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
+      const auto textFieldSp1 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
       textFieldSp->RegisterText();
+      textFieldSp1->RegisterText();
 
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
