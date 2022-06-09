@@ -34,6 +34,11 @@ namespace Graphics
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_descriptor);
 		}
 
+		size_t IndexBufferObject::GetVectorElementByteSize() const
+		{
+			return sizeof(uint32_t);
+		}
+
 		void IndexBufferObject::SendDataToGPU()
 		{
 			GenIndexBuffer();

@@ -11,9 +11,11 @@ namespace Graphics
     public:
         size_t mTextFieldId;
 
-        size_t mChunkOffset;
+        size_t mPositionChunkOffset;
+        size_t mPositionChunkSize;
 
-        size_t mChunkSize;
+        size_t mTextureCoordinatesChunkOffset;
+        size_t mTextureCoordinatesChunkSize;
 
         std::string mText;
 

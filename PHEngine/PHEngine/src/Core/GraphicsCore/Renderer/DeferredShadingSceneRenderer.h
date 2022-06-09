@@ -153,7 +153,9 @@ namespace Graphics
 
          void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
-         void RegisterText(const TextFieldProxy textFieldProxy);
+         void RegisterText(const std::shared_ptr<TextFieldProxy> & textFieldProxy);
+
+         void UnregisterText(const std::string& fontName, const size_t textFieldProxyId);
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);

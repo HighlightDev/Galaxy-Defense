@@ -172,6 +172,8 @@ namespace EngineCore
       void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
 
       void RegisterText_OnRenderThread(const std::shared_ptr<TextField>& textField);
+      
+      void UnregisterText_OnRenderThread(const std::shared_ptr<TextField>& textField);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 

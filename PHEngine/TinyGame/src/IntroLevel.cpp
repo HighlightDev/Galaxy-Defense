@@ -60,6 +60,8 @@ namespace Game
       mSceneController->PreInit();
    }
 
+   std::shared_ptr<TextField> text1, text2, text3;
+
    void IntroLevel::CreateScene()
    {
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
@@ -107,10 +109,12 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      const auto textFieldSp = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
-      const auto textFieldSp1 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
-      textFieldSp->RegisterText();
-      textFieldSp1->RegisterText();
+      text1 = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
+      text2 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
+      text3 = std::make_shared<TextField>("arial", 5, "Privet pipka", glm::vec3(1), glm::vec2(), 0.5, 5, true);
+      text1->RegisterText();
+      text2->RegisterText();
+      text3->RegisterText();
 
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
@@ -119,6 +123,8 @@ namespace Game
    {
       CreateScene();
       mSceneController->PostInit();
+
+      text2->UnregisterText();
 
       /*const auto groundActor = mScene->GetActorByName("Ground");
       const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();

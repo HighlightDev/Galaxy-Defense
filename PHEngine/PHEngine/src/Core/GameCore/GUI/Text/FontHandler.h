@@ -25,7 +25,7 @@ namespace EngineCore
         TextVertexChunkData();
     };
 
-    struct FontRenderData
+    class FontRenderData
     {
         TextVertexChunkData mPositionChunkData;
         TextVertexChunkData mTextureCoordinatesChunkData;
@@ -35,15 +35,33 @@ namespace EngineCore
         std::shared_ptr<ITexture> mFontTextureAtlas;
         std::shared_ptr<FontMetaFile> mFontMetaFile;
 
-        std::vector<TextFieldProxy> mTextFields;
+        std::vector<std::shared_ptr<TextFieldProxy>> mTextFields;
 
+    public:
         FontRenderData(const std::shared_ptr<TextMesh> &textMesh,
                        const std::shared_ptr<ITexture> &fontTextureAtlas,
                        const std::shared_ptr<FontMetaFile> &fontMetaFile);
 
-        void RegisterText(const TextFieldProxy &textFieldProxy);
+        void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-        void AllocateTextSpace(const TextFieldProxy &textFieldProxy);
+        void UnregisterText(const size_t textFieldId);
+
+        TextVertexChunkData& GetPositionChunkDataRef();
+
+        TextVertexChunkData& GetTextureCoordinatesChunkDataRef();
+
+        const std::shared_ptr<TextMesh>& GetTextMesh() const;
+
+        const std::shared_ptr<ITexture>& GetFontTextureAtlas() const;
+
+        const std::shared_ptr<FontMetaFile>& GetFontMetaFile() const;
+
+        size_t GetVerticesCount() const;
+
+    private:
+        void AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
+
+        void ReallocateTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy);
     };
 
     class FontHandler
@@ -57,8 +75,10 @@ namespace EngineCore
 
         const std::shared_ptr<FontRenderData> &GetFontRenderData(const std::string &fontName) const;
 
-        const std::unordered_map<std::string, std::shared_ptr<FontRenderData>>& GetFontRenderDataMap() const;
+        const std::unordered_map<std::string, std::shared_ptr<FontRenderData>> &GetFontRenderDataMap() const;
 
-        void RegisterText(const TextFieldProxy &textFieldProxy);
+        void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
+
+        void UnregisterText(const std::string& fontName, const size_t textFieldProxyId);
     };
 }

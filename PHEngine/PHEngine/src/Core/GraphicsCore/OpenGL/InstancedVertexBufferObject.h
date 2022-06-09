@@ -48,11 +48,6 @@ namespace Graphics
 				}
 			}
 
-			static const size_t GetVectorElementByteSize()
-			{
-				return sizeof(DataType);
-			}
-
 			// For current implementation pointer offset is zero
 			virtual void SetVertexAttribPointerWithSpecificParams()
 			{
@@ -109,6 +104,11 @@ namespace Graphics
 			std::vector<DataType> &GetCastedDataRef()
 			{
 				return m_data;
+			}
+
+			virtual size_t GetVectorElementByteSize() const override
+			{
+				return sizeof(DataType);
 			}
 
 			virtual void SendDataToGPU() override

@@ -535,17 +535,32 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
-                                                      TextFieldProxy textFieldProxy;
-                                                      textFieldProxy.mTextFieldId = textField->GetTextFieldId();
-                                                      textFieldProxy.mText = textField->GetText();
-                                                      textFieldProxy.mFontName = textField->GetFontName();
-                                                      textFieldProxy.mPosition = textField->GetPosition();
-                                                      textFieldProxy.mColor = textField->GetColor();
-                                                      textFieldProxy.mFontSize = textField->GetFontSize();
-                                                      textFieldProxy.mIsCenteredText = textField->GetIsCentered();
-                                                      textFieldProxy.mLineMaxSize = textField->GetLineMaxSize();
-                                                      textFieldProxy.mNumberOfLines = textField->GetNumberOfLines();
+                                                      std::shared_ptr<TextFieldProxy> textFieldProxy = std::make_shared<TextFieldProxy>();
+                                                      textFieldProxy->mTextFieldId = textField->GetTextFieldId();
+                                                      textFieldProxy->mText = textField->GetText();
+                                                      textFieldProxy->mFontName = textField->GetFontName();
+                                                      textFieldProxy->mPosition = textField->GetPosition();
+                                                      textFieldProxy->mColor = textField->GetColor();
+                                                      textFieldProxy->mFontSize = textField->GetFontSize();
+                                                      textFieldProxy->mIsCenteredText = textField->GetIsCentered();
+                                                      textFieldProxy->mLineMaxSize = textField->GetLineMaxSize();
+                                                      textFieldProxy->mNumberOfLines = textField->GetNumberOfLines();
                                                       sceneRenderer->RegisterText(textFieldProxy); }));
+      }
+   }
+
+   void Scene::UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField)
+   {
+      Logger::Out("Scene::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static const uint64_t functionId = Hash("Scene::UnregisterText_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->UnregisterText(textField->GetFontName(), textField->GetTextFieldId()); }));
       }
    }
 

@@ -873,9 +873,14 @@ namespace Graphics
          return false;
       }
 
-      void DeferredShadingSceneRenderer::RegisterText(const TextFieldProxy textFieldProxy)
+      void DeferredShadingSceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
       {
          mFontHandler.RegisterText(textFieldProxy);
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterText(const std::string &fontName, const size_t textFieldProxyId)
+      {
+         mFontHandler.UnregisterText(fontName, textFieldProxyId);
       }
 
 #if DEBUG
@@ -900,37 +905,6 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugRenderText()
       {
-         static struct TempTextStructure
-         {
-            FontType font;
-            GUIText text;
-            TextMeshData meshData;
-
-            std::shared_ptr<Skin> mSkin;
-
-            std::shared_ptr<ITexture> mFontTexture;
-
-            TempTextStructure()
-                : font(FontType(0, FolderManager::GetInstance()->GetResPath() + "fonts/arial.fnt")),
-                  text(GUIText("335", 5, glm::vec2(0.5f, 0.5f), 0.5, true))
-            {
-               meshData = font.CreateTextMeshData(text);
-               VertexArrayObject vao;
-               VertexBufferObject<float, 2> *positionVBO = new VertexBufferObject<float, 2>(std::move(meshData.mVertexPositions),
-                                                                                            eAttribArrayIndexName::POSITION,
-                                                                                            GL_ARRAY_BUFFER,
-                                                                                            eDataCarryFlag::INVALIDATE);
-               VertexBufferObject<float, 2> *textureVBO = new VertexBufferObject<float, 2>(std::move(meshData.mTextureCoords),
-                                                                                           eAttribArrayIndexName::TEXTURE_COORDINATES,
-                                                                                           GL_ARRAY_BUFFER,
-                                                                                           eDataCarryFlag::INVALIDATE);
-               vao.AddVBO(positionVBO, textureVBO);
-               vao.BindBuffersToVao();
-               mSkin = std::make_shared<Skin>(vao, BoundingBox());
-               mFontTexture = TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
-            }
-         } textMaster;
-
          static struct TextShader : public Shader
          {
             Uniform u_fontAtlas;
@@ -958,22 +932,22 @@ namespace Graphics
 
          } shader;
 
-         const auto& renderDataMap = mFontHandler.GetFontRenderDataMap();
+         const auto &renderDataMap = mFontHandler.GetFontRenderDataMap();
 
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
                      BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
              renderState;
          renderState.BindRenderState();
 
-         for (const auto& renderData : renderDataMap)
+         for (const auto &renderData : renderDataMap)
          {
-            const auto& renderDataSp = renderData.second;
-            renderDataSp->mFontTextureAtlas->BindTexture(0);
+            const auto &renderDataSp = renderData.second;
+            renderDataSp->GetFontTextureAtlas()->BindTexture(0);
             shader.ExecuteShader();
             shader.u_fontAtlas.LoadUniform(0);
-            shader.u_position.LoadUniform(textMaster.text.GetPosition());
+            shader.u_position.LoadUniform(glm::vec2(0.5f, 0.5f));
             shader.u_color.LoadUniform(glm::vec3(1, 0, 0));
-            renderDataSp->mTextMesh->GetBuffer()->RenderVAO(renderDataSp->mVerticesCount, GL_TRIANGLES);
+            renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(renderDataSp->GetVerticesCount(), GL_TRIANGLES);
             shader.StopShader();
          }
 

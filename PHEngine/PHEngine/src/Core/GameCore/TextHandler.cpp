@@ -45,6 +45,7 @@ namespace EngineCore
             {
                 assert(mTextFields.end() != it);
                 mTextFields.erase(it);
+                sceneSp->UnregisterText_OnRenderThread(textSp);
             }
         }
     }
