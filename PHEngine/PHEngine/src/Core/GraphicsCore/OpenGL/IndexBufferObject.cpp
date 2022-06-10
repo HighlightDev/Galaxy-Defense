@@ -34,7 +34,7 @@ namespace Graphics
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_descriptor);
 		}
 
-		size_t IndexBufferObject::GetVectorElementByteSize() const
+		size_t IndexBufferObject::GetElementByteSize() const
 		{
 			return sizeof(uint32_t);
 		}

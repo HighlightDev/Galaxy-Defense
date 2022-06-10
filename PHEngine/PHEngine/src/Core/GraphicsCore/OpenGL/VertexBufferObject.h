@@ -47,7 +47,7 @@ namespace Graphics
 			// For current implementation pointer offset is zero
 			virtual void SetVertexAttribPointerWithSpecificParams()
 			{
-				size_t stride = GetVectorElementByteSize() * m_vectorSize;
+				size_t stride = GetElementByteSize() * m_vectorSize;
 				SetVertexAttribPointer(m_vertexAttribIndex, m_vectorSize, false, stride, 0);
 			}
 
@@ -70,7 +70,7 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("VertexBufferObject::ctor => #1");
+				Logger::Out("VertexBufferObject::ctor => #1 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
 			}
 
 			VertexBufferObject(
@@ -79,12 +79,12 @@ namespace Graphics
 				const int32_t bufferTarget)
 				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
 				  m_data(),
-				  m_totalDataLength(indicesCount * GetVectorElementByteSize()),
+				  m_totalDataLength(indicesCount * m_vectorSize),
 				  m_countOfIndices(indicesCount),
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
 			{
-				Logger::Out("VertexBufferObject::ctor => #2");
+				Logger::Out("VertexBufferObject::ctor => #2 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
 			}
 
 			virtual ~VertexBufferObject()
@@ -102,18 +102,18 @@ namespace Graphics
 				return m_data;
 			}
 
-			virtual size_t GetVectorElementByteSize() const override
+			virtual size_t GetElementByteSize() const override
 			{
 				return sizeof(DataType);
 			}
 
 			virtual void SendDataToGPU() override
 			{
-				const size_t bufferSize = GetVectorElementByteSize() * m_totalDataLength;
+				const size_t bufferSize = GetElementByteSize() * m_totalDataLength;
 				GenBuffer();
 				BindVBO();
 
-				Logger::Out("VertexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
+				Logger::Out("VertexBufferObject::SendDataToGPU => descriptor = ", m_descriptor, " bufferSize = ", bufferSize);
 
 				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);

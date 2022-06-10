@@ -40,7 +40,7 @@ namespace Graphics
 
 			virtual size_t GetCountOfIndices() const override;
 
-			virtual size_t GetVectorElementByteSize() const override;
+			virtual size_t GetElementByteSize() const override;
 
 			virtual size_t GetTotalLengthOfData() const override;
 

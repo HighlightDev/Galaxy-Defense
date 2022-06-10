@@ -51,7 +51,7 @@ namespace Graphics
 			// For current implementation pointer offset is zero
 			virtual void SetVertexAttribPointerWithSpecificParams()
 			{
-				size_t stride = GetVectorElementByteSize() * m_vectorSize;
+				size_t stride = GetElementByteSize() * m_vectorSize;
 				SetVertexAttribPointer(m_vertexAttribIndex, m_vectorSize, false, stride, 0);
 			}
 
@@ -83,7 +83,7 @@ namespace Graphics
 				const int32_t bufferTarget)
 				: VertexBufferObjectBase(attribArrayIndexName, bufferTarget),
 				  m_data(),
-				  m_totalDataLength(indicesCount * GetVectorElementByteSize()),
+				  m_totalDataLength(indicesCount * GetElementByteSize()),
 				  m_countOfIndices(indicesCount),
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
@@ -106,14 +106,14 @@ namespace Graphics
 				return m_data;
 			}
 
-			virtual size_t GetVectorElementByteSize() const override
+			virtual size_t GetElementByteSize() const override
 			{
 				return sizeof(DataType);
 			}
 
 			virtual void SendDataToGPU() override
 			{
-				const size_t bufferSize = GetVectorElementByteSize() * m_totalDataLength;
+				const size_t bufferSize = GetElementByteSize() * m_totalDataLength;
 				GenBuffer();
 				BindVBO();
 

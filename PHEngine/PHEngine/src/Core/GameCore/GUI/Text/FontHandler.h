@@ -29,6 +29,8 @@ namespace EngineCore
     {
         TextVertexChunkData mPositionChunkData;
         TextVertexChunkData mTextureCoordinatesChunkData;
+        TextVertexChunkData mOffsetsChunkData;
+        TextVertexChunkData mColorsChunkData;
         size_t mVerticesCount;
 
         std::shared_ptr<TextMesh> mTextMesh;
@@ -46,15 +48,19 @@ namespace EngineCore
 
         void UnregisterText(const size_t textFieldId);
 
-        TextVertexChunkData& GetPositionChunkDataRef();
+        TextVertexChunkData &GetPositionChunkDataRef();
 
-        TextVertexChunkData& GetTextureCoordinatesChunkDataRef();
+        TextVertexChunkData &GetTextureCoordinatesChunkDataRef();
 
-        const std::shared_ptr<TextMesh>& GetTextMesh() const;
+        TextVertexChunkData& GetOffsetChunkDataRef();
 
-        const std::shared_ptr<ITexture>& GetFontTextureAtlas() const;
+        TextVertexChunkData& GetColorChunkDataRef();
 
-        const std::shared_ptr<FontMetaFile>& GetFontMetaFile() const;
+        const std::shared_ptr<TextMesh> &GetTextMesh() const;
+
+        const std::shared_ptr<ITexture> &GetFontTextureAtlas() const;
+
+        const std::shared_ptr<FontMetaFile> &GetFontMetaFile() const;
 
         size_t GetVerticesCount() const;
 
@@ -62,6 +68,12 @@ namespace EngineCore
         void AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
         void ReallocateTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy);
+
+        void FontBufferSubData(const std::shared_ptr<TextFieldProxy> &textFieldProxy,
+                               VertexBufferObjectBase *const positionVBO,
+                               VertexBufferObjectBase *const textureCoordinatesVBO,
+                               VertexBufferObjectBase *const colorVBO,
+                               VertexBufferObjectBase *const offsetVBO);
     };
 
     class FontHandler
@@ -79,6 +91,6 @@ namespace EngineCore
 
         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-        void UnregisterText(const std::string& fontName, const size_t textFieldProxyId);
+        void UnregisterText(const std::string &fontName, const size_t textFieldProxyId);
     };
 }

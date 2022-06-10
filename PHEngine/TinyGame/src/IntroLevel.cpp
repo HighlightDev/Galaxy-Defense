@@ -109,9 +109,9 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      text1 = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
-      text2 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(1), glm::vec2(), 0.5, 5, true);
-      text3 = std::make_shared<TextField>("arial", 5, "Privet pipka", glm::vec3(1), glm::vec2(), 0.5, 5, true);
+      text1 = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1, 0.5, 0.5), glm::vec2(0.5), 0.5, 5, false);
+      text2 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(0.1, 0.1, 0.5), glm::vec2(0.2), 0.5, 5, false);
+      text3 = std::make_shared<TextField>("arial", 5, "Privet pipka", glm::vec3(1), glm::vec2(), 0.5, 5, false);
       text1->RegisterText();
       text2->RegisterText();
       text3->RegisterText();
