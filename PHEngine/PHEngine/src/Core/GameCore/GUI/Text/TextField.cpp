@@ -1,6 +1,7 @@
 #include "TextField.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Event/TextEvent.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -13,7 +14,7 @@ namespace EngineCore
 
   TextField::TextField(const std::string &fontName,
                        const float fontSize,
-                       const std::string& text,
+                       const std::string &text,
                        const glm::vec3 &color,
                        const glm::vec2 &position,
                        const float lineMaxSize,
@@ -99,5 +100,44 @@ namespace EngineCore
   bool TextField::GetIsRegistered() const
   {
     return mIsRegistered;
+  }
+
+  void TextField::SetText(const std::string &text)
+  {
+    if (mText != text)
+    {
+      mText = text;
+
+      if (mIsRegistered)
+      {
+        TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                       shared_from_this(),
+                                                       eTextChangedDataType::TEXT);
+      }
+    }
+  }
+
+  void TextField::SetColor(const glm::vec3 &color)
+  {
+    mColor = color;
+
+    if (mIsRegistered)
+    {
+      TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                     shared_from_this(),
+                                                     eTextChangedDataType::COLOR);
+    }
+  }
+
+  void TextField::SetPosition(const glm::vec2 &position)
+  {
+    mPosition = position;
+
+    if (mIsRegistered)
+    {
+      TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                     shared_from_this(),
+                                                     eTextChangedDataType::OFFSET);
+    }
   }
 }

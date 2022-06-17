@@ -13,6 +13,7 @@
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
@@ -24,6 +25,14 @@
 #include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
 #include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 
+#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+
+using namespace Resources;
 using namespace EngineCore;
 using namespace Graphics;
 
@@ -69,26 +78,26 @@ namespace Game
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        rotation, scale, "", pbs_mat);
-
-        const auto &c_mesh = scene->CreateComponent_GameThread<StaticMeshComponent, eComponentMetaType::StaticMesh>(d_mesh);
+        const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+        const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_enemySpaceship->AddComponent(c_mesh);
 
         MovementComponentData d_movement("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
-        const auto &c_movement = scene->CreateComponent_GameThread<NoPhysicsMovementComponent,
-                                                                   eComponentMetaType::Movement>(d_movement);
+        const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
+        const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetSpeed(0.005f);
-
         a_enemySpaceship->AddComponent(c_movement);
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
         PhysicsComponentData physData("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
-        const auto &c_ghostPhysics = scene->CreateComponent_GameThread<GhostPhysicsComponent, eComponentMetaType::Physics>(physData);
+        const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);;
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
         ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0), 200);
-        const auto &c_particleSystemComponent = scene->CreateComponent_GameThread<ParticleSystemComponent,
-                                                                                  eComponentMetaType::ParticleSystem>(d_particle);
+        const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
+        const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);
         c_particleSystemComponent->SetParticleEmitter(emitter);

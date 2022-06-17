@@ -2,6 +2,8 @@
 
 #include <cstddef>
 #include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
@@ -156,6 +158,12 @@ namespace Graphics
          void RegisterText(const std::shared_ptr<TextFieldProxy> & textFieldProxy);
 
          void UnregisterText(const std::string& fontName, const size_t textFieldProxyId);
+
+         void TextPositionChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec2& position);
+
+         void TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color);
+
+         void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);

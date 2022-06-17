@@ -61,6 +61,12 @@ namespace EngineCore
 
         glm::vec2 GetPosition() const;
 
+        void SetText(const std::string& text);
+
+        void SetColor(const glm::vec3 & color);
+
+        void SetPosition(const glm::vec2& position);
+
         float GetLineMaxSize() const;
 
         int32_t GetNumberOfLines() const;

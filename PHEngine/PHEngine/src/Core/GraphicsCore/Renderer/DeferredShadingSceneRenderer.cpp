@@ -883,6 +883,21 @@ namespace Graphics
          mFontHandler.UnregisterText(fontName, textFieldProxyId);
       }
 
+      void DeferredShadingSceneRenderer::TextPositionChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec2 &position)
+      {
+         mFontHandler.TextPositionChanged(fontName, textFieldProxyId, position);
+      }
+
+      void DeferredShadingSceneRenderer::TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color)
+      {
+         mFontHandler.TextColorChanged(fontName, textFieldProxyId, color);
+      }
+
+      void DeferredShadingSceneRenderer::TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text)
+      {
+         mFontHandler.TextChanged(fontName, textFieldProxyId, text);
+      }
+
 #if DEBUG
 
       void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()

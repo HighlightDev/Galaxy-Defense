@@ -1,11 +1,22 @@
 #pragma once
 #include <TinyLogger/LogInterface.h>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
 namespace TinyLogger {
    namespace LogHelp {
+
+      template <>
+      struct CastTypeToString<glm::vec2>
+      {
+         static std::string Do(const glm::vec2& value)
+         {
+            return "vec2:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + ","
+               + "y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "}";
+         }
+      };
 
       template <>
       struct CastTypeToString<glm::vec3>

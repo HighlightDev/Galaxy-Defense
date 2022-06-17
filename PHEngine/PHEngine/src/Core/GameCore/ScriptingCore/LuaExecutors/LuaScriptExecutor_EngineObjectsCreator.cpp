@@ -11,8 +11,12 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/GameCore/HumanoidPlayerController.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 using namespace Graphics;
+using namespace EngineUtility;
+using namespace IO;
+using namespace Resources;
 
 namespace EngineCore
 {

@@ -9,6 +9,10 @@
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
 #include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
 #include "Core/GameCore/Components/SpotlightComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
@@ -24,6 +28,19 @@
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/CubemapComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PlanarReflectionComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PlatformTraverseComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/WaterPlaneComponentCreator.h"
 
 using namespace EngineUtility;
 
@@ -104,66 +121,66 @@ namespace EngineCore
    {
       assert(componentData && scene);
 
-      std::shared_ptr<Component> result;
+      std::shared_ptr<IComponentCreatable> creator;
 
       if ("LightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PointLightComponent, eComponentMetaType::LightComponent>(*componentData);
+         creator = std::make_shared<LightComponentCreator<PointLightComponent>>();
       }
       else if ("DirectionalLightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<DirectionalLightComponent, EngineCore::eComponentMetaType::LightComponent>(*componentData);
+         creator = std::make_shared<LightComponentCreator<DirectionalLightComponent>>();
       }
       else if ("SpotlightComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SpotlightComponent, EngineCore::eComponentMetaType::LightComponent>(*componentData);
+         creator = std::make_shared<LightComponentCreator<SpotlightComponent>>();
       }
       else if ("StaticMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<StaticMeshComponent, eComponentMetaType::StaticMesh>(*componentData);
+         creator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
       }
       else if ("SkeletalMeshComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SkeletalMeshComponent, eComponentMetaType::SkeletalMesh>(*componentData);
+         creator = std::make_shared<SkeletalMeshComponentCreator<SkeletalMeshComponent>>();
       }
       else if ("RigidBodyPhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<RigidBodyPhysicsComponent, eComponentMetaType::Physics>(*componentData);
+         creator = std::make_shared<PhysicsComponentCreator<RigidBodyPhysicsComponent>>();
       }
       else if ("CharacterPhysicsComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<CharacterPhysicsComponent, eComponentMetaType::Physics>(*componentData);
+         creator = std::make_shared<PhysicsComponentCreator<CharacterPhysicsComponent>>();
       }
       else if ("InputComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<InputComponent, eComponentMetaType::Input>(*componentData);
+         creator = std::make_shared<InputComponentCreator<InputComponent>>();
       }
       else if ("HumanoidPhysicsMovementComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<HumanoidPhysicsMovementComponent, eComponentMetaType::Movement>(*componentData);
+         creator = std::make_shared<MovementComponentCreator<HumanoidPhysicsMovementComponent>>();
       }
       else if ("PlatformTraverseComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PlatformTraverseComponent, eComponentMetaType::PlatformTraverse>(*componentData);
+         creator = std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>();
       }
       else if ("SkyboxComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<SkyboxComponent, eComponentMetaType::Skybox>(*componentData);
+         creator = std::make_shared<SkyboxComponentCreator<SkyboxComponent>>();
       }
       else if ("WaterPlaneComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<WaterPlaneComponent, eComponentMetaType::WaterPlane>(*componentData);
+         creator = std::make_shared<WaterPlaneComponentCreator<WaterPlaneComponent>>();
       }
       else if ("PlanarReflectionComponent" == componentType)
       {
-         result = scene->CreateComponent_GameThread<PlanarReflectionComponent, eComponentMetaType::PlanarReflection>(*componentData);
+         creator = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
       }
       else
       {
          assert(false);
       }
 
-      return result;
+      return scene->CreateComponent_GameThread(creator, *componentData);
    }
 
    ProjectedShadowInfo *EngineObjectCreator::CreateProjectedShadowInfo(const std::string &lightType, const glm::ivec2 &shadowAtlasSize)

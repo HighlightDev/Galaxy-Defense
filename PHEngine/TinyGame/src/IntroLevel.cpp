@@ -14,14 +14,14 @@
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+
+#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
-
-#include "Core/GameCore/GUI/Text/FontHandler.h"
-#include "Core/GameCore/GUI/Text/FontParams.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -29,6 +29,8 @@
 using namespace Graphics;
 using namespace EnginePhysics;
 using namespace IO;
+using namespace EngineCore;
+using namespace Resources;
 
 namespace Game
 {
@@ -60,8 +62,6 @@ namespace Game
       mSceneController->PreInit();
    }
 
-   std::shared_ptr<TextField> text1, text2, text3;
-
    void IntroLevel::CreateScene()
    {
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
@@ -77,12 +77,13 @@ namespace Game
       assert(a_spaceship);
 
       InputComponentData d_input = InputComponentData("SpaceshipInputComponent");
-      const auto &c_input = mScene->CreateComponent_GameThread<InputComponent, eComponentMetaType::Input>(d_input);
+      const auto& inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
+      const auto &c_input = mScene->CreateComponent_GameThread(inputComponentCreator, d_input);
       a_spaceship->AddComponent(c_input);
 
       MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
-      const auto &c_movement = mScene->CreateComponent_GameThread<NoPhysicsMovementComponent,
-                                                                  eComponentMetaType::Movement>(d_movement);
+      const auto& movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
+      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(mScene->CreateComponent_GameThread(movementComponentCreator, d_movement));
 
       c_movement->SetSpeed(0.02f);
       a_spaceship->AddComponent(c_movement);
@@ -109,13 +110,6 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      text1 = std::make_shared<TextField>("arial", 5, "Hello world!", glm::vec3(1, 0.5, 0.5), glm::vec2(0.5), 0.5, 5, false);
-      text2 = std::make_shared<TextField>("arial", 5, "Hi!", glm::vec3(0.1, 0.1, 0.5), glm::vec2(0.2), 0.5, 5, false);
-      text3 = std::make_shared<TextField>("arial", 5, "Privet pipka", glm::vec3(1), glm::vec2(), 0.5, 5, false);
-      text1->RegisterText();
-      text2->RegisterText();
-      text3->RegisterText();
-
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
    }
 
@@ -123,8 +117,6 @@ namespace Game
    {
       CreateScene();
       mSceneController->PostInit();
-
-      text2->UnregisterText();
 
       /*const auto groundActor = mScene->GetActorByName("Ground");
       const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();

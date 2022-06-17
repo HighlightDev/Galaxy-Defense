@@ -48,14 +48,45 @@ namespace EngineCore
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldId == mProxy->mTextFieldId; });
-        auto deleteTextProxy = *foundIt;
+        assert(foundIt != mTextFields.end());
 
+        auto deleteTextProxy = *foundIt;
         const auto removeIt = std::remove_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                              { return textFieldId == mProxy->mTextFieldId; });
-        assert(removeIt != mTextFields.end());
+
         mTextFields.erase(removeIt);
 
-        ReallocateTextSpace(deleteTextProxy);
+        FreeAllocatedTextSpace(deleteTextProxy);
+    }
+
+    void FontRenderData::TextPositionChanged(const size_t textFieldId, const glm::vec2 &position)
+    {
+        const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
+                                          { return textFieldId == mProxy->mTextFieldId; });
+        assert(foundIt != mTextFields.end());
+        (*foundIt)->mPosition = position;
+
+        PositionChanged(*foundIt);
+    }
+
+    void FontRenderData::TextColorChanged(const size_t textFieldProxyId, const glm::vec3 &color)
+    {
+        const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
+                                          { return textFieldProxyId == mProxy->mTextFieldId; });
+        assert(foundIt != mTextFields.end());
+        (*foundIt)->mColor = color;
+
+        ColorChanged(*foundIt);
+    }
+
+    void FontRenderData::TextChanged(const size_t textFieldProxyId, const std::string &text)
+    {
+        const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
+                                          { return textFieldProxyId == mProxy->mTextFieldId; });
+        assert(foundIt != mTextFields.end());
+        (*foundIt)->mText = text;
+
+        ReallocateTextSpace();
     }
 
     void FontRenderData::FontBufferSubData(const std::shared_ptr<TextFieldProxy> &textFieldProxy,
@@ -132,6 +163,45 @@ namespace EngineCore
         textFieldProxy->mColorChunkSize = colorSizeUpdate;
     }
 
+    void FontRenderData::PositionChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
+    {
+        auto *const offsetVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
+        assert(offsetVBO != nullptr);
+
+        const size_t offsetsCount = (mOffsetsChunkData.mCurrentChunkOffset / offsetVBO->GetElementByteSize()) / offsetVBO->GetVectorSize();
+        std::vector<float> offsets(offsetsCount);
+        for (size_t offsetIndex = 0; offsetIndex < offsetsCount; offsetIndex += 2)
+        {
+            offsets[offsetIndex] = textFieldProxy->mPosition.x;
+            offsets[offsetIndex + 1] = textFieldProxy->mPosition.y;
+        }
+
+        // offsets
+        offsetVBO->BindVBO();
+        offsetVBO->BufferSubData(textFieldProxy->mOffsetChunkOffset, textFieldProxy->mOffsetChunkSize, offsets.data());
+        offsetVBO->UnbindVBO();
+    }
+
+    void FontRenderData::ColorChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
+    {
+        auto *const colorVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::COLOR);
+        assert(colorVBO != nullptr);
+
+        const size_t colorsCount = (mColorsChunkData.mCurrentChunkOffset / colorVBO->GetElementByteSize()) / colorVBO->GetVectorSize();
+        std::vector<float> colors(colorsCount);
+        for (size_t colorIndex = 0; colorIndex < colorsCount; colorIndex += 3)
+        {
+            colors[colorIndex] = textFieldProxy->mColor.r;
+            colors[colorIndex + 1] = textFieldProxy->mColor.g;
+            colors[colorIndex + 2] = textFieldProxy->mColor.b;
+        }
+
+        // offsets
+        colorVBO->BindVBO();
+        colorVBO->BufferSubData(textFieldProxy->mColorChunkOffset, textFieldProxy->mColorChunkSize, colors.data());
+        colorVBO->UnbindVBO();
+    }
+
     void FontRenderData::AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
     {
         auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
@@ -146,7 +216,26 @@ namespace EngineCore
         mVerticesCount = (mPositionChunkData.mCurrentChunkOffset / positionVBO->GetElementByteSize()) / positionVBO->GetVectorSize();
     }
 
-    void FontRenderData::ReallocateTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy)
+    void FontRenderData::ReallocateTextSpace()
+    {
+        auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
+        auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
+        auto *const offsetVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
+        auto *const colorVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::COLOR);
+        assert(positionVBO && textureCoordinatesVBO && offsetVBO && colorVBO);
+
+        mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
+        mTextureCoordinatesChunkData.mCurrentChunkOffset = 0;
+        mOffsetsChunkData.mCurrentChunkOffset = 0;
+        mColorsChunkData.mCurrentChunkOffset = 0;
+
+        for (auto &textProxy : mTextFields)
+        {
+            FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO, colorVBO, offsetVBO);
+        }
+    }
+
+    void FontRenderData::FreeAllocatedTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy)
     {
         auto *const positionVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
         auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
@@ -313,5 +402,23 @@ namespace EngineCore
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->UnregisterText(textFieldProxyId);
+    }
+
+    void FontHandler::TextPositionChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec2 &position)
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        mFontRenderDataMap.at(fontName)->TextPositionChanged(textFieldProxyId, position);
+    }
+
+    void FontHandler::TextColorChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec3 &color)
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        mFontRenderDataMap.at(fontName)->TextColorChanged(textFieldProxyId, color);
+    }
+
+    void FontHandler::TextChanged(const std::string &fontName, const size_t textFieldProxyId, const std::string &text)
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        mFontRenderDataMap.at(fontName)->TextChanged(textFieldProxyId, text);
     }
 }

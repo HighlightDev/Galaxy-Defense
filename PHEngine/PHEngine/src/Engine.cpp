@@ -1,5 +1,6 @@
 #include "Engine.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
@@ -9,6 +10,7 @@
 using namespace TinyLogger;
 using namespace IO;
 using namespace EngineUtility;
+using namespace Resources;
 
 Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
     : m_interThreadMgr(interThreadMgr),
@@ -71,7 +73,8 @@ void Engine::PreLevelInit()
                               MouseMovedEvent,
                               MouseScrollEvent,
                               PhysicsCollisionOccuredEvent,
-                              TextRegisterEvent>();
+                              TextRegisterEvent,
+                              TextDataChangedEvent>();
 
    EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 

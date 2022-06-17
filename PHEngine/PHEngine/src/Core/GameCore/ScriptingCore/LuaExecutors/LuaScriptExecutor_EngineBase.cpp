@@ -1,6 +1,7 @@
 #include "LuaScriptExecutor_EngineBase.h"
 
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace IO;
 

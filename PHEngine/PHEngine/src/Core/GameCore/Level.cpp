@@ -5,6 +5,8 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/GameCore/HumanoidPlayerController.h"
+#include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -12,6 +14,7 @@
 #include <TinyLogger/LogInterface.h>
 
 using namespace TinyLogger;
+using namespace IO;
 
 namespace EngineCore
 {

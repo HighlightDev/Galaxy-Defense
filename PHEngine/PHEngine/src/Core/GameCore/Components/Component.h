@@ -11,7 +11,7 @@
 
 namespace EngineCore
 {
-
+   class Scene;
 	class Actor;
 	// This is the base abstract class
 	// of all components which could be 

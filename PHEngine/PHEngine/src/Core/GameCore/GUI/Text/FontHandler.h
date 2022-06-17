@@ -48,6 +48,12 @@ namespace EngineCore
 
         void UnregisterText(const size_t textFieldId);
 
+        void TextPositionChanged(const size_t textFieldId, const glm::vec2& position);
+
+        void TextColorChanged(const size_t textFieldProxyId, const glm::vec3& color);
+
+        void TextChanged(const size_t textFieldProxyId, const std::string& text);
+
         TextVertexChunkData &GetPositionChunkDataRef();
 
         TextVertexChunkData &GetTextureCoordinatesChunkDataRef();
@@ -67,13 +73,19 @@ namespace EngineCore
     private:
         void AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-        void ReallocateTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy);
+        void FreeAllocatedTextSpace(const std::shared_ptr<TextFieldProxy> &removeTextFieldProxy);
+
+        void ReallocateTextSpace();
 
         void FontBufferSubData(const std::shared_ptr<TextFieldProxy> &textFieldProxy,
                                VertexBufferObjectBase *const positionVBO,
                                VertexBufferObjectBase *const textureCoordinatesVBO,
                                VertexBufferObjectBase *const colorVBO,
                                VertexBufferObjectBase *const offsetVBO);
+
+        void PositionChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
+
+        void ColorChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
     };
 
     class FontHandler
@@ -92,5 +104,11 @@ namespace EngineCore
         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
         void UnregisterText(const std::string &fontName, const size_t textFieldProxyId);
+
+        void TextPositionChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec2 &position);
+
+        void TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color);
+
+         void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
     };
 }

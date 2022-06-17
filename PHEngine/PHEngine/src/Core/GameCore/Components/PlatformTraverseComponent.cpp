@@ -2,7 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
-#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
+#include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 
 #include <iostream>

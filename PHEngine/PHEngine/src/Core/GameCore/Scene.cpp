@@ -7,6 +7,9 @@
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
 #include "Core/GameCore/GUI/Text/TextFieldProxy.h"
+#include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GameCore/Components/ComponentCreators/IComponentCreatable.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -564,6 +567,44 @@ namespace EngineCore
       }
    }
 
+   void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType)
+   {
+      Logger::Out("Scene::TextDataChanged_OnRenderThread => font name = ",
+                  textField->GetFontName(),
+                  " textFieldId = ",
+                  textField->GetTextFieldId(),
+                  " textChangedDatType = ",
+                  (uint32_t)textChangedDataType);
+
+      const uint64_t creatorObjectId = textField->GetTextFieldId();
+      static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     {
+                                                        if (eTextChangedDataType::OFFSET == textChangedDataType)
+                                                        {
+                                                         sceneRenderer->TextPositionChanged(textField->GetFontName(),
+                                                                                          textField->GetTextFieldId(),
+                                                                                          textField->GetPosition());
+                                                        }
+                                                        else if (eTextChangedDataType::COLOR == textChangedDataType)
+                                                        {
+                                                            sceneRenderer->TextColorChanged(textField->GetFontName(),
+                                                                                          textField->GetTextFieldId(),
+                                                                                          textField->GetColor());
+                                                        }
+                                                        else if (eTextChangedDataType::TEXT == textChangedDataType)
+                                                        {
+                                                           sceneRenderer->TextChanged(textField->GetFontName(),
+                                                           textField->GetTextFieldId(),
+                                                           textField->GetText());
+                                                        } }));
+      }
+   }
+
    void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
    {
       static constexpr uint64_t creatorObjectId = 0;
@@ -756,6 +797,16 @@ namespace EngineCore
             PlanarReflectionSceneProxyAdded_OnRenderThread(componentPtr->GetSceneProxyId(), sceneProxySp);
          }
       }
+   }
+
+   std::shared_ptr<Component> Scene::CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
+                                                                const ComponentData &componentData)
+   {
+      const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
+      RegisterComponentSceneProxy(component);
+      RegisterGameObject(component.get());
+      component->OnPostInitialized();
+      return component;
    }
 
    bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName)

@@ -2,19 +2,21 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/Component.h"
-#include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Core/GameCore/Components/ComponentCreatorFactory.h"
 #include "Core/GameCore/Components/LightComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/GameCore/ActorController.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 #include "Core/GameCore/ACamera.h"
+#include "Core/GameCore/Event/eTextEventEnums.h"
+#include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "TextHandler.h"
 
 #include <type_traits>
 
 using namespace Thread;
+using namespace Event;
+using namespace Resources;
 
 namespace Graphics
 {
@@ -37,6 +39,9 @@ namespace EnginePhysics
 
 namespace EngineCore
 {
+   class IComponentCreatable;
+   struct ComponentData;
+
    class Scene : public GameObject,
                  public std::enable_shared_from_this<Scene>
    {
@@ -72,17 +77,8 @@ namespace EngineCore
 
       ~Scene();
 
-      template <typename ComponentType, eComponentMetaType c_metaType>
-      typename std::enable_if<std::is_base_of<Component, ComponentType>::value, std::shared_ptr<ComponentType>>::type
-      CreateComponent_GameThread(const ComponentData &componentData)
-      {
-         ComponentCreatorFactory componentFactory;
-         const std::shared_ptr<ComponentType> &component = componentFactory.CreateComponent<ComponentType, c_metaType>(componentData, this);
-         RegisterComponentSceneProxy(component);
-         RegisterGameObject(component.get());
-         component->OnPostInitialized();
-         return component;
-      }
+      std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
+                                                                const ComponentData &componentData);
 
       void PostLevelInit();
 
@@ -171,9 +167,11 @@ namespace EngineCore
 
       void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
 
-      void RegisterText_OnRenderThread(const std::shared_ptr<TextField>& textField);
-      
-      void UnregisterText_OnRenderThread(const std::shared_ptr<TextField>& textField);
+      void RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
+
+      void UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
+
+      void TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
