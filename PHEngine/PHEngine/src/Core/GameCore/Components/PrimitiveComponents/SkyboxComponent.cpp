@@ -67,7 +67,7 @@ namespace EngineCore
       return std::make_shared<SkyboxSceneProxy>(this);
    }
 
-   ComponentType SkyboxComponent::GetComponentType() const
+   eComponentType SkyboxComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

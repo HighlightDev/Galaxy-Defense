@@ -48,7 +48,7 @@ namespace EngineCore
       }
    }
 
-   ComponentType PlatformTraverseComponent::GetComponentType() const
+   eComponentType PlatformTraverseComponent::GetComponentType() const
    {
       return PLATFORM_MOVEMENT_COMPONENT;
    }

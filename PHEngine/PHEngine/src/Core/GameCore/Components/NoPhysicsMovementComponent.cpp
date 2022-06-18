@@ -28,7 +28,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType NoPhysicsMovementComponent::GetComponentType() const
+   eComponentType NoPhysicsMovementComponent::GetComponentType() const
    {
       return MOVEMENT_COMPONENT;
    }

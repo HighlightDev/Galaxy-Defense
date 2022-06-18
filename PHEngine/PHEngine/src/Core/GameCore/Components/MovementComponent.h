@@ -24,7 +24,7 @@ namespace EngineCore
 
       virtual ~MovementComponent();
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 

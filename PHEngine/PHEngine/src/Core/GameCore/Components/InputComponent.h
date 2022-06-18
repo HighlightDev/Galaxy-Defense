@@ -21,7 +21,7 @@ namespace EngineCore
 
       virtual ~InputComponent();
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       // Game thread tick
       virtual void Tick(const float deltaTime) override;

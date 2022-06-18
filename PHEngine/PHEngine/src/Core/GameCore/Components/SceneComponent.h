@@ -7,8 +7,6 @@
 
 namespace EngineCore
 {
-   class Scene;
-
    class SceneComponent
        : public Component
    {
@@ -23,8 +21,6 @@ namespace EngineCore
 
       glm::mat4 m_relativeMatrix;
 
-      std::weak_ptr<Scene> m_sceneWP;
-
    public:
       bool bIsRootComponent = false;
 
@@ -36,12 +32,10 @@ namespace EngineCore
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       /* This method works every time when this component has dirty transform */
       virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix = glm::mat4(1));
-
-      void SetScene(std::weak_ptr<Scene> scene);
 
       void SetIsTransformationDirty(const bool isDirty);
 

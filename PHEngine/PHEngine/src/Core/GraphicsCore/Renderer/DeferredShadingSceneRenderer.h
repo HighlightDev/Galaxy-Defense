@@ -165,6 +165,8 @@ namespace Graphics
 
          void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
 
+         void TextVisibilityChanged(const std::string& fontName, const size_t textFieldProxyId, const bool bIsVisible);
+
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
 

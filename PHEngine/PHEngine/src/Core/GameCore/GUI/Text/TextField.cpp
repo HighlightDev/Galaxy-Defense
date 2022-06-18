@@ -21,6 +21,7 @@ namespace EngineCore
                        const int32_t numberOfLines,
                        const bool isCenteredText)
       : mTextFieldId(-1),
+        mIsVisible(true),
         mFontName(fontName),
         mFontSize(fontSize),
         mText(text),
@@ -60,6 +61,11 @@ namespace EngineCore
   int32_t TextField::GetTextFieldId() const
   {
     return mTextFieldId;
+  }
+
+  bool TextField::GetIsVisible() const
+  {
+    return mIsVisible;
   }
 
   std::string TextField::GetFontName() const
@@ -113,6 +119,21 @@ namespace EngineCore
         TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                        shared_from_this(),
                                                        eTextChangedDataType::TEXT);
+      }
+    }
+  }
+
+  void TextField::SetVisibility(const bool isVisible)
+  {
+    if (mIsVisible != isVisible)
+    {
+      mIsVisible = isVisible;
+
+      if (mIsRegistered)
+      {
+        TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                       shared_from_this(),
+                                                       eTextChangedDataType::VISIBILITY);
       }
     }
   }

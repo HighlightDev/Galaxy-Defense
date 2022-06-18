@@ -24,7 +24,7 @@ namespace EngineCore
 
 		virtual ~StaticMeshComponent();
 
-		virtual ComponentType GetComponentType() const override;
+		virtual eComponentType GetComponentType() const override;
 
 		virtual void SetIsEnabled(const bool bEnabled) override;
 

@@ -48,7 +48,7 @@ namespace EngineCore
       return std::make_shared<PointLightSceneProxy>(this);
    }
 
-   ComponentType PointLightComponent::GetComponentType() const
+   eComponentType PointLightComponent::GetComponentType() const
    {
       return LIGHT_COMPONENT;
    }

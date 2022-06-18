@@ -888,14 +888,19 @@ namespace Graphics
          mFontHandler.TextPositionChanged(fontName, textFieldProxyId, position);
       }
 
-      void DeferredShadingSceneRenderer::TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color)
+      void DeferredShadingSceneRenderer::TextColorChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec3 &color)
       {
          mFontHandler.TextColorChanged(fontName, textFieldProxyId, color);
       }
 
-      void DeferredShadingSceneRenderer::TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text)
+      void DeferredShadingSceneRenderer::TextChanged(const std::string &fontName, const size_t textFieldProxyId, const std::string &text)
       {
          mFontHandler.TextChanged(fontName, textFieldProxyId, text);
+      }
+
+      void DeferredShadingSceneRenderer::TextVisibilityChanged(const std::string &fontName, const size_t textFieldProxyId, const bool bIsVisible)
+      {
+         mFontHandler.TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
       }
 
 #if DEBUG
@@ -959,10 +964,17 @@ namespace Graphics
             const auto &renderDataSp = renderData.second;
             renderDataSp->GetFontTextureAtlas()->BindTexture(0);
             shader.ExecuteShader();
+            const auto &textFields = renderDataSp->GetTexFieldProxies();
             shader.u_fontAtlas.LoadUniform(0);
-            shader.u_position.LoadUniform(glm::vec2(0.5f, 0.5f));
-            shader.u_color.LoadUniform(glm::vec3(1, 0, 0));
-            renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(renderDataSp->GetVerticesCount(), GL_TRIANGLES);
+            for (const auto &textField : textFields)
+            {
+               if (textField->mIsVisible)
+               {
+                  shader.u_position.LoadUniform(textField->mPosition);
+                  shader.u_color.LoadUniform(textField->mColor);
+                  renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->mVertexStart, textField->mVerticesCount, GL_TRIANGLES);
+               }
+            }
             shader.StopShader();
          }
 

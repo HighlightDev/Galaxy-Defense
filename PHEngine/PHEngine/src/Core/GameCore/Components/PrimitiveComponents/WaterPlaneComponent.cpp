@@ -25,7 +25,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType WaterPlaneComponent::GetComponentType() const
+   eComponentType WaterPlaneComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

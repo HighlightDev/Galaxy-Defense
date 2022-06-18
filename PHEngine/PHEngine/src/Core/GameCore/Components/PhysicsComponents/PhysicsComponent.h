@@ -41,7 +41,7 @@ namespace EnginePhysics
 
       bool IsTransformDirty() const;
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       glm::vec3 GetWorldTranslation() const;
 

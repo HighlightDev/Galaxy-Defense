@@ -20,8 +20,7 @@ namespace EngineCore
          m_additionalRotationEuler(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(0.0f), "b_rotator",
                                                                                  std::make_unique<typename EngineGOProperty<glm::vec3>::Action_t>([=](const glm::vec3 &rotator)
                                                                                                                                                   { SetIsTransformationDirty(true); }))),
-         m_relativeMatrix(1),
-         m_sceneWP()
+         m_relativeMatrix(1)
    {
       AddEngineProperty(m_additionalRotationEuler);
    }
@@ -42,7 +41,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType SceneComponent::GetComponentType() const
+   eComponentType SceneComponent::GetComponentType() const
    {
       return SCENE_COMPONENT;
    }
@@ -80,11 +79,6 @@ namespace EngineCore
       m_relativeMatrix *= glm::toMat4(nRotator);
 
       SetIsTransformationDirty(false);
-   }
-
-   void SceneComponent::SetScene(std::weak_ptr<Scene> scene)
-   {
-      m_sceneWP = scene;
    }
 
    void SceneComponent::SetIsTransformationDirty(const bool isDirty)

@@ -15,6 +15,8 @@ namespace EngineCore
 
         static size_t s_TotalTextFieldId;
 
+        bool mIsVisible;
+
         std::string mFontName;
 
         std::string mText;
@@ -51,6 +53,8 @@ namespace EngineCore
 
         int32_t GetTextFieldId() const;
 
+        bool GetIsVisible() const;
+
         std::string GetFontName() const;
 
         float GetFontSize() const;
@@ -62,6 +66,8 @@ namespace EngineCore
         glm::vec2 GetPosition() const;
 
         void SetText(const std::string& text);
+
+        void SetVisibility(const bool isVisible);
 
         void SetColor(const glm::vec3 & color);
 

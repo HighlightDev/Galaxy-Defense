@@ -10,6 +10,7 @@ namespace Event
 
     enum class eTextChangedDataType
     {
+        VISIBILITY,
         OFFSET,
         COLOR,
         TEXT

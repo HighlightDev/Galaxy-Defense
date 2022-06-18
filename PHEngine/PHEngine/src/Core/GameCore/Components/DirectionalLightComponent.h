@@ -27,7 +27,7 @@ namespace EngineCore
 
       virtual ~DirectionalLightComponent();
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 

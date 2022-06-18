@@ -67,7 +67,8 @@ namespace Graphics
 			void GenVAO();
 
 			void RenderVAO(const int32_t primitiveMode = GL_TRIANGLES);
-			void RenderVAO(const size_t count, const int32_t primitiveMode = GL_TRIANGLES);
+			
+			void RenderVAO(const size_t first, const size_t count, const int32_t primitiveMode = GL_TRIANGLES);
 
 			void RenderInstanced(const int32_t primitiveMode, const size_t primitivesCount);
 

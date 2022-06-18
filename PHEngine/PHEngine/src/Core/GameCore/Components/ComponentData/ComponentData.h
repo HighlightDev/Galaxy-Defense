@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/Components/ComponentType.h"
-
 namespace EngineCore
 {
    struct ComponentData

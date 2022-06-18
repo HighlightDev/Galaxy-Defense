@@ -27,7 +27,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType PrimitiveComponent::GetComponentType() const
+   eComponentType PrimitiveComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

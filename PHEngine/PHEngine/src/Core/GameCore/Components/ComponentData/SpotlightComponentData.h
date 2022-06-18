@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/Components/ComponentType.h"
 #include "PointLightComponentData.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 

@@ -16,7 +16,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType CubemapComponent::GetComponentType() const
+   eComponentType CubemapComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

@@ -40,7 +40,7 @@ namespace EngineCore
 
       virtual ~WaterPlaneComponent();
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       virtual void Tick(const float deltaTime) override;
       

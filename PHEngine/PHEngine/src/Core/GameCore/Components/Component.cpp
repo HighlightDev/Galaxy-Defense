@@ -1,5 +1,6 @@
 #include "Component.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Scene.h"
 
 #include <algorithm>
 
@@ -7,7 +8,11 @@ namespace EngineCore
 {
 
    Component::Component(const std::string &gameObjectName)
-       : GameObject(gameObjectName), m_owner(), mIsEnabled(true), mIsPostLevelInitialized(false)
+       : GameObject(gameObjectName),
+         m_owner(),
+         mIsEnabled(true),
+         mIsPostLevelInitialized(false),
+         m_sceneWP()
    {
    }
 
@@ -25,7 +30,7 @@ namespace EngineCore
       m_owner.reset();
    }
 
-   ComponentType Component::GetComponentType() const
+   eComponentType Component::GetComponentType() const
    {
       return COMPONENT;
    }
@@ -63,6 +68,11 @@ namespace EngineCore
       }
 
       return base;
+   }
+
+   void Component::SetScene(const std::weak_ptr<Scene> &scene)
+   {
+      m_sceneWP = scene;
    }
 
    void Component::OnPostInitialized()

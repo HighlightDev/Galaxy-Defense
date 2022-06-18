@@ -109,7 +109,7 @@ namespace EngineCore
       mPlanarReflectionSceneProxyId = sceneProxyId;
    }
 
-   ComponentType PlanarReflectionComponent::GetComponentType() const
+   eComponentType PlanarReflectionComponent::GetComponentType() const
    {
       return PLANAR_REFLECTION_COMPONENT;
    }

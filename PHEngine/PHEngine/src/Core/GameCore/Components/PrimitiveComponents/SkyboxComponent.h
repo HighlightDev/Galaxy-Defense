@@ -40,7 +40,7 @@ namespace EngineCore
 
 		virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-		virtual ComponentType GetComponentType() const override;
+		virtual eComponentType GetComponentType() const override;
 
 		virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 

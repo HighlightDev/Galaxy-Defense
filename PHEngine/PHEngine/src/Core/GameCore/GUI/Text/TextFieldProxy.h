@@ -25,6 +25,11 @@ namespace Graphics
         size_t mColorChunkSize;
         // Chunk Data End
 
+        size_t mVertexStart;
+        size_t mVerticesCount;
+
+        bool mIsVisible;
+
         std::string mText;
 
         std::string mFontName;

@@ -85,7 +85,7 @@ namespace EngineCore
       return std::make_shared<StaticMeshSceneProxy>(this);
    }
 
-   ComponentType StaticMeshComponent::GetComponentType() const
+   eComponentType StaticMeshComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

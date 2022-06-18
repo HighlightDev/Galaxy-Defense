@@ -44,7 +44,7 @@ namespace EngineCore
     {
     }
 
-    ComponentType ParticleSystemComponent::GetComponentType() const
+    eComponentType ParticleSystemComponent::GetComponentType() const
     {
         return PRIMITIVE_COMPONENT;
     }

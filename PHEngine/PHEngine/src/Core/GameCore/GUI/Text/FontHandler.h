@@ -54,6 +54,8 @@ namespace EngineCore
 
         void TextChanged(const size_t textFieldProxyId, const std::string& text);
 
+        void TextVisibilityChanged(const size_t textFieldProxyId, const bool bIsVisible);
+
         TextVertexChunkData &GetPositionChunkDataRef();
 
         TextVertexChunkData &GetTextureCoordinatesChunkDataRef();
@@ -70,6 +72,8 @@ namespace EngineCore
 
         size_t GetVerticesCount() const;
 
+        const std::vector<std::shared_ptr<TextFieldProxy>>& GetTexFieldProxies() const;
+
     private:
         void AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
@@ -82,10 +86,6 @@ namespace EngineCore
                                VertexBufferObjectBase *const textureCoordinatesVBO,
                                VertexBufferObjectBase *const colorVBO,
                                VertexBufferObjectBase *const offsetVBO);
-
-        void PositionChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
-
-        void ColorChanged(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
     };
 
     class FontHandler
@@ -109,6 +109,8 @@ namespace EngineCore
 
         void TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color);
 
-         void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
+        void TextVisibilityChanged(const std::string& fontName, const size_t textFieldProxyId, const bool bIsVisible);
+
+        void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
     };
 }

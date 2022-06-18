@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Core/GameCore/Components/ComponentType.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 
 #include <string>

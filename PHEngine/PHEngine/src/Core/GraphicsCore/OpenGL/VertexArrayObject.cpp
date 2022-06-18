@@ -55,7 +55,7 @@ namespace Graphics
 			glBindVertexArray(0);
 		}
 
-		void VertexArrayObject::RenderVAO(const size_t count, const int32_t primitiveMode)
+		void VertexArrayObject::RenderVAO(const size_t first, const size_t count, const int32_t primitiveMode)
 		{
 			glBindVertexArray(m_descriptor);
 			if (HasIBO())
@@ -64,7 +64,7 @@ namespace Graphics
 			}
 			else
 			{
-				glDrawArrays(primitiveMode, 0, count);
+				glDrawArrays(primitiveMode, first, count);
 			}
 			glBindVertexArray(0);
 		}

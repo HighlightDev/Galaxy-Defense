@@ -16,7 +16,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType InputComponent::GetComponentType() const
+   eComponentType InputComponent::GetComponentType() const
    {
       return INPUT_COMPONENT;
    }

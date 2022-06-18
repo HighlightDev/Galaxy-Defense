@@ -31,7 +31,7 @@ namespace EngineCore
       CameraTransformChangedEvent::GetInstance()->RemoveListener(this);
    }
 
-   ComponentType HumanoidPhysicsMovementComponent::GetComponentType() const
+   eComponentType HumanoidPhysicsMovementComponent::GetComponentType() const
    {
       return CHARACTER_MOVEMENT_COMPONENT;
    }

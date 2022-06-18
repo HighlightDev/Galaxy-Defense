@@ -66,6 +66,11 @@ namespace Game
             counter = 0;
         }
 
+        if (counter == 600)
+        {
+            text2->SetVisibility(!text2->GetIsVisible());
+        }
+
         if (counter == 800)
         {
             text1->SetText(std::to_string(deltaTime * 100.0f) + "_text");

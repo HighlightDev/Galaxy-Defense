@@ -44,7 +44,7 @@ namespace EngineCore
 
             virtual void SetIsEnabled(const bool bEnabled) override;
 
-            virtual ComponentType GetComponentType() const override;
+            virtual eComponentType GetComponentType() const override;
 
             virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 

@@ -6,8 +6,6 @@
 #include "Core/GameCore/Serialize/ISerializable.h"
 
 #include <memory>
-#include <vector>
-#include <glm/vec3.hpp>
 
 namespace EngineCore
 {
@@ -29,13 +27,15 @@ namespace EngineCore
 
       bool mIsPostLevelInitialized;
 
+      std::weak_ptr<Scene> m_sceneWP;
+
 	public:
 
       Component(const std::string& gameObjectName);
 
 		virtual ~Component();
 
-      virtual ComponentType GetComponentType() const;
+      virtual eComponentType GetComponentType() const;
 
 		virtual void SetOwner(const std::weak_ptr<Actor>& ownerActor);
 
@@ -46,6 +46,8 @@ namespace EngineCore
       std::weak_ptr<Actor> GetBaseOwner() const;
 
       bool IsEnabled() const;
+
+      void SetScene(const std::weak_ptr<Scene>& scene);
 
       virtual void Tick(const float deltaTime) override;
 

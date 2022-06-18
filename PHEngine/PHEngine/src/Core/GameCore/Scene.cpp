@@ -539,6 +539,7 @@ namespace EngineCore
                                                  Job(creatorObjectId, functionId, [=]()
                                                      {
                                                       std::shared_ptr<TextFieldProxy> textFieldProxy = std::make_shared<TextFieldProxy>();
+                                                      textFieldProxy->mIsVisible = textField->GetIsVisible();
                                                       textFieldProxy->mTextFieldId = textField->GetTextFieldId();
                                                       textFieldProxy->mText = textField->GetText();
                                                       textFieldProxy->mFontName = textField->GetFontName();
@@ -592,15 +593,21 @@ namespace EngineCore
                                                         }
                                                         else if (eTextChangedDataType::COLOR == textChangedDataType)
                                                         {
-                                                            sceneRenderer->TextColorChanged(textField->GetFontName(),
+                                                         sceneRenderer->TextColorChanged(textField->GetFontName(),
                                                                                           textField->GetTextFieldId(),
                                                                                           textField->GetColor());
                                                         }
                                                         else if (eTextChangedDataType::TEXT == textChangedDataType)
                                                         {
                                                            sceneRenderer->TextChanged(textField->GetFontName(),
-                                                           textField->GetTextFieldId(),
-                                                           textField->GetText());
+                                                                                       textField->GetTextFieldId(),
+                                                                                       textField->GetText());
+                                                        }
+                                                        else if (eTextChangedDataType::VISIBILITY == textChangedDataType)
+                                                        {
+                                                           sceneRenderer->TextVisibilityChanged(textField->GetFontName(),
+                                                                                                textField->GetTextFieldId(),
+                                                                                                textField->GetIsVisible());
                                                         } }));
       }
    }
@@ -725,10 +732,10 @@ namespace EngineCore
 
    void Scene::RemoveComponent(std::shared_ptr<Component> component)
    {
-      const ComponentType type = component->GetComponentType();
+      const eComponentType type = component->GetComponentType();
 
       // Remove corresponding primitive proxy
-      if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
+      if ((type & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
       {
          auto componentPtr = std::static_pointer_cast<PrimitiveComponent>(component);
          const size_t removeProxyIndex = componentPtr->SceneProxyId;
@@ -736,7 +743,7 @@ namespace EngineCore
          // delete light proxy from render thread
          PrimitiveSceneProxyDeleted_OnRenderThread(removeProxyIndex);
       }
-      else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
+      else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
       {
          auto componentPtr = std::static_pointer_cast<LightComponent>(component);
          const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
@@ -747,11 +754,11 @@ namespace EngineCore
 
       if (const auto &spOwner = component->GetOwner().lock())
       {
-         if ((type & ComponentType::MOVEMENT_COMPONENT) == ComponentType::MOVEMENT_COMPONENT)
+         if ((type & eComponentType::MOVEMENT_COMPONENT) == eComponentType::MOVEMENT_COMPONENT)
          {
             spOwner->RemoveMovementComponent();
          }
-         else if ((type & ComponentType::INPUT_COMPONENT) == ComponentType::INPUT_COMPONENT)
+         else if ((type & eComponentType::INPUT_COMPONENT) == eComponentType::INPUT_COMPONENT)
          {
             spOwner->RemoveInputComponent();
          }
@@ -768,27 +775,25 @@ namespace EngineCore
    {
       Logger::Out("Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
 
-      ComponentType type = component->GetComponentType();
-      if ((type & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+      const eComponentType type = component->GetComponentType();
+      if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
       {
          SceneComponent *sceneComponentPtr = static_cast<SceneComponent *>(component.get());
-         sceneComponentPtr->SetScene(shared_from_this());
-         if ((type & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
+         if ((type & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
          {
             PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);
-
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
             PrimitiveSceneProxyAdded_OnRenderThread(componentPtr->SceneProxyId, sceneProxySp);
          }
-         else if ((type & ComponentType::LIGHT_COMPONENT) == ComponentType::LIGHT_COMPONENT)
+         else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
          {
             LightComponent *componentPtr = static_cast<LightComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->LightSceneProxyId = sceneProxySp->GetSceneProxyId();
             LightSceneProxyAdded_OnRenderThread(componentPtr->LightSceneProxyId, sceneProxySp);
          }
-         else if ((type & ComponentType::PLANAR_REFLECTION_COMPONENT) == ComponentType::PLANAR_REFLECTION_COMPONENT)
+         else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT)
          {
             PlanarReflectionComponent *componentPtr = static_cast<PlanarReflectionComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreatePlanarReflectionProxy();
@@ -803,6 +808,7 @@ namespace EngineCore
                                                                 const ComponentData &componentData)
    {
       const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
+      component->SetScene(shared_from_this());
       RegisterComponentSceneProxy(component);
       RegisterGameObject(component.get());
       component->OnPostInitialized();

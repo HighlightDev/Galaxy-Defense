@@ -91,9 +91,9 @@ namespace EngineCore
       Base::Tick(deltaTime);
    }
 
-   ComponentType DirectionalLightComponent::GetComponentType() const
+   eComponentType DirectionalLightComponent::GetComponentType() const
    {
-      return ComponentType::LIGHT_COMPONENT;
+      return eComponentType::LIGHT_COMPONENT;
    }
 
    void DirectionalLightComponent::ForceUpdateShadowMap()

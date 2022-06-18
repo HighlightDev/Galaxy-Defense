@@ -58,7 +58,7 @@ namespace EngineCore {
 
       void SetSceneProxyId(const size_t sceneProxyId);
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       void SyncDataWithRenderThread();
 

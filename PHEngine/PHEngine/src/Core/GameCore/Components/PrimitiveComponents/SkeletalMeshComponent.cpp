@@ -95,7 +95,7 @@ namespace EngineCore
       return materialResult;
    }
 
-   ComponentType SkeletalMeshComponent::GetComponentType() const
+   eComponentType SkeletalMeshComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }

@@ -16,7 +16,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType LightComponent::GetComponentType() const
+   eComponentType LightComponent::GetComponentType() const
    {
       return LIGHT_COMPONENT;
    }

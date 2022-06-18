@@ -5,7 +5,6 @@
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GameCore/Components/ComponentType.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"

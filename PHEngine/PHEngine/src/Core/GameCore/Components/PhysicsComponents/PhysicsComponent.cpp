@@ -69,7 +69,7 @@ namespace EnginePhysics
       mDescriptor->SetRotator(Converter::glmToBullet(rotator));
    }
 
-   ComponentType PhysicsComponent::GetComponentType() const
+   eComponentType PhysicsComponent::GetComponentType() const
    {
       return PHYSICS_COMPONENT;
    }

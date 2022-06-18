@@ -29,7 +29,7 @@ namespace EngineCore
 
       virtual ~BillboardComponent();
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       virtual void Tick(float deltaTime) override;
 

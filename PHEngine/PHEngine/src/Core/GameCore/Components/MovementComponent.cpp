@@ -16,7 +16,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType MovementComponent::GetComponentType() const
+   eComponentType MovementComponent::GetComponentType() const
    {
       return MOVEMENT_COMPONENT;
    }

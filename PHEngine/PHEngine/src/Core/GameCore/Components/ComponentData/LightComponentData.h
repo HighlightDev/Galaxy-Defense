@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ComponentData.h"
-#include "Core/GameCore/Components/ComponentType.h"
 
 #include <glm/vec3.hpp>
 

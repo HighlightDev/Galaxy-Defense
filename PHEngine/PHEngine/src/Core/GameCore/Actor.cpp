@@ -161,7 +161,7 @@ namespace EngineCore
 
             for (auto &component : m_allComponents)
             {
-               if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+               if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
                {
                   SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
                   sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
@@ -190,7 +190,7 @@ namespace EngineCore
 
       for (std::shared_ptr<Component> component : m_allComponents)
       {
-         if ((component->GetComponentType() & ComponentType::PRIMITIVE_COMPONENT) == ComponentType::PRIMITIVE_COMPONENT)
+         if ((component->GetComponentType() & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
          {
             std::static_pointer_cast<PrimitiveComponent>(component)->SetIsVisible(isVisible);
          }
@@ -225,7 +225,7 @@ namespace EngineCore
 
          for (auto &component : m_allComponents)
          {
-            if ((component->GetComponentType() & ComponentType::SCENE_COMPONENT) == ComponentType::SCENE_COMPONENT)
+            if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
             {
                SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
                if (sceneComp->GetIsTransformationDirty())
@@ -301,15 +301,15 @@ namespace EngineCore
 
       const uint64_t componentType = component->GetComponentType();
 
-      if ((componentType & ComponentType::MOVEMENT_COMPONENT) == ComponentType::MOVEMENT_COMPONENT)
+      if ((componentType & eComponentType::MOVEMENT_COMPONENT) == eComponentType::MOVEMENT_COMPONENT)
       {
          m_movementComponent = std::static_pointer_cast<MovementComponent>(component);
       }
-      else if ((componentType & ComponentType::INPUT_COMPONENT) == ComponentType::INPUT_COMPONENT)
+      else if ((componentType & eComponentType::INPUT_COMPONENT) == eComponentType::INPUT_COMPONENT)
       {
          m_inputComponent = std::static_pointer_cast<InputComponent>(component);
       }
-      else if ((componentType & ComponentType::PHYSICS_COMPONENT) == ComponentType::PHYSICS_COMPONENT)
+      else if ((componentType & eComponentType::PHYSICS_COMPONENT) == eComponentType::PHYSICS_COMPONENT)
       {
          m_physicsComponent = std::static_pointer_cast<PhysicsComponent>(component);
       }

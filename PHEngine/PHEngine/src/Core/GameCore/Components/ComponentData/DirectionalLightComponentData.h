@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/GameCore/Components/ComponentType.h"
 #include "LightComponentData.h"
 
 namespace EngineCore

@@ -27,7 +27,7 @@ namespace EngineCore
 
       size_t LightSceneProxyId = 0;
 
-      virtual ComponentType GetComponentType() const override;
+      virtual eComponentType GetComponentType() const override;
 
       virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 

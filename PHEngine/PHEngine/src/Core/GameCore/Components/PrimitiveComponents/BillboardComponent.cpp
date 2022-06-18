@@ -19,7 +19,7 @@ namespace EngineCore
    {
    }
 
-   ComponentType BillboardComponent::GetComponentType() const
+   eComponentType BillboardComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }
