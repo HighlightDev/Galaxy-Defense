@@ -21,11 +21,8 @@ function System_OnStart(host)
 	OnStart(host)
 end
 
-function System_OnUpdate(host, deltaTime)
-	local a_skelet = _GetGameObject(host, "moveCompData")
-	local srcTime = _GetGOPropertyValFloat(host, a_skelet, "SrcAnimTime")
-	print("srcTime is ", srcTime)
-end
+--function System_OnUpdate(host, deltaTime)
+--end
 
 --function System_OnUpdate(host, deltaTime)
 --local status = coroutine.status(OnUpdateCoroutine)

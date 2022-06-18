@@ -29,8 +29,6 @@ namespace EngineCore
     {
         TextVertexChunkData mPositionChunkData;
         TextVertexChunkData mTextureCoordinatesChunkData;
-        TextVertexChunkData mOffsetsChunkData;
-        TextVertexChunkData mColorsChunkData;
         size_t mVerticesCount;
 
         std::shared_ptr<TextMesh> mTextMesh;
@@ -60,10 +58,6 @@ namespace EngineCore
 
         TextVertexChunkData &GetTextureCoordinatesChunkDataRef();
 
-        TextVertexChunkData& GetOffsetChunkDataRef();
-
-        TextVertexChunkData& GetColorChunkDataRef();
-
         const std::shared_ptr<TextMesh> &GetTextMesh() const;
 
         const std::shared_ptr<ITexture> &GetFontTextureAtlas() const;
@@ -83,9 +77,7 @@ namespace EngineCore
 
         void FontBufferSubData(const std::shared_ptr<TextFieldProxy> &textFieldProxy,
                                VertexBufferObjectBase *const positionVBO,
-                               VertexBufferObjectBase *const textureCoordinatesVBO,
-                               VertexBufferObjectBase *const colorVBO,
-                               VertexBufferObjectBase *const offsetVBO);
+                               VertexBufferObjectBase *const textureCoordinatesVBO);
     };
 
     class FontHandler

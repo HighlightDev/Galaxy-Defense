@@ -36,24 +36,8 @@ namespace Resources
 																	 eAttribArrayIndexName::TEXTURE_COORDINATES,
 																	 GL_ARRAY_BUFFER);
 
-		auto *offsetVBO = new VertexBufferObject<float,
-												 2,
-												 GL_FLOAT,
-												 GL_DYNAMIC_DRAW>(maxFontCharactersCount * verticesPerCharacter,
-																  eAttribArrayIndexName::CUSTOM_0,
-																  GL_ARRAY_BUFFER);
-
-		auto *colorVBO = new VertexBufferObject<float,
-												3,
-												GL_FLOAT,
-												GL_DYNAMIC_DRAW>(maxFontCharactersCount * verticesPerCharacter,
-																 eAttribArrayIndexName::COLOR,
-																 GL_ARRAY_BUFFER);
-
 		vao.AddVBO(positionsVBO,
-				   texCoordsVBO,
-				   offsetVBO,
-				   colorVBO);
+				   texCoordsVBO);
 
 		vao.BindBuffersToVao();
 
