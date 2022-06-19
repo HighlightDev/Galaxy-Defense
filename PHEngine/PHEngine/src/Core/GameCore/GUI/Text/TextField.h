@@ -11,6 +11,8 @@ namespace EngineCore
     class TextField
         : public std::enable_shared_from_this<TextField>
     {
+        friend class UiComponent;
+
         int32_t mTextFieldId;
 
         static size_t s_TotalTextFieldId;
@@ -38,7 +40,7 @@ namespace EngineCore
     public:
         TextField(const std::string &fontName,
                   const float fontSize,
-                  const std::string& text,
+                  const std::string &text,
                   const glm::vec3 &color,
                   const glm::vec2 &position,
                   const float lineMaxSize,
@@ -46,10 +48,6 @@ namespace EngineCore
                   const bool isCenteredText);
 
         std::shared_ptr<TextField> GetSharedFromThis() const;
-
-        void RegisterText();
-
-        void UnregisterText();
 
         int32_t GetTextFieldId() const;
 
@@ -65,13 +63,13 @@ namespace EngineCore
 
         glm::vec2 GetPosition() const;
 
-        void SetText(const std::string& text);
+        void SetText(const std::string &text);
 
         void SetVisibility(const bool isVisible);
 
-        void SetColor(const glm::vec3 & color);
+        void SetColor(const glm::vec3 &color);
 
-        void SetPosition(const glm::vec2& position);
+        void SetPosition(const glm::vec2 &position);
 
         float GetLineMaxSize() const;
 
@@ -81,5 +79,9 @@ namespace EngineCore
 
         bool GetIsRegistered() const;
 
+    private:
+        void RegisterText();
+
+        void UnregisterText();
     };
 }

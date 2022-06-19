@@ -23,7 +23,6 @@
 #include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
 #include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
-#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
@@ -282,7 +281,7 @@ namespace EngineCore
 
    ComponentData *EngineObjectCreator::CreateInputComponentData(const std::string &gameObjectName)
    {
-      return new InputComponentData(gameObjectName);
+      return new ComponentData(gameObjectName);
    }
 
    ComponentData *EngineObjectCreator::CreateSkyboxComponentData(const std::string &gameObjectName,

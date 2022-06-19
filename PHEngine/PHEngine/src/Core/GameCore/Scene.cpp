@@ -570,12 +570,12 @@ namespace EngineCore
 
    void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType)
    {
-      Logger::Out("Scene::TextDataChanged_OnRenderThread => font name = ",
+      /*Logger::Out("Scene::TextDataChanged_OnRenderThread => font name = ",
                   textField->GetFontName(),
                   " textFieldId = ",
                   textField->GetTextFieldId(),
                   " textChangedDatType = ",
-                  (uint32_t)textChangedDataType);
+                  (uint32_t)textChangedDataType);*/
 
       const uint64_t creatorObjectId = textField->GetTextFieldId();
       static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");
@@ -864,6 +864,31 @@ namespace EngineCore
       }
 
       return false;
+   }
+
+   glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition)
+   {
+      glm::vec4 result = worldPosition;
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
+         if (sceneViewSp)
+         {
+            const auto &cameraProxySp = sceneViewSp->GetCameraProxy();
+            const auto &viewMatrix = cameraProxySp->GetViewMatrix();
+            const auto &projectionMatrix = cameraProxySp->GetProjectionMatrix();
+            result = projectionMatrix * viewMatrix * result;
+         }
+         else
+         {
+            Logger::Out("Scene::GetConvertedToClippedSpacePosition => "
+                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                        cameraProxyId);
+         }
+      }
+
+      return result;
    }
 
    Scene::~Scene()

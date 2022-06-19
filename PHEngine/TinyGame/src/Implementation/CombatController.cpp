@@ -6,9 +6,13 @@
 #include "SpaceShipPlayerController.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/Scene.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
+using namespace EngineCore;
 
 namespace Game
 {
@@ -32,6 +36,11 @@ namespace Game
     void CombatController::PreInit()
     {
     }
+
+    int counter = 0;
+
+    size_t textField1, textField2, textField3;
+    std::shared_ptr<UiComponent> uiComp;
 
     void CombatController::PostInit()
     {
@@ -57,6 +66,15 @@ namespace Game
 
                 mEnemies.emplace_back(CombatEntity(a_enemyShip));
             }
+
+            const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
+            const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(sceneSp->CreateComponent_GameThread(uiComponentCreator, ComponentData("UiComponent1")));
+            mPlayerShip->AddComponent(c_uiComponent);
+            textField1 = c_uiComponent->CreateTextField("arial", 5, "Hello world!", glm::vec3(1, 0.5, 0.5), glm::vec2(0.5), 0.5, 5, false);
+            textField2 = c_uiComponent->CreateTextField("arial", 5, "Hi!", glm::vec3(0.1, 0.1, 0.5), glm::vec2(0.2), 0.5, 5, false);
+            textField3 = c_uiComponent->CreateTextField("arial", 5, "Privet pipka", glm::vec3(1), glm::vec2(), 0.5, 5, false);
+
+            uiComp = c_uiComponent;
         }
     }
 
@@ -188,6 +206,22 @@ namespace Game
                 ReSpawnEnemyShip(enemyContainer, startPosition);
             }
         }
+
+        if (counter == 2)
+        {
+            const auto &playerTranslation = mPlayerShip->GetRootComponent()->GetTranslation();
+            const auto &mainCameraSp = mMainPlayerActorController->GetCamera();
+            const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(playerTranslation, 1.0f));
+            const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
+                                                       clippedSpaceTranslation.y / clippedSpaceTranslation.w,
+                                                       clippedSpaceTranslation.z / clippedSpaceTranslation.w);
+            const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
+            uiComp->GetTextFieldById(textField1)->SetPosition(textureSpaceTranslation);
+            uiComp->GetTextFieldById(textField1)->SetText(std::to_string(deltaTime * 100.0f) + "_text");
+            counter = 0;
+        }
+        
+        ++counter;
     }
 
     void CombatController::CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp)

@@ -10,7 +10,7 @@ namespace EngineCore
     class Scene;
 
     template <typename ComponentInstantiationType>
-    class InputComponentCreator
+    class UiComponentCreator
         : public ComponentCreatorBase
     {
     public:

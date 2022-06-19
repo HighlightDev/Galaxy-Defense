@@ -55,6 +55,11 @@ namespace Game
       mLevelBounds = levelBounds;
    }
 
+   std::shared_ptr<FirstPersonCamera> SpaceShipPlayerController::GetCamera() const
+   {
+      return m_camera;
+   }
+
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
       assert(m_actor);

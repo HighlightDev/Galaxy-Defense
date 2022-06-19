@@ -2,7 +2,6 @@
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
-#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -76,7 +75,7 @@ namespace Game
       const auto &a_spaceship = mScene->GetActorByName("SpaceshipActor");
       assert(a_spaceship);
 
-      InputComponentData d_input = InputComponentData("SpaceshipInputComponent");
+      ComponentData d_input = ComponentData("SpaceshipInputComponent");
       const auto& inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
       const auto &c_input = mScene->CreateComponent_GameThread(inputComponentCreator, d_input);
       a_spaceship->AddComponent(c_input);

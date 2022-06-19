@@ -136,6 +136,8 @@ namespace EngineCore
 
       virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) = 0;
 
+      glm::vec4 GetConvertedToClippedSpacePosition(const glm::vec4& worldPosition);
+
    protected:
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);

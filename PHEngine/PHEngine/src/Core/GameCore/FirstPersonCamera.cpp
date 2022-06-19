@@ -5,18 +5,28 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseBindings.h"
-#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
-
-#include <set>
 
 using namespace Graphics;
 
 namespace EngineCore
 {
 
-   FirstPersonCamera::FirstPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg, glm::vec3 camPos)
-       : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), m_firstPersonCameraPosition(camPos), m_cameraMoveSpeed(0.01f), mInputComponent(std::make_unique<InputComponent>(
-                                                                                                                                                        InputComponentData("FirstPersonCameraInputComponent")))
+   FirstPersonCamera::FirstPersonCamera(const std::string &cameraName,
+                                        const eCameraType cameraType,
+                                        std::shared_ptr<Scene> scene,
+                                        const ViewPortInfo &viewPort,
+                                        const float initPitchDeg,
+                                        const float initYawDeg,
+                                        glm::vec3 camPos)
+       : ACamera(cameraName,
+                 cameraType,
+                 scene,
+                 viewPort,
+                 initPitchDeg,
+                 initYawDeg),
+         m_firstPersonCameraPosition(camPos),
+         m_cameraMoveSpeed(0.01f),
+         mInputComponent(std::make_unique<InputComponent>(ComponentData("FirstPersonCameraInputComponent")))
    {
       ACamera::UpdateRotationMatrix(0, 0);
    }

@@ -183,4 +183,16 @@ namespace EngineCore
    {
       return mPlanarReflectionComponent;
    }
+
+   glm::vec4 ACamera::GetConvertedToClippedSpacePosition(const glm::vec4 &worldPosition)
+   {
+      glm::vec4 clippedSpacePosition = worldPosition;
+
+      if (auto sceneSp = mScene.lock())
+      {
+         clippedSpacePosition = sceneSp->GetConvertedToClippedSpacePosition(SceneProxyId, worldPosition);
+      }
+
+      return clippedSpacePosition;
+   }
 }

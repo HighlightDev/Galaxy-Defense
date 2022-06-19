@@ -5,7 +5,7 @@
 
 namespace EngineCore
 {
-   struct InputComponentData;
+   struct ComponentData;
 
    class InputComponent :
       public Component
@@ -17,7 +17,7 @@ namespace EngineCore
 
    public:
 
-      InputComponent(const InputComponentData& componentData);
+      InputComponent(const ComponentData& componentData);
 
       virtual ~InputComponent();
 

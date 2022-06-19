@@ -1434,9 +1434,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\RenderData\SkeletalMeshRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>

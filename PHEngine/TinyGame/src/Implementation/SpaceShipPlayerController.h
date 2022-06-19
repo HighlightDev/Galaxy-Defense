@@ -37,6 +37,8 @@ namespace Game
       virtual void InitActorController() override;
 
       void SetLevelBounds(const BoundingBox& mLevelBounds);
+
+      std::shared_ptr<FirstPersonCamera> GetCamera() const;
    };
 
 }

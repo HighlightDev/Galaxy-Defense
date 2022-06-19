@@ -1,11 +1,11 @@
 #include "InputComponent.h"
 #include "Core/GameCore/Input/InputManager.h"
-#include "Core/GameCore/Components/ComponentData/InputComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ComponentData.h"
 
 namespace EngineCore
 {
 
-   InputComponent::InputComponent(const InputComponentData& componentData)
+   InputComponent::InputComponent(const ComponentData& componentData)
       : Component(componentData.GameObjectName)
       , m_keyboardBindings(std::make_shared<DefaultKeyboardBindings>())
       , m_mouseBindings()

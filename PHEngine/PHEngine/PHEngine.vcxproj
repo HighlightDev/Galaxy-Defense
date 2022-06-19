@@ -556,7 +556,6 @@
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasHandler.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\InputComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Input\InputManager.h" />

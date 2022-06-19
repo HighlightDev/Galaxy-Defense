@@ -8,8 +8,7 @@
 namespace EngineCore
 {
     TextHandler::TextHandler()
-        : mSceneWp(),
-          mTextFields()
+        : mSceneWp()
     {
         TextRegisterEvent::GetInstance()->AddListener(this);
         TextDataChangedEvent::GetInstance()->AddListener(this);
@@ -33,21 +32,12 @@ namespace EngineCore
             const auto &textSp = std::get<0>(data);
             const auto registerType = std::get<1>(data);
 
-            const auto it = std::find_if(mTextFields.begin(),
-                                         mTextFields.end(),
-                                         [textSp](const auto &textFieldSp)
-                                         { return textFieldSp->GetTextFieldId() == textSp->GetTextFieldId(); });
-
             if (eRegisterType::REGISTER == registerType)
             {
-                assert(mTextFields.end() == it);
-                mTextFields.emplace_back(textSp);
                 sceneSp->RegisterText_OnRenderThread(textSp);
             }
             else
             {
-                assert(mTextFields.end() != it);
-                mTextFields.erase(it);
                 sceneSp->UnregisterText_OnRenderThread(textSp);
             }
         }

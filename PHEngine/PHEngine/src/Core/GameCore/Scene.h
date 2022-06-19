@@ -13,6 +13,7 @@
 #include "TextHandler.h"
 
 #include <type_traits>
+#include <glm/vec3.hpp>
 
 using namespace Thread;
 using namespace Event;
@@ -176,6 +177,8 @@ namespace EngineCore
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
+
+      glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition);
 
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData);

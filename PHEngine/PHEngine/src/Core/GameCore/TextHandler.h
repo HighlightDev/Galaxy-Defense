@@ -1,6 +1,5 @@
 #pragma once
 
-#include <vector>
 #include <memory>
 
 #include "Core/GameCore/GUI/Text/TextField.h"
@@ -22,8 +21,6 @@ namespace EngineCore
         ~TextHandler();
 
         std::weak_ptr<Scene> mSceneWp;
-
-        std::vector<std::shared_ptr<TextField>> mTextFields;
 
         void SetScene(const std::weak_ptr<Scene> &sceneWp);
 
