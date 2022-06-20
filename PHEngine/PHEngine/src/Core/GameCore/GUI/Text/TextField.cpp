@@ -34,6 +34,26 @@ namespace EngineCore
   {
   }
 
+  TextField::TextField(const std::string &fontName,
+                       const float fontSize,
+                       const glm::vec3 &color,
+                       const float lineMaxSize,
+                       const int32_t numberOfLines,
+                       const bool isCenteredText)
+      : mTextFieldId(-1),
+        mIsVisible(false),
+        mFontName(fontName),
+        mFontSize(fontSize),
+        mText(),
+        mColor(color),
+        mPosition(),
+        mLineMaxSize(lineMaxSize),
+        mNumberOfLines(numberOfLines),
+        mIsCenteredText(isCenteredText),
+        mIsRegistered(false)
+  {
+  }
+
   void TextField::RegisterText()
   {
     assert(!mIsRegistered);

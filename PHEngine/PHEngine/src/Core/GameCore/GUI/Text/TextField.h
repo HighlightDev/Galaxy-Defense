@@ -47,6 +47,13 @@ namespace EngineCore
                   const int32_t numberOfLines,
                   const bool isCenteredText);
 
+        TextField(const std::string &fontName,
+                  const float fontSize,
+                  const glm::vec3 &color,
+                  const float lineMaxSize,
+                  const int32_t numberOfLines,
+                  const bool isCenteredText);
+
         std::shared_ptr<TextField> GetSharedFromThis() const;
 
         int32_t GetTextFieldId() const;

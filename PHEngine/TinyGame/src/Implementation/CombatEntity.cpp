@@ -1,15 +1,20 @@
 #include "CombatEntity.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
 
 using namespace EngineCore;
 
 namespace Game
 {
-    CombatEntity::CombatEntity(const std::shared_ptr<Actor> &spaceShipActor)
+    CombatEntity::CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor,
+                               const std::shared_ptr<::EngineCore::UiComponent> &uiComponent,
+                               const size_t dmgTextFieldId)
         : mDamageDeltaTime(0.0f),
           mIsDamageReceived(false),
           mLifePoints(4),
-          mSpaceShipActor(spaceShipActor)
+          mSpaceShipActor(spaceShipActor),
+          mUiComponent(uiComponent),
+          mDmgTextFieldId(dmgTextFieldId)
     {
     }
 
@@ -18,7 +23,7 @@ namespace Game
         return mSpaceShipActor;
     }
 
-    bool CombatEntity::CheckIsAliveAfterDamage(const float dmg)
+    bool CombatEntity::CheckIsAliveAfterDamage(const size_t dmg)
     {
         mLifePoints = mLifePoints >= dmg ? mLifePoints - dmg : 0;
         return 0 != mLifePoints;
@@ -47,5 +52,15 @@ namespace Game
     void CombatEntity::RestoreLife()
     {
         mLifePoints = 4;
+    }
+
+    const std::shared_ptr<::EngineCore::UiComponent> &CombatEntity::GetSpaceShipUiComponent() const
+    {
+        return mUiComponent;
+    }
+
+    size_t CombatEntity::GetDmgTextFieldId() const
+    {
+        return mDmgTextFieldId;
     }
 }

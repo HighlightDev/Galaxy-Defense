@@ -39,7 +39,10 @@ namespace EngineCore
         assert(it == mTextFields.end());
         mTextFields.emplace_back(textFieldProxy);
 
-        AllocateTextSpace(textFieldProxy);
+        if (textFieldProxy->mText != "") // if text is empty - skip allocation
+        {
+            AllocateTextSpace(textFieldProxy);
+        }
     }
 
     void FontRenderData::UnregisterText(const size_t textFieldId)
@@ -87,8 +90,7 @@ namespace EngineCore
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
-        assert(foundIt != mTextFields.end());
-
+        assert(foundIt != mTextFields.end() && (*foundIt)->mText != "");
         (*foundIt)->mIsVisible = isVisible;
     }
 
@@ -152,7 +154,10 @@ namespace EngineCore
 
         for (auto &textProxy : mTextFields)
         {
-            FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
+            if (textProxy->mText != "") // if text is empty - skip allocation
+            {
+                FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
+            }
         }
     }
 

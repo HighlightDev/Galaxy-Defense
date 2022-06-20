@@ -29,6 +29,8 @@
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
@@ -140,6 +142,10 @@ namespace Game
 
         const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
         BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
+
+        const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
+        const auto &c_uiComponent = scene->CreateComponent_GameThread(uiComponentCreator, ComponentData("c_uiComponent_" + enemyShipIndexStr));
+        a_enemySpaceship->AddComponent(c_uiComponent);
 
         return a_enemySpaceship;
     }

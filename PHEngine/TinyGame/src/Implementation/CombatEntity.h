@@ -5,6 +5,7 @@
 namespace EngineCore
 {
     class Actor;
+    class UiComponent;
 }
 
 namespace Game
@@ -19,12 +20,18 @@ namespace Game
 
         std::shared_ptr<::EngineCore::Actor> mSpaceShipActor;
 
+        std::shared_ptr<::EngineCore::UiComponent> mUiComponent;
+
+        size_t mDmgTextFieldId;
+
     public:
-        CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor);
+        CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor,
+                     const std::shared_ptr<::EngineCore::UiComponent> &uiComponent,
+                     const size_t dmgTextFieldId);
 
         const std::shared_ptr<::EngineCore::Actor> &GetSpaceShipActor() const;
 
-        bool CheckIsAliveAfterDamage(const float dmg);
+        bool CheckIsAliveAfterDamage(const size_t dmg);
 
         void SetDamageDeltaTime(const float deltaTime);
 
@@ -35,7 +42,10 @@ namespace Game
         bool GetIsDamageReceived() const;
 
         void RestoreLife();
+
+        const std::shared_ptr<::EngineCore::UiComponent>& GetSpaceShipUiComponent() const;
+
+        size_t GetDmgTextFieldId() const;
     };
 
 }
-

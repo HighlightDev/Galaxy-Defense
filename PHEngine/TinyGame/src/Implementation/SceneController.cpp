@@ -24,8 +24,6 @@ namespace Game
         mCombatController->PreInit();
     }
 
- 
-
     void SceneController::PostInit()
     {
         mCombatController->PostInit();

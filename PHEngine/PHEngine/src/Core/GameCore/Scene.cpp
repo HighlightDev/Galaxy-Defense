@@ -570,13 +570,6 @@ namespace EngineCore
 
    void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType)
    {
-      /*Logger::Out("Scene::TextDataChanged_OnRenderThread => font name = ",
-                  textField->GetFontName(),
-                  " textFieldId = ",
-                  textField->GetTextFieldId(),
-                  " textChangedDatType = ",
-                  (uint32_t)textChangedDataType);*/
-
       const uint64_t creatorObjectId = textField->GetTextFieldId();
       static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");
 

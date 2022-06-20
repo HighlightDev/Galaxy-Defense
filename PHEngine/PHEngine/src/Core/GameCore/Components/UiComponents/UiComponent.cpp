@@ -4,7 +4,7 @@
 
 namespace EngineCore
 {
-    UiComponent::UiComponent(const ComponentData& data)
+    UiComponent::UiComponent(const ComponentData &data)
         : Component(data.GameObjectName),
           mTextFields()
     {
@@ -39,6 +39,19 @@ namespace EngineCore
                                         const bool isCenteredText)
     {
         const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, isCenteredText);
+        mTextFields.emplace_back(textFieldSp);
+        textFieldSp->RegisterText();
+        return textFieldSp->GetTextFieldId();
+    }
+
+    size_t UiComponent::CreateEmptyTextField(const std::string &fontName,
+                                             const float fontSize,
+                                             const glm::vec3 &color,
+                                             const float lineMaxSize,
+                                             const int32_t numberOfLines,
+                                             const bool isCenteredText)
+    {
+        const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, isCenteredText);
         mTextFields.emplace_back(textFieldSp);
         textFieldSp->RegisterText();
         return textFieldSp->GetTextFieldId();
