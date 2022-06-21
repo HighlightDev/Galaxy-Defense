@@ -4,7 +4,6 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/GUI/Text/TextMeshCreator.h"
-#include "Core/GameCore/GUI/Text/GUIText.h"
 
 #include <algorithm>
 
@@ -98,13 +97,8 @@ namespace EngineCore
                                            VertexBufferObjectBase *const positionVBO,
                                            VertexBufferObjectBase *const textureCoordinatesVBO)
     {
-        TextMeshCreator textMeshCreator(*mFontMetaFile.get());
-        auto guiText = GUIText(textFieldProxy->mText,
-                               textFieldProxy->mFontSize,
-                               textFieldProxy->mPosition,
-                               textFieldProxy->mLineMaxSize,
-                               textFieldProxy->mIsCenteredText);
-        auto textMesh = textMeshCreator.CreateTextMesh(guiText);
+        TextMeshCreator textMeshCreator(mFontMetaFile);
+        auto textMesh = textMeshCreator.CreateTextMesh(textFieldProxy);
         const auto &vertexPositions = textMesh.mVertexPositions;
         const auto &textCoordinates = textMesh.mTextureCoords;
 

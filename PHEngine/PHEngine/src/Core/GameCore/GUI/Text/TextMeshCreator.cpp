@@ -1,30 +1,23 @@
 #include "TextMeshCreator.h"
 
-#include "GUIText.h"
-
 namespace EngineCore
 {
-	TextMeshCreator::TextMeshCreator(const std::string &fontFilePath)
-		: mMetaData(FontMetaFile(fontFilePath))
-	{
-	}
-
-	TextMeshCreator::TextMeshCreator(const FontMetaFile &metaData)
+	TextMeshCreator::TextMeshCreator(const std::shared_ptr<FontMetaFile> &metaData)
 		: mMetaData(metaData)
 	{
 	}
 
-	TextMeshData TextMeshCreator::CreateTextMesh(GUIText &text)
+	TextMeshData TextMeshCreator::CreateTextMesh(const std::shared_ptr<TextFieldProxy> &text)
 	{
 		return CreateQuadVertices(text, CreateStructure(text));
 	}
 
-	std::vector<Line> TextMeshCreator::CreateStructure(GUIText &text)
+	std::vector<Line> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &text)
 	{
-		const auto &chars = text.GetTextString();
+		const auto &chars = text->mText;
 		std::vector<Line> lines;
-		Line currentLine(mMetaData.GetSpaceWidth(), text.GetFontSize(), text.GetMaxLineSize());
-		Word currentWord(text.GetFontSize());
+		Line currentLine(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
+		Word currentWord(text->mFontSize);
 		for (const auto &c : chars)
 		{
 			const int32_t ascii = (int32_t)c;
@@ -34,60 +27,60 @@ namespace EngineCore
 				if (!bIsAdded)
 				{
 					lines.emplace_back(currentLine);
-					currentLine = Line(mMetaData.GetSpaceWidth(), text.GetFontSize(), text.GetMaxLineSize());
+					currentLine = Line(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
 					currentLine.TryToAddWord(currentWord);
 				}
-				currentWord = Word(text.GetFontSize());
+				currentWord = Word(text->mFontSize);
 				continue;
 			}
-			Character character = mMetaData.GetCharacter(ascii);
+			Character character = mMetaData->GetCharacter(ascii);
 			currentWord.AddCharacter(character);
 		}
 		CompleteStructure(lines, currentLine, currentWord, text);
 		return lines;
 	}
 
-	void TextMeshCreator::CompleteStructure(std::vector<Line> &lines, Line &currentLine, const Word &currentWord, GUIText &text)
+	void TextMeshCreator::CompleteStructure(std::vector<Line> &lines, Line &currentLine, const Word &currentWord, const std::shared_ptr<TextFieldProxy> &text)
 	{
 		const bool bAdded = currentLine.TryToAddWord(currentWord);
 		if (!bAdded)
 		{
 			lines.emplace_back(currentLine);
-			Line newLine(mMetaData.GetSpaceWidth(), text.GetFontSize(), text.GetMaxLineSize());
+			Line newLine(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
 			newLine.TryToAddWord(currentWord);
 			lines.emplace_back(newLine);
 		}
 		lines.emplace_back(currentLine);
 	}
 
-	TextMeshData TextMeshCreator::CreateQuadVertices(GUIText &text, const std::vector<Line> &lines)
+	TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextFieldProxy> &text, const std::vector<Line> &lines)
 	{
-		text.SetNumberOfLines(lines.size());
 		float curserX = 0.0f;
 		float curserY = 0.0f;
 		std::vector<float> vertices;
 		std::vector<float> textureCoords;
 		for (const auto &line : lines)
 		{
-			if (text.IsCentered())
+			if (text->mIsCenteredText)
 			{
 				const auto &lineMaxLengthInScreenCoords = line.GetMaxLength();
 				curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
 			}
+			const float fontSize = text->mFontSize;
 
 			for (const auto &word : line.GetWords())
 			{
 				for (const auto &letter : word.GetCharacters())
 				{
-					AddVerticesForCharacter(curserX, curserY, letter, text.GetFontSize(), vertices);
+					AddVerticesForCharacter(curserX, curserY, letter, fontSize, vertices);
 					AddTexCoords(textureCoords, letter.GetxTextureCoord(), letter.GetyTextureCoord(),
 								 letter.GetXMaxTextureCoord(), letter.GetYMaxTextureCoord());
-					curserX += letter.GetxAdvance() * text.GetFontSize();
+					curserX += letter.GetxAdvance() * fontSize;
 				}
-				curserX += mMetaData.GetSpaceWidth() * text.GetFontSize();
+				curserX += mMetaData->GetSpaceWidth() * fontSize;
 			}
 			curserX = 0;
-			curserY += LINE_HEIGHT * text.GetFontSize();
+			curserY += LINE_HEIGHT * fontSize;
 		}
 		return TextMeshData(vertices, textureCoords);
 	}

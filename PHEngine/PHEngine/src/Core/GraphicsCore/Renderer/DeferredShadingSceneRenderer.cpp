@@ -16,8 +16,6 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/Scene.h"
 
-#include "Core/GameCore/GUI/Text/GUIText.h"
-#include "Core/GameCore/GUI/Text/FontType.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
@@ -88,6 +86,10 @@ namespace Graphics
          ShaderParams deferredLightShaderParams(
              "DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl");
          m_deferredLightShader = ShaderPool::GetInstance()->template GetOrAllocateResource<DeferredLightShader>(deferredLightShaderParams);
+
+         ShaderParams fontRenderingShaderParams(
+             "FontRendering Shader", folderManager->GetShadersPath() + "fontVS.glsl", folderManager->GetShadersPath() + "fontFS.glsl");
+         m_fontShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(fontRenderingShaderParams);
       }
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
@@ -925,57 +927,28 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugRenderText()
       {
-         static struct TextShader : public Shader
-         {
-            Uniform u_fontAtlas;
-            Uniform u_position;
-            Uniform u_color;
-
-            TextShader()
-                : Shader(ShaderParams("fontShader",
-                                      FolderManager::GetInstance()->GetShadersPath() + "fontVS.glsl",
-                                      FolderManager::GetInstance()->GetShadersPath() + "fontFS.glsl"))
-            {
-               ShaderInit();
-            }
-
-            virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override
-            {
-               u_fontAtlas = GetUniform("fontAtlas", shaderProgramID);
-               u_position = GetUniform("position", shaderProgramID);
-               u_color = GetUniform("color", shaderProgramID);
-            }
-
-            virtual void SetShaderPredefine() override
-            {
-            }
-
-         } shader;
-
          const auto &renderDataMap = mFontHandler.GetFontRenderDataMap();
 
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>,
-                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
-             renderState;
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto &renderData : renderDataMap)
          {
             const auto &renderDataSp = renderData.second;
             renderDataSp->GetFontTextureAtlas()->BindTexture(0);
-            shader.ExecuteShader();
+            m_fontShader->ExecuteShader();
             const auto &textFields = renderDataSp->GetTexFieldProxies();
-            shader.u_fontAtlas.LoadUniform(0);
+            m_fontShader->SetFontAtlasSlot(0);
             for (const auto &textField : textFields)
             {
                if (textField->mIsVisible)
                {
-                  shader.u_position.LoadUniform(textField->mPosition);
-                  shader.u_color.LoadUniform(textField->mColor);
+                  m_fontShader->SetPosition(textField->mPosition);
+                  m_fontShader->SetColor(textField->mColor);
                   renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->mVertexStart, textField->mVerticesCount, GL_TRIANGLES);
                }
             }
-            shader.StopShader();
+            m_fontShader->StopShader();
          }
 
          glDisable(GL_BLEND);

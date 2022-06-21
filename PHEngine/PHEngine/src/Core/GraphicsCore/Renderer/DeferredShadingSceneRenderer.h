@@ -25,6 +25,7 @@
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/DepthCollectShader.h"
+#include "Core/GameCore/ShaderImplementation/FontRenderingShader.h"
 
 #include "Core/GameCore/Physics/DebugRender/DebugPhysicsRenderData.h"
 
@@ -74,6 +75,8 @@ namespace Graphics
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
+
+         std::shared_ptr<FontRenderingShader> m_fontShader;
 
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>> mDepthCollectShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> mDepthCollectShaderNonSkeletal;

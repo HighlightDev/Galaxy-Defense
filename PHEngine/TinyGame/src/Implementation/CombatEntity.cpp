@@ -11,7 +11,7 @@ namespace Game
                                const size_t dmgTextFieldId)
         : mDamageDeltaTime(0.0f),
           mIsDamageReceived(false),
-          mLifePoints(4),
+          mLifePoints(10),
           mSpaceShipActor(spaceShipActor),
           mUiComponent(uiComponent),
           mDmgTextFieldId(dmgTextFieldId)
@@ -51,7 +51,7 @@ namespace Game
 
     void CombatEntity::RestoreLife()
     {
-        mLifePoints = 4;
+        mLifePoints = 10;
     }
 
     const std::shared_ptr<::EngineCore::UiComponent> &CombatEntity::GetSpaceShipUiComponent() const

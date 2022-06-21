@@ -115,7 +115,8 @@ namespace Game
                 {
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
-                    const size_t dmg = 1;
+                    
+                    const size_t dmg = (size_t)(Random::Float() * 5.0f);
                     const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
 
                     if (a_enemyShipIt->CheckIsAliveAfterDamage(dmg))
