@@ -6,6 +6,7 @@
 #include "Core/IoCore/AsyncLoaderCore/AsyncJob.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -24,7 +25,11 @@ namespace IO
    ResourceMap *ResourceMap::mInstance = nullptr;
 
    ResourceMap::ResourceMap()
-       : ReadyToReadResources(), mAsyncDataProxy(new AsyncDataProxy())
+       : mTextureLoader(),
+         mMeshLoader(),
+         mAudioLoader(),
+         ReadyToReadResources(),
+         mAsyncDataProxy(new AsyncDataProxy())
    {
    }
 
@@ -74,17 +79,23 @@ namespace IO
       {
       case eResourceType::TEXTURE:
       {
-         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
+         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &mTextureLoader, std::placeholders::_1));
          std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
          mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
          break;
       }
       case eResourceType::MESH:
       {
-         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
+         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &mMeshLoader, std::placeholders::_1));
          std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
          mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
          break;
+      }
+      case eResourceType::AUDIO:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&AudioResourceLoader::LoadResource, &mAudioLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
+         mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
       }
       default:
          break;
@@ -106,17 +117,23 @@ namespace IO
       {
       case eResourceType::TEXTURE:
       {
-         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &textureLoader, std::placeholders::_1));
+         AsyncJob<Resource *, const std::string &> job(std::bind(&TextureResourceLoader::LoadResource, &mTextureLoader, std::placeholders::_1));
          std::future<Resource *> futureResult = job.StartDeferred(fileFullPath);
          ReadyToReadResources[key] = futureResult.get();
          break;
       }
       case eResourceType::MESH:
       {
-         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &meshLoader, std::placeholders::_1));
+         AsyncJob<Resource *, const std::string &> job(std::bind(&MeshResourceLoader::LoadResource, &mMeshLoader, std::placeholders::_1));
          std::future<Resource *> futureResult = job.StartDeferred(fileFullPath);
          ReadyToReadResources[key] = futureResult.get();
          break;
+      }
+      case eResourceType::AUDIO:
+      {
+         AsyncJob<Resource *, const std::string &> job(std::bind(&AudioResourceLoader::LoadResource, &mAudioLoader, std::placeholders::_1));
+         std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
+         mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
       }
       default:
          break;
@@ -135,6 +152,8 @@ namespace IO
          case eResourceType::TEXTURE:
             TexturePool::GetInstance()->GetOrAllocateResource(resource.first);
             break;
+         case eResourceType::AUDIO:
+            SoundBufferPool::GetInstance()->GetOrAllocateResource(resource.first);
          default:
             assert(false); // undefined type
             break;

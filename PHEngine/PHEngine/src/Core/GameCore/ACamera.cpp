@@ -4,6 +4,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
+#include "Core/AudioCore/SoundDevice.h"
+
 #include <algorithm>
 
 using namespace EngineMath;
@@ -28,6 +30,7 @@ namespace EngineCore
          mYaw(initYawDeg),
          m_cameraType(cameraType)
    {
+      SoundDevice::GetInstance();
    }
 
    ACamera::~ACamera()

@@ -23,6 +23,7 @@ if (UNIX)
 endif()
 
 find_package(OpenGL REQUIRED)
+find_package(OpenAL REQUIRED)
 
 add_compile_definitions(
     GLM_ENABLE_EXPERIMENTAL

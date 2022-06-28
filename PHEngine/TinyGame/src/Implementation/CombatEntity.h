@@ -22,12 +22,12 @@ namespace Game
 
         std::shared_ptr<::EngineCore::UiComponent> mUiComponent;
 
-        size_t mDmgTextFieldId;
+        int32_t mDmgTextFieldId;
 
     public:
         CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor,
                      const std::shared_ptr<::EngineCore::UiComponent> &uiComponent,
-                     const size_t dmgTextFieldId);
+                     const int32_t dmgTextFieldId);
 
         const std::shared_ptr<::EngineCore::Actor> &GetSpaceShipActor() const;
 
@@ -45,7 +45,7 @@ namespace Game
 
         const std::shared_ptr<::EngineCore::UiComponent>& GetSpaceShipUiComponent() const;
 
-        size_t GetDmgTextFieldId() const;
+        int32_t GetDmgTextFieldId() const;
     };
 
 }

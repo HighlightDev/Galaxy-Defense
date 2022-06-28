@@ -160,15 +160,18 @@ namespace Graphics
 
          void RegisterText(const std::shared_ptr<TextFieldProxy> & textFieldProxy);
 
-         void UnregisterText(const std::string& fontName, const size_t textFieldProxyId);
+         void UnregisterText(const std::string& fontName, const int32_t textFieldProxyId);
 
-         void TextPositionChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec2& position);
+         void TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position);
 
-         void TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color);
+         void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
 
-         void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
+         void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
 
-         void TextVisibilityChanged(const std::string& fontName, const size_t textFieldProxyId, const bool bIsVisible);
+         void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+
+         float GetTextWidthByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
+         float GetTextHeightByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);

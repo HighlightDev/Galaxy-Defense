@@ -15,18 +15,16 @@ namespace IO
 			class StbLoader
 			{
 
-				uint8_t* m_lastAllocatedMemory;
+				uint8_t *m_lastAllocatedMemory;
 
 			public:
+				StbLoader();
 
-            StbLoader();
+				~StbLoader();
 
-            ~StbLoader();
-
-				uint8_t* AllocateTextureMemoryFromFile(const std::string& pathToFile, TextureResourceInfo& out_params);
+				uint8_t *AllocateTextureMemoryFromFile(const std::string &pathToFile, TextureResourceInfo &out_params);
 
 				void ReleaseTextureMemory();
-   
 			};
 		}
 	}

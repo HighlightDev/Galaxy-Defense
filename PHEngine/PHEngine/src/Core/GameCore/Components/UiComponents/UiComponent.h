@@ -29,7 +29,7 @@ namespace EngineCore
 
         virtual eComponentType GetComponentType() const override;
 
-        size_t CreateTextField(const std::string &fontName,
+        int32_t CreateTextField(const std::string &fontName,
                                const float fontSize,
                                const std::string &text,
                                const glm::vec3 &color,
@@ -38,16 +38,16 @@ namespace EngineCore
                                const int32_t numberOfLines,
                                const bool isCenteredText);
 
-        size_t CreateEmptyTextField(const std::string &fontName,
+        int32_t CreateEmptyTextField(const std::string &fontName,
                                     const float fontSize,
                                     const glm::vec3 &color,
                                     const float lineMaxSize,
                                     const int32_t numberOfLines,
                                     const bool isCenteredText);
 
-        void DeleteTextField(const size_t textFieldId);
+        void DeleteTextField(const int32_t textFieldId);
 
-        std::shared_ptr<TextField> GetTextFieldById(const size_t textFieldId) const;
+        std::shared_ptr<TextField> GetTextFieldById(const int32_t textFieldId) const;
 
         const std::vector<std::shared_ptr<TextField>> &GetTextFields() const;
     };

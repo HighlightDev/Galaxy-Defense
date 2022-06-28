@@ -8,7 +8,7 @@ namespace Game
 {
     CombatEntity::CombatEntity(const std::shared_ptr<::EngineCore::Actor> &spaceShipActor,
                                const std::shared_ptr<::EngineCore::UiComponent> &uiComponent,
-                               const size_t dmgTextFieldId)
+                               const int32_t dmgTextFieldId)
         : mDamageDeltaTime(0.0f),
           mIsDamageReceived(false),
           mLifePoints(10),
@@ -59,7 +59,7 @@ namespace Game
         return mUiComponent;
     }
 
-    size_t CombatEntity::GetDmgTextFieldId() const
+    int32_t CombatEntity::GetDmgTextFieldId() const
     {
         return mDmgTextFieldId;
     }

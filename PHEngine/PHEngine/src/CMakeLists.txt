@@ -24,6 +24,7 @@ set(LUA_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/Lua54/inc
 set(BULLET_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/include/)
 set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
 set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
+set(SNDFILE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/include/)
 
 target_include_directories(PHEngine 
   PUBLIC ${ENGINE_CORE_INCLUDE}
@@ -36,6 +37,7 @@ target_include_directories(PHEngine
   PRIVATE ${BULLET_DEPENDENCE_INCLUDE}
   PRIVATE ${BULLET_PHYS_INCLUDE}
   PUBLIC ${LUA_DEPENDENCE_INCLUDE}
+  PUBLIC ${SNDFILE_INCLUDE}
   )
 
 if (UNIX)	
@@ -78,6 +80,13 @@ if (UNIX)
 		message(FATAL_ERROR "Assimp libraries were not found!")
 	else()
 		target_link_libraries(PHEngine PUBLIC ${ASSIMP_LIBRARIES})
+	endif()
+
+  find_library(SNDFILE_LIBRARIES sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/Unix/)
+	if (NOT SNDFILE_LIBRARIES)
+		message(FATAL_ERROR "SndFile libraries were not found!")
+	else()
+		target_link_libraries(PHEngine PUBLIC ${SNDFILE_LIBRARIES})
 	endif()
 
 	find_library(BULLET3COLLISION_LIBRARIES Bullet3Collision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
@@ -123,5 +132,6 @@ endif(UNIX)
 
 target_link_libraries(PHEngine 
 PUBLIC ${OPENGL_LIBRARIES}
+PUBLIC ${OPENAL_LIBRARY}
 PUBLIC TinyLogger
 )

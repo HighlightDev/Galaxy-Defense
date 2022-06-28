@@ -115,8 +115,8 @@ namespace Game
                 {
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
-                    
-                    const size_t dmg = (size_t)(Random::Float() * 5.0f);
+
+                    const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
                     const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
 
                     if (a_enemyShipIt->CheckIsAliveAfterDamage(dmg))
@@ -172,30 +172,35 @@ namespace Game
         {
             if (enemyContainer.GetIsDamageReceived())
             {
-                const auto& dmgTextField = enemyContainer.GetSpaceShipUiComponent()->GetTextFieldById(enemyContainer.GetDmgTextFieldId());
-                float dmgTime = enemyContainer.GetDamageDeltaTime();
-                dmgTime += deltaTime * 10.0f;
-                if (dmgTime > 1.0f)
+                if (const auto &sceneSp = mScene.lock())
                 {
-                    dmgTime = 0.0f;
-                    enemyContainer.SetIsDamageReceived(false);
-                    dmgTextField->SetVisibility(false);
+                    const auto &dmgTextField = enemyContainer.GetSpaceShipUiComponent()->GetTextFieldById(enemyContainer.GetDmgTextFieldId());
+                    float dmgTime = enemyContainer.GetDamageDeltaTime();
+                    dmgTime += deltaTime * 10.0f;
+                    if (dmgTime > 1.0f)
+                    {
+                        dmgTime = 0.0f;
+                        enemyContainer.SetIsDamageReceived(false);
+                        dmgTextField->SetVisibility(false);
+                    }
+                    enemyContainer.SetDamageDeltaTime(dmgTime);
+
+                    const auto &materialDamageProperty =
+                        std::static_pointer_cast<EngineGOProperty<float>>(
+                            enemyContainer.GetSpaceShipActor()->GetEnginePropertyByName("property_damageEffect"));
+                    materialDamageProperty->SetValue(dmgTime);
+
+                    const auto &spaceShipTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
+                    const auto &mainCameraSp = mMainPlayerActorController->GetCamera();
+                    const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
+                    const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
+                                                               clippedSpaceTranslation.y / clippedSpaceTranslation.w,
+                                                               clippedSpaceTranslation.z / clippedSpaceTranslation.w);
+                    const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
+                    const float textWidth = sceneSp->GetTextWidthByTextFieldId_OnGameThread(dmgTextField);
+                    dmgTextField->SetPosition(textureSpaceTranslation - (textWidth * 0.5f));
+                    dmgTextField->SetPosition(textureSpaceTranslation + glm::vec2(0.0f, -0.2f));
                 }
-                enemyContainer.SetDamageDeltaTime(dmgTime);
-
-                const auto &materialDamageProperty =
-                    std::static_pointer_cast<EngineGOProperty<float>>(
-                        enemyContainer.GetSpaceShipActor()->GetEnginePropertyByName("property_damageEffect"));
-                materialDamageProperty->SetValue(dmgTime);
-
-                const auto &spaceShipTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
-                const auto &mainCameraSp = mMainPlayerActorController->GetCamera();
-                const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-                const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                                                           clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                                                           clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-                const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-                dmgTextField->SetPosition(textureSpaceTranslation + glm::vec2(0.0f, -0.2f));
             }
         }
 

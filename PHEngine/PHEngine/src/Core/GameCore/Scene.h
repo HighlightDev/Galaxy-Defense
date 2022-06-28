@@ -79,7 +79,7 @@ namespace EngineCore
       ~Scene();
 
       std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
-                                                                const ComponentData &componentData);
+                                                            const ComponentData &componentData);
 
       void PostLevelInit();
 
@@ -174,11 +174,14 @@ namespace EngineCore
 
       void TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType);
 
+      float GetTextWidthByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
+      float GetTextHeightByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
+
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 
-      glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4& worldPosition);
+      glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition);
 
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData);

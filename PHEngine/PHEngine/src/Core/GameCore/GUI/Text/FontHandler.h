@@ -44,15 +44,15 @@ namespace EngineCore
 
         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-        void UnregisterText(const size_t textFieldId);
+        void UnregisterText(const int32_t textFieldId);
 
-        void TextPositionChanged(const size_t textFieldId, const glm::vec2& position);
+        void TextPositionChanged(const int32_t textFieldId, const glm::vec2& position);
 
-        void TextColorChanged(const size_t textFieldProxyId, const glm::vec3& color);
+        void TextColorChanged(const int32_t textFieldProxyId, const glm::vec3& color);
 
-        void TextChanged(const size_t textFieldProxyId, const std::string& text);
+        void TextChanged(const int32_t textFieldProxyId, const std::string& text);
 
-        void TextVisibilityChanged(const size_t textFieldProxyId, const bool bIsVisible);
+        void TextVisibilityChanged(const int32_t textFieldProxyId, const bool bIsVisible);
 
         TextVertexChunkData &GetPositionChunkDataRef();
 
@@ -67,6 +67,8 @@ namespace EngineCore
         size_t GetVerticesCount() const;
 
         const std::vector<std::shared_ptr<TextFieldProxy>>& GetTexFieldProxies() const;
+
+        const std::shared_ptr<TextFieldProxy>& GetTextFieldById(const int32_t textFieldId) const;
 
     private:
         void AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
@@ -95,14 +97,18 @@ namespace EngineCore
 
         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-        void UnregisterText(const std::string &fontName, const size_t textFieldProxyId);
+        void UnregisterText(const std::string &fontName, const int32_t textFieldProxyId);
 
-        void TextPositionChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec2 &position);
+        void TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position);
 
-        void TextColorChanged(const std::string& fontName, const size_t textFieldProxyId, const glm::vec3& color);
+        void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
 
-        void TextVisibilityChanged(const std::string& fontName, const size_t textFieldProxyId, const bool bIsVisible);
+        void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
-        void TextChanged(const std::string& fontName, const size_t textFieldProxyId, const std::string& text);
+        void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
+
+        float GetTextWidth(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+        float GetTextHeight(const std::string& fontName, const int32_t textFieldProxyId) const;
     };
 }

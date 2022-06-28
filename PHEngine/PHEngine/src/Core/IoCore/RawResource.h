@@ -2,11 +2,13 @@
 
 #include "ResourceExtensionsInfo.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
+#include "Core/IoCore/AudioLoaderCore/AudioResourceInfo.h"
 #include "Core/IoCore/MeshLoaderCore/MeshResourceInfo.h"
+
+using namespace IO::Audio;
 
 namespace IO
 {
-
    struct Resource {
 
       eResourceType ResourceType = eResourceType::UNDEFINED_TYPE;
@@ -53,6 +55,23 @@ namespace IO
       MeshResourceInfo* GetMeshResourceInfo() const {
          MeshResourceInfo* data = (MeshResourceInfo*)DATA;
          return data;
+      }
+   };
+
+   struct AudioResource
+      : public Resource
+   {
+       AudioResourceInfo AudioInfo;
+
+      AudioResource()
+         : Resource()
+      {
+         ResourceType = eResourceType::AUDIO;
+      }
+
+      virtual void Clear() override
+      {
+         free(DATA);
       }
    };
 

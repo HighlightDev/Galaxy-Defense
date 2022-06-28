@@ -24,7 +24,7 @@ namespace IO
 
       TextureResourceLoader();
 
-      virtual Resource* LoadResource(const std::string& key);
+      virtual Resource* LoadResource(const std::string& key) override;
    };
 
    class MeshResourceLoader
@@ -34,7 +34,17 @@ namespace IO
 
       MeshResourceLoader();
 
-      virtual Resource* LoadResource(const std::string& key);
+      virtual Resource* LoadResource(const std::string& key) override;
+   };
+
+   class AudioResourceLoader
+   : public ResourceLoader
+   {
+      public:
+
+       AudioResourceLoader();
+
+       virtual Resource* LoadResource(const std::string& key);
    };
 
 }

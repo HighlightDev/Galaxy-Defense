@@ -9,9 +9,11 @@ namespace IO {
 
    private:
 
-      TextureResourceLoader textureLoader;
+      TextureResourceLoader mTextureLoader;
 
-      MeshResourceLoader meshLoader;
+      MeshResourceLoader mMeshLoader;
+
+      AudioResourceLoader mAudioLoader;
 
       std::map<std::string, Resource*> ReadyToReadResources;
 

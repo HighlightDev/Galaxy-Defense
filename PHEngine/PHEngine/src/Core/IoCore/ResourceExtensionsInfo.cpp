@@ -14,6 +14,7 @@ namespace IO
       std::pair("obj", eResourceType::MESH),
       std::pair("dae", eResourceType::MESH),
       std::pair("fbx", eResourceType::MESH),
+      std::pair("wav", eResourceType::AUDIO)
    });
 
    eResourceType ResourceExtensionsInfo::GetResourceTypeByFileExtension(const std::string& filePath) 

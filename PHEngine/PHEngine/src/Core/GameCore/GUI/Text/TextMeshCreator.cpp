@@ -55,6 +55,7 @@ namespace EngineCore
 
 	TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextFieldProxy> &text, const std::vector<Line> &lines)
 	{
+		float textWidth = 0.0f, textHeight = 0.0f;
 		float curserX = 0.0f;
 		float curserY = 0.0f;
 		std::vector<float> vertices;
@@ -79,10 +80,12 @@ namespace EngineCore
 				}
 				curserX += mMetaData->GetSpaceWidth() * fontSize;
 			}
+			textWidth = std::max(curserX, textWidth);
 			curserX = 0;
 			curserY += LINE_HEIGHT * fontSize;
 		}
-		return TextMeshData(vertices, textureCoords);
+		textHeight = curserY;
+		return TextMeshData(vertices, textureCoords, textWidth, textHeight);
 	}
 
 	void TextMeshCreator::AddVerticesForCharacter(const float curserX, const float curserY, Character character, const float fontSize,

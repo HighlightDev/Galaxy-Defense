@@ -9,7 +9,29 @@ namespace Graphics
     class TextFieldProxy
     {
     public:
-        size_t mTextFieldId;
+        TextFieldProxy()
+            : mTextFieldId(-1),
+              mPositionChunkOffset(0),
+              mPositionChunkSize(0),
+              mTextureCoordinatesChunkOffset(0),
+              mTextureCoordinatesChunkSize(0),
+              mVertexStart(0),
+              mVerticesCount(0),
+              mIsVisible(false),
+              mText(),
+              mFontName(),
+              mFontSize(0.0f),
+              mColor(),
+              mPosition(),
+              mLineMaxSize(0.0f),
+              mNumberOfLines(0),
+              mIsCenteredText(false),
+              mCreatedMeshTextWidth(0.0f),
+              mCreatedMeshTextHeight(0.0f)
+        {
+        }
+
+        int32_t mTextFieldId;
 
         // Chunk Data Begin
         size_t mPositionChunkOffset;
@@ -39,5 +61,8 @@ namespace Graphics
         int32_t mNumberOfLines;
 
         bool mIsCenteredText;
+
+        float mCreatedMeshTextWidth;
+        float mCreatedMeshTextHeight;
     };
 }

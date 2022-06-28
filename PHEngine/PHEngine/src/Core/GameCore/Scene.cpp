@@ -605,6 +605,30 @@ namespace EngineCore
       }
    }
 
+   float Scene::GetTextWidthByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField)
+   {
+      float width = 0.0f;
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         width = sceneRenderer->GetTextWidthByTextFieldId(textField->GetFontName(), textField->GetTextFieldId());
+      }
+
+      return width;
+   }
+
+   float Scene::GetTextHeightByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField)
+   {
+      float height = 0.0f;
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         height = sceneRenderer->GetTextHeightByTextFieldId(textField->GetFontName(), textField->GetTextFieldId());
+      }
+
+      return height;
+   }
+
    void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
    {
       static constexpr uint64_t creatorObjectId = 0;

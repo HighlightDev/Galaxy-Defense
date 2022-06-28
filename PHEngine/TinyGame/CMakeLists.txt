@@ -52,6 +52,7 @@ set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/inclu
 set(GLFW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLFW/include/)
 set(BULLET_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/include/)
 set(BULLET_PHYS_INCLUDE ${BULLET_DEPENDENCE_INCLUDE}/BulletPhys/)
+set(SNDFILE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/include/)
 
 target_include_directories(TinyGame
 PUBLIC ${GAME_SRC_INCLUDE}
@@ -63,6 +64,7 @@ PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
 PUBLIC ${GLM_DEPENDENCE_INCLUDE}
 PUBLIC ${BULLET_DEPENDENCE_INCLUDE}
 PUBLIC ${BULLET_PHYS_INCLUDE}
+PUBLIC ${SNDFILE_INCLUDE}
 )
 
 if (UNIX)
@@ -101,6 +103,13 @@ if (UNIX)
 		message(FATAL_ERROR "Assimp libraries were not found!")
 	else()
 		target_link_libraries(TinyGame PUBLIC ${ASSIMP_LIBRARIES})
+	endif()
+
+	find_library(SNDFILE_LIBRARIES sndfile ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/SndFile/lib/Unix/)
+	if (NOT SNDFILE_LIBRARIES)
+		message(FATAL_ERROR "SndFile libraries were not found!")
+	else()
+		target_link_libraries(TinyGame PUBLIC ${SNDFILE_LIBRARIES})
 	endif()
 
 	find_library(BULLET3COLLISION_LIBRARIES Bullet3Collision ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)

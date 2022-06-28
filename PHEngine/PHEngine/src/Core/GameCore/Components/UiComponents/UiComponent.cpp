@@ -29,7 +29,7 @@ namespace EngineCore
         return UI_COMPONENT;
     }
 
-    size_t UiComponent::CreateTextField(const std::string &fontName,
+    int32_t UiComponent::CreateTextField(const std::string &fontName,
                                         const float fontSize,
                                         const std::string &text,
                                         const glm::vec3 &color,
@@ -44,7 +44,7 @@ namespace EngineCore
         return textFieldSp->GetTextFieldId();
     }
 
-    size_t UiComponent::CreateEmptyTextField(const std::string &fontName,
+    int32_t UiComponent::CreateEmptyTextField(const std::string &fontName,
                                              const float fontSize,
                                              const glm::vec3 &color,
                                              const float lineMaxSize,
@@ -57,7 +57,7 @@ namespace EngineCore
         return textFieldSp->GetTextFieldId();
     }
 
-    void UiComponent::DeleteTextField(const size_t textFieldId)
+    void UiComponent::DeleteTextField(const int32_t textFieldId)
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
@@ -67,7 +67,7 @@ namespace EngineCore
         mTextFields.erase(it);
     }
 
-    std::shared_ptr<TextField> UiComponent::GetTextFieldById(const size_t textFieldId) const
+    std::shared_ptr<TextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)

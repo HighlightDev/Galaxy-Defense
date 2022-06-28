@@ -36,6 +36,12 @@ function CreateTestLevel(host)
 	,spaceship_normal.jpg
 	,spaceship_roughness.jpg
 	,spaceship_metallic.jpg
+	,solar_cells_albedo_512.jpg
+	,solar_cells_normal_512.jpg
+	,solar_cells_roughness_512.jpg
+	,solar_cells_metallic_512.jpg
+	,playerCube.obj
+	,arial.png
 	]])
 	 
 	local aTra = { x = 0, y = 0, z = 0 }
@@ -183,7 +189,7 @@ function CreateTestLevel(host)
 		local shape1 = _CreatePhysicsBoxShape(host, 8, 1, 8)
 		local floorPhysDesc1 = _CreateRigidBodyController(host, shape1, "KINEMATIC_BODY", 0.0)
 		local physData1 = _CreatePhysicsComponentData(host, "smallFloorPhysComp", floorPhysDesc1)
-		local phyComponent1 = _CreateComponent(host, "PhysicsComponent", physData1)
+		local phyComponent1 = _CreateComponent(host, "RigidBodyPhysicsComponent", physData1)
 		_AttachComponentToActor(host, "SmallGround", phyComponent1)
 	end
 
@@ -240,7 +246,7 @@ function CreateTestLevel(host)
 		local houseShape = _CreatePhysicsBoxShape(host, 3, 4.5, 3)
 		local houseDesc = _CreateRigidBodyController(host, houseShape, "DYNAMIC_BODY", 525.0)
 		local housePhysCompData = _CreatePhysicsComponentData(host, "housePhyComp", houseDesc)
-		local housePhysComp = _CreateComponent(host, "PhysicsComponent", housePhysCompData)
+		local housePhysComp = _CreateComponent(host, "RigidBodyPhysicsComponent", housePhysCompData)
 		_AttachComponentToActor(host, "House", housePhysComp)
 	end
 

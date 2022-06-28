@@ -44,7 +44,7 @@ namespace EngineCore
         }
     }
 
-    void FontRenderData::UnregisterText(const size_t textFieldId)
+    void FontRenderData::UnregisterText(const int32_t textFieldId)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldId == mProxy->mTextFieldId; });
@@ -59,7 +59,7 @@ namespace EngineCore
         FreeAllocatedTextSpace(deleteTextProxy);
     }
 
-    void FontRenderData::TextPositionChanged(const size_t textFieldId, const glm::vec2 &position)
+    void FontRenderData::TextPositionChanged(const int32_t textFieldId, const glm::vec2 &position)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldId == mProxy->mTextFieldId; });
@@ -67,7 +67,7 @@ namespace EngineCore
         (*foundIt)->mPosition = position;
     }
 
-    void FontRenderData::TextColorChanged(const size_t textFieldProxyId, const glm::vec3 &color)
+    void FontRenderData::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3 &color)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
@@ -75,7 +75,7 @@ namespace EngineCore
         (*foundIt)->mColor = color;
     }
 
-    void FontRenderData::TextChanged(const size_t textFieldProxyId, const std::string &text)
+    void FontRenderData::TextChanged(const int32_t textFieldProxyId, const std::string &text)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
@@ -85,7 +85,7 @@ namespace EngineCore
         ReallocateTextSpace();
     }
 
-    void FontRenderData::TextVisibilityChanged(const size_t textFieldProxyId, const bool isVisible)
+    void FontRenderData::TextVisibilityChanged(const int32_t textFieldProxyId, const bool isVisible)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
@@ -123,6 +123,8 @@ namespace EngineCore
         mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
         textFieldProxy->mTextureCoordinatesChunkOffset = texCoordinatesOffset;
         textFieldProxy->mTextureCoordinatesChunkSize = texCoordinatesSizeUpdate;
+        textFieldProxy->mCreatedMeshTextWidth = textMesh.mTextWidth;
+        textFieldProxy->mCreatedMeshTextHeight = textMesh.mTextHeight;
     }
 
     void FontRenderData::AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
@@ -235,6 +237,15 @@ namespace EngineCore
         return mTextFields;
     }
 
+    const std::shared_ptr<TextFieldProxy>& FontRenderData::GetTextFieldById(const int32_t textFieldId) const
+    {
+        const auto it = std::find_if(
+            mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
+            { return textFieldSp->mTextFieldId == textFieldId; });
+        assert(it != mTextFields.end());
+        return *it;
+    }
+
     FontHandler::FontHandler()
         : mFontRenderDataMap()
     {
@@ -287,33 +298,45 @@ namespace EngineCore
         mFontRenderDataMap.at(textFieldProxy->mFontName)->RegisterText(textFieldProxy);
     }
 
-    void FontHandler::UnregisterText(const std::string &fontName, const size_t textFieldProxyId)
+    void FontHandler::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->UnregisterText(textFieldProxyId);
     }
 
-    void FontHandler::TextPositionChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec2 &position)
+    void FontHandler::TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position)
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->TextPositionChanged(textFieldProxyId, position);
     }
 
-    void FontHandler::TextVisibilityChanged(const std::string &fontName, const size_t textFieldProxyId, const bool bIsVisible)
+    void FontHandler::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->TextVisibilityChanged(textFieldProxyId, bIsVisible);
     }
 
-    void FontHandler::TextColorChanged(const std::string &fontName, const size_t textFieldProxyId, const glm::vec3 &color)
+    void FontHandler::TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color)
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->TextColorChanged(textFieldProxyId, color);
     }
 
-    void FontHandler::TextChanged(const std::string &fontName, const size_t textFieldProxyId, const std::string &text)
+    void FontHandler::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
     {
         assert(mFontRenderDataMap.count(fontName));
         mFontRenderDataMap.at(fontName)->TextChanged(textFieldProxyId, text);
+    }
+
+    float FontHandler::GetTextWidth(const std::string &fontName, const int32_t textFieldProxyId) const
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mCreatedMeshTextWidth;
+    }
+
+    float FontHandler::GetTextHeight(const std::string &fontName, const int32_t textFieldProxyId) const
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mCreatedMeshTextHeight;
     }
 }

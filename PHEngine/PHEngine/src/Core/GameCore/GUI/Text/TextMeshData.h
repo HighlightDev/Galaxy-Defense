@@ -15,8 +15,14 @@ namespace EngineCore
 		std::vector<float> mVertexPositions;
 		std::vector<float> mTextureCoords;
 
+		float mTextWidth;
+		float mTextHeight;
+
 		TextMeshData();
 
-		TextMeshData(const std::vector<float> &vertexPositions, const std::vector<float> &textureCoords);
+		TextMeshData(const std::vector<float> &vertexPositions,
+					 const std::vector<float> &textureCoords,
+					 const float textWidth,
+					 const float textHeight);
 	};
 }
