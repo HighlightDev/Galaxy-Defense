@@ -33,13 +33,14 @@ namespace IO
 		CreateFilePathMap(GetScriptPath(), GetShortScriptPath());
 		CreateFilePathMap(GetTweenerPath(), GetShortTweenerPath());
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
+		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
 	}
 
 	void FolderManager::CreateFilePathMap(const std::string &absolutePathToDirectory, const std::string &relativePathToDirectory)
 	{
-		using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+		using directory_iterator = std::filesystem::directory_iterator;
 
-		for (const auto &dirEntry : recursive_directory_iterator(absolutePathToDirectory))
+		for (const auto &dirEntry : directory_iterator(absolutePathToDirectory))
 		{
 			const std::string &fileName = std::string(dirEntry.path().filename().string());
 			assert(mFilesPathMap.count(fileName) == 0);
@@ -173,6 +174,11 @@ namespace IO
 		return GetShortResPath() + "fonts" + SLASH;
 	}
 
+	std::string FolderManager::GetShortAudioPath() const
+	{
+		return GetShortResPath() + "audio" + SLASH;
+	}
+
 	std::string FolderManager::GetShortTweenerPath() const
 	{
 		return GetShortResPath() + "tweeners" + SLASH;
@@ -211,6 +217,11 @@ namespace IO
 	std::string FolderManager::GetFontsPath() const
 	{
 		return GetResPath() + "fonts" + SLASH;
+	}
+
+	std::string FolderManager::GetAudioPath() const
+	{
+		return GetResPath() + "audio" + SLASH;
 	}
 
 	std::string FolderManager::GetGrassTexturePath() const

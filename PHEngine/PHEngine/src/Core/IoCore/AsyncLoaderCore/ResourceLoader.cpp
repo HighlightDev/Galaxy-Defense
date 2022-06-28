@@ -90,9 +90,9 @@ namespace IO
       AudioResourceInfo audioResourceInfo;
       void *data = loader.AllocateMemoryForAudioSource(key, audioResourceInfo);
 
-      size_t size = 1;
-      void *localData = malloc(size);
-      memcpy(localData, data, size);
+      const size_t dataSize = audioResourceInfo.mNumBytes;
+      void *localData = malloc(dataSize);
+      memcpy(localData, data, dataSize);
       loader.ReleaseAudioMemory();
 
       AudioResource *resource = new AudioResource();

@@ -88,5 +88,7 @@ namespace Game
         typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator FindBulletByName(const std::string &actorName);
 
         typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator FindBulletById(const uint64_t actorId);
+
+        void TestSound();
     };
 }

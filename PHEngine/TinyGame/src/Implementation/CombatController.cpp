@@ -9,9 +9,15 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 
+#include "Core/AudioCore/SoundDevice.h"
+#include "Core/AudioCore/SoundBuffer.h"
+#include "Core/AudioCore/SoundSource.h"
+#include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
+
 using namespace Graphics;
 using namespace EnginePhysics;
 using namespace EngineCore;
+using namespace Resources;
 
 namespace Game
 {
@@ -63,6 +69,8 @@ namespace Game
                 mEnemies.emplace_back(CombatEntity(a_enemyShip, c_uiComponent, dmgTextFieldId));
             }
         }
+
+        TestSound();
     }
 
     void CombatController::PostPlayLevelFinished()
@@ -91,6 +99,9 @@ namespace Game
         }
     }
 
+    std::shared_ptr<SoundBuffer> bounceSoundBuffer;
+    std::shared_ptr<SoundSource> soundSource;
+
     void CombatController::ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data)
     {
         const ePhysicsBodyType physBodyType = std::get<0>(data);
@@ -115,6 +126,8 @@ namespace Game
                 {
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
+
+                    soundSource->Play(bounceSoundBuffer);
 
                     const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
                     const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
@@ -338,5 +351,13 @@ namespace Game
                                                                                                                    return actorId == bulletPair.first->GetObjectId();
                                                                                                                });
         return foundIt;
+    }
+
+    void CombatController::TestSound()
+    {
+        SoundDevice::GetInstance();
+
+        bounceSoundBuffer = SoundBufferPool::GetInstance()->GetOrAllocateResource("bounce.wav");
+        soundSource = std::make_shared<SoundSource>();
     }
 }
