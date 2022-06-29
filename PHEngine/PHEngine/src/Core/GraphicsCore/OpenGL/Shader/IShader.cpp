@@ -478,13 +478,13 @@ namespace Graphics
       {
          m_shaderProgramID = shaderProgramId;
 #if DEBUG
-         Logger::Out("IShader::AccessAllUniformLocations => ", GetCompileLogInfo(), "\n", GetLinkLogInfo());
+         Logger::Out("IShader::AccessAllUniformLocations => shaderProgramId = ", shaderProgramId, " issues: ", GetCompileLogInfo() + "\n", GetLinkLogInfo());
 #endif
       }
 
       void IShader::CleanUp(bool bDeleteShaderProgram)
       {
-         Logger::Out("IShader::CleanUp => bDeleteShaderProgram = ", bDeleteShaderProgram);
+         Logger::Out("IShader::CleanUp => shaderProgramID = ", m_shaderProgramID, " bDeleteShaderProgram = ", bDeleteShaderProgram);
          StopShader();
          glDetachShader(m_shaderProgramID, m_vertexShaderID);
          glDetachShader(m_shaderProgramID, m_fragmentShaderID);

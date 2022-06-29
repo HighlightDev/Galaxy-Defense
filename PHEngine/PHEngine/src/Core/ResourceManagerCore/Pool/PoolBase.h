@@ -7,6 +7,9 @@
 #include <cstddef>
 #include <type_traits>
 #include <unordered_map>
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
 
 namespace Resources
 {
@@ -64,18 +67,6 @@ namespace Resources
       }
     }
 
-    void CleanUp()
-    {
-      for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it)
-      {
-        auto key = it->first;
-        policy_t::DeallocateMemory(resourceMap[key]);
-      }
-
-      resourceMap.clear();
-      referenceMap.clear();
-    }
-
     template <typename InnerAllocationType>
     typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const key_t &key)
     {
@@ -113,9 +104,25 @@ namespace Resources
     }
 
   public:
-    PoolBase() {}
 
-    virtual ~PoolBase() { CleanUp(); }
+    PoolBase() = default;
+
+    virtual ~PoolBase() = default;
+
+    virtual std::string ToString() const = 0;
+
+    void CleanUp()
+    {
+      Logger::Out(ToString(), "::CleanUp");
+      for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it)
+      {
+        auto key = it->first;
+        policy_t::DeallocateMemory(resourceMap[key]);
+      }
+
+      resourceMap.clear();
+      referenceMap.clear();
+    }
 
     template <typename InnerAllocationType = Common::NullType>
     typename std::enable_if<

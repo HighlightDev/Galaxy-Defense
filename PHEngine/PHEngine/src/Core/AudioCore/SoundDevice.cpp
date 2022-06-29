@@ -1,4 +1,5 @@
 #include "SoundDevice.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <AL/al.h>
 #include <TinyLogger/LogInterface.h>
@@ -7,11 +8,12 @@ using namespace TinyLogger;
 
 namespace EngineCore
 {
-    SoundDevice *SoundDevice::s_mePtr = nullptr;
+    std::shared_ptr<SoundDevice> SoundDevice::s_mePtr = nullptr;
 
     SoundDevice::SoundDevice()
         : m_alcDevice(nullptr),
-          m_alcContext(nullptr)
+          m_alcContext(nullptr),
+          mIsCleanedUp(false)
     {
         m_alcDevice = alcOpenDevice(nullptr); // get default device
         if (!m_alcDevice)
@@ -33,30 +35,37 @@ namespace EngineCore
         Logger::Out("SoundDevice::ctor => Opened device ", name);
     }
 
-    SoundDevice::~SoundDevice()
+    void SoundDevice::CleanUp()
     {
         if (!alcMakeContextCurrent(nullptr))
         {
-            Logger::Out("SoundDevice::~SoundDevice => failed to set context to nullptr");
+            Logger::Out("SoundDevice::CleanUp => failed to set context to nullptr");
         }
 
         alcDestroyContext(m_alcContext);
         if (m_alcContext)
         {
-            Logger::Out("SoundDevice::~SoundDevice => failed to unset during close");
+            Logger::Out("SoundDevice::CleanUp => failed to unset during close");
         }
 
         if (!alcCloseDevice(m_alcDevice))
         {
-            Logger::Out("SoundDevice::~SoundDevice => failed to close sound device");
+            Logger::Out("SoundDevice::CleanUp => failed to close sound device");
         }
+
+        mIsCleanedUp = true;
     }
 
-    SoundDevice *SoundDevice::GetInstance()
+    SoundDevice::~SoundDevice()
+    {
+        assert(mIsCleanedUp); // clean up should be called before dctor
+    }
+
+    std::shared_ptr<SoundDevice> SoundDevice::GetInstance()
     {
         if (!s_mePtr)
         {
-            s_mePtr = new SoundDevice();
+            s_mePtr = std::make_shared<SoundDevice>();
         }
 
         return s_mePtr;

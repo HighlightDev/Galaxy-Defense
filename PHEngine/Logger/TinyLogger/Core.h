@@ -29,12 +29,10 @@ namespace TinyLogger
    {
       std::mutex mWriteToFileMutex;
       std::thread mLogThread;
-      std::atomic<bool> mIsThreadRunning{ true };
+      std::atomic<bool> mIsThreadRunning{ false };
 
       std::queue<LogMessage> mMessageQueue;
       std::vector<LoggerClientBase*> mLoggerClients;
-
-      bool mLogThreadStarted;
 
       LoggerServer();
 
@@ -52,7 +50,9 @@ namespace TinyLogger
 
    private:
 
-      void WriteLogMessages();
+      void WriteLogMessage();
+
+      void UpdateLoggerMainLoop();
 
       std::string ConcatMessages();
    };

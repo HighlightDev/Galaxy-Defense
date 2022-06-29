@@ -14,7 +14,14 @@ namespace EngineCore
 {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData &data)
-       : SceneComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale), mReflectionPlane(), mOwnerCamera(data.m_ownerCamera), mRenderTargetViewPortInfo(data.m_fboViewPortInfo), mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
+       : SceneComponent(data.GameObjectName,
+                        data.m_translation,
+                        data.m_eulerRotationDegrees,
+                        data.m_scale),
+         mReflectionPlane(),
+         mOwnerCamera(data.m_ownerCamera),
+         mRenderTargetViewPortInfo(data.m_fboViewPortInfo),
+         mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
    {
    }
 
@@ -47,7 +54,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         sceneSP->RegisterDeferredResourceCreator(this, GetGameObjectName());
+         sceneSP->RegisterDeferredResourceCreator(shared_from_this(), GetGameObjectName());
       }
    }
 

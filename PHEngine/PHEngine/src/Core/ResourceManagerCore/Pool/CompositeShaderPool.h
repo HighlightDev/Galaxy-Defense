@@ -16,20 +16,12 @@ namespace Resources
 
       using poolType_t = PoolBase<IShader, CompositeShaderParams, CompositeShaderAllocationPolicy>;
 
-      static CompositeShaderPool* GetInstance()
-      {
-         static CompositeShaderPool instance;
-         return &instance;
-      }
+      virtual std::string ToString() const override;
+
+      static CompositeShaderPool* GetInstance();
 
 #if DEBUG
-      void RecompileShaders()
-      {
-         for (const auto& shader_pair : resourceMap)
-         {
-            shader_pair.second->RecompileShader();
-         }
-      }
+      void RecompileShaders();
 #endif
 
    };

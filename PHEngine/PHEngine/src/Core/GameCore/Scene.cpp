@@ -237,9 +237,9 @@ namespace EngineCore
       return go;
    }
 
-   IDeferredResourceCreator *Scene::GetDeferredResourceCreatorByName(const std::string &name) const
+   std::shared_ptr<IDeferredResourceCreator> Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
-      IDeferredResourceCreator *creatorInstance = nullptr;
+      std::shared_ptr<IDeferredResourceCreator> creatorInstance;
 
       if (mDeferredResourceCreators.count(name))
       {
@@ -832,7 +832,7 @@ namespace EngineCore
       return component;
    }
 
-   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName)
+   bool Scene::RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator>& creatorInstance, const std::string &gameObjectName)
    {
       // Add deferred resource creator instance
       assert(!mDeferredResourceCreators.count(gameObjectName));

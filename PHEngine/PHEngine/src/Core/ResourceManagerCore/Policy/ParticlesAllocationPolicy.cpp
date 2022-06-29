@@ -19,7 +19,7 @@ namespace Resources
 		std::shared_ptr<Skin> resultSkin;
 
 		{
-			VertexArrayObject vao;
+			const auto vao = std::make_shared<VertexArrayObject>();
 
 			auto *vertexVBO = new VertexBufferObject<float,
 													 3,
@@ -53,12 +53,12 @@ namespace Resources
 																		 eAttribArrayIndexName::CUSTOM_2,
 																		 GL_ARRAY_BUFFER);
 
-			vao.AddVBO(vertexVBO,
+			vao->AddVBO(vertexVBO,
 					   instancedTransformVBO,
 					   instancedRotationSizeVBO,
 					   instancedColorVBO);
 					   
-			vao.BindBuffersToVao();
+			vao->BindBuffersToVao();
 
 			resultSkin = std::make_shared<Skin>(vao, BoundingBox());
 		}

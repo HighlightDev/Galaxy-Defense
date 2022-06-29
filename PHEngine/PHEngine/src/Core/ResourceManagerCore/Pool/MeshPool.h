@@ -19,19 +19,11 @@ namespace Resources
 
 		using poolType_t = PoolBase<Skin, std::string, MeshAllocationPolicy>;
 
-		static std::unique_ptr<MeshPool>& GetInstance()
-		{
-			if (!m_instance)
-				m_instance = std::make_unique<MeshPool>();
+		virtual std::string ToString() const override;
 
-			return m_instance;
-		}
+		static std::unique_ptr<MeshPool>& GetInstance();
 
-		static void ReloadInstance()
-		{
-			if (m_instance)
-				m_instance.reset();
-		}
+		static void ReloadInstance();
 	};
 
 }

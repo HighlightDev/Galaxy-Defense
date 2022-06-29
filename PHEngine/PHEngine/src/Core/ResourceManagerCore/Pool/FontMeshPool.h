@@ -15,23 +15,13 @@ namespace Resources
 		static std::unique_ptr<FontMeshPool> m_instance;
 
 	public:
-
 		using poolType_t = PoolBase<TextMesh, FontParams, FontMeshAllocationPolicy>;
 
-		static std::unique_ptr<FontMeshPool>& GetInstance()
-		{
-			if (!m_instance)
-				m_instance = std::make_unique<FontMeshPool>();
+		virtual std::string ToString() const override;
 
-			return m_instance;
-		}
+		static std::unique_ptr<FontMeshPool> &GetInstance();
 
-		static void ReloadInstance()
-		{
-			if (m_instance)
-				m_instance.reset();
-		}
+		static void ReloadInstance();
 	};
 
 }
-

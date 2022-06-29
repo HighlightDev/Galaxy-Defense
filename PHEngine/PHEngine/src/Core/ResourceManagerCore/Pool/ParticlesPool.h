@@ -17,19 +17,11 @@ namespace Resources
 
       using poolType_t = PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy>;
 
-      static std::unique_ptr<ParticlesPool>& GetInstance()
-      {
-         if (!m_instance)
-            m_instance = std::make_unique<ParticlesPool>();
+      virtual std::string ToString() const override;
 
-         return m_instance;
-      }
+      static std::unique_ptr<ParticlesPool>& GetInstance();
 
-      static void ReloadInstance()
-      {
-         if (m_instance)
-            m_instance.reset();
-      }
+      static void ReloadInstance();
    };
 
 }

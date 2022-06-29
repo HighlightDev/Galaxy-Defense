@@ -2,26 +2,101 @@
 #include "Core/AudioCore/SoundBuffer.h"
 
 #include <iostream>
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
 
 namespace EngineCore
 {
     SoundSource::SoundSource()
-        : mActiveBuffer()
+        : mPitch(1.f),
+          mGain(1.f),
+          mPosition(0.0f),
+          mVelocity(0.0f),
+          mIsLoopSound(false),
+          mActiveBuffer()
     {
-        alGenSources(1, &mSourceDesc);
-        alSourcef(mSourceDesc, AL_PITCH, p_Pitch);
-        alSourcef(mSourceDesc, AL_GAIN, p_Gain);
-        alSource3f(mSourceDesc, AL_POSITION, p_Position[0], p_Position[1], p_Position[2]);
-        alSource3f(mSourceDesc, AL_VELOCITY, p_Velocity[0], p_Velocity[1], p_Velocity[2]);
-        alSourcei(mSourceDesc, AL_LOOPING, p_LoopSound);
+        Logger::Out("SoundSource::ctor");
+        Init();
     }
 
     SoundSource::~SoundSource()
     {
+        Logger::Out("SoundSource::dctor => mSourceDesc = ", mSourceDesc);
         alDeleteSources(1, &mSourceDesc);
     }
 
-    void SoundSource::Play(const std::shared_ptr<SoundBuffer>& soundBuffer)
+    void SoundSource::SetPitch(const float pitch)
+    {
+        mPitch = pitch;
+        alSourcef(mSourceDesc, AL_PITCH, mPitch);
+    }
+
+    void SoundSource::SetGain(const float gain)
+    {
+        mGain = gain;
+        alSourcef(mSourceDesc, AL_GAIN, mGain);
+    }
+
+    void SoundSource::SetPosition(const glm::vec3 &position)
+    {
+        mPosition = position;
+        alSource3f(mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
+    }
+
+    void SoundSource::SetVelocity(const glm::vec3 &velocity)
+    {
+        mVelocity = velocity;
+        alSource3f(mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
+    }
+
+    void SoundSource::SetIsLoopSound(const bool isLoopSound)
+    {
+        if (mIsLoopSound != isLoopSound)
+        {
+            mIsLoopSound = isLoopSound;
+            alSourcei(mSourceDesc, AL_LOOPING, mIsLoopSound);
+        }
+    }
+
+    ALint SoundSource::GetCurrentSourceState() const
+    {
+        ALint state;
+        alGetSourcei(mSourceDesc, AL_SOURCE_STATE, &state);
+        return state;
+    }
+
+    float SoundSource::GetPitch() const
+    {
+        return mPitch;
+    }
+
+    float SoundSource::GetGain() const
+    {
+        return mGain;
+    }
+
+    glm::vec3 SoundSource::GetPosition() const
+    {
+        return mPosition;
+    }
+
+    glm::vec3 SoundSource::GetVelocity() const
+    {
+        return mVelocity;
+    }
+
+    bool SoundSource::GetIsLoopSound() const
+    {
+        return mIsLoopSound;
+    }
+
+    std::shared_ptr<SoundBuffer> SoundSource::GetActiveBuffer() const
+    {
+        return mActiveBuffer;
+    }
+
+    void SoundSource::Play(const std::shared_ptr<SoundBuffer> &soundBuffer)
     {
         if (!mActiveBuffer || soundBuffer->GetBufferDesc() != mActiveBuffer->GetBufferDesc())
         {
@@ -30,14 +105,17 @@ namespace EngineCore
         }
 
         alSourcePlay(mSourceDesc);
+    }
 
-        ALint state = AL_PLAYING;
-        std::cout << "playing sound\n";
-        if (state == AL_PLAYING && alGetError() == AL_NO_ERROR)
-        {
-            std::cout << "currently playing sound\n";
-            //alGetSourcei(mSourceDesc, AL_SOURCE_STATE, &state);
-        }
-        std::cout << "done playing sound\n";
+    void SoundSource::Init()
+    {
+        alGenSources(1, &mSourceDesc);
+        alSourcef(mSourceDesc, AL_PITCH, mPitch);
+        alSourcef(mSourceDesc, AL_GAIN, mGain);
+        alSource3f(mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
+        alSource3f(mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
+        alSourcei(mSourceDesc, AL_LOOPING, mIsLoopSound);
+
+        Logger::Out("SoundSource::Init => mSourceDesc = ", mSourceDesc);
     }
 }

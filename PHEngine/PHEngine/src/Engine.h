@@ -14,78 +14,82 @@
 using namespace EngineCore;
 using namespace Graphics::Renderer;
 
-class Engine
+namespace EngineCore
 {
+   class SoundDevice;
 
-   static constexpr double InvLimitFPS = 1.0 / 60.0;
+   class Engine
+   {
+      static constexpr double InvLimitFPS = 1.0 / 60.0;
 
-   InterThreadCommunicationMgr& m_interThreadMgr;
+      InterThreadCommunicationMgr &m_interThreadMgr;
 
-   std::shared_ptr<InputManager> mInputManager;
+      std::shared_ptr<InputManager> mInputManager;
 
-   std::shared_ptr<Level> m_level;
+      std::shared_ptr<Level> m_level;
 
-   std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
+      std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
-   std::atomic_bool bGameThreadExecution = true;
+      std::atomic_bool bGameThreadExecution = true;
 
-private:
-   std::thread m_gameThread;
+      std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
-   Moment_t mLastRenderThreadPulseTime;
-   double mRenderThreadDeltaTimeSeconds;
+   private:
+      std::thread m_gameThread;
 
-   Moment_t mLastGameThreadPulseTime;
-   double mGameThreadDeltaTimeSeconds;
-   double mGameThreadSumDeltaTimeSec;
+      Moment_t mLastRenderThreadPulseTime;
+      double mRenderThreadDeltaTimeSeconds;
 
-public:
+      Moment_t mLastGameThreadPulseTime;
+      double mGameThreadDeltaTimeSeconds;
+      double mGameThreadSumDeltaTimeSec;
 
-	Engine(InterThreadCommunicationMgr& interThreadMgr);
+   public:
+      Engine(InterThreadCommunicationMgr &interThreadMgr);
 
-	~Engine();
+      ~Engine();
 
-   void StopGameThreadExecution();
+      void PlayLevel(std::shared_ptr<Level> level);
 
-   void PlayLevel(std::shared_ptr<Level> level);
+      void PreLevelInit();
 
-   void PreLevelInit();
+      void PostLevelInit();
 
-   void PostLevelInit();
+      void PostPhysicsInitialize();
 
-   void PostPhysicsInitialize();
+      void PostPlayLevelFinished();
 
-   void PostPlayLevelFinished();
+      void ProcessEvents(Event::eExecutionOrder order);
 
-   void ProcessEvents(Event::eExecutionOrder order);
+      void GameThreadPulse();
 
-   void GameThreadPulse();
+      void RenderThreadPulse();
 
-   void RenderThreadPulse();
+      void TickWindow();
 
-	void TickWindow();
+      std::shared_ptr<InputManager> GetInputManager() const;
 
-   std::shared_ptr<InputManager> GetInputManager() const;
+      double GetRenderThreadDeltaTime() const;
 
-   double GetRenderThreadDeltaTime() const;
+      double GetGameThreadDeltaTime() const;
 
-   double GetGameThreadDeltaTime() const;
-
-   InterThreadCommunicationMgr& GetThreadCommunicationManager();
+      InterThreadCommunicationMgr &GetThreadCommunicationManager();
 
 #if DEBUG
 
-   void PushFrame();
+      void PushFrame();
 
-   void RecompileAllShaders();
+      void RecompileAllShaders();
 
 #endif
 
-private:
+      void CleanUp();
 
-   double GetRenderThreadDeltaSeconds() const;
+   private:
+      double GetRenderThreadDeltaSeconds() const;
 
-   double GetGameThreadDeltaSeconds() const;
+      double GetGameThreadDeltaSeconds() const;
 
-};
-
+      void StopGameThreadExecution();
+   };
+}

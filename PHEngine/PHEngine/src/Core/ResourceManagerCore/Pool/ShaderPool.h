@@ -10,36 +10,20 @@ using namespace Graphics::OpenGL;
 namespace Resources
 {
 
-	class ShaderPool :
-		public PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>
+	class ShaderPool : public PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>
 	{
 		static std::unique_ptr<ShaderPool> m_instance;
 
 	public:
-
 		using poolType_t = PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>;
 
-		static std::unique_ptr<ShaderPool>& GetInstance()
-		{
-			if (!m_instance)
-				m_instance = std::make_unique<ShaderPool>();
+		virtual std::string ToString() const override;
 
-			return m_instance;
-		}
+		static std::unique_ptr<ShaderPool> &GetInstance();
 
-		static void ReloadInstance()
-		{
-			if (m_instance)
-				m_instance.reset();
-		}
+		static void ReloadInstance();
 #if DEBUG
-      void RecompileShaders()
-      {
-         for (const auto& shader_pair : resourceMap)
-         {
-            shader_pair.second->RecompileShader();
-         }
-      }
+		void RecompileShaders();
 #endif
 	};
 }

@@ -8,35 +8,35 @@
 using namespace Resources;
 using namespace Graphics::Texture;
 
-namespace Graphics{
-
+namespace Graphics
+{
    class PlanarReflectionProxy;
 }
 
-namespace EngineCore {
-
+namespace EngineCore
+{
    class ACamera;
    struct PlanarReflectionComponentData;
 
    using Graphics::PlanarReflectionProxy;
-   
-   class PlanarReflectionComponent 
-      : public SceneComponent
-      , public IDeferredResourceCreator
+
+   class PlanarReflectionComponent
+       : std::enable_shared_from_this<IDeferredResourceCreator>,
+         public SceneComponent,
+         public IDeferredResourceCreator
    {
       size_t mPlanarReflectionSceneProxyId = -1;
 
       glm::vec4 mReflectionPlane;
 
-      ACamera* mOwnerCamera;
+      ACamera *mOwnerCamera;
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
       std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>> mPlanarReflectionDeferredController;
 
    public:
-
-      PlanarReflectionComponent(const PlanarReflectionComponentData& data);
+      PlanarReflectionComponent(const PlanarReflectionComponentData &data);
 
       virtual ~PlanarReflectionComponent();
 
@@ -50,7 +50,7 @@ namespace EngineCore {
 
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
 
-      ACamera* GetOwnerCamera() const;
+      ACamera *GetOwnerCamera() const;
 
       size_t GetSceneProxyId() const;
 
@@ -65,8 +65,6 @@ namespace EngineCore {
       virtual std::shared_ptr<IDeferredResourceBase> GetDeferredResource() override;
 
    private:
-
       void UpdateReflectionPlane();
    };
 }
-

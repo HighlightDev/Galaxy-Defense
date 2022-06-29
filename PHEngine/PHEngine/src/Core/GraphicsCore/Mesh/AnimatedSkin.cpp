@@ -9,7 +9,7 @@ namespace Graphics
 	namespace Mesh
 	{
 
-		AnimatedSkin::AnimatedSkin(const VertexArrayObject &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox &boundingBox)
+		AnimatedSkin::AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox &boundingBox)
 			: Skin(vao, boundingBox), m_animatedMeshData(animatedMeshData)
 		{
 			Logger::Out("AnimatedSkin::ctor => RootNode name=", animatedMeshData->RootNode->Name);
@@ -22,7 +22,6 @@ namespace Graphics
 
 		void AnimatedSkin::CleanUp()
 		{
-
 			Skin::CleanUp();
 		}
 

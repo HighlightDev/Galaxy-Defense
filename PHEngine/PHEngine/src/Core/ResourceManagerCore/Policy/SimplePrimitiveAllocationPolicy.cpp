@@ -20,7 +20,7 @@ namespace Resources
       std::shared_ptr<Skin> resultSkin;
 
       {
-         VertexArrayObject vao;
+         const auto vao = std::make_shared<VertexArrayObject>();
 
          std::vector<float> vertices;
          std::vector<float> normals;
@@ -188,9 +188,8 @@ namespace Resources
                                                                                       eDataCarryFlag::INVALIDATE);
          }
 
-         vao.AddVBO(vertexVBO, normalVBO, texCoordsVBO);
-
-         vao.BindBuffersToVao();
+         vao->AddVBO(vertexVBO, normalVBO, texCoordsVBO);
+         vao->BindBuffersToVao();
 
          resultSkin = std::make_shared<Skin>(vao, boundingBox);
       }

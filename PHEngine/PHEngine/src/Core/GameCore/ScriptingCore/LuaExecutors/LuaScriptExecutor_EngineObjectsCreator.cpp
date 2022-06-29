@@ -412,7 +412,7 @@ namespace EngineCore
 
       if (auto scene = mSceneWP.lock())
       {
-         IDeferredResourceCreator *resourceCreator = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
+         const auto resourceCreator = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
          assert(resourceCreator);
          MaterialPropertySetter::SetMaterialPropertyValue(material, propertyName, resourceCreator);
       }

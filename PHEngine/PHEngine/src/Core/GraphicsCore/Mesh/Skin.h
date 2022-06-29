@@ -17,17 +17,17 @@ namespace Graphics
       class Skin
       {
 
-         VertexArrayObject m_buffer;
+         std::shared_ptr<VertexArrayObject> m_buffer;
 
          BoundingBox mBoundingBox;
 
       public:
 
-         Skin(const VertexArrayObject& vao, const BoundingBox& boundingBox);
+         Skin(const std::shared_ptr<VertexArrayObject>& vao, const BoundingBox& boundingBox);
 
          virtual ~Skin();
 
-         VertexArrayObject* GetBuffer();
+         const std::shared_ptr<VertexArrayObject>& GetBuffer() const;
 
          BoundingBox GetBoundingBox() const;
 

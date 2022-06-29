@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <AL/al.h>
+#include <glm/vec3.hpp>
 
 namespace EngineCore
 {
@@ -9,21 +10,53 @@ namespace EngineCore
 
     class SoundSource
     {
+        ALuint mSourceDesc;
+
+        float mPitch;
+
+        float mGain;
+
+        glm::vec3 mPosition;
+
+        glm::vec3 mVelocity;
+
+        bool mIsLoopSound;
+
+        std::shared_ptr<SoundBuffer> mActiveBuffer;
+
     public:
         SoundSource();
+
         ~SoundSource();
 
-        void Play(const std::shared_ptr<SoundBuffer>& soundBuffer);
+        void SetPitch(const float pitch);
+
+        void SetGain(const float gain);
+
+        void SetPosition(const glm::vec3& position);
+
+        void SetVelocity(const glm::vec3& velocity);
+
+        void SetIsLoopSound(const bool isLoopSound);
+
+        void Play(const std::shared_ptr<SoundBuffer> &soundBuffer);
+
+        ALint GetCurrentSourceState() const;
+
+        float GetPitch() const;
+
+        float GetGain() const;
+        
+        glm::vec3 GetPosition() const;
+
+        glm::vec3 GetVelocity() const;
+
+        bool GetIsLoopSound() const;
+
+        std::shared_ptr<SoundBuffer> GetActiveBuffer() const;
 
     private:
-        ALuint mSourceDesc;
-        float p_Pitch = 1.f;
-        float p_Gain = 1.f;
-        float p_Position[3] = {0, 0, 0};
-        float p_Velocity[3] = {0, 0, 0};
-        bool p_LoopSound = false;
-        
-        std::shared_ptr<SoundBuffer> mActiveBuffer;
+        void Init();
     };
 
 }

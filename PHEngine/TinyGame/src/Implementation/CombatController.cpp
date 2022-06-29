@@ -9,7 +9,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 
-#include "Core/AudioCore/SoundDevice.h"
 #include "Core/AudioCore/SoundBuffer.h"
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
@@ -223,7 +222,6 @@ namespace Game
 
             if (mDeltaTime > mCoolDownTime)
             {
-                Logger::Out("CombatController::Tick => Cooldown!");
                 mDeltaTime = 0.0f;
                 bIsCoolDownInProgress = false;
             }
@@ -273,7 +271,6 @@ namespace Game
             bulletSp->SetIsEnabled(true);
             bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
             idleBulletIt->second = eBulletState::ACTIVE;
-            Logger::Out("CombatController::ShootBuller => Successfull shoot.");
         }
     }
 
@@ -298,9 +295,6 @@ namespace Game
                     weaponSP->SetIsEnabled(false);
                     weaponSP->GetRootComponent()->SetTranslation(glm::vec3(0));
                     weaponPair.second = eBulletState::IDLE;
-
-                    Logger::Out("CombatController::FlushToPoolUsedBullets => Flush bullet to pool. Position = ",
-                                bulletPosition, " . Actor name = ", weaponSP->GetName());
                 }
             }
             else
@@ -355,8 +349,6 @@ namespace Game
 
     void CombatController::TestSound()
     {
-        SoundDevice::GetInstance();
-
         bounceSoundBuffer = SoundBufferPool::GetInstance()->GetOrAllocateResource("bounce.wav");
         soundSource = std::make_shared<SoundSource>();
     }

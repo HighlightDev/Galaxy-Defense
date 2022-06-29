@@ -1,11 +1,12 @@
 #include "CubemapTexture.h"
-#include "Core/IoCore/TextureLoaderCore/StbLoader/StbLoader.h"
 #include "Core/IoCore/TextureLoaderCore/TextureResourceInfo.h"
 #include "Core/IoCore/RawResource.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
 
-using namespace IO::Images::Stb;
+#include <TinyLogger/LogInterface.h>
+
+using namespace TinyLogger;
 using namespace IO;
 
 namespace Graphics
@@ -13,46 +14,49 @@ namespace Graphics
 	namespace Texture
 	{
 
-		CubemapTexture::CubemapTexture(const std::vector<std::string>& pathToTextures)
+		CubemapTexture::CubemapTexture(const std::vector<std::string> &pathToTextures)
 		{
 			m_texDescriptor = CreateCubemapTexture(pathToTextures);
+			Logger::Out("CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor = ", m_texDescriptor);
 		}
 
-      CubemapTexture::CubemapTexture(TexParams cubemapTexParams)
-         : m_texParams({ cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams })
-      {
-         m_texDescriptor = CreateEmptyCubemapTexture();
-      }
+		CubemapTexture::CubemapTexture(TexParams cubemapTexParams)
+			: m_texParams({cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams})
+		{
+			m_texDescriptor = CreateEmptyCubemapTexture();
+			Logger::Out("CubemapTexture::ctor(TexParams) => m_texDescriptor = ", m_texDescriptor);
+		}
 
 		CubemapTexture::~CubemapTexture()
 		{
+			Logger::Out("CubemapTexture::dctor");
 		}
 
-      uint32_t CubemapTexture::CreateEmptyCubemapTexture()
-      {
-         uint32_t resultTextureDescriptor = -1;
+		uint32_t CubemapTexture::CreateEmptyCubemapTexture()
+		{
+			uint32_t resultTextureDescriptor = -1;
 
-         glGenTextures(1, &resultTextureDescriptor);
-         glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
+			glGenTextures(1, &resultTextureDescriptor);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
 
-         for (size_t texIndex = 0; texIndex < m_texParams.size(); texIndex++)
-         {
-            TexParams texParam = m_texParams[texIndex];
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texIndex, 0, texParam.TexPixelInternalFormat, texParam.TexBufferWidth, texParam.TexBufferHeight, 0, texParam.TexPixelFormat, texParam.TexPixelType, NULL);
+			for (size_t texIndex = 0; texIndex < m_texParams.size(); texIndex++)
+			{
+				TexParams texParam = m_texParams[texIndex];
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + texIndex, 0, texParam.TexPixelInternalFormat, texParam.TexBufferWidth, texParam.TexBufferHeight, 0, texParam.TexPixelFormat, texParam.TexPixelType, NULL);
 
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, texParam.TexMagFilter);
-            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, texParam.TexMinFilter);
-         }
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, texParam.TexMagFilter);
+				glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, texParam.TexMinFilter);
+			}
 
-         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-         return resultTextureDescriptor;
-      }
+			return resultTextureDescriptor;
+		}
 
-		uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string>& pathToTextures)
+		uint32_t CubemapTexture::CreateCubemapTexture(const std::vector<std::string> &pathToTextures)
 		{
 			uint32_t resultTextureDescriptor = -1;
 			size_t mutualPixelFormat = -1;
@@ -63,28 +67,28 @@ namespace Graphics
 			const size_t texturesCount = pathToTextures.size();
 			for (size_t texIndex = 0; texIndex < texturesCount; texIndex++)
 			{
-            TexParams texParam;
+				TexParams texParam;
 
-            Resource* outResource;
-            bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTextures[texIndex]);
+				Resource *outResource;
+				bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTextures[texIndex]);
 
-            assert(bResourceValid);
+				assert(bResourceValid);
 
-            TextureResource* texResource = static_cast<TextureResource*>(outResource);
+				TextureResource *texResource = static_cast<TextureResource *>(outResource);
 
-            texParam.TexBufferWidth = texResource->TexInfo.Width;
-            texParam.TexBufferHeight = texResource->TexInfo.Height;
+				texParam.TexBufferWidth = texResource->TexInfo.Width;
+				texParam.TexBufferHeight = texResource->TexInfo.Height;
 
-            if (texResource->TexInfo.PixelComponents == 3)
-            {
-               texParam.TexPixelFormat = GL_RGB;
-               texParam.TexPixelInternalFormat = GL_RGB;
-            }
-            else if (texResource->TexInfo.PixelComponents == 4)
-            {
-               texParam.TexPixelFormat = GL_RGBA;
-               texParam.TexPixelInternalFormat = GL_RGBA;
-            }
+				if (texResource->TexInfo.PixelComponents == 3)
+				{
+					texParam.TexPixelFormat = GL_RGB;
+					texParam.TexPixelInternalFormat = GL_RGB;
+				}
+				else if (texResource->TexInfo.PixelComponents == 4)
+				{
+					texParam.TexPixelFormat = GL_RGBA;
+					texParam.TexPixelInternalFormat = GL_RGBA;
+				}
 
 				if (mutualPixelFormat == -1)
 				{
@@ -125,6 +129,7 @@ namespace Graphics
 
 		void CubemapTexture::CleanUp()
 		{
+			Logger::Out("CubemapTexture::CleanUp => m_texDescriptor = ", m_texDescriptor);
 			glDeleteTextures(1, &m_texDescriptor);
 		}
 
@@ -143,14 +148,14 @@ namespace Graphics
 			return m_texParams[0];
 		}
 
-      float CubemapTexture::GetTextureAspectRatio() const
-      {
-         return (static_cast<float>(m_texParams[0].TexBufferWidth) / static_cast<float>(m_texParams[0].TexBufferHeight));
-      }
+		float CubemapTexture::GetTextureAspectRatio() const
+		{
+			return (static_cast<float>(m_texParams[0].TexBufferWidth) / static_cast<float>(m_texParams[0].TexBufferHeight));
+		}
 
-      eTextureType CubemapTexture::GetTextureType() const
-      {
-         return eTextureType::TEXTURE_CUBE;
-      }
+		eTextureType CubemapTexture::GetTextureType() const
+		{
+			return eTextureType::TEXTURE_CUBE;
+		}
 	}
 }

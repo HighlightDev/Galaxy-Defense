@@ -5,12 +5,12 @@
 namespace TinyLogger
 {
    LogMessage::LogMessage(std::initializer_list<std::string> messages)
-      : mLogs(messages)
+       : mLogs(messages)
    {
    }
 
    LogMessage::LogMessage(std::vector<std::string> messages)
-      : mLogs(std::move(messages)) 
+       : mLogs(std::move(messages))
    {
    }
 
@@ -18,44 +18,46 @@ namespace TinyLogger
    {
       std::string result;
 
-      std::for_each(mLogs.begin(), mLogs.end(), [&](const std::string& logArg) { result += "  " + logArg; });
+      std::for_each(mLogs.begin(), mLogs.end(), [&](const std::string &logArg)
+                    { result += "  " + logArg; });
 
       return result;
    }
 
    LoggerServer::LoggerServer()
-      : mLogThreadStarted(false)
+       : mMessageQueue(),
+         mLoggerClients()
    {
-
    }
 
-   LoggerServer* LoggerServer::GetInstance_()
+   LoggerServer *LoggerServer::GetInstance_()
    {
       static LoggerServer loggerInstance;
       return &loggerInstance;
    }
 
-   void LoggerServer::AddLoggerClient(LoggerClientBase* clientBase)
+   void LoggerServer::AddLoggerClient(LoggerClientBase *clientBase)
    {
       mLoggerClients.push_back(clientBase);
    }
 
    void LoggerServer::StartLogThread()
    {
-      if (!mLogThreadStarted)
+      if (!mIsThreadRunning.load(std::memory_order::memory_order_seq_cst))
       {
-         mLogThread = std::thread(std::bind(&LoggerServer::WriteLogMessages, this));
-         mLogThread.detach();
-         mLogThreadStarted = true;
+         mIsThreadRunning.store(true, std::memory_order::memory_order_seq_cst);
+         mLogThread = std::thread(std::bind(&LoggerServer::UpdateLoggerMainLoop, this));
       }
    }
 
    void LoggerServer::StopLogThread()
    {
       mIsThreadRunning.store(false, std::memory_order::memory_order_seq_cst);
+      mLogThread.join();
+      WriteLogMessage();
    }
 
-   void LoggerServer::EnqueuLogMessage(LogMessage&& message)
+   void LoggerServer::EnqueuLogMessage(LogMessage &&message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
       mMessageQueue.emplace(message);
@@ -68,7 +70,7 @@ namespace TinyLogger
       while (!mMessageQueue.empty())
       {
          auto message = mMessageQueue.front();
-         const std::string& log = message.GetLog();
+         const std::string &log = message.GetLog();
          result += log + "\n";
          mMessageQueue.pop();
       }
@@ -76,20 +78,25 @@ namespace TinyLogger
       return result;
    }
 
-   void LoggerServer::WriteLogMessages()
+   void LoggerServer::WriteLogMessage()
+   {
+      std::lock_guard<std::mutex> writeLock(mWriteToFileMutex);
+      if (!mMessageQueue.empty())
+      {
+         const std::string &log = ConcatMessages();
+         if ("" != log)
+         {
+            std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](LoggerClientBase *client)
+                          { client->WriteLog(log); });
+         }
+      }
+   }
+
+   void LoggerServer::UpdateLoggerMainLoop()
    {
       while (mIsThreadRunning.load(std::memory_order::memory_order_seq_cst))
       {
-         std::unique_lock<std::mutex> uLock(mWriteToFileMutex);
-         if (!mMessageQueue.empty())
-         {
-            const std::string& log = ConcatMessages();
-            if ("" != log)
-            {
-               std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](LoggerClientBase* client) { client->WriteLog(log); });
-            }
-         }
-         uLock.unlock();
+         WriteLogMessage();
          std::this_thread::sleep_for(std::chrono::seconds(1));
       }
    }

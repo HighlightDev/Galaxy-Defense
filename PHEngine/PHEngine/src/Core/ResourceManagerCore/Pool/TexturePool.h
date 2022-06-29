@@ -17,24 +17,15 @@ namespace Resources
 		static std::unique_ptr<TexturePool> m_instance;
 
 	public:
-
 		using poolType_t = PoolBase<ITexture, std::string, TextureAllocationPolicy>;
 
-		static std::unique_ptr<TexturePool>& GetInstance()
-		{
-			if (!m_instance)
-				m_instance = std::move(std::make_unique<TexturePool>());
+		virtual std::string ToString() const override;
 
-			return m_instance;
-		}
+		std::shared_ptr<ITexture> GetTextureAt(size_t index) const;
 
-      std::shared_ptr<ITexture> GetTextureAt(size_t index) const;
+		static std::unique_ptr<TexturePool> &GetInstance();
 
-		static void ReloadInstance()
-		{
-			if (m_instance)
-				m_instance.reset();
-		}
+		static void ReloadInstance();
 	};
 
 }

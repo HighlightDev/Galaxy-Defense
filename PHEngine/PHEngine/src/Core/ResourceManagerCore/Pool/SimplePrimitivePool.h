@@ -6,28 +6,18 @@
 namespace Resources
 {
 
-   class SimplePrimitivePool :
-      public PoolBase<Skin, int32_t, SimplePrimitiveAllocationPolicy>
+   class SimplePrimitivePool : public PoolBase<Skin, int32_t, SimplePrimitiveAllocationPolicy>
    {
       static std::unique_ptr<SimplePrimitivePool> m_instance;
 
    public:
-
       using poolType_t = PoolBase<Skin, int32_t, SimplePrimitiveAllocationPolicy>;
 
-      static std::unique_ptr<SimplePrimitivePool>& GetInstance()
-      {
-         if (!m_instance)
-            m_instance = std::make_unique<SimplePrimitivePool>();
+      virtual std::string ToString() const override;
 
-         return m_instance;
-      }
+      static std::unique_ptr<SimplePrimitivePool> &GetInstance();
 
-      static void ReloadInstance()
-      {
-         if (m_instance)
-            m_instance.reset();
-      }
+      static void ReloadInstance();
    };
 
 }

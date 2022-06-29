@@ -3,29 +3,28 @@
 #include "Skin.h"
 #include "AnimatedMeshData.h"
 
-namespace Graphics 
+namespace Graphics
 {
-	namespace Mesh 
+	namespace Mesh
 	{
 
 		class AnimatedSkin : public Skin
 		{
-         std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
+			std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 
 		public:
-
-			AnimatedSkin(const VertexArrayObject& vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox& boundingBox);
+			AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox &boundingBox);
 
 			~AnimatedSkin();
 
-         std::shared_ptr<AnimatedMeshData> GetAnimatedMeshData() {
+			std::shared_ptr<AnimatedMeshData> GetAnimatedMeshData()
+			{
 
-            return m_animatedMeshData;
-         }
-			
+				return m_animatedMeshData;
+			}
+
 			void CleanUp() override;
 		};
 
 	}
 }
-

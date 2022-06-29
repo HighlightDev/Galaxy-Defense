@@ -20,21 +20,13 @@ namespace Resources
 
       using poolType_t = PoolBase<ITexture, TexParams, RenderTargetAllocationPolicy>;
 
+      virtual std::string ToString() const override;
+
       std::shared_ptr<ITexture> GetRenderTargetAt(size_t index) const;
 
-      static std::unique_ptr<RenderTargetPool>& GetInstance() {
+      static std::unique_ptr<RenderTargetPool>& GetInstance();
 
-         if (!m_instance)
-            m_instance = std::make_unique<RenderTargetPool>();
-
-         return m_instance;
-      }
-
-      static void ReloadInstance()
-      {
-         if (m_instance)
-            m_instance.reset();
-      }
+      static void ReloadInstance();
 
    };
 }

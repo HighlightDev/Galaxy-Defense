@@ -101,7 +101,6 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
     else if (key == ESCAPE_KEY)
     {
       bPollEvents = false;
-      Logger::StopLogThread();
     }
 
     else if (key == 'M' || key == 'm')
@@ -236,10 +235,12 @@ int32_t main(int32_t argc, char **argv)
       }
     }
 
-    engine.StopGameThreadExecution();
+    engine.CleanUp();
   }
 
   glfwTerminate();
+
+  Logger::StopLogThread(); // join logger thread
 
   return 0;
 }

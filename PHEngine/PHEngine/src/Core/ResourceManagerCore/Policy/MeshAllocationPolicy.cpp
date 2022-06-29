@@ -29,7 +29,7 @@ namespace Resources
 		std::shared_ptr<Skin> resultSkin;
 
 		{
-			VertexArrayObject vao;
+			const auto vao = std::make_shared<VertexArrayObject>();
 
 			Resource *outResource;
 			const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, arg);
@@ -121,7 +121,7 @@ namespace Resources
 																		 eDataCarryFlag::INVALIDATE);
 			}
 
-			vao.AddVBO(vertexVBO,
+			vao->AddVBO(vertexVBO,
 					   normalsVBO,
 					   texCoordsVBO,
 					   tangentsVBO,
@@ -129,8 +129,8 @@ namespace Resources
 					   blendWeightsVBO,
 					   blendIndicesVBO);
 
-			vao.AddIndexBuffer(ibo);
-			vao.BindBuffersToVao();
+			vao->AddIndexBuffer(ibo);
+			vao->BindBuffersToVao();
 
 			BoundingBoxBuilder builder;
 			BoundingBox boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
