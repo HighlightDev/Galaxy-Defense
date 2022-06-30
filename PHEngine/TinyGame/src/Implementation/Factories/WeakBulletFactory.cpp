@@ -20,6 +20,7 @@
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
@@ -63,18 +64,24 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-        const MeshComponentData d_mesh("c_meshData_" + shipBulletIndexStr, "playerCube.obj", glm::vec3(0),
+        const MeshComponentData d_mesh("c_meshComponent_" + shipBulletIndexStr, "playerCube.obj", glm::vec3(0),
                                        glm::vec3(0), glm::vec3(2), "", pbs_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_bullet->AddComponent(c_mesh);
 
-        MovementComponentData d_movement("c_noPhysMoveData_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+        MovementComponentData d_movement("c_noPhysMoveComponent_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetSpeed(0.03f);
         c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
         a_bullet->AddComponent(c_movement);
+
+        ComponentData d_audio("c_soundComponent_" + shipBulletIndexStr);
+        const auto& soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
+        const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
+        c_sound->CreateSoundBuffer("bounce.wav", "explosion");
+        a_bullet->AddComponent(c_sound);
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);

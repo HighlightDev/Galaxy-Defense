@@ -8,10 +8,7 @@
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
-
-#include "Core/AudioCore/SoundBuffer.h"
-#include "Core/AudioCore/SoundSource.h"
-#include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
+#include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -68,8 +65,6 @@ namespace Game
                 mEnemies.emplace_back(CombatEntity(a_enemyShip, c_uiComponent, dmgTextFieldId));
             }
         }
-
-        TestSound();
     }
 
     void CombatController::PostPlayLevelFinished()
@@ -123,10 +118,11 @@ namespace Game
                 if (a_enemyShipIt != mEnemies.end() &&
                     a_bulletIt != mWeaponBulletsPool.end())
                 {
+                    const auto c_sound = a_bulletIt->first->GetComponentsByType<SoundComponent>().back();
+                    c_sound->PlayBuffer("explosion");
+
                     a_bulletIt->first->SetIsEnabled(false);
                     a_bulletIt->second = eBulletState::IDLE;
-
-                    soundSource->Play(bounceSoundBuffer);
 
                     const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
                     const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
@@ -345,11 +341,5 @@ namespace Game
                                                                                                                    return actorId == bulletPair.first->GetObjectId();
                                                                                                                });
         return foundIt;
-    }
-
-    void CombatController::TestSound()
-    {
-        bounceSoundBuffer = SoundBufferPool::GetInstance()->GetOrAllocateResource("bounce.wav");
-        soundSource = std::make_shared<SoundSource>();
     }
 }
