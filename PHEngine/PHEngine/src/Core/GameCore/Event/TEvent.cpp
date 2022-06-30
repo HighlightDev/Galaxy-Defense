@@ -9,18 +9,20 @@
 #include "Core/GameCore/Input/MouseEventEnums.h"
 #include "Core/GameCore/GUI/Text/TextField.h"
 #include "Core/GameCore/Event/TextEvent.h"
+#include "Core/GameCore/Input/InputDeviceKeyData.h"
 
 using namespace Graphics::Texture;
 
 namespace Event
 {
-   template class TEvent<SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>;
+   template class TEvent<SingleDataEventPolicy<std::weak_ptr<Transform>>>;
    template class TEvent<SingleDataEventPolicy<std::string>>;
-   template class TEvent<SingleDataEventPolicy<EngineCore::ACamera*>>;
-   template class TEvent<SingleDataEventPolicy<std::vector<KeyboardData>>>;
+   template class TEvent<SingleDataEventPolicy<ACamera*>>;
+   template class TEvent<SingleDataEventPolicy<std::vector<KeyboardKeysData>>>;
    template class TEvent<SingleDataEventPolicy<glm::ivec4>>;
-   template class TEvent<SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>;
-   template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>;
+   template class TEvent<SingleDataEventPolicy<eMouseScrollDirection>>;
+   template class TEvent<SingleDataEventPolicy<std::vector<MouseKeysData>>>;
+   template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EulerAnglesTransform>>;
 
    template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;

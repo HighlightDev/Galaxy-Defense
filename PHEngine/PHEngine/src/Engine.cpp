@@ -92,7 +92,7 @@ namespace EngineCore
 
    void Engine::PreLevelInit()
    {
-      EventDispatcher ::GetInstance()
+      EventDispatcher::GetInstance()
           ->RegisterEventsByType<CameraTransformChangedEvent,
                                  PlayerMovedEvent,
                                  PhysicsComponentUpdatedEvent,
@@ -101,6 +101,7 @@ namespace EngineCore
                                  TextureAtlasGeneratedEvent,
                                  MouseMovedEvent,
                                  MouseScrollEvent,
+                                 MouseButtonDownEvent,
                                  PhysicsCollisionOccuredEvent,
                                  TextRegisterEvent,
                                  TextDataChangedEvent>();

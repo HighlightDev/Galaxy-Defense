@@ -107,6 +107,14 @@ namespace EngineCore
         alSourcePlay(mSourceDesc);
     }
 
+    void SoundSource::Stop()
+    {
+        if (!mActiveBuffer || GetCurrentSourceState() != AL_PLAYING)
+            return;
+        
+        alSourceStop(mSourceDesc);
+    }
+
     void SoundSource::Init()
     {
         alGenSources(1, &mSourceDesc);

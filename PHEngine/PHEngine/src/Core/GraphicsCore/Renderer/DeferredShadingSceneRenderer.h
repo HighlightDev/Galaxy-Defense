@@ -131,6 +131,8 @@ namespace Graphics
 
          void PlanarReflectionPass();
 
+         void GuiTextPass();
+
          void RegisterFonts();
 
       public:
@@ -150,6 +152,7 @@ namespace Graphics
          std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const size_t proxyId) const;
 
          bool RemovePrimitiveProxyByProxyId(const size_t proxyId);
+
          bool RemoveLightProxyByProxyId(const size_t proxyId);
 
          void SetProxiesAreDirty(const bool bDirty);
@@ -171,6 +174,7 @@ namespace Graphics
          void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
          float GetTextWidthByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
+
          float GetTextHeightByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
 
 #if DEBUG
@@ -183,8 +187,6 @@ namespace Graphics
          void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
          void DebugFramePanelsPass();
-
-         void DebugRenderText();
 #endif
 		};
 

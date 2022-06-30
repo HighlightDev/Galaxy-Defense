@@ -2,27 +2,28 @@
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
 #include "Core/GameCore/Event/MouseMovedEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
 
 using namespace Event;
 
 namespace EngineCore
 {
    InputManager::InputManager()
-       : mPrevMouseX(0), mPrevMouseY(0), mKeyboardMaskVec()
+       : mPrevMouseX(0), mPrevMouseY(0), mKeyboardMaskVec(), mMouseButtonMaskVec()
    {
    }
 
-   void InputManager::TriggerOnKeyDown(Keys key)
+   void InputManager::TriggerOnKeyboardKeyDown(eKeyboardKeys key)
    {
-      SetKeyState(KeyboardData(key, KeyState::PRESSED));
+      SetKeyboardKeyState(KeyboardKeysData(key, KeyState::PRESSED));
    }
 
-   void InputManager::TriggerOnKeyUp(Keys key)
+   void InputManager::TriggerOnKeyboardKeyUp(eKeyboardKeys key)
    {
-      SetKeyState(KeyboardData(key, KeyState::RELEASED));
+      SetKeyboardKeyState(KeyboardKeysData(key, KeyState::RELEASED));
    }
 
-   void InputManager::SetKeyState(KeyboardData key)
+   void InputManager::SetKeyboardKeyState(const KeyboardKeysData key)
    {
       auto it = std::find_if(mKeyboardMaskVec.begin(),
                              mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
@@ -54,6 +55,34 @@ namespace EngineCore
    void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection)
    {
       MouseScrollEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
+   }
+
+   void InputManager::TriggerOnMouseButtonKeyDown(const eMouseKeys key)
+   {
+      SetMouseButtonKeyState(MouseKeysData(key, KeyState::PRESSED));
+   }
+
+   void InputManager::TriggerOnMouseButtonKeyUp(const eMouseKeys key)
+   {
+      SetMouseButtonKeyState(MouseKeysData(key, KeyState::RELEASED));
+   }
+
+   void InputManager::SetMouseButtonKeyState(const MouseKeysData key)
+   {
+      auto it = std::find_if(mMouseButtonMaskVec.begin(),
+                             mMouseButtonMaskVec.end(), [=](const auto &keyData) -> bool
+                             { return keyData.Key == key.Key; });
+
+      if (it == mMouseButtonMaskVec.end())
+      {
+         mMouseButtonMaskVec.emplace_back(key);
+      }
+      else
+      {
+         it->State = key.State;
+      }
+
+      MouseButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mMouseButtonMaskVec);
    }
 
 }

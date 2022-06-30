@@ -82,7 +82,12 @@ namespace Game
          if (mouseBindings.IsMouseScrollEventDirty())
          {
             const auto scrollDirection = mouseBindings.FlushMouseScrollEvent();
-            m_camera->Zoom(scrollDirection, 1.25f);
+            m_camera->Zoom(scrollDirection, 4.0f);
+         }
+
+         if (KeyState::PRESSED == mouseBindings.GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
+         {
+            MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
          }
 
          const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
@@ -152,11 +157,6 @@ namespace Game
             else
             {
                bMoveCommitted = false;
-            }
-
-            if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_JUMP))
-            {
-               MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
             }
 
             if (bMoveCommitted)

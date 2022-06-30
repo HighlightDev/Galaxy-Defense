@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Input/Keys.h"
-#include "Core/GameCore/Input/KeyboardData.h"
+#include "Core/GameCore/Input/InputDeviceKeyData.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 
 #include <vector>
@@ -16,7 +16,8 @@ namespace EngineCore
       int32_t mPrevMouseX;
       int32_t mPrevMouseY;
 
-      std::vector<KeyboardData> mKeyboardMaskVec;
+      std::vector<KeyboardKeysData> mKeyboardMaskVec;
+      std::vector<MouseKeysData> mMouseButtonMaskVec;
 
    public:
       InputManager();
@@ -24,17 +25,23 @@ namespace EngineCore
       ~InputManager() = default;
 
       // KEYBOARD
-      void TriggerOnKeyDown(Keys key);
+      void TriggerOnKeyboardKeyDown(eKeyboardKeys key);
 
-      void TriggerOnKeyUp(Keys key);
+      void TriggerOnKeyboardKeyUp(eKeyboardKeys key);
 
       // MOUSE
       void TriggerOnMouseMove(const int32_t x, const int32_t y);
 
       void TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection);
 
+      void TriggerOnMouseButtonKeyDown(const eMouseKeys key);
+
+      void TriggerOnMouseButtonKeyUp(const eMouseKeys key);
+
    private:
-      void SetKeyState(KeyboardData key);
+      void SetKeyboardKeyState(const KeyboardKeysData key);
+
+      void SetMouseButtonKeyState(const MouseKeysData key);
    };
 
 }

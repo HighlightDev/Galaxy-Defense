@@ -1872,7 +1872,7 @@
     <ClInclude Include="src\Core\GameCore\Input\InputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Input\KeyboardData.h">
+    <ClInclude Include="src\Core\GameCore\Input\InputDeviceKeyData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.h">

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Keys.h"
-#include "KeyboardData.h"
+#include "InputDeviceKeyData.h"
 #include "Core/GameCore/Event/KeyboardInputEvent.h"
 
 #include <unordered_map>
@@ -24,15 +24,15 @@ namespace EngineCore
    
    struct IActionBinding
    {
-      virtual Keys GetMappedWithActionKey(eKeyActionType actionType) = 0;
-      virtual eKeyActionType GetMappedWithKeyAction(Keys key) = 0;
+      virtual eKeyboardKeys GetMappedWithActionKey(eKeyActionType actionType) = 0;
+      virtual eKeyActionType GetMappedWithKeyAction(eKeyboardKeys key) = 0;
    };
 
    struct DefaultKeyboardBindings : public IActionBinding
    {
-      virtual Keys GetMappedWithActionKey(eKeyActionType actionType) override;
+      virtual eKeyboardKeys GetMappedWithActionKey(eKeyActionType actionType) override;
 
-      virtual eKeyActionType GetMappedWithKeyAction(Keys key) override;
+      virtual eKeyActionType GetMappedWithKeyAction(eKeyboardKeys key) override;
    };
 
    class KeyboardBindings 
@@ -40,13 +40,11 @@ namespace EngineCore
    {
       std::shared_ptr<IActionBinding> mActionBindings;
 
-      std::vector<KeyboardData> mKeyboardMaskVec;
+      std::vector<KeyboardKeysData> mKeyboardMaskVec;
 
-      std::vector<Keys> mReleasedKeysOnCurrentTick;
+      std::vector<eKeyboardKeys> mReleasedKeysOnCurrentTick;
 
-      std::vector<Keys> mPressedKeysOnCurrentTick;
-
-      size_t mPressedKeysCount = 0;
+      std::vector<eKeyboardKeys> mPressedKeysOnCurrentTick;
 
    public:
 
@@ -64,9 +62,9 @@ namespace EngineCore
 
       std::shared_ptr<IActionBinding> GetActionBindings() const;
 
-      const std::vector<Keys>& GetReleasedKeysOnCurrentTick() const;
+      const std::vector<eKeyboardKeys>& GetReleasedKeys() const;
 
-      const std::vector<Keys>& GetPressedKeysOnCurrentTick() const;
+      const std::vector<eKeyboardKeys>& GetPressedKeys() const;
    };
 
 };

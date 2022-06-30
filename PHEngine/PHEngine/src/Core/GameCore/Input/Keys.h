@@ -8,7 +8,14 @@ namespace EngineCore
       PRESSED,
    };
 
-   enum class Keys
+   enum class eMouseKeys
+   {
+      MouseButtonLeft = 0,
+      MouseButtonRight = 1, 
+      MouseButtonMiddle = 2
+   };
+
+   enum class eKeyboardKeys
    {
       //
        // Summary:

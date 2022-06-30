@@ -608,6 +608,35 @@ namespace Graphics
          glDisable(GL_CLIP_DISTANCE0);
       }
 
+      void DeferredShadingSceneRenderer::GuiTextPass()
+      {
+         const auto &renderDataMap = mFontHandler.GetFontRenderDataMap();
+
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.BindRenderState();
+
+         for (const auto &renderData : renderDataMap)
+         {
+            const auto &renderDataSp = renderData.second;
+            renderDataSp->GetFontTextureAtlas()->BindTexture(0);
+            m_fontShader->ExecuteShader();
+            const auto &textFields = renderDataSp->GetTexFieldProxies();
+            m_fontShader->SetFontAtlasSlot(0);
+            for (const auto &textField : textFields)
+            {
+               if (textField->mIsVisible)
+               {
+                  m_fontShader->SetPosition(textField->mPosition);
+                  m_fontShader->SetColor(textField->mColor);
+                  renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->mVertexStart, textField->mVerticesCount, GL_TRIANGLES);
+               }
+            }
+            m_fontShader->StopShader();
+         }
+
+         glDisable(GL_BLEND);
+      }
+
       void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
       {
          if (bProxiesDirty)
@@ -740,7 +769,7 @@ namespace Graphics
                if (mForwardRenderingProxiesVec.size())
                   ForwardBasePass_RenderThread(sceneView);
 
-               DebugRenderText();
+               GuiTextPass();
             }
             else
             {
@@ -748,7 +777,7 @@ namespace Graphics
             }
 
 #if DEBUG
-            DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+            //DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
 #endif
          }
 
@@ -933,35 +962,6 @@ namespace Graphics
       void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {
          mDebugPhysicsRenderData = debugPhysicsRenderData;
-      }
-
-      void DeferredShadingSceneRenderer::DebugRenderText()
-      {
-         const auto &renderDataMap = mFontHandler.GetFontRenderDataMap();
-
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
-         renderState.BindRenderState();
-
-         for (const auto &renderData : renderDataMap)
-         {
-            const auto &renderDataSp = renderData.second;
-            renderDataSp->GetFontTextureAtlas()->BindTexture(0);
-            m_fontShader->ExecuteShader();
-            const auto &textFields = renderDataSp->GetTexFieldProxies();
-            m_fontShader->SetFontAtlasSlot(0);
-            for (const auto &textField : textFields)
-            {
-               if (textField->mIsVisible)
-               {
-                  m_fontShader->SetPosition(textField->mPosition);
-                  m_fontShader->SetColor(textField->mColor);
-                  renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->mVertexStart, textField->mVerticesCount, GL_TRIANGLES);
-               }
-            }
-            m_fontShader->StopShader();
-         }
-
-         glDisable(GL_BLEND);
       }
 
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)

@@ -52,16 +52,16 @@ void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
    *  may add more actions.
    * */
 
-  if (GLFW_MOUSE_BUTTON_1 == button)
+  if (GLFW_PRESS == action)
   {
-    if (GLFW_PRESS == action)
-    {
-    }
-    else if (GLFW_RELEASE == action)
-    {
-    }
+    engineInputManager->TriggerOnMouseButtonKeyDown((eMouseKeys)button);
   }
-  else if (GLFW_MOUSE_BUTTON_2 == button)
+  else if (GLFW_RELEASE == action)
+  {
+    engineInputManager->TriggerOnMouseButtonKeyUp((eMouseKeys)button);
+  }
+
+  if (GLFW_MOUSE_BUTTON_2 == button)
   {
     if (GLFW_PRESS == action)
     {
@@ -113,12 +113,12 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
       bDeserializeLevel = true;
     }
 
-    engineInputManager->TriggerOnKeyDown((Keys)key);
+    engineInputManager->TriggerOnKeyboardKeyDown((eKeyboardKeys)key);
   }
 
   else if (actionType == GLFW_RELEASE)
   {
-    engineInputManager->TriggerOnKeyUp((Keys)key);
+    engineInputManager->TriggerOnKeyboardKeyUp((eKeyboardKeys)key);
     bPushFrame = false;
   }
 }

@@ -4,12 +4,7 @@
 
 namespace TinyLogger
 {
-   LogMessage::LogMessage(std::initializer_list<std::string> messages)
-       : mLogs(messages)
-   {
-   }
-
-   LogMessage::LogMessage(std::vector<std::string> messages)
+   LogMessage::LogMessage(std::vector<std::string>&& messages)
        : mLogs(std::move(messages))
    {
    }
@@ -57,7 +52,7 @@ namespace TinyLogger
       WriteLogMessage();
    }
 
-   void LoggerServer::EnqueuLogMessage(LogMessage &&message)
+   void LoggerServer::EnqueuLogMessage(const LogMessage &message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
       mMessageQueue.emplace(message);

@@ -156,23 +156,21 @@ namespace TinyLogger
 
    struct Logger
    {
+      using Clock_t = std::chrono::high_resolution_clock;
+      using Duration_t = Clock_t::duration;
+      using Moment_t = Clock_t::time_point;
+
       static size_t index;
+      static Clock_t::time_point logStartTimestamp;
+
       template <typename LogArg, typename... LogArgs>
       static void Out(LogArg &&arg, LogArgs &&...args)
       {
          static std::hash<std::thread::id> hasher;
-         const std::time_t currentTime = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+         const auto timestampNow = std::chrono::system_clock::now();
 
-#ifdef _WIN32
-         char str[26];
-         struct tm timeinfo;
-         localtime_s(&timeinfo, &currentTime);
-         asctime_s(str, sizeof str, &timeinfo);
-#elif __linux__
-         const std::string &str = std::asctime(std::localtime(&currentTime));
-#endif
-         std::string timeFileWasChanged = str;
-         timeFileWasChanged[timeFileWasChanged.size() - 1] = ' ';
+         static constexpr double invFromNanoToSec = 1e-9;
+         const double timePassedSinceStart = static_cast<double>((timestampNow - logStartTimestamp).count()) * invFromNanoToSec;
 
          auto argument = LogHelp::CompressMessage<LogArg>(std::forward<LogArg>(arg));
          using argument_t = typename GetCompressedMessageType<typename std::decay<LogArg>::type>::type;
@@ -181,12 +179,14 @@ namespace TinyLogger
 
          using tuple_t = decltype(argTuple);
 
-         std::vector<std::string> result{std::to_string(index), timeFileWasChanged, "Thread: " + std::to_string(hasher(std::this_thread::get_id()))};
+         std::vector<std::string> result{std::to_string(index),
+                                         "| Timestamp: " + std::to_string(timePassedSinceStart),
+                                         "| Thread: " + std::to_string(hasher(std::this_thread::get_id())) + "| "};
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
 
-         LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(result));
+         LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(std::move(result)));
       }
 
 #define LOG_INFO (AT)
@@ -207,6 +207,7 @@ namespace TinyLogger
       static void StartLogThread()
       {
          LoggerServer::GetInstance_()->StartLogThread();
+         logStartTimestamp = std::chrono::system_clock::now();
       }
 
       static void StopLogThread()

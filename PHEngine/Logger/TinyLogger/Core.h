@@ -19,8 +19,7 @@ namespace TinyLogger
 
    public:
 
-      LogMessage(std::initializer_list<std::string> messages);
-      LogMessage(std::vector<std::string> messages);
+      LogMessage(std::vector<std::string>&& messages);
    
       std::string GetLog() const;
    };
@@ -46,7 +45,7 @@ namespace TinyLogger
 
       void StopLogThread();
 
-      void EnqueuLogMessage(LogMessage&& message);
+      void EnqueuLogMessage(const LogMessage& message);
 
    private:
 

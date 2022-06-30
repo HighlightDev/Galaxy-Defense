@@ -8,51 +8,51 @@ using namespace Event;
 namespace EngineCore
 {
 
-   Keys DefaultKeyboardBindings::GetMappedWithActionKey(eKeyActionType actionType)
+   eKeyboardKeys DefaultKeyboardBindings::GetMappedWithActionKey(eKeyActionType actionType)
    {
-      Keys result = Keys::None;
+      eKeyboardKeys result = eKeyboardKeys::None;
 
       switch (actionType)
       {
       case EngineCore::eKeyActionType::ACTION_MOVE_FORWARD:
-         result = Keys::W;
+         result = eKeyboardKeys::W;
          break;
       case EngineCore::eKeyActionType::ACTION_MOVE_LEFT:
-         result = Keys::A;
+         result = eKeyboardKeys::A;
          break;
       case EngineCore::eKeyActionType::ACTION_MOVE_RIGHT:
-         result = Keys::D;
+         result = eKeyboardKeys::D;
          break;
       case EngineCore::eKeyActionType::ACTION_MOVE_BACK:
-         result = Keys::S;
+         result = eKeyboardKeys::S;
          break;
       case EngineCore::eKeyActionType::ACTION_JUMP:
-         result = Keys::Space;
+         result = eKeyboardKeys::Space;
          break;
       }
 
       return result;
    }
 
-   eKeyActionType DefaultKeyboardBindings::GetMappedWithKeyAction(Keys key)
+   eKeyActionType DefaultKeyboardBindings::GetMappedWithKeyAction(eKeyboardKeys key)
    {
       eKeyActionType result = eKeyActionType::NONE;
 
       switch (key)
       {
-      case Keys::W:
+      case eKeyboardKeys::W:
          result = eKeyActionType::ACTION_MOVE_FORWARD;
          break;
-      case Keys::A:
+      case eKeyboardKeys::A:
          result = eKeyActionType::ACTION_MOVE_LEFT;
          break;
-      case Keys::D:
+      case eKeyboardKeys::D:
          result = eKeyActionType::ACTION_MOVE_RIGHT;
          break;
-      case Keys::S:
+      case eKeyboardKeys::S:
          result = eKeyActionType::ACTION_MOVE_BACK;
          break;
-      case Keys::Space:
+      case eKeyboardKeys::Space:
          result = eKeyActionType::ACTION_JUMP;
          break;
       }
@@ -107,7 +107,7 @@ namespace EngineCore
    {
       KeyState state = KeyState::RELEASED;
 
-      const Keys key = mActionBindings->GetMappedWithActionKey(actionType);
+      const eKeyboardKeys key = mActionBindings->GetMappedWithActionKey(actionType);
       auto it = std::find_if(mKeyboardMaskVec.begin(),
                              mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
                              { return keyData.Key == key; });
@@ -125,12 +125,12 @@ namespace EngineCore
       return mActionBindings;
    }
 
-   const std::vector<Keys> &KeyboardBindings::GetReleasedKeysOnCurrentTick() const
+   const std::vector<eKeyboardKeys> &KeyboardBindings::GetReleasedKeys() const
    {
       return mReleasedKeysOnCurrentTick;
    }
 
-   const std::vector<Keys> &KeyboardBindings::GetPressedKeysOnCurrentTick() const
+   const std::vector<eKeyboardKeys> &KeyboardBindings::GetPressedKeys() const
    {
       return mPressedKeysOnCurrentTick;
    }

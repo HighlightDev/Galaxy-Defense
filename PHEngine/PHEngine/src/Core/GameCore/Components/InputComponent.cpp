@@ -25,7 +25,7 @@ namespace EngineCore
    {
       std::vector<eKeyActionType> result;
       std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
-      const std::vector<Keys>& releasedKeys = m_keyboardBindings.GetReleasedKeysOnCurrentTick();
+      const std::vector<eKeyboardKeys>& releasedKeys = m_keyboardBindings.GetReleasedKeys();
       std::for_each(releasedKeys.begin(), releasedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
       return result;
    }
@@ -34,7 +34,7 @@ namespace EngineCore
    {
       std::vector<eKeyActionType> result;
       std::shared_ptr<IActionBinding> actionBindings = m_keyboardBindings.GetActionBindings();
-      const std::vector<Keys>& pressedKeys = m_keyboardBindings.GetPressedKeysOnCurrentTick();
+      const std::vector<eKeyboardKeys>& pressedKeys = m_keyboardBindings.GetPressedKeys();
       std::for_each(pressedKeys.begin(), pressedKeys.end(), [&](const auto& key) { result.push_back(actionBindings->GetMappedWithKeyAction(key)); });
       return result;
    }

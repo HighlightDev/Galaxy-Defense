@@ -6,16 +6,25 @@ namespace EngineCore
 {
 
     MouseBindings::MouseBindings()
-        : mLastMouseMoveEvent(0), bMouseMoveEventDirty(false), mLastMouseScrollDirectionEvent(eMouseScrollDirection::Undefined), bMouseScrollEventDirty(false)
+        : mLastMouseMoveEvent(0),
+          bMouseMoveEventDirty(false),
+          mLastMouseScrollDirectionEvent(eMouseScrollDirection::Undefined),
+          bMouseScrollEventDirty(false),
+          mMouseKeysMaskVec(),
+          mPressedMouseKeysCount(0)
     {
         MouseMovedEvent::GetInstance()->AddListener(this);
         MouseScrollEvent::GetInstance()->AddListener(this);
+        MouseButtonDownEvent::GetInstance()->AddListener(this);
+
+        mMouseKeysMaskVec.reserve(3);
     }
 
     MouseBindings::~MouseBindings()
     {
         MouseMovedEvent::GetInstance()->RemoveListener(this);
         MouseScrollEvent::GetInstance()->RemoveListener(this);
+        MouseButtonDownEvent::GetInstance()->RemoveListener(this);
     }
 
     void MouseBindings::ProcessEvent(const typename MouseMovedEvent::EventData_t &mouseData)
@@ -28,6 +37,27 @@ namespace EngineCore
     {
         const eMouseScrollDirection mouseScrollDirection = std::get<0>(mouseData);
         PushMouseScrollEvent(mouseScrollDirection);
+    }
+
+    void MouseBindings::ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data)
+    {
+        mMouseKeysMaskVec = std::move(std::get<0>(data));
+    }
+
+    KeyState MouseBindings::GetKeyState(const eMouseKeys mouseButtonKey) const
+    {
+        KeyState state = KeyState::RELEASED;
+
+        auto it = std::find_if(mMouseKeysMaskVec.begin(),
+                               mMouseKeysMaskVec.end(), [=](const auto &keyData) -> bool
+                               { return keyData.Key == mouseButtonKey; });
+
+        if (it != mMouseKeysMaskVec.end())
+        {
+            state = it->State;
+        }
+
+        return state;
     }
 
     bool MouseBindings::IsMouseMoveEventDirty() const

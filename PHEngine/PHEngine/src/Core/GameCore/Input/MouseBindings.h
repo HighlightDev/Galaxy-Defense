@@ -2,6 +2,8 @@
 
 #include "Core/GameCore/Event/MouseMovedEvent.h"
 #include "Core/GameCore/Event/MouseScrollEvent.h"
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
+#include "Core/GameCore/Input/InputDeviceKeyData.h"
 
 #include <vector>
 #include <glm/vec4.hpp>
@@ -13,6 +15,7 @@ namespace EngineCore
    class MouseBindings 
       : public MouseMovedEvent
       , public MouseScrollEvent
+      , public MouseButtonDownEvent
    {
       glm::ivec4 mLastMouseMoveEvent;
 
@@ -21,6 +24,10 @@ namespace EngineCore
       eMouseScrollDirection mLastMouseScrollDirectionEvent;
 
       bool bMouseScrollEventDirty;
+
+      std::vector<MouseKeysData> mMouseKeysMaskVec;
+
+      size_t mPressedMouseKeysCount;
    public:
 
       MouseBindings();
@@ -31,6 +38,8 @@ namespace EngineCore
 
       virtual void ProcessEvent(const typename MouseScrollEvent::EventData_t& data) override;
 
+      virtual void ProcessEvent(const typename MouseButtonDownEvent::EventData_t& data) override;
+
       bool IsMouseMoveEventDirty() const;
 
       bool IsMouseScrollEventDirty() const;
@@ -38,6 +47,8 @@ namespace EngineCore
       eMouseScrollDirection FlushMouseScrollEvent();
 
       glm::ivec4 FlushMouseMoveEvent();
+
+      KeyState GetKeyState(const eMouseKeys mouseButtonKey) const;
 
       protected:
 

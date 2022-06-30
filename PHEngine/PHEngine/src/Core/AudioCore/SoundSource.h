@@ -41,6 +41,8 @@ namespace EngineCore
 
         void Play(const std::shared_ptr<SoundBuffer> &soundBuffer);
 
+        void Stop();
+
         ALint GetCurrentSourceState() const;
 
         float GetPitch() const;

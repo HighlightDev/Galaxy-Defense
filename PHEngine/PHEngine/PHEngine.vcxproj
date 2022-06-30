@@ -414,7 +414,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\PlanarReflectionComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlanarReflectionComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseMovedEvent.h" />
-    <ClInclude Include="src\Core\GameCore\Input\KeyboardData.h" />
+    <ClInclude Include="src\Core\GameCore\Input\InputDeviceKeyData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.h" />
