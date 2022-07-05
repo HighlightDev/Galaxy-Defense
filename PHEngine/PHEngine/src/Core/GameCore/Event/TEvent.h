@@ -14,35 +14,38 @@ namespace Event
    class TEvent : public IEvent
    {
    public:
-
       using EventHandlePolicy_t = EventHandlePolicy;
       using Event_t = TEvent<EventHandlePolicy>;
       using EventData_t = typename EventHandlePolicy_t::TupleData_t;
 
    private:
-
       EventHandlePolicy mPolicy[2];
 
-      std::vector<TEvent<EventHandlePolicy_t>*> m_listeners;
+      std::vector<TEvent<EventHandlePolicy_t> *> m_listeners;
 
    protected:
-
-      TEvent() {
+      TEvent()
+      {
       }
 
    public:
-
-      virtual ~TEvent() {
+      virtual ~TEvent()
+      {
       }
 
-      static Event_t* GetInstance() {
-         static Event_t m_instance = Event_t();
-
+      static Event_t *GetInstance()
+      {
+         static Event_t m_instance;
          return &m_instance;
       }
 
+      virtual std::string ToString() const override
+      {
+         return "TEvent";
+      }
+
       template <typename... DataTypesT>
-      void SendEvent(const eExecutionOrder order, DataTypesT&&... data)
+      void SendEvent(const eExecutionOrder order, DataTypesT &&...data)
       {
          mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
       }
@@ -51,20 +54,20 @@ namespace Event
       {
          while (mPolicy[currentOrder].HasData())
          {
-            const EventData_t& packedData = mPolicy[currentOrder].PopData();
-            for (auto& listener : m_listeners)
+            const EventData_t &packedData = mPolicy[currentOrder].PopData();
+            for (auto &listener : m_listeners)
             {
                listener->ProcessEvent(packedData);
             }
          }
       }
 
-      void AddListener(Event_t* eventListener)
+      void AddListener(Event_t *eventListener)
       {
          m_listeners.push_back(eventListener);
       }
 
-      void RemoveListener(Event_t* eventListener)
+      void RemoveListener(Event_t *eventListener)
       {
          auto it = std::find(m_listeners.begin(), m_listeners.end(), eventListener);
          if (it != m_listeners.end())
@@ -72,8 +75,6 @@ namespace Event
       }
 
    protected:
-
-      virtual void ProcessEvent(const EventData_t& data) { }
+      virtual void ProcessEvent(const EventData_t &data) {}
    };
 }
-

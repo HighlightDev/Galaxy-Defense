@@ -11,6 +11,10 @@ namespace Event
    {
    public:
       using Event_t = TEvent<SingleDataEventPolicy<glm::ivec4>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "MouseMovedEvent";
+      }
    };
 
 }

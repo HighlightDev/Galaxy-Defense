@@ -6,6 +6,7 @@
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 
 #include <TinyLogger/LogInterface.h>
@@ -30,7 +31,7 @@ namespace EnginePhysics
 
    void PhysicsComponent::SetOwner(const std::weak_ptr<Actor> &ownerActor)
    {
-      Logger::Out("PhysicsComponent::SetOwner");
+      LogInfo( "PhysicsComponent::SetOwner");
 
       Component::SetOwner(ownerActor);
       const auto &ownerActorSp = ownerActor.lock();

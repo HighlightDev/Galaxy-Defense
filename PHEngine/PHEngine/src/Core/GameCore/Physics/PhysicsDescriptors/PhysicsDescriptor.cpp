@@ -2,12 +2,12 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <limits>
-#include <TinyLogger/LogInterface.h>
 
 using namespace EngineMath;
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace EnginePhysics
 {
@@ -45,7 +45,7 @@ namespace EnginePhysics
          mMotionModifier(motionModifier),
          mIsCollisionEnabled(true)
    {
-      Logger::Out("PhysicsDescriptor::ctor => my descriptor id=", mCurrentId);
+      LogInfo("PhysicsDescriptor::ctor => my descriptor id=", mCurrentId);
 
       if (!CompareFloats(mass, 0.0f))
       {
@@ -55,7 +55,7 @@ namespace EnginePhysics
 
    PhysicsDescriptor::~PhysicsDescriptor()
    {
-      Logger::Out("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
+      LogInfo("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
 
       if (mRigidBody)
       {
@@ -170,7 +170,7 @@ namespace EnginePhysics
 
    void PhysicsDescriptor::SetOwnerComponentGameObjectId(const uint64_t ownerComponentGameObjectId)
    {
-      Logger::Out("PhysicsDescriptor::SetOwnerComponentGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
+      LogInfo("PhysicsDescriptor::SetOwnerComponentGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
       mOwnerComponentGameObjectId = ownerComponentGameObjectId;
    }
 
@@ -181,7 +181,7 @@ namespace EnginePhysics
 
    void PhysicsDescriptor::SetOwnerActorGameObjectId(const uint64_t ownerActorGameObjectId)
    {
-      Logger::Out("PhysicsDescriptor::SetOwnerActorGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
+      LogInfo("PhysicsDescriptor::SetOwnerActorGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
       mOwnerActorGameObjectId = ownerActorGameObjectId;
    }
 

@@ -6,9 +6,9 @@
 
 namespace EngineCore
 {
-    class SoundBuffer;
+    class StreamingSoundBufferBundle;
 
-    class SoundSource
+    class StreamingSoundSource
     {
         ALuint mSourceDesc;
 
@@ -20,14 +20,16 @@ namespace EngineCore
 
         glm::vec3 mVelocity;
 
+        bool mIsPlaybackEnabled;
+
         bool mIsLoopSound;
 
-        std::shared_ptr<SoundBuffer> mActiveBuffer;
+        std::shared_ptr<StreamingSoundBufferBundle> mStreamingBufferBundle;
 
     public:
-        SoundSource();
+        StreamingSoundSource(const std::string& soundName);
 
-        ~SoundSource();
+        ~StreamingSoundSource();
 
         void SetPitch(const float pitch);
 
@@ -39,7 +41,7 @@ namespace EngineCore
 
         void SetIsLoopSound(const bool isLoopSound);
 
-        void Play(const std::shared_ptr<SoundBuffer> &soundBuffer);
+        void Play();
 
         void Stop();
 
@@ -55,10 +57,12 @@ namespace EngineCore
 
         bool IsSoundLooped() const;
 
-        std::shared_ptr<SoundBuffer> GetActiveBuffer() const;
+        void UpdateBufferStream();
+
+        bool IsPlaying() const;
 
     private:
-        void Init();
+        void Init(const std::string& soundName);
     };
 
 }

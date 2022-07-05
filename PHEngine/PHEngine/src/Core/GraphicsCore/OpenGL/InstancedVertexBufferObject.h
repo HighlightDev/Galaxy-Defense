@@ -8,6 +8,7 @@
 
 #include "DataCarryFlag.h"
 #include "VertexBufferObjectBase.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace TinyLogger;
 
@@ -74,7 +75,7 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("InstancedVertexBufferObject::ctor");
+				LogInfo("InstancedVertexBufferObject::ctor");
 			}
 
 			InstancedVertexBufferObject(
@@ -88,12 +89,12 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
 			{
-				Logger::Out("InstancedVertexBufferObject::ctor => for empty VBO");
+				LogInfo("InstancedVertexBufferObject::ctor => for empty VBO");
 			}
 
 			virtual ~InstancedVertexBufferObject()
 			{
-				Logger::Out("InstancedVertexBufferObject::~dctor");
+				LogInfo("InstancedVertexBufferObject::~dctor");
 			}
 
 			virtual void *GetData()
@@ -117,7 +118,7 @@ namespace Graphics
 				GenBuffer();
 				BindVBO();
 
-				Logger::Out("InstancedVertexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
+				LogInfo("InstancedVertexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
 
 				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
@@ -161,7 +162,7 @@ namespace Graphics
 
 			virtual void CleanUp() override
 			{
-				Logger::Out("InstancedVertexBufferObject::CleanUp => descriptor = ", m_descriptor);
+				LogInfo("InstancedVertexBufferObject::CleanUp => descriptor = ", m_descriptor);
 				UnbindVBO();
 				glDeleteBuffers(1, &m_descriptor);
 			}

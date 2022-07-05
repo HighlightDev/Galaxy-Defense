@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace Event
 {
     enum eExecutionOrder
@@ -12,5 +14,7 @@ namespace Event
     {
     public:
         virtual void ProcessCachedEvents(const eExecutionOrder currentOrder) = 0;
+
+        virtual std::string ToString() const = 0;
     };
 }

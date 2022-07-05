@@ -1,7 +1,8 @@
 #include "SoundSource.h"
 #include "Core/AudioCore/SoundBuffer.h"
+#include "Core/AudioCore/ErrorHandler.h"
+#include "Core/GameCore/LoggerExtension.h"
 
-#include <iostream>
 #include <TinyLogger/LogInterface.h>
 
 using namespace TinyLogger;
@@ -16,38 +17,38 @@ namespace EngineCore
           mIsLoopSound(false),
           mActiveBuffer()
     {
-        Logger::Out("SoundSource::ctor");
+        LogInfo( "SoundSource::ctor");
         Init();
     }
 
     SoundSource::~SoundSource()
     {
-        Logger::Out("SoundSource::dctor => mSourceDesc = ", mSourceDesc);
+        LogInfo( "SoundSource::dctor => mSourceDesc = ", mSourceDesc);
         alDeleteSources(1, &mSourceDesc);
     }
 
     void SoundSource::SetPitch(const float pitch)
     {
         mPitch = pitch;
-        alSourcef(mSourceDesc, AL_PITCH, mPitch);
+        alCall(alSourcef, mSourceDesc, AL_PITCH, mPitch);
     }
 
     void SoundSource::SetGain(const float gain)
     {
         mGain = gain;
-        alSourcef(mSourceDesc, AL_GAIN, mGain);
+        alCall(alSourcef, mSourceDesc, AL_GAIN, mGain);
     }
 
     void SoundSource::SetPosition(const glm::vec3 &position)
     {
         mPosition = position;
-        alSource3f(mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
+        alCall(alSource3f, mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
     }
 
     void SoundSource::SetVelocity(const glm::vec3 &velocity)
     {
         mVelocity = velocity;
-        alSource3f(mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
+        alCall(alSource3f, mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
     }
 
     void SoundSource::SetIsLoopSound(const bool isLoopSound)
@@ -55,14 +56,14 @@ namespace EngineCore
         if (mIsLoopSound != isLoopSound)
         {
             mIsLoopSound = isLoopSound;
-            alSourcei(mSourceDesc, AL_LOOPING, mIsLoopSound);
+            alCall(alSourcei, mSourceDesc, AL_LOOPING, mIsLoopSound);
         }
     }
 
     ALint SoundSource::GetCurrentSourceState() const
     {
         ALint state;
-        alGetSourcei(mSourceDesc, AL_SOURCE_STATE, &state);
+        alCall(alGetSourcei, mSourceDesc, AL_SOURCE_STATE, &state);
         return state;
     }
 
@@ -86,7 +87,7 @@ namespace EngineCore
         return mVelocity;
     }
 
-    bool SoundSource::GetIsLoopSound() const
+    bool SoundSource::IsSoundLooped() const
     {
         return mIsLoopSound;
     }
@@ -101,10 +102,10 @@ namespace EngineCore
         if (!mActiveBuffer || soundBuffer->GetBufferDesc() != mActiveBuffer->GetBufferDesc())
         {
             mActiveBuffer = soundBuffer;
-            alSourcei(mSourceDesc, AL_BUFFER, (ALint)mActiveBuffer->GetBufferDesc());
+            alCall(alSourcei, mSourceDesc, AL_BUFFER, (ALint)mActiveBuffer->GetBufferDesc());
         }
 
-        alSourcePlay(mSourceDesc);
+        alCall(alSourcePlay, mSourceDesc);
     }
 
     void SoundSource::Stop()
@@ -112,18 +113,18 @@ namespace EngineCore
         if (!mActiveBuffer || GetCurrentSourceState() != AL_PLAYING)
             return;
         
-        alSourceStop(mSourceDesc);
+        alCall(alSourceStop, mSourceDesc);
     }
 
     void SoundSource::Init()
     {
-        alGenSources(1, &mSourceDesc);
-        alSourcef(mSourceDesc, AL_PITCH, mPitch);
-        alSourcef(mSourceDesc, AL_GAIN, mGain);
-        alSource3f(mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
-        alSource3f(mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
-        alSourcei(mSourceDesc, AL_LOOPING, mIsLoopSound);
+        alCall(alGenSources, 1, &mSourceDesc);
+        alCall(alSourcef, mSourceDesc, AL_PITCH, mPitch);
+        alCall(alSourcef, mSourceDesc, AL_GAIN, mGain);
+        alCall(alSource3f, mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
+        alCall(alSource3f, mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
+        alCall(alSourcei, mSourceDesc, AL_LOOPING, mIsLoopSound);
 
-        Logger::Out("SoundSource::Init => mSourceDesc = ", mSourceDesc);
+        LogInfo( "SoundSource::Init => mSourceDesc = ", mSourceDesc);
     }
 }

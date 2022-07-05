@@ -1,5 +1,6 @@
 #include "LuaWrapper.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -28,7 +29,7 @@ namespace EngineCore
 
       if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
       {
-         Logger::Out(GetErrorMessageAt(-1));
+         LogInfo( GetErrorMessageAt(-1));
          return false;
       }
 

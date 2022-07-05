@@ -16,6 +16,10 @@ namespace Event
    {
    public:
       using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "TextRegisterEvent";
+      }
    };
 
    class TextDataChangedEvent
@@ -23,5 +27,9 @@ namespace Event
    {
    public:
       using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "TextDataChangedEvent";
+      }
    };
 }

@@ -40,7 +40,7 @@ namespace EngineCore
         mSoundBuffersMap.emplace(bufferName, buffer);
     }
 
-    const std::shared_ptr<SoundBuffer> &SoundComponent::GetSoundBufferByName(const std::string &soundName) const
+    std::shared_ptr<SoundBuffer> SoundComponent::GetSoundBufferByName(const std::string &soundName) const
     {
         return mSoundBuffersMap.count(soundName) ? mSoundBuffersMap.at(soundName) : nullptr;
     }

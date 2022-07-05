@@ -17,6 +17,7 @@ extern "C"
 }
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "LuaWrapper.h"
 
 #ifdef _WIN32
@@ -53,7 +54,7 @@ namespace EngineCore
          {
             if (LUA_OK != luaCallResult)
             {
-               Logger::Out(instanceWrapper.GetErrorMessageAt(-1));
+               LogInfo( instanceWrapper.GetErrorMessageAt(-1));
                return false;
             }
 

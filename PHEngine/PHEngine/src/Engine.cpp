@@ -7,11 +7,13 @@
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
+#include "Core/ResourceManagerCore/Pool/SoundMemoryChunkPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/AudioCore/SoundDevice.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -47,12 +49,13 @@ namespace EngineCore
       CompositeShaderPool::GetInstance()->CleanUp();
       FontMeshPool::GetInstance()->CleanUp();
       MeshPool::GetInstance()->CleanUp();
+      TexturePool::GetInstance()->CleanUp();
       ParticlesPool::GetInstance()->CleanUp();
       RenderTargetPool::GetInstance()->CleanUp();
       ShaderPool::GetInstance()->CleanUp();
       SimplePrimitivePool::GetInstance()->CleanUp();
       SoundBufferPool::GetInstance()->CleanUp();
-      TexturePool::GetInstance()->CleanUp();
+      SoundMemoryChunkPool::GetInstance()->CleanUp();
 
       mActiveAudioOutputDevice->CleanUp();
    }
@@ -129,6 +132,8 @@ namespace EngineCore
 
    void Engine::GameThreadPulse()
    {
+      ThreadHelper::GetInstance()->RegisterThread("Game");
+
       while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
          const uint64_t memoryBeforeExe = getProcessMemorySize();
@@ -159,7 +164,7 @@ namespace EngineCore
 
             if (memoryAfterExe > 0)
             {
-               Logger::Out("Engine::GameThread => execution. Memory consumption : ", (uint64_t)memoryAfterExe);
+               LogInfo( "Engine::GameThread => execution. Memory consumption : ", (uint64_t)memoryAfterExe);
             }*/
          }
       }

@@ -1,12 +1,12 @@
 #include "Uniform.h"
 #include "Core/UtilityCore/StringStreamWrapper.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
-#include <TinyLogger/LogInterface.h>
 
+using namespace EngineCore;
 using namespace EngineUtility;
-using namespace TinyLogger;
 
 namespace Graphics
 {
@@ -36,7 +36,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -53,7 +53,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -69,7 +69,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -85,7 +85,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -101,7 +101,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -117,7 +117,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -133,7 +133,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -149,7 +149,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -165,7 +165,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -181,7 +181,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -197,7 +197,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif
@@ -214,7 +214,7 @@ namespace Graphics
 #if DEBUG
          if (uniformIndex >= m_uniformLocations.size())
          {
-            Logger::Out("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
+            LogInfo("UniformArray::LoadUniform => Out of uniform array bounds. Uniform name is : " + m_uniformName);
             return;
          }
 #endif

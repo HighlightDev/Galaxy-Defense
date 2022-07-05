@@ -14,6 +14,10 @@ namespace Event
    {
    public:
       using Event_t = TEvent<SingleDataEventPolicy<ACamera*>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "CameraTransformChangedEvent";
+      }
    };
 
 }

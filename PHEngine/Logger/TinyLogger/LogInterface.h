@@ -4,7 +4,6 @@
 #include <istream>
 #include <utility>
 #include <stdio.h>
-#include <thread>
 #include <ctime>
 #include <chrono>
 #include <string>
@@ -142,18 +141,6 @@ namespace TinyLogger
       };
    }
 
-   template <typename T>
-   struct GetCompressedMessageType
-   {
-      using type = typename std::decay<T>::type;
-   };
-
-   template <>
-   struct GetCompressedMessageType<const char *>
-   {
-      using type = std::string;
-   };
-
    struct Logger
    {
       using Clock_t = std::chrono::high_resolution_clock;
@@ -163,8 +150,8 @@ namespace TinyLogger
       static size_t index;
       static Clock_t::time_point logStartTimestamp;
 
-      template <typename LogArg, typename... LogArgs>
-      static void Out(LogArg &&arg, LogArgs &&...args)
+      template <typename... LogArgs>
+      static void Out(const std::string& threadName, LogArgs &&...args)
       {
          static std::hash<std::thread::id> hasher;
          const auto timestampNow = std::chrono::system_clock::now();
@@ -172,16 +159,14 @@ namespace TinyLogger
          static constexpr double invFromNanoToSec = 1e-9;
          const double timePassedSinceStart = static_cast<double>((timestampNow - logStartTimestamp).count()) * invFromNanoToSec;
 
-         auto argument = LogHelp::CompressMessage<LogArg>(std::forward<LogArg>(arg));
-         using argument_t = typename GetCompressedMessageType<typename std::decay<LogArg>::type>::type;
-         auto argTuple = std::make_tuple(std::forward<argument_t>(argument),
-                                         std::forward<LogArgs>(args)...);
+         auto argTuple = std::make_tuple(std::forward<LogArgs>(args)...);
 
          using tuple_t = decltype(argTuple);
 
          std::vector<std::string> result{std::to_string(index),
                                          "| Timestamp: " + std::to_string(timePassedSinceStart),
-                                         "| Thread: " + std::to_string(hasher(std::this_thread::get_id())) + "| "};
+                                         "| Thread: " + threadName + "| "}; 
+                                         //std::to_string(hasher(std::this_thread::get_id())) + "| "};
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);

@@ -7,9 +7,9 @@
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
-
 #include <functional>
 #include <algorithm>
 
@@ -68,7 +68,7 @@ namespace IO
 
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         Logger::Out("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
+         LogInfo( "ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
          return;
       }
 
@@ -100,13 +100,15 @@ namespace IO
       default:
          break;
       }
+
+      LogInfo( "ResourceMap::AllocateAsync => resource type: ", (uint8_t)resType, ", file: ", fileFullPath);
    }
 
    void ResourceMap::AllocateSync(const std::string &key)
    {
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         Logger::Out("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+         LogInfo( "ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
          return;
       }
 

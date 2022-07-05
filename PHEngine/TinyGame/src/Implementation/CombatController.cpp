@@ -9,6 +9,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -258,7 +259,7 @@ namespace Game
 
         if (idleBulletIt == mWeaponBulletsPool.end())
         {
-            Logger::Out("CombatController::ShootBullet => Error - no idle bullets in the pool");
+            LogInfo( "CombatController::ShootBullet => Error - no idle bullets in the pool");
             return;
         }
 
@@ -295,7 +296,7 @@ namespace Game
             }
             else
             {
-                Logger::Out("CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
+                LogInfo( "CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
             }
         }
     }

@@ -4,12 +4,12 @@
 #include <gl/glew.h>
 #include <memory>
 #include <vector>
-#include <TinyLogger/LogInterface.h>
 
 #include "DataCarryFlag.h"
 #include "VertexBufferObjectBase.h"
+#include "Core/GameCore/LoggerExtension.h"
 
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -70,7 +70,7 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(flag)
 			{
-				Logger::Out("VertexBufferObject::ctor => #1 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
+				LogInfo("VertexBufferObject::ctor => #1 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
 			}
 
 			VertexBufferObject(
@@ -84,12 +84,12 @@ namespace Graphics
 				  m_vertexAttribIndex(int32_t(attribArrayIndexName)),
 				  m_dataCarryFlag(eDataCarryFlag::INVALIDATE)
 			{
-				Logger::Out("VertexBufferObject::ctor => #2 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
+				LogInfo("VertexBufferObject::ctor => #2 totalDataLength = ", m_totalDataLength, " countOfIndices = ", m_countOfIndices);
 			}
 
 			virtual ~VertexBufferObject()
 			{
-				Logger::Out("VertexBufferObject::~dctor");
+				LogInfo("VertexBufferObject::~dctor");
 			}
 
 			virtual void *GetData()
@@ -113,7 +113,7 @@ namespace Graphics
 				GenBuffer();
 				BindVBO();
 
-				Logger::Out("VertexBufferObject::SendDataToGPU => descriptor = ", m_descriptor, " bufferSize = ", bufferSize);
+				LogInfo("VertexBufferObject::SendDataToGPU => descriptor = ", m_descriptor, " bufferSize = ", bufferSize);
 
 				glBufferData(m_bufferTarget, bufferSize, m_data.size() ? m_data.data() : nullptr, buffer_usage);
 				glEnableVertexAttribArray(m_vertexAttribIndex);
@@ -153,7 +153,7 @@ namespace Graphics
 
 			virtual void CleanUp() override
 			{
-				Logger::Out("VertexBufferObject::CleanUp => descriptor = ", m_descriptor);
+				LogInfo("VertexBufferObject::CleanUp => descriptor = ", m_descriptor);
 				UnbindVBO();
 				glDeleteBuffers(1, &m_descriptor);
 			}

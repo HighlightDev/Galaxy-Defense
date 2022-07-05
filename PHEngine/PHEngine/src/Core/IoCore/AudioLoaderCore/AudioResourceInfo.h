@@ -13,6 +13,7 @@ namespace IO
         {
 			ALenum mAudioFormat;
             int32_t mSampleRate;
+            size_t mChannelsCount;
 			ALsizei mNumBytes;
         };
     }

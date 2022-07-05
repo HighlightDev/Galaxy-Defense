@@ -1,8 +1,7 @@
 #include "AVertexFactoryShaderModule.h"
+#include "Core/GameCore/LoggerExtension.h"
 
-#include <TinyLogger/LogInterface.h>
-
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -27,14 +26,14 @@ namespace Graphics
 
       void AVertexFactoryShaderModule::ProcessAllPredefines()
       {
-         Logger::Out("AVertexFactoryShaderModule::ProcessAllPredefines");
+         LogInfo("AVertexFactoryShaderModule::ProcessAllPredefines");
          mVertexFactoryShader->ProcessAllPredefines();
          GetBaseShader()->ProcessAllPredefines();
       }
 
       bool AVertexFactoryShaderModule::AssembleShaderSource()
       {
-         Logger::Out("AVertexFactoryShaderModule::AssembleShaderSource");
+         LogInfo("AVertexFactoryShaderModule::AssembleShaderSource");
          const std::string vertexFactoryShaderSource = mVertexFactoryShader->GetShaderSource();
 
          ShaderParams shaderParams = GetBaseShader()->GetShaderParams();
@@ -61,7 +60,7 @@ namespace Graphics
 
       void AVertexFactoryShaderModule::Init()
       {
-         Logger::Out("AVertexFactoryShaderModul::Init");
+         LogInfo("AVertexFactoryShaderModul::Init");
          ProcessAllPredefines();
 
          const bool bShaderLoadedSuccessfully = AssembleShaderSource();
@@ -78,7 +77,7 @@ namespace Graphics
 
       void AVertexFactoryShaderModule::RecompileShader()
       {
-         Logger::Out("AVertexFactoryShaderModul::RecompileShader");
+         LogInfo("AVertexFactoryShaderModul::RecompileShader");
          CleanUp(false);
          Init();
       }

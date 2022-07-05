@@ -18,6 +18,7 @@
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <gl/glew.h>
 #include <glm/gtc/type_ptr.hpp>
@@ -54,7 +55,7 @@ namespace Graphics
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
       {
-         Logger::Out("DeferredShadingSceneRenderer::ctor");
+         LogInfo( "DeferredShadingSceneRenderer::ctor");
 
          const auto &folderManager = FolderManager::GetInstance();
 

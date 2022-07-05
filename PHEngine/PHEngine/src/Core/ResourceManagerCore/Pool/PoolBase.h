@@ -1,15 +1,17 @@
 #pragma once
 
 #include "Core/CommonCore/CommonMeta.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
 #include <memory>
 #include <cstddef>
 #include <type_traits>
 #include <unordered_map>
-#include <TinyLogger/LogInterface.h>
 
-using namespace TinyLogger;
+#include "Core/GameCore/LoggerExtension.h"
+
+using namespace EngineCore;
 
 namespace Resources
 {
@@ -113,7 +115,7 @@ namespace Resources
 
     void CleanUp()
     {
-      Logger::Out(ToString(), "::CleanUp");
+      LogInfo( ToString(), "::CleanUp");
       for (auto it = resourceMap.begin(); it != resourceMap.end(); ++it)
       {
         auto key = it->first;

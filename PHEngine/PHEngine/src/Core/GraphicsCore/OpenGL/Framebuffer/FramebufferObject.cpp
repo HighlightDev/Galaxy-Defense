@@ -1,10 +1,10 @@
 #include "FramebufferObject.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
-#include <TinyLogger/LogInterface.h>
 
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -59,7 +59,7 @@ namespace Graphics
       GLenum result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
       if (GL_FRAMEBUFFER_COMPLETE != result)
       {
-         Logger::Out(GetFramebufferLog());
+         LogInfo(GetFramebufferLog());
          assert(false); // this code should not be reached
       }
       return result;

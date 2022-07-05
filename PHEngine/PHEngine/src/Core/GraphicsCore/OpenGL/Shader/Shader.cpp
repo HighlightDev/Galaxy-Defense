@@ -1,12 +1,11 @@
 #include "Shader.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <glm/vec2.hpp>
 #include <gl/glew.h>
 #include <fstream>
 
-#include <TinyLogger/LogInterface.h>
-
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -41,7 +40,7 @@ namespace Graphics
          }
          else
          {
-            Logger::Out("Shader::ShaderInit => Shader source loading failed");
+            LogInfo("Shader::ShaderInit => Shader source loading failed");
          }
       }
 
@@ -155,7 +154,7 @@ namespace Graphics
          }
 
          const bool bCompiledSuccesfully = IsShaderCompiled();
-         Logger::Out("Shader::RecompileShader => shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
+         LogInfo("Shader::RecompileShader => shader " + m_shaderParams.ShaderName + (bCompiledSuccesfully ? " has recompiled successfully " : "has not recompiled"));
       }
 
 #endif

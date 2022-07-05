@@ -1,27 +1,23 @@
 #include "IndexBufferObject.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <gl/glew.h>
-#include <TinyLogger/LogInterface.h>
 
-using namespace TinyLogger;
+using namespace EngineCore;
 
 namespace Graphics
 {
 	namespace OpenGL
 	{
-		IndexBufferObject::IndexBufferObject(std::vector<uint32_t>&& data, eDataCarryFlag dataCarryFlag)
-			: VertexBufferObjectBase(eAttribArrayIndexName::POSITION_INDICES, GL_ELEMENT_ARRAY_BUFFER)
-			, m_data(std::move(data))
-			, m_dataCarryFlag(dataCarryFlag)
-			, m_countOfIndices(m_data.size())
-			, m_countOfTotalLengthOfData(m_countOfIndices)
+		IndexBufferObject::IndexBufferObject(std::vector<uint32_t> &&data, eDataCarryFlag dataCarryFlag)
+			: VertexBufferObjectBase(eAttribArrayIndexName::POSITION_INDICES, GL_ELEMENT_ARRAY_BUFFER), m_data(std::move(data)), m_dataCarryFlag(dataCarryFlag), m_countOfIndices(m_data.size()), m_countOfTotalLengthOfData(m_countOfIndices)
 		{
-			Logger::Out("IndexBufferObject::ctor");
+			LogInfo("IndexBufferObject::ctor");
 		}
 
 		IndexBufferObject::~IndexBufferObject()
 		{
-			Logger::Out("IndexBufferObject::~dctor");
+			LogInfo("IndexBufferObject::~dctor");
 		}
 
 		void IndexBufferObject::GenIndexBuffer()
@@ -45,7 +41,7 @@ namespace Graphics
 			BindIndexBuffer();
 			size_t bufferSize = sizeof(size_t) * GetTotalLengthOfData();
 
-			Logger::Out("IndexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
+			LogInfo("IndexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
 			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
@@ -62,7 +58,7 @@ namespace Graphics
 
 		void IndexBufferObject::CleanUp()
 		{
-			Logger::Out("IndexBufferObject::CleanUp => descriptor = ", m_descriptor);
+			LogInfo("IndexBufferObject::CleanUp => descriptor = ", m_descriptor);
 			glDeleteBuffers(1, &m_descriptor);
 		}
 
@@ -81,7 +77,7 @@ namespace Graphics
 			return m_countOfTotalLengthOfData;
 		}
 
-		size_t IndexBufferObject::GetVertexAttribIndex() const 
+		size_t IndexBufferObject::GetVertexAttribIndex() const
 		{
 			return (size_t)-1;
 		}

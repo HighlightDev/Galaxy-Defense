@@ -3,6 +3,7 @@
 #include "Core/IoCore/RawResource.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -17,19 +18,19 @@ namespace Graphics
 		CubemapTexture::CubemapTexture(const std::vector<std::string> &pathToTextures)
 		{
 			m_texDescriptor = CreateCubemapTexture(pathToTextures);
-			Logger::Out("CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor = ", m_texDescriptor);
+			LogInfo( "CubemapTexture::ctor(const std::vector<std::string> &) => m_texDescriptor = ", m_texDescriptor);
 		}
 
 		CubemapTexture::CubemapTexture(TexParams cubemapTexParams)
 			: m_texParams({cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams, cubemapTexParams})
 		{
 			m_texDescriptor = CreateEmptyCubemapTexture();
-			Logger::Out("CubemapTexture::ctor(TexParams) => m_texDescriptor = ", m_texDescriptor);
+			LogInfo( "CubemapTexture::ctor(TexParams) => m_texDescriptor = ", m_texDescriptor);
 		}
 
 		CubemapTexture::~CubemapTexture()
 		{
-			Logger::Out("CubemapTexture::dctor");
+			LogInfo( "CubemapTexture::dctor");
 		}
 
 		uint32_t CubemapTexture::CreateEmptyCubemapTexture()
@@ -129,7 +130,7 @@ namespace Graphics
 
 		void CubemapTexture::CleanUp()
 		{
-			Logger::Out("CubemapTexture::CleanUp => m_texDescriptor = ", m_texDescriptor);
+			LogInfo( "CubemapTexture::CleanUp => m_texDescriptor = ", m_texDescriptor);
 			glDeleteTextures(1, &m_texDescriptor);
 		}
 

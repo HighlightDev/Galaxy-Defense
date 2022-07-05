@@ -10,6 +10,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentCreators/IComponentCreatable.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -35,7 +36,7 @@ namespace EngineCore
          mExternalTickableObjects(),
          mTextHandler()
    {
-      Logger::Out("Scene::ctor");
+      LogInfo( "Scene::ctor");
 
       RegisterGameObject(this);
       AddEngineProperty(mGameThreadDeltaSec);
@@ -44,7 +45,7 @@ namespace EngineCore
 
    void Scene::PostLevelInit()
    {
-      Logger::Out("Scene::PostLevelInit");
+      LogInfo( "Scene::PostLevelInit");
 
       mTextHandler.SetScene(shared_from_this());
 
@@ -62,7 +63,7 @@ namespace EngineCore
 
    void Scene::PostPhysicsInitialize()
    {
-      Logger::Out("Scene::PostPhysicsInitialize");
+      LogInfo( "Scene::PostPhysicsInitialize");
 
       for (auto &actor : mActors)
       {
@@ -72,7 +73,7 @@ namespace EngineCore
 
    void Scene::PostPlayLevelFinished()
    {
-      Logger::Out("Scene::PostPhysicsInitialize");
+      LogInfo( "Scene::PostPhysicsInitialize");
 
       for (auto &actor : mActors)
       {
@@ -82,7 +83,7 @@ namespace EngineCore
 
    void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
    {
-      Logger::Out("Scene::RegisterMainCamera => name = ", camera->GetCameraName());
+      LogInfo( "Scene::RegisterMainCamera => name = ", camera->GetCameraName());
 
       assert(!mMainCamera);
       mMainCamera = camera;
@@ -91,7 +92,7 @@ namespace EngineCore
 
    void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
    {
-      Logger::Out("Scene::RegisterCamera => name = ", camera->GetCameraName());
+      LogInfo( "Scene::RegisterCamera => name = ", camera->GetCameraName());
 
       mActiveCameras.emplace_back(camera);
       RegisterGameObject(camera.get());
@@ -102,7 +103,7 @@ namespace EngineCore
 
    std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
    {
-      Logger::Out("Scene::RegisterMaterialInstance => name = ", material->MaterialName);
+      LogInfo( "Scene::RegisterMaterialInstance => name = ", material->MaterialName);
 
       mMaterials.push_back(material);
 
@@ -289,7 +290,7 @@ namespace EngineCore
                      primitiveSp->SetEnabled(bEnabled);
                   }
                   else {
-                       Logger::Out("Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
+                       LogInfo( "Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
                                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                                                                 primitiveSceneProxyIndex);
                   } }));
@@ -311,7 +312,7 @@ namespace EngineCore
                      primitiveProxySp->SetVisibility(visibility);
                   }
                   else {
-                       Logger::Out("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
+                       LogInfo( "Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
                                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                                                                 primitiveSceneProxyIndex);
                   } }));
@@ -335,7 +336,7 @@ namespace EngineCore
             }
             else
             {
-               Logger::Out("Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
+               LogInfo( "Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
                               "Error !Current proxy index doesn't exist on RT. Proxy index = " , primitiveSceneProxyIndex);
             } }));
       }
@@ -358,7 +359,7 @@ namespace EngineCore
          }
          else
          {
-            Logger::Out("Scene::UpdateCameraSceneProxyData_OnRenderThread => "
+            LogInfo( "Scene::UpdateCameraSceneProxyData_OnRenderThread => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                         sceneProxyId);
          }
@@ -380,7 +381,7 @@ namespace EngineCore
                }
                else
                {
-                  Logger::Out("Scene::UpdateLightComponentTransform_OnRenderThread => "
+                  LogInfo( "Scene::UpdateLightComponentTransform_OnRenderThread => "
                               "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
                } }));
       }
@@ -403,7 +404,7 @@ namespace EngineCore
                }
                else 
                {
-                   Logger::Out("Scene::PrimitiveSceneProxyDeleted_OnRenderThread => "
+                   LogInfo( "Scene::PrimitiveSceneProxyDeleted_OnRenderThread => "
                                "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
                } }));
       }
@@ -440,7 +441,7 @@ namespace EngineCore
                }
                else
                {
-                  Logger::Out("Scene::LightSceneProxyDeleted_OnRenderThread => "
+                  LogInfo( "Scene::LightSceneProxyDeleted_OnRenderThread => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
                } }));
       }
@@ -509,7 +510,7 @@ namespace EngineCore
 
    void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
    {
-      Logger::Out("Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName);
+      LogInfo( "Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName);
 
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
@@ -521,14 +522,14 @@ namespace EngineCore
                                                      { 
                                                         const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
                                                         assert(!materialProxySp);
-                                                        Logger::Out("MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
+                                                        LogInfo( "MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
                                                         sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); }));
       }
    }
 
    void Scene::RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField)
    {
-      Logger::Out("Scene::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+      LogInfo( "Scene::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::RegisterText_OnRenderThread");
@@ -555,7 +556,7 @@ namespace EngineCore
 
    void Scene::UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField)
    {
-      Logger::Out("Scene::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+      LogInfo( "Scene::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::UnregisterText_OnRenderThread");
@@ -645,7 +646,7 @@ namespace EngineCore
                                                          materialProxySp->UpdateProperties(std::move(properties)); 
                                                       }
                                                       else{
-                                                         Logger::Out("Scene::MaterialPropertiesUpdated_OnRenderThread => "
+                                                         LogInfo( "Scene::MaterialPropertiesUpdated_OnRenderThread => "
                                                             "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
                                                       } }));
       }
@@ -687,7 +688,7 @@ namespace EngineCore
             }
              else
             {
-               Logger::Out("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
+               LogInfo( "Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
                      "Error! Current proxy index doesn't exist on RT. Proxy index = ", proxyId);
             } }));
       }
@@ -790,7 +791,7 @@ namespace EngineCore
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
-      Logger::Out("Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
+      LogInfo( "Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
 
       const eComponentType type = component->GetComponentType();
       if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
@@ -899,7 +900,7 @@ namespace EngineCore
          }
          else
          {
-            Logger::Out("Scene::GetConvertedToClippedSpacePosition => "
+            LogInfo( "Scene::GetConvertedToClippedSpacePosition => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ",
                         cameraProxyId);
          }

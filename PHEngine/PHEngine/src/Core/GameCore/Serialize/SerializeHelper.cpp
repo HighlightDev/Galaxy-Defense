@@ -1,6 +1,7 @@
 #include "SerializeHelper.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
@@ -493,7 +494,7 @@ namespace EngineCore
       }
       }
 
-      Logger::Out("SerializeHelper::CreateComponentFromSerializedData => Deserialize component, type:", logCompType);
+      LogInfo( "SerializeHelper::CreateComponentFromSerializedData => Deserialize component, type:", logCompType);
 
       return result;
    }

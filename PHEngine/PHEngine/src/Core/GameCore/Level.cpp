@@ -7,6 +7,7 @@
 #include "Core/GameCore/HumanoidPlayerController.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -30,12 +31,12 @@ namespace EngineCore
 
    void Level::PreLevelInit()
    {
-      Logger::Out("Level::PreLevelInit");
+      LogInfo( "Level::PreLevelInit");
    }
 
    void Level::PostLevelInit()
    {
-      Logger::Out("Level::PostLevelInit");
+      LogInfo( "Level::PostLevelInit");
       mScene->PostLevelInit();
 
       ResourceMap::DeleteInstance();
@@ -44,7 +45,7 @@ namespace EngineCore
 
    void Level::PostPlayLevelFinished()
    {
-      Logger::Out("Level::PostPlayLevelFinished");
+      LogInfo( "Level::PostPlayLevelFinished");
       mScene->PostPlayLevelFinished();
    }
 
@@ -107,7 +108,7 @@ namespace EngineCore
 
    void Level::CollectAllocatedResourcesForSerialization(SerializeDataContainer &container)
    {
-      Logger::Out("CollectAllocatedResourcesForSerialization");
+      LogInfo( "CollectAllocatedResourcesForSerialization");
 
       std::vector<std::string> loadedTextureNames = TexturePool::GetInstance()->GetAllKeys();
       std::vector<std::string> loadedModelNames = MeshPool::GetInstance()->GetAllKeys();
@@ -126,7 +127,7 @@ namespace EngineCore
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
    {
-      Logger::Out("Level::InstantiateLevelFromSerializedContainer");
+      LogInfo( "Level::InstantiateLevelFromSerializedContainer");
 
       const std::vector<std::string> &resourceNames = SerializeHelper::GetSerializedAllocatedResources(container.Resources);
       for (const auto &resName : resourceNames)
@@ -161,13 +162,13 @@ namespace EngineCore
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         Logger::Out("Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
+         LogInfo( "Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
 
          for (const auto &componentData : actorData.ComponentsData)
          {
             const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            Logger::Out("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
+            LogInfo( "Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
 
             if (component)
             {

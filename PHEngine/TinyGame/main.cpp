@@ -9,6 +9,7 @@
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Engine.h"
 
 using namespace EngineCore;
@@ -143,6 +144,7 @@ void get_window_size(GLFWwindow *window)
 
 int32_t main(int32_t argc, char **argv)
 {
+  ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
   Logger::InitLog(new LoggerClientConsole());
@@ -161,7 +163,7 @@ int32_t main(int32_t argc, char **argv)
   auto width = 1200;
   auto height = 900;
   window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
-  Logger::Out("main => glfwWindow create with size: width = ", width, " height = ", height);
+  LogInfo( "main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)
   {
@@ -182,7 +184,7 @@ int32_t main(int32_t argc, char **argv)
 
   if (initResult != GLEW_OK)
   {
-    Logger::Out("main => GLEW is NOK");
+    LogInfo( "main => GLEW is NOK");
     glfwTerminate();
   }
 

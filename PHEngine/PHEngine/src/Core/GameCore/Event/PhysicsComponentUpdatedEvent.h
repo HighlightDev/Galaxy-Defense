@@ -13,7 +13,10 @@ namespace Event
    {
    public:
       using Event = TEvent<SingleDataEventPolicy<std::string>>::Event_t;
-         
+      
+      virtual std::string ToString() const override {
+         return "PhysicsComponentUpdatedEvent";
+      }
    };
 
 }

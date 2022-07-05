@@ -1,5 +1,6 @@
 #include "SndFileLoader.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <sndfile/sndfile.h>
 #include <AL/alext.h>
@@ -63,6 +64,7 @@ namespace IO
 			}
 
 			outAudioInfo.mSampleRate = sfinfo.samplerate;
+			outAudioInfo.mChannelsCount = (size_t)sfinfo.channels;
 
 			/* Decode the whole audio file to a buffer. */
 			membuf = static_cast<short *>(malloc((size_t)(sfinfo.frames * sfinfo.channels) * sizeof(short)));

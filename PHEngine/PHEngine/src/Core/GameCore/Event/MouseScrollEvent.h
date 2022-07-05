@@ -10,6 +10,10 @@ namespace Event
    {
    public:
       using Event_t = TEvent<SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "MouseScrollEvent";
+      }
    };
 
 }

@@ -2,6 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
 #include <TinyLogger/LogInterface.h>
@@ -16,12 +17,12 @@ namespace Thread
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
        : mRenderThreadSwapChain()
    {
-      Logger::Out("InterThreadCommunicationMgr::ctor");
+      LogInfo( "InterThreadCommunicationMgr::ctor");
    }
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()
    {
-      Logger::Out("InterThreadCommunicationMgr::dctor");
+      LogInfo( "InterThreadCommunicationMgr::dctor");
    }
 
    void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<DeferredShadingSceneRenderer> sceneRenderer)

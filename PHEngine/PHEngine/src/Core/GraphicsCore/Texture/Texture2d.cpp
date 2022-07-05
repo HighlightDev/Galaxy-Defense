@@ -6,6 +6,7 @@
 #include "Core/IoCore/RawResource.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -20,7 +21,7 @@ namespace Graphics
       Texture2d::Texture2d(uint32_t texDescriptor, glm::ivec2 texBufferWH)
           : ITexture(), m_mipmapState(nullptr)
       {
-         Logger::Out("Texture2d::ctor(uint32_t, glm::ivec2) => texDescriptor = ", texDescriptor);
+         LogInfo( "Texture2d::ctor(uint32_t, glm::ivec2) => texDescriptor = ", texDescriptor);
          m_texDescriptor = texDescriptor;
          m_textureParams.TexBufferWidth = texBufferWH.x;
          m_textureParams.TexBufferHeight = texBufferWH.y;
@@ -30,19 +31,19 @@ namespace Graphics
           : ITexture(), m_mipmapState(mipmapState)
       {
          m_texDescriptor = GetTextureResource(pathToTex);
-         Logger::Out("Texture2d::ctor(const std::string&, ITextureMipMapState*) => texDescriptor = ", m_texDescriptor);
+         LogInfo( "Texture2d::ctor(const std::string&, ITextureMipMapState*) => texDescriptor = ", m_texDescriptor);
       }
 
       Texture2d::Texture2d(const TexParams &textureParameters)
           : ITexture(), m_textureParams(textureParameters), m_mipmapState(nullptr)
       {
          InitEmptyTexture();
-         Logger::Out("Texture2d::ctor(const TexParams &) => texDescriptor = ", m_texDescriptor);
+         LogInfo( "Texture2d::ctor(const TexParams &) => texDescriptor = ", m_texDescriptor);
       }
 
       Texture2d::~Texture2d()
       {
-         Logger::Out("Texture2d::dctor");
+         LogInfo( "Texture2d::dctor");
          if (m_mipmapState)
             delete m_mipmapState;
       }
@@ -130,7 +131,7 @@ namespace Graphics
 
       void Texture2d::CleanUp()
       {
-         Logger::Out("Texture2d::CleanUp => texDescriptor = ", m_texDescriptor);
+         LogInfo( "Texture2d::CleanUp => texDescriptor = ", m_texDescriptor);
          glDeleteTextures(1, &m_texDescriptor);
       }
 

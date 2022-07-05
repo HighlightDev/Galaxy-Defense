@@ -2,6 +2,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Event/TextEvent.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -61,7 +62,7 @@ namespace EngineCore
     mIsRegistered = true;
     TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER);
 
-    Logger::Out("TextField::RegisterText => Registered text with id = ", mTextFieldId);
+    LogInfo( "TextField::RegisterText => Registered text with id = ", mTextFieldId);
   }
 
   void TextField::UnregisterText()
@@ -70,7 +71,7 @@ namespace EngineCore
     mIsRegistered = false;
     TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER);
 
-    Logger::Out("TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
+    LogInfo( "TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
   }
 
   std::string TextField::GetText() const
