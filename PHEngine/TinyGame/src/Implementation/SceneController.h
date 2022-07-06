@@ -1,12 +1,14 @@
 #pragma once
 
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Actor.h"
 
 #include <memory>
 
 namespace EngineCore
 {
     class Scene;
+    class Actor;
 };
 
 namespace Game
@@ -16,7 +18,11 @@ namespace Game
 
     class SceneController : public ITickable
     {
+        std::weak_ptr<::EngineCore::Scene> mScene;
+        
         std::unique_ptr<CombatController> mCombatController;
+
+        std::shared_ptr<Actor> mAmbientMusicDummy;// todo: should smth better
 
     public:
         SceneController(const std::weak_ptr<::EngineCore::Scene> &scene);

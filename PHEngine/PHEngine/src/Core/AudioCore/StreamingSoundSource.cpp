@@ -11,7 +11,7 @@ namespace EngineCore
 {
     StreamingSoundSource::StreamingSoundSource(const std::string &soundName)
         : mPitch(1.f),
-          mGain(1.f),
+          mGain(1.0f),
           mPosition(0.0f),
           mVelocity(0.0f),
           mIsPlaybackEnabled(false),
