@@ -45,6 +45,11 @@ namespace EngineCore
         return mSoundBuffersMap.count(soundName) ? mSoundBuffersMap.at(soundName) : nullptr;
     }
 
+    std::shared_ptr<SoundSource> SoundComponent::GetSoundSource() const
+    {
+        return mSoundSource;
+    }
+
     void SoundComponent::PlayBuffer(const std::string& soundName)
     {
         assert(mSoundBuffersMap.count(soundName));

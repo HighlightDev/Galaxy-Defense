@@ -36,6 +36,8 @@ namespace EngineCore
 
         std::shared_ptr<SoundBuffer> GetSoundBufferByName(const std::string& soundName) const;
 
+        std::shared_ptr<SoundSource> GetSoundSource() const;
+
         virtual void PlayBuffer(const std::string& soundName);
     };
 }
