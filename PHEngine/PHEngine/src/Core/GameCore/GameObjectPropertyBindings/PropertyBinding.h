@@ -10,13 +10,14 @@ namespace EngineCore {
       FloatScalar,
       EulerAnglesRotation,
       Animation,
+      Boolean
    };
 
    struct PropertyBinding
    {
    protected:
 
-      bool bValueSet = false;
+      bool bPropertyConnected = false;
 
    public:
 

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Core/GameCore/ITickable.h"
-#include "Events/MainPlayerActionEvent.h"
+#include "Implementation/Events/MainPlayerActionEvent.h"
+#include "Implementation/CombatEntity.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
-#include "CombatEntity.h"
 
 #include <memory>
 #include <utility>

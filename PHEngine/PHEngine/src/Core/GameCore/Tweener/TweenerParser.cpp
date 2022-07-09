@@ -5,6 +5,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
 
 #include <unordered_map>
 #include <type_traits>
@@ -68,7 +69,9 @@ namespace EngineCore
             property.State = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
-            assert((false, "unknown xml node."));
+         {
+            assert(false);
+         }
       }
 
       beginIt = propertyEndNode;
@@ -98,7 +101,9 @@ namespace EngineCore
             binding.Type = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
-            assert((false, "unknown xml node."));
+         {
+            assert(false);
+         }
       }
 
       beginIt = bindingEndNode;
@@ -136,7 +141,9 @@ namespace EngineCore
             transition.Duration = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
          }
          else
-            assert((false, "unknown xml node."));
+         {
+            assert(false);
+         }
       }
 
       beginIt = transitionEndNode;
@@ -229,6 +236,10 @@ namespace EngineCore
       {
          result = std::make_shared<EulerAnglesRotationPropertyBinding>(binding.BindingName);
       }
+      else if ("boolean" == binding.Type)
+      {
+         result = std::make_shared<BooleanPropertyBinding>(binding.BindingName);
+      }
       else
       {
          assert(false);
@@ -237,20 +248,20 @@ namespace EngineCore
       return result;
    }
 
-   BaseStateProperty *CreateProperty(const TweenerParser::TweenerParser_Property &property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> &bindings)
+   std::unique_ptr<BaseStateProperty> CreateProperty(const TweenerParser::TweenerParser_Property &property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> &bindings)
    {
-      BaseStateProperty *result = nullptr;
+      std::unique_ptr<BaseStateProperty> result;
 
       assert(bindings.count(property.BindingName));
 
       if ("animation" == property.Type)
       {
-         result = new StateProperty<eBindingType::Animation>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eBindingType::Animation>>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("scalar_float" == property.Type)
       {
          const float value = std::stof(property.Value);
-         result = new StateProperty<eBindingType::FloatScalar>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eBindingType::FloatScalar>>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("euler_angles_rotation" == property.Type)
       {
@@ -282,13 +293,17 @@ namespace EngineCore
             }
          }
 
-         result = new StateProperty<eBindingType::EulerAnglesRotation>(eulerAngles,
-                                                                       std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eBindingType::EulerAnglesRotation>>(eulerAngles,
+                                                                                     std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
       }
-      else
+      else if ("boolean" == property.Type)
       {
-         assert((false, "unknown binding type."));
+         const std::string &value = ToLower(property.Value);
+         const bool booleanValue = "true" == value;
+         result = std::make_unique<StateProperty<eBindingType::Boolean>>(booleanValue, std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
       }
+
+      assert(result);
 
       return result;
    }
@@ -305,7 +320,7 @@ namespace EngineCore
          allStates.push_back(states[item.Name]);
       }
 
-      auto tweener = std::make_shared<Tweener>(relPathTweener, states[mStates[0].Name], allStates);
+      auto tweener = std::make_shared<Tweener>(relPathTweener, states[mStates[0].Name], std::move(allStates));
 
       for (const auto &item : mTransitions)
       {
@@ -322,7 +337,7 @@ namespace EngineCore
 
       for (const auto &item : mProperties)
       {
-         BaseStateProperty *property = CreateProperty(item, bindings);
+         std::shared_ptr<BaseStateProperty> property = CreateProperty(item, bindings);
          states[item.State]->AddStateProperty(property);
       }
 

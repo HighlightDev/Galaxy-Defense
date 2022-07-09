@@ -1,6 +1,7 @@
 #pragma once
 
-#include "IWeaponBulletFactory.h"
+#include <memory>
+#include <glm/vec3.hpp>
 
 namespace EngineCore
 {
@@ -10,18 +11,12 @@ namespace EngineCore
 
 namespace Game
 {
-    class WeakBulletFactory
-        : public IWeaponBulletFactory
+    class IMissileFactory
     {
-        static size_t s_weakBulletCounter;
-
-    public:
-        WeakBulletFactory() = default;
-
         virtual std::shared_ptr<::EngineCore::Actor>
         CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,
                         const glm::vec3 &translation,
                         const glm::vec3 &rotation,
-                        const glm::vec3 &scale) override;
+                        const glm::vec3 &scale) = 0;
     };
 }

@@ -3,6 +3,7 @@
 #include "Core/GameCore/Tweener/AnimationTweenController.h"
 #include "Core/GameCore/Tweener/FloatTweenController.h"
 #include "Core/GameCore/Tweener/EulerAnglesRotationTweenController.h"
+#include "Core/GameCore/Tweener/BooleanTweenController.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Actor.h"
 
@@ -11,8 +12,13 @@
 namespace EngineCore
 {
 
-   Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates)
-       : mMyAllStates(allStates), mRelPathTweener(relPathFSM), mStateNodeInitRoot(rootNode), mCurrentStateNode(mStateNodeInitRoot)
+   Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
+       : mMyAllStates(std::move(allStates)),
+         mRelPathTweener(relPathFSM),
+         mStateNodeInitRoot(rootNode),
+         mCurrentStateNode(mStateNodeInitRoot),
+         bIsStateChangedDirty(false),
+         mChangedStateName("")
    {
    }
 
@@ -33,6 +39,7 @@ namespace EngineCore
          std::shared_ptr<ITweenController> propertyController;
 
          const auto propertyType = dstProperty->GetStatePropertyType();
+
          if (eBindingType::Animation == propertyType)
          {
             propertyController = std::make_shared<AnimationTweenController>();
@@ -45,9 +52,13 @@ namespace EngineCore
          {
             propertyController = std::make_shared<EulerAnglesRotationTweenController>();
          }
+         else if (eBindingType::Boolean == propertyType)
+         {
+            propertyController = std::make_shared<BooleanTweenController>();
+         }
 
          assert(propertyController);
-         propertyController->InitWithPropsInstant(dstProperty.get());
+         propertyController->InitWithPropsInstant(dstProperty);
       }
    }
 
@@ -59,6 +70,8 @@ namespace EngineCore
          for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
          {
             controllerSp->OnTransitionFinished();
+            mChangedStateName = dstStateName;
+            bIsStateChangedDirty = true;
          }
 
          if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
@@ -85,10 +98,7 @@ namespace EngineCore
 
          if (spDestination && spFrom)
          {
-            State *stateTo = spDestination.get();
-            State *stateFrom = spFrom.get();
-
-            assert(stateFrom->GetStateName() == mCurrentStateNode->GetStateName());
+            assert(spFrom->GetStateName() == mCurrentStateNode->GetStateName());
 
             mCurrentActiveStateTransition = &transition;
             mTransitionTime = 0.0f;
@@ -96,8 +106,8 @@ namespace EngineCore
             mTransitionDuration = transition.TransitionDuration;
             bTransitionEnabled = true;
 
-            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = stateFrom->GetStateProperties();
-            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = stateTo->GetStateProperties();
+            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = spFrom->GetStateProperties();
+            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = spDestination->GetStateProperties();
 
             for (auto &srcNameAndPropertyPair : srcProperties)
             {
@@ -123,10 +133,14 @@ namespace EngineCore
                   {
                      propertyController = std::make_shared<EulerAnglesRotationTweenController>();
                   }
+                  else if (eBindingType::Boolean == propertyType)
+                  {
+                     propertyController = std::make_shared<BooleanTweenController>();
+                  }
 
                   assert(propertyController);
                   CurrentActiveTransitionControllers.emplace_back(propertyController);
-                  propertyController->OnTransitionStarted(srcProperty.get(), dstProperty.get(), mTransitionDuration);
+                  propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
                }
             }
          }
@@ -143,6 +157,12 @@ namespace EngineCore
       else
       {
          DoTransition(dstStateName);
+      }
+
+      if (mCurrentStateNode->GetStateName() == dstStateName)
+      {
+         mChangedStateName = dstStateName;
+         bIsStateChangedDirty = true;
       }
    }
 
@@ -168,6 +188,11 @@ namespace EngineCore
       it->TweenerData = tweenerData;
    }
 
+   void Tweener::SubscribeOnStateChange(ITweenStateChangeNotifyable *observer)
+   {
+      mStateChangedObservers.emplace_back(observer);
+   }
+
    void Tweener::SetParentActor(Actor *parent)
    {
       mParent = parent;
@@ -185,6 +210,18 @@ namespace EngineCore
       mCurrentStateNode = newCurrentState;
       mCurrentActiveStateTransition = nullptr;
       bTransitionEnabled = false;
+   }
+
+   void Tweener::NotifyStateChangedObservers()
+   {
+      if (bIsStateChangedDirty)
+      {
+         for (const auto &observer : mStateChangedObservers)
+         {
+            observer->OnTweenStateChanged(mChangedStateName);
+         }
+         bIsStateChangedDirty = false;
+      }
    }
 
    std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string &name) const
@@ -219,7 +256,7 @@ namespace EngineCore
                mTransitionParameter = mTransitionTime / mTransitionDuration;
             }
 
-            for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
+            for (const auto &controllerSp : CurrentActiveTransitionControllers)
             {
                if (bTransitionEnabled)
                {
@@ -228,6 +265,8 @@ namespace EngineCore
                else
                {
                   controllerSp->OnTransitionFinished();
+                  mChangedStateName = stateTo->GetStateName();
+                  bIsStateChangedDirty = true;
                }
             }
 

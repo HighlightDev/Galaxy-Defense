@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Level.h"
-#include "Implementation/SceneController.h"
+#include "Implementation/Controllers/SceneController.h"
 
 using namespace EngineCore;
 

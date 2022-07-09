@@ -34,74 +34,74 @@ namespace EngineCore
 
       void SetSrcName(const std::string &name)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          SrcName->SetValue(name);
       }
 
       void SetDstName(const std::string &name) const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          DstName->SetValue(name);
       }
 
       void SetSrcTime(const float value)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          SrcTime->SetValue(value);
       }
 
       void SetDstTime(const float value)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          DstTime->SetValue(value);
       }
 
       void SetIsTransitionEnabled(bool bEnabled)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          bTranstitionEnabled->SetValue(bEnabled);
       }
 
       void SetTransitionValue(float transitionValue)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          TransitionValue->SetValue(transitionValue);
       }
 
       std::string GetSrcName() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return SrcName->GetValue();
       }
 
       std::string GetDstName() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return DstName->GetValue();
       }
 
       float GetSrcTime() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
 
          return SrcTime->GetValue();
       }
 
       float GetDstTime() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return DstTime->GetValue();
       }
 
       bool GetIsTransitionEnabled() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return bTranstitionEnabled->GetValue();
       }
 
       float GetTransitionValue() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return TransitionValue->GetValue();
       }
 
@@ -119,7 +119,7 @@ namespace EngineCore
          bTranstitionEnabled = isTransitionEnabled;
          TransitionValue = transitionValue;
 
-         bValueSet = true;
+         bPropertyConnected = true;
       }
 
       virtual eBindingType GetBindingType() const override

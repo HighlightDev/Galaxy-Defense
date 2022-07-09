@@ -11,8 +11,6 @@ namespace Game
 {
     class AiActorController : public ActorController
     {
-        std::string mCurrentState;
-
     public:
         AiActorController(const std::shared_ptr<Actor>& actor);
 

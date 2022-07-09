@@ -12,11 +12,13 @@ namespace EngineCore
       DestinationState = 1
    };
 
+   struct BaseStateProperty;
+
    class ITweenController
    {
    protected:
 
-      struct BaseStateProperty* TranstionProperties[2];
+      std::shared_ptr<BaseStateProperty> TranstionProperties[2];
 
       std::weak_ptr<PropertyBinding> mPropertyBinding;
 
@@ -26,11 +28,11 @@ namespace EngineCore
 
       virtual void OnTransitionFinished() = 0;
 
-      virtual void OnTransitionStarted(struct BaseStateProperty* srcStateProperty, struct BaseStateProperty* dstStateProperty, const float transitionDuration);
+      virtual void OnTransitionStarted(const std::shared_ptr<BaseStateProperty>& srcStateProperty, const std::shared_ptr<BaseStateProperty>& dstStateProperty, const float transitionDuration);
 
       virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter);
 
-      virtual void InitWithPropsInstant(struct BaseStateProperty* dstStateProperty);
+      virtual void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty);
 
       enum eBindingType GetControllerPropertyType() const;
    };

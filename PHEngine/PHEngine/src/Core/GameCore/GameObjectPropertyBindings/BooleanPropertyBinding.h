@@ -8,41 +8,41 @@
 
 namespace EngineCore {
 
-   struct FloatPropertyBinding
+   struct BooleanPropertyBinding
       : public PropertyBinding
    {
    private:
       
-      std::shared_ptr<EngineGOProperty<float>> mGoProperty;
+      std::shared_ptr<EngineGOProperty<bool>> mGoProperty;
 
    public:
 
-      FloatPropertyBinding(const std::string& bindingName)
+      BooleanPropertyBinding(const std::string& bindingName)
          : PropertyBinding(bindingName)
          , mGoProperty()
       {
       }
 
-      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<float>> gameObjectProperty)
+      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<bool>>& gameObjectProperty)
       {
          assert(gameObjectProperty);
          mGoProperty = gameObjectProperty;
          bPropertyConnected = true;
       }
 
-      void SetValue(float value) {
+      void SetValue(const bool value) {
          assert(bPropertyConnected);
          mGoProperty->SetValue(value);
       }
 
-      float GetValue() const {
+      bool GetValue() const {
          assert(bPropertyConnected);
          return mGoProperty->GetValue();
       }
 
       virtual eBindingType GetBindingType() const override
       {
-         return eBindingType::FloatScalar;
+         return eBindingType::Boolean;
       }
    };
 }

@@ -32,34 +32,34 @@ namespace EngineCore
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FloatScalar>* srcFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::SourceState]);
-         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::DestinationState]);
+         auto srcFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
+         auto dstFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
          floatBinding->SetValue(EngineMath::LerpNormalizedFloat(srcFloatProperty->Value, dstFloatProperty->Value, transitionParameter));
       }
    }
 
-   void FloatTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   void FloatTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
    {
       mPropertyBinding = dstStateProperty->Binding;
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(dstStateProperty);
+         auto dstFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
          floatBinding->SetValue(dstFloatProperty->Value);
       }
    }
 
    void FloatTweenController::OnTransitionStarted(
-      BaseStateProperty* srcProperty,
-      BaseStateProperty* dstProperty,
+      const std::shared_ptr<BaseStateProperty>& srcProperty,
+      const std::shared_ptr<BaseStateProperty>& dstProperty,
       const float transitionDuration)
    {
       Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
 
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FloatScalar>* srcFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::SourceState]);
+         auto srcFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
          floatBinding->SetValue(srcFloatProperty->Value);
       }
@@ -69,7 +69,7 @@ namespace EngineCore
    {
       if (auto floatBinding = GetFloatPropertyBindingSP())
       {
-         StateProperty<eBindingType::FloatScalar>* dstFloatProperty = static_cast<StateProperty<eBindingType::FloatScalar>*>(TranstionProperties[(int)StateType::DestinationState]);
+         auto dstFloatProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
          floatBinding->SetValue(dstFloatProperty->Value);
       }

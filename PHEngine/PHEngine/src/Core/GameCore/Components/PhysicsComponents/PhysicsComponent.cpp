@@ -79,9 +79,10 @@ namespace EnginePhysics
    {
       const auto &spOwner = GetOwner().lock();
       assert(spOwner);
-
-      const glm::vec3 &translation = spOwner->GetRootComponent()->GetTranslation();
-      const glm::quat &rotator = spOwner->GetRootComponent()->GetRotator();
+      auto ownerRootComponent = spOwner->GetRootComponent();
+      assert(ownerRootComponent);
+      const glm::vec3 &translation = ownerRootComponent->GetTranslation();
+      const glm::quat &rotator = ownerRootComponent->GetRotator();
 
       mDescriptor->SetMotionStateWorldTransform(Converter::glmToBullet(rotator), Converter::glmToBullet(translation));
       mDescriptor->CompletePhysicsDescriptorConstruction();

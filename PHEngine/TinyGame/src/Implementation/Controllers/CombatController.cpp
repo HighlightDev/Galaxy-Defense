@@ -1,15 +1,18 @@
 #include "CombatController.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Factories/WeakSpaceShipFactory.h"
-#include "Factories/WeakBulletFactory.h"
-#include "SpaceShipPlayerController.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
+
+#include "Implementation/Factories/WeakSpaceShipFactory.h"
+#include "Implementation/Factories/WeakMissileFactory.h"
+#include "Implementation/Factories/BlackHoleMissileFactory.h"
+#include "Implementation/Actors/BlackHoleMissileActor.h"
+#include "Implementation/Controllers/SpaceShipPlayerController.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -240,7 +243,7 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp)
     {
-        WeakBulletFactory bulletFactory;
+        BlackHoleMissileFactory bulletFactory;
         for (size_t i = 0; i < poolSize; ++i)
         {
             const auto &a_shipBullet = bulletFactory.CreateWeaponBullet(sceneSp,
@@ -267,6 +270,8 @@ namespace Game
         {
             bulletSp->SetIsEnabled(true);
             bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
+            auto blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(bulletSp);
+            blackHoleMissile->TriggerLifecycle_FirstPhasePreload();
             idleBulletIt->second = eBulletState::ACTIVE;
         }
     }

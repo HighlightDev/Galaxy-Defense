@@ -8,6 +8,7 @@
 
 #include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 #include "Core/UtilityCore/EngineMath.h"
 
@@ -41,8 +42,9 @@ namespace EngineCore
          return eBindingType::Animation;
       }
 
-      StateProperty(const std::string &animationName, std::shared_ptr<AnimationPropertyBinding> animationPropertyBinding)
-          : BaseStateProperty(animationPropertyBinding), AnimationName(animationName)
+      StateProperty(const std::string &animationName, const std::shared_ptr<AnimationPropertyBinding> &animationPropertyBinding)
+          : BaseStateProperty(animationPropertyBinding),
+            AnimationName(animationName)
       {
       }
    };
@@ -58,8 +60,9 @@ namespace EngineCore
          return eBindingType::FloatScalar;
       }
 
-      StateProperty(float value, std::shared_ptr<FloatPropertyBinding> floatPropertyBinding)
-          : BaseStateProperty(floatPropertyBinding), Value(value)
+      StateProperty(const float value, const std::shared_ptr<FloatPropertyBinding> &floatPropertyBinding)
+          : BaseStateProperty(floatPropertyBinding),
+            Value(value)
       {
       }
    };
@@ -76,8 +79,10 @@ namespace EngineCore
          return eBindingType::EulerAnglesRotation;
       }
 
-      StateProperty(const glm::vec3 &value, std::shared_ptr<EulerAnglesRotationPropertyBinding> rotationPropertyBinding)
-          : BaseStateProperty(rotationPropertyBinding), Value(value), QuatValue()
+      StateProperty(const glm::vec3 &value, const std::shared_ptr<EulerAnglesRotationPropertyBinding> &rotationPropertyBinding)
+          : BaseStateProperty(rotationPropertyBinding),
+            Value(value),
+            QuatValue()
       {
          ConvertInternalEulerAnglesToQuaternion();
       }
@@ -95,8 +100,26 @@ namespace EngineCore
          conjugatedRotationMat *= cameraPitchRotation;
          conjugatedRotationMat *= cameraYawRotation;
          conjugatedRotationMat *= cameraRollRotation;
-         
+
          QuatValue = glm::toQuat(conjugatedRotationMat);
+      }
+   };
+
+   template <>
+   struct StateProperty<eBindingType::Boolean>
+       : public BaseStateProperty
+   {
+      bool Value;
+
+      virtual eBindingType GetStatePropertyType() const override
+      {
+         return eBindingType::Boolean;
+      }
+
+      StateProperty(const bool value, const std::shared_ptr<BooleanPropertyBinding> &booleanPropertyBinding)
+          : BaseStateProperty(booleanPropertyBinding),
+            Value(value)
+      {
       }
    };
 

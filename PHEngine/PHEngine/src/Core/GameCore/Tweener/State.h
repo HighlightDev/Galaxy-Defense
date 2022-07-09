@@ -36,7 +36,7 @@ namespace EngineCore
          return mStateName;
       }
 
-      void AddStateProperty(BaseStateProperty* stateProperty)
+      void AddStateProperty(const std::shared_ptr<BaseStateProperty>& stateProperty)
       {
          auto bindingSP = stateProperty->Binding.lock();
          assert(bindingSP);

@@ -3,7 +3,7 @@
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Event/PlayerMovedEvent.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Events/MainPlayerActionEvent.h"
+#include "Implementation/Events/MainPlayerActionEvent.h"
 
 #include <algorithm>
 #include <iostream>

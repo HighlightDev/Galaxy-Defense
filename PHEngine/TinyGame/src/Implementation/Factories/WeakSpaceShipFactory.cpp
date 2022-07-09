@@ -2,7 +2,7 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
-#include "Implementation/AiActorController.h"
+#include "Implementation/Controllers/AiSpaceshipActorController.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
@@ -133,7 +133,7 @@ namespace Game
 
         a_enemySpaceship->AddComponent(c_particleSystemComponent);
 
-        scene->AddActorController(std::make_shared<AiActorController>(a_enemySpaceship));
+        scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
         TweenerParser tweenerParser;
         const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");

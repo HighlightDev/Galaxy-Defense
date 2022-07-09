@@ -31,12 +31,12 @@ namespace EngineCore
       }
    }
 
-   void AnimationTweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   void AnimationTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
    {
       mPropertyBinding = dstStateProperty->Binding;
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {
-         StateProperty<eBindingType::Animation>* dstAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(dstStateProperty);
+         auto dstAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
          animBinding->SetSrcName(dstAnimationProperty->AnimationName);
          animBinding->SetSrcTime(0.0f);
@@ -48,14 +48,14 @@ namespace EngineCore
    }
 
    void AnimationTweenController::OnTransitionStarted(
-      BaseStateProperty* srcProperty,
-      BaseStateProperty* dstProperty,
+      const std::shared_ptr<BaseStateProperty>& srcProperty,
+      const std::shared_ptr<BaseStateProperty>& dstProperty,
       const float transitionDuration)
    {
       Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
 
-      StateProperty<eBindingType::Animation>* srcAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(srcProperty);
-      StateProperty<eBindingType::Animation>* dstAnimationProperty = static_cast<StateProperty<eBindingType::Animation>*>(dstProperty);
+      auto srcAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(srcProperty);
+      auto dstAnimationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstProperty);
 
       if (auto animBinding = GetAnimationPropertyBindingSP())
       {

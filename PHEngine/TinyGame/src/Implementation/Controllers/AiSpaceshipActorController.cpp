@@ -1,4 +1,4 @@
-#include "AiActorController.h"
+#include "AiSpaceshipActorController.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <vector>
@@ -9,18 +9,15 @@ using namespace EngineMath;
 
 namespace Game
 {
-    AiActorController::AiActorController(const std::shared_ptr<Actor> &actor)
-        : ActorController(actor),
+    AiSpaceshipActorController::AiSpaceshipActorController(const std::shared_ptr<Actor> &actor)
+        : AiActorController(actor),
           mCurrentState("s_idle")
     {
     }
 
-    void AiActorController::Tick(const float deltaTime)
+    void AiSpaceshipActorController::Tick(const float deltaTime)
     {
-        if (!m_actor->IsEnabled())
-            return;
-
-        m_movementComponent->Move();
+        AiActorController::Tick(deltaTime);
 
         const auto &moveDirection = m_movementComponent->GetDirection();
         const float dotLeft = glm::dot(moveDirection, -AXIS_RIGHT);
@@ -48,8 +45,8 @@ namespace Game
         }
     }
 
-    void AiActorController::InitActorController()
+    void AiSpaceshipActorController::InitActorController()
     {
-        ActorController::InitActorController();
+        AiActorController::InitActorController();
     }
 }

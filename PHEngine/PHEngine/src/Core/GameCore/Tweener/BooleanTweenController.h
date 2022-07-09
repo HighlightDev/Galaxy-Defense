@@ -1,20 +1,20 @@
 #pragma once
 #include "ITweenController.h"
 #include "StateProperty.h"
+#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
 
 namespace EngineCore
 {
 
-   class EulerAnglesRotationTweenController :
+   class BooleanTweenController :
       public ITweenController
    {
       using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eBindingType::EulerAnglesRotation>;
-      
+      using TweenStateProperty_t = StateProperty<eBindingType::Boolean>;
 
    public:
-      EulerAnglesRotationTweenController();
-      virtual ~EulerAnglesRotationTweenController();
+      BooleanTweenController();
+      virtual ~BooleanTweenController();
 
       virtual void OnTransitionStarted(const std::shared_ptr<BaseStateProperty>& srcState, const std::shared_ptr<BaseStateProperty>& dstState, const float duration) override;
 
@@ -26,7 +26,7 @@ namespace EngineCore
 
    private:
 
-      std::shared_ptr<EulerAnglesRotationPropertyBinding> GetRotationPropertyBindingSP() const;
+      std::shared_ptr<BooleanPropertyBinding> GetBooleanPropertyBindingSP() const;
    };
 
 }

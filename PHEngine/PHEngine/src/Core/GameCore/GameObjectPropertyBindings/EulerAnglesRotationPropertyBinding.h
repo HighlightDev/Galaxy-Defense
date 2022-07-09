@@ -26,18 +26,18 @@ namespace EngineCore
       {
          assert(engineGoProperty);
          mGoProperty = engineGoProperty;
-         bValueSet = true;
+         bPropertyConnected = true;
       }
 
       void SetValue(const glm::vec3 &value)
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          mGoProperty->SetValue(value);
       }
 
       glm::vec3 GetValue() const
       {
-         assert(bValueSet);
+         assert(bPropertyConnected);
          return mGoProperty->GetValue();
       }
 

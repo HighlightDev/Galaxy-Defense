@@ -27,7 +27,7 @@ namespace EngineCore
       , public ISerializable
       , public std::enable_shared_from_this<Actor>
    {
-   private:
+   protected:
 
       std::shared_ptr<SceneComponent> m_rootComponent;
 
@@ -36,15 +36,13 @@ namespace EngineCore
       // Makes all primitive components visible or not
       std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
-   protected:
-
       /* If Actor is disabled 
        - turn off all calculations for him and physics simulation
        also it won't be visible
        */
-      bool mIsEnabled;
+      std::shared_ptr<EngineGOProperty<bool>> mIsEnabled;
 
-      std::vector<std::weak_ptr<Actor>> m_children;
+      std::vector<std::shared_ptr<Actor>> m_children;
 
       std::weak_ptr<Actor> m_parent;
 
@@ -60,7 +58,8 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
 
-      Actor(const std::string& gameObjectName, std::shared_ptr<EngineCore::SceneComponent> rootComponent);
+      Actor(const std::string& gameObjectName);
+      Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
       virtual ~Actor();
 
@@ -105,11 +104,11 @@ namespace EngineCore
 
       std::weak_ptr<Scene> GetSceneOwner() const;
 
-      void AttachActor(std::shared_ptr<Actor> actor);
+      void AddChild(std::shared_ptr<Actor> actor);
 
-      void DetachActor(std::shared_ptr<Actor> actor);
+      void RemoveChild(const std::shared_ptr<Actor>& actor);
 
-      void AttachTweener(std::shared_ptr<Tweener> tweener);
+      virtual void AttachTweener(std::shared_ptr<Tweener> tweener);
 
       std::shared_ptr<Tweener> GetTweener() const;
 

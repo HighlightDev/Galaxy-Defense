@@ -10,7 +10,7 @@ namespace EngineCore {
    {
    }
 
-   void ITweenController::OnTransitionStarted(BaseStateProperty* srcStateProperty, BaseStateProperty* dstStateProperty, const float transitionDuration)
+   void ITweenController::OnTransitionStarted(const std::shared_ptr<BaseStateProperty>& srcStateProperty, const std::shared_ptr<BaseStateProperty>& dstStateProperty, const float transitionDuration)
    {
       mPropertyBinding = srcStateProperty->Binding;
       TranstionProperties[(int)StateType::SourceState] = srcStateProperty;
@@ -21,15 +21,12 @@ namespace EngineCore {
 
    eBindingType ITweenController::GetControllerPropertyType() const
    {
-      BaseStateProperty* srcProp = TranstionProperties[(int)StateType::SourceState];
-
+      auto srcProp = TranstionProperties[(int)StateType::SourceState];
       assert(srcProp != nullptr);
-
       return srcProp->GetStatePropertyType();
    }
 
-   void ITweenController::InitWithPropsInstant(struct BaseStateProperty* dstStateProperty)
+   void ITweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
    {
-
    }
 }

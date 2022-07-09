@@ -35,9 +35,9 @@ namespace EngineCore
       if (auto rotationBinding = GetRotationPropertyBindingSP())
       {
          auto srcRotationProperty =
-             static_cast<TweenStateProperty_t *>(TranstionProperties[(int)StateType::SourceState]);
+             std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
          auto dstRotationProperty =
-             static_cast<TweenStateProperty_t *>(TranstionProperties[(int)StateType::DestinationState]);
+             std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
          glm::quat srcQuat = srcRotationProperty->QuatValue;
          glm::quat dstQuat = dstRotationProperty->QuatValue;
@@ -46,29 +46,29 @@ namespace EngineCore
       }
    }
 
-   void EulerAnglesRotationTweenController::InitWithPropsInstant(struct BaseStateProperty *dstStateProperty)
+   void EulerAnglesRotationTweenController::InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty)
    {
       mPropertyBinding = dstStateProperty->Binding;
       if (auto rotationBinding = GetRotationPropertyBindingSP())
       {
-         auto dstFloatProperty = static_cast<TweenStateProperty_t *>(dstStateProperty);
+         auto dstRotationProperty = std::static_pointer_cast<TweenStateProperty_t>(dstStateProperty);
 
-         rotationBinding->SetValue(dstFloatProperty->Value);
+         rotationBinding->SetValue(dstRotationProperty->Value);
       }
    }
 
    void EulerAnglesRotationTweenController::OnTransitionStarted(
-       BaseStateProperty *srcProperty,
-       BaseStateProperty *dstProperty,
+       const std::shared_ptr<BaseStateProperty>& srcProperty,
+       const std::shared_ptr<BaseStateProperty>& dstProperty,
        const float transitionDuration)
    {
       Base::OnTransitionStarted(srcProperty, dstProperty, transitionDuration);
 
       if (auto rotationBinding = GetRotationPropertyBindingSP())
       {
-         auto srcFloatProperty = static_cast<TweenStateProperty_t *>(TranstionProperties[(int)StateType::SourceState]);
+         auto srcRotationProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::SourceState]);
 
-         rotationBinding->SetValue(srcFloatProperty->Value);
+         rotationBinding->SetValue(srcRotationProperty->Value);
       }
    }
 
@@ -76,9 +76,9 @@ namespace EngineCore
    {
       if (auto rotationBinding = GetRotationPropertyBindingSP())
       {
-         auto dstFloatProperty = static_cast<TweenStateProperty_t *>(TranstionProperties[(int)StateType::DestinationState]);
+         auto dstRotationProperty = std::static_pointer_cast<TweenStateProperty_t>(TranstionProperties[(int)StateType::DestinationState]);
 
-         rotationBinding->SetValue(dstFloatProperty->Value);
+         rotationBinding->SetValue(dstRotationProperty->Value);
       }
    }
 

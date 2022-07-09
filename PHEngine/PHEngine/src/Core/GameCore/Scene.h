@@ -125,6 +125,10 @@ namespace EngineCore
 
       void RemoveActor(std::shared_ptr<Actor> actor);
 
+      bool RegisterGameObject(GameObject *const gameObjectPtr);
+
+      bool RemoveGameObject(GameObject *const gameObjectPtr);
+
       void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
 
       void Tick_GameThread(float delta);
@@ -189,10 +193,6 @@ namespace EngineCore
 
    private:
       void RegisterComponentSceneProxy(const std::shared_ptr<Component> &component);
-
-      bool RegisterGameObject(GameObject *const gameObjectPtr);
-
-      bool RemoveGameObject(GameObject *const gameObjectPtr);
    };
 
 }

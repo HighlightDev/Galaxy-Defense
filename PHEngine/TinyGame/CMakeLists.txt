@@ -3,18 +3,22 @@ set(
 	src/GameLevelFactory.h
 	src/IntroLevel.h
 	src/Implementation/SpaceSceneCamera.h
-	src/Implementation/SpaceShipPlayerController.h
-	src/Implementation/CombatController.h
 	src/Implementation/AiBrain.h
-	src/Implementation/SceneController.h
-	src/Implementation/AiActorController.h
+	src/Implementation/Controllers/SpaceShipPlayerController.h
+	src/Implementation/Controllers/CombatController.h
+	src/Implementation/Controllers/SceneController.h
+	src/Implementation/Controllers/AiActorController.h
+	src/Implementation/Controllers/AiSpaceshipActorController.h
 	src/Implementation/CombatEntity.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
-	src/Implementation/Factories/IWeaponBulletFactory.h
+	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/WeakSpaceShipFactory.h
-	src/Implementation/Factories/WeakBulletFactory.h
+	src/Implementation/Factories/WeakMissileFactory.h
+	src/Implementation/Factories/BlackHoleMissileFactory.h
+	src/Implementation/Actors/SpaceEntityActor.h
+	src/Implementation/Actors/BlackHoleMissileActor.h
 )
 
 set(
@@ -22,15 +26,19 @@ set(
 	src/GameLevelFactory.cpp
 	src/IntroLevel.cpp
 	src/Implementation/SpaceSceneCamera.cpp
-	src/Implementation/SpaceShipPlayerController.cpp
-	src/Implementation/CombatController.cpp
+	src/Implementation/Controllers/SpaceShipPlayerController.cpp
+	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp
-	src/Implementation/SceneController.cpp
-	src/Implementation/AiActorController.cpp
+	src/Implementation/Controllers/SceneController.cpp
+	src/Implementation/Controllers/AiActorController.cpp
+	src/Implementation/Controllers/AiSpaceshipActorController.cpp
 	src/Implementation/CombatEntity.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
-	src/Implementation/Factories/WeakBulletFactory.cpp
+	src/Implementation/Factories/WeakMissileFactory.cpp
+	src/Implementation/Factories/BlackHoleMissileFactory.cpp
+	src/Implementation/Actors/SpaceEntityActor.cpp
+	src/Implementation/Actors/BlackHoleMissileActor.cpp
     main.cpp
 )
 

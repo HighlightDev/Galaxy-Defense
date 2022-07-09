@@ -13,25 +13,45 @@ using namespace EngineMath;
 namespace EngineCore
 {
 
-   Actor::Actor(const std::string &gameObjectName, std::shared_ptr<EngineCore::SceneComponent> rootComponent)
+   Actor::Actor(const std::string &gameObjectName)
+       : GameObject(gameObjectName),
+         m_rootComponent(nullptr),
+         m_physicsComponent(nullptr),
+         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
+                                                             "p_isVisible",
+                                                             std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
+                                                                                                                         { SyncComponentsVisibility(visibility); }))),
+         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
+                                                             "p_isEnabled")),
+         m_inputComponent(),
+         m_movementComponent(),
+         mTweener(nullptr),
+         m_parent()
+   {
+      AddEngineProperty(mIsVisible);
+      AddEngineProperty(mIsEnabled);
+   }
+
+   Actor::Actor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
        : GameObject(gameObjectName),
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
          mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
-                                                             "IsVisible",
+                                                             "p_isVisible",
                                                              std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
                                                                                                                          { SyncComponentsVisibility(visibility); }))),
-         mIsEnabled(true),
+         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
+                                                             "p_isEnabled")),
          m_inputComponent(),
          m_movementComponent(),
          mTweener(nullptr),
          m_parent()
    {
       assert(m_rootComponent);
+      m_rootComponent->bIsRootComponent = true;
 
       AddEngineProperty(mIsVisible);
-
-      m_rootComponent->bIsRootComponent = true;
+      AddEngineProperty(mIsEnabled);
    }
 
    Actor::~Actor()
@@ -50,12 +70,9 @@ namespace EngineCore
          m_physicsComponent->PostPhysicsInit();
       }
 
-      for (const auto &childWp : m_children)
+      for (const auto &childSp : m_children)
       {
-         if (const auto &childSp = childWp.lock())
-         {
-            childSp->PostPhysicsInitialize();
-         }
+         childSp->PostPhysicsInitialize();
       }
    }
 
@@ -75,12 +92,9 @@ namespace EngineCore
          comp->PostLevelInit();
       }
 
-      for (const auto &childWp : m_children)
+      for (const auto &childSp : m_children)
       {
-         if (const auto &childSp = childWp.lock())
-         {
-            childSp->PostLevelInit();
-         }
+         childSp->PostLevelInit();
       }
 
       if (m_physicsComponent)
@@ -103,11 +117,11 @@ namespace EngineCore
    {
       SerializeDataActor data;
       data.ActorName = GameObject::GameObjectName;
-      data.RootCompTranslation = m_rootComponent->GetTranslation();
-      const glm::vec3 eulerAngles = EngineMath::QuatToEulerAngles(m_rootComponent->GetRotator());
+      data.RootCompTranslation = m_rootComponent ? m_rootComponent->GetTranslation() : glm::vec3();
+      const glm::vec3 eulerAngles = m_rootComponent ? EngineMath::QuatToEulerAngles(m_rootComponent->GetRotator()) : glm::vec3(0);
 
       data.RootCompRotation = glm::vec3(RAD_TO_DEG(eulerAngles.x), RAD_TO_DEG(eulerAngles.y), RAD_TO_DEG(eulerAngles.z));
-      data.RootCompScale = m_rootComponent->GetScale();
+      data.RootCompScale = m_rootComponent ? m_rootComponent->GetScale() : glm::vec3(1);
 
       dataContainer.Actors.emplace_back(data);
 
@@ -196,12 +210,9 @@ namespace EngineCore
          }
       }
 
-      for (const auto &wpChild : m_children)
+      for (const auto &spChild : m_children)
       {
-         if (const auto &spChild = wpChild.lock())
-         {
-            spChild->SetIsVisible(isVisible);
-         }
+         spChild->SetIsVisible(isVisible);
       }
    }
 
@@ -239,8 +250,11 @@ namespace EngineCore
 
    void Actor::ChangeTweenState(const std::string &stateName)
    {
-      if (mTweener)
+      if (mTweener && mIsEnabled)
+      {
+         mTweener->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
          mTweener->ChangeState(stateName);
+      }
    }
 
    void Actor::Tick(const float deltaTime)
@@ -270,13 +284,10 @@ namespace EngineCore
          }
       }
 
-      for (const auto &childWp : m_children)
+      for (const auto &childSp : m_children)
       {
-         if (const auto &childSp = childWp.lock())
-         {
-            // tick all attached actors
-            childSp->Tick(deltaTime);
-         }
+         // tick all attached actors
+         childSp->Tick(deltaTime);
       }
 
       if (m_inputComponent && m_inputComponent->IsEnabled())
@@ -292,6 +303,7 @@ namespace EngineCore
       if (mTweener && mIsEnabled)
       {
          mTweener->Tick(deltaTime);
+         mTweener->NotifyStateChangedObservers();
       }
    }
 
@@ -359,21 +371,16 @@ namespace EngineCore
       return mSceneOwner;
    }
 
-   void Actor::AttachActor(std::shared_ptr<Actor> actor)
+   void Actor::AddChild(std::shared_ptr<Actor> actor)
    {
       actor->SetParent(GetWeakFromThis());
       m_children.push_back(actor);
    }
 
-   void Actor::DetachActor(std::shared_ptr<Actor> actor)
+   void Actor::RemoveChild(const std::shared_ptr<Actor> &actor)
    {
-      const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto &childWp)
-                                        {
-         if (const auto& childSp = childWp.lock())
-         {
-            return actor->GetName() == childSp->GetName();
-         } 
-         return false; });
+      const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto &childSp)
+                                        { return actor->GetName() == childSp->GetName(); });
 
       if (actorIt != m_children.end())
       {
@@ -396,11 +403,9 @@ namespace EngineCore
 
    void Actor::SetIsEnabled(bool isEnabled)
    {
-      assert(("Actor must have components.", m_allComponents.size() > 0));
-
-      if (isEnabled != mIsEnabled)
+      if (isEnabled != mIsEnabled->GetValue())
       {
-         mIsEnabled = isEnabled;
+         mIsEnabled->SetValue(isEnabled);
 
          for (const auto &component : m_allComponents)
          {
@@ -422,12 +427,9 @@ namespace EngineCore
             m_physicsComponent->SetIsEnabled(isEnabled);
          }
 
-         for (const auto &wpChild : m_children)
+         for (const auto &spChild : m_children)
          {
-            if (const auto &spChild = wpChild.lock())
-            {
-               spChild->SetIsEnabled(isEnabled);
-            }
+            spChild->SetIsEnabled(isEnabled);
          }
       }
    }
@@ -439,7 +441,7 @@ namespace EngineCore
 
    bool Actor::IsEnabled() const
    {
-      return mIsEnabled;
+      return mIsEnabled->GetValue();
    }
 
    std::shared_ptr<SceneComponent> Actor::GetBaseRootComponent() const

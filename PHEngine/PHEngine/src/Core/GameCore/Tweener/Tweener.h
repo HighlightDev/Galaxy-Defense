@@ -5,6 +5,7 @@
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeDataContainer.h"
 #include "Core/GameCore/Tweener/ITweenController.h"
+#include "Core/GameCore/Tweener/ITweenStateChangeNotifyable.h"
 
 #include <unordered_map>
 
@@ -37,9 +38,12 @@ namespace EngineCore
       float mTransitionTime = 0.0f;
       float mTransitionDuration = 0.0f;
 
+      bool bIsStateChangedDirty;
+      std::string mChangedStateName;
+      std::vector<ITweenStateChangeNotifyable*> mStateChangedObservers; 
    public:
 
-      Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> allStates);
+      Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
 
       ~Tweener();
 
@@ -48,6 +52,8 @@ namespace EngineCore
       virtual void Tick(const float deltaTime) override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+
+      void SubscribeOnStateChange(ITweenStateChangeNotifyable* observer);
 
       std::shared_ptr<State> GetCurrentState() const;
 
@@ -66,6 +72,8 @@ namespace EngineCore
       void SetParentActor(class Actor* parent);
 
       class Actor* GetParentActor() const;
+
+      void NotifyStateChangedObservers();
 
    private:
 

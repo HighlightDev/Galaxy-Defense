@@ -19,7 +19,7 @@
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 
 #include "Implementation/SpaceSceneCamera.h"
-#include "Implementation/SpaceShipPlayerController.h"
+#include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 
 #include <glm/vec4.hpp>
