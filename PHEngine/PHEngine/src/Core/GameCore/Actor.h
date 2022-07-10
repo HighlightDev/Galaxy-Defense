@@ -58,7 +58,6 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
 
-      Actor(const std::string& gameObjectName);
       Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 
       virtual ~Actor();
@@ -100,9 +99,13 @@ namespace EngineCore
 
       std::weak_ptr<Actor> GetParent() const;
 
+      std::weak_ptr<Actor> GetBaseParent() const;
+
       std::string GetName() const;
 
       std::weak_ptr<Scene> GetSceneOwner() const;
+
+      bool HasGameObjectIdInHierarchy(const uint64_t id) const;
 
       void AddChild(std::shared_ptr<Actor> actor);
 
@@ -123,10 +126,10 @@ namespace EngineCore
       std::shared_ptr<PhysicsComponent> GetPhysicsComponent() const;
 
       // If root component has dirty transformation -> update it and all attached actors + children components
-      void UpdateRootComponentTransform();
+      void UpdateTransform();
 
-      // If components from list is scene component -> check if it has dity transformation, and if it does -> update it
-      void UpdateComponentsTransform();
+      // If components from list is scene component -> check if it has dirty transformation, and if it does -> update it
+      void UpdateComponentsTransform(const bool bForceUpdate);
 
       template <typename ComponentT>
       typename std::enable_if<std::is_base_of<Component, ComponentT>::value,

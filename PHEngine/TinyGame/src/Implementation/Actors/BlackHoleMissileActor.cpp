@@ -91,4 +91,9 @@ namespace Game
 
         mTweener->ChangeState("s_SecondPhaseExplosion");
     }
+
+    void BlackHoleMissileActor::Spawn(const glm::vec3& position)
+    {
+        m_rootComponent->SetTranslation(position);
+    }
 }

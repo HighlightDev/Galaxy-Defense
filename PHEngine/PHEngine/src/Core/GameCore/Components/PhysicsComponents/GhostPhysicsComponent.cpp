@@ -5,6 +5,7 @@
 #include "Core/GameCore/Serialize/SerializeHelper.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineMath;
 
@@ -25,8 +26,10 @@ namespace EnginePhysics
 
       if (const auto &spOwner = GetOwner().lock())
       {
-         const glm::vec3 &translation = spOwner->GetRootComponent()->GetTranslation();
-         const glm::quat &rotator = spOwner->GetRootComponent()->GetRotator();
+         auto rootComponentSp = spOwner->GetRootComponent();
+         const glm::vec3 translation = rootComponentSp->GetHierarchyAccumulatedTranslation();
+         const glm::quat rotator = rootComponentSp->GetHierarchyAccumulatedRotator();
+
          mDescriptor->SetMotionStateWorldTransform(Converter::glmToBullet(rotator), Converter::glmToBullet(translation));
       }
 

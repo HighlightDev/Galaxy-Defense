@@ -12,26 +12,6 @@ using namespace EngineMath;
 
 namespace EngineCore
 {
-
-   Actor::Actor(const std::string &gameObjectName)
-       : GameObject(gameObjectName),
-         m_rootComponent(nullptr),
-         m_physicsComponent(nullptr),
-         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
-                                                             "p_isVisible",
-                                                             std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
-                                                                                                                         { SyncComponentsVisibility(visibility); }))),
-         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
-                                                             "p_isEnabled")),
-         m_inputComponent(),
-         m_movementComponent(),
-         mTweener(nullptr),
-         m_parent()
-   {
-      AddEngineProperty(mIsVisible);
-      AddEngineProperty(mIsEnabled);
-   }
-
    Actor::Actor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
        : GameObject(gameObjectName),
          m_rootComponent(rootComponent),
@@ -82,6 +62,8 @@ namespace EngineCore
 
    void Actor::PostLevelInit()
    {
+      m_rootComponent->SetOwner(GetWeakFromThis());
+
       if (mTweener)
       {
          mTweener->InitRootState();
@@ -111,6 +93,20 @@ namespace EngineCore
       {
          m_movementComponent->PostLevelInit();
       }
+   }
+
+   bool Actor::HasGameObjectIdInHierarchy(const uint64_t id) const
+   {
+      if (GetObjectId() == id)
+         return true;
+
+      for (const auto& child : m_children)
+      {
+         if (child->HasGameObjectIdInHierarchy(id))
+            return true;
+      }
+
+      return false;
    }
 
    void Actor::CollectDataForSerialization(SerializeDataContainer &dataContainer)
@@ -151,45 +147,51 @@ namespace EngineCore
       }
    }
 
-   void Actor::UpdateRootComponentTransform()
+   void Actor::UpdateTransform()
    {
-      if (m_rootComponent)
+      assert(m_rootComponent);
+
+      if (m_rootComponent->GetIsTransformationDirty())
       {
-         // Root component and all attached objects to this actor must update their transforms
-
-         if (m_rootComponent->GetIsTransformationDirty())
+         glm::mat4 parentRelativeMatrix(1);
+         if (const auto &spParent = m_parent.lock())
          {
-            // Update root component with parent transform matrix
-            {
-               glm::mat4 parentRelativeMatrix(1); // identity matrix
-               if (const auto &spParent = m_parent.lock())
-               {
-                  parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
-               }
-
-               m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
-            }
-
-            // Update all components that have transformation
-            glm::mat4 rootRelativeMatrix = m_rootComponent->GetRelativeMatrix();
-
-            for (auto &component : m_allComponents)
-            {
-               if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
-               {
-                  SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
-                  sceneComp->UpdateRelativeMatrix(rootRelativeMatrix);
-               }
-            }
+            parentRelativeMatrix *= spParent->GetRootComponent()->GetRelativeMatrix();
          }
-         else // If root component wasn't updated then just check if component has dirty transform
+
+         m_rootComponent->UpdateRelativeMatrix(parentRelativeMatrix);
+         UpdateComponentsTransform(true);
+
+         for (const auto &child : m_children)
          {
-            UpdateComponentsTransform();
+            child->GetRootComponent()->SetIsTransformationDirty(true); // force to update children's transform
          }
       }
       else
       {
-         UpdateComponentsTransform();
+         UpdateComponentsTransform(false);
+      }
+   }
+
+   void Actor::UpdateComponentsTransform(const bool bForceUpdate)
+   {
+      assert(m_rootComponent);
+
+      if (m_allComponents.size())
+      {
+         auto parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
+
+         for (auto &component : m_allComponents)
+         {
+            if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
+            {
+               auto sceneComp = std::static_pointer_cast<SceneComponent>(component);
+               if (bForceUpdate || sceneComp->GetIsTransformationDirty())
+               {
+                  sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
+               }
+            }
+         }
       }
    }
 
@@ -216,41 +218,9 @@ namespace EngineCore
       }
    }
 
-   void Actor::UpdateComponentsTransform()
-   {
-      if (m_allComponents.size() > 0)
-      {
-         glm::mat4 parentRelativeMatrix(1); // identity matrix
-
-         if (const auto &spParent = m_parent.lock())
-         {
-            parentRelativeMatrix = spParent->GetRootComponent()->GetRelativeMatrix();
-         }
-
-         // Update all components that have transformation
-
-         if (m_rootComponent)
-         {
-            parentRelativeMatrix = m_rootComponent->GetRelativeMatrix();
-         }
-
-         for (auto &component : m_allComponents)
-         {
-            if ((component->GetComponentType() & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
-            {
-               SceneComponent *sceneComp = static_cast<SceneComponent *>(component.get());
-               if (sceneComp->GetIsTransformationDirty())
-               {
-                  sceneComp->UpdateRelativeMatrix(parentRelativeMatrix);
-               }
-            }
-         }
-      }
-   }
-
    void Actor::ChangeTweenState(const std::string &stateName)
    {
-      if (mTweener && mIsEnabled)
+      if (mTweener && mIsEnabled->GetValue())
       {
          mTweener->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
          mTweener->ChangeState(stateName);
@@ -259,10 +229,12 @@ namespace EngineCore
 
    void Actor::Tick(const float deltaTime)
    {
-      if (!mIsEnabled)
+      if (!mIsEnabled->GetValue())
+      {
          return;
+      }
 
-      UpdateRootComponentTransform();
+      UpdateTransform();
 
       // Update physics
       if (m_physicsComponent && m_physicsComponent->IsEnabled())
@@ -300,7 +272,7 @@ namespace EngineCore
          m_movementComponent->Tick(deltaTime);
       }
 
-      if (mTweener && mIsEnabled)
+      if (mTweener && mIsEnabled->GetValue())
       {
          mTweener->Tick(deltaTime);
          mTweener->NotifyStateChangedObservers();
@@ -364,6 +336,23 @@ namespace EngineCore
    std::weak_ptr<Actor> Actor::GetParent() const
    {
       return m_parent;
+   }
+
+   std::weak_ptr<Actor> Actor::GetBaseParent() const
+   {
+      if (!m_parent.lock())
+         return std::weak_ptr<Actor>();
+
+      std::shared_ptr<Actor> baseParent;
+      auto parentWp = m_parent;
+
+      while (const auto &spParent = parentWp.lock())
+      {
+         baseParent = spParent;
+         parentWp = spParent->GetParent();
+      }
+
+      return baseParent;
    }
 
    std::weak_ptr<Scene> Actor::GetSceneOwner() const
@@ -446,16 +435,14 @@ namespace EngineCore
 
    std::shared_ptr<SceneComponent> Actor::GetBaseRootComponent() const
    {
-      std::shared_ptr<const Actor> baseParent = shared_from_this();
-      auto parentWp = m_parent;
+      auto rootComponent = GetRootComponent();
 
-      while (const auto &spParent = parentWp.lock())
+      if (auto baseParentSp = GetBaseParent().lock())
       {
-         baseParent = spParent;
-         parentWp = spParent->GetParent();
+         rootComponent = baseParentSp->GetRootComponent();
       }
 
-      return baseParent->GetRootComponent();
+      return rootComponent;
    }
 
    std::string Actor::GetName() const

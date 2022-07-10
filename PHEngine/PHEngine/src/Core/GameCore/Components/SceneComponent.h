@@ -7,6 +7,8 @@
 
 namespace EngineCore
 {
+   class Actor;
+
    class SceneComponent
        : public Component
    {
@@ -62,5 +64,14 @@ namespace EngineCore
       glm::mat4 GetRelativeMatrix() const;
 
       void AddTranslation(const glm::vec3 &offsetTranslation);
+
+      glm::vec3 GetHierarchyAccumulatedTranslation() const;
+
+      glm::quat GetHierarchyAccumulatedRotator() const;
+
+      private:
+
+      void IterateHierarchyUpCollectRotator(const std::weak_ptr<Actor>& currentOwnerWp, glm::quat& accumulatedRotator) const;
+      void IterateHierarchyUpCollectTranslation(const std::weak_ptr<Actor> &currentOwnerWp, glm::vec3 &accumulatedTranslation) const;
    };
 }

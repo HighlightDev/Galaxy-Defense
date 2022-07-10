@@ -4,6 +4,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/ext/quaternion_float.hpp>
 #include <utility>
 
 #include "Core/CommonCore/ThreadHelper.h"
@@ -27,7 +28,7 @@ namespace TinyLogger
       {
          static std::string Do(const glm::vec2 &value)
          {
-            return "vec2:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + "," + "y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "}";
+            return "vec2:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "}";
          }
       };
 
@@ -36,7 +37,7 @@ namespace TinyLogger
       {
          static std::string Do(const glm::vec3 &value)
          {
-            return "vec3:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + "," + "y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "," + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "}";
+            return "vec3:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + " z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "}";
          }
       };
 
@@ -45,7 +46,16 @@ namespace TinyLogger
       {
          static std::string Do(const glm::vec4 &value)
          {
-            return "vec4:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + "," + "y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "," + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "," + "w=" + TinyLogger::LogHelp::ToString<float>::Value(value.w) + "}";
+            return "vec4:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "w=" + TinyLogger::LogHelp::ToString<float>::Value(value.w) + "}";
+         }
+      };
+
+      template <>
+      struct CastTypeToString<glm::quat>
+      {
+         static std::string Do(const glm::quat &value)
+         {
+            return "quat:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "," + "z=" + TinyLogger::LogHelp::ToString<float>::Value(value.z) + "w=" + TinyLogger::LogHelp::ToString<float>::Value(value.w) + "}";
          }
       };
 

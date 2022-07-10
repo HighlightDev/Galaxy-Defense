@@ -96,10 +96,7 @@ namespace Game
             }
         }
     }
-
-    std::shared_ptr<SoundBuffer> bounceSoundBuffer;
-    std::shared_ptr<SoundSource> soundSource;
-
+    
     void CombatController::ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data)
     {
         const ePhysicsBodyType physBodyType = std::get<0>(data);
@@ -262,15 +259,15 @@ namespace Game
 
         if (idleBulletIt == mWeaponBulletsPool.end())
         {
-            LogInfo( "CombatController::ShootBullet => Error - no idle bullets in the pool");
+            LogInfo("CombatController::ShootBullet => Error - no idle bullets in the pool");
             return;
         }
 
         if (const auto &bulletSp = idleBulletIt->first)
         {
-            bulletSp->SetIsEnabled(true);
-            bulletSp->GetRootComponent()->SetTranslation(bulletStartPosition);
             auto blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(bulletSp);
+            blackHoleMissile->Spawn(bulletStartPosition);
+            blackHoleMissile->SetIsEnabled(true);
             blackHoleMissile->TriggerLifecycle_FirstPhasePreload();
             idleBulletIt->second = eBulletState::ACTIVE;
         }
@@ -301,7 +298,7 @@ namespace Game
             }
             else
             {
-                LogInfo( "CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
+                LogInfo("CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
             }
         }
     }
@@ -321,7 +318,7 @@ namespace Game
     CombatController::FindEnemyShipById(const uint64_t actorId)
     {
         auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyContainer)
-                                    { return actorId == enemyContainer.GetSpaceShipActor()->GetObjectId(); });
+                                    { return enemyContainer.GetSpaceShipActor()->HasGameObjectIdInHierarchy(actorId); });
         return foundIt;
     }
 
@@ -344,7 +341,7 @@ namespace Game
                                                                                                                mWeaponBulletsPool.end(),
                                                                                                                [=](const auto &bulletPair)
                                                                                                                {
-                                                                                                                   return actorId == bulletPair.first->GetObjectId();
+                                                                                                                   return bulletPair.first->HasGameObjectIdInHierarchy(actorId);
                                                                                                                });
         return foundIt;
     }

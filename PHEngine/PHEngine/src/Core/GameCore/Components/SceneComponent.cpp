@@ -1,5 +1,6 @@
 #include "SceneComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Actor.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -143,6 +144,52 @@ namespace EngineCore
    glm::mat4 SceneComponent::GetRelativeMatrix() const
    {
       return m_relativeMatrix;
+   }
+
+   glm::vec3 SceneComponent::GetHierarchyAccumulatedTranslation() const
+   {
+       glm::vec3 result(0.0f);
+
+      if (auto ownerSp = GetOwner().lock())
+      {
+         IterateHierarchyUpCollectTranslation(ownerSp->GetParent(), result);
+      }
+
+      result += mTransform->Translation;
+
+      return result;
+   }
+
+   glm::quat SceneComponent::GetHierarchyAccumulatedRotator() const
+   {
+      glm::quat result(glm::vec3(0, 0, 0));
+
+      if (auto ownerSp = GetOwner().lock())
+      {
+         IterateHierarchyUpCollectRotator(ownerSp->GetParent(), result);
+      }
+
+      result *= mTransform->Rotator;
+
+      return result;
+   }
+
+   void SceneComponent::IterateHierarchyUpCollectRotator(const std::weak_ptr<Actor> &currentOwnerWp, glm::quat &accumulatedRotator) const
+   {
+      if (auto currentOwnerSp = currentOwnerWp.lock())
+      {
+         IterateHierarchyUpCollectRotator(currentOwnerSp->GetParent(), accumulatedRotator);
+         accumulatedRotator *= currentOwnerSp->GetRootComponent()->GetRotator();
+      }
+   }
+
+   void SceneComponent::IterateHierarchyUpCollectTranslation(const std::weak_ptr<Actor> &currentOwnerWp, glm::vec3 &accumulatedTranslation) const
+   {
+      if (auto currentOwnerSp = currentOwnerWp.lock())
+      {
+         IterateHierarchyUpCollectTranslation(currentOwnerSp->GetParent(), accumulatedTranslation);
+         accumulatedTranslation += currentOwnerSp->GetRootComponent()->GetTranslation();
+      }
    }
 
 }

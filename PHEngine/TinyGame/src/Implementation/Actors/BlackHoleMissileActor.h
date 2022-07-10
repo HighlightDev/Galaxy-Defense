@@ -31,6 +31,8 @@ namespace Game
 
         void TriggerLifecycle_SecondPhaseExplosion();
 
+        void Spawn(const glm::vec3& position);
+
         private:
 
         void InitTweenerSubscriptions();
