@@ -19,7 +19,7 @@ namespace Game
 
       virtual ~IntroLevel();
 
-      virtual void LoadLevel() override;
+      virtual void InitLevel() override;
 
       virtual void PreLevelInit();
 

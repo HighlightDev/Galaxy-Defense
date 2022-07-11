@@ -29,9 +29,11 @@ namespace Game
 
         ~SceneController();
 
-        virtual void PreInit();
+        virtual void OnPreLevelInit();
 
-        virtual void PostInit();
+        virtual void OnInitLevel();
+
+        virtual void OnPostLevelInit();
 
         virtual void PostPlayLevelFinished();
 

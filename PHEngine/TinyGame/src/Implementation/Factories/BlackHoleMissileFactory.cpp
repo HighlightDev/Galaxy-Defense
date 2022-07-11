@@ -73,7 +73,7 @@ namespace Game
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missileCombatActivePhase->AddComponent(c_mesh);
 
-        a_missile->AddChild(a_missileCombatActivePhase);
+        a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);
 
         ComponentData d_audio("c_soundComponent_" + missileIndexStr);
         const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
@@ -105,7 +105,7 @@ namespace Game
         a_missile->AttachTweener(missileTweener);
 
         const auto &binding = missileTweener->GetPropertyBindingByName("b_isEnabled");
-        BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase.get(), binding.get(), "p_isVisible");
+        BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase.get(), binding.get(), "p_isEnabled");
 
         return a_missile;
     }

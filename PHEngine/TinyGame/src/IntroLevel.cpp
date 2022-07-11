@@ -58,7 +58,7 @@ namespace Game
    void IntroLevel::PreLevelInit()
    {
       Base::PreLevelInit();
-      mSceneController->PreInit();
+      mSceneController->OnPreLevelInit();
    }
 
    void IntroLevel::CreateScene()
@@ -76,12 +76,12 @@ namespace Game
       assert(a_spaceship);
 
       ComponentData d_input = ComponentData("SpaceshipInputComponent");
-      const auto& inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
+      const auto &inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
       const auto &c_input = mScene->CreateComponent_GameThread(inputComponentCreator, d_input);
       a_spaceship->AddComponent(c_input);
 
       MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
-      const auto& movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
+      const auto &movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
       const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(mScene->CreateComponent_GameThread(movementComponentCreator, d_movement));
 
       c_movement->SetSpeed(0.02f);
@@ -110,12 +110,7 @@ namespace Game
       mSceneController->SetPlayerActorController(spaceShipController);
 
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
-   }
 
-   void IntroLevel::PostLevelInit()
-   {
-      CreateScene();
-      mSceneController->PostInit();
 
       /*const auto groundActor = mScene->GetActorByName("Ground");
       const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
@@ -125,6 +120,13 @@ namespace Game
                                                       FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
       const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
+
+      mSceneController->OnInitLevel();
+   }
+
+   void IntroLevel::PostLevelInit()
+   {
+      mSceneController->OnPostLevelInit();
       Base::PostLevelInit();
    }
 
@@ -134,15 +136,15 @@ namespace Game
       mSceneController->PostPlayLevelFinished();
    }
 
-   void IntroLevel::LoadLevel()
+   void IntroLevel::InitLevel()
    {
       // ResourceMap::GetInstance()->WaitUntilResourcesLoad();
-
 #if 0
       DeserializeLevel("test_serialize.xml");
 #else
       RunLuaBuildLevelScript();
 #endif
+      CreateScene();
    }
 #undef GET_REL_PATH_TO_FILE
 }

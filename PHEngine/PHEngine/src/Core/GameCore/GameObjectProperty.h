@@ -30,13 +30,22 @@ protected:
 
 public:
 
-   template <typename ValueType>
+   template <typename ValueType, typename FunctionType>
    EngineGOProperty(const ValueType& value,
       const std::string& key,
-      std::unique_ptr<Action_t> action = std::unique_ptr<Action_t>(nullptr))
+      FunctionType action)
       : EngineGOPropertyBase(key)
       , ValuePtr(std::make_shared<Type>(value))
-      , Action(std::move(action))
+      , Action(std::make_unique<Action_t>(action))
+   {
+   }
+
+   template <typename ValueType>
+   EngineGOProperty(const ValueType& value,
+      const std::string& key)
+      : EngineGOPropertyBase(key)
+      , ValuePtr(std::make_shared<Type>(value))
+      , Action()
    {
    }
 

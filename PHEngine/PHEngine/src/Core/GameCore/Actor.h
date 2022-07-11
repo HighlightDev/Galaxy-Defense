@@ -152,7 +152,9 @@ namespace EngineCore
 
       private:
 
-         void SyncComponentsVisibility(bool isVisible);
+         void SyncIsVisible(const bool isVisible);
+
+         void SyncIsEnabled(const bool isEnabled);
    };
 
 }

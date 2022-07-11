@@ -18,10 +18,12 @@ namespace EngineCore
          m_physicsComponent(nullptr),
          mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
                                                              "p_isVisible",
-                                                             std::make_unique<typename EngineGOProperty<bool>::Action_t>([=](const bool &visibility)
-                                                                                                                         { SyncComponentsVisibility(visibility); }))),
+                                                             [=](const bool &visibility)
+                                                             { SyncIsVisible(visibility); })),
          mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
-                                                             "p_isEnabled")),
+                                                             "p_isEnabled",
+                                                             [=](const bool &isEnabled)
+                                                             { SyncIsEnabled(isEnabled); })),
          m_inputComponent(),
          m_movementComponent(),
          mTweener(nullptr),
@@ -100,7 +102,7 @@ namespace EngineCore
       if (GetObjectId() == id)
          return true;
 
-      for (const auto& child : m_children)
+      for (const auto &child : m_children)
       {
          if (child->HasGameObjectIdInHierarchy(id))
             return true;
@@ -197,14 +199,15 @@ namespace EngineCore
 
    void Actor::SetIsVisible(bool isVisible)
    {
-      mIsVisible->SetValue(isVisible);
+      if (isVisible != mIsVisible->GetValue())
+      {
+         mIsVisible->SetValue(isVisible);
+      }
    }
 
-   void Actor::SyncComponentsVisibility(bool isVisible)
+   void Actor::SyncIsVisible(const bool isVisible)
    {
-      assert(("Actor must have components.", m_allComponents.size() > 0));
-
-      for (std::shared_ptr<Component> component : m_allComponents)
+      for (const auto &component : m_allComponents)
       {
          if ((component->GetComponentType() & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
          {
@@ -215,6 +218,42 @@ namespace EngineCore
       for (const auto &spChild : m_children)
       {
          spChild->SetIsVisible(isVisible);
+      }
+   }
+
+   void Actor::SetIsEnabled(bool isEnabled)
+   {
+      if (isEnabled != mIsEnabled->GetValue())
+      {
+         mIsEnabled->SetValue(isEnabled);
+      }
+   }
+
+   void Actor::SyncIsEnabled(const bool isEnabled)
+   {
+      for (const auto &component : m_allComponents)
+      {
+         component->SetIsEnabled(isEnabled);
+      }
+
+      if (m_inputComponent)
+      {
+         m_inputComponent->SetIsEnabled(isEnabled);
+      }
+
+      if (m_movementComponent)
+      {
+         m_movementComponent->SetIsEnabled(isEnabled);
+      }
+
+      if (m_physicsComponent)
+      {
+         m_physicsComponent->SetIsEnabled(isEnabled);
+      }
+
+      for (const auto &spChild : m_children)
+      {
+         spChild->SetIsEnabled(isEnabled);
       }
    }
 
@@ -389,40 +428,7 @@ namespace EngineCore
    {
       return mTweener;
    }
-
-   void Actor::SetIsEnabled(bool isEnabled)
-   {
-      if (isEnabled != mIsEnabled->GetValue())
-      {
-         mIsEnabled->SetValue(isEnabled);
-
-         for (const auto &component : m_allComponents)
-         {
-            component->SetIsEnabled(isEnabled);
-         }
-
-         if (m_inputComponent)
-         {
-            m_inputComponent->SetIsEnabled(isEnabled);
-         }
-
-         if (m_movementComponent)
-         {
-            m_movementComponent->SetIsEnabled(isEnabled);
-         }
-
-         if (m_physicsComponent)
-         {
-            m_physicsComponent->SetIsEnabled(isEnabled);
-         }
-
-         for (const auto &spChild : m_children)
-         {
-            spChild->SetIsEnabled(isEnabled);
-         }
-      }
-   }
-
+   
    bool Actor::GetIsVisible() const
    {
       return mIsVisible->GetValue();

@@ -60,6 +60,8 @@ namespace EngineCore
          assert(propertyController);
          propertyController->InitWithPropsInstant(dstProperty);
       }
+
+      SetTransitionValuesFinished(mStateNodeInitRoot);
    }
 
    void Tweener::DoTranstionInstantly(const std::string &dstStateName)
@@ -89,59 +91,57 @@ namespace EngineCore
    {
       const std::map<std::string /*dstStateName*/, StateTransition> &transitions = mCurrentStateNode->GetTransitions();
 
-      if (transitions.count(dstStateName))
+      assert(transitions.count(dstStateName));
+      const StateTransition &transition = transitions.at(dstStateName);
+
+      auto spDestination = transition.StateDestination.lock();
+      auto spFrom = transition.StateFrom.lock();
+
+      if (spDestination && spFrom)
       {
-         const StateTransition &transition = transitions.at(dstStateName);
+         assert(spFrom->GetStateName() == mCurrentStateNode->GetStateName());
 
-         auto spDestination = transition.StateDestination.lock();
-         auto spFrom = transition.StateFrom.lock();
+         mCurrentActiveStateTransition = &transition;
+         mTransitionTime = 0.0f;
+         mTransitionParameter = 0.0f;
+         mTransitionDuration = transition.TransitionDuration;
+         bTransitionEnabled = true;
 
-         if (spDestination && spFrom)
+         std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = spFrom->GetStateProperties();
+         std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = spDestination->GetStateProperties();
+
+         for (auto &srcNameAndPropertyPair : srcProperties)
          {
-            assert(spFrom->GetStateName() == mCurrentStateNode->GetStateName());
+            const std::string &name = srcNameAndPropertyPair.first;
 
-            mCurrentActiveStateTransition = &transition;
-            mTransitionTime = 0.0f;
-            mTransitionParameter = 0.0f;
-            mTransitionDuration = transition.TransitionDuration;
-            bTransitionEnabled = true;
-
-            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> srcProperties = spFrom->GetStateProperties();
-            std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = spDestination->GetStateProperties();
-
-            for (auto &srcNameAndPropertyPair : srcProperties)
+            if (dstProperties.count(name))
             {
-               const std::string &name = srcNameAndPropertyPair.first;
+               std::shared_ptr<BaseStateProperty> srcProperty = srcNameAndPropertyPair.second;
+               std::shared_ptr<BaseStateProperty> dstProperty = dstProperties[name];
 
-               if (dstProperties.count(name))
+               std::shared_ptr<ITweenController> propertyController;
+
+               const auto propertyType = srcProperty->GetStatePropertyType();
+               if (eBindingType::Animation == propertyType)
                {
-                  std::shared_ptr<BaseStateProperty> srcProperty = srcNameAndPropertyPair.second;
-                  std::shared_ptr<BaseStateProperty> dstProperty = dstProperties[name];
-
-                  std::shared_ptr<ITweenController> propertyController;
-
-                  const auto propertyType = srcProperty->GetStatePropertyType();
-                  if (eBindingType::Animation == propertyType)
-                  {
-                     propertyController = std::make_shared<AnimationTweenController>();
-                  }
-                  else if (eBindingType::FloatScalar == propertyType)
-                  {
-                     propertyController = std::make_shared<FloatTweenController>();
-                  }
-                  else if (eBindingType::EulerAnglesRotation == propertyType)
-                  {
-                     propertyController = std::make_shared<EulerAnglesRotationTweenController>();
-                  }
-                  else if (eBindingType::Boolean == propertyType)
-                  {
-                     propertyController = std::make_shared<BooleanTweenController>();
-                  }
-
-                  assert(propertyController);
-                  CurrentActiveTransitionControllers.emplace_back(propertyController);
-                  propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
+                  propertyController = std::make_shared<AnimationTweenController>();
                }
+               else if (eBindingType::FloatScalar == propertyType)
+               {
+                  propertyController = std::make_shared<FloatTweenController>();
+               }
+               else if (eBindingType::EulerAnglesRotation == propertyType)
+               {
+                  propertyController = std::make_shared<EulerAnglesRotationTweenController>();
+               }
+               else if (eBindingType::Boolean == propertyType)
+               {
+                  propertyController = std::make_shared<BooleanTweenController>();
+               }
+
+               assert(propertyController);
+               CurrentActiveTransitionControllers.emplace_back(propertyController);
+               propertyController->OnTransitionStarted(srcProperty, dstProperty, mTransitionDuration);
             }
          }
       }

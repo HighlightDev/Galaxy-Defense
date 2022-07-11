@@ -56,18 +56,13 @@ namespace EngineCore
 
    void Level::InitLevel()
    {
-      LoadLevel();
    }
 
    std::weak_ptr<Scene> Level::GetSceneWP() const
    {
       return mScene;
    }
-
-   void Level::LoadLevel()
-   {
-   }
-
+   
    void Level::SerializeLevel(const std::string &pathToFolder)
    {
 

@@ -1,11 +1,14 @@
 #include "BlackHoleMissileActor.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 
 namespace Game
 {
     BlackHoleMissileActor::BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : SpaceEntityActor(gameObjectName, rootComponent)
+        : SpaceEntityActor(gameObjectName, rootComponent),
+          mCombatActivePhaseActor()
     {
     }
 
@@ -23,31 +26,40 @@ namespace Game
         mTweener->SubscribeOnStateChange(this);
     }
 
-    void BlackHoleMissileActor::OnTweenStateChanged(const std::string& stateName)
+    void BlackHoleMissileActor::AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor)
+    {
+        assert(!mCombatActivePhaseActor);
+        mCombatActivePhaseActor = combatActivePhaseActor;
+        AddChild(combatActivePhaseActor);
+    }
+
+    eMissileActivityState BlackHoleMissileActor::GetMissileActivityState() const
+    {
+        return mActivityState;
+    }
+
+    void BlackHoleMissileActor::OnTweenStateChanged(const std::string &stateName)
     {
         LogInfo("BlackHoleMissileActor::OnTweenStateChanged => New state: ", stateName);
 
         if ("s_FirstPhasePreload" == stateName)
         {
-            TriggerLifecycle_FirstPhaseActiveCombat();
         }
         else if ("s_FirstPhaseActiveCombat" == stateName)
         {
-            TriggerLifecycle_FirstPhaseExplosion();
         }
         else if ("s_FirstPhaseExplosion" == stateName)
         {
-            TriggerLifecycle_SecondPhasePreload();
+            TriggerDisable();
         }
         else if ("s_SecondPhasePreload" == stateName)
         {
-            TriggerLifecycle_SecondPhaseExplosion();
         }
         else if ("s_SecondPhaseExplosion" == stateName)
         {
-            LogInfo("BlackHoleMissileActor::OnTweenStateChanged => All stages are completed");
         }
-        else {
+        else
+        {
             assert(false);
         }
     }
@@ -92,8 +104,32 @@ namespace Game
         mTweener->ChangeState("s_SecondPhaseExplosion");
     }
 
-    void BlackHoleMissileActor::Spawn(const glm::vec3& position)
+    void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position)
     {
-        m_rootComponent->SetTranslation(position);
+        LogInfo("BlackHoleMissileActor::TriggerSpawn => GoID: ", this->GetObjectId());
+        mActivityState = eMissileActivityState::ACTIVE;
+        SetIsEnabled(true);
+        mCombatActivePhaseActor->GetMovementComponent()->Teleport(position);
+
+        TriggerLifecycle_FirstPhaseActiveCombat();
+    }
+
+    void BlackHoleMissileActor::TriggerDisable()
+    {
+        LogInfo("BlackHoleMissileActor::TriggerDisable => GoID: ", this->GetObjectId());
+        mActivityState = eMissileActivityState::IDLE;
+        mTweener->InitRootState();
+    }
+
+    void BlackHoleMissileActor::TriggerActivePhaseExplosion()
+    {
+        const auto c_sound = GetComponentsByType<SoundComponent>().back();
+        c_sound->PlayBuffer("explosion");
+        TriggerLifecycle_FirstPhaseExplosion();
+    }
+
+    bool BlackHoleMissileActor::IsInsideLevel(const BoundingBox &boundingBox) const
+    {
+        return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
     }
 }

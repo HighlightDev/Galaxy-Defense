@@ -81,8 +81,8 @@ namespace EngineCore
       m_level->InitLevel();
       m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
-      PostLevelInit();
       PostPhysicsInitialize();
+      PostLevelInit();
       PostPlayLevelFinished();
 
       m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));

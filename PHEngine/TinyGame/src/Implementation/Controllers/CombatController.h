@@ -22,12 +22,6 @@ namespace Game
 {
     class SpaceShipPlayerController;
 
-    enum class eBulletState
-    {
-        IDLE,
-        ACTIVE,
-    };
-
     class CombatController : public ITickable,
                              public MainPlayerActionEvent,
                              public PhysicsCollisionOccuredEvent
@@ -40,7 +34,7 @@ namespace Game
 
         std::vector<CombatEntity> mEnemies;
 
-        std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>> mWeaponBulletsPool;
+        std::vector<std::shared_ptr<Actor>> mMissilesPool;
 
         size_t enemyShipCounter = 0;
 
@@ -57,9 +51,11 @@ namespace Game
 
         ~CombatController();
 
-        virtual void PreInit();
+        virtual void OnPreLevelInit();
 
-        virtual void PostInit();
+        virtual void OnInitLevel();
+
+        virtual void OnPostLevelInit();
 
         virtual void PostPlayLevelFinished();
 
@@ -85,9 +81,9 @@ namespace Game
 
         typename std::vector<CombatEntity>::iterator FindEnemyShipById(const uint64_t actorId);
 
-        typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator FindBulletByName(const std::string &actorName);
+        typename std::vector<std::shared_ptr<Actor>>::iterator FindBulletByName(const std::string &actorName);
 
-        typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator FindBulletById(const uint64_t actorId);
+        typename std::vector<std::shared_ptr<Actor>>::iterator FindBulletById(const uint64_t actorId);
 
         void TestSound();
     };

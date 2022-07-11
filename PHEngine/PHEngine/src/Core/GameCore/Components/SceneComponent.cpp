@@ -19,8 +19,8 @@ namespace EngineCore
                                                 glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))),
                                                 scale)),
          m_additionalRotationEuler(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(0.0f), "b_rotator",
-                                                                                 std::make_unique<typename EngineGOProperty<glm::vec3>::Action_t>([=](const glm::vec3 &rotator)
-                                                                                                                                                  { SetIsTransformationDirty(true); }))),
+                                                                                 [=](const glm::vec3 &rotator)
+                                                                                 { SetIsTransformationDirty(true); })),
          m_relativeMatrix(1)
    {
       AddEngineProperty(m_additionalRotationEuler);
@@ -148,7 +148,7 @@ namespace EngineCore
 
    glm::vec3 SceneComponent::GetHierarchyAccumulatedTranslation() const
    {
-       glm::vec3 result(0.0f);
+      glm::vec3 result(0.0f);
 
       if (auto ownerSp = GetOwner().lock())
       {

@@ -38,11 +38,11 @@ namespace Game
         PhysicsCollisionOccuredEvent::GetInstance()->RemoveListener(this);
     }
 
-    void CombatController::PreInit()
+    void CombatController::OnPreLevelInit()
     {
     }
 
-    void CombatController::PostInit()
+    void CombatController::OnInitLevel()
     {
         if (const auto &sceneSp = mScene.lock())
         {
@@ -71,14 +71,15 @@ namespace Game
         }
     }
 
+    void CombatController::OnPostLevelInit()
+    {
+    }
+
     void CombatController::PostPlayLevelFinished()
     {
-        for (const auto &bulletPair : mWeaponBulletsPool)
+        for (const auto &missile : mMissilesPool)
         {
-            if (const auto &bulletSp = bulletPair.first)
-            {
-                bulletSp->SetIsEnabled(false); // disable all bullets at level start
-            }
+            missile->SetIsEnabled(false); // disable all missiles at level start
         }
     }
 
@@ -96,7 +97,7 @@ namespace Game
             }
         }
     }
-    
+
     void CombatController::ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data)
     {
         const ePhysicsBodyType physBodyType = std::get<0>(data);
@@ -114,16 +115,13 @@ namespace Game
                 auto a_thatBulletIt = FindBulletById(that_actor_id);
 
                 auto a_enemyShipIt = a_thisEnemyShipIt != mEnemies.end() ? a_thisEnemyShipIt : a_thatEnemyShipIt;
-                auto a_bulletIt = a_thisBulletIt != mWeaponBulletsPool.end() ? a_thisBulletIt : a_thatBulletIt;
+                auto a_bulletIt = a_thisBulletIt != mMissilesPool.end() ? a_thisBulletIt : a_thatBulletIt;
 
                 if (a_enemyShipIt != mEnemies.end() &&
-                    a_bulletIt != mWeaponBulletsPool.end())
+                    a_bulletIt != mMissilesPool.end())
                 {
-                    const auto c_sound = a_bulletIt->first->GetComponentsByType<SoundComponent>().back();
-                    c_sound->PlayBuffer("explosion");
-
-                    a_bulletIt->first->SetIsEnabled(false);
-                    a_bulletIt->second = eBulletState::IDLE;
+                    auto missileActor = std::static_pointer_cast<BlackHoleMissileActor>(*a_bulletIt);
+                    missileActor->TriggerActivePhaseExplosion();
 
                     const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
                     const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
@@ -248,29 +246,24 @@ namespace Game
                                                                         glm::vec3(),
                                                                         glm::vec3(1.0));
 
-            mWeaponBulletsPool.emplace_back(std::make_pair(a_shipBullet, eBulletState::IDLE));
+            mMissilesPool.emplace_back(a_shipBullet);
         }
     }
 
     void CombatController::ShootBullet(const glm::vec3 &bulletStartPosition)
     {
-        auto idleBulletIt = std::find_if(mWeaponBulletsPool.begin(), mWeaponBulletsPool.end(), [](const auto &bulletPair)
-                                         { return bulletPair.second == eBulletState::IDLE; });
+        auto idleBulletIt = std::find_if(mMissilesPool.begin(), mMissilesPool.end(), [](const auto &missile)
+                                         { auto missileActor = std::static_pointer_cast<BlackHoleMissileActor>(missile);
+                                          return eMissileActivityState::IDLE == missileActor->GetMissileActivityState(); });
 
-        if (idleBulletIt == mWeaponBulletsPool.end())
+        if (idleBulletIt == mMissilesPool.end())
         {
             LogInfo("CombatController::ShootBullet => Error - no idle bullets in the pool");
             return;
         }
 
-        if (const auto &bulletSp = idleBulletIt->first)
-        {
-            auto blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(bulletSp);
-            blackHoleMissile->Spawn(bulletStartPosition);
-            blackHoleMissile->SetIsEnabled(true);
-            blackHoleMissile->TriggerLifecycle_FirstPhasePreload();
-            idleBulletIt->second = eBulletState::ACTIVE;
-        }
+        auto blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(*idleBulletIt);
+        blackHoleMissile->TriggerSpawn(bulletStartPosition);
     }
 
     void CombatController::ReSpawnEnemyShip(CombatEntity &spaceShip, const glm::vec3 &shipStartPosition)
@@ -282,23 +275,16 @@ namespace Game
 
     void CombatController::FlushToPoolUsedBullets()
     {
-        for (auto &weaponPair : mWeaponBulletsPool)
+        for (auto &missile : mMissilesPool)
         {
-            if (auto weaponSP = weaponPair.first)
-            {
-                const auto &bulletPosition = weaponSP->GetRootComponent()->GetTranslation();
-                const bool bBulletInsideLevel = EngineMath::TestPointInAABB(mLevelBounds.GetMin(), mLevelBounds.GetMax(), bulletPosition);
+            auto blackHoleMissileActor = std::static_pointer_cast<BlackHoleMissileActor>(missile);
 
-                if (!bBulletInsideLevel)
-                {
-                    weaponSP->SetIsEnabled(false);
-                    weaponSP->GetRootComponent()->SetTranslation(glm::vec3(0));
-                    weaponPair.second = eBulletState::IDLE;
-                }
-            }
-            else
+            if (eMissileActivityState::ACTIVE == blackHoleMissileActor->GetMissileActivityState())
             {
-                LogInfo("CombatController::FlushToPoolUsedBullets => Error: Bullet was destroyed!");
+                if (!blackHoleMissileActor->IsInsideLevel(mLevelBounds))
+                {
+                    blackHoleMissileActor->TriggerDisable();
+                }
             }
         }
     }
@@ -322,27 +308,27 @@ namespace Game
         return foundIt;
     }
 
-    typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator
+    typename std::vector<std::shared_ptr<Actor>>::iterator
     CombatController::FindBulletByName(const std::string &actorName)
     {
-        typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator foundIt = std::find_if(mWeaponBulletsPool.begin(),
-                                                                                                               mWeaponBulletsPool.end(),
-                                                                                                               [&actorName = static_cast<const std::string &>(actorName)](const auto &bulletPair)
-                                                                                                               {
-                                                                                                                   return actorName == bulletPair.first->GetName();
-                                                                                                               });
+        typename std::vector<std::shared_ptr<Actor>>::iterator foundIt = std::find_if(mMissilesPool.begin(),
+                                                                                      mMissilesPool.end(),
+                                                                                      [&actorName = static_cast<const std::string &>(actorName)](const auto &missile)
+                                                                                      {
+                                                                                          return actorName == missile->GetName();
+                                                                                      });
         return foundIt;
     }
 
-    typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator
+    typename std::vector<std::shared_ptr<Actor>>::iterator
     CombatController::FindBulletById(const uint64_t actorId)
     {
-        typename std::vector<std::pair<std::shared_ptr<Actor>, eBulletState>>::iterator foundIt = std::find_if(mWeaponBulletsPool.begin(),
-                                                                                                               mWeaponBulletsPool.end(),
-                                                                                                               [=](const auto &bulletPair)
-                                                                                                               {
-                                                                                                                   return bulletPair.first->HasGameObjectIdInHierarchy(actorId);
-                                                                                                               });
+        typename std::vector<std::shared_ptr<Actor>>::iterator foundIt = std::find_if(mMissilesPool.begin(),
+                                                                                      mMissilesPool.end(),
+                                                                                      [=](const auto &missile)
+                                                                                      {
+                                                                                          return missile->HasGameObjectIdInHierarchy(actorId);
+                                                                                      });
         return foundIt;
     }
 }

@@ -22,19 +22,18 @@ namespace EngineCore
 
       void PostPhysicsInitialize();
 
-      void InitLevel();
 
       std::weak_ptr<Scene> GetSceneWP() const;
 
       virtual void PreLevelInit();
+      
+      virtual void InitLevel();
 
       virtual void PostLevelInit();
 
       virtual void PostPlayLevelFinished();
 
       virtual void TickLevel(const float deltaTime);
-
-      virtual void LoadLevel();
 
       void SerializeLevel(const std::string& pathToFolder);
 

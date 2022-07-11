@@ -29,12 +29,17 @@ namespace Game
     {
     }
 
-    void SceneController::PreInit()
+    void SceneController::OnPreLevelInit()
     {
-        mCombatController->PreInit();
+        mCombatController->OnPreLevelInit();
     }
 
-    void SceneController::PostInit()
+    void SceneController::OnInitLevel()
+    {
+        mCombatController->OnInitLevel();
+    }
+
+    void SceneController::OnPostLevelInit()
     {
         if (const auto &sceneSp = mScene.lock())
         {
@@ -50,14 +55,14 @@ namespace Game
             mAmbientMusicDummy->AddComponent(c_streamingMusic);
         }
 
-        mCombatController->PostInit();
+        mCombatController->OnPostLevelInit();
     }
 
     void SceneController::PostPlayLevelFinished()
     {
         mCombatController->PostPlayLevelFinished();
 
-        mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
+        //mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
     }
 
     void SceneController::SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController)
