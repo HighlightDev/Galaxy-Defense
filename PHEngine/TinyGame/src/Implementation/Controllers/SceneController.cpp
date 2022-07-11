@@ -62,7 +62,7 @@ namespace Game
     {
         mCombatController->PostPlayLevelFinished();
 
-        //mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
+        mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
     }
 
     void SceneController::SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController)

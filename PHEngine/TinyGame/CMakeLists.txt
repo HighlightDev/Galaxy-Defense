@@ -17,7 +17,7 @@ set(
 	src/Implementation/Factories/WeakSpaceShipFactory.h
 	src/Implementation/Factories/WeakMissileFactory.h
 	src/Implementation/Factories/BlackHoleMissileFactory.h
-	src/Implementation/Actors/SpaceEntityActor.h
+	src/Implementation/Actors/MissileActor.h
 	src/Implementation/Actors/BlackHoleMissileActor.h
 )
 
@@ -37,7 +37,7 @@ set(
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/WeakMissileFactory.cpp
 	src/Implementation/Factories/BlackHoleMissileFactory.cpp
-	src/Implementation/Actors/SpaceEntityActor.cpp
+	src/Implementation/Actors/MissileActor.cpp
 	src/Implementation/Actors/BlackHoleMissileActor.cpp
     main.cpp
 )

@@ -5,18 +5,19 @@
 
 namespace EngineCore
 {
-    class Actor;
     class Scene;
 }
 
 namespace Game
 {
+    class MissileActor;
+
     class IMissileFactory
     {
-        virtual std::shared_ptr<::EngineCore::Actor>
+        virtual std::shared_ptr<MissileActor>
         CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,
-                        const glm::vec3 &translation,
-                        const glm::vec3 &rotation,
-                        const glm::vec3 &scale) = 0;
+                           const glm::vec3 &translation,
+                           const glm::vec3 &rotation,
+                           const glm::vec3 &scale) = 0;
     };
 }

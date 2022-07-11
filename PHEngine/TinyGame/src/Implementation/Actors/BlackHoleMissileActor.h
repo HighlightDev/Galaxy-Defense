@@ -1,8 +1,7 @@
 #pragma once
 
-#include "SpaceEntityActor.h"
+#include "MissileActor.h"
 #include "Core/GameCore/Tweener/Tweener.h"
-#include "Core/GameCore/BoundingBox.h"
 
 #include <memory>
 
@@ -10,20 +9,12 @@ using namespace EngineCore;
 
 namespace Game
 {
-    enum class eMissileActivityState
-    {
-        IDLE,
-        ACTIVE,
-    };
-
     class BlackHoleMissileActor
-        : public SpaceEntityActor,
+        : public MissileActor,
           public ITweenStateChangeNotifyable
     {
     protected:
         std::shared_ptr<Actor> mCombatActivePhaseActor;
-
-        eMissileActivityState mActivityState {eMissileActivityState::IDLE};
 
     public:
         BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
@@ -32,17 +23,15 @@ namespace Game
 
         virtual void OnTweenStateChanged(const std::string &stateName) override;
 
+        virtual void TriggerSpawn(const glm::vec3 &position) override;
+
+        virtual void TriggerExplosion() override;
+
+        virtual void TriggerDisable() override;
+
+        virtual bool IsInsideLevel(const BoundingBox &boundingBox) const override;
+
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
-
-        void TriggerSpawn(const glm::vec3 &position);
-
-        void TriggerActivePhaseExplosion();
-
-        void TriggerDisable();
-
-        bool IsInsideLevel(const BoundingBox &boundingBox) const;
-
-        eMissileActivityState GetMissileActivityState() const;
 
     private:
         void InitTweenerSubscriptions();

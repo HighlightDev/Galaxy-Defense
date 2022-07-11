@@ -3,6 +3,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/CombatEntity.h"
+#include "Implementation/Actors/MissileActor.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
 
@@ -34,7 +35,7 @@ namespace Game
 
         std::vector<CombatEntity> mEnemies;
 
-        std::vector<std::shared_ptr<Actor>> mMissilesPool;
+        std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
 
         size_t enemyShipCounter = 0;
 
@@ -81,9 +82,9 @@ namespace Game
 
         typename std::vector<CombatEntity>::iterator FindEnemyShipById(const uint64_t actorId);
 
-        typename std::vector<std::shared_ptr<Actor>>::iterator FindBulletByName(const std::string &actorName);
+        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletByName(const std::string &actorName);
 
-        typename std::vector<std::shared_ptr<Actor>>::iterator FindBulletById(const uint64_t actorId);
+        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletById(const uint64_t actorId);
 
         void TestSound();
     };

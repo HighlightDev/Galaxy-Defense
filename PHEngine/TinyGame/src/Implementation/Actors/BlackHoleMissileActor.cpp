@@ -7,7 +7,7 @@
 namespace Game
 {
     BlackHoleMissileActor::BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : SpaceEntityActor(gameObjectName, rootComponent),
+        : MissileActor(gameObjectName, rootComponent),
           mCombatActivePhaseActor()
     {
     }
@@ -31,11 +31,6 @@ namespace Game
         assert(!mCombatActivePhaseActor);
         mCombatActivePhaseActor = combatActivePhaseActor;
         AddChild(combatActivePhaseActor);
-    }
-
-    eMissileActivityState BlackHoleMissileActor::GetMissileActivityState() const
-    {
-        return mActivityState;
     }
 
     void BlackHoleMissileActor::OnTweenStateChanged(const std::string &stateName)
@@ -121,10 +116,11 @@ namespace Game
         mTweener->InitRootState();
     }
 
-    void BlackHoleMissileActor::TriggerActivePhaseExplosion()
+    void BlackHoleMissileActor::TriggerExplosion()
     {
-        const auto c_sound = GetComponentsByType<SoundComponent>().back();
-        c_sound->PlayBuffer("explosion");
+        const auto c_soundList = GetComponentsByType<SoundComponent>();
+        assert(c_soundList.size());
+        c_soundList.back()->PlayBuffer("explosion");
         TriggerLifecycle_FirstPhaseExplosion();
     }
 

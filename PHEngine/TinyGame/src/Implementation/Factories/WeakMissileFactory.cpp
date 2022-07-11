@@ -1,6 +1,5 @@
 #include "WeakMissileFactory.h"
 
-#include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Controllers/AiActorController.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
@@ -17,13 +16,13 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/AudioCore/SoundSource.h"
-
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Implementation/Actors/MissileActor.h"
 
 using namespace Resources;
 using namespace EngineCore;
@@ -33,7 +32,7 @@ namespace Game
 {
     size_t WeakMissileFactory::s_weakBulletCounter = 0;
 
-    std::shared_ptr<Actor>
+    std::shared_ptr<MissileActor>
     WeakMissileFactory::CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,
                                           const glm::vec3 &translation,
                                           const glm::vec3 &rotation,
@@ -42,7 +41,7 @@ namespace Game
         const auto &shipBulletIndexStr = std::to_string(s_weakBulletCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_missile_rootComponent_" + shipBulletIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_missile = std::make_shared<Actor>("a_missile_" + shipBulletIndexStr, rootComponent);
+        const auto &a_missile = std::make_shared<MissileActor>("a_missile_" + shipBulletIndexStr, rootComponent);
         scene->AddActor(a_missile);
 
         MaterialParser materialParser;
