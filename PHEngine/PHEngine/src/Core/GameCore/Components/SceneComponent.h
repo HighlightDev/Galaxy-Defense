@@ -14,6 +14,8 @@ namespace EngineCore
    {
       using Base = Component;
 
+      std::shared_ptr<EngineGOProperty<glm::vec3>> m_TransformScale; // This property is used only for bindings. For all other purposes use transform instead
+
    protected:
       bool bTransformationDirty;
 
@@ -45,9 +47,9 @@ namespace EngineCore
 
       void SetRotator(const glm::quat &rotator);
 
-      void SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent = true);
+      void SetScale(glm::vec3 scale);
 
-      void SetAdditionalRotation(const glm::vec3 &rotationEuler, const bool bTriggerTransformUpdateEvent = true);
+      void SetAdditionalRotation(const glm::vec3 &rotationEuler);
 
       std::weak_ptr<Transform> GetTransformWeakPtr() const;
 
@@ -73,5 +75,7 @@ namespace EngineCore
 
       void IterateHierarchyUpCollectRotator(const std::weak_ptr<Actor>& currentOwnerWp, glm::quat& accumulatedRotator) const;
       void IterateHierarchyUpCollectTranslation(const std::weak_ptr<Actor> &currentOwnerWp, glm::vec3 &accumulatedTranslation) const;
+
+      void SyncScale(const glm::vec3& scale);
    };
 }

@@ -5,12 +5,14 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 using namespace EnginePhysics;
 using namespace EngineCore;
+using namespace EngineUtility;
 
 namespace Game
 {
@@ -41,19 +43,24 @@ namespace Game
 
     void SceneController::OnPostLevelInit()
     {
-        if (const auto &sceneSp = mScene.lock())
+#ifdef DEBUG
+        if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
         {
-            sceneSp->AddActor(mAmbientMusicDummy);
-            mAmbientMusicDummy->SetScene(mScene);
-            ComponentData mAmbientMusicData("c_ambientMusic");
-            const auto musicComponentCreator = std::make_shared<AudioComponentCreator<StreamingSoundComponent>>();
-            const auto c_streamingMusic = std::static_pointer_cast<StreamingSoundComponent>(
-                sceneSp->CreateComponent_GameThread(musicComponentCreator, mAmbientMusicData));
-            c_streamingMusic->CreateStreamingSoundSource("piano-loop2.wav");
-            c_streamingMusic->SetIsLoopSound(true);
-            c_streamingMusic->SetGain(0.1f);
-            mAmbientMusicDummy->AddComponent(c_streamingMusic);
+            if (const auto &sceneSp = mScene.lock())
+            {
+                sceneSp->AddActor(mAmbientMusicDummy);
+                mAmbientMusicDummy->SetScene(mScene);
+                ComponentData mAmbientMusicData("c_ambientMusic");
+                const auto musicComponentCreator = std::make_shared<AudioComponentCreator<StreamingSoundComponent>>();
+                const auto c_streamingMusic = std::static_pointer_cast<StreamingSoundComponent>(
+                    sceneSp->CreateComponent_GameThread(musicComponentCreator, mAmbientMusicData));
+                c_streamingMusic->CreateStreamingSoundSource("piano-loop2.wav");
+                c_streamingMusic->SetIsLoopSound(true);
+                c_streamingMusic->SetGain(0.1f);
+                mAmbientMusicDummy->AddComponent(c_streamingMusic);
+            }
         }
+#endif
 
         mCombatController->OnPostLevelInit();
     }
@@ -62,7 +69,12 @@ namespace Game
     {
         mCombatController->PostPlayLevelFinished();
 
-        mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
+#ifdef DEBUG
+        if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
+        {
+            mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
+        }
+#endif
     }
 
     void SceneController::SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController)

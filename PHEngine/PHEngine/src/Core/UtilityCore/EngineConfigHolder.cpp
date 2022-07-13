@@ -40,6 +40,11 @@ namespace EngineUtility
             return stof(valueStr);
         };
 
+        const auto parseBool = [](const std::string &valueStr) -> float
+        {
+            return valueStr == "true";
+        };
+
         const auto parseStringVector = [](const std::string& valueStr) -> std::vector<std::string>
         {
             auto vectorItems = Split(valueStr, ';');
@@ -65,6 +70,9 @@ namespace EngineUtility
             std::make_pair("shadow_map_bias_point_light",           std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasPointLight          = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); })),
             std::make_pair("max_font_characters_count",             std::function([=](const std::string &valueStr) { mEngineConfig.MaxFontCharactersCount           = parseUInt(valueStr); })),
+#ifdef DEBUG
+            std::make_pair("debug_enable_ambient_music",            std::function([=](const std::string &valueStr) { mEngineConfig.EnableAmbientMusic               = parseBool(valueStr); })),
+#endif
             std::make_pair("fonts",                                 std::function([=](const std::string &valueStr) { mEngineConfig.FontsVector                      = parseStringVector(valueStr); }))
         };
 

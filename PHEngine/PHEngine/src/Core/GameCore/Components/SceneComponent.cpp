@@ -14,6 +14,8 @@ namespace EngineCore
                                   const glm::vec3 &rotation = glm::vec3(0.0f),
                                   const glm::vec3 &scale = glm::vec3(0.0f))
        : Component(gameObjectName),
+         m_TransformScale(std::make_shared<EngineGOProperty<glm::vec3>>(scale, "p_scale", [=](const glm::vec3 &scale)
+                                                                        { SyncScale(scale); })),
          bTransformationDirty(true),
          mTransform(std::make_shared<Transform>(translation,
                                                 glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))),
@@ -24,10 +26,16 @@ namespace EngineCore
          m_relativeMatrix(1)
    {
       AddEngineProperty(m_additionalRotationEuler);
+      AddEngineProperty(m_TransformScale);
    }
 
    SceneComponent::~SceneComponent()
    {
+   }
+
+   void SceneComponent::SyncScale(const glm::vec3& scale)
+   {
+      SetScale(scale);
    }
 
    void SceneComponent::Tick(const float deltaTime)
@@ -62,8 +70,8 @@ namespace EngineCore
       const glm::mat4 identityMatrix(1);
       m_relativeMatrix = identityMatrix;
       m_relativeMatrix *= parentRelativeMatrix;
-      m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
       m_relativeMatrix *= glm::translate(identityMatrix, mTransform->Translation);
+      m_relativeMatrix *= glm::scale(identityMatrix, mTransform->Scale);
 
       if (bIsRootComponent)
       {
@@ -99,13 +107,13 @@ namespace EngineCore
       SetIsTransformationDirty(true);
    }
 
-   void SceneComponent::SetScale(glm::vec3 scale, const bool bTriggerTransformUpdateEvent)
+   void SceneComponent::SetScale(glm::vec3 scale)
    {
       mTransform->Scale = scale;
       SetIsTransformationDirty(true);
    }
 
-   void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationEuler, const bool bTriggerTransformUpdateEvent)
+   void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationEuler)
    {
       m_additionalRotationEuler->SetValue(rotationEuler);
       SetIsTransformationDirty(true);

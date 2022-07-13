@@ -6,6 +6,7 @@
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/Vec3PropertyBinding.h"
 
 #include <unordered_map>
 #include <type_traits>
@@ -240,12 +241,53 @@ namespace EngineCore
       {
          result = std::make_shared<BooleanPropertyBinding>(binding.BindingName);
       }
+      else if ("vec3" == binding.Type)
+      {
+         result = std::make_shared<Vec3PropertyBinding>(binding.BindingName);
+      }
       else
       {
          assert(false);
       }
 
       return result;
+   }
+
+   glm::vec3 ExtractVec3FromStrings(const std::vector<std::string>& valuesStr)
+   {
+      glm::vec3 result(0.0f);
+      bool b_xValueFound = false, b_yValueFound = false, b_zValueFound = false;
+      for (const auto &value : valuesStr)
+         {
+            const auto trimmedValueStr = TrimEnd(TrimStart(RemoveAll(value, ' ')));
+
+            if (StartsWith(trimmedValueStr, "x="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+               result.x = GetTrivialValueAfterAssignOperator<float>(valueStr);
+               b_xValueFound = true;
+            }
+            else if (StartsWith(trimmedValueStr, "y="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+               result.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
+               b_yValueFound = true;
+            }
+            else if (StartsWith(trimmedValueStr, "z="))
+            {
+               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+               result.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
+               b_zValueFound = true;
+            }
+            else
+            {
+               assert(false);
+            }
+         }
+
+         assert(b_xValueFound && b_yValueFound && b_zValueFound);
+
+         return result;
    }
 
    std::unique_ptr<BaseStateProperty> CreateProperty(const TweenerParser::TweenerParser_Property &property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> &bindings)
@@ -265,34 +307,8 @@ namespace EngineCore
       }
       else if ("euler_angles_rotation" == property.Type)
       {
-         glm::vec3 eulerAngles = glm::vec3(0.0f);
-
          const auto &values = Split(property.Value, ';');
-         for (const auto &value : values)
-         {
-            const auto trimmedValueStr = TrimEnd(TrimStart(RemoveAll(value, ' ')));
-
-            if (StartsWith(trimmedValueStr, "x="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               eulerAngles.x = GetTrivialValueAfterAssignOperator<float>(valueStr);
-            }
-            else if (StartsWith(trimmedValueStr, "y="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               eulerAngles.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
-            }
-            else if (StartsWith(trimmedValueStr, "z="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               eulerAngles.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
-            }
-            else
-            {
-               assert(false);
-            }
-         }
-
+         const glm::vec3 eulerAngles = ExtractVec3FromStrings(values);
          result = std::make_unique<StateProperty<eBindingType::EulerAnglesRotation>>(eulerAngles,
                                                                                      std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
       }
@@ -300,7 +316,15 @@ namespace EngineCore
       {
          const std::string &value = ToLower(property.Value);
          const bool booleanValue = "true" == value;
-         result = std::make_unique<StateProperty<eBindingType::Boolean>>(booleanValue, std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eBindingType::Boolean>>(booleanValue,
+                                                                         std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
+      }
+      else if ("vec3" == property.Type)
+      {
+         const auto &values = Split(property.Value, ';');
+         const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
+         result = std::make_unique<StateProperty<eBindingType::Vec3>>(vec3Value,
+                                                                      std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
       }
 
       assert(result);

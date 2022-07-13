@@ -8,7 +8,8 @@ namespace Game
 {
     BlackHoleMissileActor::BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
         : MissileActor(gameObjectName, rootComponent),
-          mCombatActivePhaseActor()
+          mCombatActivePhaseActor(),
+          mExplosionSecondPhaseActor()
     {
     }
 
@@ -33,6 +34,13 @@ namespace Game
         AddChild(combatActivePhaseActor);
     }
 
+    void BlackHoleMissileActor::AddExplosionSecondPhaseActor(const std::shared_ptr<Actor> &explosionSecondPhaseActor)
+    {
+        assert(!mExplosionSecondPhaseActor);
+        mExplosionSecondPhaseActor = explosionSecondPhaseActor;
+        AddChild(mExplosionSecondPhaseActor);
+    }
+
     void BlackHoleMissileActor::OnTweenStateChanged(const std::string &stateName)
     {
         LogInfo("BlackHoleMissileActor::OnTweenStateChanged => New state: ", stateName);
@@ -45,13 +53,12 @@ namespace Game
         }
         else if ("s_FirstPhaseExplosion" == stateName)
         {
-            TriggerDisable();
-        }
-        else if ("s_SecondPhasePreload" == stateName)
-        {
+            mExplosionSecondPhaseActor->GetMovementComponent()->Teleport(mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
+            TriggerLifecycle_SecondPhaseExplosion();
         }
         else if ("s_SecondPhaseExplosion" == stateName)
         {
+            TriggerDisable();
         }
         else
         {
@@ -81,14 +88,6 @@ namespace Game
         assert(mTweener);
 
         mTweener->ChangeState("s_FirstPhaseExplosion");
-    }
-
-    void BlackHoleMissileActor::TriggerLifecycle_SecondPhasePreload()
-    {
-        LogInfo("BlackHoleMissileActor::TriggerLifecycle_SecondPhasePreload");
-        assert(mTweener);
-
-        mTweener->ChangeState("s_SecondPhasePreload");
     }
 
     void BlackHoleMissileActor::TriggerLifecycle_SecondPhaseExplosion()
@@ -126,6 +125,8 @@ namespace Game
 
     bool BlackHoleMissileActor::IsInsideLevel(const BoundingBox &boundingBox) const
     {
-        return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
+        return EngineMath::TestPointInAABB(boundingBox.GetMin(),
+                                           boundingBox.GetMax(),
+                                           mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
     }
 }

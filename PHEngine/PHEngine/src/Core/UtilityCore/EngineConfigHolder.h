@@ -31,6 +31,10 @@ namespace EngineUtility
         size_t MaxFontCharactersCount = 0;
 
         std::vector<std::string> FontsVector = std::vector<std::string>();
+
+#ifdef DEBUG
+        bool EnableAmbientMusic = true;
+#endif
     };
 
     class EngineConfigHolder

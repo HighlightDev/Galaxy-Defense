@@ -4,6 +4,7 @@
 #include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/Vec3PropertyBinding.h"
 #include "Core/GameCore/GameObject.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -62,6 +63,13 @@ namespace EngineCore
             const auto booleanBinding = static_cast<BooleanPropertyBinding*>(binding);
             auto gameObjectProperty = CastBasePropertyToType<bool>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
             booleanBinding->SetGameObjectProperty(gameObjectProperty);
+            break;
+         }
+         case eBindingType::Vec3:
+         {
+            const auto vec3Binding = static_cast<EulerAnglesRotationPropertyBinding *>(binding);
+            auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+            vec3Binding->SetGameObjectProperty(gameObjectProperty);
             break;
          }
          default:

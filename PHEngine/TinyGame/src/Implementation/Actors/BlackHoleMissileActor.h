@@ -15,6 +15,7 @@ namespace Game
     {
     protected:
         std::shared_ptr<Actor> mCombatActivePhaseActor;
+        std::shared_ptr<Actor> mExplosionSecondPhaseActor;
 
     public:
         BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
@@ -33,6 +34,8 @@ namespace Game
 
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
 
+        void AddExplosionSecondPhaseActor(const std::shared_ptr<Actor> &explosionSecondPhaseActor);
+
     private:
         void InitTweenerSubscriptions();
 
@@ -41,8 +44,6 @@ namespace Game
         void TriggerLifecycle_FirstPhaseActiveCombat();
 
         void TriggerLifecycle_FirstPhaseExplosion();
-
-        void TriggerLifecycle_SecondPhasePreload();
 
         void TriggerLifecycle_SecondPhaseExplosion();
     };

@@ -10,6 +10,7 @@
 #include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/GameObjectPropertyBindings/Vec3PropertyBinding.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineMath;
@@ -118,6 +119,24 @@ namespace EngineCore
 
       StateProperty(const bool value, const std::shared_ptr<BooleanPropertyBinding> &booleanPropertyBinding)
           : BaseStateProperty(booleanPropertyBinding),
+            Value(value)
+      {
+      }
+   };
+
+   template <>
+   struct StateProperty<eBindingType::Vec3>
+       : public BaseStateProperty
+   {
+      glm::vec3 Value;
+
+      virtual eBindingType GetStatePropertyType() const override
+      {
+         return eBindingType::Vec3;
+      }
+
+      StateProperty(const glm::vec3 &value, const std::shared_ptr<Vec3PropertyBinding> &vec3PropertyBinding)
+          : BaseStateProperty(vec3PropertyBinding),
             Value(value)
       {
       }

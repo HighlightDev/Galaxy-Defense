@@ -10,7 +10,8 @@ namespace EngineCore {
       FloatScalar,
       EulerAnglesRotation,
       Animation,
-      Boolean
+      Boolean,
+      Vec3
    };
 
    struct PropertyBinding
