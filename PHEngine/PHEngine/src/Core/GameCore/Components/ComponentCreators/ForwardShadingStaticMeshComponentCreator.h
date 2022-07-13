@@ -22,7 +22,7 @@ namespace EngineCore
     class Scene;
 
     template <typename ComponentInstantiationType>
-    class StaticMeshComponentCreator
+    class ForwardShadingStaticMeshComponentCreator
         : public ComponentCreatorBase
     {
     public:
@@ -58,7 +58,7 @@ namespace EngineCore
                 FolderManager::GetInstance()->GetShadersPath() +
                     "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "deferredFS.glsl");
+                    "composite_shaders" + SLASH + "forwardFS.glsl");
 
             typename CompositeShaderPool::sharedValue_t staticMeshShader =
                 CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
@@ -74,13 +74,16 @@ namespace EngineCore
             typename CompositeShaderPool::sharedValue_t planarReflectionShader =
                 CreateMaterialShader<StaticMeshVertexFactory,
                                      CapturePlanarReflectionShader>(
-                    "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
+                    "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName,
+                    planarReflectionParams,
+                    materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
                                                                 StaticMeshRenderData(skin,
                                                                                      staticMeshShader,
                                                                                      planarReflectionShader,
-                                                                                     materialProxy, true));
+                                                                                     materialProxy,
+                                                                                     false));
         }
     };
 }

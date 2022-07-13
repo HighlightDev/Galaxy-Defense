@@ -16,6 +16,7 @@
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ForwardShadingStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -104,30 +105,21 @@ namespace Game
                                                                                                                  glm::vec3(), glm::vec3(), glm::vec3(1)));
 
             MaterialParser materialParser;
-            const auto &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+            const auto &missile_mat = materialParser.ParseMaterialDescriptor("BlackHoleMissileMaterial.m");
 
-            const std::string albedoName = "solar_cells_albedo_512.jpg";
-            const std::string normalName = "solar_cells_normal_512.jpg";
-            const std::string roughnessName = "solar_cells_roughness_512.jpg";
-            const std::string metallicName = "solar_cells_metallic_512.jpg";
+            const std::string albedoName = "nightTop.jpg";
 
             const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
-            const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
-            const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
-            const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
-            const float uvScale = 0.5f;
+            const float uvScale = 1.0f;
 
-            MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "albedo", albedo_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "normalMap", normal_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "roughnessMap", roughness_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", albedo_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "uvScale", uvScale);
 
             const MeshComponentData d_mesh("c_missileExplosionSecondPhase_meshComponent_" + missileIndexStr,
                                            "sphere.obj",
                                            glm::vec3(0),
-                                           glm::vec3(0), glm::vec3(5), "", pbs_mat);
-            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+                                           glm::vec3(0), glm::vec3(5), "", missile_mat);
+            const auto &meshComponentCreator = std::make_shared<ForwardShadingStaticMeshComponentCreator<StaticMeshComponent>>();
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
             a_missileExplosionSecondPhase->AddComponent(c_mesh);
 

@@ -1,0 +1,125 @@
+<tweener>
+  <states>
+    <state>
+      name: "s_FirstPhasePreload"
+    </state>
+    <state>
+      name: "s_FirstPhaseActiveCombat"
+    </state>
+    <state>
+      name: "s_FirstPhaseExplosion"
+    </state>
+     <state>
+      name: "s_SecondPhaseExplosion"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_FirstPhasePreload_To_FirstPhaseActiveCombat"
+      from_state: "s_FirstPhasePreload"
+      to_state: "s_FirstPhaseActiveCombat"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_FirstPhaseActiveCombat_To_FirstPhaseExplosion"
+      from_state: "s_FirstPhaseActiveCombat"
+      to_state: "s_FirstPhaseExplosion"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_SecondPhasePreload_To_SecondPhaseExplosion"
+      from_state: "s_FirstPhaseExplosion"
+      to_state: "s_SecondPhaseExplosion"
+      duration: "3.0"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+    </binding>
+    <binding>
+      binding_name: "b_blackHoleSize"
+      type: "vec3"
+    </binding>
+  </bindings>
+  <properties>
+    <property>
+      name: "p_missile_visibility"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_blackHolse_visibility"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_blackHolse_size"
+      binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhasePreload"
+    </property>
+
+    <property>
+      name: "p_actor_visibility_combat1"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_actor_visibility_preload1"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_blackHolse_size"
+      binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+
+    <property>
+      name: "p_actor_visibility_explosion1"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_FirstPhaseExplosion"
+    </property>
+    <property>
+      name: "p_actor_visibility_explosion1"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "true"
+      state: "s_FirstPhaseExplosion"
+    </property>
+    <property>
+      name: "p_blackHolse_size"
+      binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseExplosion"
+    </property>
+
+    <property>
+      name: "p_blackHolse_size"
+      binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=5.0;y=5.0;z=5.0;"
+      state: "s_SecondPhaseExplosion"
+    </property>
+  </properties>
+</tweener>

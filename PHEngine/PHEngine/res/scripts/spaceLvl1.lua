@@ -27,6 +27,9 @@ function CreateTestLevel(host)
 	,piano-loop2.wav
 	,missile1_model.fbx
 	,missile1_albedo.png
+	,playerCube.obj
+	,sphere.obj
+	,Brick_Medieval_albedo.jpg
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

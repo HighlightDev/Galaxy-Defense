@@ -14,6 +14,7 @@ namespace Graphics
                 component->GetRenderData().m_planarReflectionShader,
                 component->GetRenderData().mMaterialProxy)
       {
+         mIsDeferredShaded = component->GetRenderData().mIsDeferredShaded;
       }
 
       StaticMeshSceneProxy::~StaticMeshSceneProxy()
@@ -55,7 +56,7 @@ namespace Graphics
 
       bool StaticMeshSceneProxy::IsDeferred() const
       {
-         return true;
+         return mIsDeferredShaded;
       }
 
       eMeshFacing StaticMeshSceneProxy::GetMeshFrontFace() const

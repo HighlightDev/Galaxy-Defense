@@ -22,20 +22,23 @@ namespace Graphics
          std::shared_ptr<IShader> m_materialShader;
          std::shared_ptr<IShader> m_planarReflectionShader;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
+         bool mIsDeferredShaded;
 
          StaticMeshRenderData(
-            std::shared_ptr<Skin> staticMesh,
-            std::shared_ptr<IShader> materialShader,
-            std::shared_ptr<IShader> planarReflectionShader,
-            std::shared_ptr<MaterialProxy> materialProxy)
-            : m_skin(staticMesh)
-            , m_materialShader(materialShader)
-            , m_planarReflectionShader(planarReflectionShader)
-            , mMaterialProxy(materialProxy)
+             std::shared_ptr<Skin> staticMesh,
+             std::shared_ptr<IShader> materialShader,
+             std::shared_ptr<IShader> planarReflectionShader,
+             std::shared_ptr<MaterialProxy> materialProxy,
+             const bool isDeferredShaded)
+             : m_skin(staticMesh),
+               m_materialShader(materialShader),
+               m_planarReflectionShader(planarReflectionShader),
+               mMaterialProxy(materialProxy),
+               mIsDeferredShaded(isDeferredShaded)
          {
          }
 
-         ~StaticMeshRenderData() { }
+         ~StaticMeshRenderData() {}
       };
    }
 }

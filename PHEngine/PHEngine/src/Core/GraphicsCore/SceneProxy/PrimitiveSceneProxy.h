@@ -51,6 +51,8 @@ namespace Graphics
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
+         bool mIsDeferredShaded{false}; //todo: redo this for all primitive scene proxies
+
       public:
          PrimitiveSceneProxy(const bool isEnabled,
                              const bool isVisible,
