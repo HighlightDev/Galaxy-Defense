@@ -105,15 +105,19 @@ namespace Game
                                                                                                                  glm::vec3(), glm::vec3(), glm::vec3(1)));
 
             MaterialParser materialParser;
+
             const auto &missile_mat = materialParser.ParseMaterialDescriptor("BlackHoleMissileMaterial.m");
+            const std::string resourceCreatorName = "c_planarReflectionMainCamera";
+            const auto planarReflectionTextureValue = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
+            assert(planarReflectionTextureValue);
 
-            const std::string albedoName = "nightTop.jpg";
+            const std::string dudvTextureName = "water_dudv.jpg";
+            const auto &dudv_tex = TexturePool::GetInstance()->GetOrAllocateResource(dudvTextureName);
 
-            const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
-            const float uvScale = 1.0f;
-
-            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", albedo_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "uvScale", uvScale);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "mul_coef", 2.5f);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene.get(), "GT_DeltaSec", "deltaTime");
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", planarReflectionTextureValue);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "dudv", dudv_tex);
 
             const MeshComponentData d_mesh("c_missileExplosionSecondPhase_meshComponent_" + missileIndexStr,
                                            "sphere.obj",

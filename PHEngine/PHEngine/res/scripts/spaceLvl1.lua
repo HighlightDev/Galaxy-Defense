@@ -30,6 +30,7 @@ function CreateTestLevel(host)
 	,playerCube.obj
 	,sphere.obj
 	,Brick_Medieval_albedo.jpg
+	,water_dudv.jpg
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

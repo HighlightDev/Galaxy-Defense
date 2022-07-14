@@ -25,7 +25,7 @@ namespace Graphics
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, ITexture* texture);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const float value);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const std::shared_ptr<IDeferredResourceCreator>& deferredResourceCreator);
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const class GameObject* gameObject,const std::string& gamePropertyName, const std::string& bindingName);
 
    private:
@@ -36,7 +36,7 @@ namespace Graphics
 
       static void SetFloatValue(std::shared_ptr<MaterialProperty> materialProperty, const float value);
 
-      static void SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, const std::shared_ptr<IDeferredResourceCreator>& deferredResourceCreator);
+      static void SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator);
 
       static bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property, MaterialProperty::eMaterialPropertyType& outPropertyType);
    };

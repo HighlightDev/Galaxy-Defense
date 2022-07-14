@@ -14,9 +14,12 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/PlanarReflectionComponentCreator.h"
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
@@ -30,6 +33,7 @@ using namespace EnginePhysics;
 using namespace IO;
 using namespace EngineCore;
 using namespace Resources;
+using namespace Graphics;
 
 namespace Game
 {
@@ -63,14 +67,28 @@ namespace Game
 
    void IntroLevel::CreateScene()
    {
+      const float displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+      const float displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
                                                             eCameraType::MAIN_FIRST_PERSON_CAMERA,
                                                             mScene,
-                                                            ViewPortInfo(glm::ivec4(0, 0,
-                                                                                    DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-                                                                                    DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())),
-                                                            38.88f, -2.72f, glm::vec3(5.0f, 45.0f, -40.0f));
+                                                            ViewPortInfo(0, 0, displayWidth, displayHeight),
+                                                            38.88f,
+                                                            -2.72f,
+                                                            glm::vec3(5.0f, 45.0f, -40.0f));
       mScene->RegisterMainCamera(spaceCamera);
+
+      auto d_planarReflectionComponentData = PlanarReflectionComponentData("c_planarReflectionMainCamera",
+                                                                           glm::vec3(0, -5, 0),
+                                                                           glm::vec3(),
+                                                                           glm::vec3(1),
+                                                                           spaceCamera.get(),
+                                                                           ViewPortInfo(0, 0, displayWidth, displayHeight));
+                                                                           
+      auto planarReflectionComponentCreator = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
+      const auto c_planarReflection = std::static_pointer_cast<PlanarReflectionComponent>(mScene->CreateComponent_GameThread(planarReflectionComponentCreator,
+                                                                                                                             d_planarReflectionComponentData));
 
       const auto &a_spaceship = mScene->GetActorByName("SpaceshipActor");
       assert(a_spaceship);
@@ -110,7 +128,6 @@ namespace Game
       mSceneController->SetPlayerActorController(spaceShipController);
 
       TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
-
 
       /*const auto groundActor = mScene->GetActorByName("Ground");
       const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();

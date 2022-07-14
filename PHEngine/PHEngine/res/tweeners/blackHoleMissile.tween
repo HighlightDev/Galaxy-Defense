@@ -30,7 +30,7 @@
       name: "t_SecondPhasePreload_To_SecondPhaseExplosion"
       from_state: "s_FirstPhaseExplosion"
       to_state: "s_SecondPhaseExplosion"
-      duration: "3.0"
+      duration: "5.0"
     </transition>
   </transitions>
   <bindings>

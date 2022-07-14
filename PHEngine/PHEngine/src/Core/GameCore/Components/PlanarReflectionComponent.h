@@ -21,8 +21,7 @@ namespace EngineCore
    using Graphics::PlanarReflectionProxy;
 
    class PlanarReflectionComponent
-       : std::enable_shared_from_this<IDeferredResourceCreator>,
-         public SceneComponent,
+       : public SceneComponent,
          public IDeferredResourceCreator
    {
       size_t mPlanarReflectionSceneProxyId = -1;

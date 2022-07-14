@@ -41,7 +41,6 @@ namespace EngineCore
 
    ::Graphics::ViewPortInfo PlanarReflectionComponent::GetRenderTargetViewPortInfo() const
    {
-
       return mRenderTargetViewPortInfo;
    }
 
@@ -54,7 +53,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         sceneSP->RegisterDeferredResourceCreator(shared_from_this(), GetGameObjectName());
+         sceneSP->RegisterDeferredResourceCreator(this, GetGameObjectName());
       }
    }
 

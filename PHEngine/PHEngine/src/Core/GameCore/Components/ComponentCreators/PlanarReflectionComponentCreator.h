@@ -3,6 +3,7 @@
 #include "IComponentCreatable.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
 #include <type_traits>
 
@@ -15,7 +16,7 @@ namespace EngineCore
         : public ComponentCreatorBase
     {
     public:
-        virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
+        virtual typename std::enable_if<std::is_base_of<PlanarReflectionComponent, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
         {
            const PlanarReflectionComponentData &mData =

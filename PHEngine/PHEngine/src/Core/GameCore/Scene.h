@@ -55,7 +55,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineGOProperty<float>> mGameThreadDeltaSec;
 
-      std::unordered_map<std::string, std::shared_ptr<IDeferredResourceCreator>> mDeferredResourceCreators;
+      std::unordered_map<std::string, IDeferredResourceCreator*> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
 
@@ -97,7 +97,7 @@ namespace EngineCore
 
       GameObject *GetGameObjectById(const uint64_t id) const;
 
-      std::shared_ptr<IDeferredResourceCreator> GetDeferredResourceCreatorByName(const std::string &name) const;
+      IDeferredResourceCreator* GetDeferredResourceCreatorByName(const std::string &name) const;
 
       const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
 
@@ -181,7 +181,7 @@ namespace EngineCore
       float GetTextWidthByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
       float GetTextHeightByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
 
-      bool RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator>& creatorInstance, const std::string &gameObjectName);
+      bool RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 

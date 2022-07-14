@@ -50,7 +50,7 @@ namespace Graphics
       floatProperty->SetValue(value);
    }
 
-   void MaterialPropertySetter::SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, const std::shared_ptr<IDeferredResourceCreator>& deferredResourceCreator)
+   void MaterialPropertySetter::SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator)
    {
       if (materialProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY)
       {
@@ -111,7 +111,7 @@ namespace Graphics
          SetFloatValue(materialInstance->GetMaterialPropertyByName(propertyName), value);
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, const std::shared_ptr<IDeferredResourceCreator>& deferredResourceCreator)
+   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator)
    {
       assert(materialInstance);
 

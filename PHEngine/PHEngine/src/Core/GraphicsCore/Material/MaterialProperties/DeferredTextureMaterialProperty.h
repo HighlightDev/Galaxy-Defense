@@ -2,8 +2,10 @@
 
 #include "MaterialProperty.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResource.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace Resources;
+using namespace EngineCore;
 
 namespace Graphics {
 
@@ -45,6 +47,10 @@ namespace Graphics {
                int32_t slot = 10 + propertyIndex;
                outResource->BindTexture(slot);
                uniform.LoadUniform(slot);
+            }
+            else 
+            {
+               LogInfo("DeferredTextureMaterialProperty::SetValueToUniform => property { ", GetPropertyName()," } is not ready yet.");
             }
          }
       }
