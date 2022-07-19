@@ -11,11 +11,13 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
 	vec3 ndc = materialIn.ClippedCoordinates.xyz / materialIn.ClippedCoordinates.w;
 	vec2 texSpaceCoords = (ndc.xy * 0.5) + 0.5;
-	vec2 texCoords = materialIn.TextureCoordinates.xy * 10;
+	vec2 texCoords = materialIn.TextureCoordinates.xy;
 
-	vec2 distortionVec =  (texture(dudv, texCoords + distortion).rg * 2.0) - 1.0;
+	vec2 distortionVec =  (texture(dudv, texCoords + distortion * 0.5).rg * 2.0) - 1.0;
 
-	vec3 texelColor = texture(albedo, clamp(texSpaceCoords + distortionVec * 0.1, 0.0, 1.0)).rgb;
+	vec3 texelColor = texture(albedo, clamp(materialIn.TextureCoordinates.xy + distortionVec, 0.0, 1.0)).rgb;
+	const float brightnessCorrectionFactor = 1.0 / 2.2;
+  	texelColor = pow(texelColor, vec3(brightnessCorrectionFactor));
 	return texelColor;
 }
 

@@ -3,6 +3,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 
 namespace Game
 {
@@ -54,6 +55,8 @@ namespace Game
         else if ("s_FirstPhaseExplosion" == stateName)
         {
             mExplosionSecondPhaseActor->GetMovementComponent()->Teleport(mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
+            const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
+            c_particle->EmitParticles(100);
             TriggerLifecycle_SecondPhaseExplosion();
         }
         else if ("s_SecondPhaseExplosion" == stateName)

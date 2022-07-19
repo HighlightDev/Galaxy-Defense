@@ -24,7 +24,7 @@ namespace Graphics
                                   component->GetRenderData().m_skin,
                                   component->GetRenderData().m_shader,
                                   nullptr,
-                                  nullptr),
+                                  component->GetRenderData().mMaterialProxy),
               mParticlesRawDataHandler(component->GetParticlesCount()),
               mActiveParticlesCount(0)
         {
@@ -39,11 +39,12 @@ namespace Graphics
             if (!mActiveParticlesCount)
                 return;
 
-            const std::shared_ptr<ParticleSystemSceneProxy::ParticleShader_t>& shader = std::static_pointer_cast<ParticleSystemSceneProxy::ParticleShader_t>(m_shader);
+            const std::shared_ptr<ParticleSystemSceneProxy::ParticleShader_t> &shader = std::static_pointer_cast<ParticleSystemSceneProxy::ParticleShader_t>(m_shader);
 
             PrepareParticlesInstancedBuffer();
             shader->ExecuteShader();
             shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+            shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
             m_skin->GetBuffer()->RenderInstanced(GL_POINTS, mActiveParticlesCount);
             shader->StopShader();
         }
@@ -92,10 +93,15 @@ namespace Graphics
                 mParticlesRawDataHandler.CopyToMeActiveColorData(colorBuffer, 0, colorByteChunkSize);
                 mParticlesRawDataHandler.SetColorActiveDataChunkSize(colorByteChunkSize);
             }
+
+            bIsParticlesTransformDirty = true;
         }
 
         void ParticleSystemSceneProxy::PrepareParticlesInstancedBuffer()
         {
+            if (!bIsParticlesTransformDirty)
+                return;
+
             auto *const particlesTransformVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_0);
             auto *const particlesRotationSizeVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_1);
             auto *const particlesColorVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::CUSTOM_2);
@@ -115,6 +121,8 @@ namespace Graphics
             particlesColorVBO->BufferSubData(0, colorBufferSize, mParticlesRawDataHandler.GetColorData());
 
             particlesTransformVBO->UnbindVBO();
+
+            bIsParticlesTransformDirty = false;
         }
     }
 }

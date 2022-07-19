@@ -5,7 +5,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GameCore/Particles/ParticlesRawDataHandler.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryCompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
 
 #include <vector>
@@ -29,8 +29,10 @@ namespace Graphics
 
             size_t mActiveParticlesCount;
 
+            bool bIsParticlesTransformDirty{false};
+
             using Base = PrimitiveSceneProxy;
-            using ParticleShader_t = VertexFactoryCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>;
+            using ParticleShader_t = VertexFactoryMaterialCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>;
 
         public:
             ParticleSystemSceneProxy(const ::EngineCore::ParticleSystemComponent *component);

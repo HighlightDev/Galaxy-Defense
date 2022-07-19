@@ -3,6 +3,7 @@
 #include <type_traits>
 
 #include "IComponentCreatable.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Particles/ParticlePoolParameters.h"
 #include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
@@ -18,8 +19,6 @@ using namespace Graphics::OpenGL;
 
 namespace EngineCore
 {
-    class Scene;
-
     template <typename ComponentInstantiationType>
     class ParticleSystemComponentCreator
         : public ComponentCreatorBase
@@ -36,18 +35,23 @@ namespace EngineCore
 
             ParticlesPool::sharedValue_t particlesSkin =
                 ParticlesPool::GetInstance()->GetOrAllocateResource(params);
+
+            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
             ShaderParams particlesShaderParams(
                 "ParticleShader",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
 
-            TemplatedCompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader", particlesShaderParams);
+            TemplatedCompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
+                                                                          particlesShaderParams);
 
-            const typename CompositeShaderPool::sharedValue_t &shader =
-                CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<InstancedStaticMeshVertexFactory, SimpleShader>>(particlesCompositeShaderParams);
+            typename CompositeShaderPool::sharedValue_t particleSystemShader =
+                CreateMaterialShader<InstancedStaticMeshVertexFactory, SimpleShader>(
+                    "InstancedStaticMeshVertexFactory_SimpleShader_" + materialProxy->MaterialName,
+                    particlesShaderParams, materialProxy);
 
-            return std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(particlesSkin, shader));
+            return std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(particlesSkin, particleSystemShader, materialProxy));
         }
     };
 }

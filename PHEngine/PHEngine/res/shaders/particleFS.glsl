@@ -4,7 +4,10 @@ layout (location = 0) out vec4 FragColor;
 
 in vec4 out_color;
 
+in MATERIAL_VS_OUTPUT GsOutput;
+
 void main()
-{
-    FragColor = out_color;
+{   
+    float opacity = GetMaterialAlphaMask(GsOutput);
+    FragColor = vec4(out_color.rgb, opacity);
 }

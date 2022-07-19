@@ -3,6 +3,7 @@
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -19,7 +20,15 @@
 #include "Core/GameCore/Components/ComponentCreators/ForwardShadingStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+
+#include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
+#include "Core/GameCore/Particles/Modules/Velocity/OrbitVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Velocity/ExplosionInitialVelocityModule.h"
+#include "Core/GameCore/Particles/Modules/Color/SimpleColorModule.h"
+#include "Core/GameCore/Particles/Modules/Size/SimpleSizeModule.h"
+#include "Core/GameCore/Particles/Modules/Lifetime/SimpleLifeTimeModule.h"
 
 #include "Implementation/Controllers/AiActorController.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
@@ -107,17 +116,16 @@ namespace Game
             MaterialParser materialParser;
 
             const auto &missile_mat = materialParser.ParseMaterialDescriptor("BlackHoleMissileMaterial.m");
-            const std::string resourceCreatorName = "c_planarReflectionMainCamera";
-            const auto planarReflectionTextureValue = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
-            assert(planarReflectionTextureValue);
 
             const std::string dudvTextureName = "water_dudv.jpg";
+            const std::string albedoTextureName = "nightLeft.jpg";
             const auto &dudv_tex = TexturePool::GetInstance()->GetOrAllocateResource(dudvTextureName);
+            const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoTextureName);
 
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "mul_coef", 2.5f);
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene.get(), "GT_DeltaSec", "deltaTime");
-            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", planarReflectionTextureValue);
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "dudv", dudv_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", albedo_tex);
 
             const MeshComponentData d_mesh("c_missileExplosionSecondPhase_meshComponent_" + missileIndexStr,
                                            "sphere.obj",
@@ -133,6 +141,47 @@ namespace Game
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
             a_missileExplosionSecondPhase->AddComponent(c_movement);
+
+            const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");
+
+            const auto &opacityMask_tex = TexturePool::GetInstance()->GetOrAllocateResource("circle_mask1.png");
+            MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacityMask", opacityMask_tex);
+            ParticleSystemComponentData d_particle("c_missileExplosionSecondPhase_particleSystemComponent_" + missileIndexStr,
+                                                   particles_mat,
+                                                   glm::vec3(0),
+                                                   100);
+            const auto &particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
+            const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
+            auto emitter = std::make_shared<ParticleExplosionEmitter>();
+            emitter->SetOwner(c_particleSystemComponent);
+            emitter->SetExplosionRadius(2.0f);
+            emitter->SetThetaSlicesCount(10);
+            c_particleSystemComponent->SetParticleEmitter(emitter);
+
+            auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
+            lifeTimeModule->SetOwner(c_particleSystemComponent);
+            lifeTimeModule->SetLifeTime(100.0f);
+            c_particleSystemComponent->AddParticleModule(lifeTimeModule);
+
+            auto sizeModule = std::make_shared<SimpleSizeModule>();
+            sizeModule->SetOwner(c_particleSystemComponent);
+            sizeModule->SetSizeBegin(1.8f);
+            sizeModule->SetSizeEnd(0.4f);
+            c_particleSystemComponent->AddParticleModule(sizeModule);
+
+            auto velocityModule = std::make_shared<OrbitVelocityModule>();
+            velocityModule->SetOwner(c_particleSystemComponent);
+            velocityModule->SetExtraVelocityDirectionType(eOrbitExtraVelocityDirectionType::Inside);
+            velocityModule->SetExtraVelocityPower(0.1f);
+            c_particleSystemComponent->AddParticleModule(velocityModule);
+
+            auto colorModule = std::make_shared<SimpleColorModule>();
+            colorModule->SetOwner(c_particleSystemComponent);
+            colorModule->SetColorBegin(glm::vec4(0.0f, 0.1f, 0.4f, 1.0f));
+            colorModule->SetColorEnd(glm::vec4(0.0f, 0.05f, 0.3f, 1.0f));
+            c_particleSystemComponent->AddParticleModule(colorModule);
+
+            a_missileExplosionSecondPhase->AddComponent(c_particleSystemComponent);
         }
 
         a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);

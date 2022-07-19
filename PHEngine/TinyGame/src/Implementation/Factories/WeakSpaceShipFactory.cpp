@@ -97,11 +97,15 @@ namespace Game
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);;
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
-        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, glm::vec3(0), 200);
+        const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
+        MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
+
+        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), 100);
         const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
         const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);
+        emitter->SetThetaSlicesCount(10);
         c_particleSystemComponent->SetParticleEmitter(emitter);
 
         auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();

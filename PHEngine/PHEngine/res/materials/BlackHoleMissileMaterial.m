@@ -24,7 +24,7 @@
 	</dynamic_property>
 	<property>
 		name: "albedo"
-		type: "deferred_texture"
+		type: "texture"
 	</property>
 	<property>
 		name: "dudv"

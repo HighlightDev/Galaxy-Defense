@@ -791,7 +791,7 @@ namespace EngineCore
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
-      LogInfo( "Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
+      LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
 
       const eComponentType type = component->GetComponentType();
       if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
@@ -803,6 +803,7 @@ namespace EngineCore
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
             PrimitiveSceneProxyAdded_OnRenderThread(componentPtr->SceneProxyId, sceneProxySp);
+            LogInfo("Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =", componentPtr->SceneProxyId);
          }
          else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
          {
@@ -810,6 +811,7 @@ namespace EngineCore
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->LightSceneProxyId = sceneProxySp->GetSceneProxyId();
             LightSceneProxyAdded_OnRenderThread(componentPtr->LightSceneProxyId, sceneProxySp);
+            LogInfo("Scene::RegisterComponentSceneProxy => ligth proxy added, sceneProxyId =", componentPtr->LightSceneProxyId);
          }
          else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT)
          {
@@ -818,6 +820,7 @@ namespace EngineCore
             BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, componentPtr->GetOwnerCamera());
             componentPtr->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
             PlanarReflectionSceneProxyAdded_OnRenderThread(componentPtr->GetSceneProxyId(), sceneProxySp);
+            LogInfo("Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =", componentPtr->GetSceneProxyId());
          }
       }
    }

@@ -1,13 +1,7 @@
 function CreateTestLevel(host)
 	
 	_LoadResourcesAsync(host, 
-	[[dayRight.jpg
-	,dayLeft.jpg
-	,dayTop.jpg
-	,dayBottom.jpg
-	,dayBack.jpg
-	,dayFront.jpg
-	,nightRight.jpg
+	[[nightRight.jpg
 	,nightLeft.jpg
 	,nightTop.jpg
 	,nightBottom.jpg
@@ -29,8 +23,8 @@ function CreateTestLevel(host)
 	,missile1_albedo.png
 	,playerCube.obj
 	,sphere.obj
-	,Brick_Medieval_albedo.jpg
 	,water_dudv.jpg
+	,circle_mask1.png
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

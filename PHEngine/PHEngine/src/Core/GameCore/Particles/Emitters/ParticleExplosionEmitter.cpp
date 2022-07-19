@@ -4,6 +4,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineMath;
 
@@ -11,6 +12,8 @@ namespace EngineCore
 {
    void ParticleExplosionEmitter::EmitParticles(const size_t particlesCount)
    {
+      assert(mThetaSlicesCount); // set theta slices count before emitting
+      assert((particlesCount % mThetaSlicesCount) == 0);
       const auto &ownerSp = mOwner.lock();
       assert(ownerSp);
 
@@ -19,21 +22,38 @@ namespace EngineCore
 
       const size_t particlesEmitCount = particlesCount <= poolSize ? particlesCount == 0 ? poolSize : particlesCount : poolSize;
 
-      static constexpr float radius = 20.0f;
+      size_t particleIndex = 0;
 
-      for (size_t i = 0; i < particlesEmitCount; ++i)
+      const size_t particlesPerPhiFullRotate = particlesEmitCount / mThetaSlicesCount;
+
+      const float thetaStep = (EngineMath::PI * 2.0f) / (float)mThetaSlicesCount;
+      const float phiStep = (EngineMath::PI) / (float)particlesPerPhiFullRotate;
+      for (size_t thetaParticleIndex = 0; thetaParticleIndex < mThetaSlicesCount; ++thetaParticleIndex)
       {
-         const float random_radius = 1.0f;
-         const float random_theta_rad = Random::Float() * EngineMath::PI * 2;
-         const float random_phi_rad = Random::Float() * EngineMath::PI;
+         const float theta = thetaStep * (float)thetaParticleIndex;
+         for (size_t phiParticeIndex = 0; phiParticeIndex < particlesPerPhiFullRotate; ++phiParticeIndex)
+         {
+            const float phi = phiStep * (float)phiParticeIndex;
 
-         Particle &p = particlePool[i];
+            Particle &p = particlePool[particleIndex];
+            p.Position = glm::vec3(
+                mRadius * std::cos(theta) * std::sin(phi),
+                mRadius * std::sin(theta) * std::sin(phi),
+                mRadius * std::cos(phi));
+            p.Rotation = Random::Float() * EngineMath::PI * 2;
 
-         p.Position = glm::vec3(
-             random_radius * std::cos(random_theta_rad) * std::sin(random_phi_rad),
-             random_radius * std::sin(random_theta_rad) * std::sin(random_theta_rad),
-             random_radius * std::cos(random_phi_rad));
-         p.Rotation = Random::Float() * EngineMath::PI * 2;
+            ++particleIndex;
+         }
       }
+   }
+
+   void ParticleExplosionEmitter::SetExplosionRadius(const float radius)
+   {
+      mRadius = radius;
+   }
+
+   void ParticleExplosionEmitter::SetThetaSlicesCount(const size_t thetaSlicesCount)
+   {
+      mThetaSlicesCount = thetaSlicesCount;
    }
 }

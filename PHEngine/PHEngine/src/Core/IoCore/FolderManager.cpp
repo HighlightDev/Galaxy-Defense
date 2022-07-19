@@ -34,6 +34,7 @@ namespace IO
 		CreateFilePathMap(GetTweenerPath(), GetShortTweenerPath());
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
 		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
+		CreateFilePathMap(GetMaskTexturePath(), GetShortMaskTexturePath());
 	}
 
 	void FolderManager::CreateFilePathMap(const std::string &absolutePathToDirectory, const std::string &relativePathToDirectory)
@@ -159,6 +160,11 @@ namespace IO
 		return GetShortTexturesPath() + "editor" + SLASH;
 	}
 
+	std::string FolderManager::GetShortMaskTexturePath() const
+	{
+		return GetShortTexturesPath() + "mask" + SLASH;
+	}
+
 	std::string FolderManager::GetShortScriptPath() const
 	{
 		return GetShortResPath() + "scripts" + SLASH;
@@ -272,6 +278,11 @@ namespace IO
 	std::string FolderManager::GetEditorTexturePath() const
 	{
 		return GetTexturesPath() + "editor" + SLASH;
+	}
+
+	std::string FolderManager::GetMaskTexturePath() const
+	{
+		return GetTexturesPath() + "mask" + SLASH;
 	}
 
 	std::string FolderManager::GetScriptPath() const

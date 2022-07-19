@@ -73,7 +73,7 @@ namespace EngineCore
 
             if ((particleIt->LifeRemaining - deltaTime) > 0.0f)
             {
-                particleIt->Position += (particleIt->InitialVelocity * delta_time + particleIt->Velocity * delta_time);
+                particleIt->Position += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * delta_time;
                 particleIt->LifeRemaining -= deltaTime;
 
                 mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);
