@@ -40,7 +40,7 @@ namespace EngineCore
 
       virtual void ProcessEvent(const typename CameraTransformChangedEvent::EventData_t &data) override;
 
-      virtual void Move() override;
+      virtual void Move(const float deltaTime) override;
 
       virtual void Jump() override;
 

@@ -42,9 +42,9 @@ namespace EngineCore
    {
    }
 
-   void NoPhysicsMovementComponent::Move()
+   void NoPhysicsMovementComponent::Move(const float deltaTime)
    {
-      m_actorRootComponent->AddTranslation(GetVelocity());
+      m_actorRootComponent->AddTranslation(GetVelocity() * deltaTime);
    }
 
    void NoPhysicsMovementComponent::Jump()

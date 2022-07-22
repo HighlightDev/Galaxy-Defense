@@ -160,25 +160,25 @@ namespace Game
 
             auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
             lifeTimeModule->SetOwner(c_particleSystemComponent);
-            lifeTimeModule->SetLifeTime(100.0f);
+            lifeTimeModule->SetLifeTime(10.0f);
             c_particleSystemComponent->AddParticleModule(lifeTimeModule);
 
             auto sizeModule = std::make_shared<SimpleSizeModule>();
             sizeModule->SetOwner(c_particleSystemComponent);
-            sizeModule->SetSizeBegin(1.8f);
+            sizeModule->SetSizeBegin(2.2f);
             sizeModule->SetSizeEnd(0.4f);
             c_particleSystemComponent->AddParticleModule(sizeModule);
 
             auto velocityModule = std::make_shared<OrbitVelocityModule>();
             velocityModule->SetOwner(c_particleSystemComponent);
-            velocityModule->SetExtraVelocityDirectionType(eOrbitExtraVelocityDirectionType::Inside);
+            velocityModule->SetExtraVelocityDirectionType(eOrbitExtraVelocityDirectionType::Outside);
             velocityModule->SetExtraVelocityPower(0.1f);
             c_particleSystemComponent->AddParticleModule(velocityModule);
 
             auto colorModule = std::make_shared<SimpleColorModule>();
             colorModule->SetOwner(c_particleSystemComponent);
-            colorModule->SetColorBegin(glm::vec4(0.0f, 0.1f, 0.4f, 1.0f));
-            colorModule->SetColorEnd(glm::vec4(0.0f, 0.05f, 0.3f, 1.0f));
+            colorModule->SetColorBegin(glm::vec4(0.0f, 0.2f, 0.6f, 1.0f));
+            colorModule->SetColorEnd(glm::vec4(0.0f, 0.15f, 0.5f, 1.0f));
             c_particleSystemComponent->AddParticleModule(colorModule);
 
             a_missileExplosionSecondPhase->AddComponent(c_particleSystemComponent);

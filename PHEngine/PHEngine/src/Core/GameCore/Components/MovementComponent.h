@@ -28,7 +28,7 @@ namespace EngineCore
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
-      virtual void Move() = 0;
+      virtual void Move(const float deltaTime) = 0;
 
       virtual void Jump() = 0;
 

@@ -142,6 +142,7 @@ namespace Game
 
    void IntroLevel::InitLevel()
    {
+      Base::InitLevel();
       // ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 #if 0
       DeserializeLevel("test_serialize.xml");

@@ -51,13 +51,16 @@ namespace EngineCore
 
     void ParticleSystemComponent::Tick(const float deltaTime)
     {
-        const float delta_time = deltaTime * 100.0f;
+        static constexpr float particleMoveSpeed = 15.0f;
 
-        for (auto &particle : mParticlesPool)
+        //if (mPrevActiveParticles)
         {
-            for (const auto &module : mParticleModules)
+            for (auto &particle : mParticlesPool)
             {
-                module->Update(particle, delta_time);
+                for (const auto &module : mParticleModules)
+                {
+                    module->Update(particle, deltaTime);
+                }
             }
         }
 
@@ -73,7 +76,7 @@ namespace EngineCore
 
             if ((particleIt->LifeRemaining - deltaTime) > 0.0f)
             {
-                particleIt->Position += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * delta_time;
+                particleIt->Position += glm::normalize(particleIt->InitialVelocity + particleIt->Velocity) * deltaTime * particleMoveSpeed;
                 particleIt->LifeRemaining -= deltaTime;
 
                 mParticlesRawDataHandler.SubTranslationData(particleTranslationByteOffset, particleIt->Position);

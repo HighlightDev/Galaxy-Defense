@@ -20,8 +20,6 @@ namespace EngineCore
 
    class Engine
    {
-      static constexpr double InvLimitFPS = 1.0 / 60.0;
-
       InterThreadCommunicationMgr &m_interThreadMgr;
 
       std::shared_ptr<InputManager> mInputManager;
@@ -37,12 +35,9 @@ namespace EngineCore
    private:
       std::thread m_gameThread;
 
-      Moment_t mLastRenderThreadPulseTime;
-      double mRenderThreadDeltaTimeSeconds;
+      float mRenderThreadDeltaTimeSeconds;
 
-      Moment_t mLastGameThreadPulseTime;
-      double mGameThreadDeltaTimeSeconds;
-      double mGameThreadSumDeltaTimeSec;
+      float mGameThreadDeltaTimeSeconds;
 
    public:
       Engine(InterThreadCommunicationMgr &interThreadMgr);
@@ -69,9 +64,9 @@ namespace EngineCore
 
       std::shared_ptr<InputManager> GetInputManager() const;
 
-      double GetRenderThreadDeltaTime() const;
+      float GetRenderThreadDeltaTime() const;
 
-      double GetGameThreadDeltaTime() const;
+      float GetGameThreadDeltaTime() const;
 
       InterThreadCommunicationMgr &GetThreadCommunicationManager();
 
@@ -86,10 +81,6 @@ namespace EngineCore
       void CleanUp();
 
    private:
-      double GetRenderThreadDeltaSeconds() const;
-
-      double GetGameThreadDeltaSeconds() const;
-
       void StopGameThreadExecution();
    };
 }

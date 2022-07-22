@@ -711,12 +711,9 @@ namespace EngineCore
 
    void Scene::Tick_GameThread(float delta)
    {
-      constexpr float inv_PhysicsStep = 1.0f / 260.0f;
-      const float physTickStep = delta * (inv_PhysicsStep / delta);
-
       mGameThreadDeltaSec->SetValue(delta);
 
-      mPhysicsWorld->Tick(physTickStep);
+      mPhysicsWorld->Tick(delta * 10.0f); // todo: something bad....
 
       for (const auto &cameraPtr : mActiveCameras)
       {

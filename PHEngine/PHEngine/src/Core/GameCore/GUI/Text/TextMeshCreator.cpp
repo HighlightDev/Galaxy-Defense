@@ -21,6 +21,10 @@ namespace EngineCore
 		for (const auto &c : chars)
 		{
 			const int32_t ascii = (int32_t)c;
+			
+			if (0 == ascii)
+				continue;
+
 			if (ascii == SPACE_ASCII)
 			{
 				const bool bIsAdded = currentLine.TryToAddWord(currentWord);

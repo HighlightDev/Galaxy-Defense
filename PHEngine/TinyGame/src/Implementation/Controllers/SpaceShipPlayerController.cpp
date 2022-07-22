@@ -161,8 +161,9 @@ namespace Game
 
             if (bMoveCommitted)
             {
+               static constexpr float moveSpeed = 2000.0f;
                m_movementComponent->SetDirection(direction);
-               m_movementComponent->Move();
+               m_movementComponent->Move(deltaTime * moveSpeed);
             }
          }
          else

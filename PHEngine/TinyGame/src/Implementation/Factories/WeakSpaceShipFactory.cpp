@@ -110,7 +110,7 @@ namespace Game
 
         auto lifeTimeModule = std::make_shared<SimpleLifeTimeModule>();
         lifeTimeModule->SetOwner(c_particleSystemComponent);
-        lifeTimeModule->SetLifeTime(50.0f);
+        lifeTimeModule->SetLifeTime(2.5f);
         c_particleSystemComponent->AddParticleModule(lifeTimeModule);
 
         auto sizeModule = std::make_shared<SimpleSizeModule>();

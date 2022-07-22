@@ -1,15 +1,22 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/InterThreadCommunicationMgr.h"
+#include "Core/GameCore/GUI/Text/TextField.h"
 
 using namespace Thread;
 
 namespace EngineCore
 {
-
    class Level
    {
+#ifdef DEBUG
+      std::shared_ptr<Actor> mDebugDummyActor;
+      std::shared_ptr<TextField> mRtTextField;
+      std::shared_ptr<TextField> mGtTextField;
+#endif
+
    protected:
 
       std::shared_ptr<Scene> mScene;
@@ -21,7 +28,6 @@ namespace EngineCore
       virtual ~Level();
 
       void PostPhysicsInitialize();
-
 
       std::weak_ptr<Scene> GetSceneWP() const;
 
@@ -38,6 +44,14 @@ namespace EngineCore
       void SerializeLevel(const std::string& pathToFolder);
 
       void DeserializeLevel(const std::string& pathToFile);
+
+#ifdef DEBUG
+
+      void SetRenderThreadFPSTextValue(const float fps);
+
+      void SetGameThreadFPSTextValue(const float fps);
+
+#endif
 
    private:
 

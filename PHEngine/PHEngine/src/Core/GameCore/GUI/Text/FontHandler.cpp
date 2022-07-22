@@ -63,24 +63,30 @@ namespace EngineCore
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldId == mProxy->mTextFieldId; });
-        assert(foundIt != mTextFields.end());
-        (*foundIt)->mPosition = position;
+        if (foundIt != mTextFields.end())
+        {
+            (*foundIt)->mPosition = position;
+        }
     }
 
     void FontRenderData::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3 &color)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
-        assert(foundIt != mTextFields.end());
-        (*foundIt)->mColor = color;
+        if (foundIt != mTextFields.end())
+        {
+            (*foundIt)->mColor = color;
+        }
     }
 
     void FontRenderData::TextChanged(const int32_t textFieldProxyId, const std::string &text)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
-        assert(foundIt != mTextFields.end());
-        (*foundIt)->mText = text;
+        if (foundIt != mTextFields.end())
+        {
+            (*foundIt)->mText = text;
+        }
 
         ReallocateTextSpace();
     }
@@ -89,8 +95,10 @@ namespace EngineCore
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
                                           { return textFieldProxyId == mProxy->mTextFieldId; });
-        assert(foundIt != mTextFields.end() && (*foundIt)->mText != "");
-        (*foundIt)->mIsVisible = isVisible;
+        if (foundIt != mTextFields.end() && (*foundIt)->mText != "")
+        {
+            (*foundIt)->mIsVisible = isVisible;
+        }
     }
 
     void FontRenderData::FontBufferSubData(const std::shared_ptr<TextFieldProxy> &textFieldProxy,
@@ -237,7 +245,7 @@ namespace EngineCore
         return mTextFields;
     }
 
-    const std::shared_ptr<TextFieldProxy>& FontRenderData::GetTextFieldById(const int32_t textFieldId) const
+    const std::shared_ptr<TextFieldProxy> &FontRenderData::GetTextFieldById(const int32_t textFieldId) const
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)

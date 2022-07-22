@@ -27,7 +27,7 @@ namespace EngineCore
                            meshComponentData.m_luaScriptPath),
          mLuaInstance(std::make_unique<LuaWrapper>()),
          mUpdateDataResetTimeCounter(0.0f),
-         update_data_reset_time(0.015f),
+         update_data_reset_time(0.1f),
          mTimeIncreaseMultiply(1.0f),
          LuaScriptName(meshComponentData.m_luaScriptPath),
          SrcAnimationTime(std::make_shared<EngineGOProperty<float>>(0.0f, "SrcAnimTime")),

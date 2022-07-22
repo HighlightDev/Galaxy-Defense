@@ -23,7 +23,7 @@ namespace EngineCore
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual void Move() override;
+      virtual void Move(const float deltaTime) override;
 
       virtual void Jump() override;
 

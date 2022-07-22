@@ -42,7 +42,7 @@ namespace EnginePhysics
       , mDeceleration(0.1f)
       , mMaxSpeed(15.0f)
       , mJumpImpulse(150)
-      , mJumpRechargeTime(10.0f)
+      , mJumpRechargeTime(0.5f)
       , mJumpRechargeTimer(0.0f)
       , mBottomYOffset(height / 3.0f + radius)
       , mBottomRoundedRegionYOffset((height + radius) / 3.0f)
@@ -108,7 +108,7 @@ namespace EnginePhysics
 
    void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
    {
-      mTimerMultiplier = deltaTime * 1000; // from ms to sec
+      mTimerMultiplier = deltaTime; // from ms to sec
 
       // Sync ghost with actually object
       mGhostObject->setWorldTransform(mRigidBody->getWorldTransform());

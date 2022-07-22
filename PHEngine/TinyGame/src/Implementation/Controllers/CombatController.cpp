@@ -181,7 +181,7 @@ namespace Game
                 {
                     const auto &dmgTextField = enemyContainer.GetSpaceShipUiComponent()->GetTextFieldById(enemyContainer.GetDmgTextFieldId());
                     float dmgTime = enemyContainer.GetDamageDeltaTime();
-                    dmgTime += deltaTime * 10.0f;
+                    dmgTime += deltaTime;
                     if (dmgTime > 1.0f)
                     {
                         dmgTime = 0.0f;

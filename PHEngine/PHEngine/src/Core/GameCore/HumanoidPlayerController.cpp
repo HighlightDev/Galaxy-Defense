@@ -72,7 +72,7 @@ namespace EngineCore
          {
             if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
             {
-               m_movementComponent->Move();
+               m_movementComponent->Move(deltaTime);
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
             {

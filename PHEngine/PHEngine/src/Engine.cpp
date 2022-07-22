@@ -29,11 +29,8 @@ namespace EngineCore
        : m_interThreadMgr(interThreadMgr),
          mInputManager(std::make_shared<InputManager>()),
          mActiveAudioOutputDevice(SoundDevice::GetInstance()),
-         mLastRenderThreadPulseTime(EngineTime::GetNowTime()),
          mRenderThreadDeltaTimeSeconds(),
-         mLastGameThreadPulseTime(EngineTime::GetNowTime()),
-         mGameThreadDeltaTimeSeconds(),
-         mGameThreadSumDeltaTimeSec()
+         mGameThreadDeltaTimeSeconds()
    {
    }
 
@@ -130,18 +127,21 @@ namespace EngineCore
       m_level->PostPlayLevelFinished();
    }
 
+   size_t rtCounter = 0;
+   size_t gtCounter = 0;
+
+   float sumRtFramesTime = 0.0f;
+   float sumGtFramesTime = 0.0f;
+
    void Engine::GameThreadPulse()
    {
       ThreadHelper::GetInstance()->RegisterThread("Game");
 
       while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
-         const uint64_t memoryBeforeExe = getProcessMemorySize();
-
          /* GAME THREAD*/
          {
-            mGameThreadDeltaTimeSeconds = GetGameThreadDeltaSeconds();
-            mGameThreadSumDeltaTimeSec += mGameThreadDeltaTimeSeconds;
+            const auto gtStartTimePoint = EngineTime::GetNowTime();
 
             /* Events: pre execution */
             ProcessEvents(Event::eExecutionOrder::PRE_EXECUTION);
@@ -149,23 +149,26 @@ namespace EngineCore
             /* Work Jobs */
             m_interThreadMgr.SpinGameThreadJobs();
 
-            if (mGameThreadSumDeltaTimeSec >= InvLimitFPS) // 1 / 60 of a second
+            // This should be executed on game thread
+            m_level->TickLevel(mGameThreadDeltaTimeSeconds);
+
+#ifdef DEBUG
+            if (gtCounter == 1000)
             {
-               // This should be executed on game thread
-               m_level->TickLevel(static_cast<float>(mGameThreadDeltaTimeSeconds));
-               mLastGameThreadPulseTime = EngineTime::GetNowTime();
-               mGameThreadSumDeltaTimeSec = 0.0;
+               gtCounter = 0;
+               const float fps = 1000.0f / (float)sumGtFramesTime;
+               m_level->SetGameThreadFPSTextValue(fps);
+               sumGtFramesTime = 0.0f;
             }
+            sumGtFramesTime += mGameThreadDeltaTimeSeconds;
+            ++gtCounter;
+#endif
 
             /* Events: post execution */
             ProcessEvents(Event::eExecutionOrder::POST_EXECUTION);
 
-            /*const uint64_t memoryAfterExe = memoryBeforeExe - getProcessMemorySize();
-
-            if (memoryAfterExe > 0)
-            {
-               LogInfo( "Engine::GameThread => execution. Memory consumption : ", (uint64_t)memoryAfterExe);
-            }*/
+            mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
+                EngineTime::GetPassedDuration(gtStartTimePoint));
          }
       }
    }
@@ -179,10 +182,23 @@ namespace EngineCore
    {
       /* RENDER THREAD */
       {
-         // mRenderThreadDeltaTimeSeconds = GetRenderThreadDeltaSeconds();
+         const auto rtStartTimePoint = EngineTime::GetNowTime();
+#ifdef DEBUG
+         if (rtCounter == 100)
+         {
+            rtCounter = 0;
+            const float fps = 100.0f / sumRtFramesTime;
+            m_level->SetRenderThreadFPSTextValue(fps);
+            sumRtFramesTime = 0.0f;
+         }
+         sumRtFramesTime += mRenderThreadDeltaTimeSeconds;
+         ++rtCounter;
+#endif
          m_interThreadMgr.SpinRenderThreadJobs();
          m_sceneRenderer->RenderScene_RenderThread();
-         // mLastRenderThreadPulseTime = EngineTime::GetNowTime();
+
+         mRenderThreadDeltaTimeSeconds =
+             (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(rtStartTimePoint));
       }
    }
 
@@ -191,22 +207,12 @@ namespace EngineCore
       RenderThreadPulse();
    }
 
-   double Engine::GetRenderThreadDeltaSeconds() const
-   {
-      return EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(mLastRenderThreadPulseTime));
-   }
-
-   double Engine::GetGameThreadDeltaSeconds() const
-   {
-      return EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(mLastGameThreadPulseTime));
-   }
-
-   double Engine::GetRenderThreadDeltaTime() const
+   float Engine::GetRenderThreadDeltaTime() const
    {
       return mRenderThreadDeltaTimeSeconds;
    }
 
-   double Engine::GetGameThreadDeltaTime() const
+   float Engine::GetGameThreadDeltaTime() const
    {
       return mGameThreadDeltaTimeSeconds;
    }

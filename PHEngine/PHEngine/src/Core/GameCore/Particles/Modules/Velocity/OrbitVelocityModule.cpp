@@ -23,7 +23,7 @@ namespace EngineCore
          const auto orbitOrigin = ownerSp->GetHierarchyAccumulatedTranslation();
          const auto& particlePosition = particle.Position;
          const auto nOrbitDir = glm::normalize(particlePosition - orbitOrigin);
-         static constexpr float rotationStepDeg = 10.0f;
+         const float rotationStepDeg = deltaTime * 100.0f;
 
          glm::mat4 identityMatrix(1);
          const glm::mat4 yawRotation = glm::rotate(identityMatrix, DEG_TO_RAD(rotationStepDeg), AXIS_UP);
@@ -33,11 +33,11 @@ namespace EngineCore
          
          if (eOrbitExtraVelocityDirectionType::Inside == mExtraVelocityDirectionType)
          {
-            particle.Velocity = glm::normalize(particle.Velocity + (-nOrbitDir * mExtraVelocityPower));
+            particle.Velocity = deltaTime * glm::normalize(particle.Velocity + (-nOrbitDir * mExtraVelocityPower));
          }
          else if (eOrbitExtraVelocityDirectionType::Outside == mExtraVelocityDirectionType)
          {
-            particle.Velocity = glm::normalize(particle.Velocity + (nOrbitDir * mExtraVelocityPower));
+            particle.Velocity = deltaTime * glm::normalize(particle.Velocity + (nOrbitDir * mExtraVelocityPower));
          }
       }
    }

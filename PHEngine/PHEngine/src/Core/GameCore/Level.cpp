@@ -8,20 +8,26 @@
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
 #include <fstream>
-#include <TinyLogger/LogInterface.h>
 
-using namespace TinyLogger;
 using namespace IO;
+using namespace EngineUtility;
 
 namespace EngineCore
 {
 
    Level::Level(InterThreadCommunicationMgr &interThreadMgr)
-       : mScene(std::make_shared<Scene>(interThreadMgr))
+       : mScene(std::make_shared<Scene>(interThreadMgr)),
+         mDebugDummyActor(),
+         mRtTextField(),
+         mGtTextField()
    {
    }
 
@@ -31,12 +37,12 @@ namespace EngineCore
 
    void Level::PreLevelInit()
    {
-      LogInfo( "Level::PreLevelInit");
+      LogInfo("Level::PreLevelInit");
    }
 
    void Level::PostLevelInit()
    {
-      LogInfo( "Level::PostLevelInit");
+      LogInfo("Level::PostLevelInit");
       mScene->PostLevelInit();
 
       ResourceMap::DeleteInstance();
@@ -45,27 +51,56 @@ namespace EngineCore
 
    void Level::PostPlayLevelFinished()
    {
-      LogInfo( "Level::PostPlayLevelFinished");
+      LogInfo("Level::PostPlayLevelFinished");
       mScene->PostPlayLevelFinished();
    }
 
    void Level::PostPhysicsInitialize()
    {
+      LogInfo("Level::PostPhysicsInitialize");
+
       mScene->PostPhysicsInitialize();
    }
 
    void Level::InitLevel()
    {
+      LogInfo("Level::InitLevel");
+
+#ifdef DEBUG
+      mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
+                                                 std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
+                                                                                  glm::vec3(),
+                                                                                  glm::vec3(),
+                                                                                  glm::vec3(1.0f)));
+      const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
+      const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(mScene->CreateComponent_GameThread(uiComponentCreator,
+                                                                                                           ComponentData("c_uiComponent_DebugDummyActor")));
+      mDebugDummyActor->AddComponent(c_uiComponent);
+      mScene->AddActor(mDebugDummyActor);
+
+      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("arial", 1, glm::vec3(0.8, 0.0, 0.0), 0.3, 1, false);
+      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("arial", 1, glm::vec3(0.0, 0.8, 0.0), 0.3, 1, false);
+      mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
+      mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
+      mRtTextField->SetPosition(glm::vec2(0.0f, 0.05f));
+      mRtTextField->SetVisibility(true);
+      mGtTextField->SetPosition(glm::vec2(0.0f, 0.1f));
+      mGtTextField->SetVisibility(true);
+#endif
+   }
+
+   void Level::TickLevel(const float deltaTime)
+   {
+      mScene->Tick_GameThread(deltaTime);
    }
 
    std::weak_ptr<Scene> Level::GetSceneWP() const
    {
       return mScene;
    }
-   
+
    void Level::SerializeLevel(const std::string &pathToFolder)
    {
-
       std::ofstream os(pathToFolder);
       cereal::XMLOutputArchive oarchive(os);
 
@@ -103,7 +138,7 @@ namespace EngineCore
 
    void Level::CollectAllocatedResourcesForSerialization(SerializeDataContainer &container)
    {
-      LogInfo( "CollectAllocatedResourcesForSerialization");
+      LogInfo("CollectAllocatedResourcesForSerialization");
 
       std::vector<std::string> loadedTextureNames = TexturePool::GetInstance()->GetAllKeys();
       std::vector<std::string> loadedModelNames = MeshPool::GetInstance()->GetAllKeys();
@@ -122,7 +157,7 @@ namespace EngineCore
 
    void Level::InstantiateLevelFromSerializedContainer(SerializeDataContainer &container)
    {
-      LogInfo( "Level::InstantiateLevelFromSerializedContainer");
+      LogInfo("Level::InstantiateLevelFromSerializedContainer");
 
       const std::vector<std::string> &resourceNames = SerializeHelper::GetSerializedAllocatedResources(container.Resources);
       for (const auto &resName : resourceNames)
@@ -157,13 +192,13 @@ namespace EngineCore
       {
          std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-         LogInfo( "Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
+         LogInfo("Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
 
          for (const auto &componentData : actorData.ComponentsData)
          {
             const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            LogInfo( "Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
+            LogInfo("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
 
             if (component)
             {
@@ -208,8 +243,19 @@ namespace EngineCore
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
-   void Level::TickLevel(const float deltaTime)
+#ifdef DEBUG
+
+   void Level::SetRenderThreadFPSTextValue(const float fps)
    {
-      mScene->Tick_GameThread(deltaTime);
+      const auto value = std::to_string(fps);
+      mRtTextField->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
    }
+
+   void Level::SetGameThreadFPSTextValue(const float fps)
+   {
+      const auto value = std::to_string(fps);
+      mGtTextField->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
+   }
+
+#endif
 }

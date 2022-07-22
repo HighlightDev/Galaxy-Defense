@@ -78,7 +78,7 @@ namespace EngineCore
       }
    }
 
-   void HumanoidPhysicsMovementComponent::Move()
+   void HumanoidPhysicsMovementComponent::Move(const float deltaTime)
    {
       m_playerPhysicsComponent->SetWalkVelocity(GetVelocity());
    }

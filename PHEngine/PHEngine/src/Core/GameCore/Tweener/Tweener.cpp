@@ -83,7 +83,6 @@ namespace EngineCore
          {
             controllerSp->OnTransitionFinished();
             mChangedStateName = dstStateName;
-            bIsStateChangedDirty = true;
          }
 
          if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
@@ -94,6 +93,8 @@ namespace EngineCore
             // Begin new transition
             DoTransition(dstStateName);
          }
+
+         bIsStateChangedDirty = true;
       }
    }
 
@@ -204,11 +205,11 @@ namespace EngineCore
    {
       if (bIsStateChangedDirty)
       {
+         bIsStateChangedDirty = false;
          for (const auto &observer : mStateChangedObservers)
          {
             observer->OnTweenStateChanged(mChangedStateName);
          }
-         bIsStateChangedDirty = false;
       }
    }
 
@@ -233,7 +234,7 @@ namespace EngineCore
          {
             std::shared_ptr<State> stateTo = spDestination;
 
-            mTransitionTime += deltaTime * 5.0f;
+            mTransitionTime += deltaTime;
 
             if (mTransitionTime > mTransitionDuration)
             {
@@ -254,13 +255,13 @@ namespace EngineCore
                {
                   controllerSp->OnTransitionFinished();
                   mChangedStateName = stateTo->GetStateName();
-                  bIsStateChangedDirty = true;
                }
             }
 
             if (!bTransitionEnabled)
             {
                CurrentActiveTransitionControllers.clear();
+               bIsStateChangedDirty = true;
             }
          }
       }
