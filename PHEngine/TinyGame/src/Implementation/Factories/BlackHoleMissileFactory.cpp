@@ -177,8 +177,8 @@ namespace Game
 
             auto colorModule = std::make_shared<SimpleColorModule>();
             colorModule->SetOwner(c_particleSystemComponent);
-            colorModule->SetColorBegin(glm::vec4(0.0f, 0.2f, 0.6f, 1.0f));
-            colorModule->SetColorEnd(glm::vec4(0.0f, 0.15f, 0.5f, 1.0f));
+            colorModule->SetColorBegin(glm::vec4(0.5f, 0.0f, 0.6f, 1.0f));
+            colorModule->SetColorEnd(glm::vec4(0.4f, 0.0f, 0.5f, 1.0f));
             c_particleSystemComponent->AddParticleModule(colorModule);
 
             a_missileExplosionSecondPhase->AddComponent(c_particleSystemComponent);
