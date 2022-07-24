@@ -182,6 +182,13 @@ namespace Game
             c_particleSystemComponent->AddParticleModule(colorModule);
 
             a_missileExplosionSecondPhase->AddComponent(c_particleSystemComponent);
+
+            GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(1.0f), 0.0f);
+            scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+            PhysicsComponentData physData("c_missileExplosionSecondPhase_PhysicsComponent_" + missileIndexStr, ghostController);
+            const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+            const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+            a_missileExplosionSecondPhase->AddComponent(c_ghostPhysics);
         }
 
         a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);

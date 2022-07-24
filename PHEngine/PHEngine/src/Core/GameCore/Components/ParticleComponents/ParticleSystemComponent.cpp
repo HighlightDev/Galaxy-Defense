@@ -53,14 +53,14 @@ namespace EngineCore
     {
         static constexpr float particleMoveSpeed = 15.0f;
 
-        //if (mPrevActiveParticles)
+        for (auto &particle : mParticlesPool)
         {
-            for (auto &particle : mParticlesPool)
+            if (!particle.isActive)
+                continue;
+
+            for (const auto &module : mParticleModules)
             {
-                for (const auto &module : mParticleModules)
-                {
-                    module->Update(particle, deltaTime);
-                }
+                module->Update(particle, deltaTime);
             }
         }
 

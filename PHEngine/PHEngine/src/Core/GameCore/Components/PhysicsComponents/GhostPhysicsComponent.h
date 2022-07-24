@@ -8,21 +8,25 @@
 
 using namespace EngineCore;
 
-namespace EnginePhysics {
+namespace EnginePhysics
+{
 
-   class GhostPhysicsComponent 
-      : public PhysicsComponent
+   class GhostPhysicsComponent
+       : public PhysicsComponent
    {
-   public:
+   protected:
+      std::shared_ptr<EngineGOProperty<glm::vec3>> m_CollisionShapeScale;
 
-      GhostPhysicsComponent(const PhysicsComponentData& data);
+   public:
+      GhostPhysicsComponent(const PhysicsComponentData &data);
 
       virtual ~GhostPhysicsComponent();
 
       virtual void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
+   private:
+      void SyncCollisionShapeScale(const glm::vec3 &scale);
    };
 }
-

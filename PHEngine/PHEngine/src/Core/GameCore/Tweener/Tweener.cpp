@@ -78,23 +78,28 @@ namespace EngineCore
    {
       if (mCurrentActiveStateTransition)
       {
-         // Finish current transition
          for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
          {
             controllerSp->OnTransitionFinished();
-            mChangedStateName = dstStateName;
          }
 
-         if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
+         CurrentActiveTransitionControllers.clear();
+
+         auto dstStateIt = std::find_if(mMyAllStates.begin(), mMyAllStates.end(), [=](const auto &state)
+                                        { return state->GetStateName() == dstStateName; });
+         assert(dstStateIt != mMyAllStates.end());
+         auto dstStateSp = (*dstStateIt);
+
+         std::map<std::string /*Property Name*/, std::shared_ptr<BaseStateProperty>> dstProperties = dstStateSp->GetStateProperties();
+         for (auto &dstNameAndPropertyPair : dstProperties)
          {
-            SetTransitionValuesFinished(spDestination);
-            CurrentActiveTransitionControllers.clear();
+            const std::shared_ptr<BaseStateProperty> &dstProperty = dstNameAndPropertyPair.second;
 
-            // Begin new transition
-            DoTransition(dstStateName);
+            const auto propertyController = GetPropertyTweenerController(dstProperty->GetStatePropertyType());
+            propertyController->InitWithPropsInstant(dstProperty);
          }
 
-         bIsStateChangedDirty = true;
+         SetTransitionValuesFinished(dstStateSp);
       }
    }
 
@@ -103,6 +108,7 @@ namespace EngineCore
       const std::map<std::string /*dstStateName*/, StateTransition> &transitions = mCurrentStateNode->GetTransitions();
 
       assert(transitions.count(dstStateName));
+
       const StateTransition &transition = transitions.at(dstStateName);
 
       auto spDestination = transition.StateDestination.lock();
@@ -124,7 +130,7 @@ namespace EngineCore
          for (auto &dstNameAndPropertyPair : dstProperties)
          {
             const std::string &name = dstNameAndPropertyPair.first;
-            assert(srcProperties.count(name)); // missing transition from src to dst property, probably forgot to add property state to src state 
+            assert(srcProperties.count(name)); // missing transition from src to dst property, probably forgot to add property state to src state
 
             const std::shared_ptr<BaseStateProperty> srcProperty = srcProperties.at(name);
             const std::shared_ptr<BaseStateProperty> dstProperty = dstNameAndPropertyPair.second;
@@ -145,13 +151,10 @@ namespace EngineCore
       }
       else
       {
-         DoTransition(dstStateName);
-      }
-
-      if (mCurrentStateNode->GetStateName() == dstStateName)
-      {
-         mChangedStateName = dstStateName;
-         bIsStateChangedDirty = true;
+         if (mCurrentStateNode->GetStateName() != dstStateName)
+         {
+            DoTransition(dstStateName);
+         }
       }
    }
 
@@ -199,6 +202,8 @@ namespace EngineCore
       mCurrentStateNode = newCurrentState;
       mCurrentActiveStateTransition = nullptr;
       bTransitionEnabled = false;
+      mChangedStateName = newCurrentState->GetStateName();
+      bIsStateChangedDirty = true;
    }
 
    void Tweener::NotifyStateChangedObservers()
@@ -254,14 +259,12 @@ namespace EngineCore
                else
                {
                   controllerSp->OnTransitionFinished();
-                  mChangedStateName = stateTo->GetStateName();
                }
             }
 
             if (!bTransitionEnabled)
             {
                CurrentActiveTransitionControllers.clear();
-               bIsStateChangedDirty = true;
             }
          }
       }
