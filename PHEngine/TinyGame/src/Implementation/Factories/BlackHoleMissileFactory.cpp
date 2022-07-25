@@ -183,12 +183,15 @@ namespace Game
 
             a_missileExplosionSecondPhase->AddComponent(c_particleSystemComponent);
 
-            GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(1.0f), 0.0f);
+            GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
             scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
             PhysicsComponentData physData("c_missileExplosionSecondPhase_PhysicsComponent_" + missileIndexStr, ghostController);
             const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
             const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
             a_missileExplosionSecondPhase->AddComponent(c_ghostPhysics);
+
+            const auto &b_blackHoleHitBoxSize = missileTweener->GetPropertyBindingByName("b_blackHoleHitBoxSize");
+            BindingAttachmentBuilder::SetAttachment(c_ghostPhysics.get(), b_blackHoleHitBoxSize.get(), "p_hitBoxScale");
         }
 
         a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);

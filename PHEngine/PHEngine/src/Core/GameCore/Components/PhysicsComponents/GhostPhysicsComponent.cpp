@@ -13,12 +13,12 @@ namespace EnginePhysics
 {
    GhostPhysicsComponent::GhostPhysicsComponent(const PhysicsComponentData &data)
        : PhysicsComponent(data),
-         m_CollisionShapeScale(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(1.0f),
-                                                                             "p_collisionShapeScale",
+         m_HitBoxScale(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(1.0f),
+                                                                             "p_hitBoxScale",
                                                                              [this](const glm::vec3 &value)
-                                                                             { SyncCollisionShapeScale(value); }))
+                                                                             { SyncHitBoxScale(value); }))
    {
-      AddEngineProperty(m_CollisionShapeScale);
+      AddEngineProperty(m_HitBoxScale);
    }
 
    GhostPhysicsComponent::~GhostPhysicsComponent()
@@ -53,7 +53,7 @@ namespace EnginePhysics
       // actorData.ComponentsData.emplace_back(physCompData);
    }
 
-   void GhostPhysicsComponent::SyncCollisionShapeScale(const glm::vec3& scale)
+   void GhostPhysicsComponent::SyncHitBoxScale(const glm::vec3& scale)
    {
       mDescriptor->GetShape()->GetCollisionShape()->setLocalScaling(Converter::glmToBullet(scale));
    }

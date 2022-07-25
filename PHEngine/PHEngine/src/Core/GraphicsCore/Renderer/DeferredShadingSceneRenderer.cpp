@@ -41,21 +41,42 @@ namespace Graphics
 {
    namespace Renderer
    {
-
       DeferredShadingSceneRenderer::DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr)
-          : SceneViewsVector(),
-            bLightProxiesDirty(false),
-            bProxiesDirty(false),
-            bPlanarReflectionProxiesDirty(false),
-            PrimitiveProxiesVector(),
-            LightProxiesVector(),
-            m_interThreadMgr(interThreadMgr),
+          : m_interThreadMgr(interThreadMgr),
             m_gbuffer(
                 std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowHeight())))
+                                                                      DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
+            m_deferredLightShader(),
+            m_fontShader(),
+            mDepthCollectShaderSkeletal(),
+            mDepthCollectShaderNonSkeletal(),
+            mDepthCollectPointLightShaderSkeletal(),
+            mDepthCollectPointLightShaderNonSkeletal(),
+            m_textureRenderer(),
+
+            bProxiesDirty(false),
+            bLightProxiesDirty(false),
+            bPlanarReflectionProxiesDirty(false),
+#if DEBUG
+            mDebugPhysicsRenderData(),
+#endif
+            mForwardRenderingProxiesVec(),
+            mSkeletalProxiesVec(),
+            mNonSkeletalProxiesVec(),
+            mDirLightProxiesVec(),
+            mPointLightProxiesVec(),
+            mSpotlightProxiesVec(),
+            mPlanarReflectionProxiesVec(),
+            mGroupedByShadowAtlasLights(),
+            mFontHandler(),
+            SceneViewsVector(),
+            PrimitiveProxiesVector(),
+            LightProxiesVector(),
+            MaterialProxiesVector(),
+            PlanarReflectionProxiesVector()
       {
-         LogInfo( "DeferredShadingSceneRenderer::ctor");
+         LogInfo("DeferredShadingSceneRenderer::ctor");
 
          const auto &folderManager = FolderManager::GetInstance();
 
@@ -95,17 +116,21 @@ namespace Graphics
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
       {
+         LogInfo("DeferredShadingSceneRenderer::dctor");
       }
 
       void DeferredShadingSceneRenderer::PostLevelInit()
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(0, 0, [=]()
-                                                     {
-            for (auto& lightProxy : LightProxiesVector)
-            {
-               lightProxy->PostLevelInit();
-            } }));
+         m_interThreadMgr.EmplaceRenderThreadJob(
+             eEnqueueJobPolicy::PUSH_ANYWAY,
+             Job(0, 0,
+                 [=]()
+                 {
+                    for (const auto &lightProxy : LightProxiesVector)
+                    {
+                       lightProxy->PostLevelInit();
+                    }
+                 }));
 
          RegisterFonts();
       }
@@ -141,16 +166,15 @@ namespace Graphics
 
                   if (lightProxyType == LightSceneProxyType::DIR_LIGHT)
                   {
-                     DirectionalLightSceneProxy *lightPtr = static_cast<DirectionalLightSceneProxy *>(lightProxyPtr);
+                     const auto dirLightPtr = std::static_pointer_cast<DirectionalLightSceneProxy>(lightProxyPtr);
 
-                     if (lightPtr->IsEnabled())
+                     if (dirLightPtr->IsEnabled())
                      {
-                        ProjectedShadowInfo *const shadowInfo = lightPtr->GetProjectedDirShadowInfo();
+                        ProjectedShadowInfo *const shadowInfo = dirLightPtr->GetProjectedDirShadowInfo();
                         if (shadowInfo && shadowInfo->IsShadowMapDirty())
                         {
                            shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                           DirectionalLightSceneProxy *dirLightPtr = lightPtr;
                            const BoundingBox &dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
                            if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
@@ -201,7 +225,7 @@ namespace Graphics
                   }
                   else if (lightProxyType == LightSceneProxyType::SPOT_LIGHT)
                   {
-                     SpotlightSceneProxy *spotlightPtr = static_cast<SpotlightSceneProxy *>(lightProxyPtr);
+                     const auto spotlightPtr = std::static_pointer_cast<SpotlightSceneProxy>(lightProxyPtr);
 
                      if (spotlightPtr->IsEnabled())
                      {
@@ -249,7 +273,7 @@ namespace Graphics
 
                                  if (bShouldRender)
                                  {
-                                    SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
+                                    const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
                                     const auto &worldMatrix = skeletalProxy->GetMatrix();
                                     const auto &viewMatrices = shadowInfo->GetShadowViewMatrix();
@@ -274,7 +298,7 @@ namespace Graphics
                   }
                   else if (lightProxyType == LightSceneProxyType::POINT_LIGHT)
                   {
-                     PointLightSceneProxy *pointLightPtr = static_cast<PointLightSceneProxy *>(lightProxyPtr);
+                     const auto pointLightPtr = std::static_pointer_cast<PointLightSceneProxy>(lightProxyPtr);
 
                      if (pointLightPtr->IsEnabled())
                      {
@@ -319,7 +343,7 @@ namespace Graphics
                                                             sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                                  if (bShouldRender)
                                  {
-                                    SkeletalMeshSceneProxy *skeletalProxy = static_cast<SkeletalMeshSceneProxy *>(proxy);
+                                    const auto skeletalProxy = std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy);
 
                                     const auto &worldMatrix = skeletalProxy->GetMatrix();
                                     const auto &viewMatrices = shadowInfo->GetShadowViewMatrices();
@@ -648,18 +672,16 @@ namespace Graphics
 
             for (auto &proxy : PrimitiveProxiesVector)
             {
-               PrimitiveSceneProxy *proxyPtr = proxy.get();
-
-               if (proxyPtr->IsDeferred())
+               if (proxy->IsDeferred())
                {
-                  if (proxyPtr->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
-                     mSkeletalProxiesVec.push_back(static_cast<SkeletalMeshSceneProxy *>(proxyPtr));
+                  if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY)
+                     mSkeletalProxiesVec.emplace_back(std::static_pointer_cast<SkeletalMeshSceneProxy>(proxy));
                   else
-                     mNonSkeletalProxiesVec.push_back(proxyPtr);
+                     mNonSkeletalProxiesVec.emplace_back(proxy);
                }
                else
                {
-                  mForwardRenderingProxiesVec.push_back(proxyPtr);
+                  mForwardRenderingProxiesVec.emplace_back(proxy);
                }
             }
             SetProxiesAreDirty(false);
@@ -677,15 +699,15 @@ namespace Graphics
 
                if (lightType == LightSceneProxyType::DIR_LIGHT)
                {
-                  mDirLightProxiesVec.push_back(static_cast<DirectionalLightSceneProxy *>(proxy.get()));
+                  mDirLightProxiesVec.emplace_back(std::static_pointer_cast<DirectionalLightSceneProxy>(proxy));
                }
                else if (lightType == LightSceneProxyType::POINT_LIGHT)
                {
-                  mPointLightProxiesVec.push_back(static_cast<PointLightSceneProxy *>(proxy.get()));
+                  mPointLightProxiesVec.emplace_back(std::static_pointer_cast<PointLightSceneProxy>(proxy));
                }
                else if (lightType == LightSceneProxyType::SPOT_LIGHT)
                {
-                  mSpotlightProxiesVec.push_back(static_cast<SpotlightSceneProxy *>(proxy.get()));
+                  mSpotlightProxiesVec.emplace_back(std::static_pointer_cast<SpotlightSceneProxy>(proxy));
                }
             }
 
@@ -696,16 +718,15 @@ namespace Graphics
 
          if (bPlanarReflectionProxiesDirty)
          {
-            for (auto &proxy : PlanarReflectionProxiesVector)
+            for (const auto &proxy : PlanarReflectionProxiesVector)
             {
-               PlanarReflectionProxy *proxyPtr = proxy.get();
                auto findIt = std::find_if(mPlanarReflectionProxiesVec.begin(), mPlanarReflectionProxiesVec.end(),
-                                          [=](const auto &existingProxy)
-                                          { return proxyPtr->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
+                                          [&](const auto &existingProxy)
+                                          { return proxy->GetSceneProxyId() == existingProxy->GetSceneProxyId(); });
 
                if (mPlanarReflectionProxiesVec.end() == findIt)
                {
-                  mPlanarReflectionProxiesVec.push_back(proxyPtr);
+                  mPlanarReflectionProxiesVec.emplace_back(proxy);
                }
             }
 
@@ -729,14 +750,14 @@ namespace Graphics
 
                   if (groupIt == mGroupedByShadowAtlasLights.end())
                   {
-                     std::vector<LightSceneProxy *> result;
+                     std::vector<std::shared_ptr<LightSceneProxy>> result;
 
                      for (const auto &proxy : LightProxiesVector)
                      {
                         if (proxy->GetShadowInfo() && proxy->GetShadowInfo()->GetAtlasResource())
                         {
                            if (proxy->GetShadowInfo()->GetAtlasResource()->GetTextureDescriptor() == lastDesc)
-                              result.emplace_back(proxy.get());
+                              result.emplace_back(proxy);
                         }
                      }
                      mGroupedByShadowAtlasLights.emplace_back(std::make_pair(lastDesc, result));
@@ -778,7 +799,7 @@ namespace Graphics
             }
 
 #if DEBUG
-            //DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+            // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
 #endif
          }
 

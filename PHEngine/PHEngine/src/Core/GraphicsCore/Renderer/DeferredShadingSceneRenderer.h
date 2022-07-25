@@ -44,43 +44,21 @@ using namespace EnginePhysics;
 
 namespace Graphics
 {
-	namespace Renderer
-	{
+   namespace Renderer
+   {
 
-		class DeferredShadingSceneRenderer
-		{
-
-         using PointLightProxiesPtrVector = std::vector<PointLightSceneProxy*>;
-         using DirectionalLightProxiesPtrVector = std::vector<DirectionalLightSceneProxy*>;
-         using SpotlightProxiesPtrVector = std::vector<SpotlightSceneProxy*>;
-
-      public:
-
-         std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
-
-         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
-
-         std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
-
-         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
-
-         std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
-
-      private:
-
-         InterThreadCommunicationMgr& m_interThreadMgr;
+      class DeferredShadingSceneRenderer
+      {
+         InterThreadCommunicationMgr &m_interThreadMgr;
 
          /* G-buffers */
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
-
          std::shared_ptr<FontRenderingShader> m_fontShader;
-
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>> mDepthCollectShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> mDepthCollectShaderNonSkeletal;
-
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>> mDepthCollectPointLightShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> mDepthCollectPointLightShaderNonSkeletal;
 
@@ -97,23 +75,24 @@ namespace Graphics
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
-         std::vector<PrimitiveSceneProxy*> mForwardRenderingProxiesVec;
-
-         std::vector<SkeletalMeshSceneProxy*> mSkeletalProxiesVec;
-
-         std::vector<PrimitiveSceneProxy*> mNonSkeletalProxiesVec;
-
-         DirectionalLightProxiesPtrVector mDirLightProxiesVec;
-
-         PointLightProxiesPtrVector mPointLightProxiesVec;
-
-         SpotlightProxiesPtrVector mSpotlightProxiesVec;
-
-         std::vector<PlanarReflectionProxy*> mPlanarReflectionProxiesVec;
-
-         std::vector<std::pair<size_t, std::vector<LightSceneProxy*>>> mGroupedByShadowAtlasLights;
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> mForwardRenderingProxiesVec;
+         std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> mSkeletalProxiesVec;
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> mNonSkeletalProxiesVec;
+         std::vector<std::shared_ptr<DirectionalLightSceneProxy>> mDirLightProxiesVec;
+         std::vector<std::shared_ptr<PointLightSceneProxy>> mPointLightProxiesVec;
+         std::vector<std::shared_ptr<SpotlightSceneProxy>> mSpotlightProxiesVec;
+         std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
+         std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
          FontHandler mFontHandler;
+
+      public:
+
+         std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
+         std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
+         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
+         std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
 
       private:
 
@@ -136,10 +115,9 @@ namespace Graphics
          void RegisterFonts();
 
       public:
+         DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
 
-         DeferredShadingSceneRenderer(InterThreadCommunicationMgr& interThreadMgr);
-
-			~DeferredShadingSceneRenderer();
+         ~DeferredShadingSceneRenderer();
 
          void PostLevelInit();
 
@@ -161,35 +139,33 @@ namespace Graphics
 
          void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
-         void RegisterText(const std::shared_ptr<TextFieldProxy> & textFieldProxy);
+         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
-         void UnregisterText(const std::string& fontName, const int32_t textFieldProxyId);
+         void UnregisterText(const std::string &fontName, const int32_t textFieldProxyId);
 
-         void TextPositionChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec2& position);
+         void TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position);
 
-         void TextColorChanged(const std::string& fontName, const int32_t textFieldProxyId, const glm::vec3& color);
+         void TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color);
 
-         void TextChanged(const std::string& fontName, const int32_t textFieldProxyId, const std::string& text);
+         void TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text);
 
-         void TextVisibilityChanged(const std::string& fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+         void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
          float GetTextWidthByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
 
          float GetTextHeightByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
 
 #if DEBUG
-         void SetDebugPhysicsRenderData(const DebugPhysicsRenderData& debugPhysicsRenderData);
+         void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);
 
          void PushRenderTargetToTextureRenderer();
 
-         private:
-
-         void DebugRenderPhysics(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+      private:
+         void DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
          void DebugFramePanelsPass();
 #endif
-		};
+      };
 
-	}
+   }
 }
-

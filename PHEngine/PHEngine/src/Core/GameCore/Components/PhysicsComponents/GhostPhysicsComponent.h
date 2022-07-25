@@ -15,7 +15,7 @@ namespace EnginePhysics
        : public PhysicsComponent
    {
    protected:
-      std::shared_ptr<EngineGOProperty<glm::vec3>> m_CollisionShapeScale;
+      std::shared_ptr<EngineGOProperty<glm::vec3>> m_HitBoxScale;
 
    public:
       GhostPhysicsComponent(const PhysicsComponentData &data);
@@ -27,6 +27,6 @@ namespace EnginePhysics
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
    private:
-      void SyncCollisionShapeScale(const glm::vec3 &scale);
+      void SyncHitBoxScale(const glm::vec3 &scale);
    };
 }
