@@ -36,9 +36,9 @@ namespace Game
         mCombatController->OnPreLevelInit();
     }
 
-    void SceneController::OnInitLevel()
+    void SceneController::OnLevelInit()
     {
-        mCombatController->OnInitLevel();
+        mCombatController->OnLevelInit();
     }
 
     void SceneController::OnPostLevelInit()

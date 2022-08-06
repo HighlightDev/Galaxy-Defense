@@ -125,7 +125,7 @@ namespace EngineCore
          {
             static const uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH, GetObjectId(), functionId, [=]()
+            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
                                            {
                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
                assert(lightProxySp);                                       

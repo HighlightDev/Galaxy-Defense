@@ -27,7 +27,8 @@ namespace Graphics
               mNumberOfLines(0),
               mIsCenteredText(false),
               mCreatedMeshTextWidth(0.0f),
-              mCreatedMeshTextHeight(0.0f)
+              mCreatedMeshTextHeight(0.0f),
+              mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
         {
         }
 
@@ -64,5 +65,7 @@ namespace Graphics
 
         float mCreatedMeshTextWidth;
         float mCreatedMeshTextHeight;
+
+        bool mIsSubscribedOnTextScreenSpaceSizeUpdate;
     };
 }

@@ -9,7 +9,6 @@ set(
 	src/Implementation/Controllers/SceneController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
-	src/Implementation/CombatEntity.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
@@ -17,8 +16,11 @@ set(
 	src/Implementation/Factories/WeakSpaceShipFactory.h
 	src/Implementation/Factories/WeakMissileFactory.h
 	src/Implementation/Factories/BlackHoleMissileFactory.h
+	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Actors/MissileActor.h
 	src/Implementation/Actors/BlackHoleMissileActor.h
+	src/Implementation/Actors/SpaceshipActor.h
+	src/Implementation/Actors/WeakSpaceshipActor.h
 )
 
 set(
@@ -32,13 +34,14 @@ set(
 	src/Implementation/Controllers/SceneController.cpp
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
-	src/Implementation/CombatEntity.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/WeakMissileFactory.cpp
 	src/Implementation/Factories/BlackHoleMissileFactory.cpp
 	src/Implementation/Actors/MissileActor.cpp
 	src/Implementation/Actors/BlackHoleMissileActor.cpp
+	src/Implementation/Actors/SpaceshipActor.cpp
+	src/Implementation/Actors/WeakSpaceshipActor.cpp
     main.cpp
 )
 

@@ -41,7 +41,7 @@ namespace Game
     {
     }
 
-    void CombatController::OnInitLevel()
+    void CombatController::OnLevelInit()
     {
         if (const auto &sceneSp = mScene.lock())
         {
@@ -63,9 +63,7 @@ namespace Game
                                                                            glm::vec3(),
                                                                            glm::vec3(9));
 
-                const auto c_uiComponent = a_enemyShip->GetComponentsByType<UiComponent>().back();
-                const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("arial", 3, glm::vec3(1, 0.0, 0.0), 0.3, 1, false);
-                mEnemies.emplace_back(CombatEntity(a_enemyShip, c_uiComponent, dmgTextFieldId));
+                mEnemies.emplace_back(a_enemyShip);
             }
         }
     }
@@ -119,41 +117,13 @@ namespace Game
                 if (a_enemyShipIt != mEnemies.end() &&
                     a_bulletIt != mMissilesPool.end())
                 {
-                    (*a_bulletIt)->TriggerExplosion();
+                    const std::shared_ptr<MissileActor>& missileActor = (*a_bulletIt);
+                    const std::shared_ptr<SpaceshipActor>& enemyShipActor = (*a_enemyShipIt);
 
                     const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
-                    const auto &dmgTextField = a_enemyShipIt->GetSpaceShipUiComponent()->GetTextFieldById(a_enemyShipIt->GetDmgTextFieldId());
 
-                    if (a_enemyShipIt->CheckIsAliveAfterDamage(dmg))
-                    {
-                        a_enemyShipIt->SetIsDamageReceived(true);
-
-                        const auto c_particle = a_enemyShipIt->GetSpaceShipActor()->GetComponentsByType<ParticleSystemComponent>().back();
-                        c_particle->EmitParticles();
-
-                        dmgTextField->SetText(std::to_string(dmg));
-                        dmgTextField->SetVisibility(true);
-
-                        const auto &spaceShipTranslation = a_enemyShipIt->GetSpaceShipActor()->GetRootComponent()->GetTranslation();
-                        const auto &mainCameraSp = mMainPlayerActorController->GetCamera();
-                        const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-                        const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                                                                   clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                                                                   clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-                        const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-                        dmgTextField->SetPosition(textureSpaceTranslation);
-                    }
-                    else
-                    {
-                        static constexpr float x_axisHalfWidth = 20.0f;
-                        static constexpr float y_axisHalfHeight = 20.0f;
-                        const float x = Random::Float() * 10.0f;
-                        glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 70.0f);
-
-                        dmgTextField->SetVisibility(false);
-
-                        ReSpawnEnemyShip(*a_enemyShipIt, startPosition);
-                    }
+                    enemyShipActor->TriggerDamageReceived(dmg);
+                    missileActor->TriggerExplosion();
                 }
             }
         }
@@ -173,42 +143,6 @@ namespace Game
         // Test bullets if they are still inside level bounds
         FlushToPoolUsedBullets();
 
-        for (auto &enemyContainer : mEnemies)
-        {
-            if (enemyContainer.GetIsDamageReceived())
-            {
-                if (const auto &sceneSp = mScene.lock())
-                {
-                    const auto &dmgTextField = enemyContainer.GetSpaceShipUiComponent()->GetTextFieldById(enemyContainer.GetDmgTextFieldId());
-                    float dmgTime = enemyContainer.GetDamageDeltaTime();
-                    dmgTime += deltaTime;
-                    if (dmgTime > 1.0f)
-                    {
-                        dmgTime = 0.0f;
-                        enemyContainer.SetIsDamageReceived(false);
-                        dmgTextField->SetVisibility(false);
-                    }
-                    enemyContainer.SetDamageDeltaTime(dmgTime);
-
-                    const auto &materialDamageProperty =
-                        std::static_pointer_cast<EngineGOProperty<float>>(
-                            enemyContainer.GetSpaceShipActor()->GetEnginePropertyByName("property_damageEffect"));
-                    materialDamageProperty->SetValue(dmgTime);
-
-                    const auto &spaceShipTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
-                    const auto &mainCameraSp = mMainPlayerActorController->GetCamera();
-                    const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-                    const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                                                               clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                                                               clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-                    const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-                    const float textWidth = sceneSp->GetTextWidthByTextFieldId_OnGameThread(dmgTextField);
-                    dmgTextField->SetPosition(textureSpaceTranslation - (textWidth * 0.5f));
-                    dmgTextField->SetPosition(textureSpaceTranslation + glm::vec2(0.0f, -0.2f));
-                }
-            }
-        }
-
         if (bIsCoolDownInProgress)
         {
             mDeltaTime += deltaTime;
@@ -220,16 +154,16 @@ namespace Game
             }
         }
 
-        for (auto &enemyContainer : mEnemies)
+        for (const auto &enemyActor : mEnemies)
         {
-            const auto &enemyTranslation = enemyContainer.GetSpaceShipActor()->GetRootComponent()->GetTranslation();
+            const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
             if (enemyTranslation.z < -10.0f)
             {
                 static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
                 glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 70.0f);
-                ReSpawnEnemyShip(enemyContainer, startPosition);
+                ReSpawnEnemyShip(enemyActor, startPosition);
             }
         }
     }
@@ -262,10 +196,10 @@ namespace Game
         (*idleBulletIt)->TriggerSpawn(bulletStartPosition);
     }
 
-    void CombatController::ReSpawnEnemyShip(CombatEntity &spaceShip, const glm::vec3 &shipStartPosition)
+    void CombatController::ReSpawnEnemyShip(const std::shared_ptr<SpaceshipActor>& spaceShip, const glm::vec3 &shipStartPosition)
     {
-        spaceShip.RestoreLife();
-        const auto &c_movement = spaceShip.GetSpaceShipActor()->GetMovementComponent();
+        spaceShip->RestoreLife();
+        const auto &c_movement = spaceShip->GetMovementComponent();
         c_movement->Teleport(shipStartPosition);
     }
 
@@ -283,22 +217,22 @@ namespace Game
         }
     }
 
-    typename std::vector<CombatEntity>::iterator
+    typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator
     CombatController::FindEnemyShipByName(const std::string &actorName)
     {
         auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(),
-                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &enemyContainer)
+                                    [&actorName = static_cast<const std::string &>(actorName)](const auto &enemyActor)
                                     {
-                                        return actorName == enemyContainer.GetSpaceShipActor()->GetName();
+                                        return actorName == enemyActor->GetName();
                                     });
         return foundIt;
     }
 
-    typename std::vector<CombatEntity>::iterator
+    typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator
     CombatController::FindEnemyShipById(const uint64_t actorId)
     {
-        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyContainer)
-                                    { return enemyContainer.GetSpaceShipActor()->HasGameObjectIdInHierarchy(actorId); });
+        auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyActor)
+                                    { return enemyActor->HasGameObjectIdInHierarchy(actorId); });
         return foundIt;
     }
 

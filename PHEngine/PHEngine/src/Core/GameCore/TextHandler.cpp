@@ -8,7 +8,8 @@
 namespace EngineCore
 {
     TextHandler::TextHandler()
-        : mSceneWp()
+        : mSceneWp(),
+          mRegisteredTexts()
     {
         TextRegisterEvent::GetInstance()->AddListener(this);
         TextDataChangedEvent::GetInstance()->AddListener(this);
@@ -25,19 +26,36 @@ namespace EngineCore
         mSceneWp = sceneWp;
     }
 
+    std::shared_ptr<TextField> TextHandler::GetTextFieldById(const int32_t fieldId) const
+    {
+        auto foundIt = std::find_if(mRegisteredTexts.begin(), mRegisteredTexts.end(), [=](const auto &textField)
+                                    { return fieldId == textField->GetTextFieldId(); });
+
+        return foundIt != mRegisteredTexts.end() ? *foundIt : nullptr;
+    }
+
     void TextHandler::ProcessEvent(const TextRegisterEvent::EventData_t &data)
     {
         if (auto sceneSp = mSceneWp.lock())
         {
             const auto &textSp = std::get<0>(data);
             const auto registerType = std::get<1>(data);
+            const bool bSubscribeOnUpdateTextScreenSpaceSize = std::get<2>(data);
 
             if (eRegisterType::REGISTER == registerType)
             {
-                sceneSp->RegisterText_OnRenderThread(textSp);
+                mRegisteredTexts.emplace_back(textSp);
+                sceneSp->RegisterText_OnRenderThread(textSp, bSubscribeOnUpdateTextScreenSpaceSize);
             }
             else
             {
+                auto removeIt = std::remove_if(mRegisteredTexts.begin(), mRegisteredTexts.end(), [=](const auto &textField)
+                                               { return textSp->GetTextFieldId() == textField->GetTextFieldId(); });
+
+                if (removeIt != mRegisteredTexts.end())
+                {
+                    mRegisteredTexts.erase(removeIt);
+                }
                 sceneSp->UnregisterText_OnRenderThread(textSp);
             }
         }

@@ -34,6 +34,7 @@ namespace EngineCore
                                const std::string &text,
                                const glm::vec3 &color,
                                const glm::vec2 &position,
+                               const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                const float lineMaxSize,
                                const int32_t numberOfLines,
                                const bool isCenteredText);
@@ -41,6 +42,7 @@ namespace EngineCore
         int32_t CreateEmptyTextField(const std::string &fontName,
                                     const float fontSize,
                                     const glm::vec3 &color,
+                                    const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                     const float lineMaxSize,
                                     const int32_t numberOfLines,
                                     const bool isCenteredText);

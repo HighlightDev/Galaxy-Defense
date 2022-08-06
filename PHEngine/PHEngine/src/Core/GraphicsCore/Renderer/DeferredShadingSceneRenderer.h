@@ -151,10 +151,6 @@ namespace Graphics
 
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
-         float GetTextWidthByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
-
-         float GetTextHeightByTextFieldId(const std::string &fontName, const int32_t textFieldId) const;
-
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);
 

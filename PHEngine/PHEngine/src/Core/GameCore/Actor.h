@@ -71,6 +71,8 @@ namespace EngineCore
 
       virtual void ChangeTweenState(const std::string& stateName);
 
+      virtual void OnLevelInit();
+
       virtual void PostLevelInit();
 
       virtual void PostPhysicsInitialize();

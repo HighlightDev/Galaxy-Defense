@@ -190,7 +190,7 @@ namespace EngineCore
         {
             if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
             {
-                sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH,
+                sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                GetObjectId(),
                                                functionId,
                                                [=]() mutable

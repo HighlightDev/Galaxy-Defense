@@ -2,8 +2,8 @@
 
 #include "Core/GameCore/ITickable.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
-#include "Implementation/CombatEntity.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/SpaceshipActor.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
 
@@ -33,7 +33,7 @@ namespace Game
 
         std::shared_ptr<SpaceShipPlayerController> mMainPlayerActorController;
 
-        std::vector<CombatEntity> mEnemies;
+        std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
 
@@ -54,7 +54,7 @@ namespace Game
 
         virtual void OnPreLevelInit();
 
-        virtual void OnInitLevel();
+        virtual void OnLevelInit();
 
         virtual void OnPostLevelInit();
 
@@ -74,13 +74,13 @@ namespace Game
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
-        void ReSpawnEnemyShip(CombatEntity& spaceShip, const glm::vec3& shipStartPosition);
+        void ReSpawnEnemyShip(const std::shared_ptr<SpaceshipActor>& spaceShip, const glm::vec3& shipStartPosition);
 
         void FlushToPoolUsedBullets();
 
-        typename std::vector<CombatEntity>::iterator FindEnemyShipByName(const std::string &actorName);
+        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipByName(const std::string &actorName);
 
-        typename std::vector<CombatEntity>::iterator FindEnemyShipById(const uint64_t actorId);
+        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipById(const uint64_t actorId);
 
         typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletByName(const std::string &actorName);
 

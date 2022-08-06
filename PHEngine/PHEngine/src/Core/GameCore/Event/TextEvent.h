@@ -12,10 +12,10 @@ using namespace EngineCore;
 namespace Event
 {
    class TextRegisterEvent
-       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>
+       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>
    {
    public:
-      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>::Event_t;
 
       virtual std::string ToString() const override {
          return "TextRegisterEvent";

@@ -31,7 +31,8 @@ namespace EngineCore
         mLineMaxSize(lineMaxSize),
         mNumberOfLines(numberOfLines),
         mIsCenteredText(isCenteredText),
-        mIsRegistered(false)
+        mIsRegistered(false),
+        mScreenSpaceSize(0.0f, 0.0f)
   {
   }
 
@@ -55,12 +56,12 @@ namespace EngineCore
   {
   }
 
-  void TextField::RegisterText()
+  void TextField::RegisterText(const bool receiveUpdateOnTextScreenSpaceSizeChanged)
   {
     assert(!mIsRegistered);
     mTextFieldId = s_TotalTextFieldId++;
     mIsRegistered = true;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER);
+    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER, receiveUpdateOnTextScreenSpaceSizeChanged);
 
     LogInfo( "TextField::RegisterText => Registered text with id = ", mTextFieldId);
   }
@@ -69,7 +70,7 @@ namespace EngineCore
   {
     assert(mIsRegistered);
     mIsRegistered = false;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER);
+    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER, false);
 
     LogInfo( "TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
   }
@@ -181,5 +182,15 @@ namespace EngineCore
                                                      shared_from_this(),
                                                      eTextChangedDataType::OFFSET);
     }
+  }
+
+  void TextField::SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize)
+  {
+    mScreenSpaceSize = screenSpaceSize;
+  }
+
+  glm::vec2 TextField::GetScreenSpaceSize() const
+  {
+    return mScreenSpaceSize;
   }
 }

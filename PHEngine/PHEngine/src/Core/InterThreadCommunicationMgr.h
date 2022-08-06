@@ -37,7 +37,7 @@ namespace Thread
    enum class eEnqueueJobPolicy
    {
       IF_DUPLICATE_NO_PUSH,
-      IF_DUPLICATE_REPLACE_AND_PUSH,
+      IF_DUPLICATE_REPLACE,
       PUSH_ANYWAY
    };
 

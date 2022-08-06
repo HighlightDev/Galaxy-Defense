@@ -110,5 +110,9 @@ namespace EngineCore
         float GetTextWidth(const std::string& fontName, const int32_t textFieldProxyId) const;
 
         float GetTextHeight(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+        bool IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const;
+
+        glm::vec2 GetTextScreenSpaceSize(const std::string& fontName, const int32_t textFieldProxyId) const;
     };
 }

@@ -347,4 +347,17 @@ namespace EngineCore
         assert(mFontRenderDataMap.count(fontName));
         return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mCreatedMeshTextHeight;
     }
+
+    bool FontHandler::IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mIsSubscribedOnTextScreenSpaceSizeUpdate;
+    }
+
+    glm::vec2 FontHandler::GetTextScreenSpaceSize(const std::string &fontName, const int32_t textFieldProxyId) const
+    {
+        assert(mFontRenderDataMap.count(fontName));
+        const auto &textFiledSp = mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId);
+        return glm::vec2(textFiledSp->mCreatedMeshTextWidth, textFiledSp->mCreatedMeshTextHeight);
+    }
 }

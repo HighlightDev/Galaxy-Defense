@@ -91,7 +91,7 @@ namespace Thread
 
          break;
       }
-      case eEnqueueJobPolicy::IF_DUPLICATE_REPLACE_AND_PUSH:
+      case eEnqueueJobPolicy::IF_DUPLICATE_REPLACE:
       {
          const auto duplicateIt = std::find_if(jobs.begin(), jobs.end(),
                                                [&](const Job &collectionJob)

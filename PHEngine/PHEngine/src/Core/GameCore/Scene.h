@@ -81,6 +81,8 @@ namespace EngineCore
       std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
                                                             const ComponentData &componentData);
 
+      void OnLevelInit();
+
       void PostLevelInit();
 
       void PostPhysicsInitialize();
@@ -120,6 +122,8 @@ namespace EngineCore
       std::shared_ptr<ACamera> GetMainCamera() const;
 
       const InterThreadCommunicationMgr &GetThreadManager() const;
+
+      const TextHandler& GetTextHandler() const;
 
       void AddActor(std::shared_ptr<Actor> actor);
 
@@ -172,14 +176,11 @@ namespace EngineCore
 
       void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
 
-      void RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
+      void RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
 
       void UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
 
       void TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType);
-
-      float GetTextWidthByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
-      float GetTextHeightByTextFieldId_OnGameThread(const std::shared_ptr<TextField> &textField);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string &gameObjectName);
 

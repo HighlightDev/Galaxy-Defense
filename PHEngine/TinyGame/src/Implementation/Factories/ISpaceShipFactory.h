@@ -5,15 +5,16 @@
 
 namespace EngineCore
 {
-    class Actor;
     class Scene;
 }
 
 namespace Game
 {
+    class SpaceshipActor;
+
     class ISpaceShipFactory
     {
-        virtual std::shared_ptr<::EngineCore::Actor>
+        virtual std::shared_ptr<SpaceshipActor>
         CreateSpaceShip(const std::shared_ptr<::EngineCore::Scene> &scene,
                         const glm::vec3 &translation,
                         const glm::vec3 &rotation,

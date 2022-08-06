@@ -125,7 +125,7 @@ namespace Game
       const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
 
-      mSceneController->OnInitLevel();
+      mSceneController->OnLevelInit();
    }
 
    void IntroLevel::PostLevelInit()

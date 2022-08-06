@@ -3,6 +3,8 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
 #include "Implementation/Controllers/AiSpaceshipActorController.h"
+#include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/WeakSpaceshipActor.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
@@ -42,7 +44,7 @@ namespace Game
 {
     size_t WeakSpaceShipFactory::s_weakSpaceShipCounter = 0;
 
-    std::shared_ptr<Actor>
+    std::shared_ptr<SpaceshipActor>
     WeakSpaceShipFactory::CreateSpaceShip(const std::shared_ptr<::EngineCore::Scene> &scene,
                                           const glm::vec3 &translation,
                                           const glm::vec3 &rotation,
@@ -51,7 +53,7 @@ namespace Game
         const auto &enemyShipIndexStr = std::to_string(s_weakSpaceShipCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_enemyShip_rootComponent_" + enemyShipIndexStr,
                                                                                  translation, glm::vec3(0), glm::vec3(1));
-        const auto &a_enemySpaceship = std::make_shared<Actor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
+        const auto &a_enemySpaceship = std::make_shared<WeakSpaceshipActor>("a_enemyShip_" + enemyShipIndexStr, rootComponent);
         scene->AddActor(a_enemySpaceship);
 
         MaterialParser materialParser;
@@ -74,9 +76,9 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-        const auto &damagePropSp = std::make_shared<EngineGOProperty<float>>(0.0f, "property_damageEffect");
+        const auto &damagePropSp = std::make_shared<EngineGOProperty<float>>(0.0f, "p_damageEffect");
         a_enemySpaceship->AddEngineProperty(damagePropSp);
-        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, a_enemySpaceship.get(), "property_damageEffect", "damageTime");
+        MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, a_enemySpaceship.get(), "p_damageEffect", "damageTime");
 
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        rotation, scale, "", pbs_mat);

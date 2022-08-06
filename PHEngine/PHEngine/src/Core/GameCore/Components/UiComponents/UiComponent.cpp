@@ -34,26 +34,28 @@ namespace EngineCore
                                         const std::string &text,
                                         const glm::vec3 &color,
                                         const glm::vec2 &position,
+                                        const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                         const float lineMaxSize,
                                         const int32_t numberOfLines,
                                         const bool isCenteredText)
     {
         const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, isCenteredText);
         mTextFields.emplace_back(textFieldSp);
-        textFieldSp->RegisterText();
+        textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();
     }
 
     int32_t UiComponent::CreateEmptyTextField(const std::string &fontName,
                                              const float fontSize,
                                              const glm::vec3 &color,
+                                             const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                              const float lineMaxSize,
                                              const int32_t numberOfLines,
                                              const bool isCenteredText)
     {
         const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, isCenteredText);
         mTextFields.emplace_back(textFieldSp);
-        textFieldSp->RegisterText();
+        textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();
     }
 

@@ -31,7 +31,7 @@ namespace Game
 
         virtual void OnPreLevelInit();
 
-        virtual void OnInitLevel();
+        virtual void OnLevelInit();
 
         virtual void OnPostLevelInit();
 

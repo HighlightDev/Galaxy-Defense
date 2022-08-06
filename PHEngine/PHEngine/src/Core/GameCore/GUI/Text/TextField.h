@@ -37,6 +37,8 @@ namespace EngineCore
 
         bool mIsRegistered;
 
+        glm::vec2 mScreenSpaceSize;
+
     public:
         TextField(const std::string &fontName,
                   const float fontSize,
@@ -86,8 +88,12 @@ namespace EngineCore
 
         bool GetIsRegistered() const;
 
+        void SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize);
+
+        glm::vec2 GetScreenSpaceSize() const;
+
     private:
-        void RegisterText();
+        void RegisterText(const bool receiveUpdateOnTextScreenSpaceSizeChanged);
 
         void UnregisterText();
     };

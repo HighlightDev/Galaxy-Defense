@@ -14,7 +14,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
-#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/TextHandler.h"
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -949,21 +949,27 @@ namespace Graphics
       void DeferredShadingSceneRenderer::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
       {
          mFontHandler.TextChanged(fontName, textFieldProxyId, text);
+
+         if (mFontHandler.IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId))
+         {
+            static constexpr uint64_t creatorObjectId = 0;
+            static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextChanged");
+
+            if (const auto &sceneSp = m_interThreadMgr.TryGetSceneWP().lock())
+            {
+               m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                     Job(creatorObjectId, functionId, [=]()
+                                                         { sceneSp->GetTextHandler()
+                                                               .GetTextFieldById(textFieldProxyId)
+                                                               ->SetTextScreenSpaceSize(mFontHandler
+                                                                                            .GetTextScreenSpaceSize(fontName, textFieldProxyId)); }));
+            }
+         }
       }
 
       void DeferredShadingSceneRenderer::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
       {
          mFontHandler.TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
-      }
-
-      float DeferredShadingSceneRenderer::GetTextWidthByTextFieldId(const std::string &fontName, const int32_t textFieldId) const
-      {
-         return mFontHandler.GetTextWidth(fontName, textFieldId);
-      }
-
-      float DeferredShadingSceneRenderer::GetTextHeightByTextFieldId(const std::string &fontName, const int32_t textFieldId) const
-      {
-         return mFontHandler.GetTextHeight(fontName, textFieldId);
       }
 
 #if DEBUG

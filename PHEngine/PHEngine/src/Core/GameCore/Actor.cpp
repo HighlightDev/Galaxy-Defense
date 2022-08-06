@@ -62,6 +62,10 @@ namespace EngineCore
    {
    }
 
+   void Actor::OnLevelInit()
+   {
+   }
+
    void Actor::PostLevelInit()
    {
       m_rootComponent->SetOwner(GetWeakFromThis());
