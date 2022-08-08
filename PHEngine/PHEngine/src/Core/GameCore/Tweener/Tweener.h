@@ -19,6 +19,8 @@ namespace EngineCore
 
       class Actor* mParent = nullptr;
 
+      std::string mTweenerName;
+      
       std::string mRelPathTweener;
 
       /* At beginning we are here */
@@ -43,7 +45,7 @@ namespace EngineCore
       std::vector<ITweenStateChangeNotifyable*> mStateChangedObservers; 
    public:
 
-      Tweener(const std::string& relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
+      Tweener(const std::string& relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
 
       ~Tweener();
 
@@ -62,6 +64,8 @@ namespace EngineCore
       float GetTransitionParameter() const;
 
       std::string GetRelPathTweener() const;
+
+      const std::string& GetTweenerName() const;
 
       void AddPropertyBinding(const std::string& propBindingName, std::shared_ptr<PropertyBinding> binding);
 

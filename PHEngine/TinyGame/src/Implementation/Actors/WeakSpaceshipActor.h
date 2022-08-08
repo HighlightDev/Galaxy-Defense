@@ -13,6 +13,9 @@ namespace Game
         : public SpaceshipActor,
           public ITweenStateChangeNotifyable
     {
+
+        std::shared_ptr<Tweener> mWeakSpaceshipTweener;
+
     public:
         WeakSpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 

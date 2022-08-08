@@ -26,7 +26,7 @@ namespace EngineCore
                                                              { SyncIsEnabled(isEnabled); })),
          m_inputComponent(),
          m_movementComponent(),
-         mTweener(nullptr),
+         mTweeners(),
          m_parent()
    {
       assert(m_rootComponent);
@@ -70,9 +70,9 @@ namespace EngineCore
    {
       m_rootComponent->SetOwner(GetWeakFromThis());
 
-      if (mTweener)
+      for (const auto &tweener : mTweeners)
       {
-         mTweener->InitRootState();
+         tweener->InitRootState();
       }
 
       for (const auto &comp : m_allComponents)
@@ -147,9 +147,9 @@ namespace EngineCore
          m_movementComponent->CollectDataForSerialization(dataContainer);
       }
 
-      if (mTweener)
+      for (const auto &tweener : mTweeners)
       {
-         mTweener->CollectDataForSerialization(dataContainer);
+         tweener->CollectDataForSerialization(dataContainer);
       }
    }
 
@@ -261,12 +261,16 @@ namespace EngineCore
       }
    }
 
-   void Actor::ChangeTweenState(const std::string &stateName)
+   void Actor::ChangeTweenerState(const std::string &tweenerName, const std::string &stateName)
    {
-      if (mTweener && mIsEnabled->GetValue())
+      if (mIsEnabled->GetValue())
       {
-         mTweener->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
-         mTweener->ChangeState(stateName);
+         auto it = std::find_if(mTweeners.begin(), mTweeners.end(), [&](const auto &tweener)
+                                { return tweener->GetTweenerName() == tweenerName; });
+         assert(it != mTweeners.end());
+         auto tweenerSp = *it;
+         tweenerSp->NotifyStateChangedObservers(); // if state was changed and is pending to notify - firstly do it
+         tweenerSp->ChangeState(stateName);
       }
    }
 
@@ -315,10 +319,13 @@ namespace EngineCore
          m_movementComponent->Tick(deltaTime);
       }
 
-      if (mTweener && mIsEnabled->GetValue())
+      if (mIsEnabled->GetValue())
       {
-         mTweener->Tick(deltaTime);
-         mTweener->NotifyStateChangedObservers();
+         for (const auto &tweener : mTweeners)
+         {
+            tweener->Tick(deltaTime);
+            tweener->NotifyStateChangedObservers();
+         }
       }
    }
 
@@ -421,18 +428,28 @@ namespace EngineCore
       }
    }
 
-   void Actor::AttachTweener(std::shared_ptr<Tweener> tweener)
+   void Actor::AttachTweener(std::shared_ptr<Tweener> newTweener)
    {
-      assert((!mTweener, "Tweener was already attached."));
-      mTweener = tweener;
-      mTweener->SetParentActor(this);
+      auto it = std::find_if(mTweeners.begin(), mTweeners.end(), [=](const auto &tweener)
+                             { return tweener->GetTweenerName() == newTweener->GetTweenerName(); });
+      assert(it == mTweeners.end());
+      newTweener->SetParentActor(this);
+      mTweeners.emplace_back(newTweener);
    }
 
-   std::shared_ptr<Tweener> Actor::GetTweener() const
+   const std::vector<std::shared_ptr<Tweener>> &Actor::GetTweeners() const
    {
-      return mTweener;
+      return mTweeners;
    }
-   
+
+   std::shared_ptr<Tweener> Actor::GetTweenerByName(const std::string &name) const
+   {
+      auto it = std::find_if(mTweeners.cbegin(), mTweeners.cend(), [&](const auto &tweener)
+                             { return name == tweener->GetTweenerName(); });
+
+      return it != mTweeners.cend() ? *it : nullptr;
+   }
+
    bool Actor::GetIsVisible() const
    {
       return mIsVisible->GetValue();

@@ -99,7 +99,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFrameReleasedKeys.end())
             {
-               m_actor->ChangeTweenState("Idle");
+               m_actor->ChangeTweenerState("CharacterAnimation", "Idle");
             }
          }
 
@@ -109,7 +109,7 @@ namespace EngineCore
             auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
             if (moveForwardIt != currentFramePressedKeys.end())
             {
-               m_actor->ChangeTweenState("Walking");
+               m_actor->ChangeTweenerState("CharacterAnimation", "Walking");
             }
          }
       }

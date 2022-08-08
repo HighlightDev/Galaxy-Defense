@@ -18,6 +18,8 @@ namespace EngineCore
 {
 #define TWEENER_START_NODE_NAME "<tweener>"
 #define TWEENER_END_NODE_NAME "</tweener>"
+#define TWEENER_NAME_START_NODE "<tweener_name>"
+#define TWEENER_NAME_END_NODE "</tweener_name>"
 #define STATES_START_NODE_NAME "<states>"
 #define STATES_END_NODE_NAME "</states>"
 #define STATE_START_NODE_NAME "<state>"
@@ -167,6 +169,7 @@ namespace EngineCore
       assert(sizeOfSrc > 0);
 
       std::list<std::string> fileSource = fileWorker.GetFileSrc();
+      std::string tweenerInnerName = "";
 
       // Collect tweener data
       {
@@ -174,6 +177,21 @@ namespace EngineCore
          auto tweenStartNode = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_START_NODE_NAME);
          auto tweenEndNode = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_END_NODE_NAME);
          ++tweenStartNode;
+
+         auto tweenStartName = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_NAME_START_NODE);
+         auto tweenEndName = XMLParserHelper::GetItByNodeName(fileSource, TWEENER_NAME_END_NODE);
+
+         for (auto it = tweenStartName; it != tweenEndName; ++it)
+         {
+            const std::string &currentNodeStr = EngineUtility::TrimStart(*it);
+
+            if (EngineUtility::StartsWith(currentNodeStr, "name"))
+            {
+               const std::string &name = XMLParserHelper::GetPropertyNodeAfterColon(currentNodeStr);
+               tweenerInnerName = name;
+            }
+         }
+         assert(tweenerInnerName != "");
 
          auto statesStartNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_START_NODE_NAME);
          auto statesEndNode = XMLParserHelper::GetItByNodeName(tweenStartNode, tweenEndNode, STATES_END_NODE_NAME);
@@ -218,7 +236,7 @@ namespace EngineCore
          }
       }
 
-      return BuildTweener(tweenerName);
+      return BuildTweener(tweenerName, tweenerInnerName);
    }
 
    std::shared_ptr<PropertyBinding> CreatePropertyBinding(const TweenerParser::TweenerParser_Binding &binding)
@@ -332,7 +350,7 @@ namespace EngineCore
       return result;
    }
 
-   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string &relPathTweener)
+   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string &relPathTweener, const std::string& tweenerInnerName)
    {
       std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::vector<std::shared_ptr<State>> allStates;
@@ -344,7 +362,7 @@ namespace EngineCore
          allStates.push_back(states[item.Name]);
       }
 
-      auto tweener = std::make_shared<Tweener>(relPathTweener, states[mStates[0].Name], std::move(allStates));
+      auto tweener = std::make_shared<Tweener>(relPathTweener, tweenerInnerName, states[mStates[0].Name], std::move(allStates));
 
       for (const auto &item : mTransitions)
       {

@@ -67,9 +67,12 @@ namespace Game
       if (!m_actor->IsEnabled())
          return;
 
+      auto spaceshipTweener = m_actor->GetTweenerByName("SpaceshipMovement");
+      assert(spaceshipTweener);
+
       if ("" == mCurrentState)
       {
-         mCurrentState = m_actor->GetTweener()->GetCurrentState()->GetStateName();
+         mCurrentState = spaceshipTweener->GetCurrentState()->GetStateName();
       }
 
       if (m_actor->GetInputComponent())
@@ -112,7 +115,7 @@ namespace Game
                if ("s_fly_forward" != mCurrentState)
                {
                   mCurrentState = "s_fly_forward";
-                  m_actor->ChangeTweenState("s_fly_forward");
+                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_forward");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
@@ -125,7 +128,7 @@ namespace Game
                if ("s_fly_left" != mCurrentState)
                {
                   mCurrentState = "s_fly_left";
-                  m_actor->ChangeTweenState("s_fly_left");
+                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_left");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
@@ -138,7 +141,7 @@ namespace Game
                if ("s_fly_right" != mCurrentState)
                {
                   mCurrentState = "s_fly_right";
-                  m_actor->ChangeTweenState("s_fly_right");
+                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_right");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
@@ -151,7 +154,7 @@ namespace Game
                if ("s_fly_back" != mCurrentState)
                {
                   mCurrentState = "s_fly_back";
-                  m_actor->ChangeTweenState("s_fly_back");
+                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_back");
                }
             }
             else
@@ -176,11 +179,11 @@ namespace Game
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
-               m_actor->ChangeTweenState("s_idle");
+               m_actor->ChangeTweenerState("SpaceshipMovement", "s_idle");
             }
          }
 
-         if (bMoveCommitted || m_actor->GetTweener()->IsTransitionActive())
+         if (bMoveCommitted || spaceshipTweener->IsTransitionActive())
          {
             const auto &rootComponent = m_actor->GetBaseRootComponent();
             PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());

@@ -84,7 +84,7 @@ namespace EngineCore
 
    private:
 
-      std::shared_ptr<Tweener> BuildTweener(const std::string& relPathTweener);
+      std::shared_ptr<Tweener> BuildTweener(const std::string& relPathTweener, const std::string& tweenerInnerName);
 
    };
 

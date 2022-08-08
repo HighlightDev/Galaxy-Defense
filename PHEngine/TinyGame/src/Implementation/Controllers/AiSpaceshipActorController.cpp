@@ -40,7 +40,7 @@ namespace Game
         const auto &actualDirectionName = greatestDot->first;
         if (actualDirectionName != mCurrentState)
         {
-            m_actor->ChangeTweenState(actualDirectionName);
+            m_actor->ChangeTweenerState("SpaceshipMovement", actualDirectionName);
             mCurrentState = actualDirectionName;
         }
     }

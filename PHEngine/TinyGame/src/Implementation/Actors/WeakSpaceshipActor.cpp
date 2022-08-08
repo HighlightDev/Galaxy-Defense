@@ -6,8 +6,8 @@
 namespace Game
 {
     WeakSpaceshipActor::WeakSpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : SpaceshipActor(gameObjectName, rootComponent)
-        , ITweenStateChangeNotifyable()
+        : SpaceshipActor(gameObjectName, rootComponent), ITweenStateChangeNotifyable(),
+          mWeakSpaceshipTweener()
     {
     }
 
@@ -17,12 +17,13 @@ namespace Game
         LogInfo("WeakSpaceshipActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
 
         Actor::AttachTweener(tweener);
+        mWeakSpaceshipTweener = tweener;
         InitTweenerSubscriptions();
     }
 
     void WeakSpaceshipActor::InitTweenerSubscriptions()
     {
-        mTweener->SubscribeOnStateChange(this);
+        mWeakSpaceshipTweener->SubscribeOnStateChange(this);
     }
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)

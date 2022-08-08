@@ -13,9 +13,10 @@
 namespace EngineCore
 {
 
-   Tweener::Tweener(const std::string &relPathFSM, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
+   Tweener::Tweener(const std::string &relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
        : mMyAllStates(std::move(allStates)),
          mRelPathTweener(relPathFSM),
+         mTweenerName(tweenerInnerName),
          mStateNodeInitRoot(rootNode),
          mCurrentStateNode(mStateNodeInitRoot),
          bIsStateChangedDirty(false),
@@ -288,5 +289,10 @@ namespace EngineCore
    std::string Tweener::GetRelPathTweener() const
    {
       return mRelPathTweener;
+   }
+
+   const std::string& Tweener::GetTweenerName() const
+   {
+      return mTweenerName;
    }
 }

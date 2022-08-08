@@ -17,6 +17,8 @@ namespace Game
         std::shared_ptr<Actor> mCombatActivePhaseActor;
         std::shared_ptr<Actor> mExplosionSecondPhaseActor;
 
+        std::shared_ptr<Tweener> mBlackMissileTweener;
+
     public:
         BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 

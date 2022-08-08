@@ -50,7 +50,7 @@ namespace EngineCore
 
       std::shared_ptr<MovementComponent> m_movementComponent;
 
-      std::shared_ptr<Tweener> mTweener;
+      std::vector<std::shared_ptr<Tweener>> mTweeners;
 
       std::weak_ptr<Scene> mSceneOwner;
 
@@ -69,7 +69,7 @@ namespace EngineCore
 
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual void ChangeTweenState(const std::string& stateName);
+      virtual void ChangeTweenerState(const std::string& tweenerName, const std::string& stateName);
 
       virtual void OnLevelInit();
 
@@ -115,7 +115,9 @@ namespace EngineCore
 
       virtual void AttachTweener(std::shared_ptr<Tweener> tweener);
 
-      std::shared_ptr<Tweener> GetTweener() const;
+      const std::vector<std::shared_ptr<Tweener>>& GetTweeners() const;
+
+      std::shared_ptr<Tweener> GetTweenerByName(const std::string& name) const;
 
       std::shared_ptr<EngineCore::SceneComponent> GetRootComponent() const;
 

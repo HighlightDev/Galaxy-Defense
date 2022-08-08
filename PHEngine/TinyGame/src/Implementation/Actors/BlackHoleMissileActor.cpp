@@ -20,12 +20,13 @@ namespace Game
         LogInfo("BlackHoleMissileActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
 
         Actor::AttachTweener(tweener);
+        mBlackMissileTweener = tweener;
         InitTweenerSubscriptions();
     }
 
     void BlackHoleMissileActor::InitTweenerSubscriptions()
     {
-        mTweener->SubscribeOnStateChange(this);
+        mBlackMissileTweener->SubscribeOnStateChange(this);
     }
 
     void BlackHoleMissileActor::AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor)
@@ -72,33 +73,33 @@ namespace Game
     void BlackHoleMissileActor::TriggerLifecycle_FirstPhasePreload()
     {
         LogInfo("BlackHoleMissileActor::TriggerLifecycle_FirstPhasePreload");
-        assert(mTweener);
+        assert(mBlackMissileTweener);
 
-        mTweener->ChangeState("s_FirstPhasePreload");
+        mBlackMissileTweener->ChangeState("s_FirstPhasePreload");
     }
 
     void BlackHoleMissileActor::TriggerLifecycle_FirstPhaseActiveCombat()
     {
         LogInfo("BlackHoleMissileActor::TriggerLifecycle_FirstPhaseActiveCombat");
-        assert(mTweener);
+        assert(mBlackMissileTweener);
 
-        mTweener->ChangeState("s_FirstPhaseActiveCombat");
+        mBlackMissileTweener->ChangeState("s_FirstPhaseActiveCombat");
     }
 
     void BlackHoleMissileActor::TriggerLifecycle_FirstPhaseExplosion()
     {
         LogInfo("BlackHoleMissileActor::TriggerLifecycle_FirstPhaseExplosion");
-        assert(mTweener);
+        assert(mBlackMissileTweener);
 
-        mTweener->ChangeState("s_FirstPhaseExplosion");
+        mBlackMissileTweener->ChangeState("s_FirstPhaseExplosion");
     }
 
     void BlackHoleMissileActor::TriggerLifecycle_SecondPhaseExplosion()
     {
         LogInfo("BlackHoleMissileActor::TriggerLifecycle_SecondPhaseExplosion");
-        assert(mTweener);
+        assert(mBlackMissileTweener);
 
-        mTweener->ChangeState("s_SecondPhaseExplosion");
+        mBlackMissileTweener->ChangeState("s_SecondPhaseExplosion");
     }
 
     void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position)
@@ -115,7 +116,7 @@ namespace Game
     {
         LogInfo("BlackHoleMissileActor::TriggerDisable => GoID: ", this->GetObjectId());
         mActivityState = eMissileActivityState::IDLE;
-        mTweener->InitRootState();
+        mBlackMissileTweener->InitRootState();
     }
 
     void BlackHoleMissileActor::TriggerExplosion()
