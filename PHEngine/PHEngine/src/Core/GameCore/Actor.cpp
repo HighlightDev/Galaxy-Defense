@@ -19,11 +19,11 @@ namespace EngineCore
          mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
                                                              "p_isVisible",
                                                              [=](const bool &visibility)
-                                                             { SyncIsVisible(visibility); })),
+                                                             { SetIsVisible(visibility); })),
          mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
                                                              "p_isEnabled",
                                                              [=](const bool &isEnabled)
-                                                             { SyncIsEnabled(isEnabled); })),
+                                                             { SetIsEnabled(isEnabled); })),
          m_inputComponent(),
          m_movementComponent(),
          mTweeners(),
@@ -205,12 +205,9 @@ namespace EngineCore
    {
       if (isVisible != mIsVisible->GetValue())
       {
-         mIsVisible->SetValue(isVisible);
+         mIsVisible->SetValue(isVisible, false);
       }
-   }
 
-   void Actor::SyncIsVisible(const bool isVisible)
-   {
       for (const auto &component : m_allComponents)
       {
          if ((component->GetComponentType() & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
@@ -229,12 +226,9 @@ namespace EngineCore
    {
       if (isEnabled != mIsEnabled->GetValue())
       {
-         mIsEnabled->SetValue(isEnabled);
+         mIsEnabled->SetValue(isEnabled, false);
       }
-   }
 
-   void Actor::SyncIsEnabled(const bool isEnabled)
-   {
       for (const auto &component : m_allComponents)
       {
          component->SetIsEnabled(isEnabled);

@@ -57,11 +57,11 @@ public:
       return *ValuePtr;
    }
 
-   void SetValue(const Type& value)
+   void SetValue(const Type& value, const bool triggerAction = true)
    {
       *ValuePtr = value;
 
-      if (Action)
+      if (triggerAction && Action)
       {
          (*(Action.get()))(value);
       }

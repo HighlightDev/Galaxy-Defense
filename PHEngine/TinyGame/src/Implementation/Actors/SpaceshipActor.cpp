@@ -34,6 +34,25 @@ namespace Game
         mDamageTextField = c_uiComponent->GetTextFieldById(dmgTextFieldId);
     }
 
+    void SpaceshipActor::TriggerSpawn(const glm::vec3 &position)
+    {
+        SetIsEnabled(true);
+        mActivityState = eSpaceshipActivityState::ACTIVE;
+        GetMovementComponent()->Teleport(position);
+        RestoreLife();
+    }
+
+    void SpaceshipActor::TriggerExplosion()
+    {
+        TriggerDisable();
+    }
+
+    void SpaceshipActor::TriggerDisable()
+    {
+        mActivityState = eSpaceshipActivityState::IDLE;
+        SetIsEnabled(false);
+    }
+
     void SpaceshipActor::Tick(const float deltaTime)
     {
         Actor::Tick(deltaTime);
@@ -84,32 +103,39 @@ namespace Game
 
     void SpaceshipActor::TriggerDamageReceived(const size_t dmg)
     {
+        if (CheckIsAliveAfterDamage(dmg))
+        {
+            mIsDamageEffectActive = true;
+            mIsDamageTextActive = true;
+            mDamageEffectTimePassed = 0.0f;
+            mDamageTextTimePassed = 0.0f;
+
+            const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+            c_particle->EmitParticles();
+
+            mDamageTextField->SetText(std::to_string(dmg));
+            mDamageTextField->SetVisibility(true);
+            mDamageTextField->SetPosition(CalculatePositionForDamageText());
+        }
+    }
+
+    glm::vec2 SpaceshipActor::CalculatePositionForDamageText() const
+    {
+        const auto &spaceShipTranslation = GetRootComponent()->GetTranslation();
+
         if (const auto &sceneSp = mSceneOwner.lock())
         {
-            if (CheckIsAliveAfterDamage(dmg))
-            {
-                mIsDamageEffectActive = true;
-                mIsDamageTextActive = true;
-                mDamageEffectTimePassed = 0.0f;
-                mDamageTextTimePassed = 0.0f;
+            const auto &mainCameraSp = sceneSp->GetMainCamera();
+            const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
+            const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
+                                                       clippedSpaceTranslation.y / clippedSpaceTranslation.w,
+                                                       clippedSpaceTranslation.z / clippedSpaceTranslation.w);
 
-                const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
-                c_particle->EmitParticles();
-
-                mDamageTextField->SetText(std::to_string(dmg));
-                mDamageTextField->SetVisibility(true);
-
-                const auto &spaceShipTranslation = GetRootComponent()->GetTranslation();
-                const auto &mainCameraSp = sceneSp->GetMainCamera();
-                const glm::vec4 clippedSpaceTranslation = mainCameraSp->GetConvertedToClippedSpacePosition(glm::vec4(spaceShipTranslation, 1.0f));
-                const glm::vec3 ndcTranslation = glm::vec3(clippedSpaceTranslation.x / clippedSpaceTranslation.w,
-                                                           clippedSpaceTranslation.y / clippedSpaceTranslation.w,
-                                                           clippedSpaceTranslation.z / clippedSpaceTranslation.w);
-
-                const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
-                mDamageTextField->SetPosition(textureSpaceTranslation - (mDamageTextField->GetScreenSpaceSize().x * 0.5f) + glm::vec2(0.0f, -0.2f));
-            }
+            const glm::vec2 textureSpaceTranslation = glm::vec2(ndcTranslation.x * 0.5f + 0.5f, 1.0f - (ndcTranslation.y * 0.5f + 0.5f));
+            return (textureSpaceTranslation + glm::vec2(mDamageTextField->GetScreenSpaceSize().x * -0.5f, -0.2f));
         }
+
+        return glm::vec2(spaceShipTranslation.x, spaceShipTranslation.y);
     }
 
     bool SpaceshipActor::IsInsideLevel(const BoundingBox &boundingBox) const
@@ -157,5 +183,10 @@ namespace Game
     const std::shared_ptr<TextField> &SpaceshipActor::GetDamageFieldText() const
     {
         return mDamageTextField;
+    }
+
+    eSpaceshipActivityState SpaceshipActor::GetSpaceshipActivityState() const
+    {
+        return mActivityState;
     }
 }

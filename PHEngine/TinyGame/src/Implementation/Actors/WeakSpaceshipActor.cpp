@@ -2,6 +2,9 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 
 namespace Game
 {
@@ -11,13 +14,12 @@ namespace Game
     {
     }
 
-    void WeakSpaceshipActor::AttachTweener(std::shared_ptr<Tweener> tweener)
+    void WeakSpaceshipActor::PostLevelInit()
     {
-        assert(tweener);
-        LogInfo("WeakSpaceshipActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
+        SpaceshipActor::PostLevelInit();
 
-        Actor::AttachTweener(tweener);
-        mWeakSpaceshipTweener = tweener;
+        mWeakSpaceshipTweener = GetTweenerByName("WeakSpaceshipLifecycle");
+        assert(mWeakSpaceshipTweener);
         InitTweenerSubscriptions();
     }
 
@@ -26,8 +28,72 @@ namespace Game
         mWeakSpaceshipTweener->SubscribeOnStateChange(this);
     }
 
+    void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage)
+    {
+        if (CheckIsAliveAfterDamage(damage))
+        {
+            mIsDamageEffectActive = true;
+            mDamageEffectTimePassed = 0.0f;
+        }
+        else
+        {
+            mWeakSpaceshipTweener->ChangeState("s_LifecycleExplosion");
+        }
+
+        mIsDamageTextActive = true;
+        mDamageTextTimePassed = 0.0f;
+
+        mDamageTextField->SetText(std::to_string(damage));
+        mDamageTextField->SetVisibility(true);
+        mDamageTextField->SetPosition(CalculatePositionForDamageText());
+    }
+
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
     {
         LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
+
+        if ("s_LifecyclePreload" == stateName)
+        {
+        }
+        else if ("s_LifecycleActive" == stateName)
+        {
+        }
+        else if ("s_LifecycleExplosion" == stateName)
+        {
+            TriggerExplosion();
+        }
+        else if ("s_LifecycleDestroyed" == stateName)
+        {
+            TriggerDisable();
+        }
+    }
+
+    void WeakSpaceshipActor::TriggerSpawn(const glm::vec3 &position)
+    {
+        mActivityState = eSpaceshipActivityState::ACTIVE;
+        SetIsEnabled(true);
+        GetMovementComponent()->Teleport(position);
+        RestoreLife();
+
+        mWeakSpaceshipTweener->ChangeState("s_LifecycleActive");
+    }
+
+    void WeakSpaceshipActor::TriggerExplosion()
+    {
+        const auto c_spaceshipMesh = GetComponentsByType<StaticMeshComponent>().back();
+        c_spaceshipMesh->SetIsEnabled(false);
+        
+        const auto& c_physics = GetPhysicsComponent();
+        c_physics->SetIsEnabled(false);
+
+        const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
+        c_particle->EmitParticles();
+        mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");
+    }
+
+    void WeakSpaceshipActor::TriggerDisable()
+    {
+        mActivityState = eSpaceshipActivityState::IDLE;
+        mWeakSpaceshipTweener->InitRootState();
     }
 }

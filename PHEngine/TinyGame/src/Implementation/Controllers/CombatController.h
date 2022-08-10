@@ -74,8 +74,6 @@ namespace Game
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
-        void ReSpawnEnemyShip(const std::shared_ptr<SpaceshipActor>& spaceShip, const glm::vec3& shipStartPosition);
-
         void FlushToPoolUsedBullets();
 
         typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipByName(const std::string &actorName);

@@ -16,8 +16,6 @@ namespace EngineCore
 
       uint64_t mObjectId;
 
-      //std::unordered_map<std::string, EngineGOPropertyBase*> mEngineProperties;
-
       std::unordered_map<std::string, std::shared_ptr<EngineGOPropertyBase>> mEngineProperties;
 
       std::string GameObjectName;

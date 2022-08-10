@@ -23,7 +23,7 @@ namespace EngineCore
 
    protected:
 
-      bool mIsEnabled;
+      std::shared_ptr<EngineGOProperty<bool>> mIsEnabled;
 
       bool mIsPostLevelInitialized;
 

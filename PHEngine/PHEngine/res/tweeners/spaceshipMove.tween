@@ -1,4 +1,8 @@
 <tweener>
+  <tweener_name>
+    name: "SpaceshipMovement"
+  </tweener_name>
+
   <states>
     <state>
       name: "s_idle"

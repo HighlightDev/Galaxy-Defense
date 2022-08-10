@@ -153,12 +153,6 @@ namespace EngineCore
 
          return result;
       }
-
-      private:
-
-         void SyncIsVisible(const bool isVisible);
-
-         void SyncIsEnabled(const bool isEnabled);
    };
 
 }

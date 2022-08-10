@@ -1,4 +1,8 @@
 <tweener>
+  <tweener_name>
+    name: "BlackHoleMissile"
+  </tweener_name>
+  
   <states>
     <state>
       name: "s_FirstPhasePreload"
@@ -46,6 +50,10 @@
       binding_name: "b_blackHoleSize"
       type: "vec3"
     </binding>
+    <binding>
+      binding_name: "b_blackHoleHitBoxSize"
+      type: "vec3"
+    </binding>
   </bindings>
   <properties>
     <property>
@@ -63,8 +71,15 @@
       state: "s_FirstPhasePreload"
     </property>
     <property>
-      name: "p_blackHolse_size"
+      name: "p_blackHole_size"
       binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhasePreload"
+    </property>
+    <property>
+      name: "p_blackHoleHitBox_size"
+      binding_name: "b_blackHoleHitBoxSize"
       type: "vec3"
       value: "x=0.0;y=0.0;z=0.0;"
       state: "s_FirstPhasePreload"
@@ -85,8 +100,15 @@
       state: "s_FirstPhaseActiveCombat"
     </property>
     <property>
-      name: "p_blackHolse_size"
+      name: "p_blackHole_size"
       binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseActiveCombat"
+    </property>
+    <property>
+      name: "p_blackHoleHitBox_size"
+      binding_name: "b_blackHoleHitBoxSize"
       type: "vec3"
       value: "x=0.0;y=0.0;z=0.0;"
       state: "s_FirstPhaseActiveCombat"
@@ -107,16 +129,30 @@
       state: "s_FirstPhaseExplosion"
     </property>
     <property>
-      name: "p_blackHolse_size"
+      name: "p_blackHole_size"
       binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=0.0;y=0.0;z=0.0;"
+      state: "s_FirstPhaseExplosion"
+    </property>
+    <property>
+      name: "p_blackHoleHitBox_size"
+      binding_name: "b_blackHoleHitBoxSize"
       type: "vec3"
       value: "x=0.0;y=0.0;z=0.0;"
       state: "s_FirstPhaseExplosion"
     </property>
 
     <property>
-      name: "p_blackHolse_size"
+      name: "p_blackHole_size"
       binding_name: "b_blackHoleSize"
+      type: "vec3"
+      value: "x=5.0;y=5.0;z=5.0;"
+      state: "s_SecondPhaseExplosion"
+    </property>
+    <property>
+      name: "p_blackHoleHitBox_size"
+      binding_name: "b_blackHoleHitBoxSize"
       type: "vec3"
       value: "x=5.0;y=5.0;z=5.0;"
       state: "s_SecondPhaseExplosion"

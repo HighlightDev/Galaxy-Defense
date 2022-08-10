@@ -44,6 +44,7 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::Move(const float deltaTime)
    {
+      assert(m_actorRootComponent);
       m_actorRootComponent->AddTranslation(GetVelocity() * deltaTime);
    }
 
@@ -53,6 +54,7 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::Teleport(const glm::vec3& teleportPosition)
    {
+      assert(m_actorRootComponent);
       m_actorRootComponent->SetTranslation(teleportPosition);
    }
 

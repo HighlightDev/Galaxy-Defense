@@ -10,10 +10,12 @@ namespace EngineCore
    Component::Component(const std::string &gameObjectName)
        : GameObject(gameObjectName),
          m_owner(),
-         mIsEnabled(true),
+         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true, "p_isEnabled", [=](const bool &isEnabled)
+                                                             { SetIsEnabled(isEnabled); })),
          mIsPostLevelInitialized(false),
          m_sceneWP()
    {
+      AddEngineProperty(mIsEnabled);
    }
 
    Component::~Component()
@@ -105,12 +107,15 @@ namespace EngineCore
 
    bool Component::IsEnabled() const
    {
-      return mIsEnabled;
+      return mIsEnabled->GetValue();
    }
 
    void Component::SetIsEnabled(const bool bEnabled)
    {
-      mIsEnabled = bEnabled;
+      if (mIsEnabled->GetValue() != bEnabled)
+      {
+         mIsEnabled->SetValue(bEnabled, false);
+      }
    }
 
 }

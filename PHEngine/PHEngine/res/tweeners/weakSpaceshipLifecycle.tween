@@ -1,0 +1,55 @@
+<tweener>
+  <tweener_name>
+    name: "WeakSpaceshipLifecycle"
+  </tweener_name>
+  
+  <states>
+    <state>
+      name: "s_LifecyclePreload"
+    </state>
+    <state>
+      name: "s_LifecycleActive"
+    </state>
+    <state>
+      name: "s_LifecycleExplosion"
+    </state>
+     <state>
+      name: "s_LifecycleDestroyed"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_from_preload_to_active"
+      from_state: "s_LifecyclePreload"
+      to_state: "s_LifecycleActive"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_from_active_to_explosion"
+      from_state: "s_LifecycleActive"
+      to_state: "s_LifecycleExplosion"
+      duration: "0.001"
+    </transition>
+    <transition>
+      name: "t_from_explosion_to_destroyed"
+      from_state: "s_LifecycleExplosion"
+      to_state: "s_LifecycleDestroyed"
+      duration: "1.5"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_isSpaceshipEnabled"
+      type: "boolean"
+    </binding>
+  </bindings>
+  <properties>
+    <property>
+      name: "p_isSpaceshipEnabled"
+      binding_name: "b_isSpaceshipEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_LifecyclePreload"
+    </property>
+  </properties>
+</tweener>

@@ -141,17 +141,21 @@ namespace Game
 
         scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
-        TweenerParser tweenerParser;
-        const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");
-
-        a_enemySpaceship->AttachTweener(spaceshipTweener);
-
-        const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
-        BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
-
         const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
         const auto &c_uiComponent = scene->CreateComponent_GameThread(uiComponentCreator, ComponentData("c_uiComponent_" + enemyShipIndexStr));
         a_enemySpaceship->AddComponent(c_uiComponent);
+
+        auto tweenerParser = std::make_unique<TweenerParser>();
+        const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");
+        const auto &rotator_binding = movementTweener->GetPropertyBindingByName("b_rotator");
+        BindingAttachmentBuilder::SetAttachment(rootComponent.get(), rotator_binding.get(), "b_rotator");
+        a_enemySpaceship->AttachTweener(movementTweener);
+        
+        tweenerParser = std::make_unique<TweenerParser>();
+        const auto lifecycleTweener = tweenerParser->ParseTweenerDescriptor("weakSpaceshipLifecycle.tween");
+        const auto& spaceship_enabled_binding = lifecycleTweener->GetPropertyBindingByName("b_isSpaceshipEnabled");
+        BindingAttachmentBuilder::SetAttachment(a_enemySpaceship.get(), spaceship_enabled_binding.get(), "p_isEnabled");
+        a_enemySpaceship->AttachTweener(lifecycleTweener);
 
         return a_enemySpaceship;
     }

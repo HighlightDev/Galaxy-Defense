@@ -51,15 +51,8 @@ namespace Game
 
             for (size_t i = 0; i < 2; ++i)
             {
-                static constexpr float x_axisHalfWidth = 20.0f;
-                static constexpr float y_axisHalfHeight = 20.0f;
-                const float x = Random::Float() * 10.0f;
-                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth,
-                                        0.0f,
-                                        30.0f);
-
                 const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,
-                                                                           startPosition,
+                                                                           glm::vec3(),
                                                                            glm::vec3(),
                                                                            glm::vec3(9));
 
@@ -77,6 +70,15 @@ namespace Game
         for (const auto &missile : mMissilesPool)
         {
             missile->SetIsEnabled(false); // disable all missiles at level start
+        }
+
+        static constexpr float x_axisHalfWidth = 20.0f;
+        static constexpr float y_axisHalfHeight = 20.0f;
+        for (const auto &spaceship : mEnemies)
+        {
+            const float x = Random::Float() * 10.0f;
+            glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 30.0f);
+            spaceship->TriggerSpawn(startPosition);
         }
     }
 
@@ -117,8 +119,8 @@ namespace Game
                 if (a_enemyShipIt != mEnemies.end() &&
                     a_bulletIt != mMissilesPool.end())
                 {
-                    const std::shared_ptr<MissileActor>& missileActor = (*a_bulletIt);
-                    const std::shared_ptr<SpaceshipActor>& enemyShipActor = (*a_enemyShipIt);
+                    const std::shared_ptr<MissileActor> &missileActor = (*a_bulletIt);
+                    const std::shared_ptr<SpaceshipActor> &enemyShipActor = (*a_enemyShipIt);
 
                     const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
 
@@ -156,14 +158,21 @@ namespace Game
 
         for (const auto &enemyActor : mEnemies)
         {
-            const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
-            if (enemyTranslation.z < -10.0f)
+            if (enemyActor->GetSpaceshipActivityState() == eSpaceshipActivityState::ACTIVE)
+            {
+                const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
+                if (enemyTranslation.z < -10.0f)
+                {
+                    enemyActor->TriggerDisable();
+                }
+            }
+            else
             {
                 static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
                 const float x = Random::Float() * 10.0f;
-                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 70.0f);
-                ReSpawnEnemyShip(enemyActor, startPosition);
+                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 30.0f);
+                enemyActor->TriggerSpawn(startPosition);
             }
         }
     }
@@ -194,13 +203,6 @@ namespace Game
         }
 
         (*idleBulletIt)->TriggerSpawn(bulletStartPosition);
-    }
-
-    void CombatController::ReSpawnEnemyShip(const std::shared_ptr<SpaceshipActor>& spaceShip, const glm::vec3 &shipStartPosition)
-    {
-        spaceShip->RestoreLife();
-        const auto &c_movement = spaceShip->GetMovementComponent();
-        c_movement->Teleport(shipStartPosition);
     }
 
     void CombatController::FlushToPoolUsedBullets()

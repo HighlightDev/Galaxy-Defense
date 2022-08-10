@@ -15,12 +15,19 @@ namespace EngineCore
     class TextField;
 }
 
+enum class eSpaceshipActivityState
+{
+    IDLE,
+    ACTIVE,
+};
+
 namespace Game
 {
     class SpaceshipActor
         : public Actor
     {
     protected:
+        eSpaceshipActivityState mActivityState{eSpaceshipActivityState::IDLE};
 
         std::vector<std::shared_ptr<IModifiable>> mModifiers;
 
@@ -49,9 +56,15 @@ namespace Game
 
         virtual bool IsInsideLevel(const BoundingBox &boundingBox) const;
 
-        void AddModifier(const std::shared_ptr<IModifiable>& modifier);
+        virtual void TriggerDamageReceived(const size_t damage);
 
-        void TriggerDamageReceived(const size_t damage);
+        virtual void TriggerSpawn(const glm::vec3 &position);
+
+        virtual void TriggerExplosion();
+
+        virtual void TriggerDisable();
+
+        void AddModifier(const std::shared_ptr<IModifiable> &modifier);
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
 
@@ -65,6 +78,12 @@ namespace Game
 
         void RestoreLife();
 
-        const std::shared_ptr<TextField>& GetDamageFieldText() const;
+        const std::shared_ptr<TextField> &GetDamageFieldText() const;
+
+        eSpaceshipActivityState GetSpaceshipActivityState() const;
+        
+        protected:
+
+        virtual glm::vec2 CalculatePositionForDamageText() const;
     };
 }
