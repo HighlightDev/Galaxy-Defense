@@ -25,6 +25,8 @@ namespace EngineCore
 
       virtual void Move(const float deltaTime) override;
 
+      virtual void Move(const glm::vec3& direction, const float deltaTime) override;
+
       virtual void Jump() override;
 
       virtual void Teleport(const glm::vec3& teleportPosition) override;

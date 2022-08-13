@@ -14,7 +14,7 @@ vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
     vec3 albedoColor = texture(albedo, materialIn.TextureCoordinates.xy * uvScale).rgb;
     vec3 damageColor = vec3(1.0, 0.0, 0.0);
-    return mix(albedoColor, damageColor, damageEffect);
+    return mix(albedoColor, damageColor, smoothstep(0.0, 0.5, damageEffect));
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)

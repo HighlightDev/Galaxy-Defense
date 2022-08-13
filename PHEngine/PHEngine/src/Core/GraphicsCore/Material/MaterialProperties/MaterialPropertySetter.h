@@ -38,7 +38,7 @@ namespace Graphics
 
       static void SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator);
 
-      static bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property, MaterialProperty::eMaterialPropertyType& outPropertyType);
+      static bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property);
    };
 }
 

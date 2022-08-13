@@ -11,10 +11,13 @@ using namespace EngineCore;
 
 namespace Game
 {
+    class MissileExplosionVisitorBase;
+    
     enum class eMissileActivityState
     {
         IDLE,
         ACTIVE,
+        EXPLOSION
     };
 
     class MissileActor
@@ -33,6 +36,8 @@ namespace Game
         virtual void TriggerExplosion();
 
         virtual void TriggerDisable();
+
+        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
 
         eMissileActivityState GetMissileActivityState() const;
     };

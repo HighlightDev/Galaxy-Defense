@@ -1,9 +1,19 @@
 #pragma once
 
+#include "Core/GameCore/ITickable.h"
+
 namespace Game
 {
-    class IModifiable
+    class SpaceshipActor;
+
+    enum class eModifierType
     {
-        virtual void Placeholder() = 0;
+        Gravity
+    };
+
+    class IModifiable : public ITickable
+    {
+    public:
+        virtual eModifierType GetModifierType() const = 0;
     };
 }

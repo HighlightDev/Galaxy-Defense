@@ -410,6 +410,31 @@ namespace EngineCore
       m_children.push_back(actor);
    }
 
+   std::shared_ptr<Actor> Actor::GetChildByObjectId(const uint64_t id) const
+   {
+      std::shared_ptr<Actor> resultChild;
+
+      for (const auto &child : m_children)
+      {
+         if (child->GetObjectId() == id)
+         {
+            resultChild = child;
+            break;
+         }
+         else
+         {
+            const auto& hierarchyChild = child->GetChildByObjectId(id);
+            if (hierarchyChild)
+            {
+               resultChild = hierarchyChild;
+               break;
+            }
+         }
+      }
+
+      return resultChild;
+   }
+
    void Actor::RemoveChild(const std::shared_ptr<Actor> &actor)
    {
       const auto actorIt = std::find_if(m_children.begin(), m_children.end(), [&](const auto &childSp)

@@ -9,6 +9,8 @@ using namespace EngineCore;
 
 namespace Game
 {
+    class MissileExplosionVisitorBase;
+
     class BlackHoleMissileActor
         : public MissileActor,
           public ITweenStateChangeNotifyable
@@ -37,6 +39,8 @@ namespace Game
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
 
         void AddExplosionSecondPhaseActor(const std::shared_ptr<Actor> &explosionSecondPhaseActor);
+
+        std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
     private:
         void InitTweenerSubscriptions();

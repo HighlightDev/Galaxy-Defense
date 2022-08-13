@@ -2,6 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Implementation/MissileExplosionVisitors/BombExplosionVisitor.h"
 
 namespace Game
 {
@@ -29,6 +30,7 @@ namespace Game
 
     void MissileActor::TriggerExplosion()
     {
+        mActivityState = eMissileActivityState::EXPLOSION;
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
         c_soundList.back()->PlayBuffer("explosion");
@@ -39,5 +41,10 @@ namespace Game
     {
         mActivityState = eMissileActivityState::IDLE;
         SetIsEnabled(false);
+    }
+
+    std::shared_ptr<MissileExplosionVisitorBase> MissileActor::CreateMissileExplosionVisitor()
+    {
+        return std::make_shared<BombExplosionVisitor>(std::static_pointer_cast<MissileActor>(shared_from_this()));
     }
 }

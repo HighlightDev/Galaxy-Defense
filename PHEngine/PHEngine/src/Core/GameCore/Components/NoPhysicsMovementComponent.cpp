@@ -7,7 +7,7 @@
 namespace EngineCore
 {
 
-   NoPhysicsMovementComponent::NoPhysicsMovementComponent(const MovementComponentData& movementComponentData)
+   NoPhysicsMovementComponent::NoPhysicsMovementComponent(const MovementComponentData &movementComponentData)
        : MovementComponent(movementComponentData), m_actorRootComponent()
    {
       mSpeed = 0.01f;
@@ -16,7 +16,7 @@ namespace EngineCore
    void NoPhysicsMovementComponent::PostLevelInit()
    {
       MovementComponent::PostLevelInit();
-       
+
       if (const auto &spOwner = GetOwner().lock())
       {
          m_actorRootComponent = spOwner->GetRootComponent();
@@ -48,11 +48,17 @@ namespace EngineCore
       m_actorRootComponent->AddTranslation(GetVelocity() * deltaTime);
    }
 
+   void NoPhysicsMovementComponent::Move(const glm::vec3 &direction, const float deltaTime)
+   {
+      assert(m_actorRootComponent);
+      m_actorRootComponent->AddTranslation(direction * deltaTime);
+   }
+
    void NoPhysicsMovementComponent::Jump()
    {
    }
 
-   void NoPhysicsMovementComponent::Teleport(const glm::vec3& teleportPosition)
+   void NoPhysicsMovementComponent::Teleport(const glm::vec3 &teleportPosition)
    {
       assert(m_actorRootComponent);
       m_actorRootComponent->SetTranslation(teleportPosition);

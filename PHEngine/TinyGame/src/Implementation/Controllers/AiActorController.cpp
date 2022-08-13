@@ -19,8 +19,7 @@ namespace Game
         if (!m_actor->IsEnabled())
             return;
         
-        static constexpr float moveSpeed = 2000.0f;
-        m_movementComponent->Move(deltaTime * moveSpeed);
+        m_movementComponent->Move(deltaTime);
     }
 
     void AiActorController::InitActorController()

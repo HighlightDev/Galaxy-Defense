@@ -39,6 +39,8 @@ namespace Game
 
         float mDamageEffectDuration;
 
+        std::shared_ptr<EngineGOProperty<float>> mDamageTimeProperty;
+
         float mDamageTextShowDuration;
 
         float mDamageTextTimePassed;
@@ -65,6 +67,8 @@ namespace Game
         virtual void TriggerDisable();
 
         void AddModifier(const std::shared_ptr<IModifiable> &modifier);
+
+        bool HasModifier(const eModifierType modifierType) const;
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
 

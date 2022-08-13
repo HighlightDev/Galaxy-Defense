@@ -30,6 +30,8 @@ namespace EngineCore
 
       virtual void Move(const float deltaTime) = 0;
 
+      virtual void Move(const glm::vec3& direction, const float deltaTime) = 0;
+
       virtual void Jump() = 0;
 
       virtual void Teleport(const glm::vec3& teleportPosition) = 0;

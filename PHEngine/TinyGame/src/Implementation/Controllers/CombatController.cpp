@@ -12,6 +12,7 @@
 #include "Implementation/Factories/WeakMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
+#include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -76,8 +77,8 @@ namespace Game
         static constexpr float y_axisHalfHeight = 20.0f;
         for (const auto &spaceship : mEnemies)
         {
-            const float x = Random::Float() * 10.0f;
-            glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 30.0f);
+            const float x = (Random::Float() * 2.0f) - 1.0f;
+            glm::vec3 startPosition((x_axisHalfWidth * x), 0.0f, 100.0f);
             spaceship->TriggerSpawn(startPosition);
         }
     }
@@ -113,19 +114,51 @@ namespace Game
                 const auto &a_thatEnemyShipIt = FindEnemyShipById(that_actor_id);
                 auto a_thatBulletIt = FindBulletById(that_actor_id);
 
-                auto a_enemyShipIt = a_thisEnemyShipIt != mEnemies.end() ? a_thisEnemyShipIt : a_thatEnemyShipIt;
-                auto a_bulletIt = a_thisBulletIt != mMissilesPool.end() ? a_thisBulletIt : a_thatBulletIt;
+                std::shared_ptr<MissileActor> missileActor;
+                std::shared_ptr<SpaceshipActor> enemyShipActor;
+                uint64_t missileActor_id;
+                uint64_t spaceshipActor_id;
 
-                if (a_enemyShipIt != mEnemies.end() &&
-                    a_bulletIt != mMissilesPool.end())
+                if (a_thisBulletIt != mMissilesPool.end() || a_thatBulletIt != mMissilesPool.end())
                 {
-                    const std::shared_ptr<MissileActor> &missileActor = (*a_bulletIt);
-                    const std::shared_ptr<SpaceshipActor> &enemyShipActor = (*a_enemyShipIt);
+                    if (a_thisBulletIt != mMissilesPool.end())
+                    {
+                        missileActor = *a_thisBulletIt;
+                        missileActor_id = this_actor_id;
+                    }
+                    else
+                    {
+                        missileActor = *a_thatBulletIt;
+                        missileActor_id = that_actor_id;
+                    }
+                }
 
-                    const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
+                if (a_thisEnemyShipIt != mEnemies.end() || a_thatEnemyShipIt != mEnemies.end())
+                {
+                    if (a_thisEnemyShipIt != mEnemies.end())
+                    {
+                        enemyShipActor = *a_thisEnemyShipIt;
+                        spaceshipActor_id = this_actor_id;
+                    }
+                    else
+                    {
+                        enemyShipActor = *a_thatEnemyShipIt;
+                        spaceshipActor_id = that_actor_id;
+                    }
+                }
 
-                    enemyShipActor->TriggerDamageReceived(dmg);
-                    missileActor->TriggerExplosion();
+                if (missileActor && enemyShipActor)
+                {
+                    const auto &concreteMissileActor = missileActor->GetObjectId() == missileActor_id
+                                                           ? missileActor
+                                                           : missileActor->GetChildByObjectId(missileActor_id);
+
+                    const auto &concreteSpaceshipActor = enemyShipActor->GetObjectId() == spaceshipActor_id
+                                                             ? enemyShipActor
+                                                             : enemyShipActor->GetChildByObjectId(spaceshipActor_id);
+
+                    const auto explosionVisitor = missileActor->CreateMissileExplosionVisitor();
+                    explosionVisitor->VisitSpaceship(enemyShipActor, concreteMissileActor, concreteSpaceshipActor);
                 }
             }
         }
@@ -170,8 +203,8 @@ namespace Game
             {
                 static constexpr float x_axisHalfWidth = 20.0f;
                 static constexpr float y_axisHalfHeight = 20.0f;
-                const float x = Random::Float() * 10.0f;
-                glm::vec3 startPosition(((x_axisHalfWidth / x) * 2) - x_axisHalfWidth, 0.0f, 30.0f);
+                const float x = (Random::Float() * 2.0f) - 1.0f;
+                glm::vec3 startPosition((x_axisHalfWidth * x), 0.0f, 100.0f);
                 enemyActor->TriggerSpawn(startPosition);
             }
         }

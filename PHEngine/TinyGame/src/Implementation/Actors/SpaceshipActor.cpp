@@ -17,12 +17,14 @@ namespace Game
           mLifePoints(10),
           mDamageTextField(),
           mDamageEffectTimePassed(0.0f),
-          mDamageEffectDuration(1.0f),
+          mDamageEffectDuration(0.5f),
+          mDamageTimeProperty(std::make_shared<EngineGOProperty<float>>(0.0f, "p_damageEffect")),
           mDamageTextShowDuration(1.5f),
           mDamageTextTimePassed(0.0f),
           mIsDamageEffectActive(false),
           mIsDamageTextActive(false)
     {
+        AddEngineProperty(mDamageTimeProperty);
     }
 
     void SpaceshipActor::PostLevelInit()
@@ -57,10 +59,15 @@ namespace Game
     {
         Actor::Tick(deltaTime);
 
+        for (const auto &modifier : mModifiers)
+        {
+            modifier->Tick(deltaTime);
+        }
+
         if (mIsDamageEffectActive)
         {
-            const auto &materialDamageProperty = std::static_pointer_cast<EngineGOProperty<float>>(GetEnginePropertyByName("p_damageEffect"));
-            materialDamageProperty->SetValue(mDamageEffectTimePassed);
+            const float normDmgEffectTime = glm::clamp(mDamageEffectTimePassed / mDamageEffectDuration, 0.0f, 1.0f);
+            mDamageTimeProperty->SetValue(normDmgEffectTime);
 
             if (mDamageEffectTimePassed < mDamageEffectDuration)
             {
@@ -70,6 +77,7 @@ namespace Game
             {
                 mIsDamageEffectActive = false;
                 mDamageEffectTimePassed = 0.0f;
+                mDamageTimeProperty->SetValue(0.0f);
             }
         }
 
@@ -146,6 +154,13 @@ namespace Game
     void SpaceshipActor::AddModifier(const std::shared_ptr<IModifiable> &modifier)
     {
         mModifiers.emplace_back(modifier);
+    }
+
+    bool SpaceshipActor::HasModifier(const eModifierType modifierType) const
+    {
+        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
+                                    { return modifierType == modifier->GetModifierType(); });
+        return mModifiers.end() != foundIt;
     }
 
     bool SpaceshipActor::CheckIsAliveAfterDamage(const size_t dmg)

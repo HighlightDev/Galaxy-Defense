@@ -111,6 +111,8 @@ namespace EngineCore
 
       void AddChild(std::shared_ptr<Actor> actor);
 
+      std::shared_ptr<Actor> GetChildByObjectId(const uint64_t id) const;
+
       void RemoveChild(const std::shared_ptr<Actor>& actor);
 
       virtual void AttachTweener(std::shared_ptr<Tweener> tweener);

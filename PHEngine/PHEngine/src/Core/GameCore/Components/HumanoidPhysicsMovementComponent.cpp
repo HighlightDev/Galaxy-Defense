@@ -80,7 +80,12 @@ namespace EngineCore
 
    void HumanoidPhysicsMovementComponent::Move(const float deltaTime)
    {
-      m_playerPhysicsComponent->SetWalkVelocity(GetVelocity());
+      m_playerPhysicsComponent->SetWalkVelocity(GetVelocity() * deltaTime);
+   }
+
+   void HumanoidPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTime)
+   {
+      m_playerPhysicsComponent->SetWalkVelocity(direction * deltaTime * mSpeed);
    }
 
    void HumanoidPhysicsMovementComponent::Jump()

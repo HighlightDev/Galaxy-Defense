@@ -4,6 +4,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h"
 
 namespace Game
 {
@@ -121,6 +122,7 @@ namespace Game
 
     void BlackHoleMissileActor::TriggerExplosion()
     {
+        mActivityState = eMissileActivityState::EXPLOSION;
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
         c_soundList.back()->PlayBuffer("explosion");
@@ -132,5 +134,10 @@ namespace Game
         return EngineMath::TestPointInAABB(boundingBox.GetMin(),
                                            boundingBox.GetMax(),
                                            mCombatActivePhaseActor->GetRootComponent()->GetTranslation());
+    }
+
+    std::shared_ptr<MissileExplosionVisitorBase> BlackHoleMissileActor::CreateMissileExplosionVisitor()
+    {
+        return std::make_shared<BlackHoleExplosionVisitor>(std::static_pointer_cast<MissileActor>(shared_from_this()));
     }
 }

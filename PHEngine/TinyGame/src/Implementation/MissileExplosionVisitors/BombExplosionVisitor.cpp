@@ -1,0 +1,30 @@
+#include "BombExplosionVisitor.h"
+#include "Core/GameCore/Actor.h"
+#include "Core/CommonCore/Random.h"
+#include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/SpaceshipActor.h"
+
+using namespace EngineCore;
+
+namespace Game
+{
+    BombExplosionVisitor::BombExplosionVisitor(const std::shared_ptr<MissileActor> &ownerMissile)
+        : MissileExplosionVisitorBase(ownerMissile)
+    {
+    }
+
+    void BombExplosionVisitor::VisitSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
+                                              const std::shared_ptr<Actor> &missileCollidedActor,
+                                              const std::shared_ptr<Actor> &spaceshipCollidedActor)
+    {
+        if (const auto &ownerSp = mOwnerWp.lock())
+        {
+            if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState())
+            {
+                const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
+                spaceship->TriggerDamageReceived(dmg);
+                ownerSp->TriggerExplosion();
+            }
+        }
+    }
+}

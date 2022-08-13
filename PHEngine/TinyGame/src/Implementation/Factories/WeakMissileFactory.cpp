@@ -73,7 +73,7 @@ namespace Game
         MovementComponentData d_movement("c_noPhysMoveComponent_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-        c_movement->SetSpeed(0.03f);
+        c_movement->SetSpeed(40.0f);
         c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
         a_missile->AddComponent(c_movement);
 
