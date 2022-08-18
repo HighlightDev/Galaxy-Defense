@@ -102,7 +102,7 @@ namespace EngineCore
                                  MouseMovedEvent,
                                  MouseScrollEvent,
                                  MouseButtonDownEvent,
-                                 PhysicsCollisionOccuredEvent,
+                                 PhysicsCollisionEvent,
                                  TextRegisterEvent,
                                  TextDataChangedEvent>();
 

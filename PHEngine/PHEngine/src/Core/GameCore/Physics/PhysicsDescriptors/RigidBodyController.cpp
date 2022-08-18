@@ -39,6 +39,11 @@ namespace EnginePhysics
          Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
    }
 
+   ePhysicsDescriptorType RigidBodyController::GetPhysicsDescriptorType() const
+   {
+      return ePhysicsDescriptorType::RIGID_BODY_CONTROLLER;
+   }
+
    void RigidBodyController::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
    {
       btTransform worldTransform(quat, translation);

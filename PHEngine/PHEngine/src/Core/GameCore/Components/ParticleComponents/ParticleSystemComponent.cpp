@@ -13,7 +13,6 @@
 #include <cmath>
 #include <algorithm>
 #include <iterator>
-#include <TinyLogger/LogInterface.h>
 
 using namespace Graphics::Proxy;
 using namespace Graphics;

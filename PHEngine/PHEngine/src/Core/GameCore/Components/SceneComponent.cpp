@@ -4,6 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <cmath>
 
 using namespace EngineMath;
 
@@ -98,6 +99,10 @@ namespace EngineCore
    void SceneComponent::SetTranslation(const glm::vec3 &translation)
    {
       mTransform->Translation = translation;
+      if (std::isnan(translation.x) || std::isnan(translation.y) || std::isnan(translation.z))
+      {
+         volatile auto b = 0;
+      }
       SetIsTransformationDirty(true);
    }
 

@@ -27,6 +27,8 @@ namespace Game
 
         virtual eModifierType GetModifierType() const override;
 
+        virtual uint64_t CreatorObjectId() const override;
+
         virtual void Tick(const float deltaTime) override;
 
         void SetGravityPower(const float power);

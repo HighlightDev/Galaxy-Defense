@@ -34,10 +34,16 @@ namespace Game
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
         c_soundList.back()->PlayBuffer("explosion");
-        TriggerDisable();
+        TriggerExplosionFinished();
     }
 
-    void MissileActor::TriggerDisable()
+    void MissileActor::TriggerExplosionFinished()
+    {
+        mActivityState = eMissileActivityState::EXPLOSION_FINISHED;
+        TriggerDisabled();
+    }
+
+    void MissileActor::TriggerDisabled()
     {
         mActivityState = eMissileActivityState::IDLE;
         SetIsEnabled(false);

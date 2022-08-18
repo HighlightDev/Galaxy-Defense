@@ -68,6 +68,8 @@ namespace EnginePhysics
 
       virtual void PostPhysicsSimulationUpdate(const float deltaTime);
 
+      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
+
       PhysicsShapeBase *GetShape() const;
 
       size_t GetId() const;

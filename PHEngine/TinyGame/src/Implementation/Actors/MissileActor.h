@@ -17,7 +17,8 @@ namespace Game
     {
         IDLE,
         ACTIVE,
-        EXPLOSION
+        EXPLOSION,
+        EXPLOSION_FINISHED
     };
 
     class MissileActor
@@ -35,7 +36,9 @@ namespace Game
 
         virtual void TriggerExplosion();
 
-        virtual void TriggerDisable();
+        virtual void TriggerExplosionFinished();
+
+        virtual void TriggerDisabled();
 
         virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
 

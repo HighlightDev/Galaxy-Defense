@@ -700,7 +700,7 @@ namespace EngineCore
    {
       mGameThreadDeltaSec->SetValue(delta);
 
-      mPhysicsWorld->Tick(delta * 10.0f); // todo: something bad....
+      mPhysicsWorld->Tick(delta);
 
       for (const auto &cameraPtr : mActiveCameras)
       {

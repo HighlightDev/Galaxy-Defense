@@ -5,7 +5,7 @@
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Core/GameCore/BoundingBox.h"
-#include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
+#include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 
 #include <memory>
 #include <utility>
@@ -25,7 +25,7 @@ namespace Game
 
     class CombatController : public ITickable,
                              public MainPlayerActionEvent,
-                             public PhysicsCollisionOccuredEvent
+                             public PhysicsCollisionEvent
     {
         std::weak_ptr<Scene> mScene;
 
@@ -36,10 +36,6 @@ namespace Game
         std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
-
-        size_t enemyShipCounter = 0;
-
-        size_t bulletCounter = 0;
 
         float mCoolDownTime = 0.2f;
 
@@ -67,7 +63,7 @@ namespace Game
     protected:
         virtual void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
-        virtual void ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data) override;
+        virtual void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
 
     private:
         void CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp);
@@ -78,11 +74,11 @@ namespace Game
 
         typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipByName(const std::string &actorName);
 
-        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipById(const uint64_t actorId);
+        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipOwnerActorById(const uint64_t actorId);
 
         typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletByName(const std::string &actorName);
 
-        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletById(const uint64_t actorId);
+        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletOwnerActorById(const uint64_t actorId);
 
         void TestSound();
     };

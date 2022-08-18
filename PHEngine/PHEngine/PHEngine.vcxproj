@@ -357,7 +357,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\RigidBodyPhysicsComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\IEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseScrollEvent.h" />
-    <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionOccuredEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionEvent.h" />
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseEventEnums.h" />

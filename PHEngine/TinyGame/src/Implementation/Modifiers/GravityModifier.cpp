@@ -19,6 +19,13 @@ namespace Game
         return eModifierType::Gravity;
     }
 
+    uint64_t GravityModifiable::CreatorObjectId() const
+    {
+        const auto& ownerSp = mOwnerWp.lock();
+        assert(ownerSp);
+        return ownerSp->GetObjectId();
+    }
+
     void GravityModifiable::Tick(const float deltaTime)
     {
         const auto &spaceshipSp = mOwnerWp.lock();
@@ -26,9 +33,14 @@ namespace Game
 
         if (spaceshipSp && missileSp)
         {
-            const auto spaceshipPosition = spaceshipSp->GetBaseRootComponent()->GetTranslation();
-            const auto nToGravityCenter = glm::normalize(mGravityCenterPosition - spaceshipPosition);
-            spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTime);
+            const auto spaceshipPosition = spaceshipSp->GetRootComponent()->GetTranslation();
+            const auto toGravityCenterVec = mGravityCenterPosition - spaceshipPosition;
+            const auto vecLength = glm::length(toGravityCenterVec);
+            if (vecLength > 0.001f) // check if length of vector is not zero otherwise normalized vector will be NaN 
+            {
+                const auto nToGravityCenter = toGravityCenterVec / vecLength;
+                spaceshipSp->GetMovementComponent()->Move(nToGravityCenter * mGravityPower, deltaTime);
+            }
         }
     }
 

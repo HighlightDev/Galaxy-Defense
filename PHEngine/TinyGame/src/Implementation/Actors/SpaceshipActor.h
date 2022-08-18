@@ -64,11 +64,13 @@ namespace Game
 
         virtual void TriggerExplosion();
 
-        virtual void TriggerDisable();
+        virtual void TriggerDisabled();
 
         void AddModifier(const std::shared_ptr<IModifiable> &modifier);
 
-        bool HasModifier(const eModifierType modifierType) const;
+        bool HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const;
+
+        void RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId);
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
 

@@ -22,7 +22,7 @@ namespace EnginePhysics
       btTransform mMotionTransform;
 
       float mCollisionCooldown;
-      static constexpr float sCollisionCooldownTimeout = 1.0f;
+      static constexpr float sCollisionCooldownTimeout = 0.1f;
 
    public:
       GhostController(class PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const float mass, const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
@@ -39,6 +39,8 @@ namespace EnginePhysics
       virtual void PostPhysicsSimulationUpdate(const float deltaTime) override;
 
       virtual void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
+
+      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
    private:
       void ParseGhostContacts();

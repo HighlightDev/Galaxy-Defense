@@ -1,9 +1,12 @@
 #pragma once
 
+#include "ActiveCollisionPair.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 #include "Core/GameCore/Physics/DebugRender/BulletDebugRenderer.h"
+
+#include <vector>
 
 namespace EnginePhysics
 {
@@ -21,12 +24,12 @@ namespace EnginePhysics
 
       btDiscreteDynamicsWorld *mWorld;
 
-   private:
       std::vector<PhysicsDescriptor *> mPhysicsDescriptors;
 
 #if DEBUG
       BulletDebugRenderer *mDebugRenderer;
 #endif
+      std::vector<ActiveCollisionPair> mActiveCollisions;
 
    public:
       PhysicsWorld();
@@ -46,6 +49,8 @@ namespace EnginePhysics
       void RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor);
 
       PhysicsDescriptor *GetPhysicsDescriptorById(const size_t descriptorId) const;
+
+      void RegisterActiveCollision(const PhysicsDescriptor* collisionBody1, const PhysicsDescriptor* collisionBody2);
 
 #if DEBUG
       const DebugPhysicsRenderData &GetDebugPhysicsRenderData() const;

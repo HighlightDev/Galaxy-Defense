@@ -2,6 +2,8 @@
 
 #include "Core/GameCore/ITickable.h"
 
+#include <stdint.h>
+
 namespace Game
 {
     class SpaceshipActor;
@@ -15,5 +17,7 @@ namespace Game
     {
     public:
         virtual eModifierType GetModifierType() const = 0;
+
+        virtual uint64_t CreatorObjectId() const = 0;
     };
 }

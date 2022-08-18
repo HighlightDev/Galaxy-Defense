@@ -32,7 +32,9 @@ namespace Game
 
         virtual void TriggerExplosion() override;
 
-        virtual void TriggerDisable() override;
+        virtual void TriggerExplosionFinished() override;
+
+        virtual void TriggerDisabled() override;
 
         virtual bool IsInsideLevel(const BoundingBox &boundingBox) const override;
 
@@ -41,6 +43,10 @@ namespace Game
         void AddExplosionSecondPhaseActor(const std::shared_ptr<Actor> &explosionSecondPhaseActor);
 
         std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
+
+        const std::shared_ptr<Actor> &GetCombatActivePhaseActor() const;
+
+        const std::shared_ptr<Actor> &GetExplosionPhaseActor() const;
 
     private:
         void InitTweenerSubscriptions();
@@ -52,5 +58,7 @@ namespace Game
         void TriggerLifecycle_FirstPhaseExplosion();
 
         void TriggerLifecycle_SecondPhaseExplosion();
+
+        void TriggerLifecycle_BlackHoleSuckIn();
     };
 }

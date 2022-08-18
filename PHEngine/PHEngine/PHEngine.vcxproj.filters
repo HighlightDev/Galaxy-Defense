@@ -2073,7 +2073,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\RigidBodyPhysicsComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionOccuredEvent.h">
+    <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\CommonCore\Random.h">

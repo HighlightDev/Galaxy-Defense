@@ -24,6 +24,8 @@ namespace EnginePhysics
 
       virtual void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
 
+      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
+
    private:
 
       bool DoRayCastDown();

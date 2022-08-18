@@ -46,11 +46,12 @@ namespace Game
 
     void SpaceshipActor::TriggerExplosion()
     {
-        TriggerDisable();
+        TriggerDisabled();
     }
 
-    void SpaceshipActor::TriggerDisable()
+    void SpaceshipActor::TriggerDisabled()
     {
+        mModifiers.clear();
         mActivityState = eSpaceshipActivityState::IDLE;
         SetIsEnabled(false);
     }
@@ -156,11 +157,21 @@ namespace Game
         mModifiers.emplace_back(modifier);
     }
 
-    bool SpaceshipActor::HasModifier(const eModifierType modifierType) const
+    bool SpaceshipActor::HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const
     {
         auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
-                                    { return modifierType == modifier->GetModifierType(); });
+                                    { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
         return mModifiers.end() != foundIt;
+    }
+
+    void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId)
+    {
+        auto removeIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
+                                       { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
+        if (mModifiers.end() != removeIt)
+        {
+            mModifiers.erase(removeIt, mModifiers.end());
+        }
     }
 
     bool SpaceshipActor::CheckIsAliveAfterDamage(const size_t dmg)

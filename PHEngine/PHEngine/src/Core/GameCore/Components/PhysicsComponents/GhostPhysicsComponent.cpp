@@ -46,6 +46,7 @@ namespace EnginePhysics
 
    void GhostPhysicsComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
+      // todo:
       // SerializeDataActor &actorData = Component::GetSerializeDataActor(dataContainer);
       // auto physCompData = SerializeHelper::GetSerializeDataPhysicsComponent(this);
       // physCompData->ComponentName = GameObjectName;

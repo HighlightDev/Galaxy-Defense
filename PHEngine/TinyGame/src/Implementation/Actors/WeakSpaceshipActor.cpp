@@ -50,7 +50,7 @@ namespace Game
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
     {
-        LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
+        //LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
 
         if ("s_LifecyclePreload" == stateName)
         {
@@ -64,7 +64,7 @@ namespace Game
         }
         else if ("s_LifecycleDestroyed" == stateName)
         {
-            TriggerDisable();
+            TriggerDisabled();
         }
     }
 
@@ -91,8 +91,9 @@ namespace Game
         mWeakSpaceshipTweener->ChangeState("s_LifecycleDestroyed");
     }
 
-    void WeakSpaceshipActor::TriggerDisable()
+    void WeakSpaceshipActor::TriggerDisabled()
     {
+        mModifiers.clear();
         mActivityState = eSpaceshipActivityState::IDLE;
         mWeakSpaceshipTweener->InitRootState();
     }

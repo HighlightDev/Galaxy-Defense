@@ -13,9 +13,9 @@ namespace Game
     {
     }
 
-    void BombExplosionVisitor::VisitSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
-                                              const std::shared_ptr<Actor> &missileCollidedActor,
-                                              const std::shared_ptr<Actor> &spaceshipCollidedActor)
+    void BombExplosionVisitor::StartExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
+                                                          const std::shared_ptr<Actor> &missileCollidedActor,
+                                                          const std::shared_ptr<Actor> &spaceshipCollidedActor)
     {
         if (const auto &ownerSp = mOwnerWp.lock())
         {
@@ -26,5 +26,11 @@ namespace Game
                 ownerSp->TriggerExplosion();
             }
         }
+    }
+
+    void BombExplosionVisitor::EndExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
+                                                        const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                        const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+    {
     }
 }

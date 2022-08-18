@@ -2,13 +2,12 @@
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/Transform.h"
-#include "Core/GameCore/Event/PhysicsCollisionOccuredEvent.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Physics/ActiveCollisionPair.h"
 
 #include <glm/gtx/projection.hpp>
-#include <TinyLogger/LogInterface.h>
 
-using namespace TinyLogger;
-using namespace Event;
+using namespace EngineCore;
 
 namespace EnginePhysics
 {
@@ -36,6 +35,11 @@ namespace EnginePhysics
          mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
       }
       delete mGhostObject;
+   }
+
+   ePhysicsDescriptorType GhostController::GetPhysicsDescriptorType() const
+   {
+      return ePhysicsDescriptorType::GHOST_CONTROLLER;
    }
 
    void GhostController::SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation)
@@ -97,17 +101,13 @@ namespace EnginePhysics
                                              int index1)
    {
       const auto &collidedObject = colObj1->getCollisionObject();
-      const auto &collidedObjDescriptor = reinterpret_cast<PhysicsDescriptor *>(collidedObject->getUserPointer());
+      auto collidedObjDescriptor = reinterpret_cast<const PhysicsDescriptor *>(collidedObject->getUserPointer());
       if (mGhostObject == collidedObject ||
           !collidedObjDescriptor->GetIsCollisionEnabled())
          return 1.0f;
 
-      PhysicsCollisionOccuredEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
-                                                             ePhysicsBodyType::GHOST,
-                                                             mCurrentId,
-                                                             mOwnerActorGameObjectId,
-                                                             collidedObjDescriptor->GetId(),
-                                                             collidedObjDescriptor->GetOwnerActorGameObjectId());
+      mPhysicsWorld->RegisterActiveCollision(this, collidedObjDescriptor);
+
       return 0.0f;
    }
 

@@ -31,7 +31,7 @@ namespace TinyLogger
       std::atomic<bool> mIsThreadRunning{ false };
 
       std::queue<LogMessage> mMessageQueue;
-      std::vector<LoggerClientBase*> mLoggerClients;
+      std::vector<std::shared_ptr<LoggerClientBase>> mLoggerClients;
 
       LoggerServer();
 
@@ -39,7 +39,7 @@ namespace TinyLogger
 
       static LoggerServer* GetInstance_();
 
-      void AddLoggerClient(LoggerClientBase* clientBase);
+      void AddLoggerClient(const std::shared_ptr<LoggerClientBase>& clientBase);
 
       void StartLogThread();
 

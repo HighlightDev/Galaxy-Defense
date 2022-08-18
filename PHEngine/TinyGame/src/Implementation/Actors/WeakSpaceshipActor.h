@@ -27,7 +27,7 @@ namespace Game
 
         virtual void TriggerExplosion() override;
 
-        virtual void TriggerDisable() override;
+        virtual void TriggerDisabled() override;
 
     private:
         virtual void OnTweenStateChanged(const std::string &stateName) override;

@@ -10,20 +10,27 @@ using namespace EnginePhysics;
 
 namespace Event
 {
-   using ParentEvent_t = TEvent<SingleDataEventPolicy<ePhysicsBodyType,
+   enum class ePhysicsCollisionEventType
+   {
+      COLLISION_REGISTERED,
+      COLLISION_UNREGISTER
+   };
+
+   using ParentEvent_t = TEvent<MultipleDataEventPolicy<ePhysicsCollisionEventType,
+                                                      ePhysicsBodyType,
                                                       uint32_t /*this_phys_descriptor_id*/,
                                                       uint64_t /*this_actor_id*/,
                                                       uint32_t /*that_phys_descriptor_id*/,
                                                       uint64_t /*that_actor_id*/>>;
 
-   class PhysicsCollisionOccuredEvent
+   class PhysicsCollisionEvent
        : public ParentEvent_t
    {
    public:
       using Event = ParentEvent_t::Event_t;
 
       virtual std::string ToString() const override {
-         return "PhysicsCollisionOccuredEvent";
+         return "PhysicsCollisionEvent";
       }
    };
 }

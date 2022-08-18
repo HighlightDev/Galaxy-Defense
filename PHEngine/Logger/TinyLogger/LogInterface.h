@@ -183,7 +183,7 @@ namespace TinyLogger
       }
 
       template <typename LoggerClient, typename... Args>
-      static void InitLog(LoggerClient *loggerClient, Args &&...clients)
+      static void InitLog(LoggerClient&& loggerClient, Args &&...clients)
       {
          LoggerServer::GetInstance_()->AddLoggerClient(loggerClient);
          InitLog(std::move(clients)...);

@@ -154,6 +154,11 @@ namespace EnginePhysics
       Walk(glm::vec2(dir.x, dir.z));
    }
 
+   ePhysicsDescriptorType DynamicCharacterController::GetPhysicsDescriptorType() const
+   {
+      return ePhysicsDescriptorType::DYNAMIC_CHARACTER_CONTROLLER;
+   }
+
    void DynamicCharacterController::ParseGhostContacts()
    {
       btManifoldArray manifoldArray;

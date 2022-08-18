@@ -4,7 +4,7 @@
 
 namespace TinyLogger
 {
-   LogMessage::LogMessage(std::vector<std::string>&& messages)
+   LogMessage::LogMessage(std::vector<std::string> &&messages)
        : mLogs(std::move(messages))
    {
    }
@@ -31,7 +31,7 @@ namespace TinyLogger
       return &loggerInstance;
    }
 
-   void LoggerServer::AddLoggerClient(LoggerClientBase *clientBase)
+   void LoggerServer::AddLoggerClient(const std::shared_ptr<LoggerClientBase> &clientBase)
    {
       mLoggerClients.push_back(clientBase);
    }
@@ -81,7 +81,7 @@ namespace TinyLogger
          const std::string &log = ConcatMessages();
          if ("" != log)
          {
-            std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](LoggerClientBase *client)
+            std::for_each(mLoggerClients.begin(), mLoggerClients.end(), [&](const auto &client)
                           { client->WriteLog(log); });
          }
       }

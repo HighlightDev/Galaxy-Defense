@@ -13,8 +13,11 @@
     <state>
       name: "s_FirstPhaseExplosion"
     </state>
-     <state>
+    <state>
       name: "s_SecondPhaseExplosion"
+    </state>
+    <state>
+      name: "s_BlackHoleSuckIn"
     </state>
   </states>
   <transitions>
@@ -35,6 +38,12 @@
       from_state: "s_FirstPhaseExplosion"
       to_state: "s_SecondPhaseExplosion"
       duration: "5.0"
+    </transition>
+    <transition>
+      name: "t_SecondPhaseExplosion_To_BlackHoleSuckIn"
+      from_state: "s_SecondPhaseExplosion"
+      to_state: "s_BlackHoleSuckIn"
+      duration: "0.5"
     </transition>
   </transitions>
   <bindings>
@@ -57,14 +66,14 @@
   </bindings>
   <properties>
     <property>
-      name: "p_missile_visibility"
+      name: "p_missile_enable"
       binding_name: "b_activePhaseActorIsEnabled"
       type: "boolean"
       value: "false"
       state: "s_FirstPhasePreload"
     </property>
     <property>
-      name: "p_blackHolse_visibility"
+      name: "p_blackHole_enable"
       binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
       type: "boolean"
       value: "false"
@@ -155,6 +164,20 @@
       binding_name: "b_blackHoleHitBoxSize"
       type: "vec3"
       value: "x=5.0;y=5.0;z=5.0;"
+      state: "s_SecondPhaseExplosion"
+    </property>
+    <property>
+      name: "p_missile_enable"
+      binding_name: "b_activePhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
+      state: "s_SecondPhaseExplosion"
+    </property>
+    <property>
+      name: "p_blackHole_enable"
+      binding_name: "b_missileExplosionSecondPhaseActorIsEnabled"
+      type: "boolean"
+      value: "false"
       state: "s_SecondPhaseExplosion"
     </property>
   </properties>

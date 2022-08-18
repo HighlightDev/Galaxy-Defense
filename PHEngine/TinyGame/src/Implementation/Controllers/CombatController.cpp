@@ -29,13 +29,13 @@ namespace Game
           mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50, 50, 100)))
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
-        PhysicsCollisionOccuredEvent::GetInstance()->AddListener(this);
+        PhysicsCollisionEvent::GetInstance()->AddListener(this);
     }
 
     CombatController::~CombatController()
     {
         MainPlayerActionEvent::GetInstance()->RemoveListener(this);
-        PhysicsCollisionOccuredEvent::GetInstance()->RemoveListener(this);
+        PhysicsCollisionEvent::GetInstance()->RemoveListener(this);
     }
 
     void CombatController::OnPreLevelInit()
@@ -46,7 +46,7 @@ namespace Game
     {
         if (const auto &sceneSp = mScene.lock())
         {
-            CreateWeaponBulletPool(4, sceneSp);
+            CreateWeaponBulletPool(3, sceneSp);
 
             WeakSpaceShipFactory spaceShipFactory;
 
@@ -98,67 +98,85 @@ namespace Game
         }
     }
 
-    void CombatController::ProcessEvent(const typename PhysicsCollisionOccuredEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data)
     {
-        const ePhysicsBodyType physBodyType = std::get<0>(data);
-        const auto this_actor_id = std::get<2>(data);
-        const auto that_actor_id = std::get<4>(data);
+        const ePhysicsCollisionEventType collisionEventType = std::get<0>(data);
+        const ePhysicsBodyType physBodyType = std::get<1>(data);
+        const auto this_actor_id = std::get<3>(data);
+        const auto that_actor_id = std::get<5>(data);
 
         if (ePhysicsBodyType::GHOST == physBodyType)
         {
             if (const auto &sceneSp = mScene.lock())
             {
-                const auto &a_thisEnemyShipIt = FindEnemyShipById(this_actor_id);
-                auto a_thisBulletIt = FindBulletById(this_actor_id);
+                const auto &a_thisEnemyShipOwnerActorIt = FindEnemyShipOwnerActorById(this_actor_id);
+                auto a_thisBulletOwnerActorIt = FindBulletOwnerActorById(this_actor_id);
 
-                const auto &a_thatEnemyShipIt = FindEnemyShipById(that_actor_id);
-                auto a_thatBulletIt = FindBulletById(that_actor_id);
+                const auto &a_thatEnemyShipOwnerActorIt = FindEnemyShipOwnerActorById(that_actor_id);
+                auto a_thatBulletOwnerActorIt = FindBulletOwnerActorById(that_actor_id);
 
-                std::shared_ptr<MissileActor> missileActor;
-                std::shared_ptr<SpaceshipActor> enemyShipActor;
+                std::shared_ptr<MissileActor> ownerMissileActor;
+                std::shared_ptr<SpaceshipActor> ownerEnemyShipActor;
                 uint64_t missileActor_id;
                 uint64_t spaceshipActor_id;
 
-                if (a_thisBulletIt != mMissilesPool.end() || a_thatBulletIt != mMissilesPool.end())
+                if (a_thisBulletOwnerActorIt != mMissilesPool.end() || a_thatBulletOwnerActorIt != mMissilesPool.end())
                 {
-                    if (a_thisBulletIt != mMissilesPool.end())
+                    if (a_thisBulletOwnerActorIt != mMissilesPool.end())
                     {
-                        missileActor = *a_thisBulletIt;
+                        ownerMissileActor = *a_thisBulletOwnerActorIt;
                         missileActor_id = this_actor_id;
                     }
                     else
                     {
-                        missileActor = *a_thatBulletIt;
+                        ownerMissileActor = *a_thatBulletOwnerActorIt;
                         missileActor_id = that_actor_id;
                     }
                 }
 
-                if (a_thisEnemyShipIt != mEnemies.end() || a_thatEnemyShipIt != mEnemies.end())
+                if (a_thisEnemyShipOwnerActorIt != mEnemies.end() || a_thatEnemyShipOwnerActorIt != mEnemies.end())
                 {
-                    if (a_thisEnemyShipIt != mEnemies.end())
+                    if (a_thisEnemyShipOwnerActorIt != mEnemies.end())
                     {
-                        enemyShipActor = *a_thisEnemyShipIt;
+                        ownerEnemyShipActor = *a_thisEnemyShipOwnerActorIt;
                         spaceshipActor_id = this_actor_id;
                     }
                     else
                     {
-                        enemyShipActor = *a_thatEnemyShipIt;
+                        ownerEnemyShipActor = *a_thatEnemyShipOwnerActorIt;
                         spaceshipActor_id = that_actor_id;
                     }
                 }
 
-                if (missileActor && enemyShipActor)
+                if (ownerMissileActor && ownerEnemyShipActor)
                 {
-                    const auto &concreteMissileActor = missileActor->GetObjectId() == missileActor_id
-                                                           ? missileActor
-                                                           : missileActor->GetChildByObjectId(missileActor_id);
+                    const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
+                                                           ? ownerMissileActor
+                                                           : ownerMissileActor->GetChildByObjectId(missileActor_id);
 
-                    const auto &concreteSpaceshipActor = enemyShipActor->GetObjectId() == spaceshipActor_id
-                                                             ? enemyShipActor
-                                                             : enemyShipActor->GetChildByObjectId(spaceshipActor_id);
+                    const auto &concreteSpaceshipActor = ownerEnemyShipActor->GetObjectId() == spaceshipActor_id
+                                                             ? ownerEnemyShipActor
+                                                             : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
 
-                    const auto explosionVisitor = missileActor->CreateMissileExplosionVisitor();
-                    explosionVisitor->VisitSpaceship(enemyShipActor, concreteMissileActor, concreteSpaceshipActor);
+                    const std::string collisionType = ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType
+                                                          ? "COLLISION_REGISTERED"
+                                                          : "COLLISION_UNREGISTER";
+                    LogInfo("CombatController::PhysicsCollisionEvent =>",
+                            collisionType,
+                            "this_actor = ",
+                            concreteMissileActor->GetName(),
+                            " that_actor = ",
+                            concreteSpaceshipActor->GetName());
+
+                    const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
+                    if (ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType)
+                    {
+                        explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor, concreteSpaceshipActor);
+                    }
+                    else
+                    {
+                        explosionVisitor->EndExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor, concreteSpaceshipActor);
+                    }
                 }
             }
         }
@@ -196,7 +214,7 @@ namespace Game
                 const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
                 if (enemyTranslation.z < -10.0f)
                 {
-                    enemyActor->TriggerDisable();
+                    enemyActor->TriggerDisabled();
                 }
             }
             else
@@ -246,7 +264,7 @@ namespace Game
             {
                 if (!missile->IsInsideLevel(mLevelBounds))
                 {
-                    missile->TriggerDisable();
+                    missile->TriggerDisabled();
                 }
             }
         }
@@ -264,7 +282,7 @@ namespace Game
     }
 
     typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator
-    CombatController::FindEnemyShipById(const uint64_t actorId)
+    CombatController::FindEnemyShipOwnerActorById(const uint64_t actorId)
     {
         auto foundIt = std::find_if(mEnemies.begin(), mEnemies.end(), [=](const auto &enemyActor)
                                     { return enemyActor->HasGameObjectIdInHierarchy(actorId); });
@@ -284,7 +302,7 @@ namespace Game
     }
 
     typename std::vector<std::shared_ptr<MissileActor>>::iterator
-    CombatController::FindBulletById(const uint64_t actorId)
+    CombatController::FindBulletOwnerActorById(const uint64_t actorId)
     {
         auto foundIt = std::find_if(mMissilesPool.begin(),
                                     mMissilesPool.end(),
