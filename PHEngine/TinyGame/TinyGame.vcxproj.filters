@@ -48,7 +48,7 @@
     <ClCompile Include="src\Implementation\CombatEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Implementation\Factories\WeakMissileFactory.cpp">
+    <ClCompile Include="src\Implementation\Factories\BombMissileFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Implementation\Factories\WeakSpaceShipFactory.cpp">
@@ -95,7 +95,7 @@
     <ClInclude Include="src\Implementation\Factories\IMissileFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Implementation\Factories\WeakMissileFactory.h">
+    <ClInclude Include="src\Implementation\Factories\BombMissileFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\Factories\WeakSpaceShipFactory.h">

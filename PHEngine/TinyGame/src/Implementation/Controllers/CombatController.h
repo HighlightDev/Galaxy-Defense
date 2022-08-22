@@ -66,7 +66,7 @@ namespace Game
         virtual void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
 
     private:
-        void CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp);
+        void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 

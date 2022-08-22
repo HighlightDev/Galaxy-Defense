@@ -11,13 +11,13 @@ namespace Game
 {
     class MissileActor;
     
-    class WeakMissileFactory
+    class BombMissileFactory
         : public IMissileFactory
     {
         static size_t s_weakBulletCounter;
 
     public:
-        WeakMissileFactory() = default;
+        BombMissileFactory() = default;
 
         virtual std::shared_ptr<MissileActor>
         CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,

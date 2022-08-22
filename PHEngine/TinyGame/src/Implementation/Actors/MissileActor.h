@@ -32,15 +32,15 @@ namespace Game
 
         virtual bool IsInsideLevel(const BoundingBox &boundingBox) const;
 
-        virtual void TriggerSpawn(const glm::vec3 &position);
+        virtual void TriggerSpawn(const glm::vec3 &position) = 0;
 
-        virtual void TriggerExplosion();
+        virtual void TriggerExplosion() = 0;
 
-        virtual void TriggerExplosionFinished();
+        virtual void TriggerExplosionFinished() = 0;
 
-        virtual void TriggerDisabled();
+        virtual void TriggerDisabled() = 0;
 
-        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
+        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() = 0;
 
         eMissileActivityState GetMissileActivityState() const;
     };

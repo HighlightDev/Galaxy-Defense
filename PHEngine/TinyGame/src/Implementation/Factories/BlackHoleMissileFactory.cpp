@@ -48,9 +48,9 @@ namespace Game
                                                 const glm::vec3 &scale)
     {
         const auto &missileIndexStr = std::to_string(s_blackHoleMissileCounter++);
-        const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_missile_rootComponent_" + missileIndexStr,
+        const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_blackHoleMissile_rootComponent_" + missileIndexStr,
                                                                                  translation, rotation, scale);
-        const auto &a_missile = std::make_shared<BlackHoleMissileActor>("a_missile_" + missileIndexStr, rootComponent);
+        const auto &a_missile = std::make_shared<BlackHoleMissileActor>("a_blackHoleMissile_" + missileIndexStr, rootComponent);
         scene->AddActor(a_missile);
 
         TweenerParser tweenerParser;
@@ -84,7 +84,7 @@ namespace Game
             MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-            const MeshComponentData d_mesh("c_meshComponent_" + missileIndexStr, "missile1_model.fbx", glm::vec3(0),
+            const MeshComponentData d_mesh("c_missileCombatActivePhaseMesh_" + missileIndexStr, "missile1_model.fbx", glm::vec3(0),
                                            glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
             const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
@@ -92,7 +92,7 @@ namespace Game
 
             GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
             scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-            PhysicsComponentData physData("c_missilePhysicsComponent_" + missileIndexStr, ghostController);
+            PhysicsComponentData physData("c_missileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
             const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
             const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
             a_missileCombatActivePhase->AddComponent(c_ghostPhysics);
@@ -100,7 +100,7 @@ namespace Game
             MovementComponentData d_movement("c_missileCombatActivePhase_noPhysMoveComponent_" + missileIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-            c_movement->SetSpeed(50.0f);
+            c_movement->SetSpeed(80.0f);
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
             a_missileCombatActivePhase->AddComponent(c_movement);
 
@@ -140,7 +140,7 @@ namespace Game
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
-            c_movement->SetSpeed(50.0f);
+            c_movement->SetSpeed(80.0f);
             a_missileExplosionSecondPhase->AddComponent(c_movement);
 
             const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");
@@ -198,7 +198,7 @@ namespace Game
         a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);
         a_missile->AddExplosionSecondPhaseActor(a_missileExplosionSecondPhase);
 
-        ComponentData d_audio("c_soundComponent_" + missileIndexStr);
+        ComponentData d_audio("c_missileCombatActivePhaseSound_" + missileIndexStr);
         const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
         const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
         c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");

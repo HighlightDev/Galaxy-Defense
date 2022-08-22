@@ -9,7 +9,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
-#include "Implementation/Factories/WeakMissileFactory.h"
+#include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
@@ -46,7 +46,7 @@ namespace Game
     {
         if (const auto &sceneSp = mScene.lock())
         {
-            CreateWeaponBulletPool(3, sceneSp);
+            CreateWeaponBulletPool(sceneSp);
 
             WeakSpaceShipFactory spaceShipFactory;
 
@@ -228,12 +228,23 @@ namespace Game
         }
     }
 
-    void CombatController::CreateWeaponBulletPool(const size_t poolSize, const std::shared_ptr<Scene> &sceneSp)
+    void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
         BlackHoleMissileFactory bulletFactory;
-        for (size_t i = 0; i < poolSize; ++i)
+        for (size_t i = 0; i < 1; ++i)
         {
             const auto &a_shipBullet = bulletFactory.CreateWeaponBullet(sceneSp,
+                                                                        glm::vec3(0),
+                                                                        glm::vec3(),
+                                                                        glm::vec3(1.0));
+
+            mMissilesPool.emplace_back(a_shipBullet);
+        }
+
+        BombMissileFactory weakBulletFactory;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            const auto &a_shipBullet = weakBulletFactory.CreateWeaponBullet(sceneSp,
                                                                         glm::vec3(0),
                                                                         glm::vec3(),
                                                                         glm::vec3(1.0));

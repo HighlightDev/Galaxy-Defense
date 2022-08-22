@@ -169,7 +169,7 @@
     <ClCompile Include="src\Implementation\CombatController.cpp" />
     <ClCompile Include="src\Implementation\CombatEntity.cpp" />
     <ClCompile Include="src\Implementation\Events\MainPlayerActionEvent.cpp" />
-    <ClCompile Include="src\Implementation\Factories\WeakMissileFactory.cpp" />
+    <ClCompile Include="src\Implementation\Factories\BombMissileFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\WeakSpaceShipFactory.cpp" />
     <ClCompile Include="src\Implementation\SceneController.cpp" />
     <ClCompile Include="src\Implementation\SpaceSceneCamera.cpp" />
@@ -185,7 +185,7 @@
     <ClInclude Include="src\Implementation\Events\MainPlayerActionEvent.h" />
     <ClInclude Include="src\Implementation\Factories\ISpaceShipFactory.h" />
     <ClInclude Include="src\Implementation\Factories\IMissileFactory.h" />
-    <ClInclude Include="src\Implementation\Factories\WeakMissileFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\BombMissileFactory.h" />
     <ClInclude Include="src\Implementation\Factories\WeakSpaceShipFactory.h" />
     <ClInclude Include="src\Implementation\MainPlayerActionEnum.h" />
     <ClInclude Include="src\Implementation\SceneController.h" />
