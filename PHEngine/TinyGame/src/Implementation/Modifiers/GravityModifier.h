@@ -10,7 +10,7 @@ namespace Game
     class SpaceshipActor;
     class MissileActor;
 
-    class GravityModifiable : public IModifiable
+    class GravityModifier : public IModifiable
     {
         std::weak_ptr<SpaceshipActor> mOwnerWp;
 
@@ -21,7 +21,7 @@ namespace Game
         float mGravityPower;
 
     public:
-        GravityModifiable(const std::weak_ptr<SpaceshipActor> &owner,
+        GravityModifier(const std::weak_ptr<SpaceshipActor> &owner,
                           const std::weak_ptr<MissileActor> &missile,
                           const glm::vec3 &gravityCenterPosition);
 
@@ -31,6 +31,9 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
+        virtual bool IsExpired() const override;
+
         void SetGravityPower(const float power);
+
     };
 }

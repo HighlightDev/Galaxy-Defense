@@ -34,7 +34,7 @@ namespace Game
                 if (!spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId()))
                 {
                     const auto gravityCenterPosition = missileCollidedActor->GetRootComponent()->GetHierarchyAccumulatedTranslation();
-                    const auto gravityModifier = std::make_shared<GravityModifiable>(spaceship, ownerSp, gravityCenterPosition);
+                    const auto gravityModifier = std::make_shared<GravityModifier>(spaceship, ownerSp, gravityCenterPosition);
                     gravityModifier->SetGravityPower(15.0f);
                     LogInfo("BlackHoleExplosionVisitor::StartExplosionForSpaceship => |+| gravity from missile ", ownerSp->GetObjectId());
                     spaceship->AddModifier(gravityModifier);

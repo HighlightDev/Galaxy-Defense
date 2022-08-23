@@ -10,6 +10,7 @@
 
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
 #include "Implementation/Factories/BombMissileFactory.h"
+#include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
@@ -230,26 +231,37 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        BlackHoleMissileFactory bulletFactory;
+        FreezingMissileFactory freezingMissileFactory;
         for (size_t i = 0; i < 1; ++i)
         {
-            const auto &a_shipBullet = bulletFactory.CreateWeaponBullet(sceneSp,
+             const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
                                                                         glm::vec3(0),
                                                                         glm::vec3(),
                                                                         glm::vec3(1.0));
 
-            mMissilesPool.emplace_back(a_shipBullet);
+            mMissilesPool.emplace_back(a_missile);
         }
 
-        BombMissileFactory weakBulletFactory;
+        BombMissileFactory bombMissileFactory;
         for (size_t i = 0; i < 3; ++i)
         {
-            const auto &a_shipBullet = weakBulletFactory.CreateWeaponBullet(sceneSp,
+            const auto &a_missile = bombMissileFactory.CreateMissile(sceneSp,
                                                                         glm::vec3(0),
                                                                         glm::vec3(),
                                                                         glm::vec3(1.0));
 
-            mMissilesPool.emplace_back(a_shipBullet);
+            mMissilesPool.emplace_back(a_missile);
+        }
+
+        BlackHoleMissileFactory blackHoleMissileFactory;
+        for (size_t i = 0; i < 1; ++i)
+        {
+            const auto &a_missile = blackHoleMissileFactory.CreateMissile(sceneSp,
+                                                                        glm::vec3(0),
+                                                                        glm::vec3(),
+                                                                        glm::vec3(1.0));
+
+            mMissilesPool.emplace_back(a_missile);
         }
     }
 

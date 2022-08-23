@@ -56,9 +56,22 @@ namespace Game
         SetIsEnabled(false);
     }
 
+    void SpaceshipActor::RemoveExpiredModifiers()
+    {
+        const auto expiredIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
+                                              { return modifier->IsExpired(); });
+
+        if (mModifiers.end() != expiredIt)
+        {
+            mModifiers.erase(expiredIt, mModifiers.end());
+        }
+    }
+
     void SpaceshipActor::Tick(const float deltaTime)
     {
         Actor::Tick(deltaTime);
+
+        RemoveExpiredModifiers();
 
         for (const auto &modifier : mModifiers)
         {
@@ -162,6 +175,20 @@ namespace Game
         auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
                                     { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
         return mModifiers.end() != foundIt;
+    }
+
+    bool SpaceshipActor::HasModifier(const eModifierType modifierType) const
+    {
+        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
+                                    { return modifierType == modifier->GetModifierType(); });
+        return mModifiers.end() != foundIt;
+    }
+
+    std::shared_ptr<IModifiable> SpaceshipActor::GetModifier(const eModifierType modifierType) const
+    {
+        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
+                                    { return modifierType == modifier->GetModifierType(); });
+        return mModifiers.end() != foundIt ? *foundIt : nullptr;
     }
 
     void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId)

@@ -15,17 +15,21 @@ set(
 	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/WeakSpaceShipFactory.h
 	src/Implementation/Factories/BombMissileFactory.h
+	src/Implementation/Factories/FreezingMissileFactory.h
 	src/Implementation/Factories/BlackHoleMissileFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
+	src/Implementation/Modifiers/FreezingModifier.h
 	src/Implementation/Actors/MissileActor.h
 	src/Implementation/Actors/BombMissileActor.h
+	src/Implementation/Actors/FreezingMissileActor.h
 	src/Implementation/Actors/BlackHoleMissileActor.h
 	src/Implementation/Actors/SpaceshipActor.h
 	src/Implementation/Actors/WeakSpaceshipActor.h
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
+	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
 )
 
 set(
@@ -42,16 +46,20 @@ set(
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/BombMissileFactory.cpp
+	src/Implementation/Factories/FreezingMissileFactory.cpp
 	src/Implementation/Factories/BlackHoleMissileFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
+	src/Implementation/Modifiers/FreezingModifier.cpp
 	src/Implementation/Actors/MissileActor.cpp
 	src/Implementation/Actors/BombMissileActor.cpp
+	src/Implementation/Actors/FreezingMissileActor.cpp
 	src/Implementation/Actors/BlackHoleMissileActor.cpp
 	src/Implementation/Actors/SpaceshipActor.cpp
 	src/Implementation/Actors/WeakSpaceshipActor.cpp
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
+	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
     main.cpp
 )
 

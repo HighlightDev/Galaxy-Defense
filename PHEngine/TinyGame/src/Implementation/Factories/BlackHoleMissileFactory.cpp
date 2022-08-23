@@ -42,7 +42,7 @@ namespace Game
     size_t BlackHoleMissileFactory::s_blackHoleMissileCounter = 0;
 
     std::shared_ptr<MissileActor>
-    BlackHoleMissileFactory::CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,
+    BlackHoleMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
                                                 const glm::vec3 &translation,
                                                 const glm::vec3 &rotation,
                                                 const glm::vec3 &scale)

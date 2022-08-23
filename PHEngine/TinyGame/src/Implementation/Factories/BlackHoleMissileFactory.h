@@ -20,7 +20,7 @@ namespace Game
         BlackHoleMissileFactory() = default;
 
         virtual std::shared_ptr<MissileActor>
-        CreateWeaponBullet(const std::shared_ptr<::EngineCore::Scene> &scene,
+        CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
                         const glm::vec3 &translation,
                         const glm::vec3 &rotation,
                         const glm::vec3 &scale) override;

@@ -11,13 +11,13 @@ namespace Game
 {
     class MissileActor;
     
-    class BombMissileFactory
+    class FreezingMissileFactory
         : public IMissileFactory
     {
-        static size_t s_bombBulletCounter;
+        static size_t s_bulletCounter;
 
     public:
-        BombMissileFactory() = default;
+        FreezingMissileFactory() = default;
 
         virtual std::shared_ptr<MissileActor>
         CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,

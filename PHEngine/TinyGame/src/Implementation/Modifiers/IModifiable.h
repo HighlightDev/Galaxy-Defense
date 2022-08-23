@@ -10,7 +10,8 @@ namespace Game
 
     enum class eModifierType
     {
-        Gravity
+        Gravity,
+        Freezing
     };
 
     class IModifiable : public ITickable
@@ -19,5 +20,7 @@ namespace Game
         virtual eModifierType GetModifierType() const = 0;
 
         virtual uint64_t CreatorObjectId() const = 0;
+
+        virtual bool IsExpired() const = 0;
     };
 }

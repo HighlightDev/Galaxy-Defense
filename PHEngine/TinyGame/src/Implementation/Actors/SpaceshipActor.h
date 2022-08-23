@@ -70,6 +70,10 @@ namespace Game
 
         bool HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const;
 
+        bool HasModifier(const eModifierType modifierType) const;
+
+        std::shared_ptr<IModifiable> GetModifier(const eModifierType modifierType) const;
+
         void RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId);
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
@@ -87,9 +91,11 @@ namespace Game
         const std::shared_ptr<TextField> &GetDamageFieldText() const;
 
         eSpaceshipActivityState GetSpaceshipActivityState() const;
-        
-        protected:
 
+    protected:
         virtual glm::vec2 CalculatePositionForDamageText() const;
+
+    private:
+        void RemoveExpiredModifiers();
     };
 }

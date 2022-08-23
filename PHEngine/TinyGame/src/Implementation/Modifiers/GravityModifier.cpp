@@ -4,7 +4,7 @@
 
 namespace Game
 {
-    GravityModifiable::GravityModifiable(const std::weak_ptr<SpaceshipActor> &owner,
+    GravityModifier::GravityModifier(const std::weak_ptr<SpaceshipActor> &owner,
                                          const std::weak_ptr<MissileActor> &missile,
                                          const glm::vec3 &gravityCenterPosition)
         : mOwnerWp(owner),
@@ -14,19 +14,19 @@ namespace Game
     {
     }
 
-    eModifierType GravityModifiable::GetModifierType() const
+    eModifierType GravityModifier::GetModifierType() const
     {
         return eModifierType::Gravity;
     }
 
-    uint64_t GravityModifiable::CreatorObjectId() const
+    uint64_t GravityModifier::CreatorObjectId() const
     {
         const auto& ownerSp = mOwnerWp.lock();
         assert(ownerSp);
         return ownerSp->GetObjectId();
     }
 
-    void GravityModifiable::Tick(const float deltaTime)
+    void GravityModifier::Tick(const float deltaTime)
     {
         const auto &spaceshipSp = mOwnerWp.lock();
         const auto &missileSp = mMissileWp.lock();
@@ -44,7 +44,12 @@ namespace Game
         }
     }
 
-    void GravityModifiable::SetGravityPower(const float gravityPower)
+    bool GravityModifier::IsExpired() const
+    {
+        return false;
+    }
+
+    void GravityModifier::SetGravityPower(const float gravityPower)
     {
         mGravityPower = gravityPower;
     }
