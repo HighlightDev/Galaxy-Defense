@@ -165,8 +165,7 @@ namespace TinyLogger
 
          std::vector<std::string> result{std::to_string(index),
                                          "| Timestamp: " + std::to_string(timePassedSinceStart),
-                                         "| Thread: " + threadName + "| "}; 
-                                         //std::to_string(hasher(std::this_thread::get_id())) + "| "};
+                                         "| Thread: " + threadName + "| "};
          ++index;
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);

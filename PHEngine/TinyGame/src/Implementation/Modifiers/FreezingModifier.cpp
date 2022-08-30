@@ -31,8 +31,22 @@ namespace Game
         {
             const auto &movementComponent = spaceshipSp->GetMovementComponent();
             assert(movementComponent);
-            const float currentSpeed = movementComponent->GetSpeed();
-            movementComponent->SetSpeed(currentSpeed / mFreezingPower);
+            const float referenceSpeed = movementComponent->GetReferenceSpeed();
+            movementComponent->SetCurrentSpeed(referenceSpeed / mFreezingPower);
+
+            spaceshipSp->SetFreezingEffectValue(glm::clamp(mFreezingTimer / mFreezingTimeout, 0.0f, 1.0f));
+        }
+    }
+
+    void FreezingModifier::OnPreRemoved()
+    {
+        if (const auto &spaceshipSp = mOwnerWp.lock())
+        {
+            const auto &movementComponent = spaceshipSp->GetMovementComponent();
+            assert(movementComponent);
+            movementComponent->SetCurrentSpeedToReferenceValue();
+            
+            spaceshipSp->SetFreezingEffectValue(0.0f);
         }
     }
 

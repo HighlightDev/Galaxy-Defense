@@ -33,6 +33,8 @@ namespace Game
 
         virtual bool IsExpired() const override;
 
+        virtual void OnPreRemoved() override;
+
         void SetGravityPower(const float power);
 
     };

@@ -10,7 +10,7 @@ namespace EngineCore
    NoPhysicsMovementComponent::NoPhysicsMovementComponent(const MovementComponentData &movementComponentData)
        : MovementComponent(movementComponentData), m_actorRootComponent()
    {
-      mSpeed = 0.01f;
+      mCurrentSpeed = 0.01f;
    }
 
    void NoPhysicsMovementComponent::PostLevelInit()
@@ -66,6 +66,6 @@ namespace EngineCore
 
    glm::vec3 NoPhysicsMovementComponent::GetVelocity() const
    {
-      return mDirection * mSpeed;
+      return mDirection * mCurrentSpeed;
    }
 }

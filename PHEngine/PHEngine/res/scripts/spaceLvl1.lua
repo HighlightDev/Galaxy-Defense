@@ -25,6 +25,10 @@ function CreateTestLevel(host)
 	,sphere.obj
 	,water_dudv.jpg
 	,circle_mask1.png
+	,Ice_Cracked_albedo.jpg
+	,Ice_Cracked_normal.jpg
+	,Ice_Cracked_metallic.jpg
+	,Ice_Cracked_roughness.jpg
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

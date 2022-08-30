@@ -100,7 +100,8 @@ namespace Game
             MovementComponentData d_movement("c_missileCombatActivePhase_noPhysMoveComponent_" + missileIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-            c_movement->SetSpeed(80.0f);
+            c_movement->SetReferenceSpeed(80.0f);
+            c_movement->SetCurrentSpeedToReferenceValue();
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
             a_missileCombatActivePhase->AddComponent(c_movement);
 
@@ -140,7 +141,8 @@ namespace Game
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
-            c_movement->SetSpeed(80.0f);
+            c_movement->SetReferenceSpeed(80.0f);
+            c_movement->SetCurrentSpeedToReferenceValue();
             a_missileExplosionSecondPhase->AddComponent(c_movement);
 
             const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");

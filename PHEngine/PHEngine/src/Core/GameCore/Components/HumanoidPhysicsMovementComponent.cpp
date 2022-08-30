@@ -85,7 +85,7 @@ namespace EngineCore
 
    void HumanoidPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTime)
    {
-      m_playerPhysicsComponent->SetWalkVelocity(direction * deltaTime * mSpeed);
+      m_playerPhysicsComponent->SetWalkVelocity(direction * deltaTime * mCurrentSpeed);
    }
 
    void HumanoidPhysicsMovementComponent::Jump()
@@ -95,7 +95,7 @@ namespace EngineCore
 
    glm::vec3 HumanoidPhysicsMovementComponent::GetVelocity() const
    {
-      return mDirection * mSpeed;
+      return mDirection * mCurrentSpeed;
    }
 
    glm::mat3 HumanoidPhysicsMovementComponent::GetCameraYawRotationMatrix() const

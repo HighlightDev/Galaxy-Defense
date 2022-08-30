@@ -29,6 +29,8 @@ namespace Game
 
         virtual bool IsExpired() const override;
 
+        virtual void OnPreRemoved() override;
+
         void SetFreezingPower(const float power);
 
         void ResetFreezingTimer();

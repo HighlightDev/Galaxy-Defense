@@ -44,6 +44,10 @@ namespace Game
         }
     }
 
+    void GravityModifier::OnPreRemoved()
+    {
+    }
+
     bool GravityModifier::IsExpired() const
     {
         return false;

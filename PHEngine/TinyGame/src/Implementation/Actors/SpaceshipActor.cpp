@@ -19,12 +19,14 @@ namespace Game
           mDamageEffectTimePassed(0.0f),
           mDamageEffectDuration(0.5f),
           mDamageTimeProperty(std::make_shared<EngineGOProperty<float>>(0.0f, "p_damageEffect")),
+          mFreezingEffectProperty(std::make_shared<EngineGOProperty<float>>(0.0f, "p_freezingEffect")),
           mDamageTextShowDuration(1.5f),
           mDamageTextTimePassed(0.0f),
           mIsDamageEffectActive(false),
           mIsDamageTextActive(false)
     {
         AddEngineProperty(mDamageTimeProperty);
+        AddEngineProperty(mFreezingEffectProperty);
     }
 
     void SpaceshipActor::PostLevelInit()
@@ -51,6 +53,9 @@ namespace Game
 
     void SpaceshipActor::TriggerDisabled()
     {
+        std::for_each(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
+                      { modifier->OnPreRemoved(); });
+
         mModifiers.clear();
         mActivityState = eSpaceshipActivityState::IDLE;
         SetIsEnabled(false);
@@ -59,7 +64,13 @@ namespace Game
     void SpaceshipActor::RemoveExpiredModifiers()
     {
         const auto expiredIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
-                                              { return modifier->IsExpired(); });
+                                              { 
+                                                const bool isExpired = modifier->IsExpired();
+                                                if (isExpired)
+                                                {
+                                                    modifier->OnPreRemoved();
+                                                }
+                                                return isExpired; });
 
         if (mModifiers.end() != expiredIt)
         {
@@ -241,5 +252,10 @@ namespace Game
     eSpaceshipActivityState SpaceshipActor::GetSpaceshipActivityState() const
     {
         return mActivityState;
+    }
+
+    void SpaceshipActor::SetFreezingEffectValue(const float value)
+    {
+        mFreezingEffectProperty->SetValue(value);
     }
 }

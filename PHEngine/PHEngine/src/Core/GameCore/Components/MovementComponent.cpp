@@ -7,8 +7,11 @@
 namespace EngineCore
 {
 
-   MovementComponent::MovementComponent(const MovementComponentData& movementComponentData)
-       : Component(movementComponentData.GameObjectName), mSpeed(1.0f), mDirection(movementComponentData.m_launchDirection)
+   MovementComponent::MovementComponent(const MovementComponentData &movementComponentData)
+       : Component(movementComponentData.GameObjectName),
+         mReferenceSpeed(1.0f),
+         mCurrentSpeed(1.0f),
+         mDirection(movementComponentData.m_launchDirection)
    {
    }
 
@@ -21,14 +24,29 @@ namespace EngineCore
       return MOVEMENT_COMPONENT;
    }
 
-   float MovementComponent::GetSpeed() const
+   void MovementComponent::SetCurrentSpeed(const float speed)
    {
-      return mSpeed;
+      mCurrentSpeed = speed;
    }
 
-   void MovementComponent::SetSpeed(const float speed)
+   float MovementComponent::GetCurrentSpeed() const
    {
-      mSpeed = speed;
+      return mCurrentSpeed;
+   }
+
+   void MovementComponent::SetReferenceSpeed(const float speed)
+   {
+      mReferenceSpeed = speed;
+   }
+
+   float MovementComponent::GetReferenceSpeed() const
+   {
+      return mReferenceSpeed;
+   }
+
+   void MovementComponent::SetCurrentSpeedToReferenceValue()
+   {
+      mCurrentSpeed = mReferenceSpeed;
    }
 
    void MovementComponent::SetDirection(const glm::vec3 &direction)

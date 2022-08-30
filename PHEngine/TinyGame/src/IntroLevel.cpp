@@ -89,7 +89,8 @@ namespace Game
       const auto &movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
       const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(mScene->CreateComponent_GameThread(movementComponentCreator, d_movement));
 
-      c_movement->SetSpeed(20.0f);
+      c_movement->SetReferenceSpeed(20.0f);
+      c_movement->SetCurrentSpeedToReferenceValue();
       a_spaceship->AddComponent(c_movement);
 
       const auto &mainCamera = mScene->GetMainCamera();

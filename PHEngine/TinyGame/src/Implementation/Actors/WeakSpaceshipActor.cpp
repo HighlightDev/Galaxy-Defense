@@ -50,7 +50,7 @@ namespace Game
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
     {
-        //LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
+        // LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
 
         if ("s_LifecyclePreload" == stateName)
         {
@@ -82,8 +82,8 @@ namespace Game
     {
         const auto c_spaceshipMesh = GetComponentsByType<StaticMeshComponent>().back();
         c_spaceshipMesh->SetIsEnabled(false);
-        
-        const auto& c_physics = GetPhysicsComponent();
+
+        const auto &c_physics = GetPhysicsComponent();
         c_physics->SetIsEnabled(false);
 
         const auto c_particle = GetComponentsByType<ParticleSystemComponent>().back();
@@ -93,6 +93,9 @@ namespace Game
 
     void WeakSpaceshipActor::TriggerDisabled()
     {
+        std::for_each(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
+                      { modifier->OnPreRemoved(); });
+
         mModifiers.clear();
         mActivityState = eSpaceshipActivityState::IDLE;
         mWeakSpaceshipTweener->InitRootState();

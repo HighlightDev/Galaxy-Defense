@@ -18,6 +18,20 @@
 			</no_op>
 		</operation>
 	</dynamic_property>
+	<dynamic_property>
+		name: "freezingEffect"
+		type: "float"
+		incremental: "false"
+		range: "[0.0 ; 1.0]"
+		<operation>
+			<no_op>
+				<property>
+					name: "freezingBlendValue"
+					type: "binding_float"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 	<property>
 		name: "albedo"
 		type: "texture"
@@ -41,5 +55,21 @@
 	<property>
 		name: "uvScale"
 		type: "float"
+	</property>
+	<property>
+		name: "albedo_ice"
+		type: "texture"
+	</property>
+	<property>
+		name: "normalMap_ice"
+		type: "texture"
+	</property>
+	<property>
+		name: "metallicMap_ice"
+		type: "texture"
+	</property>
+	<property>
+		name: "roughnessMap_ice"
+		type: "texture"
 	</property>
 </properties>

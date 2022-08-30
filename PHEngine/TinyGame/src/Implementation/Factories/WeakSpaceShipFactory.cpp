@@ -64,6 +64,16 @@ namespace Game
         const std::string roughnessName = "spaceship_roughness.jpg";
         const std::string metallicName = "spaceship_metallic.jpg";
 
+        const std::string albedo_ice = "Ice_Cracked_albedo.jpg";
+        const std::string normal_ice = "Ice_Cracked_normal.jpg";
+        const std::string roughness_ice = "Ice_Cracked_roughness.jpg";
+        const std::string metallic_ice = "Ice_Cracked_metallic.jpg";
+
+        const auto& albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedo_ice);
+        const auto& normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(normal_ice);
+        const auto& roughness_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughness_ice);
+        const auto& metallic_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallic_ice);
+
         const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
         const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
         const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
@@ -77,6 +87,12 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "uvScale", uvScale);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship.get(), "p_damageEffect", "damageTime");
 
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo_ice", albedo_ice_tex);
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap_ice", normal_ice_tex);
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap_ice", roughness_ice_tex);
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap_ice", metallic_ice_tex);
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship.get(), "p_freezingEffect", "freezingBlendValue");
+
         const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        rotation, scale, "", spaceshipPbs_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
@@ -86,7 +102,8 @@ namespace Game
         MovementComponentData d_movement("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-        c_movement->SetSpeed(10.0f);
+        c_movement->SetReferenceSpeed(10.0f);
+        c_movement->SetCurrentSpeedToReferenceValue();
         a_enemySpaceship->AddComponent(c_movement);
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);

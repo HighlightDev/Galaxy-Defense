@@ -40,6 +40,7 @@ namespace Game
         float mDamageEffectDuration;
 
         std::shared_ptr<EngineGOProperty<float>> mDamageTimeProperty;
+        std::shared_ptr<EngineGOProperty<float>> mFreezingEffectProperty;
 
         float mDamageTextShowDuration;
 
@@ -91,6 +92,8 @@ namespace Game
         const std::shared_ptr<TextField> &GetDamageFieldText() const;
 
         eSpaceshipActivityState GetSpaceshipActivityState() const;
+
+        void SetFreezingEffectValue(const float value);
 
     protected:
         virtual glm::vec2 CalculatePositionForDamageText() const;

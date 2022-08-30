@@ -13,8 +13,9 @@ namespace EngineCore
        : public Component
    {
    protected:
-   
-      float mSpeed;
+
+      float mReferenceSpeed;
+      float mCurrentSpeed;
 
       glm::vec3 mDirection;
 
@@ -36,9 +37,15 @@ namespace EngineCore
 
       virtual void Teleport(const glm::vec3& teleportPosition) = 0;
 
-      float GetSpeed() const;
+      void SetCurrentSpeed(const float speed);
 
-      void SetSpeed(const float speed);
+      float GetCurrentSpeed() const;
+
+      void SetReferenceSpeed(const float speed);
+
+      float GetReferenceSpeed() const;
+
+      void SetCurrentSpeedToReferenceValue();
 
       void SetDirection(const glm::vec3& direction);
 

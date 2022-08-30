@@ -22,5 +22,7 @@ namespace Game
         virtual uint64_t CreatorObjectId() const = 0;
 
         virtual bool IsExpired() const = 0;
+
+        virtual void OnPreRemoved() = 0;
     };
 }
