@@ -1,6 +1,7 @@
 #include "BlackHoleExplosionVisitor.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/BlackHoleMissileActor.h"
 #include "Implementation/Modifiers/GravityModifier.h"
 #include "Core/GameCore/Actor.h"
@@ -69,5 +70,29 @@ namespace Game
                 }
             }
         }
+    }
+
+    void BlackHoleExplosionVisitor::StartExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                                 const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                                 const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+    {
+        if (const auto &ownerSp = mOwnerWp.lock())
+        {
+            const auto &blackHoleMissile = std::static_pointer_cast<BlackHoleMissileActor>(ownerSp);
+            const auto beforeExplosionActorId = blackHoleMissile->GetCombatActivePhaseActor()->GetObjectId();
+            const auto afterExplosionActorId = blackHoleMissile->GetExplosionPhaseActor()->GetObjectId();
+
+            if (missileCollidedActor->GetObjectId() == beforeExplosionActorId) // missile explosion should be triggered
+            {
+                ownerSp->TriggerExplosion();
+                spaceObject->TriggerDisabled();
+            }
+        }
+    }
+
+    void BlackHoleExplosionVisitor::EndExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                               const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                               const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+    {
     }
 }

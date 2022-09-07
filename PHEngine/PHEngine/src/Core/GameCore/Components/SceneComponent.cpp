@@ -99,10 +99,6 @@ namespace EngineCore
    void SceneComponent::SetTranslation(const glm::vec3 &translation)
    {
       mTransform->Translation = translation;
-      if (std::isnan(translation.x) || std::isnan(translation.y) || std::isnan(translation.z))
-      {
-         volatile auto b = 0;
-      }
       SetIsTransformationDirty(true);
    }
 

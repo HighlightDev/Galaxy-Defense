@@ -12,6 +12,7 @@
 #include "Implementation/Factories/BombMissileFactory.h"
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
+#include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 
@@ -60,6 +61,8 @@ namespace Game
 
                 mEnemies.emplace_back(a_enemyShip);
             }
+
+            CreateAsteroidsPool(sceneSp);
         }
     }
 
@@ -81,6 +84,14 @@ namespace Game
             const float x = (Random::Float() * 2.0f) - 1.0f;
             glm::vec3 startPosition((x_axisHalfWidth * x), 0.0f, 100.0f);
             spaceship->TriggerSpawn(startPosition);
+        }
+
+        for (const auto &asteroid : mSpaceObjectsPool)
+        {
+            const float x = Random::Float() * 50.0f + 100.0f;
+            const float z = (Random::Float() * 2.0f) - 1.0f;
+            glm::vec3 startPosition(-x, 0.0f, (x_axisHalfWidth * z));
+            asteroid->TriggerSpawn(startPosition);
         }
     }
 
@@ -111,15 +122,19 @@ namespace Game
             if (const auto &sceneSp = mScene.lock())
             {
                 const auto &a_thisEnemyShipOwnerActorIt = FindEnemyShipOwnerActorById(this_actor_id);
-                auto a_thisBulletOwnerActorIt = FindBulletOwnerActorById(this_actor_id);
+                const auto &a_thisBulletOwnerActorIt = FindBulletOwnerActorById(this_actor_id);
+                const auto &a_thisSpaceObjectOwnerActorIt = FindSpaceObjectOwnerActorById(this_actor_id);
 
                 const auto &a_thatEnemyShipOwnerActorIt = FindEnemyShipOwnerActorById(that_actor_id);
-                auto a_thatBulletOwnerActorIt = FindBulletOwnerActorById(that_actor_id);
+                const auto &a_thatBulletOwnerActorIt = FindBulletOwnerActorById(that_actor_id);
+                const auto &a_thatSpaceObjectOwnerActorIt = FindSpaceObjectOwnerActorById(that_actor_id);
 
                 std::shared_ptr<MissileActor> ownerMissileActor;
                 std::shared_ptr<SpaceshipActor> ownerEnemyShipActor;
+                std::shared_ptr<SpaceObjectActor> ownerSpaceObjectActor;
                 uint64_t missileActor_id;
                 uint64_t spaceshipActor_id;
+                uint64_t spaceObjectActor_id;
 
                 if (a_thisBulletOwnerActorIt != mMissilesPool.end() || a_thatBulletOwnerActorIt != mMissilesPool.end())
                 {
@@ -149,7 +164,49 @@ namespace Game
                     }
                 }
 
-                if (ownerMissileActor && ownerEnemyShipActor)
+                if (a_thisSpaceObjectOwnerActorIt != mSpaceObjectsPool.end() || a_thatSpaceObjectOwnerActorIt != mSpaceObjectsPool.end())
+                {
+                    if (a_thisSpaceObjectOwnerActorIt != mSpaceObjectsPool.end())
+                    {
+                        ownerSpaceObjectActor = *a_thisSpaceObjectOwnerActorIt;
+                        spaceObjectActor_id = this_actor_id;
+                    }
+                    else
+                    {
+                        ownerSpaceObjectActor = *a_thatSpaceObjectOwnerActorIt;
+                        spaceObjectActor_id = that_actor_id;
+                    }
+                }
+
+                const std::string collisionType = ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType
+                                                      ? "collision registered"
+                                                      : "collision unregister";
+
+                if (ownerMissileActor && ownerSpaceObjectActor)
+                {
+                    const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
+                                                           ? ownerMissileActor
+                                                           : ownerMissileActor->GetChildByObjectId(missileActor_id);
+
+                    LogInfo("CombatController::PhysicsCollisionEvent => ",
+                            collisionType,
+                            "missile with space object"
+                            " this_actor = ",
+                            concreteMissileActor->GetName(),
+                            " that_actor = ",
+                            ownerSpaceObjectActor->GetName());
+
+                    const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
+                    if (ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType)
+                    {
+                        explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor, ownerSpaceObjectActor);
+                    }
+                    else
+                    {
+                        explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor, ownerSpaceObjectActor);
+                    }
+                }
+                else if (ownerMissileActor && ownerEnemyShipActor)
                 {
                     const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
                                                            ? ownerMissileActor
@@ -159,11 +216,9 @@ namespace Game
                                                              ? ownerEnemyShipActor
                                                              : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
 
-                    const std::string collisionType = ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType
-                                                          ? "COLLISION_REGISTERED"
-                                                          : "COLLISION_UNREGISTER";
                     LogInfo("CombatController::PhysicsCollisionEvent =>",
                             collisionType,
+                            "missile with spaceship",
                             "this_actor = ",
                             concreteMissileActor->GetName(),
                             " that_actor = ",
@@ -227,6 +282,27 @@ namespace Game
                 enemyActor->TriggerSpawn(startPosition);
             }
         }
+
+        for (const auto &spaceObject : mSpaceObjectsPool)
+        {
+            if (spaceObject->GetActivityState() == eSpaceObjectActivityState::ACTIVE)
+            {
+                const auto &asteroidTranslation = spaceObject->GetRootComponent()->GetTranslation();
+                if (asteroidTranslation.x > 50.0f)
+                {
+                    spaceObject->TriggerDisabled();
+                }
+            }
+            else
+            {
+                static constexpr float x_axisHalfWidth = 20.0f;
+                static constexpr float y_axisHalfHeight = 20.0f;
+                const float x = Random::Float() * 50.0f + 100.0f;
+                const float z = (Random::Float() * 2.0f) - 1.0f;
+                glm::vec3 startPosition(-x, 0.0f, (x_axisHalfWidth * z));
+                spaceObject->TriggerSpawn(startPosition);
+            }
+        }
     }
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
@@ -234,10 +310,10 @@ namespace Game
         FreezingMissileFactory freezingMissileFactory;
         for (size_t i = 0; i < 1; ++i)
         {
-             const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
-                                                                        glm::vec3(0),
-                                                                        glm::vec3(),
-                                                                        glm::vec3(1.0));
+            const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
+                                                                         glm::vec3(0),
+                                                                         glm::vec3(),
+                                                                         glm::vec3(1.0));
 
             mMissilesPool.emplace_back(a_missile);
         }
@@ -246,9 +322,9 @@ namespace Game
         for (size_t i = 0; i < 3; ++i)
         {
             const auto &a_missile = bombMissileFactory.CreateMissile(sceneSp,
-                                                                        glm::vec3(0),
-                                                                        glm::vec3(),
-                                                                        glm::vec3(1.0));
+                                                                     glm::vec3(0),
+                                                                     glm::vec3(),
+                                                                     glm::vec3(1.0));
 
             mMissilesPool.emplace_back(a_missile);
         }
@@ -257,11 +333,23 @@ namespace Game
         for (size_t i = 0; i < 1; ++i)
         {
             const auto &a_missile = blackHoleMissileFactory.CreateMissile(sceneSp,
-                                                                        glm::vec3(0),
-                                                                        glm::vec3(),
-                                                                        glm::vec3(1.0));
+                                                                          glm::vec3(0),
+                                                                          glm::vec3(),
+                                                                          glm::vec3(1.0));
 
             mMissilesPool.emplace_back(a_missile);
+        }
+    }
+
+    void CombatController::CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp)
+    {
+        AsteroidFactory asteroidFactory;
+        for (size_t i = 0; i < 5; ++i)
+        {
+            const auto &a_asteroid = asteroidFactory.CreateSpaceObject(sceneSp, glm::vec3(0),
+                                                                       glm::vec3(),
+                                                                       glm::vec3(40.0));
+            mSpaceObjectsPool.emplace_back(a_asteroid);
         }
     }
 
@@ -332,6 +420,18 @@ namespace Game
                                     [=](const auto &missile)
                                     {
                                         return missile->HasGameObjectIdInHierarchy(actorId);
+                                    });
+        return foundIt;
+    }
+
+    typename std::vector<std::shared_ptr<SpaceObjectActor>>::iterator
+    CombatController::FindSpaceObjectOwnerActorById(const uint64_t actorId)
+    {
+        auto foundIt = std::find_if(mSpaceObjectsPool.begin(),
+                                    mSpaceObjectsPool.end(),
+                                    [=](const auto &spaceObject)
+                                    {
+                                        return spaceObject->HasGameObjectIdInHierarchy(actorId);
                                     });
         return foundIt;
     }

@@ -4,6 +4,7 @@
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/SpaceObjectActor.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 
@@ -37,6 +38,8 @@ namespace Game
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
 
+        std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
+
         float mCoolDownTime = 0.2f;
 
         bool bIsCoolDownInProgress = false;
@@ -68,6 +71,8 @@ namespace Game
     private:
         void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);
 
+        void CreateAsteroidsPool(const std::shared_ptr<Scene>& sceneSp);
+
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
         void FlushToPoolUsedBullets();
@@ -75,6 +80,8 @@ namespace Game
         typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipByName(const std::string &actorName);
 
         typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipOwnerActorById(const uint64_t actorId);
+
+        typename std::vector<std::shared_ptr<SpaceObjectActor>>::iterator FindSpaceObjectOwnerActorById(const uint64_t actorId);
 
         typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletByName(const std::string &actorName);
 

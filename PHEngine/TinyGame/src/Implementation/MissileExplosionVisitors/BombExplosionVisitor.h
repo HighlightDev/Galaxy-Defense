@@ -11,6 +11,7 @@ namespace Game
 {
     class MissileActor;
     class SpaceshipActor;
+    class SpaceObjectActor;
 
     class BombExplosionVisitor : public MissileExplosionVisitorBase
     {
@@ -24,5 +25,13 @@ namespace Game
         virtual void EndExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
                                               const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
                                               const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor) override;
+
+        virtual void StartExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                  const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                  const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor) override;
+
+        virtual void EndExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor) override;
     };
 }

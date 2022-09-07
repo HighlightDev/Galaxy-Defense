@@ -2,6 +2,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/CommonCore/Random.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 
 using namespace EngineCore;
@@ -31,6 +32,27 @@ namespace Game
     void BombExplosionVisitor::EndExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
                                                         const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
                                                         const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+    {
+    }
+
+    void BombExplosionVisitor::StartExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                            const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                            const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+    {
+
+        if (const auto &ownerSp = mOwnerWp.lock())
+        {
+            if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState())
+            {
+                spaceObject->TriggerDisabled();
+                ownerSp->TriggerExplosion();
+            }
+        }
+    }
+
+    void BombExplosionVisitor::EndExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
+                                                          const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
+                                                          const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
     {
     }
 }

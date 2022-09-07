@@ -7,28 +7,31 @@ function CreateTestLevel(host)
 	,nightBottom.jpg
 	,nightBack.jpg
 	,nightFront.jpg
-	,spaceship.obj
 	,spaceship_albedo.jpg
 	,spaceship_normal.jpg
 	,spaceship_roughness.jpg
 	,spaceship_metallic.jpg
-	,solar_cells_albedo_512.jpg
 	,solar_cells_normal_512.jpg
 	,solar_cells_roughness_512.jpg
 	,solar_cells_metallic_512.jpg
 	,arial.png
-	,explosion1.ogg
-	,piano-loop2.wav
-	,missile1_model.fbx
 	,missile1_albedo.png
-	,playerCube.obj
-	,sphere.obj
 	,water_dudv.jpg
 	,circle_mask1.png
 	,Ice_Cracked_albedo.jpg
 	,Ice_Cracked_normal.jpg
 	,Ice_Cracked_metallic.jpg
 	,Ice_Cracked_roughness.jpg
+	,Asteroid_albedo.jpg
+	,Asteroid_normal.jpg
+	,Asteroid_roughness.jpg
+	,Asteroid_metallic.jpg
+	,sphere.obj
+	,spaceship.obj
+	,missile1_model.fbx
+	,asteroid.fbx
+	,explosion1.ogg
+	,piano-loop2.wav
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",
