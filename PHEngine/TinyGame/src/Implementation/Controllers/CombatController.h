@@ -87,6 +87,7 @@ namespace Game
 
         typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletOwnerActorById(const uint64_t actorId);
 
-        void TestSound();
+        glm::vec3 GenRandomPositionForSpaceship() const;
+        glm::vec3 GenRandomPositionForSpaceObject() const;
     };
 }

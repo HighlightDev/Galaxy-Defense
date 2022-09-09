@@ -171,6 +171,11 @@ namespace Game
         return glm::vec2(spaceShipTranslation.x, spaceShipTranslation.y);
     }
 
+    glm::vec3 SpaceshipActor::GetWorldPosition() const
+    {
+        return GetRootComponent()->GetTranslation();
+    }
+
     bool SpaceshipActor::IsInsideLevel(const BoundingBox &boundingBox) const
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());

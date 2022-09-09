@@ -18,4 +18,9 @@ namespace Game
     {
         return mActivityState;
     }
+
+    glm::vec3 SpaceObjectActor::GetWorldPosition() const
+    {
+        return m_rootComponent->GetTranslation();
+    }
 }

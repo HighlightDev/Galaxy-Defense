@@ -67,6 +67,8 @@ namespace Game
 
         virtual void TriggerDisabled();
 
+        glm::vec3 GetWorldPosition() const;
+
         void AddModifier(const std::shared_ptr<IModifiable> &modifier);
 
         bool HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const;

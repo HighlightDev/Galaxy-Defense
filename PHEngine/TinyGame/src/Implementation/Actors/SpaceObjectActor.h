@@ -33,5 +33,7 @@ namespace Game
         virtual void TriggerDisabled() = 0;
 
         eSpaceObjectActivityState GetActivityState() const;
+
+        glm::vec3 GetWorldPosition() const;
     };
 }

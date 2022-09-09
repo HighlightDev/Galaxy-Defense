@@ -74,24 +74,17 @@ namespace Game
     {
         for (const auto &missile : mMissilesPool)
         {
-            missile->SetIsEnabled(false); // disable all missiles at level start
+            missile->SetIsEnabled(false); // disable all missiles at level beginning
         }
 
-        static constexpr float x_axisHalfWidth = 20.0f;
-        static constexpr float y_axisHalfHeight = 20.0f;
         for (const auto &spaceship : mEnemies)
         {
-            const float x = (Random::Float() * 2.0f) - 1.0f;
-            glm::vec3 startPosition((x_axisHalfWidth * x), 0.0f, 100.0f);
-            spaceship->TriggerSpawn(startPosition);
+            spaceship->TriggerSpawn(GenRandomPositionForSpaceship());
         }
 
         for (const auto &asteroid : mSpaceObjectsPool)
         {
-            const float x = Random::Float() * 50.0f + 100.0f;
-            const float z = (Random::Float() * 2.0f) - 1.0f;
-            glm::vec3 startPosition(-x, 0.0f, (x_axisHalfWidth * z));
-            asteroid->TriggerSpawn(startPosition);
+            asteroid->TriggerSpawn(GenRandomPositionForSpaceObject());
         }
     }
 
@@ -188,11 +181,7 @@ namespace Game
                                                            ? ownerMissileActor
                                                            : ownerMissileActor->GetChildByObjectId(missileActor_id);
 
-                    LogInfo("CombatController::PhysicsCollisionEvent => ",
-                            collisionType,
-                            "missile with space object"
-                            " this_actor = ",
-                            concreteMissileActor->GetName(),
+                    LogInfo("CombatController::PhysicsCollisionEvent => ", collisionType, "missile with space object, this_actor = ", concreteMissileActor->GetName(),
                             " that_actor = ",
                             ownerSpaceObjectActor->GetName());
 
@@ -206,6 +195,14 @@ namespace Game
                         explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor, ownerSpaceObjectActor);
                     }
                 }
+                else if (ownerEnemyShipActor && ownerSpaceObjectActor)
+                {
+                    LogInfo("CombatController::PhysicsCollisionEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
+                            " that_actor = ", ownerSpaceObjectActor->GetName());
+
+                    ownerEnemyShipActor->TriggerDamageReceived(1UL);
+                    ownerSpaceObjectActor->TriggerDisabled();
+                }
                 else if (ownerMissileActor && ownerEnemyShipActor)
                 {
                     const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
@@ -216,12 +213,7 @@ namespace Game
                                                              ? ownerEnemyShipActor
                                                              : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
 
-                    LogInfo("CombatController::PhysicsCollisionEvent =>",
-                            collisionType,
-                            "missile with spaceship",
-                            "this_actor = ",
-                            concreteMissileActor->GetName(),
-                            " that_actor = ",
+                    LogInfo("CombatController::PhysicsCollisionEvent =>", collisionType, "missile with spaceship, this_actor = ", concreteMissileActor->GetName(), " that_actor = ",
                             concreteSpaceshipActor->GetName());
 
                     const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
@@ -265,7 +257,7 @@ namespace Game
 
         for (const auto &enemyActor : mEnemies)
         {
-            if (enemyActor->GetSpaceshipActivityState() == eSpaceshipActivityState::ACTIVE)
+            if (eSpaceshipActivityState::ACTIVE == enemyActor->GetSpaceshipActivityState())
             {
                 const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
                 if (enemyTranslation.z < -10.0f)
@@ -275,17 +267,13 @@ namespace Game
             }
             else
             {
-                static constexpr float x_axisHalfWidth = 20.0f;
-                static constexpr float y_axisHalfHeight = 20.0f;
-                const float x = (Random::Float() * 2.0f) - 1.0f;
-                glm::vec3 startPosition((x_axisHalfWidth * x), 0.0f, 100.0f);
-                enemyActor->TriggerSpawn(startPosition);
+                enemyActor->TriggerSpawn(GenRandomPositionForSpaceship());
             }
         }
 
         for (const auto &spaceObject : mSpaceObjectsPool)
         {
-            if (spaceObject->GetActivityState() == eSpaceObjectActivityState::ACTIVE)
+            if (eSpaceObjectActivityState::ACTIVE == spaceObject->GetActivityState())
             {
                 const auto &asteroidTranslation = spaceObject->GetRootComponent()->GetTranslation();
                 if (asteroidTranslation.x > 50.0f)
@@ -295,14 +283,45 @@ namespace Game
             }
             else
             {
-                static constexpr float x_axisHalfWidth = 20.0f;
-                static constexpr float y_axisHalfHeight = 20.0f;
-                const float x = Random::Float() * 50.0f + 100.0f;
-                const float z = (Random::Float() * 2.0f) - 1.0f;
-                glm::vec3 startPosition(-x, 0.0f, (x_axisHalfWidth * z));
-                spaceObject->TriggerSpawn(startPosition);
+                spaceObject->TriggerSpawn(GenRandomPositionForSpaceObject());
             }
         }
+    }
+
+    glm::vec3 CombatController::GenRandomPositionForSpaceObject() const
+    {
+        static constexpr float x_axisHalfWidth = 20.0f;
+        static constexpr float y_axisHalfHeight = 20.0f;
+        static constexpr float min_squared_radius = 150.0f;
+
+        glm::vec3 potentialPosition(0.0f);
+        do
+        {
+            const float x = Random::Float() * 50.0f + 100.0f;
+            const float z = (Random::Float() * 2.0f) - 1.0f;
+            potentialPosition = glm::vec3(-x, 0.0f, (30.0f + x_axisHalfWidth * z));
+        } while (std::any_of(mSpaceObjectsPool.begin(), mSpaceObjectsPool.end(), [=](const auto &existingSpaceObject)
+                             { return ((eSpaceObjectActivityState::ACTIVE == existingSpaceObject->GetActivityState()) && ((glm::length2(existingSpaceObject->GetWorldPosition() - potentialPosition) < min_squared_radius))); }));
+
+        return potentialPosition;
+    }
+
+    glm::vec3 CombatController::GenRandomPositionForSpaceship() const
+    {
+        static constexpr float x_axisHalfWidth = 20.0f;
+        static constexpr float z_axisHalfHeight = 20.0f;
+        static constexpr float min_squared_radius = 250.0f;
+
+        glm::vec3 potentialPosition(0.0f);
+        do
+        {
+            const float x = ((Random::Float() * 2.0f) - 1.0f) * x_axisHalfWidth;
+            const float z = Random::Float() * 25.0f + 75.0f;
+            potentialPosition = glm::vec3(x, 0.0f, z);
+        } while (std::any_of(mEnemies.begin(), mEnemies.end(), [=](const auto &existingEnemy)
+                             { return ((eSpaceshipActivityState::ACTIVE == existingEnemy->GetSpaceshipActivityState()) && ((glm::length2(existingEnemy->GetWorldPosition() - potentialPosition) < min_squared_radius))); }));
+
+        return potentialPosition;
     }
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
