@@ -31,10 +31,8 @@ namespace EngineCore
             const SkyboxComponentData &mData =
                 static_cast<const SkyboxComponentData &>(data);
 
-            int32_t primitive =
-                (int32_t)SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE;
             auto skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
+                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(static_cast<int32_t>(SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE));
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 

@@ -89,5 +89,7 @@ namespace Game
 
         glm::vec3 GenRandomPositionForSpaceship() const;
         glm::vec3 GenRandomPositionForSpaceObject() const;
+
+        void CreateParallaxBackground();
     };
 }

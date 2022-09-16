@@ -19,6 +19,8 @@ namespace EngineCore
 
       using Base = PrimitiveComponent;
 
+      float mBillboardExtent;
+
    private:
 
       BillboardRenderData m_renderData;
@@ -36,6 +38,12 @@ namespace EngineCore
       virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+
+      void SetBillboardExtent(const float extent);
+
+      float GetBillboardExtent() const;
+
+      void SetBillboardTexture(const std::shared_ptr<ITexture>& texture);
 
       inline const BillboardRenderData& GetRenderData() const {
 

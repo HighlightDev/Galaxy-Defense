@@ -32,6 +32,7 @@ function CreateTestLevel(host)
 	,asteroid.fbx
 	,explosion1.ogg
 	,piano-loop2.wav
+	,planet_1.png
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

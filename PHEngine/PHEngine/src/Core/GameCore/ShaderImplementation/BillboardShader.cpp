@@ -1,23 +1,21 @@
 #include "BillboardShader.h"
 
-
 namespace EngineCore
 {
    namespace ShaderImpl
    {
 
-      BillboardShader::BillboardShader(const ShaderParams& params)
-         : Shader(params)
+      BillboardShader::BillboardShader(const ShaderParams &params)
+          : Shader(params)
       {
          ShaderInit();
       }
-
 
       BillboardShader::~BillboardShader()
       {
       }
 
-      void BillboardShader::SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+      void BillboardShader::SetTransformMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          u_worldMatrix.LoadUniform(worldMatrix);
          u_viewMatrix.LoadUniform(viewMatrix);
@@ -29,6 +27,11 @@ namespace EngineCore
          u_texture.LoadUniform(texSlot);
       }
 
+      void BillboardShader::SetExtent(const float extent)
+      {
+         u_billboardExtent.LoadUniform(extent);
+      }
+
       void BillboardShader::AccessAllUniformLocations(uint32_t shaderProgramID)
       {
          Shader::AccessAllUniformLocations(shaderProgramID);
@@ -37,11 +40,11 @@ namespace EngineCore
          u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
          u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
          u_texture = GetUniform("billboardTexture", shaderProgramID);
+         u_billboardExtent = GetUniform("extent", shaderProgramID);
       }
 
       void BillboardShader::SetShaderPredefine()
       {
-         DefineConstant<float>(ShaderType::GeometryShader, "billboardSize", 1.0f);
       }
 
    }

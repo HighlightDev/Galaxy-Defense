@@ -8,10 +8,12 @@
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
 using namespace Resources;
+using namespace IO;
 
 namespace EngineCore
 {
@@ -25,20 +27,18 @@ namespace EngineCore
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
         {
-             const BillboardComponentData &mData =
-                static_cast<const BillboardComponentData &>(data);
+            const BillboardComponentData &mData = static_cast<const BillboardComponentData &>(data);
 
             int32_t primitive = (int32_t)SimplePrimitiveType::POINT;
-            SimplePrimitivePool::sharedValue_t skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
-            typename TexturePool::sharedValue_t texture =
-                TexturePool::GetInstance()->GetOrAllocateResource(
-                    mData.m_pathToTexture);
-            ShaderParams shaderParams("Billboard Shader", mData.m_vsShaderPath,
-                                      mData.m_fsShaderPath, mData.m_gsShaderPath);
-            ShaderPool::sharedValue_t shader =
-                ShaderPool::GetInstance()
-                    ->template GetOrAllocateResource<BillboardShader>(shaderParams);
+            SimplePrimitivePool::sharedValue_t skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
+            typename TexturePool::sharedValue_t texture = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_pathToTexture);
+            const ShaderParams shaderParams(
+                "Billboard Shader",
+                FolderManager::GetInstance()->GetShadersPath() + "billboardVS.glsl",
+                FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl",
+                FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
+
+            const auto &shader = ShaderPool::GetInstance()->template GetOrAllocateResource<BillboardShader>(shaderParams);
 
             BillboardRenderData renderData(skin, shader, texture);
 

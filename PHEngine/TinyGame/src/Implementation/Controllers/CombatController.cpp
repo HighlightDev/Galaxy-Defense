@@ -16,6 +16,10 @@
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
+#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+
 using namespace Graphics;
 using namespace EnginePhysics;
 using namespace EngineCore;
@@ -44,6 +48,8 @@ namespace Game
     {
     }
 
+    void CreateBillboard(const std::shared_ptr<Scene> &sceneSp);
+
     void CombatController::OnLevelInit()
     {
         if (const auto &sceneSp = mScene.lock())
@@ -63,7 +69,22 @@ namespace Game
             }
 
             CreateAsteroidsPool(sceneSp);
+
+            CreateBillboard(sceneSp);
         }
+    }
+
+    void CreateBillboard(const std::shared_ptr<Scene> &sceneSp)
+    {
+        const auto billboardActor = std::make_shared<Actor>("Billboard Actor", std::make_shared<SceneComponent>("BillboardActor_rootComponent",
+                                                                                                                glm::vec3(0), glm::vec3(), glm::vec3(1)));
+
+        auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
+        BillboardComponentData data("c_billboardMesh", 25.0f, "planet_1.png", glm::vec3(0.0f, -100.0f, 80.0f), glm::vec3(1.0f));
+        const auto &billboardComponent = sceneSp->CreateComponent_GameThread(billboardComponentCreator, data);
+        billboardActor->AddComponent(billboardComponent);
+
+        sceneSp->AddActor(billboardActor);
     }
 
     void CombatController::OnPostLevelInit()

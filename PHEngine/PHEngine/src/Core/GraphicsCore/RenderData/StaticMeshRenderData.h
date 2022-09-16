@@ -38,7 +38,7 @@ namespace Graphics
          {
          }
 
-         ~StaticMeshRenderData() {}
+         virtual ~StaticMeshRenderData() {}
       };
    }
 }

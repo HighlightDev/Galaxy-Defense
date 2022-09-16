@@ -19,6 +19,8 @@ namespace Graphics
 
          std::shared_ptr<ITexture> m_billboardTexture;
 
+         float mBillboardExtent;
+
          using Base = PrimitiveSceneProxy;
 
       public:
@@ -32,6 +34,10 @@ namespace Graphics
          virtual bool IsDeferred() const override;
 
          virtual eMeshFacing GetMeshFrontFace() const override;
+
+         void SetBillboardExtent(const float extent);
+
+         void SetBillboardTexture(const std::shared_ptr<ITexture>& texture);
       };
 
    }

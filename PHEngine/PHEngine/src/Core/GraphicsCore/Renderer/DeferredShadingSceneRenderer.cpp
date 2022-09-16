@@ -89,14 +89,14 @@ namespace Graphics
                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
 
-         TemplatedCompositeShaderParams staticMeshParams(
+         CompositeShaderParams staticMeshParams(
              "StaticMeshVertexFactory_DepthCollectShader", depthCollectShaderParams);
-         TemplatedCompositeShaderParams skeletalMeshParams(
+         CompositeShaderParams skeletalMeshParams(
              "SkeletalMeshVertexFactory<4>_DepthCollectShader", depthCollectShaderParams);
 
-         TemplatedCompositeShaderParams staticMeshCompositeParams(
+         CompositeShaderParams staticMeshCompositeParams(
              "StaticMeshVertexFactory_PointLightDepthCollectShader", plDepthCollectShaderParams);
-         TemplatedCompositeShaderParams skeletalMeshCompositeParams(
+         CompositeShaderParams skeletalMeshCompositeParams(
              "SkeletalMeshVertexFactory<4>_PointLightDepthCollectShader", plDepthCollectShaderParams);
 
          mDepthCollectShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);

@@ -54,9 +54,8 @@ namespace EngineCore
 
       std::weak_ptr<Scene> mSceneOwner;
 
-   public:
-
       std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
+   public:
 
       Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
 

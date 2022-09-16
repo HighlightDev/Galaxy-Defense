@@ -17,16 +17,15 @@ namespace Graphics
 
          const uint64_t HASH;
 
-         CompositeShaderParams(const uint64_t hash, const std::string &shaderName, const ShaderParams &shaderParams)
+         CompositeShaderParams(const std::string &shaderName, const ShaderParams &shaderParams)
              : mShaderParams(shaderParams),
                mShaderName(shaderName),
-               HASH(hash)
+               HASH(EngineCore::Hash(shaderName))
          {
          }
 
          bool operator==(const CompositeShaderParams &other) const
          {
-
             return this->mShaderName == other.mShaderName && this->HASH == other.HASH;
          }
       };
@@ -37,38 +36,11 @@ namespace Graphics
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-         CompositeMaterialShaderParams(const uint64_t hash,
-                                       const std::string &shaderName,
+         CompositeMaterialShaderParams(const std::string &shaderName,
                                        const ShaderParams &shaderParams,
                                        std::shared_ptr<MaterialProxy> materialProxy)
-             : CompositeShaderParams(hash, shaderName, shaderParams), mMaterialProxy(materialProxy)
-         {
-         }
-      };
-
-      struct TemplatedCompositeMaterialShaderParams
-          : public CompositeMaterialShaderParams
-      {
-
-         TemplatedCompositeMaterialShaderParams(const std::string &uniqueName, const ShaderParams &shaderParams, std::shared_ptr<MaterialProxy> materialProxy)
-             : CompositeMaterialShaderParams(
-                   EngineCore::Hash(uniqueName),
-                   uniqueName,
-                   shaderParams,
-                   materialProxy)
-         {
-         }
-      };
-
-      struct TemplatedCompositeShaderParams
-          : public CompositeShaderParams
-      {
-
-         TemplatedCompositeShaderParams(const std::string &uniqueName, const ShaderParams &shaderParams)
-             : CompositeShaderParams(
-                   EngineCore::Hash(uniqueName),
-                   uniqueName,
-                   shaderParams)
+             : CompositeShaderParams(shaderName, shaderParams),
+               mMaterialProxy(materialProxy)
          {
          }
       };

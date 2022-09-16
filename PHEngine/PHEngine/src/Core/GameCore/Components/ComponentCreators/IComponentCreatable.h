@@ -31,7 +31,7 @@ namespace EngineCore
                              const ShaderParams &shaderParams,
                              std::shared_ptr<MaterialProxy> materialProxy) const
         {
-            TemplatedCompositeMaterialShaderParams compositeParams(compositeShaderName,
+            CompositeMaterialShaderParams compositeParams(compositeShaderName,
                                                                    shaderParams,
                                                                    materialProxy);
 

@@ -69,8 +69,8 @@ namespace Resources
       }
     }
 
-    template <typename InnerAllocationType>
-    typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const key_t &key)
+    template <typename InnerAllocationType, typename Key_t>
+    typename std::enable_if<!std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const Key_t &key)
     {
       sharedValue_t resource = GetResource(key);
       if (!resource)
@@ -87,8 +87,8 @@ namespace Resources
       return resource;
     }
 
-    template <typename InnerAllocationType>
-    typename std::enable_if<std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const key_t &key)
+    template <typename InnerAllocationType, typename Key_t>
+    typename std::enable_if<std::is_same<InnerAllocationType, Common::NullType>::value, sharedValue_t>::type GetOrAllocateResourceBridge(const Key_t &key)
     {
       sharedValue_t resource = GetResource(key);
       if (!resource)
@@ -126,21 +126,21 @@ namespace Resources
       referenceMap.clear();
     }
 
-    template <typename InnerAllocationType = Common::NullType>
+    template <typename InnerAllocationType = Common::NullType, typename Key_t>
     typename std::enable_if<
         !std::is_same<InnerAllocationType, Common::NullType>::value,
         std::shared_ptr<InnerAllocationType>>::type
-    GetOrAllocateResource(const key_t &key)
+    GetOrAllocateResource(const Key_t &key)
     {
       return std::static_pointer_cast<InnerAllocationType>(
           GetOrAllocateResourceBridge<InnerAllocationType>(key));
     }
 
-    template <typename InnerAllocationType = Common::NullType>
+    template <typename InnerAllocationType = Common::NullType, typename Key_t>
     typename std::enable_if<
         std::is_same<InnerAllocationType, Common::NullType>::value,
         sharedValue_t>::type
-    GetOrAllocateResource(const key_t &key)
+    GetOrAllocateResource(const Key_t &key)
     {
       return GetOrAllocateResourceBridge<InnerAllocationType>(key);
     }

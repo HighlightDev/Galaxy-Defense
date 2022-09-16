@@ -10,7 +10,6 @@
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryCompositeShader.h"
 #include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 
 using namespace EngineCore::ShaderImpl;
@@ -43,7 +42,7 @@ namespace EngineCore
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
 
-            TemplatedCompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
+            CompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
                                                                           particlesShaderParams);
 
             typename CompositeShaderPool::sharedValue_t particleSystemShader =
