@@ -25,17 +25,14 @@ namespace Game
 
     void SpaceSceneCamera::OnTransformationUpdated()
     {
-        LogInfo("SpaceSceneCamera::OnTransformationUpdated");
         for (const auto &observer : mObservers)
         {
-            LogInfo("observer->OnCameraTransformChanged");
             observer->OnCameraTransformChanged(this);
         }
     }
 
     void SpaceSceneCamera::AddCameraTransformObserver(ICameraTransformChangeNotifyable *observer)
     {
-        LogInfo("SpaceSceneCamera::AddCameraTransformObserver");
         mObservers.emplace_back(observer);
     }
 }
