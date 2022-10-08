@@ -33,6 +33,8 @@ namespace Graphics
 
          virtual bool IsDeferred() const override;
 
+         virtual bool IsFrustumCullTestNeeded() const override;
+
          virtual eMeshFacing GetMeshFrontFace() const override;
 
          void SetBillboardExtent(const float extent);

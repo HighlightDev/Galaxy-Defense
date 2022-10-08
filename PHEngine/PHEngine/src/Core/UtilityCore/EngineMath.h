@@ -5,6 +5,7 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/ext/quaternion_float.hpp>
+#include <optional>
 
 namespace EngineMath
 {
@@ -49,6 +50,8 @@ namespace EngineMath
 
    glm::mat4 BuildMirrorMatrix(const glm::vec4& mirrorPlane);
 
-   glm::vec3 QuatToEulerAngles(const glm::quat& rotationQuat); 
+   glm::vec3 QuatToEulerAngles(const glm::quat& rotationQuat);
+   
+   std::optional<glm::vec3> TestPlaneToPlaneToPlane(const glm::vec4& plane1, const glm::vec4& plane2, const glm::vec4& plane3);
 
 }

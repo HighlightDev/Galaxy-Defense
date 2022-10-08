@@ -21,7 +21,7 @@ namespace Graphics
       {
          bool bProxyVisible = true;
 
-         if (proxy->IsFrustumCullTestNeeded())
+         if (proxy->IsFrustumCullTestNeeded() && mCameraProxy->IsCameraFrustumBuilt())
          {
             bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
          }

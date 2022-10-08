@@ -47,9 +47,27 @@ namespace EngineCore
       {
          if (auto sceneSp = mScene.lock())
          {
-            sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
+            if (sceneSp->IsCameraSceneProxyExistsOnRT(SceneProxyId))
+            {
+               sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
+               bTransformationDirty = false;
+            }
          }
       }
+   }
+
+   void ACamera::OnCameraSceneProxyDataUpdated()
+   {
+      OnTransformationUpdated();
+   }
+
+   void ACamera::OnTransformationUpdated()
+   {
+   }
+
+   void ACamera::SetTransformationDirty()
+   {
+      bTransformationDirty = true;
    }
 
    void ACamera::Tick(const float DeltaTime)
@@ -90,7 +108,7 @@ namespace EngineCore
       m_eyeSpaceForwardVector = totalRotateMatrix * glm::vec4(m_localSpaceForwardVector, 0.0);
       m_eyeSpaceRightVector = totalRotateMatrix * glm::vec4(m_localSpaceRightVector, 0.0);
 
-      bTransformationDirty = true;
+      SetTransformationDirty();
    }
 
    std::string ACamera::GetCameraName() const
@@ -194,5 +212,17 @@ namespace EngineCore
       }
 
       return clippedSpacePosition;
+   }
+
+   std::optional<CameraFrustum> ACamera::GetCameraFrustum() const
+   {
+      std::optional<CameraFrustum> result{std::nullopt};
+
+      if (auto sceneSp = mScene.lock())
+      {
+         result = sceneSp->GetCameraFrustum(SceneProxyId);
+      }
+
+      return result;
    }
 }

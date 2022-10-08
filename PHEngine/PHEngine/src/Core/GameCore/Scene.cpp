@@ -243,9 +243,9 @@ namespace EngineCore
       return go;
    }
 
-   IDeferredResourceCreator* Scene::GetDeferredResourceCreatorByName(const std::string &name) const
+   IDeferredResourceCreator *Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
-      IDeferredResourceCreator* creatorInstance;
+      IDeferredResourceCreator *creatorInstance;
 
       if (mDeferredResourceCreators.count(name))
       {
@@ -270,7 +270,7 @@ namespace EngineCore
       mActorControllers.emplace_back(actorController);
    }
 
-   const TextHandler& Scene::GetTextHandler() const
+   const TextHandler &Scene::GetTextHandler() const
    {
       return mTextHandler;
    }
@@ -363,17 +363,32 @@ namespace EngineCore
                                                     Job(creatorObjectId,
                                                         functionId, [=]()
                                                         {
+                                                           sceneViewSp->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
+                                                           sceneViewSp->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix());
 
-                  sceneViewSp->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
-                  sceneViewSp->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix()); }));
+                                                           m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                                                                 Job(creatorObjectId,
+                                                                                                     functionId, [=]()
+                                                                                                     { camera->OnCameraSceneProxyDataUpdated(); })); }));
          }
          else
          {
             LogInfo("Scene::UpdateCameraSceneProxyData_OnRenderThread => "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                        sceneProxyId);
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    sceneProxyId);
          }
       }
+   }
+
+   bool Scene::IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const
+   {
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
+         return sceneViewSp != nullptr;
+      }
+
+      return false;
    }
 
    void Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
@@ -820,7 +835,7 @@ namespace EngineCore
       return component;
    }
 
-   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string &gameObjectName)
+   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName)
    {
       // Add deferred resource creator instance
       assert(!mDeferredResourceCreators.count(gameObjectName));
@@ -888,8 +903,39 @@ namespace EngineCore
          else
          {
             LogInfo("Scene::GetConvertedToClippedSpacePosition => "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                        cameraProxyId);
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    cameraProxyId);
+         }
+      }
+
+      return result;
+   }
+
+   std::optional<CameraFrustum> Scene::GetCameraFrustum(const size_t cameraProxyId)
+   {
+      std::optional<CameraFrustum> result(std::nullopt);
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
+         if (sceneViewSp)
+         {
+            if (sceneViewSp->GetCameraProxy()->IsCameraFrustumBuilt())
+            {
+               result = sceneViewSp->GetCameraProxy()->GetCameraFrustum();
+            }
+            else
+            {
+               LogInfo("Scene::GetCameraFrustum => "
+                       "Error! Camera Frustum wasn't built yet. Proxy index = ",
+                       cameraProxyId);
+            }
+         }
+         else
+         {
+            LogInfo("Scene::GetCameraFrustum => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    cameraProxyId);
          }
       }
 

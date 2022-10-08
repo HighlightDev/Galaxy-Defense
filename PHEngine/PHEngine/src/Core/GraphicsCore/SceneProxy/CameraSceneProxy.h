@@ -4,6 +4,8 @@
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
+#include <memory>
+
 namespace EngineCore
 {
    class ACamera;
@@ -24,7 +26,7 @@ namespace Graphics
    {
       ViewPortInfo mViewPort;
 
-      CameraFrustum mCameraFrustum;
+      std::unique_ptr<CameraFrustum> mCameraFrustum;
 
       glm::vec3 mEyeVector;
 
@@ -42,7 +44,9 @@ namespace Graphics
 
       glm::mat4 GetProjectionMatrix() const;
 
-      const CameraFrustum& GetCameraFrustum() const;
+      bool IsCameraFrustumBuilt() const;
+
+      CameraFrustum GetCameraFrustum() const;
 
       ViewPortInfo GetViewPort() const;
 

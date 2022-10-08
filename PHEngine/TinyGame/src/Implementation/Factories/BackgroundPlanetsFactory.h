@@ -11,15 +11,15 @@ namespace Game
 {
     class SpaceshipActor;
 
-    class AsteroidFactory
-        : public IAsteroidFactory
+    class BackgroundPlanetsFactory
+        : public ISpaceObjectFactory
     {
-        static size_t s_asteroidCounter;
+        static size_t s_backgroundPlanetCounter;
 
     public:
-        AsteroidFactory() = default;
+        BackgroundPlanetsFactory() = default;
 
-        virtual std::shared_ptr<SpaceObjectActor>
+        virtual std::shared_ptr<BackgroundSpaceObjectActor>
         CreateSpaceObject(const std::shared_ptr<::EngineCore::Scene> &scene,
                           const glm::vec3 &translation,
                           const glm::vec3 &rotation,

@@ -22,13 +22,12 @@ namespace EngineCore
    class Scene;
 
    class Actor
-      : public GameObject
-      , public ITickable
-      , public ISerializable
-      , public std::enable_shared_from_this<Actor>
+       : public GameObject,
+         public ITickable,
+         public ISerializable,
+         public std::enable_shared_from_this<Actor>
    {
    protected:
-
       std::shared_ptr<SceneComponent> m_rootComponent;
 
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
@@ -36,7 +35,7 @@ namespace EngineCore
       // Makes all primitive components visible or not
       std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
-      /* If Actor is disabled 
+      /* If Actor is disabled
        - turn off all calculations for him and physics simulation
        also it won't be visible
        */
@@ -55,9 +54,9 @@ namespace EngineCore
       std::weak_ptr<Scene> mSceneOwner;
 
       std::vector<std::shared_ptr<EngineCore::Component>> m_allComponents;
-   public:
 
-      Actor(const std::string& gameObjectName, const std::shared_ptr<EngineCore::SceneComponent>& rootComponent);
+   public:
+      Actor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
       virtual ~Actor();
 
@@ -66,9 +65,9 @@ namespace EngineCore
       // Tick is executed on game thread
       virtual void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual void ChangeTweenerState(const std::string& tweenerName, const std::string& stateName);
+      virtual void ChangeTweenerState(const std::string &tweenerName, const std::string &stateName);
 
       virtual void OnLevelInit();
 
@@ -94,7 +93,7 @@ namespace EngineCore
 
       bool IsEnabled() const;
 
-      void SetParent(const std::weak_ptr<Actor>& actor);
+      void SetParent(const std::weak_ptr<Actor> &actor);
 
       void SetScene(std::weak_ptr<Scene> sceneOwner);
 
@@ -112,13 +111,13 @@ namespace EngineCore
 
       std::shared_ptr<Actor> GetChildByObjectId(const uint64_t id) const;
 
-      void RemoveChild(const std::shared_ptr<Actor>& actor);
+      void RemoveChild(const std::shared_ptr<Actor> &actor);
 
       virtual void AttachTweener(std::shared_ptr<Tweener> tweener);
 
-      const std::vector<std::shared_ptr<Tweener>>& GetTweeners() const;
+      const std::vector<std::shared_ptr<Tweener>> &GetTweeners() const;
 
-      std::shared_ptr<Tweener> GetTweenerByName(const std::string& name) const;
+      std::shared_ptr<Tweener> GetTweenerByName(const std::string &name) const;
 
       std::shared_ptr<EngineCore::SceneComponent> GetRootComponent() const;
 
@@ -138,15 +137,16 @@ namespace EngineCore
 
       template <typename ComponentT>
       typename std::enable_if<std::is_base_of<Component, ComponentT>::value,
-         std::vector<std::shared_ptr<ComponentT>>>::type GetComponentsByType()
+                              std::vector<std::shared_ptr<ComponentT>>>::type
+      GetComponentsByType()
       {
          std::vector<std::shared_ptr<ComponentT>> result;
 
-         for (const auto& comp : m_allComponents)
+         for (const auto &comp : m_allComponents)
          {
-            auto seekComp = std::dynamic_pointer_cast<ComponentT>(comp);
+            const auto seekComp = std::dynamic_pointer_cast<ComponentT>(comp);
 
-            if (seekComp != nullptr)
+            if (seekComp)
             {
                result.push_back(seekComp);
             }
@@ -157,4 +157,3 @@ namespace EngineCore
    };
 
 }
-

@@ -1,6 +1,7 @@
 #include "CameraSceneProxy.h"
 
 #include "Core/GameCore/ACamera.h"
+#include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineCore;
@@ -8,28 +9,30 @@ using namespace EngineMath;
 
 namespace Graphics
 {
-   CameraSceneProxy::CameraSceneProxy(const ACamera* camera)
-      : SceneProxyBase(true)
-      , mViewPort(camera->GetViewPort())
-      , mEyeVector()
-      , mViewMatrix()
+   CameraSceneProxy::CameraSceneProxy(const ACamera *camera)
+       : SceneProxyBase(true),
+         mViewPort(camera->GetViewPort()),
+         mCameraFrustum(),
+         mEyeVector(),
+         mViewMatrix()
    {
-      const auto& perspectiveInfo = camera->GetViewPerspectiveInfo();
+      const auto &perspectiveInfo = camera->GetViewPerspectiveInfo();
       mProjectionMatrix = glm::perspective<float>(perspectiveInfo.FoV, perspectiveInfo.AspectRatio, perspectiveInfo.NearPlane, perspectiveInfo.FarPlane);
    }
 
-   void CameraSceneProxy::UpdateViewMatrix(const glm::mat4& viewMatrix)
+   void CameraSceneProxy::UpdateViewMatrix(const glm::mat4 &viewMatrix)
    {
       mViewMatrix = viewMatrix;
       RebuildCameraFrustum();
    }
 
-   void CameraSceneProxy::UpdateEyeVector(const glm::vec3& eyeVector)
+   void CameraSceneProxy::UpdateEyeVector(const glm::vec3 &eyeVector)
    {
       mEyeVector = eyeVector;
    }
 
-   void CameraSceneProxy::UpdateProjectionMatrix(const glm::mat4& projectionMatrix) {
+   void CameraSceneProxy::UpdateProjectionMatrix(const glm::mat4 &projectionMatrix)
+   {
       mProjectionMatrix = projectionMatrix;
       RebuildCameraFrustum();
    }
@@ -44,18 +47,30 @@ namespace Graphics
       return mEyeVector;
    }
 
-   glm::mat4 CameraSceneProxy::GetProjectionMatrix() const {
+   glm::mat4 CameraSceneProxy::GetProjectionMatrix() const
+   {
       return mProjectionMatrix;
    }
 
-   const CameraFrustum& CameraSceneProxy::GetCameraFrustum() const
+   bool CameraSceneProxy::IsCameraFrustumBuilt() const
    {
-      return mCameraFrustum;
+      return mCameraFrustum != nullptr;
+   }
+
+   CameraFrustum CameraSceneProxy::GetCameraFrustum() const
+   {
+      assert(mCameraFrustum);
+      return *mCameraFrustum;
    }
 
    void CameraSceneProxy::RebuildCameraFrustum()
    {
-      mCameraFrustum.ConstructFromViewProjectionMatrix(mViewMatrix, mProjectionMatrix);
+      if (!mCameraFrustum)
+      {
+         mCameraFrustum = std::make_unique<CameraFrustum>();
+      }
+
+      mCameraFrustum->ConstructFromViewProjectionMatrix(mViewMatrix, mProjectionMatrix);
    }
 
    ViewPortInfo CameraSceneProxy::GetViewPort() const

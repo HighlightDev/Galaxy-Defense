@@ -6,12 +6,14 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
+#include <optional>
 
 #include "Core/GameCore/GameObject.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
 
@@ -42,6 +44,8 @@ namespace EngineCore
 
       ViewPerspectiveInfo mViewPerspectiveInfo;
 
+      bool bTransformationDirty = false;
+
    protected:
 
       std::weak_ptr<Scene> mScene;
@@ -65,8 +69,6 @@ namespace EngineCore
       float mYaw;
 
       float mPitch;
-
-      bool bTransformationDirty = false;
 
       eCameraType m_cameraType;
 
@@ -138,9 +140,17 @@ namespace EngineCore
 
       glm::vec4 GetConvertedToClippedSpacePosition(const glm::vec4& worldPosition);
 
+      std::optional<CameraFrustum> GetCameraFrustum() const;
+
+      void OnCameraSceneProxyDataUpdated();
+
    protected:
 
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
+
+      virtual void OnTransformationUpdated();
+
+      void SetTransformationDirty();
 
    private:
 

@@ -1,4 +1,5 @@
 #include "EngineMath.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -103,5 +104,34 @@ namespace EngineMath
    {
       static constexpr float radToDeg = 180.f / 3.14159f;
       return glm::eulerAngles(rotationQuat) * radToDeg;
+   }
+
+   std::optional<glm::vec3> TestPlaneToPlaneToPlane(const glm::vec4 &plane1, const glm::vec4 &plane2, const glm::vec4 &plane3)
+   {
+      std::optional<glm::vec3> result = std::nullopt;
+      glm::vec3 N1(plane1);
+      glm::vec3 N2(plane2);
+      glm::vec3 N3(plane3);
+
+      glm::vec3 n2n3 = glm::cross(N2, N3);
+      glm::vec3 n3n1 = glm::cross(N3, N1);
+      glm::vec3 n1n2 = glm::cross(N1, N2);
+
+      float quotient = glm::dot(N1, n2n3);
+
+      if (glm::abs(quotient) > 0.000001f)
+      {
+         quotient = -1.0f / quotient;
+         n2n3 *= plane1.w;
+         n3n1 *= plane2.w;
+         n1n2 *= plane3.w;
+         glm::vec3 potentialVertex = n2n3;
+         potentialVertex += n3n1;
+         potentialVertex += n1n2;
+         potentialVertex *= quotient;
+         result = potentialVertex;
+      }
+
+      return result;
    }
 }

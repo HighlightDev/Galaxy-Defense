@@ -4,6 +4,7 @@ set(
 	src/IntroLevel.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
+	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
 	src/Implementation/Controllers/CombatController.h
 	src/Implementation/Controllers/SceneController.h
@@ -19,6 +20,7 @@ set(
 	src/Implementation/Factories/FreezingMissileFactory.h
 	src/Implementation/Factories/BlackHoleMissileFactory.h
 	src/Implementation/Factories/AsteroidFactory.h
+	src/Implementation/Factories/BackgroundPlanetsFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
 	src/Implementation/Modifiers/FreezingModifier.h
@@ -30,6 +32,7 @@ set(
 	src/Implementation/Actors/WeakSpaceshipActor.h
 	src/Implementation/Actors/SpaceObjectActor.h
 	src/Implementation/Actors/AsteroidActor.h
+	src/Implementation/Actors/BackgroundSpaceObjectActor.h
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
@@ -53,6 +56,7 @@ set(
 	src/Implementation/Factories/FreezingMissileFactory.cpp
 	src/Implementation/Factories/BlackHoleMissileFactory.cpp
 	src/Implementation/Factories/AsteroidFactory.cpp
+	src/Implementation/Factories/BackgroundPlanetsFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
 	src/Implementation/Modifiers/FreezingModifier.cpp
 	src/Implementation/Actors/MissileActor.cpp
@@ -63,6 +67,7 @@ set(
 	src/Implementation/Actors/WeakSpaceshipActor.cpp
 	src/Implementation/Actors/SpaceObjectActor.cpp
 	src/Implementation/Actors/AsteroidActor.cpp
+	src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp

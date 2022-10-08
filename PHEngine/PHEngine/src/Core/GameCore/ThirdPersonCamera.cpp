@@ -53,11 +53,6 @@ namespace EngineCore
 
       float clampedDeltaTime = std::max(DeltaTime, 0.03f);
 
-      if (bTransformationDirty)
-      {
-         bTransformationDirty = false;
-      }
-
       if (m_bThirdPersonTargetTransformationDirty)
       {
          m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
@@ -65,7 +60,7 @@ namespace EngineCore
          glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
          m_actualTargetVector = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
 
-         bTransformationDirty = true;
+         SetTransformationDirty();
 
          // If camera is at final position
          if (EngineMath::CompareFloats(m_lerpTimeElapsed, m_timeForInterpolation))
@@ -79,7 +74,7 @@ namespace EngineCore
    void ThirdPersonCamera::SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera)
    {
       m_maxDistanceFromTargetToCamera = maxDistanceFromTargetToCamera;
-      bTransformationDirty = true;
+      SetTransformationDirty();
    }
 
    float ThirdPersonCamera::GetMaxDistanceFromTargetToCamera() const
@@ -117,7 +112,7 @@ namespace EngineCore
    void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetToCamera)
    {
       m_distanceFromTargetToCamera = distanceFromTargetToCamera;
-      bTransformationDirty = true;
+      SetTransformationDirty();
    }
 
    void ThirdPersonCamera::Zoom(eMouseScrollDirection zoomDirection, float zoomPower)

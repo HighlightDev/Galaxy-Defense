@@ -44,6 +44,11 @@ namespace Graphics
          return false;
       }
 
+      bool BillboardSceneProxy::IsFrustumCullTestNeeded() const
+      {
+         return false;
+      }
+
       eMeshFacing BillboardSceneProxy::GetMeshFrontFace() const
       {
          return eMeshFacing::COUNTER_CLOCK_WISE;

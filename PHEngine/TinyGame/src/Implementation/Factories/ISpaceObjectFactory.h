@@ -10,9 +10,19 @@ namespace EngineCore
 
 namespace Game
 {
+    class BackgroundSpaceObjectActor;
     class SpaceObjectActor;
 
     class ISpaceObjectFactory
+    {
+        virtual std::shared_ptr<BackgroundSpaceObjectActor>
+        CreateSpaceObject(const std::shared_ptr<::EngineCore::Scene> &scene,
+                          const glm::vec3 &translation,
+                          const glm::vec3 &rotation,
+                          const glm::vec3 &scale) = 0;
+    };
+
+    class IAsteroidFactory
     {
         virtual std::shared_ptr<SpaceObjectActor>
         CreateSpaceObject(const std::shared_ptr<::EngineCore::Scene> &scene,

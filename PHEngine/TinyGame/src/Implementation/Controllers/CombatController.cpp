@@ -13,12 +13,10 @@
 #include "Implementation/Factories/FreezingMissileFactory.h"
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/AsteroidFactory.h"
+#include "Implementation/Factories/BackgroundPlanetsFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
-
-#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+#include "Implementation/SpaceSceneCamera.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -32,7 +30,8 @@ namespace Game
     CombatController::CombatController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
           mEnemies(),
-          mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50, 50, 100)))
+          mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50, 50, 100))),
+          mCameraVisibilityArea()
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
         PhysicsCollisionEvent::GetInstance()->AddListener(this);
@@ -48,12 +47,65 @@ namespace Game
     {
     }
 
-    void CreateBillboard(const std::shared_ptr<Scene> &sceneSp);
+    void CombatController::OnCameraTransformChanged(ACamera *eventSrc)
+    {
+        const auto &nEyeDir = glm::normalize(eventSrc->GetEyeSpaceForwardVector());
+        const auto &eyePos = eventSrc->GetEyeVector();
+
+        const auto planePosition = eyePos + nEyeDir * 100.0f;
+        const auto planeNormal = glm::vec3(0, 1, 0);
+        glm::vec4 backgroundPlane = glm::vec4(planeNormal, -glm::dot(planeNormal, planePosition));
+
+        const auto cameraFrustumOpt = eventSrc->GetCameraFrustum();
+
+        if (cameraFrustumOpt)
+        {
+            const auto cameraFrustum = cameraFrustumOpt.value();
+            const auto leftPlane = cameraFrustum.GetPlaneByName(eFrustumPlaneName::Left);
+            const auto rightPlane = cameraFrustum.GetPlaneByName(eFrustumPlaneName::Right);
+            const auto topPlane = cameraFrustum.GetPlaneByName(eFrustumPlaneName::Top);
+            const auto bottomPlane = cameraFrustum.GetPlaneByName(eFrustumPlaneName::Bottom);
+
+            auto ltb = EngineMath::TestPlaneToPlaneToPlane(leftPlane, topPlane, backgroundPlane);
+            auto lbb = EngineMath::TestPlaneToPlaneToPlane(leftPlane, bottomPlane, backgroundPlane);
+            auto rtb = EngineMath::TestPlaneToPlaneToPlane(rightPlane, topPlane, backgroundPlane);
+            auto rbb = EngineMath::TestPlaneToPlaneToPlane(rightPlane, bottomPlane, backgroundPlane);
+
+            if (ltb.has_value() && lbb.has_value() && rtb.has_value() && rbb.has_value())
+            {
+                glm::vec3 ltbPos = ltb.value();
+                glm::vec3 lbbPos = lbb.value();
+                glm::vec3 rtbPos = rtb.value();
+                glm::vec3 rbbPos = rbb.value();
+
+                float minX, maxX, minZ, maxZ;
+                float y = planePosition.y;
+                minX = glm::min(ltbPos.x, glm::min(lbbPos.x, glm::min(rtbPos.x, rbbPos.x)));
+                maxX = glm::max(ltbPos.x, glm::max(lbbPos.x, glm::max(rtbPos.x, rbbPos.x)));
+                minZ = glm::min(ltbPos.z, glm::min(lbbPos.z, glm::min(rtbPos.z, rbbPos.z)));
+                maxZ = glm::max(ltbPos.z, glm::max(lbbPos.z, glm::max(rtbPos.z, rbbPos.z)));
+
+                glm::vec3 origin(minX + ((maxX - minX) * 0.5f), y, minZ + ((maxZ - minZ) * 0.5f));
+                glm::vec3 halfExtent((maxX - minX) * 0.5f, 5.0f, (maxZ - minZ) * 0.5f);
+
+                bool bSpawn = !mCameraVisibilityArea;
+                mCameraVisibilityArea = std::make_unique<BoundingBox>(origin, halfExtent);
+
+                if (bSpawn)
+                {
+                    mBackgroundSpaceObjects.back()->TriggerSpawn(glm::vec3(origin.x, y, maxZ)); // todo: this is a terrible solution
+                }
+            }
+        }
+    }
 
     void CombatController::OnLevelInit()
     {
         if (const auto &sceneSp = mScene.lock())
         {
+            const auto &spaceCamera = std::static_pointer_cast<SpaceSceneCamera>(sceneSp->GetMainCamera());
+            spaceCamera->AddCameraTransformObserver(this);
+
             CreateWeaponBulletPool(sceneSp);
 
             WeakSpaceShipFactory spaceShipFactory;
@@ -70,21 +122,18 @@ namespace Game
 
             CreateAsteroidsPool(sceneSp);
 
-            CreateBillboard(sceneSp);
+            CreateBackgroundSpaceObjectsPool(sceneSp);
         }
     }
 
-    void CreateBillboard(const std::shared_ptr<Scene> &sceneSp)
+    void CombatController::CreateBackgroundSpaceObjectsPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        const auto billboardActor = std::make_shared<Actor>("Billboard Actor", std::make_shared<SceneComponent>("BillboardActor_rootComponent",
-                                                                                                                glm::vec3(0), glm::vec3(), glm::vec3(1)));
-
-        auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-        BillboardComponentData data("c_billboardMesh", 25.0f, "planet_1.png", glm::vec3(0.0f, -100.0f, 80.0f), glm::vec3(1.0f));
-        const auto &billboardComponent = sceneSp->CreateComponent_GameThread(billboardComponentCreator, data);
-        billboardActor->AddComponent(billboardComponent);
-
-        sceneSp->AddActor(billboardActor);
+        BackgroundPlanetsFactory factory;
+        const auto backgroundSpaceObject = factory.CreateSpaceObject(sceneSp,
+                                                                     glm::vec3(),
+                                                                     glm::vec3(),
+                                                                     glm::vec3(1));
+        mBackgroundSpaceObjects.emplace_back(backgroundSpaceObject);
     }
 
     void CombatController::OnPostLevelInit()
@@ -106,6 +155,11 @@ namespace Game
         for (const auto &asteroid : mSpaceObjectsPool)
         {
             asteroid->TriggerSpawn(GenRandomPositionForSpaceObject());
+        }
+
+        for (const auto &backgroundObject : mBackgroundSpaceObjects)
+        {
+            backgroundObject->SetIsEnabled(false);
         }
     }
 
@@ -307,6 +361,25 @@ namespace Game
                 spaceObject->TriggerSpawn(GenRandomPositionForSpaceObject());
             }
         }
+
+        if (mCameraVisibilityArea)
+        {
+            for (const auto &backgroundObject : mBackgroundSpaceObjects)
+            {
+
+                if (eSpaceObjectActivityState::IDLE == backgroundObject->GetActivityState())
+                {
+                    backgroundObject->TriggerSpawn(GetRandomPositionForBackgroundSpaceObject());
+                }
+                else if (eSpaceObjectActivityState::ACTIVE == backgroundObject->GetActivityState())
+                {
+                    if (!backgroundObject->IsInsideLevel(*mCameraVisibilityArea))
+                    {
+                        backgroundObject->TriggerDisabled();
+                    }
+                }
+            }
+        }
     }
 
     glm::vec3 CombatController::GenRandomPositionForSpaceObject() const
@@ -343,6 +416,11 @@ namespace Game
                              { return ((eSpaceshipActivityState::ACTIVE == existingEnemy->GetSpaceshipActivityState()) && ((glm::length2(existingEnemy->GetWorldPosition() - potentialPosition) < min_squared_radius))); }));
 
         return potentialPosition;
+    }
+
+    glm::vec3 CombatController::GetRandomPositionForBackgroundSpaceObject() const
+    {
+        return glm::vec3(mCameraVisibilityArea->GetOrigin().x, mCameraVisibilityArea->GetOrigin().y, mCameraVisibilityArea->GetMax().z);
     }
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)

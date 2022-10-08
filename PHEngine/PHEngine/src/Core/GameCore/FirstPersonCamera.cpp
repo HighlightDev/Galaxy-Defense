@@ -120,6 +120,7 @@ namespace EngineCore
          m_firstPersonCameraPosition += GetEyeSpaceRightVector() * m_cameraMoveSpeed;
          break;
       }
+      SetTransformationDirty();
    }
 
    void FirstPersonCamera::CollectDataForSerialization(SerializeDataContainer &dataContainer)
@@ -152,5 +153,7 @@ namespace EngineCore
       default:
          break;
       }
+
+      SetTransformationDirty();
    }
 }

@@ -10,14 +10,17 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Event/eTextEventEnums.h"
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
+#include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "TextHandler.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
+#include <optional>
 
 using namespace Thread;
 using namespace Event;
 using namespace Resources;
+using namespace Graphics;
 
 namespace Graphics
 {
@@ -156,6 +159,8 @@ namespace EngineCore
 
       void CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
 
+      bool IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const;
+
       void PrimitiveSceneProxyDeleted_OnRenderThread(size_t primitiveSceneProxyIndex);
 
       void PrimitiveSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy);
@@ -187,6 +192,8 @@ namespace EngineCore
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 
       glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition);
+
+      std::optional<CameraFrustum> GetCameraFrustum(const size_t cameraProxyId);
 
 #if DEBUG
       void UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData);

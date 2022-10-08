@@ -10,6 +10,15 @@ using namespace EngineCore;
 
 namespace Graphics
 {
+   enum class eFrustumPlaneName
+   {
+      Left,
+      Right,
+      Bottom,
+      Top,
+      Near,
+      Far
+   };
 
    class CameraFrustum
    {
@@ -30,6 +39,8 @@ namespace Graphics
       bool CollidesWithBoundingBox(const BoundingBox& boundingBox) const;
 
       static CameraFrustum GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+
+      glm::vec4 GetPlaneByName(const eFrustumPlaneName planeName) const;
    };
 
 }

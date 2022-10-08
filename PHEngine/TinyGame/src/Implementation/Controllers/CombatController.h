@@ -5,6 +5,7 @@
 #include "Implementation/Actors/MissileActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
+#include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 
@@ -18,6 +19,7 @@ namespace EngineCore
 {
     class Scene;
     class Actor;
+    class ACamera;
 }
 
 namespace Game
@@ -26,7 +28,8 @@ namespace Game
 
     class CombatController : public ITickable,
                              public MainPlayerActionEvent,
-                             public PhysicsCollisionEvent
+                             public PhysicsCollisionEvent,
+                             public ICameraTransformChangeNotifyable
     {
         std::weak_ptr<Scene> mScene;
 
@@ -40,11 +43,15 @@ namespace Game
 
         std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
 
+        std::vector<std::shared_ptr<BackgroundSpaceObjectActor>> mBackgroundSpaceObjects;
+
         float mCoolDownTime = 0.2f;
 
         bool bIsCoolDownInProgress = false;
 
         BoundingBox mLevelBounds;
+
+        std::unique_ptr<BoundingBox> mCameraVisibilityArea; // todo: prepare a better solution
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -68,10 +75,14 @@ namespace Game
 
         virtual void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
 
+        virtual void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
+
     private:
         void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);
 
-        void CreateAsteroidsPool(const std::shared_ptr<Scene>& sceneSp);
+        void CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp);
+
+        void CreateBackgroundSpaceObjectsPool(const std::shared_ptr<Scene> &sceneSp);
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
@@ -89,7 +100,6 @@ namespace Game
 
         glm::vec3 GenRandomPositionForSpaceship() const;
         glm::vec3 GenRandomPositionForSpaceObject() const;
-
-        void CreateParallaxBackground();
+        glm::vec3 GetRandomPositionForBackgroundSpaceObject() const;
     };
 }
