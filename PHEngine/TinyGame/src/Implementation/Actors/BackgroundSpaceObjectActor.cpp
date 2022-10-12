@@ -22,8 +22,6 @@ namespace Game
     {
         mActivityState = eSpaceObjectActivityState::ACTIVE;
         SetIsEnabled(true);
-        GetMovementComponent()->SetReferenceSpeed(50);
-        GetMovementComponent()->SetCurrentSpeedToReferenceValue();
         GetMovementComponent()->Teleport(position);
     }
 

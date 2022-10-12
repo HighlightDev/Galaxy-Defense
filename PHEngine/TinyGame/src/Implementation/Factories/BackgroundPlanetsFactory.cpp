@@ -47,7 +47,9 @@ namespace Game
     BackgroundPlanetsFactory::CreateSpaceObject(const std::shared_ptr<::EngineCore::Scene> &scene,
                                                 const glm::vec3 &translation,
                                                 const glm::vec3 &rotation,
-                                                const glm::vec3 &scale)
+                                                const glm::vec3 &scale,
+                                                const std::string &imageName,
+                                                const float billboardSize)
     {
         const auto &backgroundPlanetIndexStr = std::to_string(s_backgroundPlanetCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_backgroundPlanet_root_" + backgroundPlanetIndexStr,
@@ -56,14 +58,14 @@ namespace Game
         scene->AddActor(a_backgroundPlanet);
 
         auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-        BillboardComponentData data("c_billboardMesh", 25.0f, "space_nebula_1.png", glm::vec3(0.0f), glm::vec3(1.0f));
+        BillboardComponentData data("c_billboard_" + backgroundPlanetIndexStr, billboardSize, imageName, glm::vec3(0.0f), glm::vec3(1.0f));
         const auto &billboardComponent = scene->CreateComponent_GameThread(billboardComponentCreator, data);
         a_backgroundPlanet->AddComponent(billboardComponent);
 
         MovementComponentData d_movement("c_backgroundPlanet_no_phys_movement_" + backgroundPlanetIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
-        c_movement->SetReferenceSpeed(5.5f);
+        c_movement->SetReferenceSpeed(8.5f);
         c_movement->SetCurrentSpeedToReferenceValue();
         c_movement->SetDirection(glm::vec3(0.0f, .0f, -1.0f));
         a_backgroundPlanet->AddComponent(c_movement);

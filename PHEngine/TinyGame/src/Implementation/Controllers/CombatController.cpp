@@ -35,6 +35,10 @@ namespace Game
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
         PhysicsCollisionEvent::GetInstance()->AddListener(this);
+
+        mBackgroundPlanetsSpawnTimer.SetIntervalMs(1000);
+        mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
+        mBackgroundPlanetsSpawnTimer.SetCallback(std::bind(&CombatController::OnBackgroundPlanetsSpawnTimerTimeout, this));
     }
 
     CombatController::~CombatController()
@@ -49,10 +53,10 @@ namespace Game
 
     void CombatController::OnCameraTransformChanged(ACamera *eventSrc)
     {
-        const auto &nEyeDir = glm::normalize(eventSrc->GetEyeSpaceForwardVector());
+        const auto &nForwardDir = glm::normalize(eventSrc->GetEyeSpaceForwardVector());
         const auto &eyePos = eventSrc->GetEyeVector();
 
-        const auto planePosition = eyePos + nEyeDir * 100.0f;
+        const auto planePosition = eyePos + nForwardDir * 100.0f;
         const auto planeNormal = glm::vec3(0, 1, 0);
         glm::vec4 backgroundPlane = glm::vec4(planeNormal, -glm::dot(planeNormal, planePosition));
 
@@ -86,14 +90,15 @@ namespace Game
                 maxZ = glm::max(ltbPos.z, glm::max(lbbPos.z, glm::max(rtbPos.z, rbbPos.z)));
 
                 glm::vec3 origin(minX + ((maxX - minX) * 0.5f), y, minZ + ((maxZ - minZ) * 0.5f));
-                glm::vec3 halfExtent((maxX - minX) * 0.5f, 5.0f, (maxZ - minZ) * 0.5f);
+                glm::vec3 halfExtent((maxX - minX) * 0.5f, 350.0f, (maxZ - minZ) * 0.5f);
 
-                bool bSpawn = !mCameraVisibilityArea;
                 mCameraVisibilityArea = std::make_unique<BoundingBox>(origin, halfExtent);
 
-                if (bSpawn)
+                const auto &nRightDir = glm::normalize(eventSrc->GetEyeSpaceRightVector());
+                const auto nUpDir = glm::normalize(glm::cross(nRightDir, nForwardDir));
+                for (const auto &backgrounObject : mBackgroundSpaceObjects)
                 {
-                    mBackgroundSpaceObjects.back()->TriggerSpawn(glm::vec3(origin.x, y, maxZ)); // todo: this is a terrible solution
+                    backgrounObject->GetMovementComponent()->SetDirection(nUpDir);
                 }
             }
         }
@@ -129,11 +134,12 @@ namespace Game
     void CombatController::CreateBackgroundSpaceObjectsPool(const std::shared_ptr<Scene> &sceneSp)
     {
         BackgroundPlanetsFactory factory;
-        const auto backgroundSpaceObject = factory.CreateSpaceObject(sceneSp,
-                                                                     glm::vec3(),
-                                                                     glm::vec3(),
-                                                                     glm::vec3(1));
-        mBackgroundSpaceObjects.emplace_back(backgroundSpaceObject);
+
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_1.png", 15.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_2.png", 5.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_3.png", 7.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_4.png", 10.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_5.png", 12.0f));
     }
 
     void CombatController::OnPostLevelInit()
@@ -159,8 +165,10 @@ namespace Game
 
         for (const auto &backgroundObject : mBackgroundSpaceObjects)
         {
-            backgroundObject->SetIsEnabled(false);
+            backgroundObject->TriggerDisabled();
         }
+
+        mBackgroundPlanetsSpawnTimer.StartTimer();
     }
 
     void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
@@ -366,17 +374,29 @@ namespace Game
         {
             for (const auto &backgroundObject : mBackgroundSpaceObjects)
             {
-
-                if (eSpaceObjectActivityState::IDLE == backgroundObject->GetActivityState())
+                if (eSpaceObjectActivityState::ACTIVE == backgroundObject->GetActivityState() && !backgroundObject->IsInsideLevel(*mCameraVisibilityArea))
                 {
-                    backgroundObject->TriggerSpawn(GetRandomPositionForBackgroundSpaceObject());
+                    backgroundObject->TriggerDisabled();
                 }
-                else if (eSpaceObjectActivityState::ACTIVE == backgroundObject->GetActivityState())
+            }
+        }
+    }
+
+    void CombatController::OnBackgroundPlanetsSpawnTimerTimeout()
+    {
+        if (mCameraVisibilityArea)
+        {
+            const auto randomValue = Random::Float();
+            const bool bShouldSpawnBackground = (randomValue >= 0.4f && randomValue <= 0.5f);
+            if (bShouldSpawnBackground)
+            {
+                const float x = mCameraVisibilityArea->GetOrigin().x + mCameraVisibilityArea->GetHalfExtent().x * ((2.0f * Random::Float()) - 1.0f);
+                const auto foundFree = std::find_if(mBackgroundSpaceObjects.begin(), mBackgroundSpaceObjects.end(), [](const auto &object)
+                                                    { return object->GetActivityState() == eSpaceObjectActivityState::IDLE; });
+                if (foundFree != mBackgroundSpaceObjects.end())
                 {
-                    if (!backgroundObject->IsInsideLevel(*mCameraVisibilityArea))
-                    {
-                        backgroundObject->TriggerDisabled();
-                    }
+                    (*foundFree)->TriggerSpawn(glm::vec3(x, mCameraVisibilityArea->GetOrigin().y, mCameraVisibilityArea->GetMax().z));
+                    LogInfo("CombatController::OnBackgroundPlanetsSpawnTimerTimeout => Spawn background planet. Object Id: ", (*foundFree)->GetObjectId());
                 }
             }
         }

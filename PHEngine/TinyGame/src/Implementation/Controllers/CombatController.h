@@ -8,6 +8,7 @@
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Core/GameCore/BoundingBox.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
+#include "Core/CommonCore/Timer.h"
 
 #include <memory>
 #include <utility>
@@ -52,6 +53,8 @@ namespace Game
         BoundingBox mLevelBounds;
 
         std::unique_ptr<BoundingBox> mCameraVisibilityArea; // todo: prepare a better solution
+
+        GameThreadTimer mBackgroundPlanetsSpawnTimer;
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -101,5 +104,7 @@ namespace Game
         glm::vec3 GenRandomPositionForSpaceship() const;
         glm::vec3 GenRandomPositionForSpaceObject() const;
         glm::vec3 GetRandomPositionForBackgroundSpaceObject() const;
+
+        void OnBackgroundPlanetsSpawnTimerTimeout();
     };
 }

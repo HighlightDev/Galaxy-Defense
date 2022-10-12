@@ -12,7 +12,7 @@ namespace Game
     class SpaceshipActor;
 
     class BackgroundPlanetsFactory
-        : public ISpaceObjectFactory
+        : public IBackgroundSpaceObjectFactory
     {
         static size_t s_backgroundPlanetCounter;
 
@@ -23,6 +23,8 @@ namespace Game
         CreateSpaceObject(const std::shared_ptr<::EngineCore::Scene> &scene,
                           const glm::vec3 &translation,
                           const glm::vec3 &rotation,
-                          const glm::vec3 &scale) override;
+                          const glm::vec3 &scale,
+                          const std::string &imageName,
+                          const float billboardSize) override;
     };
 }

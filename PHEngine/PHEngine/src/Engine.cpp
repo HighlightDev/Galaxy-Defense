@@ -14,6 +14,7 @@
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/AudioCore/SoundDevice.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/CommonCore/Timer.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -148,6 +149,8 @@ namespace EngineCore
 
             /* Work Jobs */
             m_interThreadMgr.SpinGameThreadJobs();
+
+            GameThreadTimersHolder::GetInstance()->UpdateTimers();
 
             // This should be executed on game thread
             m_level->TickLevel(mGameThreadDeltaTimeSeconds);
