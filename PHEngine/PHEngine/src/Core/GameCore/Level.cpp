@@ -84,10 +84,18 @@ namespace EngineCore
       const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("arial", 1, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
       mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
       mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
-      mRtTextField->SetPosition(glm::vec2(0.0f, 0.05f));
-      mRtTextField->SetVisibility(true);
-      mGtTextField->SetPosition(glm::vec2(0.0f, 0.1f));
-      mGtTextField->SetVisibility(true);
+
+      if (const auto &rtTextSp = mRtTextField.lock())
+      {
+         rtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
+         rtTextSp->SetVisibility(true);
+      }
+
+      if (const auto &gtTextSp = mGtTextField.lock())
+      {
+         gtTextSp->SetPosition(glm::vec2(0.0f, 0.1f));
+         gtTextSp->SetVisibility(true);
+      }
 #endif
    }
 
@@ -249,14 +257,20 @@ namespace EngineCore
 
    void Level::SetRenderThreadFPSTextValue(const float fps)
    {
-      const auto value = std::to_string(fps);
-      mRtTextField->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
+      if (const auto &rtTextSp = mRtTextField.lock())
+      {
+         const auto value = std::to_string(fps);
+         rtTextSp->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
+      }
    }
 
    void Level::SetGameThreadFPSTextValue(const float fps)
    {
-      const auto value = std::to_string(fps);
-      mGtTextField->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
+      if (const auto &gtTextSp = mGtTextField.lock())
+      {
+         const auto value = std::to_string(fps);
+         gtTextSp->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
+      }
    }
 
 #endif

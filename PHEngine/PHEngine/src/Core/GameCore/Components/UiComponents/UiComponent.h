@@ -49,7 +49,7 @@ namespace EngineCore
 
         void DeleteTextField(const int32_t textFieldId);
 
-        std::shared_ptr<TextField> GetTextFieldById(const int32_t textFieldId) const;
+        std::weak_ptr<TextField> GetTextFieldById(const int32_t textFieldId) const;
 
         const std::vector<std::shared_ptr<TextField>> &GetTextFields() const;
     };

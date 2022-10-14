@@ -69,7 +69,7 @@ namespace EngineCore
         mTextFields.erase(it);
     }
 
-    std::shared_ptr<TextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
+    std::weak_ptr<TextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)

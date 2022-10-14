@@ -36,7 +36,7 @@ namespace Game
         MainPlayerActionEvent::GetInstance()->AddListener(this);
         PhysicsCollisionEvent::GetInstance()->AddListener(this);
 
-        mBackgroundPlanetsSpawnTimer.SetIntervalMs(1000);
+        mBackgroundPlanetsSpawnTimer.SetIntervalMs(2000);
         mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
         mBackgroundPlanetsSpawnTimer.SetCallback(std::bind(&CombatController::OnBackgroundPlanetsSpawnTimerTimeout, this));
     }
@@ -388,6 +388,10 @@ namespace Game
         {
             const auto randomValue = Random::Float();
             const bool bShouldSpawnBackground = (randomValue >= 0.4f && randomValue <= 0.5f);
+
+            static constexpr auto minSpeed = 5.0f, maxSpeed = 15.0f;
+            static constexpr auto minSize = 3.0f, maxSize = 20.0f;
+
             if (bShouldSpawnBackground)
             {
                 const float x = mCameraVisibilityArea->GetOrigin().x + mCameraVisibilityArea->GetHalfExtent().x * ((2.0f * Random::Float()) - 1.0f);
@@ -395,7 +399,13 @@ namespace Game
                                                     { return object->GetActivityState() == eSpaceObjectActivityState::IDLE; });
                 if (foundFree != mBackgroundSpaceObjects.end())
                 {
-                    (*foundFree)->TriggerSpawn(glm::vec3(x, mCameraVisibilityArea->GetOrigin().y, mCameraVisibilityArea->GetMax().z));
+                    const float speed = (Random::Float() * (maxSpeed - minSpeed)) + minSpeed;
+                    const float size = (Random::Float() * (maxSize - minSize)) + minSize;
+                    const auto& foundPlanet = *foundFree;
+                    foundPlanet->TriggerSpawn(glm::vec3(x, mCameraVisibilityArea->GetOrigin().y, mCameraVisibilityArea->GetMax().z));
+                    foundPlanet->GetMovementComponent()->SetReferenceSpeed(speed);
+                    foundPlanet->GetMovementComponent()->SetCurrentSpeedToReferenceValue();
+                    foundPlanet->SetBillboardExtentSize(size);
                     LogInfo("CombatController::OnBackgroundPlanetsSpawnTimerTimeout => Spawn background planet. Object Id: ", (*foundFree)->GetObjectId());
                 }
             }

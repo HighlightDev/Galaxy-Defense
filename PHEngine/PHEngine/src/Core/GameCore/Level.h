@@ -13,8 +13,8 @@ namespace EngineCore
    {
 #ifdef DEBUG
       std::shared_ptr<Actor> mDebugDummyActor;
-      std::shared_ptr<TextField> mRtTextField;
-      std::shared_ptr<TextField> mGtTextField;
+      std::weak_ptr<TextField> mRtTextField;
+      std::weak_ptr<TextField> mGtTextField;
 #endif
 
    protected:

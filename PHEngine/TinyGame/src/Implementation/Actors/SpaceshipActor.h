@@ -33,7 +33,7 @@ namespace Game
 
         size_t mLifePoints;
 
-        std::shared_ptr<TextField> mDamageTextField;
+        std::weak_ptr<TextField> mDamageTextFieldWp;
 
         float mDamageEffectTimePassed;
 
@@ -90,8 +90,6 @@ namespace Game
         bool GetIsDamageReceived() const;
 
         void RestoreLife();
-
-        const std::shared_ptr<TextField> &GetDamageFieldText() const;
 
         eSpaceshipActivityState GetSpaceshipActivityState() const;
 

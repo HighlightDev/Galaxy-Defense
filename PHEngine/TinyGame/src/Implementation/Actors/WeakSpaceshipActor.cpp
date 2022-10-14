@@ -43,9 +43,12 @@ namespace Game
         mIsDamageTextActive = true;
         mDamageTextTimePassed = 0.0f;
 
-        mDamageTextField->SetText(std::to_string(damage));
-        mDamageTextField->SetVisibility(true);
-        mDamageTextField->SetPosition(CalculatePositionForDamageText());
+        if (const auto &dmgTextFieldSp = mDamageTextFieldWp.lock())
+        {
+            dmgTextFieldSp->SetText(std::to_string(damage));
+            dmgTextFieldSp->SetVisibility(true);
+            dmgTextFieldSp->SetPosition(CalculatePositionForDamageText());
+        }
     }
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)

@@ -30,4 +30,9 @@ namespace Game
         mActivityState = eSpaceObjectActivityState::IDLE;
         SetIsEnabled(false);
     }
+
+    void BackgroundSpaceObjectActor::SetBillboardExtentSize(const float size)
+    {
+        mBackgroundSpaceObjectBillboard->SetBillboardExtent(size);
+    }
 }

@@ -22,5 +22,7 @@ namespace Game
         virtual void TriggerSpawn(const glm::vec3 &position) override;
 
         virtual void TriggerDisabled() override;
+
+        void SetBillboardExtentSize(const float size);
     };
 }
