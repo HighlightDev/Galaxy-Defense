@@ -11,7 +11,7 @@ namespace Graphics
 {
 
    class DeferredShadingGBuffer
-      : public FramebufferBundle
+       : public FramebufferBundle
    {
       using RenderTarget = std::shared_ptr<ITexture>;
 
@@ -23,12 +23,11 @@ namespace Graphics
       RenderTarget m_albedoBuffer;
       RenderTarget m_metallicRoughnessBuffer;
 
-      FramebufferObject mFramebuffer;
+      std::shared_ptr<FramebufferObject> mFramebuffer;
 
    public:
-
       // Buffer should be recreated when window size was changed
-      DeferredShadingGBuffer(const ViewPortInfo& viewPortInfo);
+      DeferredShadingGBuffer(const ViewPortInfo &viewPortInfo);
 
       virtual ~DeferredShadingGBuffer();
 
@@ -54,12 +53,15 @@ namespace Graphics
 
       void BindMetallicRoughnessTexture(int32_t slot);
 
-      void CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
-         size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit);
+      std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
+
+      void CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                                   const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit);
+
+      void CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject>& framebufferObjectInstance, const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                               const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit);
 
    private:
-
       void DestroyGBuffer();
    };
 }
-

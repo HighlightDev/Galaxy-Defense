@@ -47,6 +47,9 @@ namespace Graphics
                 std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
+            m_resolvedSceneFramebuffer(std::make_unique<ResolvedSceneFramebuffer>(ViewPortInfo(0, 0,
+                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
             m_deferredLightShader(),
             m_fontShader(),
             mDepthCollectShaderSkeletal(),
@@ -420,11 +423,14 @@ namespace Graphics
             }
          }
 
-         m_gbuffer->UnbindDeferredGBuffer();
+         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       }
 
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy)
       {
+         RenderState<DepthStencilState<false, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
+         renderState.BindRenderState();
+         glDepthMask(false);
          // TODO: Make some check if light source (point or spot light) is too far from current view position
          m_deferredLightShader->ExecuteShader();
 
@@ -512,6 +518,7 @@ namespace Graphics
          m_deferredLightShader->StopShader();
 
          glDisable(GL_CULL_FACE);
+         glDepthMask(true);
       }
 
       void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::shared_ptr<SceneView> sceneView)
@@ -524,12 +531,18 @@ namespace Graphics
          auto cameraProxy = sceneView->GetCameraProxy();
          auto cameraViewPort = cameraProxy->GetViewPort();
 
-         m_gbuffer->CopyFramebufferData(cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height,
-                                        cameraViewPort.OriginX, cameraViewPort.OriginY, cameraViewPort.Width, cameraViewPort.Height, GL_DEPTH_BUFFER_BIT);
+         const auto originX = cameraViewPort.OriginX,
+                    originY = cameraViewPort.OriginY,
+                    screenWidth = cameraViewPort.Width,
+                    screenHeight = cameraViewPort.Height;
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
-                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
-             renderState;
+         m_gbuffer->CopyFramebufferDataToDstFramebuffer(m_resolvedSceneFramebuffer->GetFramebufferObjectInstance(), originX, originY, screenWidth, screenHeight,
+                                                        originX, originY, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT);
+
+         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(0);
+
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto &proxy : mForwardRenderingProxiesVec)
@@ -546,6 +559,12 @@ namespace Graphics
 
          glDisable(GL_BLEND);
          glDisable(GL_CULL_FACE);
+
+         m_resolvedSceneFramebuffer->UnbindResolvedSceneFramebuffer();
+
+         m_resolvedSceneFramebuffer->CopyFramebufferDataToDefaultFramebuffer(originX, originY, screenWidth, screenHeight,
+                                                                             originX, originY, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
@@ -799,7 +818,7 @@ namespace Graphics
             }
 
 #if DEBUG
-           // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+            // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
 #endif
          }
 

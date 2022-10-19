@@ -6,6 +6,7 @@
 #include <glm/vec3.hpp>
 
 #include "Core/GraphicsCore/Renderer/DeferredShadingGBuffer.h"
+#include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 #include "Core/GraphicsCore/SceneProxy/DirectionalLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/PointLightSceneProxy.h"
 #include "Core/GraphicsCore/SceneProxy/SpotlightSceneProxy.h"
@@ -53,6 +54,8 @@ namespace Graphics
 
          /* G-buffers */
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
+
+         std::unique_ptr<ResolvedSceneFramebuffer> m_resolvedSceneFramebuffer;
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;

@@ -202,4 +202,19 @@ namespace Graphics
          glDeleteRenderbuffers(mRenderBufferId.size(), mRenderBufferId.data());
    }
 
+   void FramebufferObject::BindFramebufferAsReadTarget()
+   {
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, mFramebufferId);
+   }
+
+   void FramebufferObject::BindFramebufferAsDrawTarget()
+   {
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mFramebufferId);
+   }
+
+   void FramebufferObject::BindFramebufferAsReadDrawTarget()
+   {
+      glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+   }
+
 }

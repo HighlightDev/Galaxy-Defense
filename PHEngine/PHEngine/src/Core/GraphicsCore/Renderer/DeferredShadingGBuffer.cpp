@@ -4,7 +4,9 @@ namespace Graphics
 {
    // Buffer should be recreated when window size was changed
    DeferredShadingGBuffer::DeferredShadingGBuffer(const ViewPortInfo &viewPortInfo)
-       : FramebufferBundle(), mViewPortInfo(viewPortInfo)
+       : FramebufferBundle(),
+         mViewPortInfo(viewPortInfo),
+         mFramebuffer(std::make_shared<FramebufferObject>())
    {
       Init();
    }
@@ -97,16 +99,16 @@ namespace Graphics
          m_metallicRoughnessBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(metalllicRoughnessParams);
       }
 
-      mFramebuffer.AddRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
-      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
-      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
-      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
-      mFramebuffer.AddRenderTexture(GL_COLOR_ATTACHMENT3, m_metallicRoughnessBuffer);
+      mFramebuffer->AddRenderTexture(GL_DEPTH_ATTACHMENT, m_depthBuffer);
+      mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT0, m_positionBuffer);
+      mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT1, m_normalBuffer);
+      mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT2, m_albedoBuffer);
+      mFramebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT3, m_metallicRoughnessBuffer);
    }
 
    void DeferredShadingGBuffer::SetFramebuffers()
    {
-      mFramebuffer.CreateFramebuffer();
+      mFramebuffer->CreateFramebuffer();
    }
 
    void DeferredShadingGBuffer::SetRenderbuffers()
@@ -120,8 +122,8 @@ namespace Graphics
 
    void DeferredShadingGBuffer::DestroyGBuffer()
    {
-      mFramebuffer.UnbindFramebuffer();
-      mFramebuffer.CleanUp();
+      mFramebuffer->UnbindFramebuffer();
+      mFramebuffer->CleanUp();
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_depthBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_positionBuffer);
       RenderTargetPool::GetInstance()->TryToFreeMemory(m_normalBuffer);
@@ -131,7 +133,7 @@ namespace Graphics
 
    void DeferredShadingGBuffer::BindDeferredGBuffer()
    {
-      RenderToFBO(mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      RenderToFBO(*mFramebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::UnbindDeferredGBuffer()
@@ -169,13 +171,26 @@ namespace Graphics
       m_metallicRoughnessBuffer->BindTexture(slot);
    }
 
-   void DeferredShadingGBuffer::CopyFramebufferData(size_t srcX, size_t srcY, size_t srcResolutionX, size_t srcResolutionY,
-                                                    size_t dstX, size_t dstY, size_t dstResolutionX, size_t dstResolutionY, int32_t bufferBit)
+   void DeferredShadingGBuffer::CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                                                        const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
    {
-      mFramebuffer.BindFramebuffer(GL_FRAMEBUFFER, true, false);
+      mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
 
       glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
       glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   }
+
+   void DeferredShadingGBuffer::CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject>& framebufferObjectInstance, const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                                                    const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
+   {
+      mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
+
+      framebufferObjectInstance->BindFramebufferAsDrawTarget();
+      glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
+   }
+
+   std::shared_ptr<IFramebufferObject> DeferredShadingGBuffer::GetFramebufferObjectInstance() const 
+   {
+      return mFramebuffer;
    }
 }

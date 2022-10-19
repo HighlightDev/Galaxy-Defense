@@ -36,7 +36,6 @@ namespace Graphics
 
       void WaterPlaneSceneProxy::Init()
       {
-         // m_waterPlaneFramebuffer = std::make_unique<WaterPlaneFramebuffer>();
       }
 
       void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor)

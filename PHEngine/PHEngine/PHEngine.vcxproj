@@ -890,7 +890,6 @@
     <ClInclude Include="src\Core\GraphicsCore\RenderData\StaticMeshRenderData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.h" />
-    <ClInclude Include="src\Core\GameCore\FramebufferImplementation\WaterPlaneFramebuffer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\TextureRendererShader.h" />
     <ClInclude Include="src\Core\GameCore\Event\TEvent.h" />
@@ -1087,7 +1086,6 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\StaticMeshSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GameCore\FramebufferImplementation\WaterPlaneFramebuffer.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\TextureRendererShader.cpp" />
     <ClCompile Include="src\Core\GameCore\Event\TEvent.cpp" />
