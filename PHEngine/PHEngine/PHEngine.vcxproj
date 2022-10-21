@@ -344,6 +344,8 @@
     <None Include="res\shaders\obsolete\waterVS.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Core\GraphicsCore\PostFX\PostFxRenderer.h" />
+    <ClInclude Include="src\Core\GraphicsCore\PostFX\Bloom\BloomPostFxPass.h" />
     <ClInclude Include="src\Core\AudioCore\ErrorHandler.h" />
     <ClInclude Include="src\Core\AudioCore\SoundBuffer.h" />
     <ClInclude Include="src\Core\AudioCore\SoundDevice.h" />
@@ -436,6 +438,7 @@
     <ClInclude Include="src\Core\GameCore\Tweener\Vec3TweenController.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialUnaryNoOperationNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\eAttribArrayIndexName.h" />
+    <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\IFramebufferObject.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\InstancedVertexBufferObject.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryMaterialShaderModule.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\AVertexFactoryShaderModule.h" />
@@ -463,7 +466,9 @@
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\PropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryCompositeShader.h" />
+    <ClInclude Include="src\Core\GraphicsCore\PostFX\IPostFxPass.h" />
     <ClInclude Include="src\Core\GraphicsCore\RenderData\ParticleSystemRenderData.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Renderer\ResolvedSceneFramebuffer.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\ParticleSystemSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\ViewPerspectiveInfo.h" />
     <ClInclude Include="src\Core\IoCore\AudioLoaderCore\AudioResourceInfo.h" />
@@ -963,6 +968,8 @@
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Core\GraphicsCore\PostFX\PostFxRenderer.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\PostFX\Bloom\BloomPostFxPass.cpp" />
     <ClCompile Include="src\Core\AudioCore\ErrorHandler.cpp" />
     <ClCompile Include="src\Core\AudioCore\SoundBuffer.cpp" />
     <ClCompile Include="src\Core\AudioCore\SoundDevice.cpp" />
@@ -1033,6 +1040,7 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialValueNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialEnterNode.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialNodeDecorator.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\Renderer\ResolvedSceneFramebuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\ParticleSystemSceneProxy.cpp" />
     <ClCompile Include="src\Core\IoCore\AudioLoaderCore\SndFileLoader\SndFileLoader.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp" />

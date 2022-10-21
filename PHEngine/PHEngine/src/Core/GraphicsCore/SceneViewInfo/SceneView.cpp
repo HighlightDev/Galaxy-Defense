@@ -17,16 +17,15 @@ namespace Graphics
 
    void SceneView::DoVisibilityTest()
    {
+      if (!mCameraProxy->IsCameraFrustumBuilt())
+         return;
+
+      const auto frustum = mCameraProxy->GetCameraFrustum();
+
       for (const auto &proxy : mPrimitiveProxies)
       {
-         bool bProxyVisible = true;
-
-         if (proxy->IsFrustumCullTestNeeded() && mCameraProxy->IsCameraFrustumBuilt())
-         {
-            bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
-         }
-
-         mVisibilityMap[proxy->GetSceneProxyId()] = bProxyVisible;
+         mVisibilityMap[proxy->GetSceneProxyId()] = proxy->IsFrustumCullTestNeeded() ?
+            frustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) : true;
       }
    }
 
