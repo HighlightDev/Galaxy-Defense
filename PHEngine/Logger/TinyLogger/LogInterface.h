@@ -145,10 +145,10 @@ namespace TinyLogger
    {
       using Clock_t = std::chrono::high_resolution_clock;
       using Duration_t = Clock_t::duration;
-      using Moment_t = Clock_t::time_point;
+      using Moment_t = std::chrono::time_point<std::chrono::system_clock>;
 
       static size_t index;
-      static Clock_t::time_point logStartTimestamp;
+      static Moment_t logStartTimestamp;
 
       template <typename... LogArgs>
       static void Out(const std::string& threadName, LogArgs &&...args)

@@ -4,7 +4,7 @@
 using namespace std::chrono;
 using Clock_t = std::chrono::high_resolution_clock;
 using Duration_t = Clock_t::duration;
-using Moment_t = Clock_t::time_point;
+using Moment_t = std::chrono::time_point<std::chrono::system_clock>;
 
 namespace EngineCore
 {

@@ -672,7 +672,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\ComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\SkyboxComponentData.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\MeshPool.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkyboxComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\PrimitiveComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\Component.h" />
@@ -1047,7 +1046,6 @@
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\PlanarReflectionProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlanarReflectionComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SpotlightSceneProxy.cpp" />

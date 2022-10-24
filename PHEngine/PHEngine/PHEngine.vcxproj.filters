@@ -1299,9 +1299,6 @@
     <ClInclude Include="src\Core\UtilityCore\EngineMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreatorFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\MeshPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2757,9 +2754,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Components\ComponentCreatorFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PlanarReflectionComponent.cpp">

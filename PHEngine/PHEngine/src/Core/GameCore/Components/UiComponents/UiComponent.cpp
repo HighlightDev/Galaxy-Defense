@@ -2,6 +2,8 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 
+#include <algorithm>
+
 namespace EngineCore
 {
     UiComponent::UiComponent(const ComponentData &data)

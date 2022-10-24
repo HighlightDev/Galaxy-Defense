@@ -25,7 +25,7 @@ namespace Graphics
       PostFxRenderer();
       ~PostFxRenderer();
 
-      void Execute
+      void Execute(const std::shared_ptr<ITexture>& sceneColor);
 
    private:
 
