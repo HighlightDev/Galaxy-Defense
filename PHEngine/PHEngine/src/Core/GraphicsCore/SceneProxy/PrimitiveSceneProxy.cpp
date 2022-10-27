@@ -61,5 +61,10 @@ namespace Graphics
          return bTransformInitialized;
       }
 
+      ePrimitiveSortOrder PrimitiveSceneProxy::GetPrimitiveSortOrder() const
+      {
+         return ePrimitiveSortOrder::ORDER_FIRST;
+      }
+
    }
 }

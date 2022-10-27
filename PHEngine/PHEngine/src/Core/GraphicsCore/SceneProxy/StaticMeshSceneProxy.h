@@ -14,8 +14,7 @@ namespace Graphics
    namespace Proxy
    {
 
-      class StaticMeshSceneProxy :
-         public PrimitiveSceneProxy
+      class StaticMeshSceneProxy : public PrimitiveSceneProxy
       {
 
          using Base = PrimitiveSceneProxy;
@@ -23,20 +22,22 @@ namespace Graphics
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
       private:
+         bool mIsDeferredShaded;
 
+      private:
          std::shared_ptr<ShaderType> GetShader() const;
 
          std::shared_ptr<PlanarReflectionShaderType> GetPlanarReflectionShader() const;
 
       public:
-         StaticMeshSceneProxy(const StaticMeshComponent* component);
+         StaticMeshSceneProxy(const StaticMeshComponent *component);
 
          ~StaticMeshSceneProxy();
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
-         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
-
+         virtual void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+         
          virtual bool IsDeferred() const override;
 
          virtual eMeshFacing GetMeshFrontFace() const override;
@@ -46,4 +47,3 @@ namespace Graphics
 
    }
 }
-

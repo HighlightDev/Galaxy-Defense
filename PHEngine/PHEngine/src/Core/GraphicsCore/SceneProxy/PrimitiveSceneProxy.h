@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
+#include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -51,8 +52,6 @@ namespace Graphics
 
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-         bool mIsDeferredShaded{false}; //todo: redo this for all primitive scene proxies
-
       public:
          PrimitiveSceneProxy(const bool isEnabled,
                              const bool isVisible,
@@ -85,6 +84,8 @@ namespace Graphics
          virtual eMeshFacing GetMeshFrontFace() const = 0;
 
          virtual bool IsTransformIntialized() const;
+
+         virtual ePrimitiveSortOrder GetPrimitiveSortOrder() const;
       };
 
    }

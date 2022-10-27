@@ -12,9 +12,9 @@ namespace Graphics
                 component->GetRenderData().m_skin,
                 component->GetRenderData().m_materialShader,
                 component->GetRenderData().m_planarReflectionShader,
-                component->GetRenderData().mMaterialProxy)
+                component->GetRenderData().mMaterialProxy),
+            mIsDeferredShaded(component->GetRenderData().mIsDeferredShaded)
       {
-         mIsDeferredShaded = component->GetRenderData().mIsDeferredShaded;
       }
 
       StaticMeshSceneProxy::~StaticMeshSceneProxy()

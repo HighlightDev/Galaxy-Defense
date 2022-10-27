@@ -69,6 +69,11 @@ namespace Graphics
             mActiveParticlesCount = activeParticlesCount;
         }
 
+        ePrimitiveSortOrder ParticleSystemSceneProxy::GetPrimitiveSortOrder() const
+        {
+            return ePrimitiveSortOrder::ORDER_LAST;
+        }
+
         void ParticleSystemSceneProxy::CopyParticlesRawData(const void *translationBuffer,
                                                             const size_t translationByteChunkSize,
                                                             const void *rotationSizeBuffer,

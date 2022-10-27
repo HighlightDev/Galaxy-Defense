@@ -36,7 +36,7 @@ namespace Game
         MainPlayerActionEvent::GetInstance()->AddListener(this);
         PhysicsCollisionEvent::GetInstance()->AddListener(this);
 
-        mBackgroundPlanetsSpawnTimer.SetIntervalMs(2000);
+        mBackgroundPlanetsSpawnTimer.SetIntervalMs(1500);
         mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
         mBackgroundPlanetsSpawnTimer.SetCallback(std::bind(&CombatController::OnBackgroundPlanetsSpawnTimerTimeout, this));
     }
@@ -135,11 +135,11 @@ namespace Game
     {
         BackgroundPlanetsFactory factory;
 
-        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_1.png", 15.0f));
-        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_2.png", 5.0f));
-        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_3.png", 7.0f));
-        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_4.png", 10.0f));
-        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1), "planet_5.png", 12.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(0.0f, 0.0f, 0.01f), glm::vec3(), glm::vec3(1), "planet_1.png", 15.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(0.0f, 0.0f, 0.02f), glm::vec3(), glm::vec3(1), "planet_2.png", 5.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(0.0f, 0.0f, 0.03f), glm::vec3(), glm::vec3(1), "planet_3.png", 7.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(0.0f, 0.0f, 0.04f), glm::vec3(), glm::vec3(1), "planet_4.png", 10.0f));
+        mBackgroundSpaceObjects.emplace_back(factory.CreateSpaceObject(sceneSp, glm::vec3(0.0f, 0.0f, 0.05f), glm::vec3(), glm::vec3(1), "planet_5.png", 12.0f));
     }
 
     void CombatController::OnPostLevelInit()
@@ -390,7 +390,7 @@ namespace Game
             const bool bShouldSpawnBackground = (randomValue >= 0.4f && randomValue <= 0.5f);
 
             static constexpr auto minSpeed = 5.0f, maxSpeed = 15.0f;
-            static constexpr auto minSize = 3.0f, maxSize = 20.0f;
+            static constexpr auto minSize = 10.0f, maxSize = 20.0f;
 
             if (bShouldSpawnBackground)
             {
@@ -401,7 +401,7 @@ namespace Game
                 {
                     const float speed = (Random::Float() * (maxSpeed - minSpeed)) + minSpeed;
                     const float size = (Random::Float() * (maxSize - minSize)) + minSize;
-                    const auto& foundPlanet = *foundFree;
+                    const auto &foundPlanet = *foundFree;
                     foundPlanet->TriggerSpawn(glm::vec3(x, mCameraVisibilityArea->GetOrigin().y, mCameraVisibilityArea->GetMax().z));
                     foundPlanet->GetMovementComponent()->SetReferenceSpeed(speed);
                     foundPlanet->GetMovementComponent()->SetCurrentSpeedToReferenceValue();
@@ -456,7 +456,9 @@ namespace Game
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
         FreezingMissileFactory freezingMissileFactory;
-        for (size_t i = 0; i < 1; ++i)
+
+        static constexpr auto freezingMissileCount = 1, bombMissileCount = 2, blackHoleMissileCount = 2;
+        for (size_t i = 0; i < freezingMissileCount; ++i)
         {
             const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
                                                                          glm::vec3(0),
@@ -467,7 +469,7 @@ namespace Game
         }
 
         BombMissileFactory bombMissileFactory;
-        for (size_t i = 0; i < 3; ++i)
+        for (size_t i = 0; i < bombMissileCount; ++i)
         {
             const auto &a_missile = bombMissileFactory.CreateMissile(sceneSp,
                                                                      glm::vec3(0),
@@ -478,7 +480,7 @@ namespace Game
         }
 
         BlackHoleMissileFactory blackHoleMissileFactory;
-        for (size_t i = 0; i < 1; ++i)
+        for (size_t i = 0; i < blackHoleMissileCount; ++i)
         {
             const auto &a_missile = blackHoleMissileFactory.CreateMissile(sceneSp,
                                                                           glm::vec3(0),

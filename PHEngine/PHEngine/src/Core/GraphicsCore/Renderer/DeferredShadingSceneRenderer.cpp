@@ -15,6 +15,8 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/GameCore/TextHandler.h"
+#include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -24,18 +26,15 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
 #include <algorithm>
-#include <TinyLogger/LogInterface.h>
 
 using namespace Resources;
 using namespace Common;
 using namespace Graphics;
-using namespace Graphics::Renderer;
 using namespace Graphics::Proxy;
 using namespace Graphics::OpenGL;
 using namespace EngineUtility;
 using namespace EngineCore;
 using namespace IO;
-using namespace TinyLogger;
 
 namespace Graphics
 {
@@ -544,6 +543,9 @@ namespace Graphics
 
          RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
+
+         PrimitiveSorter sorter;
+         sorter.SortPrimitivesByOrder(mForwardRenderingProxiesVec);
 
          for (const auto &proxy : mForwardRenderingProxiesVec)
          {
