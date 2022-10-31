@@ -19,6 +19,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
+#include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
@@ -88,6 +89,8 @@ namespace Graphics
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
          FontHandler mFontHandler;
+
+         std::unique_ptr<PostFxRenderer> mPostFxRenderer;
 
       public:
 

@@ -39,6 +39,8 @@ namespace Graphics
 
         void BindResolvedSceneColorTexture(int32_t slot);
 
+        std::shared_ptr<ITexture> GetResolvedSceneColorTexture() const;
+
         std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
 
         void CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,

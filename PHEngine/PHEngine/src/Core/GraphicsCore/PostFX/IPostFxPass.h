@@ -13,5 +13,7 @@ namespace Graphics
       public:
 
       virtual std::shared_ptr<ITexture> ExecutePostFx(const std::shared_ptr<ITexture>& sceneColorTexture) = 0;
+
+      virtual void CleanUp() = 0;
    };
 }

@@ -1,19 +1,31 @@
 #include "BloomPostFxPass.h"
 
-namespace Graphics 
+namespace Graphics
 {
 
-   BloomPostFxPass::BloomPostFxPass()
+   BloomPostFxPass::BloomPostFxPass(const ViewPortInfo &viewPortInfo)
+       : mBloomFramebuffer(std::make_unique<BloomFramebuffer>(viewPortInfo)),
+         mViewPortInfo(viewPortInfo)
    {
    }
 
    BloomPostFxPass::~BloomPostFxPass()
    {
+      if (mBloomFramebuffer)
+      {
+         mBloomFramebuffer->CleanUp();
+      }
    }
 
-   std::shared_ptr<ITexture> BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture>& sceneColorTexture)
+   std::shared_ptr<ITexture> BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture)
    {
       return nullptr;
+   }
+
+   void BloomPostFxPass::CleanUp()
+   {
+      mBloomFramebuffer->CleanUp();
+      mBloomFramebuffer.reset();
    }
 
 }

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "IPostFxPass.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 #include <unordered_map>
 #include <memory>
+#include <bitset>
 
 namespace Graphics
 {
@@ -18,19 +20,20 @@ namespace Graphics
    class PostFxRenderer
    {
    private:
+      std::bitset<4> mEnabledFxBits;
+
+      ViewPortInfo mViewPortInfo;
 
       std::unordered_map<ePostFxStageIndex, std::shared_ptr<IPostFxPass>> mPostFxStages;
 
    public:
-      PostFxRenderer();
+      PostFxRenderer(const ViewPortInfo &viewPortInfo);
       ~PostFxRenderer();
 
-      void Execute(const std::shared_ptr<ITexture>& sceneColor);
+      void Execute(const std::shared_ptr<ITexture> &sceneColor);
 
    private:
-
       void Init();
    };
 
 }
-

@@ -72,6 +72,9 @@ namespace Graphics
             mPlanarReflectionProxiesVec(),
             mGroupedByShadowAtlasLights(),
             mFontHandler(),
+            mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(0, 0,
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
             SceneViewsVector(),
             PrimitiveProxiesVector(),
             LightProxiesVector(),
@@ -539,7 +542,8 @@ namespace Graphics
                                                         originX, originY, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT);
 
          // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(0);
+         static constexpr int NoClearFlag = 0;
+         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
          RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
@@ -811,6 +815,9 @@ namespace Graphics
 
                if (mForwardRenderingProxiesVec.size())
                   ForwardBasePass_RenderThread(sceneView);
+
+               if (mPostFxRenderer)
+                  mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
 
                GuiTextPass();
             }

@@ -73,6 +73,11 @@ namespace Graphics
         m_resolvedSceneColorBuffer->BindTexture(slot);
     }
 
+    std::shared_ptr<ITexture> ResolvedSceneFramebuffer::GetResolvedSceneColorTexture() const
+    {
+        return m_resolvedSceneColorBuffer;
+    }
+
     void ResolvedSceneFramebuffer::CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
                                                                            const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
     {
