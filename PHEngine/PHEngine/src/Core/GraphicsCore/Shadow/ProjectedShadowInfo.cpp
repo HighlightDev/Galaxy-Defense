@@ -33,7 +33,7 @@ namespace Graphics
       if (!m_shadowFramebuffer && mShadowmapHandler)
       {
          m_shadowFramebuffer = std::make_shared<ShadowFramebuffer>(mShadowmapHandler->GetAtlasResource());
-         m_shadowFramebuffer->UnbindFramebuffer();
+         m_shadowFramebuffer->UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
       }
    }
 

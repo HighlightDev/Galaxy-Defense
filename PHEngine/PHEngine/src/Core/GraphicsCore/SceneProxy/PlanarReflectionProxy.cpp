@@ -37,7 +37,7 @@ namespace Graphics {
 
    void PlanarReflectionProxy::StopRenderingToPlanarReflectionFBO()
    {
-      mPlanarReflectionFBO->UnbindFramebuffer();
+      mPlanarReflectionFBO->UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
    }
 
    void PlanarReflectionProxy::ResolveReflectionRenderTargetSurfaceData() 

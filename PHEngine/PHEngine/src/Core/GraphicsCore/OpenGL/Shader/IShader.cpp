@@ -482,6 +482,11 @@ namespace Graphics
 #endif
       }
 
+      void IShader::AccessAllSubroutineIndices(uint32_t shaderProgramID)
+      {
+
+      }
+
       void IShader::CleanUp(bool bDeleteShaderProgram)
       {
          LogInfo("IShader::CleanUp => shaderProgramID = ", m_shaderProgramID, " bDeleteShaderProgram = ", bDeleteShaderProgram);

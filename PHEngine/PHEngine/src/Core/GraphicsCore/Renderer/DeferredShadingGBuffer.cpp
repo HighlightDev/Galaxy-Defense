@@ -138,8 +138,7 @@ namespace Graphics
 
    void DeferredShadingGBuffer::UnbindDeferredGBuffer()
    {
-
-      UnbindFramebuffer();
+      UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
    }
 
    void DeferredShadingGBuffer::BindDepthTexture(int32_t slot)

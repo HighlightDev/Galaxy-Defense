@@ -12,11 +12,14 @@ namespace Graphics
    {
    }
 
-   void FramebufferBundle::UnbindFramebuffer() const
+   void FramebufferBundle::UnbindFramebuffer(const GLbitfield clearFlag) const
    {
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glDrawBuffer(GL_COLOR_ATTACHMENT0);
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      if (0 != clearFlag)
+      {
+         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      }
    }
 
    void FramebufferBundle::Init()

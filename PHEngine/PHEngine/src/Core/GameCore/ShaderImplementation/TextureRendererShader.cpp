@@ -44,9 +44,9 @@ namespace EngineCore
 
       void TextureRendererShader::SetShaderPredefine() {
 
-         DefineConstant<float>(ShaderType::FragmentShader, "zNearPlane", 1.0f);
-         DefineConstant<float>(ShaderType::FragmentShader, "zFarPlane", 100.0f);
-         Define(ShaderType::FragmentShader, "COLOR");
+         DefineConstant<float>(eShaderType::FragmentShader, "zNearPlane", 1.0f);
+         DefineConstant<float>(eShaderType::FragmentShader, "zFarPlane", 100.0f);
+         Define(eShaderType::FragmentShader, "COLOR");
       }
 
    }

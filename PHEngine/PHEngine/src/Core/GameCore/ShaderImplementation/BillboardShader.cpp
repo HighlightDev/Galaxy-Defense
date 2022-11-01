@@ -42,10 +42,5 @@ namespace EngineCore
          u_texture = GetUniform("billboardTexture", shaderProgramID);
          u_billboardExtent = GetUniform("extent", shaderProgramID);
       }
-
-      void BillboardShader::SetShaderPredefine()
-      {
-      }
-
    }
 }

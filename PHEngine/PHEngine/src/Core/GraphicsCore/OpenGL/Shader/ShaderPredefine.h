@@ -34,16 +34,16 @@ namespace Graphics
 		struct ShaderDefineConstant
          : public ShaderGenericDefineConstant
 		{
-			ShaderType m_ShaderType;
-			ShaderDefineConstant(const std::string& name, const std::string& value, ShaderType shaderType);
+			eShaderType m_ShaderType;
+			ShaderDefineConstant(const std::string& name, const std::string& value, eShaderType shaderType);
 		};
 
       struct ShaderDefine
          : public ShaderGenericDefine
       {
      
-         ShaderType m_ShaderType;
-         ShaderDefine(const std::string& name, const bool isDefined, ShaderType shaderType);
+         eShaderType m_ShaderType;
+         ShaderDefine(const std::string& name, const bool isDefined, eShaderType shaderType);
       };
 	}
 }

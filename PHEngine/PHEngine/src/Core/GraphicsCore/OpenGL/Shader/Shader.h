@@ -29,20 +29,20 @@ namespace Graphics
 
 		protected:
 
-         void LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t* subroutineIndices) const;
+         void LoadSubroutineIndex(const int32_t shaderType, int32_t countIndices, uint32_t* subroutineIndices) const;
 
-         int32_t GetSubroutineIndex(ShaderType shaderType, const std::string& subroutineName) const;
+         uint32_t GetSubroutineIndex(const int32_t shaderType, const std::string& subroutineName) const;
 
          template <typename ValueType>
-         void DefineConstant(ShaderType shaderType, const std::string& name, const ValueType& value)
+         void DefineConstant(eShaderType shaderType, const std::string& name, const ValueType& value)
          {
             std::string formatedValue = MacroConverter<ValueType>::GetValue(value);
             m_defineConstantParameters.emplace_back(ShaderDefineConstant(name, formatedValue, shaderType));
          }
 
-         void Define(ShaderType shaderType, const std::string& name);
+         void Define(eShaderType shaderType, const std::string& name);
 
-         void Undefine(ShaderType shaderType, const std::string& name);
+         void Undefine(eShaderType shaderType, const std::string& name);
 
       private:
 

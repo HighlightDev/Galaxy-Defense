@@ -2,7 +2,11 @@
 
 #include "Core/GraphicsCore/PostFX/IPostFxPass.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "BloomFramebuffer.h"
+#include "Core/GameCore/FramebufferImplementation/BloomFramebuffer.h"
+#include "Core/GameCore/ShaderImplementation/BloomFxShader.h"
+
+using namespace EngineCore::FramebufferImpl;
+using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {
@@ -10,6 +14,7 @@ namespace Graphics
    {
    private:
       std::unique_ptr<BloomFramebuffer> mBloomFramebuffer;
+      std::unique_ptr<BloomFxShader> mBloomFxShader;
 
       ViewPortInfo mViewPortInfo;
 

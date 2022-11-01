@@ -37,6 +37,7 @@ namespace Graphics
             m_shaderProgramID = glCreateProgram();
             LinkShaders();
             AccessAllUniformLocations(m_shaderProgramID);
+            AccessAllSubroutineIndices(m_shaderProgramID);
          }
          else
          {
@@ -75,15 +76,15 @@ namespace Graphics
          {
             for (auto define_it = m_defineConstantParameters.begin(); define_it != m_defineConstantParameters.end(); ++define_it)
             {
-               if (define_it->m_ShaderType & ShaderType::VertexShader)
+               if (define_it->m_ShaderType & eShaderType::VertexShader)
                {
                   vertexConstantPredefine.emplace_back(*define_it);
                }
-               if (define_it->m_ShaderType & ShaderType::FragmentShader)
+               if (define_it->m_ShaderType & eShaderType::FragmentShader)
                {
                   fragmentConstantPredefine.emplace_back(*define_it);
                }
-               if (define_it->m_ShaderType & ShaderType::GeometryShader)
+               if (define_it->m_ShaderType & eShaderType::GeometryShader)
                {
                   geometryConstantPredefine.emplace_back(*define_it);
                }
@@ -91,15 +92,15 @@ namespace Graphics
 
             for (auto define_it = m_defines.begin(); define_it != m_defines.end(); ++define_it)
             {
-               if (define_it->m_ShaderType & ShaderType::VertexShader)
+               if (define_it->m_ShaderType & eShaderType::VertexShader)
                {
                   vertexPredefine.emplace_back(*define_it);
                }
-               if (define_it->m_ShaderType & ShaderType::FragmentShader)
+               if (define_it->m_ShaderType & eShaderType::FragmentShader)
                {
                   fragmentPredefine.emplace_back(*define_it);
                }
-               if (define_it->m_ShaderType & ShaderType::GeometryShader)
+               if (define_it->m_ShaderType & eShaderType::GeometryShader)
                {
                   geometryPredefine.emplace_back(*define_it);
                }
@@ -129,14 +130,14 @@ namespace Graphics
          }
       }
 
-      int32_t Shader::GetSubroutineIndex(ShaderType shaderType, const std::string &subroutineName) const
+      uint32_t Shader::GetSubroutineIndex(const int32_t shaderType, const std::string &subroutineName) const
       {
          return glGetSubroutineIndex(m_shaderProgramID, (GLenum)shaderType, subroutineName.c_str());
       }
 
-      void Shader::LoadSubroutineIndex(ShaderType shaderType, int32_t countIndices, uint32_t *subroutineIndices) const
+      void Shader::LoadSubroutineIndex(const int32_t shaderType, int32_t countIndices, uint32_t *subroutineIndices) const
       {
-         glUniformSubroutinesuiv((int32_t)shaderType, countIndices, subroutineIndices);
+         glUniformSubroutinesuiv((GLenum)shaderType, countIndices, subroutineIndices);
       }
 
 #if DEBUG
@@ -159,12 +160,12 @@ namespace Graphics
 
 #endif
 
-      void Shader::Define(ShaderType shaderType, const std::string &name)
+      void Shader::Define(eShaderType shaderType, const std::string &name)
       {
          m_defines.emplace_back(ShaderDefine(name, true, shaderType));
       }
 
-      void Shader::Undefine(ShaderType shaderType, const std::string &name)
+      void Shader::Undefine(eShaderType shaderType, const std::string &name)
       {
          m_defines.emplace_back(ShaderDefine(name, false, shaderType));
       }

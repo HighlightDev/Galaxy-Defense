@@ -45,7 +45,7 @@ namespace EngineCore
 
       void PointLightDepthCollectShader::SetShaderPredefine()
       {
-         DefineConstant<int32_t>(ShaderType::GeometryShader, "CubemapFaces", 6);
+         DefineConstant<int32_t>(eShaderType::GeometryShader, "CubemapFaces", 6);
       }
 
    }

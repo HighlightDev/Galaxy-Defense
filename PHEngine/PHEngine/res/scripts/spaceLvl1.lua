@@ -32,7 +32,16 @@ function CreateTestLevel(host)
 	,asteroid.fbx
 	,explosion1.ogg
 	,piano-loop2.wav
+	,SciFiPanels1_albedo.jpg
+	,SciFiPanels1_height.jpg
 	,planet_1.png
+	,planet_2.png
+	,planet_3.png
+	,planet_4.png
+	,planet_5.png
+	,planet_6.png
+	,space_nebula_1.png
+	,space_nebula_2.png
 	]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

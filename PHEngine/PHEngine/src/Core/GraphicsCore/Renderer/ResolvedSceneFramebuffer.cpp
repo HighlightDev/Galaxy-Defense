@@ -65,7 +65,7 @@ namespace Graphics
 
     void ResolvedSceneFramebuffer::UnbindResolvedSceneFramebuffer()
     {
-        UnbindFramebuffer();
+        UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
     }
 
     void ResolvedSceneFramebuffer::BindResolvedSceneColorTexture(int32_t slot)

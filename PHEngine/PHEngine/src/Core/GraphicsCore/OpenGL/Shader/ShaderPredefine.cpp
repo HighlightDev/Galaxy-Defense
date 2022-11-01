@@ -6,7 +6,7 @@ namespace Graphics
 	namespace OpenGL
 	{
       /* ************** ShaderDefineConstant ************** */
-      ShaderDefineConstant::ShaderDefineConstant(const std::string& name, const std::string& value, ShaderType shaderType)
+      ShaderDefineConstant::ShaderDefineConstant(const std::string& name, const std::string& value, eShaderType shaderType)
          : ShaderGenericDefineConstant(name, value)
          , m_ShaderType(shaderType)
       {
@@ -14,7 +14,7 @@ namespace Graphics
 
       /* ************** ShaderDefine ************** */
 
-      ShaderDefine::ShaderDefine(const std::string& name, const bool isDefined, ShaderType shaderType)
+      ShaderDefine::ShaderDefine(const std::string& name, const bool isDefined, eShaderType shaderType)
          : ShaderGenericDefine(name, isDefined)
          , m_ShaderType(shaderType)
       {

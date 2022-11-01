@@ -24,7 +24,7 @@ namespace Graphics
 
       virtual void CleanUp() = 0;
 
-      void UnbindFramebuffer() const;
+      void UnbindFramebuffer(const GLbitfield clearFlag) const;
 
    protected:
 

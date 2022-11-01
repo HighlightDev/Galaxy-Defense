@@ -46,6 +46,7 @@ namespace Graphics
          void CleanUp(bool bDeleteShaderProgram = true);
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID);
+         virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
          virtual void SetShaderPredefine() {};
          virtual void ProcessAllPredefines() {};
 
