@@ -15,7 +15,6 @@ namespace Graphics
       class IShader
       {
       protected:
-
          int32_t m_vertexShaderID;
          int32_t m_fragmentShaderID;
          int32_t m_geometryShaderID;
@@ -24,14 +23,13 @@ namespace Graphics
          std::string mShaderName;
 
       public:
-
-         IShader(const std::string& shaderName);
+         IShader(const std::string &shaderName);
 
          virtual ~IShader();
 
-         Uniform GetUniform(const std::string& uniformName, uint32_t shaderProgramID) const;
+         Uniform GetUniform(const std::string &uniformName, uint32_t shaderProgramID) const;
 
-         UniformArray GetUniformArray(const std::string& uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const;
+         UniformArray GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const;
 
          std::string GetCompileLogInfo() const;
 
@@ -47,30 +45,40 @@ namespace Graphics
 
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID);
          virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID);
-         virtual void SetShaderPredefine() {};
-         virtual void ProcessAllPredefines() {};
+         virtual void SetShaderPredefine(){};
+         virtual void ProcessAllPredefines(){};
 
 #if DEBUG
-         virtual void RecompileShader() {};
+         virtual void RecompileShader(){};
 #endif
 
-         void ProcessPredefineToFile(const std::string& pathToShader, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const;
-         void ProcessPredefineToSource(std::string& shaderSource, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const;
-         void WriteShaderSrc(const std::string& pathToShader, const std::string& src) const;
+         void ProcessPredefineToFile(const std::string &pathToShader,
+                                     const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                     const std::vector<ShaderGenericDefine> &defines,
+                                     const std::vector<ShaderGenericConstantArray> &constantArrays) const;
+
+         void ProcessPredefineToSource(std::string &shaderSource,
+                                       const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                       const std::vector<ShaderGenericDefine> &defines,
+                                       const std::vector<ShaderGenericConstantArray> &constantArrays) const;
+
+         void WriteShaderSrc(const std::string &pathToShader, const std::string &src) const;
 
          void CompileShaders();
          void LinkShaders() const;
 
-         bool ProcessShaderIncludes(std::string& shaderSource);
-         bool SendToGpuSingleShaderSource(int32_t shaderId, const std::string& shaderSource) const;
-         bool SendToGpuShadersSources(std::string& vsSource, std::string& gsSource, std::string& fsSource);
+         bool ProcessShaderIncludes(std::string &shaderSource);
+         bool SendToGpuSingleShaderSource(int32_t shaderId, const std::string &shaderSource) const;
+         bool SendToGpuShadersSources(std::string &vsSource, std::string &gsSource, std::string &fsSource);
 
-         std::vector<std::string> LoadShaderSrcVector(const std::string& pathToShader) const;
-         std::string LoadShaderSource(const std::string& pathToShader) const;
+         std::vector<std::string> LoadShaderSrcVector(const std::string &pathToShader) const;
+         std::string LoadShaderSource(const std::string &pathToShader) const;
 
       private:
-
-         std::string GetPredefinedSource(std::vector<std::string>& shaderSourceVector, const std::vector<ShaderGenericDefineConstant>& constantDefines, const std::vector<ShaderGenericDefine>& defines) const;
+         std::string GetPredefinedSource(std::vector<std::string> &shaderSourceVector,
+                                         const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                         const std::vector<ShaderGenericDefine> &defines,
+                                         const std::vector<ShaderGenericConstantArray> &constantArrays) const;
       };
    }
 }

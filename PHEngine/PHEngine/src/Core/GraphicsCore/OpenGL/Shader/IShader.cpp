@@ -204,7 +204,10 @@ namespace Graphics
          writeStream << src;
       }
 
-      std::string IShader::GetPredefinedSource(std::vector<std::string> &shaderSourceVector, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
+      std::string IShader::GetPredefinedSource(std::vector<std::string> &shaderSourceVector,
+                                               const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                               const std::vector<ShaderGenericDefine> &defines,
+                                               const std::vector<ShaderGenericConstantArray> &constantArrays) const
       {
          // src only with macros
          std::vector<ShaderGenericDefineConstant> existingConstantDefines;
@@ -212,7 +215,19 @@ namespace Graphics
 
          for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end();)
          {
-            if (EngineUtility::StartsWith(*it, "#define"))
+            const auto foundArrayIt = std::find_if(constantArrays.begin(),
+                                                   constantArrays.end(),
+                                                   [=](const auto &array)
+                                                   {
+                                                      const auto arrayBeginningStr = "const " + array.m_InnerTypeName + " " + array.m_Name;
+                                                      return (it->find(arrayBeginningStr) != std::string::npos); 
+                                                   });
+
+            if (foundArrayIt != constantArrays.end())
+            {
+               it = shaderSourceVector.erase(it);
+            }
+            else if (EngineUtility::StartsWith(*it, "#define"))
             {
                size_t indexName = EngineUtility::IndexOf(*it, " ");
                size_t indexValue = EngineUtility::IndexOf(*it, " ", indexName + 1);
@@ -233,7 +248,9 @@ namespace Graphics
                it = shaderSourceVector.erase(it);
             }
             else
+            {
                ++it;
+            }
          }
 
          // update values for existing macros
@@ -287,6 +304,12 @@ namespace Graphics
          }
          const std::string definesResult = std::move(EngineUtility::StringStreamWrapper::FlushString());
 
+         for (const auto &array : constantArrays)
+         {
+            EngineUtility::StringStreamWrapper::ToString(array.m_Value, '\n');
+         }
+         const std::string arraysResult = std::move(EngineUtility::StringStreamWrapper::FlushString());
+
          std::vector<std::string>::iterator version_it = shaderSourceVector.begin();
 
          for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it, ++version_it)
@@ -318,6 +341,21 @@ namespace Graphics
             shaderSourceVector.insert(version_it, definesResult);
          }
 
+         version_it = shaderSourceVector.begin();
+         for (auto it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it, ++version_it)
+         {
+            if (EngineUtility::StartsWith(*it, "#version"))
+            {
+               version_it += 2;
+               break;
+            }
+         }
+
+         if ("" != arraysResult)
+         {
+            shaderSourceVector.insert(version_it, arraysResult);
+         }
+
          std::string codeResult = "";
 
          for (std::vector<std::string>::iterator it = shaderSourceVector.begin(); it != shaderSourceVector.end(); ++it)
@@ -334,21 +372,27 @@ namespace Graphics
          return codeResult;
       }
 
-      void IShader::ProcessPredefineToSource(std::string &shaderSource, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
+      void IShader::ProcessPredefineToSource(std::string &shaderSource,
+                                             const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                             const std::vector<ShaderGenericDefine> &defines,
+                                             const std::vector<ShaderGenericConstantArray> &constantArrays) const
       {
          auto shaderSrc = EngineUtility::Split(shaderSource, '\n');
 
-         shaderSource = GetPredefinedSource(shaderSrc, constantDefines, defines);
+         shaderSource = GetPredefinedSource(shaderSrc, constantDefines, defines, constantArrays);
       }
 
-      void IShader::ProcessPredefineToFile(const std::string &pathToShader, const std::vector<ShaderGenericDefineConstant> &constantDefines, const std::vector<ShaderGenericDefine> &defines) const
+      void IShader::ProcessPredefineToFile(const std::string &pathToShader,
+                                           const std::vector<ShaderGenericDefineConstant> &constantDefines,
+                                           const std::vector<ShaderGenericDefine> &defines,
+                                           const std::vector<ShaderGenericConstantArray> &constantArrays) const
       {
          if (pathToShader == "")
             return;
 
          auto shaderSrc = LoadShaderSrcVector(pathToShader);
 
-         const std::string &result = GetPredefinedSource(shaderSrc, constantDefines, defines);
+         const std::string &result = GetPredefinedSource(shaderSrc, constantDefines, defines, constantArrays);
 
          WriteShaderSrc(pathToShader, result);
       }
@@ -484,7 +528,6 @@ namespace Graphics
 
       void IShader::AccessAllSubroutineIndices(uint32_t shaderProgramID)
       {
-
       }
 
       void IShader::CleanUp(bool bDeleteShaderProgram)

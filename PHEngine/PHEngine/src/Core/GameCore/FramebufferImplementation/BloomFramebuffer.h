@@ -17,7 +17,7 @@ namespace EngineCore
       {
          using RenderTarget = std::shared_ptr<ITexture>;
 
-         const ViewPortInfo mViewPortInfo;
+         ViewPortInfo mViewPortInfo;
 
          RenderTarget m_color1;
          RenderTarget m_color2;

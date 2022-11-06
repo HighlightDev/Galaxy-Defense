@@ -1,4 +1,9 @@
 #include "BloomFramebuffer.h"
+#include "Core/GraphicsCore/PostFX/Bloom/BloomConstants.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+
+using namespace Graphics;
+using namespace EngineUtility;
 
 namespace EngineCore
 {
@@ -11,6 +16,13 @@ namespace EngineCore
             mColor1Framebuffer(std::make_shared<FramebufferObject>()),
             mColor2Framebuffer(std::make_shared<FramebufferObject>())
       {
+         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
+         const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
+         // scale bloom render target resolution accordingly to config file
+         const auto bloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
+         mViewPortInfo = ViewPortInfo(mViewPortInfo.OriginX, mViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mViewPortInfo.Width) * bloomResolutionMultiplier),
+                                      static_cast<int32_t>(static_cast<float>(mViewPortInfo.Height) * bloomResolutionMultiplier));
          Init();
       }
 
@@ -24,6 +36,7 @@ namespace EngineCore
 
       void BloomFramebuffer::SetTextures()
       {
+
          // Color1 texture
          {
             TexParams color1Params(mViewPortInfo.Width,

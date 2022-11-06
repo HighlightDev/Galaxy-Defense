@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -12,24 +13,37 @@ namespace Graphics
 	namespace OpenGL
 	{
 		template <typename Type>
-		struct MacroConverter
+		struct TypeToString;
+
+		template <>
+		struct TypeToString<float>
 		{
-			static std::string GetValue(Type&& value)
-			{
-				std::string resultStr;
-				return std::move(resultStr);
-			};
+			static constexpr char value[] = "float";
 		};
 
-      template <>
-      struct MacroConverter<float>
-      {
-         static std::string GetValue(float value)
-         {
-            EngineUtility::StringStreamWrapper::ToString(value);
-            return EngineUtility::StringStreamWrapper::FlushString();
-         }
-      };
+		template <typename Type>
+		struct MacroConverter;
+
+		template <>
+		struct MacroConverter<float>
+		{
+			static std::string GetValue(float value)
+			{
+				EngineUtility::StringStreamWrapper::ToString(value);
+				return EngineUtility::StringStreamWrapper::FlushString();
+			}
+
+			static std::string GetArrayValue(const std::string &nameVar, const std::vector<float> &vector)
+			{
+				std::string unwrappedValue = "";
+				for (int i = 0; i < vector.size(); ++i)
+				{
+					const auto isLast = i == (vector.size() - 1);
+					unwrappedValue += std::to_string(vector[i]) + (isLast ? std::string("") : std::string(","));
+				}
+				return ("const float " + nameVar + "[" + std::to_string(vector.size()) + "] = float[] (" + unwrappedValue + ");");
+			}
+		};
 
 		template <>
 		struct MacroConverter<int32_t>
@@ -44,7 +58,7 @@ namespace Graphics
 		template <>
 		struct MacroConverter<glm::vec2>
 		{
-			static std::string GetValue(const glm::vec2& value)
+			static std::string GetValue(const glm::vec2 &value)
 			{
 				EngineUtility::StringStreamWrapper::ToString("vec2(", value.x, ", ", value.y, ")");
 				std::string result = EngineUtility::StringStreamWrapper::FlushString();
@@ -55,7 +69,7 @@ namespace Graphics
 		template <>
 		struct MacroConverter<glm::vec3>
 		{
-			static std::string GetValue(const glm::vec3& value)
+			static std::string GetValue(const glm::vec3 &value)
 			{
 				EngineUtility::StringStreamWrapper::ToString("vec3(", value.x, ", ", value.y, value.z, ")");
 				return EngineUtility::StringStreamWrapper::FlushString();
@@ -65,7 +79,7 @@ namespace Graphics
 		template <>
 		struct MacroConverter<glm::vec4>
 		{
-			static std::string GetValue(const glm::vec4& value)
+			static std::string GetValue(const glm::vec4 &value)
 			{
 				EngineUtility::StringStreamWrapper::ToString("vec4(", value.x, ", ", value.y, value.z, value.w, ")");
 				return EngineUtility::StringStreamWrapper::FlushString();

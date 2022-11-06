@@ -7,16 +7,16 @@ namespace Graphics
    namespace OpenGL
    {
 
-      VertexFactoryShader::VertexFactoryShader(const std::string& vertexFactoryName)
-         : IShader(vertexFactoryName)
-      { 
+      VertexFactoryShader::VertexFactoryShader(const std::string &vertexFactoryName)
+          : IShader(vertexFactoryName)
+      {
       }
 
       VertexFactoryShader::~VertexFactoryShader()
       {
       }
 
-      void VertexFactoryShader::InitShader(const std::string& pathToShaderSource)
+      void VertexFactoryShader::InitShader(const std::string &pathToShaderSource)
       {
          mShaderSource = Base::LoadShaderSource(pathToShaderSource);
          SetShaderPredefine();
@@ -28,7 +28,7 @@ namespace Graphics
          {
             if ("" != mShaderSource)
             {
-               ProcessPredefineToSource(mShaderSource, mConstantDefines, mDefines);
+               ProcessPredefineToSource(mShaderSource, mConstantDefines, mDefines, mDefineConstantArrays);
             }
          }
       }
@@ -43,12 +43,12 @@ namespace Graphics
          return mShaderSource;
       }
 
-      void VertexFactoryShader::Define(const std::string& name)
+      void VertexFactoryShader::Define(const std::string &name)
       {
          mDefines.emplace_back(name, true);
       }
 
-      void VertexFactoryShader::Undefine(const std::string& name)
+      void VertexFactoryShader::Undefine(const std::string &name)
       {
          mDefines.emplace_back(name, false);
       }

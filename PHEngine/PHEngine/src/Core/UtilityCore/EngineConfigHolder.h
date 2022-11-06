@@ -28,6 +28,8 @@ namespace EngineUtility
         float ShadowMapBiasPointLight = 0.0f;
         float ShadowMapBiasSpotlight = 0.0f;
 
+        std::string BloomQualityName = "";
+
         size_t MaxFontCharactersCount = 0;
 
         std::vector<std::string> FontsVector = std::vector<std::string>();

@@ -11,9 +11,9 @@ namespace Graphics
 			case eShaderType::VertexShader:
 				return GL_VERTEX_SHADER;
 			case eShaderType::FragmentShader:
-				return GL_VERTEX_SHADER;
+				return GL_FRAGMENT_SHADER;
 			case eShaderType::GeometryShader:
-				return GL_VERTEX_SHADER;
+				return GL_GEOMETRY_SHADER;
 			case eShaderType::TesselationControlShader:
 				return GL_TESS_CONTROL_SHADER;
 			case eShaderType::TesselationEvaluationShader:

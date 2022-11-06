@@ -13,7 +13,11 @@ namespace Graphics
    {
 
       Shader::Shader(const ShaderParams &params)
-          : IShader(params.ShaderName), m_shaderParams(params), m_defineConstantParameters(), m_defines()
+          : IShader(params.ShaderName),
+            m_shaderParams(params),
+            m_defineConstantParameters(),
+            m_defines(),
+            m_defineConstantArrays()
       {
       }
 
@@ -70,9 +74,10 @@ namespace Graphics
       void Shader::ProcessAllPredefines()
       {
          std::vector<ShaderGenericDefineConstant> vertexConstantPredefine, fragmentConstantPredefine, geometryConstantPredefine;
+         std::vector<ShaderGenericConstantArray> vertexArrayConstants, fragmentArrayConstants, geometryArrayConstants;
          std::vector<ShaderGenericDefine> vertexPredefine, fragmentPredefine, geometryPredefine;
 
-         if (m_defineConstantParameters.size() > 0 || m_defines.size() > 0)
+         if (m_defineConstantParameters.size() > 0 || m_defines.size() > 0 || m_defineConstantArrays.size() > 0)
          {
             for (auto define_it = m_defineConstantParameters.begin(); define_it != m_defineConstantParameters.end(); ++define_it)
             {
@@ -87,6 +92,22 @@ namespace Graphics
                if (define_it->m_ShaderType & eShaderType::GeometryShader)
                {
                   geometryConstantPredefine.emplace_back(*define_it);
+               }
+            }
+
+            for (const auto &arrayConstant : m_defineConstantArrays)
+            {
+               if (arrayConstant.m_ShaderType & eShaderType::VertexShader)
+               {
+                  vertexArrayConstants.emplace_back(arrayConstant);
+               }
+               if (arrayConstant.m_ShaderType & eShaderType::FragmentShader)
+               {
+                  fragmentArrayConstants.emplace_back(arrayConstant);
+               }
+               if (arrayConstant.m_ShaderType & eShaderType::GeometryShader)
+               {
+                  geometryArrayConstants.emplace_back(arrayConstant);
                }
             }
 
@@ -107,26 +128,23 @@ namespace Graphics
             }
          }
 
-         if (vertexConstantPredefine.size() > 0 || vertexPredefine.size() > 0)
+         const bool processVsPredefines = m_shaderParams.VertexShaderFile != "" && (vertexConstantPredefine.size() || vertexPredefine.size() || vertexArrayConstants.size());
+         const bool processFsPredefines = m_shaderParams.FragmentShaderFile != "" && (fragmentConstantPredefine.size() || fragmentPredefine.size() || fragmentArrayConstants.size());
+         const bool processGsPredefines = m_shaderParams.GeometryShaderFile != "" && (geometryConstantPredefine.size() || geometryPredefine.size() || geometryArrayConstants.size());
+
+         if (processVsPredefines)
          {
-            if (m_shaderParams.VertexShaderFile != "")
-            {
-               ProcessPredefineToFile(m_shaderParams.VertexShaderFile, vertexConstantPredefine, vertexPredefine);
-            }
+            ProcessPredefineToFile(m_shaderParams.VertexShaderFile, vertexConstantPredefine, vertexPredefine, vertexArrayConstants);
          }
-         if (fragmentConstantPredefine.size() > 0 || fragmentPredefine.size() > 0)
+
+         if (processFsPredefines)
          {
-            if (m_shaderParams.FragmentShaderFile != "")
-            {
-               ProcessPredefineToFile(m_shaderParams.FragmentShaderFile, fragmentConstantPredefine, fragmentPredefine);
-            }
+            ProcessPredefineToFile(m_shaderParams.FragmentShaderFile, fragmentConstantPredefine, fragmentPredefine, fragmentArrayConstants);
          }
-         if (geometryConstantPredefine.size() > 0 || geometryPredefine.size() > 0)
+
+         if (processGsPredefines)
          {
-            if (m_shaderParams.GeometryShaderFile != "")
-            {
-               ProcessPredefineToFile(m_shaderParams.GeometryShaderFile, geometryConstantPredefine, geometryPredefine);
-            }
+            ProcessPredefineToFile(m_shaderParams.GeometryShaderFile, geometryConstantPredefine, geometryPredefine, geometryArrayConstants);
          }
       }
 

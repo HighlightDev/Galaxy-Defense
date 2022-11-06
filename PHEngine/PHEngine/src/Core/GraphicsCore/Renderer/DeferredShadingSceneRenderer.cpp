@@ -568,9 +568,9 @@ namespace Graphics
 
          m_resolvedSceneFramebuffer->UnbindResolvedSceneFramebuffer();
 
-         m_resolvedSceneFramebuffer->CopyFramebufferDataToDefaultFramebuffer(originX, originY, screenWidth, screenHeight,
+         /*m_resolvedSceneFramebuffer->CopyFramebufferDataToDefaultFramebuffer(originX, originY, screenWidth, screenHeight,
                                                                              originX, originY, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()

@@ -14,7 +14,8 @@ namespace Graphics
    {
    private:
       std::unique_ptr<BloomFramebuffer> mBloomFramebuffer;
-      std::unique_ptr<BloomFxShader> mBloomFxShader;
+      std::shared_ptr<BloomFxShader> mBloomFxShader;
+      uint32_t mBlurPassCount;
 
       ViewPortInfo mViewPortInfo;
 
@@ -25,5 +26,8 @@ namespace Graphics
       virtual std::shared_ptr<ITexture> ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
 
       virtual void CleanUp() override;
+
+   private:
+      void Init();
    };
 }

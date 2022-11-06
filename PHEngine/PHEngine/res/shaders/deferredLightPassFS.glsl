@@ -507,10 +507,7 @@ void main() {
 #ifdef SHADING_MODEL_PBR
   vec3 ambientColor = (1.0 - step(1, DirLightCount)) * GetAmbientColor();
   vec3 ambientAlbedo = albedo * ambientColor;
-  vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos, worldNormal, albedo,
-                                          metallicRoughness),
-                         1.0) +
-                    vec4(ambientAlbedo, 1.0);
+  vec4 totalColor = vec4(GetPBRLightColor(pixelWorldPos, worldNormal, albedo, metallicRoughness), 1.0) + vec4(ambientAlbedo, 1.0);
 #else
 #ifdef NO_LIT
   vec4 totalColor = vec4(albedo, 1.0);
