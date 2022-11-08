@@ -541,7 +541,6 @@ namespace Graphics
          m_gbuffer->CopyFramebufferDataToDstFramebuffer(m_resolvedSceneFramebuffer->GetFramebufferObjectInstance(), originX, originY, screenWidth, screenHeight,
                                                         originX, originY, screenWidth, screenHeight, GL_DEPTH_BUFFER_BIT);
 
-         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
          static constexpr int NoClearFlag = 0;
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
@@ -567,10 +566,6 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
 
          m_resolvedSceneFramebuffer->UnbindResolvedSceneFramebuffer();
-
-         /*m_resolvedSceneFramebuffer->CopyFramebufferDataToDefaultFramebuffer(originX, originY, screenWidth, screenHeight,
-                                                                             originX, originY, screenWidth, screenHeight, GL_COLOR_BUFFER_BIT);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);*/
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
