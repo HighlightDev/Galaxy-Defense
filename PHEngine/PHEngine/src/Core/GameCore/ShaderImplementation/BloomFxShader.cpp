@@ -44,7 +44,6 @@ namespace EngineCore
          mExtractBrightPartsSubroutineIndex = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "extractBrightParts");
          mVerticalBlurSubroutineIndex = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "runVerticalBlur");
          mHorizontalBlurSubroutineIndex = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "runHorizontalBlur");
-         mResolveBloomColorSubroutineIndex = GetSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), "resolveBloomColor");
       }
 
       void BloomFxShader::LoadExtractBrightPartsSubroutine()
@@ -71,11 +70,6 @@ namespace EngineCore
          DefineConstant<int32_t>(FragmentShader, "BLUR_WIDTH", bloomQuality.blurWidth);
          DefineConstant<float>(FragmentShader, "bloomThreshold", 0.45);
          DefineConstantArray<float>(FragmentShader, "weights", EngineMath::CalculateGaussNormalizedWeights(bloomQuality.blurWidth));
-      }
-
-      void BloomFxShader::LoadResolveBloomColorSubroutine()
-      {
-         LoadSubroutineIndex(MapShaderTypeToOpenGLConstant(eShaderType::FragmentShader), 1, &mResolveBloomColorSubroutineIndex);
       }
    }
 }

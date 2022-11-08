@@ -40,7 +40,7 @@ namespace Graphics
       mBlurPassCount = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).blurPassCount;
    }
 
-   std::shared_ptr<ITexture> BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture)
+   void BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture>& sceneColorTexture)
    {
       glDepthMask(false);
       mBloomFxShader->ExecuteShader();
@@ -72,20 +72,12 @@ namespace Graphics
          }
       }
 
-      // mBloomFxShader->StopShader();
-
-      // todo: TEMPORARY!
-
-      mBloomFramebuffer->UnbindFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      glViewport(0, 0, mViewPortInfo.Width, mViewPortInfo.Height);
-      mBloomFxShader->LoadResolveBloomColorSubroutine();
-      sceneColorTexture->BindTexture(0);
-      mBloomFxShader->SetSceneColorTexture(0);
-      mBloomFramebuffer->BindColor1Texture(1);
-      mBloomFxShader->SetBluredColorTexture(1);
-      ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+      mBloomFxShader->StopShader();
       glDepthMask(true);
+   }
 
+   std::shared_ptr<ITexture> BloomPostFxPass::GetPostFxResult() const 
+   {
       return mBloomFramebuffer->GetColor1Texture();
    }
 
@@ -93,6 +85,6 @@ namespace Graphics
    {
       mBloomFramebuffer->CleanUp();
       mBloomFramebuffer.reset();
+      ShaderPool::GetInstance()->TryToFreeMemory(mBloomFxShader);
    }
-
 }

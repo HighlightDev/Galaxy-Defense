@@ -20,7 +20,6 @@ namespace EngineCore
          uint32_t mExtractBrightPartsSubroutineIndex;
          uint32_t mVerticalBlurSubroutineIndex;
          uint32_t mHorizontalBlurSubroutineIndex;
-         uint32_t mResolveBloomColorSubroutineIndex;
 
       public:
          BloomFxShader(const ShaderParams &params);
@@ -36,8 +35,6 @@ namespace EngineCore
          void LoadRunVerticalBlurSubroutine();
 
          void LoadRunHorizontalBlurSubroutine();
-
-         void LoadResolveBloomColorSubroutine();
 
       protected:
          virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;

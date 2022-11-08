@@ -70,6 +70,9 @@ namespace EngineUtility
             std::make_pair("shadow_map_bias_point_light",           std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasPointLight          = parseFloat(valueStr); })),
             std::make_pair("shadow_map_bias_spot_light",            std::function([=](const std::string &valueStr) { mEngineConfig.ShadowMapBiasSpotlight           = parseFloat(valueStr); })),
             std::make_pair("max_font_characters_count",             std::function([=](const std::string &valueStr) { mEngineConfig.MaxFontCharactersCount           = parseUInt(valueStr); })),
+            std::make_pair("enable_hdr",                            std::function([=](const std::string &valueStr) { mEngineConfig.IsHdrEnabled                     = parseBool(valueStr); })),
+            std::make_pair("hdr_exposure_value",                    std::function([=](const std::string &valueStr) { mEngineConfig.HdrExposureValue                 = parseFloat(valueStr); })),
+            std::make_pair("enable_bloom",                          std::function([=](const std::string &valueStr) { mEngineConfig.IsBloomEnabled                   = parseBool(valueStr); })),
             std::make_pair("bloom_quality",                         std::function([=](const std::string &valueStr) { mEngineConfig.BloomQualityName                 = valueStr; })),
 #ifdef DEBUG
             std::make_pair("debug_enable_ambient_music",            std::function([=](const std::string &valueStr) { mEngineConfig.EnableAmbientMusic               = parseBool(valueStr); })),

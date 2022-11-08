@@ -17,13 +17,17 @@ namespace Graphics
       std::shared_ptr<BloomFxShader> mBloomFxShader;
       uint32_t mBlurPassCount;
 
+      std::shared_ptr<ITexture> mBloomFxResult;
+
       ViewPortInfo mViewPortInfo;
 
    public:
       BloomPostFxPass(const ViewPortInfo &viewPortInfo);
       virtual ~BloomPostFxPass();
 
-      virtual std::shared_ptr<ITexture> ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
+      virtual void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
+
+      virtual std::shared_ptr<ITexture> GetPostFxResult() const;
 
       virtual void CleanUp() override;
 

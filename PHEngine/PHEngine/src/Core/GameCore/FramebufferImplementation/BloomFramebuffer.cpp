@@ -36,7 +36,8 @@ namespace EngineCore
 
       void BloomFramebuffer::SetTextures()
       {
-
+         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         const bool isHdrEnabled = cfg.IsHdrEnabled;
          // Color1 texture
          {
             TexParams color1Params(mViewPortInfo.Width,
@@ -45,9 +46,9 @@ namespace EngineCore
                                    GL_LINEAR,
                                    GL_LINEAR,
                                    0,
+                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
                                    GL_RGB,
-                                   GL_RGB,
-                                   GL_UNSIGNED_BYTE,
+                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
                                    GL_CLAMP_TO_EDGE,
                                    true);
             m_color1 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color1Params);
@@ -61,9 +62,9 @@ namespace EngineCore
                                    GL_LINEAR,
                                    GL_LINEAR,
                                    0,
+                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
                                    GL_RGB,
-                                   GL_RGB,
-                                   GL_UNSIGNED_BYTE,
+                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
                                    GL_CLAMP_TO_EDGE,
                                    true);
             m_color2 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color2Params);

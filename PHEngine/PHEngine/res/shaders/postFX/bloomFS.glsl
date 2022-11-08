@@ -48,16 +48,6 @@ vec4 runHorizontalBlur()
 	return sum;
 }
 
-subroutine(executePostFx)
-vec4 resolveBloomColor()
-{
-	vec3 bluredColor = texture(bluredColorTexture, vs_out_texCoords).rgb;
-    float gamma = 2.2;
-	vec3 gammaCorrectedBluredColor = pow(bluredColor, vec3(1.0 / gamma));
-    vec3 result = texture(sceneColorTexture, vs_out_texCoords).rgb + gammaCorrectedBluredColor;
-    return vec4(result, 1.0);
-}
-
 void main()
 {
     FragColor = execBloomFx();

@@ -7,7 +7,6 @@
 
 namespace EngineUtility
 {
-
     struct EngineConfig
     {
         size_t MaxSkeletBones = 0;
@@ -28,6 +27,10 @@ namespace EngineUtility
         float ShadowMapBiasPointLight = 0.0f;
         float ShadowMapBiasSpotlight = 0.0f;
 
+        bool IsHdrEnabled = false;
+        float HdrExposureValue = 1.0f;
+
+        bool IsBloomEnabled = false;
         std::string BloomQualityName = "";
 
         size_t MaxFontCharactersCount = 0;

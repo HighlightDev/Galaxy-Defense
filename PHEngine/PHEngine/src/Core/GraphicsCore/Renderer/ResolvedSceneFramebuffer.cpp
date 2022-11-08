@@ -1,4 +1,7 @@
 #include "ResolvedSceneFramebuffer.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+
+using namespace EngineUtility;
 
 namespace Graphics
 {
@@ -19,15 +22,17 @@ namespace Graphics
 
     void ResolvedSceneFramebuffer::SetTextures()
     {
+        const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+        const bool isHdrEnabled = cfg.IsHdrEnabled;
         TexParams sceneColorParams(mViewPortInfo.Width,
                                    mViewPortInfo.Height,
                                    GL_TEXTURE_2D,
                                    GL_NEAREST,
                                    GL_NEAREST,
                                    0,
+                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
                                    GL_RGB,
-                                   GL_RGB,
-                                   GL_UNSIGNED_BYTE,
+                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
                                    GL_REPEAT,
                                    true);
         m_resolvedSceneColorBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(sceneColorParams);

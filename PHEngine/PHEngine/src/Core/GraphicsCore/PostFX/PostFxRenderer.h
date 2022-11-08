@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IPostFxPass.h"
+#include "FxColorResolver/FxColorResolver.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 #include <unordered_map>
@@ -25,6 +26,8 @@ namespace Graphics
       ViewPortInfo mViewPortInfo;
 
       std::unordered_map<ePostFxStageIndex, std::shared_ptr<IPostFxPass>> mPostFxStages;
+
+      std::unique_ptr<FxColorResolver> mFxColorResolver;
 
    public:
       PostFxRenderer(const ViewPortInfo &viewPortInfo);

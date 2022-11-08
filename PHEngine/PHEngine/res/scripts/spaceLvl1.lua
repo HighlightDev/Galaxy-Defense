@@ -61,8 +61,8 @@ function CreateTestLevel(host)
 		local rotation = { x = 0, y = 0, z = 0 }
 		local direction = { x = -0.2, y = -0.5, z = 0 }
 		local ambient = { x = 0.2, y = 0.2, z = 0.2}
-		local diffuse = { x = 1.68, y = 1.5, z = 1.5 }
-		local specular = { x = 0.7, y = 0.7, z = 0.7 }
+		local diffuse = { x = 0.68, y = 0.5, z = 0.5 }
+		local specular = { x = 0.4, y = 0.4, z = 0.4 }
 	
 		--local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
 	

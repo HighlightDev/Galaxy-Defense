@@ -9,7 +9,6 @@
 
 namespace IO
 {
-
 	class FolderManager
 	{
 
