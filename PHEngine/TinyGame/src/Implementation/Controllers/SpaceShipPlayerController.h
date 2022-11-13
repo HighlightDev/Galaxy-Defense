@@ -3,7 +3,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ActorController.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 
 using namespace Event;
@@ -22,7 +22,7 @@ namespace Game
 
       std::string mCurrentState;
 
-      BoundingBox mLevelBounds;
+      BoundingBox3D mLevelBounds;
 
       std::shared_ptr<PrimitiveComponent> mSpaceShipPrimitiveComponent;
 
@@ -36,7 +36,7 @@ namespace Game
       
       virtual void InitActorController() override;
 
-      void SetLevelBounds(const BoundingBox& mLevelBounds);
+      void SetLevelBounds(const BoundingBox3D& mLevelBounds);
 
       std::shared_ptr<FirstPersonCamera> GetCamera() const;
    };

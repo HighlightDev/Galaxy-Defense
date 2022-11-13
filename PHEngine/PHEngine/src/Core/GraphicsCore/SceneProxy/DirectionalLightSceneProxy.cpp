@@ -40,16 +40,16 @@ namespace Graphics
          return result;
       }
 
-      BoundingBox DirectionalLightSceneProxy::GetShadowOrthographicProjectionBound() const
+      BoundingBox3D DirectionalLightSceneProxy::GetShadowOrthographicProjectionBound() const
       {
-         BoundingBox orthoBox;
+         BoundingBox3D orthoBox;
 
          auto shadowInfo = static_cast<ProjectedDirectionalLightShadowInfo*>(m_shadowInfo);
          if (shadowInfo)
          {
             const float halfExtent = shadowInfo->GetShadowOrthoHalfExtent();
             glm::vec3 origin = shadowInfo->GetPlayerPositionOffset();
-            orthoBox = BoundingBox(origin, glm::vec3(halfExtent * 1.5f, halfExtent * 1.5f, halfExtent * 1.5f));
+            orthoBox = BoundingBox3D(origin, glm::vec3(halfExtent * 1.5f, halfExtent * 1.5f, halfExtent * 1.5f));
          }
 
          return orthoBox;

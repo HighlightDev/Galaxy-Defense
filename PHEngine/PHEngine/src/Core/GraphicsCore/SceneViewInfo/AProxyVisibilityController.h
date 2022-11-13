@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 using namespace EngineCore;
 
@@ -11,7 +11,7 @@ namespace Graphics
    {
    protected:
 
-      BoundingBox mBoundingBox;
+      BoundingBox3D mBoundingBox;
 
       bool mIsVisible;
 
@@ -19,9 +19,9 @@ namespace Graphics
 
       AProxyVisibilityController(const bool bVisible);
 
-      BoundingBox GetTransformedBoundingBox() const;
+      BoundingBox3D GetTransformedBoundingBox() const;
 
-      void SetTransformedBoundingBox(const BoundingBox& boundingBox);
+      void SetTransformedBoundingBox(const BoundingBox3D& boundingBox);
 
       // Method returns false when no frustum call is needed for primitive
       virtual bool IsFrustumCullTestNeeded() const = 0;

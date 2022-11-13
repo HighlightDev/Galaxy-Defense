@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/SceneProxy/PrimitiveSceneProxy.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -23,7 +23,7 @@ namespace EngineCore
       protected:
             using Base = SceneComponent;
 
-            BoundingBox mBoundingBox;
+            BoundingBox3D mBoundingBox;
 
             std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
@@ -34,7 +34,7 @@ namespace EngineCore
                                const glm::vec3 &translation,
                                const glm::vec3 &rotation,
                                const glm::vec3 &scale,
-                               const BoundingBox &boundingBox);
+                               const BoundingBox3D &boundingBox);
 
             virtual ~PrimitiveComponent();
 
@@ -52,8 +52,8 @@ namespace EngineCore
 
             virtual void OnVisibilityChanged();
 
-            BoundingBox GetBoundingBox() const;
+            BoundingBox3D GetBoundingBox() const;
 
-            BoundingBox GetTransformedBoundingBox() const;
+            BoundingBox3D GetTransformedBoundingBox() const;
       };
 }

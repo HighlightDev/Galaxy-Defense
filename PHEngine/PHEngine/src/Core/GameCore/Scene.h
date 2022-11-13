@@ -141,7 +141,7 @@ namespace EngineCore
       void Tick_GameThread(float delta);
 
       void UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-                                                            const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox &newTransformedBoundingBox);
+                                                            const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox);
 
       void UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled);
 

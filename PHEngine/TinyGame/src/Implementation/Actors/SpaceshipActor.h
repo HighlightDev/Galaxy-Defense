@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Implementation/Modifiers/IModifiable.h"
 
 #include <functional>
@@ -57,7 +57,7 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
-        virtual bool IsInsideLevel(const BoundingBox &boundingBox) const;
+        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 
         virtual void TriggerDamageReceived(const size_t damage);
 

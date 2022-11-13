@@ -16,7 +16,7 @@ namespace Game
         return mActivityState;
     }
 
-    bool MissileActor::IsInsideLevel(const BoundingBox &boundingBox) const
+    bool MissileActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());
     }

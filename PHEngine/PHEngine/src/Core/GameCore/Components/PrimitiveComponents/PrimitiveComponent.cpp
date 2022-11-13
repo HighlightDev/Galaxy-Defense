@@ -10,7 +10,7 @@ namespace EngineCore
                                           const glm::vec3 &translation,
                                           const glm::vec3 &rotation,
                                           const glm::vec3 &scale,
-                                          const BoundingBox &boundingBox)
+                                          const BoundingBox3D &boundingBox)
        : SceneComponent(gameObjectName,
                         translation,
                         rotation,
@@ -81,12 +81,12 @@ namespace EngineCore
       }
    }
 
-   BoundingBox PrimitiveComponent::GetBoundingBox() const
+   BoundingBox3D PrimitiveComponent::GetBoundingBox() const
    {
       return mBoundingBox;
    }
 
-   BoundingBox PrimitiveComponent::GetTransformedBoundingBox() const
+   BoundingBox3D PrimitiveComponent::GetTransformedBoundingBox() const
    {
       return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
    }

@@ -37,7 +37,7 @@ namespace EngineCore
 				currentWord = Word(text->mFontSize);
 				continue;
 			}
-			Character character = mMetaData->GetCharacter(ascii);
+			TextCharacter character = mMetaData->GetCharacter(ascii);
 			currentWord.AddCharacter(character);
 		}
 		CompleteStructure(lines, currentLine, currentWord, text);
@@ -92,7 +92,7 @@ namespace EngineCore
 		return TextMeshData(vertices, textureCoords, textWidth, textHeight);
 	}
 
-	void TextMeshCreator::AddVerticesForCharacter(const float curserX, const float curserY, Character character, const float fontSize,
+	void TextMeshCreator::AddVerticesForCharacter(const float curserX, const float curserY, TextCharacter character, const float fontSize,
 												  std::vector<float> &vertices)
 	{
 		const float x = curserX + (character.GetxOffset() * fontSize);

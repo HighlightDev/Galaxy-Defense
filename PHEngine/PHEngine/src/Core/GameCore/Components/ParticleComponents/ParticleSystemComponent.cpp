@@ -1,5 +1,5 @@
 #include "ParticleSystemComponent.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
@@ -27,7 +27,7 @@ namespace EngineCore
                              meshComponentData.m_translation,
                              glm::vec3(),
                              glm::vec3(1.0f),
-                             BoundingBox()),
+                             BoundingBox3D()),
           mParticlesPool(),
           mParticlesRawDataHandler(meshComponentData.m_particlesCount),
           mRenderData(renderData)

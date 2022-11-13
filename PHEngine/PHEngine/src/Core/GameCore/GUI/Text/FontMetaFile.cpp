@@ -44,7 +44,7 @@ namespace EngineCore
         return mVerticalPerPixelSize;
     }
 
-    Character FontMetaFile::GetCharacter(const int32_t ascii) const
+    TextCharacter FontMetaFile::GetCharacter(const int32_t ascii) const
     {
         assert(mMetaData.count(ascii));
         return mMetaData.at(ascii);
@@ -129,7 +129,7 @@ namespace EngineCore
         }
     }
 
-    std::optional<Character> FontMetaFile::TryLoadCharacter(const int32_t imageSize)
+    std::optional<TextCharacter> FontMetaFile::TryLoadCharacter(const int32_t imageSize)
     {
         const int32_t id = GetValueOfVariable("id");
         if (id == SPACE_ASCII)
@@ -148,6 +148,6 @@ namespace EngineCore
         const float xOff = (GetValueOfVariable("xoffset") + mPadding[PAD_LEFT] - DESIRED_PADDING) * mHorizontalPerPixelSize;
         const float yOff = (GetValueOfVariable("yoffset") + (mPadding[PAD_TOP] - DESIRED_PADDING)) * mVerticalPerPixelSize;
         const float xAdvance = (GetValueOfVariable("xadvance") - mPaddingWidth) * mHorizontalPerPixelSize;
-        return Character(id, xTex, yTex, xTexSize, yTexSize, xOff, yOff, quadWidth, quadHeight, xAdvance);
+        return TextCharacter(id, xTex, yTex, xTexSize, yTexSize, xOff, yOff, quadWidth, quadHeight, xAdvance);
     }
 }

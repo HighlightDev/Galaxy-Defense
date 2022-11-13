@@ -13,7 +13,7 @@ namespace EngineCore
    {
    }
 
-   BoundingBox BoundingBoxBuilder::Build(const std::vector<float>& meshPositions)
+   BoundingBox3D BoundingBoxBuilder::Build(const std::vector<float>& meshPositions)
    {
       const size_t positionsNum = meshPositions.size();
 
@@ -38,10 +38,10 @@ namespace EngineCore
       glm::vec3 halfExtent = (max - min) / 2.0f;
       glm::vec3 origin = min + halfExtent;
 
-      return BoundingBox(origin, halfExtent);
+      return BoundingBox3D(origin, halfExtent);
    }
 
-   BoundingBox BoundingBoxBuilder::GetTransformedBoundingBox(const BoundingBox& localSpaceBb, const glm::mat4& transformMatrix)
+   BoundingBox3D BoundingBoxBuilder::GetTransformedBoundingBox(const BoundingBox3D& localSpaceBb, const glm::mat4& transformMatrix)
    {
       std::array<glm::vec3, 8> bbPoints = localSpaceBb.GetBoundPositions();
 
@@ -65,6 +65,6 @@ namespace EngineCore
       const glm::vec3& halfExtent = glm::abs(maxPoint - minPoint) / 2.0f;
       const glm::vec3& origin = minPoint + halfExtent;
 
-      return BoundingBox(origin, halfExtent);
+      return BoundingBox3D(origin, halfExtent);
    }
 }

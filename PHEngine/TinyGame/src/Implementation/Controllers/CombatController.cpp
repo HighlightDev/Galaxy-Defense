@@ -30,7 +30,7 @@ namespace Game
     CombatController::CombatController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
           mEnemies(),
-          mLevelBounds(BoundingBox(glm::vec3(0), glm::vec3(50, 50, 100))),
+          mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(50, 50, 100))),
           mCameraVisibilityArea()
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
@@ -92,7 +92,7 @@ namespace Game
                 glm::vec3 origin(minX + ((maxX - minX) * 0.5f), y, minZ + ((maxZ - minZ) * 0.5f));
                 glm::vec3 halfExtent((maxX - minX) * 0.5f, 350.0f, (maxZ - minZ) * 0.5f);
 
-                mCameraVisibilityArea = std::make_unique<BoundingBox>(origin, halfExtent);
+                mCameraVisibilityArea = std::make_unique<BoundingBox3D>(origin, halfExtent);
 
                 const auto &nRightDir = glm::normalize(eventSrc->GetEyeSpaceRightVector());
                 const auto nUpDir = glm::normalize(glm::cross(nRightDir, nForwardDir));

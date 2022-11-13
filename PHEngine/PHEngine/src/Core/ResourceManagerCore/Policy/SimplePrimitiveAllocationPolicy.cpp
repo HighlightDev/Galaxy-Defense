@@ -167,7 +167,7 @@ namespace Resources
          }
 
          BoundingBoxBuilder builder;
-         BoundingBox boundingBox = builder.Build(vertices);
+         BoundingBox3D boundingBox = builder.Build(vertices);
 
          VertexBufferObjectBase *vertexVBO = nullptr, *normalVBO = nullptr, *texCoordsVBO = nullptr;
 

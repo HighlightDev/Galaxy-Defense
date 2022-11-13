@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Actor.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 #include <functional>
 #include <unordered_map>
@@ -30,7 +30,7 @@ namespace Game
     public:
         MissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        virtual bool IsInsideLevel(const BoundingBox &boundingBox) const;
+        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 
         virtual void TriggerSpawn(const glm::vec3 &position) = 0;
 

@@ -2,7 +2,7 @@
 #include "Core/GraphicsCore/OpenGL/VertexArrayObject.h"
 #include "Core/GraphicsCore/OpenGL/VertexBufferObject.h"
 #include "Core/GraphicsCore/OpenGL/InstancedVertexBufferObject.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/CommonCore/Assertion.h"
 
 #include <gl/glew.h>
@@ -60,7 +60,7 @@ namespace Resources
 					   
 			vao->BindBuffersToVao();
 
-			resultSkin = std::make_shared<Skin>(vao, BoundingBox());
+			resultSkin = std::make_shared<Skin>(vao, BoundingBox3D());
 		}
 
 		return resultSkin;

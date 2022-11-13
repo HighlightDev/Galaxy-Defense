@@ -133,7 +133,7 @@ namespace Resources
 			vao->BindBuffersToVao();
 
 			BoundingBoxBuilder builder;
-			BoundingBox boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
+			BoundingBox3D boundingBox = builder.Build(vertexVBO->GetCastedDataRef());
 			vertexVBO->InvalidateData();
 
 			if (meshInfo->meshAnimatedData)

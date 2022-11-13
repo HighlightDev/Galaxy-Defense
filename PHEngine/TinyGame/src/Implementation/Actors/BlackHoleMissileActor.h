@@ -36,7 +36,7 @@ namespace Game
 
         virtual void TriggerDisabled() override;
 
-        virtual bool IsInsideLevel(const BoundingBox &boundingBox) const override;
+        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
 
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
 

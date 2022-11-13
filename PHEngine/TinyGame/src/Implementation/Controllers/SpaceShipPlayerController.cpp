@@ -50,7 +50,7 @@ namespace Game
       mSpaceShipPrimitiveComponent = *maxBoundPrimitiveComponentIt;
    }
 
-   void SpaceShipPlayerController::SetLevelBounds(const BoundingBox &levelBounds)
+   void SpaceShipPlayerController::SetLevelBounds(const BoundingBox3D &levelBounds)
    {
       mLevelBounds = levelBounds;
    }

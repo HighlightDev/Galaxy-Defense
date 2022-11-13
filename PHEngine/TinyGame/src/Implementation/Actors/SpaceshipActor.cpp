@@ -185,7 +185,7 @@ namespace Game
         return GetRootComponent()->GetTranslation();
     }
 
-    bool SpaceshipActor::IsInsideLevel(const BoundingBox &boundingBox) const
+    bool SpaceshipActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());
     }

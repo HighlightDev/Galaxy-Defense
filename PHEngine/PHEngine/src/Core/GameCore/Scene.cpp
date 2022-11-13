@@ -330,7 +330,7 @@ namespace EngineCore
    }
 
    void Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-                                                                const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox &newTransformedBoundingBox)
+                                                                const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
    {
       if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
       {

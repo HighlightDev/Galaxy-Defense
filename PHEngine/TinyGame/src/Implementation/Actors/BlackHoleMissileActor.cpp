@@ -143,7 +143,7 @@ namespace Game
         mBlackMissileTweener->InitRootState();
     }
 
-    bool BlackHoleMissileActor::IsInsideLevel(const BoundingBox &boundingBox) const
+    bool BlackHoleMissileActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(),
                                            boundingBox.GetMax(),

@@ -6,7 +6,7 @@
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/CommonCore/Timer.h"
 
@@ -50,9 +50,9 @@ namespace Game
 
         bool bIsCoolDownInProgress = false;
 
-        BoundingBox mLevelBounds;
+        BoundingBox3D mLevelBounds;
 
-        std::unique_ptr<BoundingBox> mCameraVisibilityArea; // todo: prepare a better solution
+        std::unique_ptr<BoundingBox3D> mCameraVisibilityArea; // todo: prepare a better solution
 
         GameThreadTimer mBackgroundPlanetsSpawnTimer;
 

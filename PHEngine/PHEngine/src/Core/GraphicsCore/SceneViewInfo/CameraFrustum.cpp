@@ -68,7 +68,7 @@ namespace Graphics
       return true;
    }
 
-   bool CameraFrustum::CollidesWithBoundingBox(const BoundingBox &boundingBox) const
+   bool CameraFrustum::CollidesWithBoundingBox(const BoundingBox3D &boundingBox) const
    {
       return IsIntersectionWithBox(boundingBox.GetOrigin(), boundingBox.GetHalfExtent());
    }

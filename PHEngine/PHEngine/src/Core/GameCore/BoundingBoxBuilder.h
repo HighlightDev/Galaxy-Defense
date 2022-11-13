@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BoundingBox.h"
+#include "BoundingBox3D.h"
 
 #include <vector>
 
@@ -15,9 +15,9 @@ namespace EngineCore
 
       ~BoundingBoxBuilder();
 
-      BoundingBox Build(const std::vector<float>& meshPositions);
+      BoundingBox3D Build(const std::vector<float>& meshPositions);
 
-      static BoundingBox GetTransformedBoundingBox(const BoundingBox& localSpaceBb, const glm::mat4& transformMatrix);
+      static BoundingBox3D GetTransformedBoundingBox(const BoundingBox3D& localSpaceBb, const glm::mat4& transformMatrix);
    };
 
 }

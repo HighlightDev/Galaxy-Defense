@@ -9,7 +9,7 @@ namespace Game
     {
     }
 
-    bool SpaceObjectActor::IsInsideLevel(const BoundingBox &boundingBox) const
+    bool SpaceObjectActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());
     }

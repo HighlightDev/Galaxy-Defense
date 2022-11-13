@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <glm/trigonometric.hpp>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/ext/quaternion_float.hpp>
@@ -10,17 +11,19 @@
 
 namespace EngineMath
 {
-#define AXIS_RIGHT glm::vec3(1, 0, 0)
-#define AXIS_UP glm::vec3(0, 1, 0)
-#define AXIS_FORWARD glm::vec3(0, 0, 1)
+   /************************************************************************/
+   /*                             CONSTANTS                                */
+   /************************************************************************/
+   extern float G;
+   extern float PI;
+   extern float ENGINE_FLOAT_EPSILON;
+   extern glm::vec3 AXIS_RIGHT;
+   extern glm::vec3 AXIS_UP;
+   extern glm::vec3 AXIS_FORWARD;
 
-   constexpr auto G = 9.8f;
-
-   constexpr auto PI = 3.14159f;
    /************************************************************************/
    /*                       Convert from degrees to radians                */
    /************************************************************************/
-
 #define DEG_TO_RAD(X) (glm::radians<float>(X))
 
    /************************************************************************/
@@ -28,14 +31,17 @@ namespace EngineMath
    /************************************************************************/
 #define RAD_TO_DEG(X) (glm::degrees<float>(X))
 
-#define ENGINE_FLOAT_EPSILON 0.01f
-
+   /************************************************************************/
+   /*                           Math Helper Functions                      */
+   /************************************************************************/
    bool CompareFloats(const float X, const float Y);
 
    float LerpNormalizedFloat(const float src, const float dst, const float factor);
+
    float LerpFloat(const float x, const float x1, const float x2, const float y1, const float y2);
 
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2);
+
    glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4 &position1, const glm::vec4 &position2);
 
    glm::quat SLerpQuat(float t, const glm::quat &src, const glm::quat &dst);
@@ -57,5 +63,7 @@ namespace EngineMath
    float GaussFunction(const float x, const float sigma);
 
    std::vector<float> CalculateGaussNormalizedWeights(const uint32_t blurWidth);
+
+   bool CheckSimilarityVec2(const glm::vec2 &left, const glm::vec2 &right);
 
 }

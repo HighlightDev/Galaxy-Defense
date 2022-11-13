@@ -180,7 +180,7 @@ namespace Graphics
                         {
                            shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
 
-                           const BoundingBox &dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
+                           const BoundingBox3D &dirLightShadowOrthoBound = dirLightPtr->GetShadowOrthographicProjectionBound();
 
                            if (mNonSkeletalProxiesVec.size() > 0) // Non - skeletal proxies
                            {

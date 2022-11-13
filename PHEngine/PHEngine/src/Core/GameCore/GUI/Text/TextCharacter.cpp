@@ -1,8 +1,8 @@
-#include "Character.h"
+#include "TextCharacter.h"
 
 namespace EngineCore
 {
-    Character::Character(const int32_t id, const float xTextureCoord, const float yTextureCoord, const float xTexSize, const float yTexSize,
+    TextCharacter::TextCharacter(const int32_t id, const float xTextureCoord, const float yTextureCoord, const float xTexSize, const float yTexSize,
                          const float xOffset, const float yOffset, const float sizeX, const float sizeY, const float xAdvance)
         : mId(id),
           mXTextureCoord(xTextureCoord),
@@ -17,52 +17,52 @@ namespace EngineCore
     {
     }
 
-    int32_t Character::GetId() const
+    int32_t TextCharacter::GetId() const
     {
         return mId;
     }
 
-    float Character::GetxTextureCoord() const
+    float TextCharacter::GetxTextureCoord() const
     {
         return mXTextureCoord;
     }
 
-    float Character::GetyTextureCoord() const
+    float TextCharacter::GetyTextureCoord() const
     {
         return mYTextureCoord;
     }
 
-    float Character::GetXMaxTextureCoord() const
+    float TextCharacter::GetXMaxTextureCoord() const
     {
         return mXMaxTextureCoord;
     }
 
-    float Character::GetYMaxTextureCoord() const
+    float TextCharacter::GetYMaxTextureCoord() const
     {
         return mYMaxTextureCoord;
     }
 
-    float Character::GetxOffset() const
+    float TextCharacter::GetxOffset() const
     {
         return mXOffset;
     }
 
-    float Character::GetyOffset() const
+    float TextCharacter::GetyOffset() const
     {
         return mYOffset;
     }
 
-    float Character::GetSizeX() const
+    float TextCharacter::GetSizeX() const
     {
         return mSizeX;
     }
 
-    float Character::GetSizeY() const
+    float TextCharacter::GetSizeY() const
     {
         return mSizeY;
     }
 
-    float Character::GetxAdvance() const
+    float TextCharacter::GetxAdvance() const
     {
         return mXAdvance;
     }

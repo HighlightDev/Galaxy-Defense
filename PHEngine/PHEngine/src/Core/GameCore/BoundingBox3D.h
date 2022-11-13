@@ -6,7 +6,7 @@
 
 namespace EngineCore
 {
-   class BoundingBox
+   class BoundingBox3D
    {
       glm::vec3 mOrigin;
 
@@ -14,11 +14,11 @@ namespace EngineCore
 
    public:
 
-      BoundingBox();
+      BoundingBox3D();
 
-      BoundingBox(const glm::vec3& origin, const glm::vec3& halfExtent);
+      BoundingBox3D(const glm::vec3& origin, const glm::vec3& halfExtent);
 
-      ~BoundingBox();
+      ~BoundingBox3D();
 
       glm::vec3 GetMax() const;
 
@@ -28,7 +28,7 @@ namespace EngineCore
 
       glm::vec3 GetHalfExtent() const;
 
-      bool IsIntersectionWithBox(const BoundingBox& boundingBox) const;
+      bool IsIntersectionWithBox(const BoundingBox3D& boundingBox) const;
 
       std::array<glm::vec3, 8> GetBoundPositions() const;
    };

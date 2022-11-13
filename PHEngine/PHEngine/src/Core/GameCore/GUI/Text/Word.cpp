@@ -13,7 +13,7 @@ namespace EngineCore
      * Adds a character to the end of the current word and increases the screen-space width of the word.
      * @param character - the character to be added.
      */
-    void Word::AddCharacter(const Character &character)
+    void Word::AddCharacter(const TextCharacter &character)
     {
         mCharacters.push_back(character);
         mWidth += character.GetxAdvance() * mFontSize;
@@ -22,7 +22,7 @@ namespace EngineCore
     /**
      * @return The list of characters in the word.
      */
-    const std::vector<Character> &Word::GetCharacters() const
+    const std::vector<TextCharacter> &Word::GetCharacters() const
     {
         return mCharacters;
     }

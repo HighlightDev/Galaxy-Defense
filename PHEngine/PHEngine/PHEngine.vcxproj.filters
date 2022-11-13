@@ -1776,7 +1776,7 @@
     <ClInclude Include="src\Core\GameCore\LoggerExtension.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\BoundingBox.h">
+    <ClInclude Include="src\Core\GameCore\BoundingBox3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\BoundingBoxBuilder.h">
@@ -2223,7 +2223,7 @@
     <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\Vec3PropertyBinding.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\GUI\Text\Character.h">
+    <ClInclude Include="src\Core\GameCore\GUI\Text\TextCharacter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\GUI\Text\FontHandler.h">
@@ -2690,7 +2690,7 @@
     <ClCompile Include="src\Core\GameCore\ACamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\BoundingBox.cpp">
+    <ClCompile Include="src\Core\GameCore\BoundingBox3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\BoundingBoxBuilder.cpp">
@@ -2951,7 +2951,7 @@
     <ClCompile Include="src\Core\GameCore\Components\UiComponents\UiComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\GUI\Text\Character.cpp">
+    <ClCompile Include="src\Core\GameCore\GUI\Text\TextCharacter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\GUI\Text\FontHandler.cpp">

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Character.h"
+#include "TextCharacter.h"
 
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace EngineCore
      */
     class Word
     {
-        std::vector<Character> mCharacters;
+        std::vector<TextCharacter> mCharacters;
 
         float mWidth;
 
@@ -28,12 +28,12 @@ namespace EngineCore
          * Adds a character to the end of the current word and increases the screen-space width of the word.
          * @param character - the character to be added.
          */
-        void AddCharacter(const Character& character);
+        void AddCharacter(const TextCharacter& character);
 
         /**
          * @return The list of characters in the word.
          */
-        const std::vector<Character>& GetCharacters() const;
+        const std::vector<TextCharacter>& GetCharacters() const;
 
         /**
          * @return The width of the word in terms of screen size.

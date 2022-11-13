@@ -9,12 +9,12 @@ namespace Graphics
    {
    }
 
-   BoundingBox AProxyVisibilityController::GetTransformedBoundingBox() const
+   BoundingBox3D AProxyVisibilityController::GetTransformedBoundingBox() const
    {
       return mBoundingBox;
    }
 
-   void AProxyVisibilityController::SetTransformedBoundingBox(const BoundingBox& boundingBox) {
+   void AProxyVisibilityController::SetTransformedBoundingBox(const BoundingBox3D& boundingBox) {
 
       mBoundingBox = boundingBox;
    }

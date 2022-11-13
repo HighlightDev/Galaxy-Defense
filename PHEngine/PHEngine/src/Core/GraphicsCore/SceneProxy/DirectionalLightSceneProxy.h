@@ -3,7 +3,7 @@
 #include "LightSceneProxy.h"
 #include "Core/GameCore/Components/DirectionalLightComponent.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 using namespace EngineCore;
 
@@ -36,7 +36,7 @@ namespace Graphics
 
          virtual ProjectedShadowInfo* GetShadowInfo();
 
-         BoundingBox GetShadowOrthographicProjectionBound() const;
+         BoundingBox3D GetShadowOrthographicProjectionBound() const;
 
       };
 

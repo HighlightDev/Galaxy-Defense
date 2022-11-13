@@ -6,6 +6,13 @@
 
 namespace EngineMath
 {
+   float G = 9.8f;
+   float PI = 3.14159f;
+   float ENGINE_FLOAT_EPSILON = 0.01f;
+   glm::vec3 AXIS_RIGHT = glm::vec3(1, 0, 0);
+   glm::vec3 AXIS_UP = glm::vec3(0, 1, 0);
+   glm::vec3 AXIS_FORWARD = glm::vec3(0, 0, 1);
+
    bool CompareFloats(const float X, const float Y)
    {
       const float absX = std::abs(X);
@@ -163,5 +170,11 @@ namespace EngineMath
          weight = weight * invSum;
       }
       return weights;
+   }
+
+   bool CheckSimilarityVec2(const glm::vec2 &left, const glm::vec2 &right)
+   {
+      const auto absoluteDiff = glm::abs(left) - glm::abs(right);
+      return absoluteDiff.x <= ENGINE_FLOAT_EPSILON && absoluteDiff.y <= ENGINE_FLOAT_EPSILON;
    }
 }

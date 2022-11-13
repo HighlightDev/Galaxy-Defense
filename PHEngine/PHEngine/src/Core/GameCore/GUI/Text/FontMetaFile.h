@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Character.h"
+#include "TextCharacter.h"
 
 #include <string>
 #include <unordered_map>
@@ -37,7 +37,7 @@ namespace EngineCore
         int32_t mPaddingWidth;
         int32_t mPaddingHeight;
 
-        std::unordered_map<int32_t, Character> mMetaData;
+        std::unordered_map<int32_t, TextCharacter> mMetaData;
         std::unordered_map<std::string, std::string> mValues;
 
         std::list<std::string> mFileSrc;
@@ -53,7 +53,7 @@ namespace EngineCore
 
         float GetSpaceWidth() const;
 
-        Character GetCharacter(const int32_t ascii) const;
+        TextCharacter GetCharacter(const int32_t ascii) const;
 
         /**
          * Read in the next line and store the variable values.
@@ -104,7 +104,7 @@ namespace EngineCore
 
         /**
          * Loads in data about each character and stores the data in the
-         * {@link Character} class.
+         * {@link TextCharacter} class.
          *
          * @param imageWidth
          *            - the width of the texture atlas in pixels.
@@ -120,7 +120,7 @@ namespace EngineCore
          *            - the size of the texture atlas in pixels.
          * @return The data about the character.
          */
-        std::optional<Character> TryLoadCharacter(const int32_t imageSize);
+        std::optional<TextCharacter> TryLoadCharacter(const int32_t imageSize);
 
         float GetHorizontalPerPixelSize() const;
         

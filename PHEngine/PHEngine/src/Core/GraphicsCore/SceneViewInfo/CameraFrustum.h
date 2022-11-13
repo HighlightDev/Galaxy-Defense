@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
@@ -36,7 +36,7 @@ namespace Graphics
 
       bool IsIntersectionWithBox(const glm::vec3& origin, const glm::vec3& extent) const;
 
-      bool CollidesWithBoundingBox(const BoundingBox& boundingBox) const;
+      bool CollidesWithBoundingBox(const BoundingBox3D& boundingBox) const;
 
       static CameraFrustum GetConstructedFromViewProjectionMatrices(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 

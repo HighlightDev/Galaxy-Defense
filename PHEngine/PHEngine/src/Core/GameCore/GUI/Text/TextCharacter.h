@@ -10,7 +10,7 @@ namespace EngineCore
      * font texture atlas. All sizes are for a font-size of 1.
      *
      */
-    class Character
+    class TextCharacter
     {
         int mId;
         float mXTextureCoord;
@@ -51,7 +51,7 @@ namespace EngineCore
          *            - how far in pixels the cursor should advance after adding
          *            this character.
          */
-        Character(const int32_t id,
+        TextCharacter(const int32_t id,
                   const float xTextureCoord,
                   const float yTextureCoord,
                   const float xTexSize,

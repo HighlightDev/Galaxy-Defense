@@ -13,7 +13,7 @@ namespace Graphics
 			std::shared_ptr<AnimatedMeshData> m_animatedMeshData;
 
 		public:
-			AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox &boundingBox);
+			AnimatedSkin(const std::shared_ptr<VertexArrayObject> &vao, std::shared_ptr<AnimatedMeshData> animatedMeshData, const BoundingBox3D &boundingBox);
 
 			~AnimatedSkin();
 

@@ -1,4 +1,4 @@
-#include "BoundingBox.h"
+#include "BoundingBox3D.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
@@ -6,43 +6,43 @@
 namespace EngineCore
 {
 
-   BoundingBox::BoundingBox()
+   BoundingBox3D::BoundingBox3D()
       : mOrigin()
       , mHalfExtent()
    {
    }
 
-   BoundingBox::BoundingBox(const glm::vec3& origin, const glm::vec3& halfExtent)
+   BoundingBox3D::BoundingBox3D(const glm::vec3& origin, const glm::vec3& halfExtent)
       : mOrigin(origin)
       , mHalfExtent(halfExtent)
    {
    }
 
-   BoundingBox::~BoundingBox()
+   BoundingBox3D::~BoundingBox3D()
    {
    }
 
-   glm::vec3 BoundingBox::GetOrigin() const
+   glm::vec3 BoundingBox3D::GetOrigin() const
    {
       return mOrigin;
    }
 
-   glm::vec3 BoundingBox::GetHalfExtent() const
+   glm::vec3 BoundingBox3D::GetHalfExtent() const
    {
       return mHalfExtent;
    }
 
-   glm::vec3 BoundingBox::GetMax() const
+   glm::vec3 BoundingBox3D::GetMax() const
    {
       return mOrigin + mHalfExtent;
    }
 
-   glm::vec3 BoundingBox::GetMin() const
+   glm::vec3 BoundingBox3D::GetMin() const
    {
       return mOrigin - mHalfExtent;
    }
 
-   bool BoundingBox::IsIntersectionWithBox(const BoundingBox& boundingBox) const
+   bool BoundingBox3D::IsIntersectionWithBox(const BoundingBox3D& boundingBox) const
    {
       const glm::vec3& meMin = GetMin();
       const glm::vec3& meMax = GetMax();
@@ -55,7 +55,7 @@ namespace EngineCore
          (meMin.z <= bbMax.z && meMax.z >= bbMin.z);
    }
 
-   std::array<glm::vec3, 8> BoundingBox::GetBoundPositions() const
+   std::array<glm::vec3, 8> BoundingBox3D::GetBoundPositions() const
    {
       /* the sequence is next:
       1 (-,+,-)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/GameCore/BoundingBox.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 #include "Implementation/Actors/MissileActor.h"
 

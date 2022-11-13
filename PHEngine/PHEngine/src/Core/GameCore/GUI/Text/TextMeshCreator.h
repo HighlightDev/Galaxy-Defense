@@ -31,7 +31,7 @@ namespace EngineCore
 
 		TextMeshData CreateQuadVertices(const std::shared_ptr<TextFieldProxy> &text, const std::vector<Line> &lines);
 
-		void AddVerticesForCharacter(const float curserX, const float curserY, Character character, const float fontSize,
+		void AddVerticesForCharacter(const float curserX, const float curserY, TextCharacter character, const float fontSize,
 									 std::vector<float> &vertices);
 
 		void AddVertices(std::vector<float> &vertices, const float x, const float y, const float maxX, const float maxY);
