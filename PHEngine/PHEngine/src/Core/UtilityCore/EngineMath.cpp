@@ -177,4 +177,9 @@ namespace EngineMath
       const auto absoluteDiff = glm::abs(left) - glm::abs(right);
       return absoluteDiff.x <= ENGINE_FLOAT_EPSILON && absoluteDiff.y <= ENGINE_FLOAT_EPSILON;
    }
+
+   bool CheckSimilarityIVec2(const glm::ivec2 &left, const glm::ivec2 &right)
+   {
+      return left.x == right.x && left.y == right.y;
+   }
 }

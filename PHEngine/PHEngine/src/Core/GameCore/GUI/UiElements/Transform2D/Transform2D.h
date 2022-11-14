@@ -8,7 +8,10 @@ namespace EngineCore
     {
         struct Transform2D
         {
-            glm::vec2 Translation;
+            glm::ivec2 Translation;
+
+            Transform2D() : Translation() {}
+            Transform2D(const glm::ivec2 &translation) : Translation(translation) {}
         };
     }
 }

@@ -65,5 +65,6 @@ namespace EngineMath
    std::vector<float> CalculateGaussNormalizedWeights(const uint32_t blurWidth);
 
    bool CheckSimilarityVec2(const glm::vec2 &left, const glm::vec2 &right);
+   bool CheckSimilarityIVec2(const glm::ivec2 &left, const glm::ivec2 &right);
 
 }

@@ -14,9 +14,9 @@ namespace EngineCore
             : mId(s_Ids++),
               mAbsoluteOrigin(),
               mRelativeOrigin(),
-              mZOrder(0.0f),
-              mWidth(0.0f),
-              mHeight(0.0f),
+              mZOrder(0),
+              mWidth(0),
+              mHeight(0),
               mBoundingArea(),
               mAnchors(),
               mParent(parent),
@@ -41,7 +41,7 @@ namespace EngineCore
 
         void UiItemBase::SetAbsoluteOrigin(const Transform2D &transform)
         {
-            if (!CheckSimilarityVec2(mAbsoluteOrigin.Translation, transform.Translation))
+            if (!CheckSimilarityIVec2(mAbsoluteOrigin.Translation, transform.Translation))
             {
                 mAbsoluteOrigin = transform;
                 TransformChanged();
@@ -50,7 +50,7 @@ namespace EngineCore
 
         void UiItemBase::SetRelativeOrigin(const Transform2D &transform)
         {
-            if (!CheckSimilarityVec2(mRelativeOrigin.Translation, transform.Translation))
+            if (!CheckSimilarityIVec2(mRelativeOrigin.Translation, transform.Translation))
             {
                 mRelativeOrigin = transform;
                 TransformChanged();
@@ -100,8 +100,6 @@ namespace EngineCore
 
         void UiItemBase::TransformChanged()
         {
-            RebuildTransform();
-            RebuildBoundingArea();
             UpdateHierarchyTransform();
             OnTransformChanged();
         }
@@ -123,13 +121,15 @@ namespace EngineCore
                 }
                 else if (eUiItemPositioningType::RELATIVE == mUiPositioningType)
                 {
+                    const auto relativeTranslation = glm::clamp(mRelativeOrigin.Translation, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
+                    mAbsoluteOrigin.Translation = relativeTranslation + parentAbsoluteOrigin.Translation;
                 }
             }
         }
 
         void UiItemBase::RebuildBoundingArea()
         {
-            mBoundingArea = BoundingBox2D(mAbsoluteOrigin.Translation, glm::vec2(mWidth / 2, mHeight / 2));
+            mBoundingArea = BoundingBox2D(mAbsoluteOrigin.Translation, glm::ivec2(mWidth / 2, mHeight / 2));
         }
 
         void UiItemBase::OnTransformChanged()
@@ -138,6 +138,9 @@ namespace EngineCore
 
         void UiItemBase::UpdateHierarchyTransform()
         {
+            RebuildTransform();
+            RebuildBoundingArea();
+            
             for (const auto &child : mChildren)
             {
                 child->UpdateHierarchyTransform();

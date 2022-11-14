@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Transform2D/Transform2D.h"
+#include "IUiTransformable.h"
 #include "Transform2D/UiAnchorType.h"
 #include "Transform2D/BoundingBox2D.h"
 
@@ -19,7 +19,7 @@ namespace EngineCore
             ANCHORS
         };
 
-        class UiItemBase
+        class UiItemBase : public IUiTransformable
         {
             size_t mId;
             static size_t s_Ids;
@@ -48,18 +48,18 @@ namespace EngineCore
 
             virtual ~UiItemBase() = default;
 
-            const Transform2D &GetAbsoluteOrigin() const;
-            const Transform2D &GetRelativeOrigin() const;
-            size_t GetZOrder() const;
-            size_t GetWidth() const;
-            size_t GetHeight() const;
+            virtual const Transform2D &GetAbsoluteOrigin() const override;
+            virtual const Transform2D &GetRelativeOrigin() const override;
+            virtual size_t GetZOrder() const override;
+            virtual size_t GetWidth() const override;
+            virtual size_t GetHeight() const override;
             size_t GetId() const;
 
-            void SetAbsoluteOrigin(const Transform2D &transform);
-            void SetRelativeOrigin(const Transform2D &transform);
-            void SetZOrder(const size_t z_order);
-            void SetWidth(const size_t width);
-            void SetHeight(const size_t height);
+            virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
+            virtual void SetRelativeOrigin(const Transform2D &transform) override;
+            virtual void SetZOrder(const size_t z_order) override;
+            virtual void SetWidth(const size_t width) override;
+            virtual void SetHeight(const size_t height) override;
             void SetUiAnchor(const eUiAnchorType anchorType, const std::shared_ptr<UiItemBase> &anchorUiItem);
 
         protected:
