@@ -4,6 +4,8 @@
 #include "IUiTransformable.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
+#include <unordered_set>
+
 using namespace Graphics;
 
 namespace EngineCore
@@ -18,11 +20,11 @@ namespace EngineCore
             glm::ivec2 mWidthHeight;
 
         protected:
-        
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
+            std::unordered_set<size_t> mRegisteredUiItems;
 
         public:
-            explicit UiCanvas(const ViewPortInfo& canvasScreenProperties);
+            explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
 
             virtual const Transform2D &GetAbsoluteOrigin() const override;
             virtual const Transform2D &GetRelativeOrigin() const override;
@@ -35,6 +37,15 @@ namespace EngineCore
             virtual void SetZOrder(const size_t z_order) override;
             virtual void SetWidth(const size_t width) override;
             virtual void SetHeight(const size_t height) override;
+
+            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+            void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+
+            void Render();
+
+        protected:
+            void RegisterUiItem(const size_t uiId);
+            void UnregisterUiItem(const size_t uiId);
         };
     }
 }

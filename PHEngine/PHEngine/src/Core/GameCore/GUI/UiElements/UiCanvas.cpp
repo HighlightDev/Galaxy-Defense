@@ -1,5 +1,7 @@
 #include "UiCanvas.h"
 
+#include <algorithm>
+
 namespace EngineCore
 {
     namespace GUI
@@ -8,7 +10,8 @@ namespace EngineCore
             : mAbsoluteOrigin(glm::ivec2(canvasScreenProperties.OriginX, canvasScreenProperties.OriginY)),
               mRelativeOrigin(mAbsoluteOrigin),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
-              mChildren()
+              mChildren(),
+              mRegisteredUiItems()
         {
         }
 
@@ -58,6 +61,40 @@ namespace EngineCore
         void UiCanvas::SetHeight(const size_t height)
         {
             mWidthHeight.y = height;
+        }
+
+        void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
+        {
+            RegisterUiItem(uiItem->GetId());
+            mChildren.emplace_back(uiItem);
+        }
+
+        void UiCanvas::RegisterUiItem(const size_t uiId)
+        {
+            assert(!mRegisteredUiItems.count(uiId));
+            mRegisteredUiItems.insert(uiId);
+        }
+
+        void UiCanvas::UnregisterUiItem(const size_t uiId)
+        {
+            assert(mRegisteredUiItems.count(uiId));
+            mRegisteredUiItems.erase(uiId);
+        }
+
+        void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
+        {
+            UnregisterUiItem(uiItem->GetId());
+            const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
+                                           { return childUi->GetId() == uiItem->GetId(); });
+            mChildren.erase(it);
+        }
+
+        void UiCanvas::Render()
+        {
+            for (const auto &child : mChildren)
+            {
+                child->Render();
+            }
         }
     }
 }

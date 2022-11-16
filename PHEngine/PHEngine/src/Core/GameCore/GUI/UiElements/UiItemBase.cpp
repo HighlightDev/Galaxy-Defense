@@ -10,7 +10,7 @@ namespace EngineCore
 
         size_t UiItemBase::s_Ids = 0;
 
-        UiItemBase::UiItemBase(const std::weak_ptr<UiItemBase> &parent)
+        UiItemBase::UiItemBase(const std::weak_ptr<IUiTransformable> &parent)
             : mId(s_Ids++),
               mAbsoluteOrigin(),
               mRelativeOrigin(),
@@ -37,6 +37,16 @@ namespace EngineCore
         size_t UiItemBase::GetZOrder() const
         {
             return mZOrder;
+        }
+
+        size_t UiItemBase::GetWidth() const
+        {
+            return mWidth;
+        }
+
+        size_t UiItemBase::GetHeight() const
+        {
+            return mHeight;
         }
 
         void UiItemBase::SetAbsoluteOrigin(const Transform2D &transform)
@@ -116,6 +126,8 @@ namespace EngineCore
                 {
                     if (mAnchors.size())
                     {
+                        assert(false);
+                        // todo: not implemented
                         // calculate size and position with anchors
                     }
                 }
@@ -140,10 +152,40 @@ namespace EngineCore
         {
             RebuildTransform();
             RebuildBoundingArea();
-            
+
             for (const auto &child : mChildren)
             {
                 child->UpdateHierarchyTransform();
+            }
+        }
+
+        void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
+        {
+            RegisterUiItem(uiItem->GetId());
+            mChildren.emplace_back(uiItem);
+        }
+
+        void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
+        {
+            UnregisterUiItem(uiItem->GetId());
+            const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
+                                           { return childUi->GetId() == uiItem->GetId(); });
+            mChildren.erase(it);
+        }
+
+        void UiItemBase::RegisterUiItem(const size_t uiId)
+        {
+            if (const auto &parentSp = mParent.lock())
+            {
+                parentSp->RegisterUiItem(uiId);
+            }
+        }
+
+        void UiItemBase::UnregisterUiItem(const size_t uiId)
+        {
+            if (const auto &parentSp = mParent.lock())
+            {
+                parentSp->UnregisterUiItem(uiId);
             }
         }
     }

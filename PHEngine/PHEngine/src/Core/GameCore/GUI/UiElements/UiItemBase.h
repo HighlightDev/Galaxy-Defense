@@ -37,14 +37,14 @@ namespace EngineCore
 
             std::unordered_map<eUiAnchorType, std::shared_ptr<UiItemBase>> mAnchors;
 
-            std::weak_ptr<UiItemBase> mParent;
+            std::weak_ptr<IUiTransformable> mParent;
 
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
             eUiItemPositioningType mUiPositioningType{eUiItemPositioningType::RELATIVE};
 
         public:
-            explicit UiItemBase(const std::weak_ptr<UiItemBase> &parent = std::weak_ptr<UiItemBase>());
+            explicit UiItemBase(const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
             virtual ~UiItemBase() = default;
 
@@ -61,6 +61,14 @@ namespace EngineCore
             virtual void SetWidth(const size_t width) override;
             virtual void SetHeight(const size_t height) override;
             void SetUiAnchor(const eUiAnchorType anchorType, const std::shared_ptr<UiItemBase> &anchorUiItem);
+
+            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+            void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+            virtual void RegisterUiItem(const size_t uiId) override;
+            virtual void UnregisterUiItem(const size_t uiId) override;
+
+            // todo: temporary, should be done by scene proxy on RT
+            virtual void Render() {}
 
         protected:
             virtual void OnTransformChanged();

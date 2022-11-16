@@ -35,6 +35,8 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/DebugCore/TextureRenderer.h"
 #include "Core/GameCore/GUI/Text/FontHandler.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GameCore/GUI/UiElements/UiImage.h"
 
 #include <utility>
 
@@ -43,6 +45,7 @@ using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
+using namespace EngineCore::GUI;
 
 namespace Graphics
 {
@@ -91,6 +94,10 @@ namespace Graphics
          FontHandler mFontHandler;
 
          std::unique_ptr<PostFxRenderer> mPostFxRenderer;
+
+         //todo
+         std::shared_ptr<UiCanvas> mUiCanvas;
+         //todo
 
       public:
 

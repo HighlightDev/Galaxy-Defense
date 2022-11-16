@@ -1,6 +1,9 @@
 #pragma once
 
 #include "UiItemBase.h"
+#include "Core/GameCore/ShaderImplementation/UiTestShader.h"
+
+using namespace EngineCore::ShaderImpl;
 
 namespace EngineCore
 {
@@ -8,12 +11,14 @@ namespace EngineCore
     {
         class UiImage : public UiItemBase
         {
+            std::shared_ptr<UiTestShader> mUiTestShader;
+
         public:
-            explicit UiImage(const std::weak_ptr<UiItemBase> &parent = std::weak_ptr<UiItemBase>());
+            explicit UiImage(const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
             ~UiImage() override = default;
 
-            void Render();
+            virtual void Render() override;
 
         protected:
             virtual void UpdateHierarchyTransform() override;

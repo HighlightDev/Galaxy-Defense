@@ -138,6 +138,12 @@ namespace Graphics
                  }));
 
          RegisterFonts();
+
+         mUiCanvas = std::make_shared<UiCanvas>(ViewPortInfo(0, 0, 500, 500));
+         const auto uiImage = std::make_shared<UiImage>(mUiCanvas);
+         mUiCanvas->AddUiItem(uiImage);
+         uiImage->SetWidth(350);
+         uiImage->SetHeight(150);
       }
 
       void DeferredShadingSceneRenderer::RegisterFonts()
@@ -815,6 +821,10 @@ namespace Graphics
                   mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
 
                GuiTextPass();
+
+               RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<false>> renderState;
+               renderState.BindRenderState();
+               mUiCanvas->Render();
             }
             else
             {
