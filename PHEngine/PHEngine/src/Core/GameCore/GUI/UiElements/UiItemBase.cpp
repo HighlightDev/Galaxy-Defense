@@ -73,6 +73,7 @@ namespace EngineCore
             {
                 mZOrder = zOrder;
                 TransformChanged();
+                UpdateSortedChildren();
             }
         }
 
@@ -163,6 +164,7 @@ namespace EngineCore
         {
             RegisterUiItem(uiItem->GetId());
             mChildren.emplace_back(uiItem);
+            UpdateSortedChildren();
         }
 
         void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
@@ -171,6 +173,7 @@ namespace EngineCore
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetId() == uiItem->GetId(); });
             mChildren.erase(it);
+            UpdateSortedChildren();
         }
 
         void UiItemBase::RegisterUiItem(const size_t uiId)
@@ -186,6 +189,30 @@ namespace EngineCore
             if (const auto &parentSp = mParent.lock())
             {
                 parentSp->UnregisterUiItem(uiId);
+            }
+        }
+
+        std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
+        {
+            using returnValue_t = decltype(GetAllChildren());
+            returnValue_t result;
+
+            result.insert(result.end(), mChildren.begin(), mChildren.end());
+
+            for (const auto &child : mChildren)
+            {
+                const auto grandChildren = child->GetAllChildren();
+                result.insert(result.end(), grandChildren.begin(), grandChildren.end());
+            }
+
+            return result;
+        }
+
+        void UiItemBase::UpdateSortedChildren()
+        {
+            if (const auto& parentSp = mParent.lock())
+            {
+                parentSp->UpdateSortedChildren();
             }
         }
     }

@@ -8,7 +8,7 @@ namespace EngineCore
     {
         class IUiTransformable
         {
-            public:
+        public:
             virtual const Transform2D &GetAbsoluteOrigin() const = 0;
             virtual const Transform2D &GetRelativeOrigin() const = 0;
             virtual size_t GetZOrder() const = 0;
@@ -23,6 +23,8 @@ namespace EngineCore
 
             virtual void RegisterUiItem(const size_t uiId) = 0;
             virtual void UnregisterUiItem(const size_t uiId) = 0;
+
+            virtual void UpdateSortedChildren() = 0;
         };
     }
 }

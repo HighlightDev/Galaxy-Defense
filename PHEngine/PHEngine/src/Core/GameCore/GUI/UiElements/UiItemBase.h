@@ -70,10 +70,14 @@ namespace EngineCore
             // todo: temporary, should be done by scene proxy on RT
             virtual void Render() {}
 
+            std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
+
         protected:
             virtual void OnTransformChanged();
 
             virtual void UpdateHierarchyTransform();
+
+            virtual void UpdateSortedChildren() override;
 
         private:
             void TransformChanged();

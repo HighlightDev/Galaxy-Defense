@@ -13,12 +13,18 @@ namespace EngineCore
         {
             std::shared_ptr<UiTestShader> mUiTestShader;
 
+            glm::vec4 mColor;
+
         public:
             explicit UiImage(const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
             ~UiImage() override = default;
 
             virtual void Render() override;
+
+            void SetColor(const glm::vec4& color);
+
+            glm::vec4 GetColor() const;
 
         protected:
             virtual void UpdateHierarchyTransform() override;

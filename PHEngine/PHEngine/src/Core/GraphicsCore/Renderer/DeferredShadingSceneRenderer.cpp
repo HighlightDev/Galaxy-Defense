@@ -144,6 +144,15 @@ namespace Graphics
          mUiCanvas->AddUiItem(uiImage);
          uiImage->SetWidth(350);
          uiImage->SetHeight(150);
+         uiImage->SetZOrder(1);
+         uiImage->SetColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+
+         const auto grandChild = std::make_shared<UiImage>(uiImage);
+         uiImage->AddUiItem(grandChild);
+         grandChild->SetWidth(250);
+         grandChild->SetHeight(100);
+         grandChild->SetZOrder(2);
+         grandChild->SetColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
       }
 
       void DeferredShadingSceneRenderer::RegisterFonts()
@@ -822,9 +831,11 @@ namespace Graphics
 
                GuiTextPass();
 
-               RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<false>> renderState;
+               RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
                renderState.BindRenderState();
+               glDepthMask(false);
                mUiCanvas->Render();
+               glDepthMask(true);
             }
             else
             {

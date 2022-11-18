@@ -11,7 +11,8 @@ namespace EngineCore
               mRelativeOrigin(mAbsoluteOrigin),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
               mChildren(),
-              mRegisteredUiItems()
+              mRegisteredUiItems(),
+              mSortedChildren()
         {
         }
 
@@ -67,6 +68,7 @@ namespace EngineCore
         {
             RegisterUiItem(uiItem->GetId());
             mChildren.emplace_back(uiItem);
+            UpdateSortedChildren();
         }
 
         void UiCanvas::RegisterUiItem(const size_t uiId)
@@ -87,14 +89,34 @@ namespace EngineCore
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetId() == uiItem->GetId(); });
             mChildren.erase(it);
+            UpdateSortedChildren();
         }
 
         void UiCanvas::Render()
         {
-            for (const auto &child : mChildren)
+            for (const auto &child : mSortedChildren)
             {
                 child->Render();
             }
+        }
+
+        void UiCanvas::SortChildrenByZOrder()
+        {
+            mSortedChildren.insert(mSortedChildren.end(), mChildren.begin(), mChildren.end());
+
+            for (const auto &child : mChildren)
+            {
+                const auto grandChildren = child->GetAllChildren();
+                mSortedChildren.insert(mSortedChildren.end(), grandChildren.begin(), grandChildren.end());
+            }
+
+            std::sort(mSortedChildren.begin(), mSortedChildren.end(), [](const auto &left, const auto &right)
+                      { return left->GetZOrder() < right->GetZOrder(); });
+        }
+
+        void UiCanvas::UpdateSortedChildren()
+        {
+            SortChildrenByZOrder();
         }
     }
 }

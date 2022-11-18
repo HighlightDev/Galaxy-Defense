@@ -12,7 +12,8 @@ namespace EngineCore
     namespace GUI
     {
         UiImage::UiImage(const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(parent)
+            : UiItemBase(parent),
+              mColor(0.0, 0.0, 0.0, 1.0)
         {
             const auto &folderManager = FolderManager::GetInstance();
             ShaderParams shaderParams("UiTest Shader", folderManager->GetShadersPath() + "uiTestVS.glsl", folderManager->GetShadersPath() + "uiTestFS.glsl", "", "", "", "");
@@ -24,7 +25,7 @@ namespace EngineCore
             const auto &absoluteTranslation = mAbsoluteOrigin.Translation;
             glViewport(absoluteTranslation.x, absoluteTranslation.y, mWidth, mHeight);
             mUiTestShader->ExecuteShader();
-            mUiTestShader->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+            mUiTestShader->SetColor(mColor);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiTestShader->StopShader();
         }
@@ -32,6 +33,16 @@ namespace EngineCore
         void UiImage::UpdateHierarchyTransform()
         {
             UiItemBase::UpdateHierarchyTransform();
+        }
+
+        void UiImage::SetColor(const glm::vec4 &color)
+        {
+            mColor = color;
+        }
+
+        glm::vec4 UiImage::GetColor() const
+        {
+            return mColor;
         }
     }
 }

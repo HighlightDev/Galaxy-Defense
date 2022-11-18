@@ -22,6 +22,7 @@ namespace EngineCore
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
             std::unordered_set<size_t> mRegisteredUiItems;
+            std::vector<std::shared_ptr<UiItemBase>> mSortedChildren;
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
@@ -43,9 +44,14 @@ namespace EngineCore
 
             void Render();
 
+        private:
+            
+            void SortChildrenByZOrder();
+
         protected:
             void RegisterUiItem(const size_t uiId);
             void UnregisterUiItem(const size_t uiId);
+            virtual void UpdateSortedChildren() override;
         };
     }
 }
