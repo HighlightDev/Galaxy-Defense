@@ -19,7 +19,7 @@ extern "C"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "LuaScriptExecutorBase.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutorBase.h"
 #include "LuaWrapper.h"
 #include "LuaHelper.h"
 
@@ -435,12 +435,12 @@ namespace EngineCore
             }
          };
 
-         template <typename ILuaExecutor_t, typename FunctorType, typename ArgsPack_t, typename ReturnValueType>
+         template <typename FunctorType, typename ArgsPack_t, typename ReturnValueType>
          struct LuaCallbackInvoker
          {
-            FORCEINLINE static int Invoke(lua_State *state, ILuaExecutor_t *executorInstance, const uint64_t funcHash, const ArgsPack_t &packArgs)
+            FORCEINLINE static int Invoke(lua_State *state, void *ownerPtr, const uint64_t funcHash, const ArgsPack_t &packArgs)
             {
-               LuaScriptExecutorBase *baseExecutorInstance = static_cast<LuaScriptExecutorBase *>(executorInstance);
+               LuaScriptExecutorBase *baseExecutorInstance = reinterpret_cast<LuaScriptExecutorBase *>(ownerPtr);
                const auto functor_any = baseExecutorInstance->GetFunctorAny(funcHash);
                const auto &functor = std::any_cast<FunctorType>(functor_any);
                const auto retValue = functor(packArgs);
@@ -449,12 +449,12 @@ namespace EngineCore
             }
          };
 
-         template <typename ILuaExecutor_t, typename FunctorType, typename ArgsPack_t>
-         struct LuaCallbackInvoker<ILuaExecutor_t, FunctorType, ArgsPack_t, void>
+         template <typename FunctorType, typename ArgsPack_t>
+         struct LuaCallbackInvoker<FunctorType, ArgsPack_t, void>
          {
-            FORCEINLINE static int Invoke(lua_State *state, ILuaExecutor_t *executorInstance, const uint64_t funcHash, const ArgsPack_t &packArgs)
+            FORCEINLINE static int Invoke(lua_State *state, void *ownerPtr, const uint64_t funcHash, const ArgsPack_t &packArgs)
             {
-               LuaScriptExecutorBase *baseExecutorInstance = static_cast<LuaScriptExecutorBase *>(executorInstance);
+               LuaScriptExecutorBase *baseExecutorInstance = reinterpret_cast<LuaScriptExecutorBase *>(ownerPtr);
                const auto functor_any = baseExecutorInstance->GetFunctorAny(funcHash);
                const auto &functor = std::any_cast<FunctorType>(functor_any);
                functor(packArgs);
@@ -586,13 +586,13 @@ namespace EngineCore
          }
       };
 
-      template <typename ILuaExecutor, uint64_t funcHash, typename FunctorType>
+      template <uint64_t funcHash, typename FunctorType>
       struct LuaCallbackBinder;
 
-      template <typename ILuaExecutor, uint64_t funcHash, typename ReturnType, typename... ArgsType>
-      struct LuaCallbackBinder<ILuaExecutor, funcHash, ReturnType(ArgsType...)>
+      template <uint64_t funcHash, typename ReturnType, typename... ArgsType>
+      struct LuaCallbackBinder<funcHash, ReturnType(ArgsType...)>
       {
-         using this_t = LuaCallbackBinder<ILuaExecutor, funcHash, ReturnType(ArgsType...)>;
+         using this_t = LuaCallbackBinder<funcHash, ReturnType(ArgsType...)>;
          using args_t = std::tuple<ArgsType...>;
          using return_t = ReturnType;
 
@@ -608,8 +608,8 @@ namespace EngineCore
          {
             using namespace LuaInnerCore;
             assert(lua_gettop(state) != 0); // Check missing host data
-            auto owner = static_cast<ILuaExecutor *>(lua_touserdata(state, 1));
-            assert(owner);
+            auto ownerPtr = lua_touserdata(state, 1);
+            assert(ownerPtr);
 
             static constexpr size_t argsCount = sizeof...(ArgsType);
             auto topStackIndex = LuaRealArgsCounter<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
@@ -617,7 +617,7 @@ namespace EngineCore
             args_t parameterPack;
             GetLuaArgsPack<args_t, argsCount>::Collect(state, parameterPack, topStackIndex);
 
-            return LuaCallbackInvoker<ILuaExecutor, std::function<return_t(args_t)>, args_t, return_t>::Invoke(state, owner, sFuncHash, parameterPack);
+            return LuaCallbackInvoker<std::function<return_t(args_t)>, args_t, return_t>::Invoke(state, ownerPtr, sFuncHash, parameterPack);
          }
       };
    }

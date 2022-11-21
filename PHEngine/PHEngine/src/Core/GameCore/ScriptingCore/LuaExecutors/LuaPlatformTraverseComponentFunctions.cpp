@@ -1,7 +1,7 @@
 #include "LuaPlatformTraverseComponentFunctions.h"
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
+#include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 
 using namespace EngineMath;
 using namespace EngineCore;
@@ -22,11 +22,7 @@ namespace EngineCore
 
       void LuaPlatformTraverseComponentFunctions::RegisterCallbacks()
       {
-         LuaCommonEngineFunctions::RegisterCallbacks();
-         using LuaExecutor_t = LuaPlatformTraverseComponentFunctions;
-
-         AddFunctor(7, WrapFunctorIntoAny<void(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float>)>::GetWrappedFunctor(std::bind(&LuaPlatformTraverseComponentFunctions::AddRoutePoint, this, std::placeholders::_1)));
-         LuaCallbackBinder<LuaExecutor_t, 7, void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Bind(mLuaInstance, "_AddRoutePoint");
+         LuaCallbackBindingHelper<7, void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Bind(mLuaInstance, this, std::bind(&LuaPlatformTraverseComponentFunctions::AddRoutePoint, this, std::placeholders::_1), "_AddRoutePoint");
       }
 
       void LuaPlatformTraverseComponentFunctions::RunScript()

@@ -4,8 +4,7 @@
 #include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
-
-#include <iostream>
+#include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 
 namespace EngineCore
 {

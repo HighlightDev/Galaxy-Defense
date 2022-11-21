@@ -3,7 +3,6 @@
 #include "ILuaScriptExecutor.h"
 #include "LuaWrapper.h"
 #include "Core/GameCore/Scene.h"
-#include "LuaBindingHelper.h"
 
 #include <unordered_map>
 #include <any>
@@ -50,10 +49,10 @@ namespace EngineCore
 
             void PostInit(const std::weak_ptr<Scene> &scene);
 
+            void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
+
         protected:
             virtual void SetScript(const std::string &scriptName) override;
-
-            void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
         };
     }
 }

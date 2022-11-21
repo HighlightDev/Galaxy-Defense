@@ -2,8 +2,6 @@
 
 #include <memory>
 
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
-
 namespace EngineCore
 {
    class Actor;
@@ -11,10 +9,6 @@ namespace EngineCore
    {
       class LuaActorFunctions
       {
-         LuaWrapper mLuaInstance;
-
-         std::string mScriptName;
-
          std::weak_ptr<Actor> mParentActor;
 
       public:

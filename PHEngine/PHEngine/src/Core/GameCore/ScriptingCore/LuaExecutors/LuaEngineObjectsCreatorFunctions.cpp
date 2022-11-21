@@ -12,7 +12,7 @@
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/GameCore/HumanoidPlayerController.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
+#include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 
 using namespace Graphics;
 using namespace EngineUtility;
@@ -43,81 +43,41 @@ namespace EngineCore
 
          using LuaExecutor_t = LuaEngineObjectsCreatorFunctions;
 
-         AddFunctor(7, WrapFunctorIntoAny<void(std::tuple<std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::LoadResourcesAsync, this, std::placeholders::_1)));
-         AddFunctor(8, WrapFunctorIntoAny<Component *(std::tuple<std::string, ComponentData *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateComponent, this, std::placeholders::_1)));
-         AddFunctor(9, WrapFunctorIntoAny<Actor *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1)));
-         AddFunctor(10, WrapFunctorIntoAny<void(std::tuple<std::string, glm::ivec4, float, float, float, glm::vec3, int32_t>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1)));
-         AddFunctor(11, WrapFunctorIntoAny<void(std::tuple<std::string, glm::ivec4, float, float, glm::vec3, int32_t>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera, this, std::placeholders::_1)));
-         AddFunctor(12, WrapFunctorIntoAny<void(std::tuple<std::string, Component *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::AttachComponentToActor, this, std::placeholders::_1)));
-         AddFunctor(13, WrapFunctorIntoAny<void(std::tuple<Actor *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::AttachPlayerControllerToActor, this, std::placeholders::_1)));
-         AddFunctor(14, WrapFunctorIntoAny<ProjectedShadowInfo *(std::tuple<int32_t, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateLightProjectionShadowInfo, this, std::placeholders::_1)));
-         AddFunctor(15, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateDirLightComponentData, this, std::placeholders::_1)));
-         AddFunctor(16, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePointLightComponentData, this, std::placeholders::_1)));
-         AddFunctor(17, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateSpotlightComponentData, this, std::placeholders::_1)));
-         AddFunctor(18, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateMeshComponentData, this, std::placeholders::_1)));
-         AddFunctor(19, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateSimpleMeshComponentData, this, std::placeholders::_1)));
-         AddFunctor(20, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, PhysicsDescriptor *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsComponentData, this, std::placeholders::_1)));
-         AddFunctor(21, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateInputComponentData, this, std::placeholders::_1)));
-         AddFunctor(22, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateCharacterMovementComponentData, this, std::placeholders::_1)));
-         AddFunctor(23, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePlatformTraverseComponentData, this, std::placeholders::_1)));
-         AddFunctor(24, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, IMaterial *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateSkyboxComponentData, this, std::placeholders::_1)));
-         AddFunctor(25, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateWaterPlaneComponentData, this, std::placeholders::_1)));
-         AddFunctor(26, WrapFunctorIntoAny<ComponentData *(std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, std::string /*Camera name*/, glm::ivec4>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponentData, this, std::placeholders::_1)));
-         AddFunctor(27, WrapFunctorIntoAny<IMaterial *(std::tuple<std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateMaterial, this, std::placeholders::_1)));
-         AddFunctor(28, WrapFunctorIntoAny<void(std::tuple<IMaterial *, std::string, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::SetTextureToMaterial, this, std::placeholders::_1)));
-         AddFunctor(29, WrapFunctorIntoAny<void(std::tuple<IMaterial *, float, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::SetFloatToMaterial, this, std::placeholders::_1)));
-         AddFunctor(30, WrapFunctorIntoAny<void(std::tuple<IMaterial *, std::string, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::SetDeferredTextureToMaterial, this, std::placeholders::_1)));
-         AddFunctor(31, WrapFunctorIntoAny<void(std::tuple<IMaterial *, std::string, std::string, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::SetBindingToMaterial, this, std::placeholders::_1)));
-         AddFunctor(32, WrapFunctorIntoAny<PhysicsShapeBase *(std::tuple<glm::vec3>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsBoxShape, this, std::placeholders::_1)));
-         AddFunctor(33, WrapFunctorIntoAny<PhysicsShapeBase *(std::tuple<double>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsSphereShape, this, std::placeholders::_1)));
-         AddFunctor(34, WrapFunctorIntoAny<PhysicsShapeBase *(std::tuple<double, double>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsCapsuleShape, this, std::placeholders::_1)));
-         AddFunctor(35, WrapFunctorIntoAny<PhysicsShapeBase *(std::tuple<glm::vec3, double>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsPlaneShape, this, std::placeholders::_1)));
-         AddFunctor(36, WrapFunctorIntoAny<PhysicsShapeBase *(std::tuple<>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsCompoundShape, this, std::placeholders::_1)));
-         AddFunctor(37, WrapFunctorIntoAny<void(std::tuple<PhysicsShapeBase *, PhysicsShapeBase *, glm::vec3, glm::vec3>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::AddCompoundChildShape, this, std::placeholders::_1)));
-         AddFunctor(38, WrapFunctorIntoAny<PhysicsDescriptor *(std::tuple<PhysicsShapeBase *, std::string, float>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateRigidBodyController, this, std::placeholders::_1)));
-         AddFunctor(39, WrapFunctorIntoAny<PhysicsDescriptor *(std::tuple<float, float, float, float>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateDynamicCharacterController, this, std::placeholders::_1)));
-         AddFunctor(40, WrapFunctorIntoAny<Tweener *(std::tuple<Actor *, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::CreateTweener, this, std::placeholders::_1)));
-         AddFunctor(41, WrapFunctorIntoAny<void(std::tuple<Tweener *, std::string, std::string, std::string>)>::GetWrappedFunctor(std::bind(&LuaEngineObjectsCreatorFunctions::SetTweenerBinding, this, std::placeholders::_1)));
-
-         LuaCallbackBinder<LuaExecutor_t, 7, void(std::string)>::Bind(mLuaInstance, "_LoadResourcesAsync");
-         LuaCallbackBinder<LuaExecutor_t, 8, Component *(std::string, ComponentData *)>::Bind(mLuaInstance, "_CreateComponent");
-         LuaCallbackBinder<LuaExecutor_t, 9, Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Bind(mLuaInstance, "_CreateActor");
-         LuaCallbackBinder<LuaExecutor_t, 10, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Bind(mLuaInstance, "_CreateThirdPersonCamera");
-         LuaCallbackBinder<LuaExecutor_t, 11, void(std::string, glm::ivec4, float, float, glm::vec3, int32_t)>::Bind(mLuaInstance, "_CreateFirstPersonCamera");
-         LuaCallbackBinder<LuaExecutor_t, 12, void(std::string, Component *)>::Bind(mLuaInstance, "_AttachComponentToActor");
-         LuaCallbackBinder<LuaExecutor_t, 13, void(Actor *)>::Bind(mLuaInstance, "_AttachPlayerControllerToActor");
-         LuaCallbackBinder<LuaExecutor_t, 14, ProjectedShadowInfo *(int32_t, std::string)>::Bind(mLuaInstance, "_CreateLightProjectionShadowInfo");
-         /*************************************COMPONENT DATA**************************************/
-         LuaCallbackBinder<LuaExecutor_t, 15, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo *)>::Bind(mLuaInstance, "_CreateDirLightComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 16, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, "_CreatePointLightComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 17, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, "_CreateSpotlightComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 18, ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, "_CreateMeshComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 19, ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, "_CreateSimpleMeshComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 20, ComponentData *(std::string, PhysicsDescriptor *)>::Bind(mLuaInstance, "_CreatePhysicsComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 21, ComponentData *(std::string)>::Bind(mLuaInstance, "_CreateInputComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 22, ComponentData *(std::string, glm::vec3, std::string)>::Bind(mLuaInstance, "_CreateCharacterMovementComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 23, ComponentData *(std::string, std::string)>::Bind(mLuaInstance, "_CreatePlatformTraverseComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 24, ComponentData *(std::string, glm::vec3, IMaterial *)>::Bind(mLuaInstance, "_CreateSkyboxComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 25, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *)>::Bind(mLuaInstance, "_CreateWaterPlaneComponentData");
-         LuaCallbackBinder<LuaExecutor_t, 26, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, std::string /*Camera name*/, glm::ivec4)>::Bind(mLuaInstance, "_CreatePlanarReflectionComponentData");
-         /*************************************COMPONENT DATA**************************************/
-         LuaCallbackBinder<LuaExecutor_t, 27, IMaterial *(std::string)>::Bind(mLuaInstance, "_CreateMaterial");
-         LuaCallbackBinder<LuaExecutor_t, 28, void(IMaterial *, std::string, std::string)>::Bind(mLuaInstance, "_SetTextureToMaterial");
-         LuaCallbackBinder<LuaExecutor_t, 29, void(IMaterial *, float, std::string)>::Bind(mLuaInstance, "_SetFloatToMaterial");
-         LuaCallbackBinder<LuaExecutor_t, 30, void(IMaterial *, std::string, std::string)>::Bind(mLuaInstance, "_SetDeferredTextureToMaterial");
-         LuaCallbackBinder<LuaExecutor_t, 31, void(IMaterial *, std::string, std::string, std::string)>::Bind(mLuaInstance, "_SetBindingToMaterial");
-         /**********************************************PHYSICS COLLISION SHAPE***********************************************/
-         LuaCallbackBinder<LuaExecutor_t, 32, PhysicsShapeBase *(glm::vec3)>::Bind(mLuaInstance, "_CreatePhysicsBoxShape");
-         LuaCallbackBinder<LuaExecutor_t, 33, PhysicsShapeBase *(double)>::Bind(mLuaInstance, "_CreatePhysicsSphereShape");
-         LuaCallbackBinder<LuaExecutor_t, 34, PhysicsShapeBase *(double, double)>::Bind(mLuaInstance, "_CreatePhysicsCapsuleShape");
-         LuaCallbackBinder<LuaExecutor_t, 35, PhysicsShapeBase *(glm::vec3, double)>::Bind(mLuaInstance, "_CreatePhysicsPlaneShape");
-         LuaCallbackBinder<LuaExecutor_t, 36, PhysicsShapeBase *()>::Bind(mLuaInstance, "_CreatePhysicsCompoundShape");
-         LuaCallbackBinder<LuaExecutor_t, 37, void(PhysicsShapeBase *, PhysicsShapeBase *, glm::vec3, glm::vec3)>::Bind(mLuaInstance, "_AddCompoundChildShape");
-         /**********************************************PHYSICS COLLISION SHAPE***********************************************/
-         LuaCallbackBinder<LuaExecutor_t, 38, PhysicsDescriptor *(PhysicsShapeBase *, std::string, float)>::Bind(mLuaInstance, "_CreateRigidBodyController");
-         LuaCallbackBinder<LuaExecutor_t, 39, PhysicsDescriptor *(float, float, float, float)>::Bind(mLuaInstance, "_CreateDynamicCharacterController");
-         LuaCallbackBinder<LuaExecutor_t, 40, Tweener *(Actor *, std::string)>::Bind(mLuaInstance, "_CreateTweener");
-         LuaCallbackBinder<LuaExecutor_t, 41, void(Tweener *, std::string, std::string, std::string)>::Bind(mLuaInstance, "_SetTweenerBinding");
+         LuaCallbackBindingHelper<7, void(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::LoadResourcesAsync, this, std::placeholders::_1), "_LoadResourcesAsync");
+         LuaCallbackBindingHelper<8, Component *(std::string, ComponentData *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateComponent, this, std::placeholders::_1), "_CreateComponent");
+         LuaCallbackBindingHelper<9, Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1), "_CreateActor");
+         LuaCallbackBindingHelper<10, void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1), "_CreateThirdPersonCamera");
+         LuaCallbackBindingHelper<11, void(std::string, glm::ivec4, float, float, glm::vec3, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera, this, std::placeholders::_1), "_CreateFirstPersonCamera");
+         LuaCallbackBindingHelper<12, void(std::string, Component *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::AttachComponentToActor, this, std::placeholders::_1), "_AttachComponentToActor");
+         LuaCallbackBindingHelper<13, void(Actor *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::AttachPlayerControllerToActor, this, std::placeholders::_1), "_AttachPlayerControllerToActor");
+         LuaCallbackBindingHelper<14, ProjectedShadowInfo *(int32_t, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateLightProjectionShadowInfo, this, std::placeholders::_1), "_CreateLightProjectionShadowInfo");
+         LuaCallbackBindingHelper<15, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, ProjectedShadowInfo *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateDirLightComponentData, this, std::placeholders::_1), "_CreateDirLightComponentData");
+         LuaCallbackBindingHelper<16, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePointLightComponentData, this, std::placeholders::_1), "_CreatePointLightComponentData");
+         LuaCallbackBindingHelper<17, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateSpotlightComponentData, this, std::placeholders::_1), "_CreateSpotlightComponentData");
+         LuaCallbackBindingHelper<18, ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateMeshComponentData, this, std::placeholders::_1), "_CreateMeshComponentData");
+         LuaCallbackBindingHelper<19, ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateSimpleMeshComponentData, this, std::placeholders::_1), "_CreateSimpleMeshComponentData");
+         LuaCallbackBindingHelper<20, ComponentData *(std::string, PhysicsDescriptor *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsComponentData, this, std::placeholders::_1), "_CreatePhysicsComponentData");
+         LuaCallbackBindingHelper<21, ComponentData *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateInputComponentData, this, std::placeholders::_1), "_CreateInputComponentData");
+         LuaCallbackBindingHelper<22, ComponentData *(std::string, glm::vec3, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateCharacterMovementComponentData, this, std::placeholders::_1), "_CreateCharacterMovementComponentData");
+         LuaCallbackBindingHelper<23, ComponentData *(std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePlatformTraverseComponentData, this, std::placeholders::_1), "_CreatePlatformTraverseComponentData");
+         LuaCallbackBindingHelper<24, ComponentData *(std::string, glm::vec3, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateSkyboxComponentData, this, std::placeholders::_1), "_CreateSkyboxComponentData");
+         LuaCallbackBindingHelper<25, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateWaterPlaneComponentData, this, std::placeholders::_1), "_CreateWaterPlaneComponentData");
+         LuaCallbackBindingHelper<26, ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, std::string /*Camera name*/, glm::ivec4)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePlanarReflectionComponentData, this, std::placeholders::_1), "_CreatePlanarReflectionComponentData");
+         LuaCallbackBindingHelper<27, IMaterial *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateMaterial, this, std::placeholders::_1), "_CreateMaterial");
+         LuaCallbackBindingHelper<28, void(IMaterial *, std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetTextureToMaterial, this, std::placeholders::_1), "_SetTextureToMaterial");
+         LuaCallbackBindingHelper<29, void(IMaterial *, float, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetFloatToMaterial, this, std::placeholders::_1), "_SetFloatToMaterial");
+         LuaCallbackBindingHelper<30, void(IMaterial *, std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetDeferredTextureToMaterial, this, std::placeholders::_1), "_SetDeferredTextureToMaterial");
+         LuaCallbackBindingHelper<31, void(IMaterial *, std::string, std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetBindingToMaterial, this, std::placeholders::_1), "_SetBindingToMaterial");
+         LuaCallbackBindingHelper<32, PhysicsShapeBase *(glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsBoxShape, this, std::placeholders::_1), "_CreatePhysicsBoxShape");
+         LuaCallbackBindingHelper<33, PhysicsShapeBase *(double)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsSphereShape, this, std::placeholders::_1), "_CreatePhysicsSphereShape");
+         LuaCallbackBindingHelper<34, PhysicsShapeBase *(double, double)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsCapsuleShape, this, std::placeholders::_1), "_CreatePhysicsCapsuleShape");
+         LuaCallbackBindingHelper<35, PhysicsShapeBase *(glm::vec3, double)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsPlaneShape, this, std::placeholders::_1), "_CreatePhysicsPlaneShape");
+         LuaCallbackBindingHelper<36, PhysicsShapeBase *()>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsCompoundShape, this, std::placeholders::_1), "_CreatePhysicsCompoundShape");
+         LuaCallbackBindingHelper<37, void(PhysicsShapeBase *, PhysicsShapeBase *, glm::vec3, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::AddCompoundChildShape, this, std::placeholders::_1), "_AddCompoundChildShape");
+         LuaCallbackBindingHelper<38, PhysicsDescriptor *(PhysicsShapeBase *, std::string, float)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateRigidBodyController, this, std::placeholders::_1), "_CreateRigidBodyController");
+         LuaCallbackBindingHelper<39, PhysicsDescriptor *(float, float, float, float)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateDynamicCharacterController, this, std::placeholders::_1), "_CreateDynamicCharacterController");
+         LuaCallbackBindingHelper<40, Tweener *(Actor *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateTweener, this, std::placeholders::_1), "_CreateTweener");
+         LuaCallbackBindingHelper<41, void(Tweener *, std::string, std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetTweenerBinding, this, std::placeholders::_1), "_SetTweenerBinding");
       }
 
       void LuaEngineObjectsCreatorFunctions::RunScript()

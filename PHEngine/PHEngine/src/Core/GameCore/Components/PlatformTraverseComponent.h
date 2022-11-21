@@ -2,7 +2,6 @@
 #include "Component.h"
 #include "Core/GameCore/ScriptingCore/LuaExecutors/LuaPlatformTraverseComponentFunctions.h"
 #include "PlatformTraverseComponentVisitor.h"
-#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace EnginePhysics;
 using namespace EngineCore::Scripts;
