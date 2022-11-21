@@ -1,10 +1,11 @@
 #pragma once
 #include "Component.h"
-#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_PlatformTraverseComponent.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaPlatformTraverseComponentFunctions.h"
 #include "PlatformTraverseComponentVisitor.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 using namespace EnginePhysics;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -16,7 +17,7 @@ namespace EngineCore
 
       std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
 
-      LuaScriptExecutor_PlatformTraverseComponent mScriptExecutor;
+      LuaPlatformTraverseComponentFunctions mScriptExecutor;
 
       std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 

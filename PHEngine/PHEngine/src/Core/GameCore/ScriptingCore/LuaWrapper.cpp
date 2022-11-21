@@ -8,41 +8,45 @@ using namespace TinyLogger;
 
 namespace EngineCore
 {
-   LuaWrapper::LuaWrapper()
+   namespace Scripts
    {
-      mState = luaL_newstate();
-      luaL_openlibs(mState);
-   }
 
-   LuaWrapper::~LuaWrapper()
-   {
-      if (mState)
+      LuaWrapper::LuaWrapper()
       {
-         lua_close(mState);
-         mState = nullptr;
-      }
-   }
-
-   bool LuaWrapper::ExecuteScript(const std::string& absPath)
-   {
-      std::string pathToFile = absPath;
-
-      if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
-      {
-         LogInfo( GetErrorMessageAt(-1));
-         return false;
+         mState = luaL_newstate();
+         luaL_openlibs(mState);
       }
 
-      return true;
-   }
+      LuaWrapper::~LuaWrapper()
+      {
+         if (mState)
+         {
+            lua_close(mState);
+            mState = nullptr;
+         }
+      }
 
-   std::string LuaWrapper::GetErrorMessageAt(int32_t stackIndex) const
-   {
-      return lua_tostring(mState, stackIndex);
-   }
+      bool LuaWrapper::ExecuteScript(const std::string &absPath)
+      {
+         std::string pathToFile = absPath;
 
-   lua_State* LuaWrapper::GetState() const
-   {
-      return mState;
+         if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
+         {
+            LogInfo(GetErrorMessageAt(-1));
+            return false;
+         }
+
+         return true;
+      }
+
+      std::string LuaWrapper::GetErrorMessageAt(int32_t stackIndex) const
+      {
+         return lua_tostring(mState, stackIndex);
+      }
+
+      lua_State *LuaWrapper::GetState() const
+      {
+         return mState;
+      }
    }
 }

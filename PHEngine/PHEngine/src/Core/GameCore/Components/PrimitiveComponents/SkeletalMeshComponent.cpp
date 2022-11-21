@@ -12,10 +12,10 @@
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-
    SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData)
        : PrimitiveComponent(meshComponentData.GameObjectName,
                             meshComponentData.m_translation,
@@ -57,7 +57,7 @@ namespace EngineCore
 
       if (mLuaInstance->ExecuteScript(mLuaScriptAbsPath))
       {
-         mTimeIncreaseMultiply = LuaGetGlobal<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
+         mTimeIncreaseMultiply = GetLuaGlobalVariable<float>::Value(*mLuaInstance.get(), "AnimationTimeMultiply", -1);
       }
    }
 

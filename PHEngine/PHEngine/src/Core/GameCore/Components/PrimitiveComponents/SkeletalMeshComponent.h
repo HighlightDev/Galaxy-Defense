@@ -9,9 +9,12 @@ using namespace Graphics::Data;
 
 namespace EngineCore
 {
-   struct MeshComponentData;
-   class LuaWrapper;
+   namespace Scripts
+   {
+      class LuaWrapper;
+   }
 
+   struct MeshComponentData;
    class SkeletalMeshComponent
        : public PrimitiveComponent
    {
@@ -23,7 +26,7 @@ namespace EngineCore
 
       std::string mLuaScriptAbsPath;
 
-      std::unique_ptr<LuaWrapper> mLuaInstance;
+      std::unique_ptr<::EngineCore::Scripts::LuaWrapper> mLuaInstance;
 
       float mUpdateDataResetTimeCounter;
 

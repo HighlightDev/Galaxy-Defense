@@ -1,5 +1,5 @@
 #include "IntroLevel.h"
-#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineObjectsCreator.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaEngineObjectsCreatorFunctions.h"
 #include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
@@ -51,7 +51,7 @@ namespace Game
       static constexpr const char *lvlName
           // = "createTestLevel.lua";
           = "spaceLvl1.lua";
-      LuaScriptExecutor_EngineObjectsCreator mLuaLevelBuilder = LuaScriptExecutor_EngineObjectsCreator(lvlName);
+      LuaEngineObjectsCreatorFunctions mLuaLevelBuilder = LuaEngineObjectsCreatorFunctions(lvlName);
       mLuaLevelBuilder.PostInit(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();

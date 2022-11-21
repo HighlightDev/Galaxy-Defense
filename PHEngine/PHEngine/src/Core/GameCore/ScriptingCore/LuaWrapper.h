@@ -11,22 +11,23 @@ extern "C"
 
 namespace EngineCore
 {
-   class LuaWrapper
+   namespace Scripts
    {
-   private:
+      class LuaWrapper
+      {
+      private:
+         lua_State *mState;
 
-      lua_State* mState;
+      public:
+         LuaWrapper();
 
-   public:
+         ~LuaWrapper();
 
-      LuaWrapper();
+         lua_State *GetState() const;
 
-      ~LuaWrapper();
+         bool ExecuteScript(const std::string &absPath);
 
-      lua_State* GetState() const;
-
-      bool ExecuteScript(const std::string& absPath);
-
-      std::string GetErrorMessageAt(int32_t stackIndex) const;
-   };
+         std::string GetErrorMessageAt(int32_t stackIndex) const;
+      };
+   }
 }
