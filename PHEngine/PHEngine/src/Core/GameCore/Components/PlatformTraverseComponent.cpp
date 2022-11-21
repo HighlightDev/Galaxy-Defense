@@ -139,7 +139,7 @@ namespace EngineCore
 
       std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
       data->ComponentName = GameObjectName;
-      data->ScriptName = mScriptExecutor.GetScriptRelPath();
+      data->ScriptName = mScriptExecutor.GetScriptName();
 
       actorData.ComponentsData.emplace_back(data);
    }

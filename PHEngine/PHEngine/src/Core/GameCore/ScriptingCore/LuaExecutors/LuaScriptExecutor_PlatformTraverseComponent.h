@@ -2,14 +2,14 @@
 
 #include "Core/GameCore/Scene.h"
 #include "Core/IoCore/FolderManager.h"
-#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaScriptExecutor_EngineBase.h"
+#include "Core/GameCore/ScriptingCore/LuaExecutors/LuaCommonEngineFunctions.h"
 
 namespace EngineCore
 {
    class PlatformTraverseComponent;
 
    class LuaScriptExecutor_PlatformTraverseComponent
-      : public LuaScriptExecutor_EngineBase
+      : public LuaCommonEngineFunctions
    {
 
       PlatformTraverseComponent* mOwnerComponent;

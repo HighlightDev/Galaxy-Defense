@@ -145,7 +145,7 @@ namespace Graphics
          uiImage->SetWidth(350);
          uiImage->SetHeight(150);
          uiImage->SetZOrder(1);
-         uiImage->SetColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
+         uiImage->SetColor(glm::vec4(1.0, 0.0, 1.0, 0.1));
 
          const auto grandChild = std::make_shared<UiImage>(uiImage);
          uiImage->AddUiItem(grandChild);
@@ -166,7 +166,7 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::DepthPass(std::shared_ptr<SceneView> sceneView)
+      void DeferredShadingSceneRenderer::DepthPass(const std::shared_ptr<SceneView> &sceneView)
       {
          if (mGroupedByShadowAtlasLights.size())
          {
@@ -396,7 +396,7 @@ namespace Graphics
          glDisable(GL_CULL_FACE);
       }
 
-      void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(std::shared_ptr<SceneView> sceneView)
+      void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
          auto cameraProxy = sceneView->GetCameraProxy();
 
@@ -443,7 +443,7 @@ namespace Graphics
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       }
 
-      void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy)
+      void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
          RenderState<DepthStencilState<false, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
@@ -538,7 +538,7 @@ namespace Graphics
          glDepthMask(true);
       }
 
-      void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(std::shared_ptr<SceneView> sceneView)
+      void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
@@ -697,6 +697,18 @@ namespace Graphics
          glDisable(GL_BLEND);
       }
 
+      void DeferredShadingSceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
+      {
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.BindRenderState();
+         glDepthMask(false);
+         mUiCanvas->Render();
+         glDepthMask(true);
+
+         const auto &viewPortInfo = sceneView->GetCameraProxy()->GetViewPort();
+         glViewport(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
+      }
+
       void DeferredShadingSceneRenderer::PrepareSceneProxiesForRender()
       {
          if (bProxiesDirty)
@@ -831,11 +843,8 @@ namespace Graphics
 
                GuiTextPass();
 
-               RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
-               renderState.BindRenderState();
-               glDepthMask(false);
-               mUiCanvas->Render();
-               glDepthMask(true);
+               GuiPass(sceneView);
+               // TODO: rendering to render texture later....
             }
             else
             {

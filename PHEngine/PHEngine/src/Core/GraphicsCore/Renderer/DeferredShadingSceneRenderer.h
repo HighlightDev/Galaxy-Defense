@@ -95,12 +95,11 @@ namespace Graphics
 
          std::unique_ptr<PostFxRenderer> mPostFxRenderer;
 
-         //todo
+         // todo
          std::shared_ptr<UiCanvas> mUiCanvas;
-         //todo
+         // todo
 
       public:
-
          std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
          std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
          std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
@@ -108,22 +107,23 @@ namespace Graphics
          std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
 
       private:
-
          void PrepareSceneProxiesForRender();
 
          void GroupLightsByShadowMap();
 
-         void DeferredLightPass_RenderThread(std::shared_ptr<CameraSceneProxy> cameraProxy);
+         void DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy);
 
-         void DeferredBasePass_RenderThread(std::shared_ptr<SceneView> sceneView);
+         void DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
 
-         void ForwardBasePass_RenderThread(std::shared_ptr<SceneView> sceneView);
+         void ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
 
-         void DepthPass(std::shared_ptr<SceneView> sceneView);
+         void DepthPass(const std::shared_ptr<SceneView> &sceneView);
 
          void PlanarReflectionPass();
 
          void GuiTextPass();
+
+         void GuiPass(const std::shared_ptr<SceneView> &sceneView);
 
          void RegisterFonts();
 

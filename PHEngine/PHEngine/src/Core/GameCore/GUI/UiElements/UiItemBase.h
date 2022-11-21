@@ -72,10 +72,10 @@ namespace EngineCore
 
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
 
+            virtual void UpdateHierarchyTransform();
+
         protected:
             virtual void OnTransformChanged();
-
-            virtual void UpdateHierarchyTransform();
 
             virtual void UpdateSortedChildren() override;
 

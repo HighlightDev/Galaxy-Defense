@@ -44,6 +44,7 @@ namespace EngineCore
         void UiCanvas::SetAbsoluteOrigin(const Transform2D &transform)
         {
             mAbsoluteOrigin = transform;
+            UpdateHierarchyTransform();
         }
 
         void UiCanvas::SetRelativeOrigin(const Transform2D &transform)
@@ -57,11 +58,21 @@ namespace EngineCore
         void UiCanvas::SetWidth(const size_t width)
         {
             mWidthHeight.x = width;
+            UpdateHierarchyTransform();
         }
 
         void UiCanvas::SetHeight(const size_t height)
         {
             mWidthHeight.y = height;
+            UpdateHierarchyTransform();
+        }
+
+        void UiCanvas::UpdateHierarchyTransform()
+        {
+            for (const auto &child : mChildren)
+            {
+                child->UpdateHierarchyTransform();
+            }
         }
 
         void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)

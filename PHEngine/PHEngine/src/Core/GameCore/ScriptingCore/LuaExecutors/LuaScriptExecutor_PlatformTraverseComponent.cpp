@@ -8,7 +8,7 @@ namespace EngineCore
 {
   
    LuaScriptExecutor_PlatformTraverseComponent::LuaScriptExecutor_PlatformTraverseComponent(PlatformTraverseComponent* owner, const std::string& scriptName)
-      : LuaScriptExecutor_EngineBase(scriptName)
+      : LuaCommonEngineFunctions(scriptName)
       , mOwnerComponent(owner)
    {
 
@@ -22,7 +22,7 @@ namespace EngineCore
    // Add route point
    void LuaScriptExecutor_PlatformTraverseComponent::RegisterCallbacks()
    {
-      LuaScriptExecutor_EngineBase::RegisterCallbacks();
+      LuaCommonEngineFunctions::RegisterCallbacks();
 
       using LuaExecutor_t = LuaScriptExecutor_PlatformTraverseComponent;
 
@@ -31,7 +31,7 @@ namespace EngineCore
 
    void LuaScriptExecutor_PlatformTraverseComponent::RunScript()
    {
-      LuaScriptExecutor_EngineBase::RunScript();
+      LuaCommonEngineFunctions::RunScript();
 
       mOwnerComponent->SetDestinationPoint(LuaGetGlobal<std::string>::Value(mLuaInstance, "StartRoute", -1));
    }

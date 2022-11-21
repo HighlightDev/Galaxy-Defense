@@ -1749,7 +1749,7 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h">
@@ -2678,7 +2678,7 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.cpp">

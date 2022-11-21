@@ -515,7 +515,7 @@
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.h" />
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.h" />
     <ClInclude Include="src\Core\GameCore\Components\HumanoidPhysicsMovementComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponent.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.h" />
@@ -1075,7 +1075,7 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneViewInfo\CameraFrustum.cpp" />
     <ClCompile Include="src\Core\GameCore\Serialize\SerializeHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.cpp" />
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_EngineBase.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\HumanoidPhysicsMovementComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaScriptExecutor_PlatformTraverseComponent.cpp" />

@@ -47,6 +47,7 @@ namespace EngineCore
         private:
             
             void SortChildrenByZOrder();
+            void UpdateHierarchyTransform();
 
         protected:
             void RegisterUiItem(const size_t uiId);

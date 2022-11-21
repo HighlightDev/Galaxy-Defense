@@ -7,7 +7,8 @@
 #include <glm/ext/quaternion_float.hpp>
 #include <algorithm>
 #include <utility>
-#include <TinyLogger/LogInterface.h>
+#include <any>
+#include <functional>
 
 extern "C"
 {
@@ -18,15 +19,17 @@ extern "C"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "LuaGlobalHandler.h"
+#include "LuaScriptExecutorBase.h"
 #include "LuaWrapper.h"
 
 #ifdef _WIN32
 #define FORCEINLINE __forceinline
-#elif __linux__ 
+#elif __linux__
 #define FORCEINLINE __attribute__((always_inline))
 #endif
 
-using namespace TinyLogger;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -54,7 +57,7 @@ namespace EngineCore
          {
             if (LUA_OK != luaCallResult)
             {
-               LogInfo( instanceWrapper.GetErrorMessageAt(-1));
+               LogInfo(instanceWrapper.GetErrorMessageAt(-1));
                return false;
             }
 
@@ -447,26 +450,21 @@ namespace EngineCore
       };
 
       template <typename tuple_type, size_t argsCount>
-      struct CollectArgsFromLuaHostInvoke;
-
-      template <typename tuple_type, size_t argsCount>
-      struct CollectArgsFromLuaHostInvoke
+      struct ArgsFromLuaCallback
       {
          using arg_type = typename std::tuple_element<argsCount - 1, tuple_type>::type;
 
          FORCEINLINE static void Collect(lua_State *state, tuple_type &params, int32_t &stackIndex)
          {
             std::get<argsCount - 1>(params) = GetValue<arg_type>::Value(state, stackIndex);
-            CollectArgsFromLuaHostInvoke<tuple_type, argsCount - 1>::Collect(state, params, stackIndex);
+            ArgsFromLuaCallback<tuple_type, argsCount - 1>::Collect(state, params, stackIndex);
          }
       };
 
       template <typename tuple_type>
-      struct CollectArgsFromLuaHostInvoke<tuple_type, 0>
+      struct ArgsFromLuaCallback<tuple_type, 0>
       {
-         FORCEINLINE static void Collect(lua_State *state, tuple_type &params, int32_t &stackIndex)
-         {
-         }
+         FORCEINLINE static void Collect(lua_State *state, tuple_type &params, int32_t &stackIndex) {}
       };
 
       struct LuaGetGlobalBase
@@ -494,6 +492,33 @@ namespace EngineCore
          FORCEINLINE static int PushToLua(lua_State *state, ILuaExecutor_t *executorInstance, ArgsPack_t &packArgs)
          {
             executorInstance->ExecuteLuaCallback(packArgs);
+            return 0;
+         }
+      };
+
+      template <typename ILuaExecutor_t, uint64_t FunctionHash, typename FunctorType, typename ArgsPack_t, typename ReturnValueType>
+      struct LuaCallbackReturnValueTemp
+      {
+         FORCEINLINE static int PushToLua(lua_State *state, ILuaExecutor_t *executorInstance, const ArgsPack_t &packArgs)
+         {
+            LuaScriptExecutorBase *baseExecutorInstance = static_cast<LuaScriptExecutorBase *>(executorInstance);
+            const auto functor_any = baseExecutorInstance->GetFunctorAny(FunctionHash);
+            const auto &functor = std::any_cast<FunctorType>(functor_any);
+            const auto retValue = functor(packArgs);
+            LuaInnerCore::PushTypeValue<ReturnValueType>(state, retValue);
+            return 1;
+         }
+      };
+
+      template <typename ILuaExecutor_t, uint64_t FunctionHash, typename FunctorType, typename ArgsPack_t>
+      struct LuaCallbackReturnValueTemp<ILuaExecutor_t, FunctionHash, FunctorType, ArgsPack_t, void>
+      {
+         FORCEINLINE static int PushToLua(lua_State *state, ILuaExecutor_t *executorInstance, const ArgsPack_t &packArgs)
+         {
+            LuaScriptExecutorBase *baseExecutorInstance = static_cast<LuaScriptExecutorBase *>(executorInstance);
+            const auto functor_any = baseExecutorInstance->GetFunctorAny(FunctionHash);
+            const auto &functor = std::any_cast<FunctorType>(functor_any);
+            functor(packArgs);
             return 0;
          }
       };
@@ -548,22 +573,16 @@ namespace EngineCore
       };
 
       template <typename tuple_t, int32_t currentIndex>
-      struct CollectLuaArgsCount_Inner
+      struct LuaRealArgsCount
       {
-         using arg_t = typename std::tuple_element<currentIndex, tuple_t>::type;
-         enum
-         {
-            value = LuaArgsCountForType<arg_t>::value + CollectLuaArgsCount_Inner<tuple_t, currentIndex - 1>::value
-         };
+         static constexpr int32_t value = LuaArgsCountForType<typename std::tuple_element<currentIndex, tuple_t>::type>::value +
+                                          LuaRealArgsCount<tuple_t, currentIndex - 1>::value;
       };
 
       template <typename tuple_t>
-      struct CollectLuaArgsCount_Inner<tuple_t, -1>
+      struct LuaRealArgsCount<tuple_t, -1>
       {
-         enum
-         {
-            value = 0
-         };
+         static constexpr int32_t value = 0;
       };
       /*------------ Inner Core  --------------*/
    }
@@ -674,12 +693,44 @@ namespace EngineCore
          ILuaExecutor *instance = static_cast<ILuaExecutor *>(lua_touserdata(state, 1));
          assert(instance);
 
-         int32_t stackIndex = LuaInnerCore::CollectLuaArgsCount_Inner<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
+         auto topStackIndex = LuaInnerCore::LuaRealArgsCount<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
 
          args_t parameterPackInstance;
-         LuaInnerCore::CollectArgsFromLuaHostInvoke<args_t, argsCount>::Collect(state, parameterPackInstance, stackIndex);
+         LuaInnerCore::ArgsFromLuaCallback<args_t, argsCount>::Collect(state, parameterPackInstance, topStackIndex);
 
          return LuaInnerCore::LuaCallbackReturnValue<ILuaExecutor, args_t, RetType>::PushToLua(state, instance, parameterPackInstance);
+      }
+   };
+
+   template <typename ILuaExecutor, uint64_t FunctionHash, typename FunctorType>
+   struct LuaRegisterCallbackTest;
+
+   template <typename ILuaExecutor, uint64_t FunctionHash, typename ReturnType, typename... ArgsType>
+   struct LuaRegisterCallbackTest<ILuaExecutor, FunctionHash, ReturnType(ArgsType...)>
+   {
+      using this_t = LuaRegisterCallbackTest<ILuaExecutor, FunctionHash, ReturnType(ArgsType...)>;
+      using args_t = std::tuple<ArgsType...>;
+      using return_t = ReturnType;
+
+      static void Register(const LuaWrapper &luaStateWrapper, const std::string &functionName)
+      {
+         lua_register(luaStateWrapper.GetState(), functionName.c_str(), this_t::WrappedCallback);
+      }
+
+   private:
+      static int WrappedCallback(lua_State *state)
+      {
+         static constexpr size_t argsCount = sizeof...(ArgsType);
+         assert(lua_gettop(state) != 0); // Check missing host data
+         auto owner = static_cast<ILuaExecutor *>(lua_touserdata(state, 1));
+         assert(owner);
+
+         auto topStackIndex = LuaInnerCore::LuaRealArgsCount<args_t, argsCount - 1>::value + 1; // + 1 because of host data at index 1
+
+         args_t parameterPackInstance;
+         LuaInnerCore::ArgsFromLuaCallback<args_t, argsCount>::Collect(state, parameterPackInstance, topStackIndex);
+
+         return LuaInnerCore::LuaCallbackReturnValueTemp<ILuaExecutor, FunctionHash, std::function<return_t(args_t)>, args_t, return_t>::PushToLua(state, owner, parameterPackInstance);
       }
    };
 }
