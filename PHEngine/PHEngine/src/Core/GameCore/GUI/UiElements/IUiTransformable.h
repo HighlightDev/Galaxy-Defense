@@ -2,6 +2,9 @@
 
 #include "Transform2D/Transform2D.h"
 
+#include <glm/vec2.hpp>
+#include <memory>
+
 namespace EngineCore
 {
     namespace GUI
@@ -14,6 +17,9 @@ namespace EngineCore
             virtual size_t GetZOrder() const = 0;
             virtual size_t GetWidth() const = 0;
             virtual size_t GetHeight() const = 0;
+            virtual glm::vec2 GetNormalizedTranslation() const = 0;
+            virtual glm::vec2 GetNormalizedScale() const = 0;
+            virtual std::shared_ptr<IUiTransformable> GetRootParent() const = 0;
 
             virtual void SetAbsoluteOrigin(const Transform2D &transform) = 0;
             virtual void SetRelativeOrigin(const Transform2D &transform) = 0;

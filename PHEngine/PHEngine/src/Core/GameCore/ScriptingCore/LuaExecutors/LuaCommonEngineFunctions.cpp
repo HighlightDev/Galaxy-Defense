@@ -4,8 +4,10 @@
 #include "Core/IoCore/FolderManager.h"
 
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/CommonCore/StringHash.h"
 
 using namespace IO;
+using namespace EngineCore;
 
 namespace EngineCore
 {
@@ -25,13 +27,13 @@ namespace EngineCore
       {
          using LuaExecutor_t = LuaCommonEngineFunctions;
 
-         LuaCallbackBindingHelper<0, GameObject *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGameObject, this, std::placeholders::_1), "_GetGameObject");
-         LuaCallbackBindingHelper<1, float(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValFloat, this, std::placeholders::_1), "_GetGOPropertyValFloat");
-         LuaCallbackBindingHelper<2, int32_t(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValInteger, this, std::placeholders::_1), "_GetGOPropertyValInteger");
-         LuaCallbackBindingHelper<3, void(GameObject *, std::string, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValVec3, this, std::placeholders::_1), "_SetGOPropertyValVec3");
-         LuaCallbackBindingHelper<4, void(GameObject *, std::string, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValBool, this, std::placeholders::_1), "_SetGOPropertyValBool");
-         LuaCallbackBindingHelper<5, int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowHeight, this, std::placeholders::_1), "_GetWindowHeight");
-         LuaCallbackBindingHelper<6, int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowWidth, this, std::placeholders::_1), "_GetWindowWidth");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGameObject"), GameObject *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGameObject, this, std::placeholders::_1), "_GetGameObject");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValFloat"), float(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValFloat, this, std::placeholders::_1), "_GetGOPropertyValFloat");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValInteger"), int32_t(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValInteger, this, std::placeholders::_1), "_GetGOPropertyValInteger");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValVec3"), void(GameObject *, std::string, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValVec3, this, std::placeholders::_1), "_SetGOPropertyValVec3");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValBool"), void(GameObject *, std::string, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValBool, this, std::placeholders::_1), "_SetGOPropertyValBool");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowHeight"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowHeight, this, std::placeholders::_1), "_GetWindowHeight");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowWidth"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowWidth, this, std::placeholders::_1), "_GetWindowWidth");
       }
 
       void LuaCommonEngineFunctions::RunScript()

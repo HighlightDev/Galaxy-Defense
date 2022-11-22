@@ -1,5 +1,8 @@
 #include "UiItemBase.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace EngineMath;
 
@@ -14,6 +17,8 @@ namespace EngineCore
             : mId(s_Ids++),
               mAbsoluteOrigin(),
               mRelativeOrigin(),
+              mNormalizedTranslation(),
+              mNormalizedScale(glm::vec2(1.0)),
               mZOrder(0),
               mWidth(0),
               mHeight(0),
@@ -22,6 +27,7 @@ namespace EngineCore
               mParent(parent),
               mChildren()
         {
+            TransformChanged();
         }
 
         const Transform2D &UiItemBase::GetAbsoluteOrigin() const
@@ -47,6 +53,26 @@ namespace EngineCore
         size_t UiItemBase::GetHeight() const
         {
             return mHeight;
+        }
+
+        glm::vec2 UiItemBase::GetNormalizedTranslation() const
+        {
+            return mNormalizedTranslation;
+        }
+
+        glm::vec2 UiItemBase::GetNormalizedScale() const
+        {
+            return mNormalizedScale;
+        }
+
+        glm::mat4 UiItemBase::GetTransformMatrix() const
+        {
+            glm::mat4 transformMatrix(1);
+            const auto &tranlsationToLeftBottomCorner = glm::vec2(1.0f) - (mNormalizedScale * glm::vec2(0.5f));
+            transformMatrix = glm::scale(transformMatrix, glm::vec3(mNormalizedScale.x, mNormalizedScale.y, 1.0f));
+            transformMatrix = glm::translate(transformMatrix, glm::vec3(mNormalizedTranslation.x - tranlsationToLeftBottomCorner.x,
+                                                                        mNormalizedTranslation.y - tranlsationToLeftBottomCorner.y, 0.0f));
+            return transformMatrix;
         }
 
         void UiItemBase::SetAbsoluteOrigin(const Transform2D &transform)
@@ -109,6 +135,20 @@ namespace EngineCore
             }
         }
 
+        std::shared_ptr<IUiTransformable> UiItemBase::GetRootParent() const
+        {
+            const std::shared_ptr<IUiTransformable> &parent = mParent.lock();
+            if (parent)
+            {
+                const auto &parentSp = parent->GetRootParent();
+                if (parentSp)
+                {
+                    return parentSp;
+                }
+            }
+            return parent;
+        }
+
         void UiItemBase::TransformChanged()
         {
             UpdateHierarchyTransform();
@@ -137,7 +177,23 @@ namespace EngineCore
                     const auto relativeTranslation = glm::clamp(mRelativeOrigin.Translation, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
                     mAbsoluteOrigin.Translation = relativeTranslation + parentAbsoluteOrigin.Translation;
                 }
+
+                RebuildNormalizedTransform(parentSp);
             }
+        }
+
+        void UiItemBase::RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent)
+        {
+            auto rootParentSp = parent->GetRootParent();
+            rootParentSp = rootParentSp ? rootParentSp : parent;
+            const auto rootWidth = rootParentSp->GetWidth();
+            const auto rootHeight = rootParentSp->GetHeight();
+            assert(rootWidth != 0 && rootHeight != 0);
+            mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.Translation.x) / static_cast<float>(rootWidth),
+                                               static_cast<float>(mAbsoluteOrigin.Translation.y) / static_cast<float>(rootHeight));
+
+            mNormalizedScale = glm::vec2(static_cast<float>(mWidth) / static_cast<float>(rootWidth),
+                                         static_cast<float>(mHeight) / static_cast<float>(rootHeight));
         }
 
         void UiItemBase::RebuildBoundingArea()
@@ -210,7 +266,7 @@ namespace EngineCore
 
         void UiItemBase::UpdateSortedChildren()
         {
-            if (const auto& parentSp = mParent.lock())
+            if (const auto &parentSp = mParent.lock())
             {
                 parentSp->UpdateSortedChildren();
             }

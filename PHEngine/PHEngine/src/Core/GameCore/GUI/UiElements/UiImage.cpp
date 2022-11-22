@@ -22,9 +22,9 @@ namespace EngineCore
 
         void UiImage::Render()
         {
-            const auto &absoluteTranslation = mAbsoluteOrigin.Translation;
-            glViewport(absoluteTranslation.x, absoluteTranslation.y, mWidth, mHeight);
+            const auto &transformMatrix = GetTransformMatrix();
             mUiTestShader->ExecuteShader();
+            mUiTestShader->SetTransformMatrix(transformMatrix);
             mUiTestShader->SetColor(mColor);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiTestShader->StopShader();

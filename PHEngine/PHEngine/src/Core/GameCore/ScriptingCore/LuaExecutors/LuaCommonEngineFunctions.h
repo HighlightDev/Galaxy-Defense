@@ -5,8 +5,6 @@
 
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutorBase.h"
 
-using namespace EngineCore::Scripts;
-
 namespace EngineCore
 {
    namespace Scripts

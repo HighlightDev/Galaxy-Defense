@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 #include <unordered_map>
+#include <glm/mat4x4.hpp>
 
 namespace EngineCore
 {
@@ -27,6 +28,9 @@ namespace EngineCore
         protected:
             Transform2D mAbsoluteOrigin;
             Transform2D mRelativeOrigin;
+
+            glm::vec2 mNormalizedTranslation;
+            glm::vec2 mNormalizedScale;
 
             size_t mZOrder;
 
@@ -53,7 +57,13 @@ namespace EngineCore
             virtual size_t GetZOrder() const override;
             virtual size_t GetWidth() const override;
             virtual size_t GetHeight() const override;
+            virtual glm::vec2 GetNormalizedTranslation() const override;
+            virtual glm::vec2 GetNormalizedScale() const override;
+            virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
+
             size_t GetId() const;
+            std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
+            glm::mat4 GetTransformMatrix() const;
 
             virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
             virtual void SetRelativeOrigin(const Transform2D &transform) override;
@@ -66,13 +76,10 @@ namespace EngineCore
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             virtual void RegisterUiItem(const size_t uiId) override;
             virtual void UnregisterUiItem(const size_t uiId) override;
+            virtual void UpdateHierarchyTransform();
 
             // todo: temporary, should be done by scene proxy on RT
             virtual void Render() {}
-
-            std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
-
-            virtual void UpdateHierarchyTransform();
 
         protected:
             virtual void OnTransformChanged();
@@ -84,6 +91,7 @@ namespace EngineCore
 
             void RebuildTransform();
             void RebuildBoundingArea();
+            void RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent);
         };
     }
 }

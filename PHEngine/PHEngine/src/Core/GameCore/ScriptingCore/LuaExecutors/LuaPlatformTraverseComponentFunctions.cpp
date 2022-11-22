@@ -2,6 +2,7 @@
 #include "Core/GameCore/Components/PlatformTraverseComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/CommonCore/StringHash.h"
 
 using namespace EngineMath;
 using namespace EngineCore;
@@ -22,7 +23,7 @@ namespace EngineCore
 
       void LuaPlatformTraverseComponentFunctions::RegisterCallbacks()
       {
-         LuaCallbackBindingHelper<7, void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Bind(mLuaInstance, this, std::bind(&LuaPlatformTraverseComponentFunctions::AddRoutePoint, this, std::placeholders::_1), "_AddRoutePoint");
+         LuaCallbackBindingHelper<Hash64_CT("LuaPlatformTraverseComponentFunctions::AddRoutePoint"), void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Bind(mLuaInstance, this, std::bind(&LuaPlatformTraverseComponentFunctions::AddRoutePoint, this, std::placeholders::_1), "_AddRoutePoint");
       }
 
       void LuaPlatformTraverseComponentFunctions::RunScript()

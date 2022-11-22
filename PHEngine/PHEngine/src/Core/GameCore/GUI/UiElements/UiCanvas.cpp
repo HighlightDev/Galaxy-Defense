@@ -41,6 +41,21 @@ namespace EngineCore
             return mWidthHeight.y;
         }
 
+        glm::vec2 UiCanvas::GetNormalizedTranslation() const
+        {
+            return glm::vec2();
+        }
+
+        glm::vec2 UiCanvas::GetNormalizedScale() const
+        {
+            return glm::vec2(1.0);
+        }
+
+        std::shared_ptr<IUiTransformable> UiCanvas::GetRootParent() const
+        {
+            return std::shared_ptr<IUiTransformable>();
+        }
+
         void UiCanvas::SetAbsoluteOrigin(const Transform2D &transform)
         {
             mAbsoluteOrigin = transform;
@@ -113,6 +128,7 @@ namespace EngineCore
 
         void UiCanvas::SortChildrenByZOrder()
         {
+            mSortedChildren.clear();
             mSortedChildren.insert(mSortedChildren.end(), mChildren.begin(), mChildren.end());
 
             for (const auto &child : mChildren)

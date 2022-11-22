@@ -702,6 +702,8 @@ namespace Graphics
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
+         const auto &canvasOrigin = mUiCanvas->GetAbsoluteOrigin();
+         glViewport(canvasOrigin.Translation.x, canvasOrigin.Translation.y, mUiCanvas->GetWidth(), mUiCanvas->GetHeight());
          mUiCanvas->Render();
          glDepthMask(true);
 

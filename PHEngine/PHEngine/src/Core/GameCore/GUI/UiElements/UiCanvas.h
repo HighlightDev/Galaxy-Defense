@@ -32,6 +32,9 @@ namespace EngineCore
             virtual size_t GetZOrder() const override;
             virtual size_t GetWidth() const override;
             virtual size_t GetHeight() const override;
+            virtual glm::vec2 GetNormalizedTranslation() const override;
+            virtual glm::vec2 GetNormalizedScale() const override;
+            virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
 
             virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
             virtual void SetRelativeOrigin(const Transform2D &transform) override;

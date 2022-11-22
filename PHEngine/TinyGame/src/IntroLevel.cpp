@@ -30,6 +30,7 @@ using namespace Graphics;
 using namespace EnginePhysics;
 using namespace IO;
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
 using namespace Resources;
 using namespace Graphics;
 
