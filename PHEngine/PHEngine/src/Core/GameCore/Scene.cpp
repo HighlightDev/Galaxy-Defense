@@ -11,8 +11,7 @@
 #include "Core/GameCore/Components/ComponentCreators/IComponentCreatable.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
-
-#include <TinyLogger/LogInterface.h>
+#include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
@@ -34,7 +33,8 @@ namespace EngineCore
          mMaterials(),
          mDynamicMaterials(),
          mExternalTickableObjects(),
-         mTextHandler()
+         mTextHandler(),
+         mUiHandler()
    {
       LogInfo("Scene::ctor");
 
@@ -53,6 +53,7 @@ namespace EngineCore
       LogInfo("Scene::PostLevelInit");
 
       mTextHandler.SetScene(shared_from_this());
+      mUiHandler.SetScene(shared_from_this());
 
       for (auto &actor : mActors)
       {
@@ -273,6 +274,11 @@ namespace EngineCore
    const TextHandler &Scene::GetTextHandler() const
    {
       return mTextHandler;
+   }
+
+   const UiHandler &Scene::GetUiHandler() const
+   {
+      return mUiHandler;
    }
 
    void Scene::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const
@@ -592,6 +598,66 @@ namespace EngineCore
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
                                                      { sceneRenderer->UnregisterText(textField->GetFontName(), textField->GetTextFieldId()); }));
+      }
+   }
+
+   void Scene::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+   {
+      LogInfo("Scene::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiCanvasProxy_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy); }));
+      }
+   }
+
+   void Scene::UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+   {
+      LogInfo("Scene::UnregisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiCanvasProxy_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->UnregisterUiCanvasProxy(uiCanvasProxy); }));
+      }
+   }
+
+   void Scene::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
+   {
+      LogInfo("Scene::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiSceneProxy_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId); }));
+      }
+   }
+
+   void Scene::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
+   {
+      LogInfo("Scene::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+
+      static constexpr uint64_t creatorObjectId = 0;
+      static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiSceneProxy_OnRenderThread");
+
+      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 Job(creatorObjectId, functionId, [=]()
+                                                     { sceneRenderer->UnregisterUiSceneProxy(uiSceneProxy, canvasUId); }));
       }
    }
 

@@ -12,6 +12,7 @@
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "TextHandler.h"
+#include "Core/GameCore/GUI/UiElements/UiHandler.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -21,6 +22,7 @@ using namespace Thread;
 using namespace Event;
 using namespace Resources;
 using namespace Graphics;
+using namespace GUI;
 
 namespace Graphics
 {
@@ -33,6 +35,8 @@ namespace Graphics
    {
       class LightSceneProxy;
       class PrimitiveSceneProxy;
+      class UiCanvasSceneProxy;
+      class UiSceneProxyBase;
    }
 }
 
@@ -58,7 +62,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineGOProperty<float>> mGameThreadDeltaSec;
 
-      std::unordered_map<std::string, IDeferredResourceCreator*> mDeferredResourceCreators;
+      std::unordered_map<std::string, IDeferredResourceCreator *> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
 
@@ -75,6 +79,8 @@ namespace EngineCore
       std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
 
       TextHandler mTextHandler;
+
+      UiHandler mUiHandler;
 
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
@@ -102,7 +108,7 @@ namespace EngineCore
 
       GameObject *GetGameObjectById(const uint64_t id) const;
 
-      IDeferredResourceCreator* GetDeferredResourceCreatorByName(const std::string &name) const;
+      IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 
       const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
 
@@ -126,7 +132,9 @@ namespace EngineCore
 
       const InterThreadCommunicationMgr &GetThreadManager() const;
 
-      const TextHandler& GetTextHandler() const;
+      const TextHandler &GetTextHandler() const;
+
+      const UiHandler &GetUiHandler() const;
 
       void AddActor(std::shared_ptr<Actor> actor);
 
@@ -185,9 +193,17 @@ namespace EngineCore
 
       void UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
 
+      void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+
+      void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+
+      void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+
+      void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+
       void TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType);
 
-      bool RegisterDeferredResourceCreator(IDeferredResourceCreator* creatorInstance, const std::string &gameObjectName);
+      bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 

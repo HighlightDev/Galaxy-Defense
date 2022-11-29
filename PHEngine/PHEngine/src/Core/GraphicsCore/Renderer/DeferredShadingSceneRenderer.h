@@ -20,6 +20,8 @@
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 
 #include "Core/GameCore/ShaderImplementation/DeferredLightShader.h"
 #include "Core/GameCore/ShaderImplementation/PointLightDepthShader.h"
@@ -35,8 +37,6 @@
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/DebugCore/TextureRenderer.h"
 #include "Core/GameCore/GUI/Text/FontHandler.h"
-#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
-#include "Core/GameCore/GUI/UiElements/UiImage.h"
 
 #include <utility>
 
@@ -45,7 +45,6 @@ using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
-using namespace EngineCore::GUI;
 
 namespace Graphics
 {
@@ -56,7 +55,7 @@ namespace Graphics
       {
          InterThreadCommunicationMgr &m_interThreadMgr;
 
-         /* G-buffers */
+         // G-buffers
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
          std::unique_ptr<ResolvedSceneFramebuffer> m_resolvedSceneFramebuffer;
@@ -69,7 +68,6 @@ namespace Graphics
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>> mDepthCollectPointLightShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> mDepthCollectPointLightShaderNonSkeletal;
 
-         // Texture renderer
          TextureRenderer m_textureRenderer;
 
          bool bProxiesDirty;
@@ -95,9 +93,7 @@ namespace Graphics
 
          std::unique_ptr<PostFxRenderer> mPostFxRenderer;
 
-         // todo
-         std::shared_ptr<UiCanvas> mUiCanvas;
-         // todo
+         std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;         
 
       public:
          std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
@@ -163,6 +159,14 @@ namespace Graphics
          void TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text);
 
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
+
+         void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy);
+
+         void UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy);
+
+         void RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId);
+
+         void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId);
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);

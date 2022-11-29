@@ -5,28 +5,45 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 #include <unordered_set>
+#include <memory>
 
 using namespace Graphics;
 
+namespace Graphics
+{
+    namespace Proxy
+    {
+        class UiCanvasSceneProxy;
+    }
+}
+
 namespace EngineCore
 {
+    class Scene;
+
     namespace GUI
     {
         class UiCanvas : public IUiTransformable
         {
         private:
+            static size_t s_UId;
+            size_t mUId;
+
+            std::weak_ptr<::EngineCore::Scene> mScene;
+
             Transform2D mAbsoluteOrigin;
             Transform2D mRelativeOrigin;
             glm::ivec2 mWidthHeight;
+            bool mIsVisible;
 
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
             std::unordered_set<size_t> mRegisteredUiItems;
-            std::vector<std::shared_ptr<UiItemBase>> mSortedChildren;
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
 
+            virtual size_t GetUId() const override;
             virtual const Transform2D &GetAbsoluteOrigin() const override;
             virtual const Transform2D &GetRelativeOrigin() const override;
             virtual size_t GetZOrder() const override;
@@ -35,27 +52,29 @@ namespace EngineCore
             virtual glm::vec2 GetNormalizedTranslation() const override;
             virtual glm::vec2 GetNormalizedScale() const override;
             virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
+            virtual bool IsVisible() const override;
 
             virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
             virtual void SetRelativeOrigin(const Transform2D &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
             virtual void SetWidth(const size_t width) override;
             virtual void SetHeight(const size_t height) override;
+            virtual void SetIsVisible(const bool isVisible) override;
+
+            void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+            virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
 
-            void Render();
+            std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
         private:
-            
-            void SortChildrenByZOrder();
             void UpdateHierarchyTransform();
 
         protected:
             void RegisterUiItem(const size_t uiId);
             void UnregisterUiItem(const size_t uiId);
-            virtual void UpdateSortedChildren() override;
         };
     }
 }

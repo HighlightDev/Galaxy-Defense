@@ -11,8 +11,10 @@
 
 namespace EngineCore
 {
+    class Scene;
     namespace GUI
     {
+        class UiCanvas;
         enum class eUiItemPositioningType
         {
             ABSOLUTE,
@@ -22,8 +24,8 @@ namespace EngineCore
 
         class UiItemBase : public IUiTransformable
         {
-            size_t mId;
-            static size_t s_Ids;
+            size_t mUId;
+            static size_t s_UIds;
 
         protected:
             Transform2D mAbsoluteOrigin;
@@ -31,6 +33,8 @@ namespace EngineCore
 
             glm::vec2 mNormalizedTranslation;
             glm::vec2 mNormalizedScale;
+
+            glm::mat4 mTransformMatrix;
 
             size_t mZOrder;
 
@@ -42,13 +46,16 @@ namespace EngineCore
             std::unordered_map<eUiAnchorType, std::shared_ptr<UiItemBase>> mAnchors;
 
             std::weak_ptr<IUiTransformable> mParent;
+            std::weak_ptr<UiCanvas> mParentCanvas;
 
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
             eUiItemPositioningType mUiPositioningType{eUiItemPositioningType::RELATIVE};
 
+            bool mIsVisible;
+
         public:
-            explicit UiItemBase(const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
+            explicit UiItemBase(const std::weak_ptr<UiCanvas>& parentCanvas, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
             virtual ~UiItemBase() = default;
 
@@ -60,10 +67,13 @@ namespace EngineCore
             virtual glm::vec2 GetNormalizedTranslation() const override;
             virtual glm::vec2 GetNormalizedScale() const override;
             virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
+            virtual bool IsVisible() const override;
+            virtual void SetIsVisible(const bool isVisible) override;
 
-            size_t GetId() const;
+            virtual size_t GetUId() const override;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             glm::mat4 GetTransformMatrix() const;
+            const std::weak_ptr<UiCanvas>& GetParentCanvas() const;
 
             virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
             virtual void SetRelativeOrigin(const Transform2D &transform) override;
@@ -78,13 +88,13 @@ namespace EngineCore
             virtual void UnregisterUiItem(const size_t uiId) override;
             virtual void UpdateHierarchyTransform();
 
-            // todo: temporary, should be done by scene proxy on RT
-            virtual void Render() {}
+            virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
+
+            virtual void OnRegistered();
+            virtual void OnDeregistered();
 
         protected:
             virtual void OnTransformChanged();
-
-            virtual void UpdateSortedChildren() override;
 
         private:
             void TransformChanged();
@@ -92,6 +102,7 @@ namespace EngineCore
             void RebuildTransform();
             void RebuildBoundingArea();
             void RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent);
+            void RebuildTransformMatrix();
         };
     }
 }

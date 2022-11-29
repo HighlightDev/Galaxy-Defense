@@ -138,21 +138,6 @@ namespace Graphics
                  }));
 
          RegisterFonts();
-
-         mUiCanvas = std::make_shared<UiCanvas>(ViewPortInfo(0, 0, 500, 500));
-         const auto uiImage = std::make_shared<UiImage>(mUiCanvas);
-         mUiCanvas->AddUiItem(uiImage);
-         uiImage->SetWidth(350);
-         uiImage->SetHeight(150);
-         uiImage->SetZOrder(1);
-         uiImage->SetColor(glm::vec4(1.0, 0.0, 1.0, 0.1));
-
-         const auto grandChild = std::make_shared<UiImage>(uiImage);
-         uiImage->AddUiItem(grandChild);
-         grandChild->SetWidth(250);
-         grandChild->SetHeight(100);
-         grandChild->SetZOrder(2);
-         grandChild->SetColor(glm::vec4(0.0, 1.0, 0.0, 1.0));
       }
 
       void DeferredShadingSceneRenderer::RegisterFonts()
@@ -702,11 +687,15 @@ namespace Graphics
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
-         const auto &canvasOrigin = mUiCanvas->GetAbsoluteOrigin();
-         glViewport(canvasOrigin.Translation.x, canvasOrigin.Translation.y, mUiCanvas->GetWidth(), mUiCanvas->GetHeight());
-         mUiCanvas->Render();
-         glDepthMask(true);
+         for (const auto &canvas : mUiCanvasProxies)
+         {
+            const auto &canvasOrigin = canvas->GetAbsoluteOrigin();
+            const auto& widthHeight = canvas->GetWidthHeight();
+            glViewport(canvasOrigin.x, canvasOrigin.y, widthHeight.x, widthHeight.y);
+            canvas->Render();
+         }
 
+         glDepthMask(true);
          const auto &viewPortInfo = sceneView->GetCameraProxy()->GetViewPort();
          glViewport(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
       }
@@ -1025,6 +1014,37 @@ namespace Graphics
       void DeferredShadingSceneRenderer::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
       {
          mFontHandler.TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
+      }
+
+      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
+      {
+         auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
+                                      { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); });
+         assert(canvasIt == mUiCanvasProxies.end());
+         mUiCanvasProxies.emplace_back(canvasSceneProxy);
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
+      {
+         mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
+                                               { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); }));
+      }
+
+      void DeferredShadingSceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
+      {
+         auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
+                                      { return canvasUId == canvasProxy->GetUiItemUId(); });
+         assert(canvasIt != mUiCanvasProxies.end());
+         sceneProxy->SetCanvasSceneProxy((*canvasIt));
+         (*canvasIt)->AddUiSceneProxy(sceneProxy);
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
+      {
+         auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
+                                      { return canvasUId == canvasProxy->GetUiItemUId(); });
+         assert(canvasIt != mUiCanvasProxies.end());
+         (*canvasIt)->RemoveUiSceneProxy(sceneProxy);
       }
 
 #if DEBUG

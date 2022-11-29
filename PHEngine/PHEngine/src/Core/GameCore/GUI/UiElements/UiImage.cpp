@@ -1,33 +1,34 @@
 #include "UiImage.h"
-#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
-#include "Core/IoCore/FolderManager.h"
-#include "Core/GraphicsCore/Common/ScreenQuad.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/UiSceneProxy/UiImageSceneProxy.h"
 
-using namespace Resources;
-using namespace IO;
-using namespace Graphics;
+using namespace EngineCore;
+using namespace Graphics::Proxy;
 
 namespace EngineCore
 {
     namespace GUI
     {
-        UiImage::UiImage(const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(parent),
-              mColor(0.0, 0.0, 0.0, 1.0)
+        UiImage::UiImage(const std::weak_ptr<UiCanvas>& canvasParent, const std::weak_ptr<IUiTransformable> &parent)
+            : UiItemBase(canvasParent, parent),
+              mColor(glm::vec4(0.0, 0.0, 0.0, 1.0))
         {
-            const auto &folderManager = FolderManager::GetInstance();
-            ShaderParams shaderParams("UiTest Shader", folderManager->GetShadersPath() + "uiTestVS.glsl", folderManager->GetShadersPath() + "uiTestFS.glsl", "", "", "", "");
-            mUiTestShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiTestShader>(shaderParams);
         }
 
-        void UiImage::Render()
+        void UiImage::OnRegistered()
         {
-            const auto &transformMatrix = GetTransformMatrix();
-            mUiTestShader->ExecuteShader();
-            mUiTestShader->SetTransformMatrix(transformMatrix);
-            mUiTestShader->SetColor(mColor);
-            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-            mUiTestShader->StopShader();
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &parentCanvasSp = mParentCanvas.lock())
+                {
+                    const auto &thisSceneProxy = CreateUiSceneProxy();
+                    sceneSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                }
+            }
+        }
+
+        void UiImage::OnDeregistered()
+        {
         }
 
         void UiImage::UpdateHierarchyTransform()
@@ -43,6 +44,11 @@ namespace EngineCore
         glm::vec4 UiImage::GetColor() const
         {
             return mColor;
+        }
+
+        std::shared_ptr<UiSceneProxyBase> UiImage::CreateUiSceneProxy() const
+        {
+            return std::make_shared<UiImageSceneProxy>(this);
         }
     }
 }

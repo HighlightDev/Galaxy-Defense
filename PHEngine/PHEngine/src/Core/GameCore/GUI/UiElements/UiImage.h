@@ -1,33 +1,42 @@
 #pragma once
 
 #include "UiItemBase.h"
-#include "Core/GameCore/ShaderImplementation/UiTestShader.h"
 
-using namespace EngineCore::ShaderImpl;
+namespace Graphics
+{
+    namespace Proxy
+    {
+        class UiSceneProxyBase;
+    }
+}
 
 namespace EngineCore
 {
+    class UiCanvas;
     namespace GUI
     {
         class UiImage : public UiItemBase
         {
-            std::shared_ptr<UiTestShader> mUiTestShader;
 
             glm::vec4 mColor;
 
         public:
-            explicit UiImage(const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
+            explicit UiImage(const std::weak_ptr<UiCanvas>& canvasParent, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
             ~UiImage() override = default;
 
-            virtual void Render() override;
-
-            void SetColor(const glm::vec4& color);
+            void SetColor(const glm::vec4 &color);
 
             glm::vec4 GetColor() const;
 
+            std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+
         protected:
             virtual void UpdateHierarchyTransform() override;
+
+            virtual void OnRegistered() override;
+
+            virtual void OnDeregistered() override;
         };
     }
 }
