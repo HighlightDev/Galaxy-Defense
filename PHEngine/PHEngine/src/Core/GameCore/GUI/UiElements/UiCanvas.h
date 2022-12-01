@@ -31,8 +31,7 @@ namespace EngineCore
 
             std::weak_ptr<::EngineCore::Scene> mScene;
 
-            Transform2D mAbsoluteOrigin;
-            Transform2D mRelativeOrigin;
+            glm::ivec2 mAbsoluteOrigin;
             glm::ivec2 mWidthHeight;
             bool mIsVisible;
 
@@ -44,8 +43,7 @@ namespace EngineCore
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
 
             virtual size_t GetUId() const override;
-            virtual const Transform2D &GetAbsoluteOrigin() const override;
-            virtual const Transform2D &GetRelativeOrigin() const override;
+            virtual const glm::ivec2 &GetAbsoluteOrigin() const override;
             virtual size_t GetZOrder() const override;
             virtual size_t GetWidth() const override;
             virtual size_t GetHeight() const override;
@@ -54,8 +52,7 @@ namespace EngineCore
             virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
             virtual bool IsVisible() const override;
 
-            virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
-            virtual void SetRelativeOrigin(const Transform2D &transform) override;
+            virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
             virtual void SetWidth(const size_t width) override;
             virtual void SetHeight(const size_t height) override;
@@ -71,6 +68,8 @@ namespace EngineCore
 
         private:
             void UpdateHierarchyTransform();
+
+            void SyncDataOnRenderThread();
 
         protected:
             void RegisterUiItem(const size_t uiId);

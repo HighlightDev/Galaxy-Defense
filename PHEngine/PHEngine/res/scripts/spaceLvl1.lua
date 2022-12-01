@@ -1,7 +1,7 @@
 function CreateTestLevel(host)
-	
-	_LoadResourcesAsync(host, 
-	[[nightRight.jpg
+
+	_LoadResourcesAsync(host,
+		[[nightRight.jpg
 	,nightLeft.jpg
 	,nightTop.jpg
 	,nightBottom.jpg
@@ -44,6 +44,10 @@ function CreateTestLevel(host)
 	,space_nebula_2.png
 	]])
 
+	_LazyLoadResourcesAsync(host,
+		[[fern.png
+		]])
+
 	--_CreateThirdPersonCamera(host, "MainCamera",
 	--0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
 	--50.0,
@@ -52,20 +56,20 @@ function CreateTestLevel(host)
 	--0, 5, 0,
 	--1) -- is main camera on scene
 
-	local a_light = _CreateActor(host, "MainLightActor", 
-	0, 0, 0,
-	0, 0, 0,
-	1, 1, 1)
-	
+	local a_light = _CreateActor(host, "MainLightActor",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1)
+
 	if a_light ~= nil then
 		local rotation = { x = 0, y = 0, z = 0 }
 		local direction = { x = -0.2, y = -0.5, z = 0 }
-		local ambient = { x = 0.2, y = 0.2, z = 0.2}
+		local ambient = { x = 0.2, y = 0.2, z = 0.2 }
 		local diffuse = { x = 0.68, y = 0.5, z = 0.5 }
 		local specular = { x = 0.4, y = 0.4, z = 0.4 }
-	
+
 		--local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
-	
+
 		local d_dirLight = _CreateDirLightComponentData(host, "MainLightComp",
 			rotation.x, rotation.y, rotation.z,
 			direction.x, direction.y, direction.z,
@@ -79,32 +83,32 @@ function CreateTestLevel(host)
 		_AttachComponentToActor(host, "MainLightActor", c_dirLight)
 	end
 
-	local a_skybox = _CreateActor(host, "SkyboxActor", 
-	0, 0, 0,
-	0, 0, 0,
-	1, 1, 1)
+	local a_skybox = _CreateActor(host, "SkyboxActor",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1)
 
-    if a_skybox ~= nil then
-	    local m_skybox = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
-	    _SetTextureToMaterial(host, m_skybox,
-		"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
-		"spaceTexture"
-	)
+	if a_skybox ~= nil then
+		local m_skybox = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
+		_SetTextureToMaterial(host, m_skybox,
+			"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
+			"spaceTexture"
+		)
 
-	    local d_skybox = _CreateSkyboxComponentData(host, "SpaceSkyboxComponent",
-	    440, 440, 440,
-	    m_skybox)
+		local d_skybox = _CreateSkyboxComponentData(host, "SpaceSkyboxComponent",
+			440, 440, 440,
+			m_skybox)
 
-	    local c_skybox = _CreateComponent(host, "SkyboxComponent", d_skybox)
-	    _AttachComponentToActor(host, "SkyboxActor", c_skybox)
-    end
+		local c_skybox = _CreateComponent(host, "SkyboxComponent", d_skybox)
+		_AttachComponentToActor(host, "SkyboxActor", c_skybox)
+	end
 
-    local a_spaceship = _CreateActor(host, "SpaceshipActor", 
-	0, 0, 0,
-	0, 0, 0,
-	1, 1, 1)
+	local a_spaceship = _CreateActor(host, "SpaceshipActor",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1)
 
-	if a_spaceship ~= nil then 
+	if a_spaceship ~= nil then
 		local mat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 		_SetTextureToMaterial(host, mat, "spaceship_albedo.jpg", "albedo")
 		_SetTextureToMaterial(host, mat, "spaceship_normal.jpg", "normalMap")
@@ -113,20 +117,24 @@ function CreateTestLevel(host)
 		_SetFloatToMaterial(host, mat, 1.0, "uvScale")
 
 		local d_spaceship = _CreateMeshComponentData(host, "spaceshipMeshComponent", "spaceship.obj",
-		0, 0, 0,
-		0, 180, 0,
-		5, 5, 5, 
-		"",
-		mat)
+			0, 0, 0,
+			0, 180, 0,
+			5, 5, 5,
+			"",
+			mat)
 
 		local c_spaceship = _CreateComponent(host, "StaticMeshComponent", d_spaceship)
 		_AttachComponentToActor(host, "SpaceshipActor", c_spaceship)
-    end
+	end
 
 end
 
 function System_OnStart(host)
 	CreateTestLevel(host)
+end
+
+function System_OnUpdate(host, deltaTime)
+	print("LUA => deltaTime:", deltaTime)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

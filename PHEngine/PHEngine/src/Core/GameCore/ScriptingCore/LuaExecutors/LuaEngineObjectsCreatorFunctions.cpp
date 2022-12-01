@@ -45,6 +45,7 @@ namespace EngineCore
          using LuaExecutor_t = LuaEngineObjectsCreatorFunctions;
 
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::LoadResourcesAsync"), void(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::LoadResourcesAsync, this, std::placeholders::_1), "_LoadResourcesAsync");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync"), void(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync, this, std::placeholders::_1), "_LazyLoadResourcesAsync");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateComponent"), Component *(std::string, ComponentData *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateComponent, this, std::placeholders::_1), "_CreateComponent");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateActor"), Actor *(std::string, glm::vec3, glm::vec3, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1), "_CreateActor");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera"), void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1), "_CreateThirdPersonCamera");
@@ -101,6 +102,21 @@ namespace EngineCore
          }
 
          ResourceMap::GetInstance()->WaitUntilResourcesLoad();
+      }
+
+      void LuaEngineObjectsCreatorFunctions::LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames)
+      {
+         LoadResourcesAsync(dataNames);
+         const std::string &resourcesNamesStr = std::get<0>(dataNames);
+         assert(!resourcesNamesStr.empty());
+
+         const std::vector<std::string> &resourceNames = Split(resourcesNamesStr, ',');
+
+         for (std::string resName : resourceNames)
+         {
+            resName = TrimEnd(resName);
+            ResourceMap::GetInstance()->SaveToPool(resName);
+         }
       }
 
       /* -------------------  Create Actor ----------------------------*/

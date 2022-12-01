@@ -690,7 +690,7 @@ namespace Graphics
          for (const auto &canvas : mUiCanvasProxies)
          {
             const auto &canvasOrigin = canvas->GetAbsoluteOrigin();
-            const auto& widthHeight = canvas->GetWidthHeight();
+            const auto &widthHeight = canvas->GetWidthHeight();
             glViewport(canvasOrigin.x, canvasOrigin.y, widthHeight.x, widthHeight.y);
             canvas->Render();
          }
@@ -940,6 +940,22 @@ namespace Graphics
          }
 
          return result;
+      }
+
+      std::shared_ptr<UiSceneProxyBase> DeferredShadingSceneRenderer::GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const
+      {
+         auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
+                                      { return canvasId == canvasProxy->GetUiItemUId(); });
+         assert(canvasIt != mUiCanvasProxies.end());
+         return (*canvasIt)->GetSceneProxyById(proxyId);
+      }
+
+      std::shared_ptr<UiCanvasSceneProxy> DeferredShadingSceneRenderer::GetCanvasSceneProxyByProxyId(const size_t proxyId) const
+      {
+         auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
+                                      { return proxyId == canvasProxy->GetUiItemUId(); });
+         assert(canvasIt != mUiCanvasProxies.end());
+         return *canvasIt;
       }
 
       bool DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const size_t proxyId)

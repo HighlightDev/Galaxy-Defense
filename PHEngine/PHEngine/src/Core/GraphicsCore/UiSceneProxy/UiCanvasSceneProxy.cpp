@@ -13,7 +13,7 @@ namespace Graphics
         UiCanvasSceneProxy::UiCanvasSceneProxy(const UiCanvas *canvas)
             : mUiItemUId(canvas->GetUId()),
               mIsVisible(canvas->IsVisible()),
-              mAbsoluteOrigin(canvas->GetAbsoluteOrigin().Translation),
+              mAbsoluteOrigin(canvas->GetAbsoluteOrigin()),
               mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight()))
         {
         }
@@ -84,6 +84,13 @@ namespace Graphics
         glm::ivec2 UiCanvasSceneProxy::GetWidthHeight() const
         {
             return mWidthHeight;
+        }
+
+        std::shared_ptr<UiSceneProxyBase> UiCanvasSceneProxy::GetSceneProxyById(const size_t uid) const
+        {
+            const auto it = std::find_if(mUiProxies.begin(), mUiProxies.end(), [&](const auto &proxy)
+                                         { return uid == proxy->GetUiItemUId(); });
+            return (mUiProxies.end() != it ? *it : nullptr);
         }
     }
 }

@@ -57,6 +57,8 @@ namespace Graphics
             glm::ivec2 GetAbsoluteOrigin() const;
 
             glm::ivec2 GetWidthHeight() const;
+
+            std::shared_ptr<UiSceneProxyBase> GetSceneProxyById(const size_t uid) const;
         };
     }
 }

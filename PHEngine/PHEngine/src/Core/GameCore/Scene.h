@@ -80,7 +80,7 @@ namespace EngineCore
 
       TextHandler mTextHandler;
 
-      UiHandler mUiHandler;
+      std::shared_ptr<UiHandler> mUiHandler;
 
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
@@ -134,7 +134,7 @@ namespace EngineCore
 
       const TextHandler &GetTextHandler() const;
 
-      const UiHandler &GetUiHandler() const;
+      std::shared_ptr<UiHandler> GetUiHandler() const;
 
       void AddActor(std::shared_ptr<Actor> actor);
 

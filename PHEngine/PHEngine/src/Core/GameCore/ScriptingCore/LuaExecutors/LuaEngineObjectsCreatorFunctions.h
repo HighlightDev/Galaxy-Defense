@@ -38,6 +38,8 @@ namespace EngineCore
          /* -------------------  Load asynchronously resources by names ----------------------------*/
          void LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData);
 
+         void LazyLoadResourcesAsync(const std::tuple<std::string> &dataNames);
+
          /* -------------------  Create Actor ----------------------------*/
          Actor *CreateActor(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3> &actorData);
 

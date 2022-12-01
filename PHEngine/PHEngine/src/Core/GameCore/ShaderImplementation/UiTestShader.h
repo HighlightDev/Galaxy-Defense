@@ -16,16 +16,19 @@ namespace EngineCore
       {
          using Base = Shader;
 
-         Uniform u_color;
+         Uniform u_image;
          Uniform u_transformMatrix;
+         Uniform u_opacity;
 
       public:
 
          UiTestShader(const ShaderParams& params);
 
-         void SetColor(const glm::vec4& color);
+         void SetImageTexture(const int32_t texSlot);
 
          void SetTransformMatrix(const glm::mat4& transformMatrix);
+
+         void SetOpacity(const float opacity);
 
       protected:
 

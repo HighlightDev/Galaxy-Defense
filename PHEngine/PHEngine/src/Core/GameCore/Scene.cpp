@@ -34,7 +34,7 @@ namespace EngineCore
          mDynamicMaterials(),
          mExternalTickableObjects(),
          mTextHandler(),
-         mUiHandler()
+         mUiHandler(std::make_shared<UiHandler>())
    {
       LogInfo("Scene::ctor");
 
@@ -53,7 +53,7 @@ namespace EngineCore
       LogInfo("Scene::PostLevelInit");
 
       mTextHandler.SetScene(shared_from_this());
-      mUiHandler.SetScene(shared_from_this());
+      mUiHandler->SetScene(shared_from_this());
 
       for (auto &actor : mActors)
       {
@@ -276,7 +276,7 @@ namespace EngineCore
       return mTextHandler;
    }
 
-   const UiHandler &Scene::GetUiHandler() const
+   std::shared_ptr<UiHandler> Scene::GetUiHandler() const
    {
       return mUiHandler;
    }

@@ -1,11 +1,14 @@
 #include "UiCanvas.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 #include <algorithm>
 
 using namespace EngineCore;
 using namespace Graphics::Proxy;
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -16,7 +19,6 @@ namespace EngineCore
         UiCanvas::UiCanvas(const ViewPortInfo &canvasScreenProperties)
             : mUId(s_UId++),
               mAbsoluteOrigin(glm::ivec2(canvasScreenProperties.OriginX, canvasScreenProperties.OriginY)),
-              mRelativeOrigin(mAbsoluteOrigin),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
               mChildren(),
               mRegisteredUiItems(),
@@ -39,14 +41,9 @@ namespace EngineCore
             return mScene;
         }
 
-        const Transform2D &UiCanvas::GetAbsoluteOrigin() const
+        const glm::ivec2 &UiCanvas::GetAbsoluteOrigin() const
         {
             return mAbsoluteOrigin;
-        }
-
-        const Transform2D &UiCanvas::GetRelativeOrigin() const
-        {
-            return mRelativeOrigin;
         }
 
         size_t UiCanvas::GetZOrder() const
@@ -79,24 +76,28 @@ namespace EngineCore
             return std::shared_ptr<IUiTransformable>();
         }
 
-        bool UiCanvas::IsVisible() const 
+        bool UiCanvas::IsVisible() const
         {
             return mIsVisible;
         }
 
         void UiCanvas::SetIsVisible(const bool isVisible)
         {
-            mIsVisible = isVisible;
+            if (mIsVisible != isVisible)
+            {
+                mIsVisible = isVisible;
+                SyncDataOnRenderThread();
+            }
         }
 
-        void UiCanvas::SetAbsoluteOrigin(const Transform2D &transform)
+        void UiCanvas::SetAbsoluteOrigin(const glm::ivec2 &transform)
         {
-            mAbsoluteOrigin = transform;
-            UpdateHierarchyTransform();
-        }
-
-        void UiCanvas::SetRelativeOrigin(const Transform2D &transform)
-        {
+            if (!EngineMath::CheckSimilarityIVec2(transform, mAbsoluteOrigin))
+            {
+                mAbsoluteOrigin = transform;
+                UpdateHierarchyTransform();
+                SyncDataOnRenderThread();
+            }
         }
 
         void UiCanvas::SetZOrder(const size_t z_order)
@@ -105,14 +106,22 @@ namespace EngineCore
 
         void UiCanvas::SetWidth(const size_t width)
         {
-            mWidthHeight.x = width;
-            UpdateHierarchyTransform();
+            if (mWidthHeight.x != width)
+            {
+                mWidthHeight.x = width;
+                UpdateHierarchyTransform();
+                SyncDataOnRenderThread();
+            }
         }
 
         void UiCanvas::SetHeight(const size_t height)
         {
-            mWidthHeight.y = height;
-            UpdateHierarchyTransform();
+            if (mWidthHeight.y != height)
+            {
+                mWidthHeight.y = height;
+                UpdateHierarchyTransform();
+                SyncDataOnRenderThread();
+            }
         }
 
         void UiCanvas::UpdateHierarchyTransform()
@@ -127,6 +136,7 @@ namespace EngineCore
         {
             RegisterUiItem(uiItem->GetUId());
             mChildren.emplace_back(uiItem);
+            uiItem->OnRegistered();
         }
 
         void UiCanvas::RegisterUiItem(const size_t uiId)
@@ -144,6 +154,8 @@ namespace EngineCore
         void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
             UnregisterUiItem(uiItem->GetUId());
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&](const auto& childItem) { return uiItem->GetUId() == childItem->GetUId(); });
+            (*foundIt)->OnUnregistered();
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetUId() == uiItem->GetUId(); });
             mChildren.erase(it);
@@ -152,6 +164,24 @@ namespace EngineCore
         std::shared_ptr<UiCanvasSceneProxy> UiCanvas::CreateUiCanvasSceneProxy() const
         {
             return std::make_shared<UiCanvasSceneProxy>(this);
+        }
+
+        void UiCanvas::SyncDataOnRenderThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::SyncDataOnRenderThread");
+            if (const auto &sceneSp = mScene.lock())
+            {
+                if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+                {
+                    sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer]()
+                    {
+                        const auto& canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId());
+                        canvasProxy->SetIsVisible(mIsVisible),
+                        canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin),
+                        canvasProxy->SetWidthHeight(mWidthHeight); 
+                    });
+                }
+            }
         }
     }
 }

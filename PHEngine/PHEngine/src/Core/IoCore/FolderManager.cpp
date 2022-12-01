@@ -28,6 +28,7 @@ namespace IO
 		CreateFilePathMap(GetDistortionTexturePath(), GetShortDistortionTexturePath());
 		CreateFilePathMap(GetCubemapTexturePath(), GetShortCubemapTexturePath());
 		CreateFilePathMap(GetMaterialTexturesPath(), GetShortMaterialTexturesPath());
+		CreateFilePathMap(GetGrassTexturePath(), GetShortGrassTexturePath());
 		CreateFilePathMap(GetModelPath(), GetShortModelPath());
 		CreateFilePathMap(GetMaterialPath(), GetShortMaterialPath());
 		CreateFilePathMap(GetScriptPath(), GetShortScriptPath());

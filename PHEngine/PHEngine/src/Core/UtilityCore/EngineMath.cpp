@@ -8,17 +8,14 @@ namespace EngineMath
 {
    float G = 9.8f;
    float PI = 3.14159f;
-   float ENGINE_FLOAT_EPSILON = 0.01f;
+   float ENGINE_FLOAT_EPSILON = 0.00001f;
    glm::vec3 AXIS_RIGHT = glm::vec3(1, 0, 0);
    glm::vec3 AXIS_UP = glm::vec3(0, 1, 0);
    glm::vec3 AXIS_FORWARD = glm::vec3(0, 0, 1);
 
    bool CompareFloats(const float X, const float Y)
    {
-      const float absX = std::abs(X);
-      const float absY = std::abs(Y);
-      const bool bResult = std::abs(absX - absY) <= ENGINE_FLOAT_EPSILON;
-      return bResult;
+      return std::abs(X - Y) <= ENGINE_FLOAT_EPSILON;
    }
 
    float LerpNormalizedFloat(const float src, const float dst, const float factor)
@@ -126,7 +123,7 @@ namespace EngineMath
 
       float quotient = glm::dot(N1, n2n3);
 
-      if (glm::abs(quotient) > 0.000001f)
+      if (glm::abs(quotient) > ENGINE_FLOAT_EPSILON)
       {
          quotient = -1.0f / quotient;
          n2n3 *= plane1.w;
@@ -174,7 +171,7 @@ namespace EngineMath
 
    bool CheckSimilarityVec2(const glm::vec2 &left, const glm::vec2 &right)
    {
-      const auto absoluteDiff = glm::abs(left) - glm::abs(right);
+      const auto absoluteDiff = glm::abs(left - right);
       return absoluteDiff.x <= ENGINE_FLOAT_EPSILON && absoluteDiff.y <= ENGINE_FLOAT_EPSILON;
    }
 

@@ -1,18 +1,34 @@
 #include "UiImage.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiImageSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 using namespace EngineCore;
 using namespace Graphics::Proxy;
+using namespace Graphics::Renderer;
+using namespace Resources;
 
 namespace EngineCore
 {
     namespace GUI
     {
-        UiImage::UiImage(const std::weak_ptr<UiCanvas>& canvasParent, const std::weak_ptr<IUiTransformable> &parent)
+        UiImage::UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent)
             : UiItemBase(canvasParent, parent),
-              mColor(glm::vec4(0.0, 0.0, 0.0, 1.0))
+              mTextureSrc(""),
+              mTexture(),
+              mOpacity(1.0f)
         {
+        }
+
+        UiImage::~UiImage()
+        {
+            if (mTexture)
+            {
+                TexturePool::GetInstance()->TryToFreeMemory(mTexture);
+            }
         }
 
         void UiImage::OnRegistered()
@@ -27,7 +43,7 @@ namespace EngineCore
             }
         }
 
-        void UiImage::OnDeregistered()
+        void UiImage::OnUnregistered()
         {
         }
 
@@ -36,19 +52,77 @@ namespace EngineCore
             UiItemBase::UpdateHierarchyTransform();
         }
 
-        void UiImage::SetColor(const glm::vec4 &color)
+        void UiImage::ReallocateTexture()
         {
-            mColor = color;
+            const auto &texturePool = TexturePool::GetInstance();
+            if (mTexture)
+            {
+                assert(texturePool->TryToFreeMemory(mTexture));
+            }
+
+            mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
         }
 
-        glm::vec4 UiImage::GetColor() const
+        void UiImage::SetTextureSrc(const std::string &textureSrc)
         {
-            return mColor;
+            if (mTextureSrc != textureSrc)
+            {
+                mTextureSrc = textureSrc;
+                ReallocateTexture();
+                SyncDataOnRenderThread();
+            }
+        }
+
+        std::string UiImage::GetTextureSrc() const
+        {
+            return mTextureSrc;
+        }
+
+        std::shared_ptr<ITexture> UiImage::GetTexture() const
+        {
+            return mTexture;
+        }
+
+        void UiImage::SetOpacity(const float opacity)
+        {
+            if (glm::abs(mOpacity - opacity) > EngineMath::ENGINE_FLOAT_EPSILON)
+            {
+                mOpacity = opacity;
+                SyncDataOnRenderThread();
+            }
+        }
+
+        float UiImage::GetOpacity() const
+        {
+            return mOpacity;
         }
 
         std::shared_ptr<UiSceneProxyBase> UiImage::CreateUiSceneProxy() const
         {
             return std::make_shared<UiImageSceneProxy>(this);
+        }
+
+        void UiImage::SyncDataOnRenderThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnRenderThread");
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &canvasSp = GetParentCanvas().lock())
+                {
+                    if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+                    {
+                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [=]()
+                                                       {
+                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
+                            if (uiSceneProxy)
+                            {
+                                const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
+                                imageSceneProxy->SetTexture(mTexture);
+                                imageSceneProxy->SetOpacity(mOpacity);
+                            } });
+                    }
+                }
+            }
         }
     }
 }

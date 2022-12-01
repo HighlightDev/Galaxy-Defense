@@ -15,18 +15,24 @@ namespace EngineCore
       {
          Base::AccessAllUniformLocations(shaderProgramId);
 
-         u_color = GetUniform("uiColor", shaderProgramId);
+         u_image = GetUniform("image", shaderProgramId);
          u_transformMatrix = GetUniform("transformMatrix", shaderProgramId);
+         u_opacity = GetUniform("opacity", shaderProgramId);
       }
 
-      void UiTestShader::SetColor(const glm::vec4 &color)
+      void UiTestShader::SetImageTexture(const int32_t texSlot)
       {
-         u_color.LoadUniform(color);
+         u_image.LoadUniform(texSlot);
       }
 
-      void UiTestShader::SetTransformMatrix(const glm::mat4& transformMatrix)
+      void UiTestShader::SetTransformMatrix(const glm::mat4 &transformMatrix)
       {
          u_transformMatrix.LoadUniform(transformMatrix);
+      }
+
+      void UiTestShader::SetOpacity(const float opacity)
+      {
+         u_opacity.LoadUniform(opacity);
       }
 
       void UiTestShader::SetShaderPredefine()

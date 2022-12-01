@@ -196,8 +196,8 @@ namespace EngineCore
                                                {
                                                    const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
                                                    assert(primitiveProxySp);
-                                                   ParticleSystemSceneProxy *const proxyPtr =
-                                                       static_cast<ParticleSystemSceneProxy *>(primitiveProxySp.get());
+                                                   const auto &proxyPtr =
+                                                       std::static_pointer_cast<ParticleSystemSceneProxy>(primitiveProxySp);
 
                                                    if (activeParticlesCount > 0)
                                                    {

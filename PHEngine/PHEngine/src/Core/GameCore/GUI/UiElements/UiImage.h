@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UiItemBase.h"
+#include "Core/GraphicsCore/Texture/ITexture.h"
 
 namespace Graphics
 {
@@ -10,6 +11,8 @@ namespace Graphics
     }
 }
 
+using namespace Graphics::Texture;
+
 namespace EngineCore
 {
     class UiCanvas;
@@ -17,17 +20,25 @@ namespace EngineCore
     {
         class UiImage : public UiItemBase
         {
+            std::string mTextureSrc;
+            std::shared_ptr<ITexture> mTexture;
 
-            glm::vec4 mColor;
+            float mOpacity;
 
         public:
-            explicit UiImage(const std::weak_ptr<UiCanvas>& canvasParent, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
+            explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
 
-            ~UiImage() override = default;
+            ~UiImage() override;
 
-            void SetColor(const glm::vec4 &color);
+            void SetTextureSrc(const std::string& textureSrc);
 
-            glm::vec4 GetColor() const;
+            std::string GetTextureSrc() const;
+
+            std::shared_ptr<ITexture> GetTexture() const;
+
+            void SetOpacity(const float opacity);
+
+            float GetOpacity() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
@@ -36,7 +47,12 @@ namespace EngineCore
 
             virtual void OnRegistered() override;
 
-            virtual void OnDeregistered() override;
+            virtual void OnUnregistered() override;
+
+        private:
+            void SyncDataOnRenderThread();
+
+            void ReallocateTexture();
         };
     }
 }

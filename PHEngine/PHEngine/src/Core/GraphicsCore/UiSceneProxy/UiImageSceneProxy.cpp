@@ -15,8 +15,10 @@ namespace Graphics
 {
     namespace Proxy
     {
-        UiImageSceneProxy::UiImageSceneProxy(const UiImage* uiImage)
-            : UiSceneProxyBase(uiImage)
+        UiImageSceneProxy::UiImageSceneProxy(const UiImage *uiImage)
+            : UiSceneProxyBase(uiImage),
+              mTexture(uiImage->GetTexture()),
+              mOpacity(uiImage->GetOpacity())
         {
             const auto &folderManager = FolderManager::GetInstance();
             ShaderParams shaderParams("UiTest Shader", folderManager->GetShadersPath() + "uiTestVS.glsl", folderManager->GetShadersPath() + "uiTestFS.glsl", "", "", "", "");
@@ -28,10 +30,24 @@ namespace Graphics
             const auto &transformMatrix = GetTransformMatrix();
             mUiTestShader->ExecuteShader();
             mUiTestShader->SetTransformMatrix(transformMatrix);
-            glm::vec4 color = glm::vec4(1.0);
-            mUiTestShader->SetColor(color);
+            if (mTexture)
+            {
+                mTexture->BindTexture(0);
+                mUiTestShader->SetImageTexture(0);
+            }
+            mUiTestShader->SetOpacity(mOpacity);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiTestShader->StopShader();
+        }
+
+        void UiImageSceneProxy::SetTexture(const std::shared_ptr<ITexture> &texture)
+        {
+            mTexture = texture;
+        }
+
+        void UiImageSceneProxy::SetOpacity(const float opacity)
+        {
+            mOpacity = opacity;
         }
     }
 }

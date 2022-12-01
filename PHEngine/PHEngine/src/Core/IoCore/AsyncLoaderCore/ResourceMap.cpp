@@ -68,7 +68,7 @@ namespace IO
 
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         LogInfo( "ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
+         LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);
          return;
       }
 
@@ -101,14 +101,14 @@ namespace IO
          break;
       }
 
-      LogInfo( "ResourceMap::AllocateAsync => resource type: ", (uint8_t)resType, ", file: ", fileFullPath);
+      LogInfo("ResourceMap::AllocateAsync => resource type: ", (uint8_t)resType, ", file: ", fileFullPath);
    }
 
    void ResourceMap::AllocateSync(const std::string &key)
    {
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
-         LogInfo( "ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
+         LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateSync invoked for existing key! key = ", key);
          return;
       }
 
@@ -142,24 +142,22 @@ namespace IO
       }
    }
 
-   void ResourceMap::UploadLoadedResourcesToPool()
+   void ResourceMap::SaveToPool(const std::string &key)
    {
-      for (auto &resource : ReadyToReadResources)
+      const eResourceType resType = ResourceExtensionsInfo::GetResourceTypeByFileExtension(key);
+      switch (resType)
       {
-         switch (resource.second->ResourceType)
-         {
-         case eResourceType::MESH:
-            MeshPool::GetInstance()->GetOrAllocateResource(resource.first);
-            break;
-         case eResourceType::TEXTURE:
-            TexturePool::GetInstance()->GetOrAllocateResource(resource.first);
-            break;
-         case eResourceType::AUDIO:
-            SoundBufferPool::GetInstance()->GetOrAllocateResource(resource.first);
-         default:
-            assert(false); // undefined type
-            break;
-         }
+      case eResourceType::MESH:
+         MeshPool::GetInstance()->GetOrAllocateResource(key);
+         break;
+      case eResourceType::TEXTURE:
+         TexturePool::GetInstance()->GetOrAllocateResource(key);
+         break;
+      case eResourceType::AUDIO:
+         SoundBufferPool::GetInstance()->GetOrAllocateResource(key);
+      default:
+         assert(false); // undefined type
+         break;
       }
    }
 
@@ -169,7 +167,10 @@ namespace IO
       {
          for (auto &resource : mAsyncDataProxy->ResourcesMap)
          {
-            ReadyToReadResources[resource.first] = resource.second.get();
+            if (resource.second.valid())
+            {
+               ReadyToReadResources[resource.first] = resource.second.get();
+            }
          }
       }
       catch (const std::exception &e)

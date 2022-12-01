@@ -50,6 +50,8 @@ namespace Graphics
 
             glm::mat4 GetTransformMatrix() const;
 
+            void SetTransformMatrix(const glm::mat4& transformMatrix);
+
             void SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy);
 
             virtual void Render();

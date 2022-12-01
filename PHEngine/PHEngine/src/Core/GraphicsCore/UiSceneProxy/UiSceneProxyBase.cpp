@@ -56,6 +56,11 @@ namespace Graphics
             return mTransformMatrix;
         }
 
+        void UiSceneProxyBase::SetTransformMatrix(const glm::mat4& transformMatrix)
+        {
+            mTransformMatrix = transformMatrix;
+        }
+
         void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy)
         {
             mParentCanvasProxy = parentCanvasProxy;

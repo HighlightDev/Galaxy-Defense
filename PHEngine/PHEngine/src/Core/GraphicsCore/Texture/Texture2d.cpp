@@ -43,7 +43,6 @@ namespace Graphics
 
       Texture2d::~Texture2d()
       {
-         LogInfo( "Texture2d::dctor");
          if (m_mipmapState)
             delete m_mipmapState;
       }

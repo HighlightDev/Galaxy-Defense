@@ -137,6 +137,8 @@ namespace Graphics
          std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const size_t proxyId) const;
          std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const size_t proxyId) const;
          std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<UiSceneProxyBase> GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const;
+         std::shared_ptr<UiCanvasSceneProxy> GetCanvasSceneProxyByProxyId(const size_t proxyId) const;
 
          bool RemovePrimitiveProxyByProxyId(const size_t proxyId);
 

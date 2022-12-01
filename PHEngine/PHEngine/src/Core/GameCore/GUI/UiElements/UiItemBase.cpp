@@ -3,11 +3,13 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace EngineMath;
 using namespace EngineCore;
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -19,7 +21,6 @@ namespace EngineCore
         UiItemBase::UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
             : mUId(s_UIds++),
               mAbsoluteOrigin(),
-              mRelativeOrigin(),
               mNormalizedTranslation(),
               mNormalizedScale(glm::vec2(1.0)),
               mTransformMatrix(glm::mat4(1)),
@@ -51,14 +52,9 @@ namespace EngineCore
             return mParentCanvas;
         }
 
-        const Transform2D &UiItemBase::GetAbsoluteOrigin() const
+        const glm::ivec2 &UiItemBase::GetAbsoluteOrigin() const
         {
             return mAbsoluteOrigin;
-        }
-
-        const Transform2D &UiItemBase::GetRelativeOrigin() const
-        {
-            return mRelativeOrigin;
         }
 
         size_t UiItemBase::GetZOrder() const
@@ -91,20 +87,11 @@ namespace EngineCore
             return mTransformMatrix;
         }
 
-        void UiItemBase::SetAbsoluteOrigin(const Transform2D &transform)
+        void UiItemBase::SetAbsoluteOrigin(const glm::ivec2 &transform)
         {
-            if (!CheckSimilarityIVec2(mAbsoluteOrigin.Translation, transform.Translation))
+            if (!CheckSimilarityIVec2(mAbsoluteOrigin, transform))
             {
                 mAbsoluteOrigin = transform;
-                TransformChanged();
-            }
-        }
-
-        void UiItemBase::SetRelativeOrigin(const Transform2D &transform)
-        {
-            if (!CheckSimilarityIVec2(mRelativeOrigin.Translation, transform.Translation))
-            {
-                mRelativeOrigin = transform;
                 TransformChanged();
             }
         }
@@ -115,6 +102,7 @@ namespace EngineCore
             {
                 mZOrder = zOrder;
                 TransformChanged();
+                SyncDataOnRenderThread();
             }
         }
 
@@ -189,8 +177,8 @@ namespace EngineCore
                 }
                 else if (eUiItemPositioningType::RELATIVE == mUiPositioningType)
                 {
-                    const auto relativeTranslation = glm::clamp(mRelativeOrigin.Translation, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
-                    mAbsoluteOrigin.Translation = relativeTranslation + parentAbsoluteOrigin.Translation;
+                    const auto& translation = glm::clamp(mAbsoluteOrigin, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
+                    mAbsoluteOrigin = translation + parentAbsoluteOrigin;
                 }
 
                 RebuildNormalizedTransform(parentSp);
@@ -205,8 +193,8 @@ namespace EngineCore
             const auto rootWidth = rootParentSp->GetWidth();
             const auto rootHeight = rootParentSp->GetHeight();
             assert(rootWidth != 0 && rootHeight != 0);
-            mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.Translation.x) / static_cast<float>(rootWidth),
-                                               static_cast<float>(mAbsoluteOrigin.Translation.y) / static_cast<float>(rootHeight));
+            mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth),
+                                               static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(rootHeight));
 
             mNormalizedScale = glm::vec2(static_cast<float>(mWidth) / static_cast<float>(rootWidth),
                                          static_cast<float>(mHeight) / static_cast<float>(rootHeight));
@@ -219,11 +207,13 @@ namespace EngineCore
             const auto translationFromCenter = mNormalizedTranslation - tranlsationToLeftBottomCorner;
             mTransformMatrix *= glm::translate(glm::mat4(1), glm::vec3(translationFromCenter.x, translationFromCenter.y, 0.0f));
             mTransformMatrix *= glm::scale(glm::mat4(1), glm::vec3(mNormalizedScale.x, mNormalizedScale.y, 1.0f));
+
+            SyncDataOnRenderThread();
         }
 
         void UiItemBase::RebuildBoundingArea()
         {
-            mBoundingArea = BoundingBox2D(mAbsoluteOrigin.Translation, glm::ivec2(mWidth / 2, mHeight / 2));
+            mBoundingArea = BoundingBox2D(mAbsoluteOrigin, glm::ivec2(mWidth / 2, mHeight / 2));
         }
 
         void UiItemBase::OnTransformChanged()
@@ -237,7 +227,11 @@ namespace EngineCore
 
         void UiItemBase::SetIsVisible(const bool isVisible)
         {
-            mIsVisible = isVisible;
+            if (mIsVisible != isVisible)
+            {
+                mIsVisible = isVisible;
+                SyncDataOnRenderThread();
+            }
         }
 
         void UiItemBase::UpdateHierarchyTransform()
@@ -264,7 +258,7 @@ namespace EngineCore
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetUId() == uiItem->GetUId(); });
             mChildren.erase(it);
-            uiItem->OnDeregistered();
+            uiItem->OnUnregistered();
         }
 
         void UiItemBase::RegisterUiItem(const size_t uiId)
@@ -287,7 +281,7 @@ namespace EngineCore
         {
         }
 
-        void UiItemBase::OnDeregistered()
+        void UiItemBase::OnUnregistered()
         {
         }
 
@@ -305,6 +299,30 @@ namespace EngineCore
             }
 
             return result;
+        }
+
+        void UiItemBase::SyncDataOnRenderThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &canvasSp = GetParentCanvas().lock())
+                {
+                    if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+                    {
+                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer, canvasSp]()
+                        {
+                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
+                            if (uiSceneProxy)
+                            {
+                                uiSceneProxy->SetIsVisible(mIsVisible);
+                                uiSceneProxy->SetZOrder(mZOrder);
+                                uiSceneProxy->SetTransformMatrix(mTransformMatrix);
+                            }
+                        });
+                    }
+                }
+            }
         }
     }
 }

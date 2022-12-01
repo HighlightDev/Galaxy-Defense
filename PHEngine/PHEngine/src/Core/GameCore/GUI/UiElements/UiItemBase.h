@@ -28,8 +28,7 @@ namespace EngineCore
             static size_t s_UIds;
 
         protected:
-            Transform2D mAbsoluteOrigin;
-            Transform2D mRelativeOrigin;
+            glm::ivec2 mAbsoluteOrigin;
 
             glm::vec2 mNormalizedTranslation;
             glm::vec2 mNormalizedScale;
@@ -59,8 +58,7 @@ namespace EngineCore
 
             virtual ~UiItemBase() = default;
 
-            virtual const Transform2D &GetAbsoluteOrigin() const override;
-            virtual const Transform2D &GetRelativeOrigin() const override;
+            virtual const glm::ivec2 &GetAbsoluteOrigin() const override;
             virtual size_t GetZOrder() const override;
             virtual size_t GetWidth() const override;
             virtual size_t GetHeight() const override;
@@ -75,8 +73,7 @@ namespace EngineCore
             glm::mat4 GetTransformMatrix() const;
             const std::weak_ptr<UiCanvas>& GetParentCanvas() const;
 
-            virtual void SetAbsoluteOrigin(const Transform2D &transform) override;
-            virtual void SetRelativeOrigin(const Transform2D &transform) override;
+            virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
             virtual void SetWidth(const size_t width) override;
             virtual void SetHeight(const size_t height) override;
@@ -91,7 +88,7 @@ namespace EngineCore
             virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             virtual void OnRegistered();
-            virtual void OnDeregistered();
+            virtual void OnUnregistered();
 
         protected:
             virtual void OnTransformChanged();
@@ -103,6 +100,8 @@ namespace EngineCore
             void RebuildBoundingArea();
             void RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent);
             void RebuildTransformMatrix();
+
+            void SyncDataOnRenderThread();
         };
     }
 }

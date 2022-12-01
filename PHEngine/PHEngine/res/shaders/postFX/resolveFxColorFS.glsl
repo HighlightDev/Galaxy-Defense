@@ -1,6 +1,7 @@
 #version 400
 
 #define HDR_ON
+#define BLOOM_ON
 #define HDR_EXPOSURE 1.5
 layout(location = 0) out vec4 FragColor;
 
