@@ -4,7 +4,7 @@ namespace EngineCore
 {
     namespace GUI
     {
-        enum class eUiAnchorType
+        enum class eUiAnchor
         {
             NONE,
             LEFT,

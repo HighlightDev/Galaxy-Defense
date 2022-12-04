@@ -3,7 +3,9 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorPositionHelper.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -20,6 +22,7 @@ namespace EngineCore
 
         UiItemBase::UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
             : mUId(s_UIds++),
+              mName("UiItemBase_" + std::to_string(mUId)),
               mAbsoluteOrigin(),
               mNormalizedTranslation(),
               mNormalizedScale(glm::vec2(1.0)),
@@ -129,27 +132,79 @@ namespace EngineCore
             return mUId;
         }
 
-        void UiItemBase::SetUiAnchor(const eUiAnchorType anchorType, const std::shared_ptr<UiItemBase> &anchorUiItem)
+        std::string UiItemBase::GetName() const
         {
-            if (!mAnchors.count(anchorType) || mAnchors.at(anchorType)->GetUId() != anchorUiItem->GetUId())
+            return mName;
+        }
+
+        BoundingBox2D UiItemBase::GetBoundingArea() const
+        {
+            return mBoundingArea;
+        }
+
+        std::shared_ptr<IUiTransformable> UiItemBase::TryFindChildByName(const std::string &name) const
+        {
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&name](const auto &child)
+                                              { return child->GetName() == name; });
+            return foundIt != mChildren.end() ? (*foundIt) : nullptr;
+        }
+
+        std::shared_ptr<UiItemBase> UiItemBase::TryFindAncestryUiItem(const std::string &name) const
+        {
+            std::shared_ptr<UiItemBase> result;
+            auto parentWp = mParent;
+
+            while (const auto &parentSp = parentWp.lock())
             {
-                mAnchors[anchorType] = anchorUiItem;
-                TransformChanged();
+                const auto &child = parentSp->TryFindChildByName(name);
+                if (child)
+                {
+                    result = std::static_pointer_cast<UiItemBase>(child);
+                    break;
+                }
+
+                parentWp = parentSp->GetParent();
+            }
+
+            return result;
+        }
+
+        void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
+        {
+            if (UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor))
+            {
+                if (TryFindAncestryUiItem(dstUiItemName))
+                {
+                    mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
+                }
+                else
+                {
+                    LogInfo("UiItemBase::SetAnchor => Warning! Try to anchor to ui item which is not parent or sibling");
+                }
+            }
+            else
+            {
+                LogInfo("UiItemBase::SetAnchor => Warning! Wrong anchor binding. srcAnchor: ", static_cast<uint8_t>(srcAnchor), " dstAnchor: ", static_cast<uint8_t>(dstAnchor));
             }
         }
 
-        std::shared_ptr<IUiTransformable> UiItemBase::GetRootParent() const
+        std::weak_ptr<IUiTransformable> UiItemBase::GetRootParent() const
         {
             const std::shared_ptr<IUiTransformable> &parent = mParent.lock();
             if (parent)
             {
-                const auto &parentSp = parent->GetRootParent();
+                const auto &parentSp = parent->GetRootParent().lock();
                 if (parentSp)
                 {
                     return parentSp;
                 }
             }
             return parent;
+        }
+
+        std::weak_ptr<IUiTransformable> UiItemBase::GetParent() const
+        {
+            return mParent;
         }
 
         void UiItemBase::TransformChanged()
@@ -166,16 +221,11 @@ namespace EngineCore
                 const auto parentHeight = parentSp->GetHeight();
                 const auto parentAbsoluteOrigin = parentSp->GetAbsoluteOrigin();
 
-                if (eUiItemPositioningType::ANCHORS == mUiPositioningType)
+                if (mAnchors.size())
                 {
-                    if (mAnchors.size())
-                    {
-                        assert(false);
-                        // todo: not implemented
-                        // calculate size and position with anchors
-                    }
+                    RecalculateAnchorPositions();
                 }
-                else if (eUiItemPositioningType::RELATIVE == mUiPositioningType)
+                else
                 {
                     const auto& translation = glm::clamp(mAbsoluteOrigin, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
                     mAbsoluteOrigin = translation + parentAbsoluteOrigin;
@@ -188,7 +238,7 @@ namespace EngineCore
 
         void UiItemBase::RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent)
         {
-            auto rootParentSp = parent->GetRootParent();
+            auto rootParentSp = parent->GetRootParent().lock();
             rootParentSp = rootParentSp ? rootParentSp : parent;
             const auto rootWidth = rootParentSp->GetWidth();
             const auto rootHeight = rootParentSp->GetHeight();
@@ -213,7 +263,47 @@ namespace EngineCore
 
         void UiItemBase::RebuildBoundingArea()
         {
-            mBoundingArea = BoundingBox2D(mAbsoluteOrigin, glm::ivec2(mWidth / 2, mHeight / 2));
+            const auto halfExtent = glm::ivec2(mWidth / 2, mHeight / 2);
+            mBoundingArea = BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
+        }
+
+        void UiItemBase::RecalculateAnchorPositions()
+        {
+            if (mAnchors.size())
+            {
+                CalculateHorizontalAnchorPositions();
+                CalculateVerticalAnchorPositions();
+            }
+        }
+
+        void UiItemBase::CalculateHorizontalAnchorPositions()
+        {
+            if (mAnchors.count(eUiAnchor::HORIZONTAL_CENTER))
+            {
+                const auto &dstAnchor = mAnchors.at(eUiAnchor::HORIZONTAL_CENTER);
+                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.second);
+                assert(dstAnchoringUiItem);
+                const auto &dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
+                mAbsoluteOrigin.x = dstBoundingArea.GetOrigin().x - (mWidth / 2);
+            }
+            else
+            {
+            }
+        }
+
+        void UiItemBase::CalculateVerticalAnchorPositions()
+        {
+            if (mAnchors.count(eUiAnchor::VERTICAL_CENTER))
+            {
+                const auto &dstAnchor = mAnchors.at(eUiAnchor::VERTICAL_CENTER);
+                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.second);
+                assert(dstAnchoringUiItem);
+                const auto &dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
+                mAbsoluteOrigin.y = dstBoundingArea.GetOrigin().y - (mHeight / 2);
+            }
+            else
+            {
+            }
         }
 
         void UiItemBase::OnTransformChanged()
@@ -247,33 +337,33 @@ namespace EngineCore
 
         void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
-            RegisterUiItem(uiItem->GetUId());
+            RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
         }
 
         void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
-            UnregisterUiItem(uiItem->GetUId());
+            UnregisterUiItem(uiItem->GetUId(), uiItem->GetName());
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetUId() == uiItem->GetUId(); });
             mChildren.erase(it);
             uiItem->OnUnregistered();
         }
 
-        void UiItemBase::RegisterUiItem(const size_t uiId)
+        void UiItemBase::RegisterUiItem(const size_t uiId, const std::string &uiItemName)
         {
             if (const auto &parentSp = mParent.lock())
             {
-                parentSp->RegisterUiItem(uiId);
+                parentSp->RegisterUiItem(uiId, uiItemName);
             }
         }
 
-        void UiItemBase::UnregisterUiItem(const size_t uiId)
+        void UiItemBase::UnregisterUiItem(const size_t uiId, const std::string &uiItemName)
         {
             if (const auto &parentSp = mParent.lock())
             {
-                parentSp->UnregisterUiItem(uiId);
+                parentSp->UnregisterUiItem(uiId, uiItemName);
             }
         }
 
@@ -283,6 +373,11 @@ namespace EngineCore
 
         void UiItemBase::OnUnregistered()
         {
+        }
+
+        void UiItemBase::Tick(const float deltaTime)
+        {
+            
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
@@ -311,15 +406,14 @@ namespace EngineCore
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
                     {
                         sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer, canvasSp]()
-                        {
+                                                       {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                             if (uiSceneProxy)
                             {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
                                 uiSceneProxy->SetTransformMatrix(mTransformMatrix);
-                            }
-                        });
+                            } });
                     }
                 }
             }

@@ -3,6 +3,9 @@
 #include <glm/vec2.hpp>
 #include <memory>
 
+#include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
 namespace EngineCore
 {
     class Scene;
@@ -19,19 +22,25 @@ namespace EngineCore
             virtual size_t GetHeight() const = 0;
             virtual glm::vec2 GetNormalizedTranslation() const = 0;
             virtual glm::vec2 GetNormalizedScale() const = 0;
-            virtual std::shared_ptr<IUiTransformable> GetRootParent() const = 0;
+            virtual std::weak_ptr<IUiTransformable> GetRootParent() const = 0;
+            virtual std::weak_ptr<IUiTransformable> GetParent() const = 0;
+            virtual std::string GetName() const = 0;
             virtual bool IsVisible() const = 0;
+            virtual BoundingBox2D GetBoundingArea() const = 0;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &translation) = 0;
             virtual void SetZOrder(const size_t z_order) = 0;
             virtual void SetWidth(const size_t width) = 0;
             virtual void SetHeight(const size_t height) = 0;
             virtual void SetIsVisible(const bool visibility) = 0;
+            virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) = 0;
 
-            virtual void RegisterUiItem(const size_t uiId) = 0;
-            virtual void UnregisterUiItem(const size_t uiId) = 0;
+            virtual void RegisterUiItem(const size_t uiId, const std::string &uiItemName) = 0;
+            virtual void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) = 0;
 
             virtual std::weak_ptr<::EngineCore::Scene> GetScene() const = 0;
+
+            virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string& name) const = 0;
         };
     }
 }

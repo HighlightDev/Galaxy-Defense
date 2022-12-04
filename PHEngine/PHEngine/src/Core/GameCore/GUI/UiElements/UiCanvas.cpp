@@ -18,10 +18,12 @@ namespace EngineCore
 
         UiCanvas::UiCanvas(const ViewPortInfo &canvasScreenProperties)
             : mUId(s_UId++),
+              mName("UiCanvas_" + std::to_string(mUId)),
               mAbsoluteOrigin(glm::ivec2(canvasScreenProperties.OriginX, canvasScreenProperties.OriginY)),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
               mChildren(),
-              mRegisteredUiItems(),
+              mRegisteredUIds(),
+              mRegisteredNames(),
               mIsVisible(true)
         {
         }
@@ -71,9 +73,14 @@ namespace EngineCore
             return glm::vec2(1.0);
         }
 
-        std::shared_ptr<IUiTransformable> UiCanvas::GetRootParent() const
+        std::weak_ptr<IUiTransformable> UiCanvas::GetRootParent() const
         {
-            return std::shared_ptr<IUiTransformable>();
+            return std::weak_ptr<IUiTransformable>();
+        }
+
+        std::weak_ptr<IUiTransformable> UiCanvas::GetParent() const
+        {
+            return std::weak_ptr<IUiTransformable>();
         }
 
         bool UiCanvas::IsVisible() const
@@ -124,6 +131,21 @@ namespace EngineCore
             }
         }
 
+        std::string UiCanvas::GetName() const
+        {
+            return mName;
+        }
+
+        BoundingBox2D UiCanvas::GetBoundingArea() const
+        {
+            const auto& halfExtent = mWidthHeight / 2;
+            return BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
+        }
+
+        void UiCanvas::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
+        {
+        }
+
         void UiCanvas::UpdateHierarchyTransform()
         {
             for (const auto &child : mChildren)
@@ -134,36 +156,52 @@ namespace EngineCore
 
         void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
-            RegisterUiItem(uiItem->GetUId());
+            RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
         }
 
-        void UiCanvas::RegisterUiItem(const size_t uiId)
+        void UiCanvas::RegisterUiItem(const size_t uiId,  const std::string& uiItemName)
         {
-            assert(!mRegisteredUiItems.count(uiId));
-            mRegisteredUiItems.insert(uiId);
+            assert(!mRegisteredUIds.count(uiId) && !mRegisteredNames.count(uiItemName));
+            mRegisteredUIds.insert(uiId);
+            mRegisteredNames.insert(uiItemName);
         }
 
-        void UiCanvas::UnregisterUiItem(const size_t uiId)
+        void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string& uiItemName)
         {
-            assert(mRegisteredUiItems.count(uiId));
-            mRegisteredUiItems.erase(uiId);
+            assert(mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName));
+            mRegisteredUIds.erase(uiId);
+            mRegisteredNames.erase(uiItemName);
         }
 
         void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
-            UnregisterUiItem(uiItem->GetUId());
-            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&](const auto& childItem) { return uiItem->GetUId() == childItem->GetUId(); });
+            UnregisterUiItem(uiItem->GetUId(), uiItem->GetName());
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&](const auto &childItem)
+                                              { return uiItem->GetUId() == childItem->GetUId(); });
             (*foundIt)->OnUnregistered();
             const auto it = std::remove_if(mChildren.begin(), mChildren.end(), [&](const auto &childUi)
                                            { return childUi->GetUId() == uiItem->GetUId(); });
             mChildren.erase(it);
         }
 
+        void UiCanvas::Tick(const float deltaTime)
+        {
+            for (const auto& child: mChildren)
+            {
+                child->Tick(deltaTime);
+            }
+        }
+
         std::shared_ptr<UiCanvasSceneProxy> UiCanvas::CreateUiCanvasSceneProxy() const
         {
             return std::make_shared<UiCanvasSceneProxy>(this);
+        }
+
+        std::shared_ptr<IUiTransformable> UiCanvas::TryFindChildByName(const std::string& name) const
+        {
+            return nullptr;
         }
 
         void UiCanvas::SyncDataOnRenderThread()
@@ -174,12 +212,11 @@ namespace EngineCore
                 if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
                 {
                     sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer]()
-                    {
+                                                   {
                         const auto& canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId());
                         canvasProxy->SetIsVisible(mIsVisible),
                         canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin),
-                        canvasProxy->SetWidthHeight(mWidthHeight); 
-                    });
+                        canvasProxy->SetWidthHeight(mWidthHeight); });
                 }
             }
         }

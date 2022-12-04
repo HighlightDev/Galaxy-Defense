@@ -811,6 +811,8 @@ namespace EngineCore
 #if DEBUG
       UpdatePhysicsRenderData(mPhysicsWorld->GetDebugPhysicsRenderData());
 #endif
+
+      mUiHandler->Tick(delta);
    }
 
    void Scene::RemoveComponent(std::shared_ptr<Component> component)

@@ -35,5 +35,13 @@ namespace EngineCore
             mUiCanvases.emplace_back(newCanvas);
             return newCanvas;
         }
+
+        void UiHandler::Tick(const float deltaTime)
+        {
+            for (const auto& canvas : mUiCanvases)
+            {
+                canvas->Tick(deltaTime);
+            }
+        }
     }
 }

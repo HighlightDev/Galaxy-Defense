@@ -3,6 +3,7 @@
 #include "UiItemBase.h"
 #include "IUiTransformable.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GameCore/ITickable.h"
 
 #include <unordered_set>
 #include <memory>
@@ -23,21 +24,29 @@ namespace EngineCore
 
     namespace GUI
     {
-        class UiCanvas : public IUiTransformable
+        class UiCanvas : public IUiTransformable,
+                         public ITickable
         {
         private:
             static size_t s_UId;
+
             size_t mUId;
+
+            std::string mName;
 
             std::weak_ptr<::EngineCore::Scene> mScene;
 
             glm::ivec2 mAbsoluteOrigin;
+
             glm::ivec2 mWidthHeight;
+
             bool mIsVisible;
 
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
-            std::unordered_set<size_t> mRegisteredUiItems;
+
+            std::unordered_set<size_t> mRegisteredUIds;
+            std::unordered_set<std::string> mRegisteredNames;
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
@@ -49,8 +58,11 @@ namespace EngineCore
             virtual size_t GetHeight() const override;
             virtual glm::vec2 GetNormalizedTranslation() const override;
             virtual glm::vec2 GetNormalizedScale() const override;
-            virtual std::shared_ptr<IUiTransformable> GetRootParent() const override;
+            virtual std::weak_ptr<IUiTransformable> GetRootParent() const override;
+            virtual std::weak_ptr<IUiTransformable> GetParent() const override;
+            virtual std::string GetName() const override;
             virtual bool IsVisible() const override;
+            virtual BoundingBox2D GetBoundingArea() const override;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
@@ -58,11 +70,13 @@ namespace EngineCore
             virtual void SetHeight(const size_t height) override;
             virtual void SetIsVisible(const bool isVisible) override;
 
-            void SetScene(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+            void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
             virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+
+            virtual void Tick(const float deltaTime) override;
 
             std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
@@ -71,9 +85,12 @@ namespace EngineCore
 
             void SyncDataOnRenderThread();
 
+            virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+
         protected:
-            void RegisterUiItem(const size_t uiId);
-            void UnregisterUiItem(const size_t uiId);
+            void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
+            void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
+            virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
         };
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UiCanvas.h"
+#include "Core/GameCore/ITickable.h"
 
 #include <vector>
 #include <memory>
@@ -11,7 +12,7 @@ namespace EngineCore
 
     namespace GUI
     {
-        class UiHandler
+        class UiHandler : public ITickable
         {
             std::weak_ptr<Scene> mOwner;
 
@@ -23,6 +24,8 @@ namespace EngineCore
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &owner);
 
             std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo &canvasScreenSize);
+
+            virtual void Tick(const float deltaTime) override;
         };
     }
 }
