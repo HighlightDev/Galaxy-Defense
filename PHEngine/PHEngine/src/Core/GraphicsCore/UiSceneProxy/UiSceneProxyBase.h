@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <memory>
-#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 
 namespace EngineCore
 {
@@ -31,7 +31,7 @@ namespace Graphics
 
             std::weak_ptr<UiCanvasSceneProxy> mParentCanvasProxy;
 
-            glm::mat4 mTransformMatrix;
+            glm::vec2 mNormalizedTranslation, mNormalizedScale;
 
         public:
             UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
@@ -48,9 +48,7 @@ namespace Graphics
 
             size_t GetZOrder() const;
 
-            glm::mat4 GetTransformMatrix() const;
-
-            void SetTransformMatrix(const glm::mat4& transformMatrix);
+            void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
             void SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy);
 

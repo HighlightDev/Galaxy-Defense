@@ -26,11 +26,11 @@ namespace EngineCore
             float mOpacity;
 
         public:
-            explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
+            explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
 
             ~UiImage() override;
 
-            void SetTextureSrc(const std::string& textureSrc);
+            void SetTextureSrc(const std::string &textureSrc);
 
             std::string GetTextureSrc() const;
 
@@ -43,8 +43,6 @@ namespace EngineCore
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
         protected:
-            virtual void UpdateHierarchyTransform() override;
-
             virtual void OnRegistered() override;
 
             virtual void OnUnregistered() override;

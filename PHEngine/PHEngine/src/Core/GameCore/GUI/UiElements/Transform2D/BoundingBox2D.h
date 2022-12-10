@@ -10,24 +10,24 @@ namespace EngineCore
    {
       class BoundingBox2D
       {
-         glm::vec2 mOrigin;
+         glm::ivec2 mOrigin;
 
-         glm::vec2 mHalfExtent;
+         glm::ivec2 mHalfExtent;
 
       public:
          BoundingBox2D();
 
-         BoundingBox2D(const glm::vec2 &origin, const glm::vec2 &halfExtent);
+         BoundingBox2D(const glm::ivec2 &origin, const glm::ivec2 &halfExtent);
 
          ~BoundingBox2D();
 
-         glm::vec2 GetMax() const;
+         glm::ivec2 GetMax() const;
 
-         glm::vec2 GetMin() const;
+         glm::ivec2 GetMin() const;
 
-         glm::vec2 GetOrigin() const;
+         glm::ivec2 GetOrigin() const;
 
-         glm::vec2 GetHalfExtent() const;
+         glm::ivec2 GetHalfExtent() const;
       };
    }
 }

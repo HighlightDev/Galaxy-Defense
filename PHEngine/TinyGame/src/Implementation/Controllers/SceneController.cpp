@@ -35,7 +35,7 @@ namespace Game
     {
     }
 
-    SceneController::~SceneController() 
+    SceneController::~SceneController()
     {
     }
 
@@ -89,13 +89,42 @@ namespace Game
             const auto &uiHandler = sceneSp->GetUiHandler();
             mTestCanvas = uiHandler->CreateCanvas(ViewPortInfo(0, 0, 600, 600));
             const auto &uiImage = std::make_shared<UiImage>(mTestCanvas, mTestCanvas);
-            uiImage->SetWidth(100);
-            uiImage->SetHeight(100);
-            uiImage->SetAbsoluteOrigin(glm::ivec2(300, 300));
-            uiImage->SetTextureSrc("fern.png");
-            uiImage->SetOpacity(0.5f);
+            uiImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mTestCanvas->GetName());
+            uiImage->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mTestCanvas->GetName());
+            uiImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mTestCanvas->GetName());
+            uiImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mTestCanvas->GetName());
+            uiImage->SetTextureSrc("path.png");
+            uiImage->SetOpacity(1);
             uiImage->SetZOrder(1);
+
+            const auto &uiImage1 = std::make_shared<UiImage>(mTestCanvas, uiImage);
+            uiImage1->SetWidth(100);
+            uiImage1->SetHeight(100);
+            uiImage1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, uiImage->GetName());
+            uiImage1->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
+            uiImage1->SetTextureSrc("grass.png");
+            uiImage1->SetZOrder(2);
+
+            const auto &uiImage2 = std::make_shared<UiImage>(mTestCanvas, uiImage);
+            uiImage2->SetWidth(100);
+            uiImage2->SetAnchor(eUiAnchor::LEFT, eUiAnchor::RIGHT, uiImage1->GetName());
+            uiImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
+            uiImage2->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
+            uiImage2->SetTextureSrc("grass.png");
+            uiImage2->SetZOrder(2);
+
+            const auto &uiImage3 = std::make_shared<UiImage>(mTestCanvas, uiImage);
+            uiImage3->SetWidth(200);
+            uiImage3->SetHeight(200);
+            uiImage3->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage->GetName());
+            uiImage3->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
+            uiImage3->SetTextureSrc("grass.png");
+            uiImage3->SetZOrder(2);
+
             mTestCanvas->AddUiItem(uiImage);
+            uiImage->AddUiItem(uiImage1);
+            uiImage->AddUiItem(uiImage2);
+            uiImage->AddUiItem(uiImage3);
         }
     }
 

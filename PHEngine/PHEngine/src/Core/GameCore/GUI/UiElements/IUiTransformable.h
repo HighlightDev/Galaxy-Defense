@@ -27,6 +27,7 @@ namespace EngineCore
             virtual std::string GetName() const = 0;
             virtual bool IsVisible() const = 0;
             virtual BoundingBox2D GetBoundingArea() const = 0;
+            virtual bool IsTransformDirty() const = 0;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &translation) = 0;
             virtual void SetZOrder(const size_t z_order) = 0;

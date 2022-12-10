@@ -36,6 +36,7 @@ namespace IO
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
 		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
 		CreateFilePathMap(GetMaskTexturePath(), GetShortMaskTexturePath());
+		CreateFilePathMap(GetLandscapeTexturePath(), GetShortLandscapeTexturePath());
 	}
 
 	void FolderManager::CreateFilePathMap(const std::string &absolutePathToDirectory, const std::string &relativePathToDirectory)

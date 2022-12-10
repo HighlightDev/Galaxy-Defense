@@ -26,7 +26,6 @@ namespace EngineCore
               mAbsoluteOrigin(),
               mNormalizedTranslation(),
               mNormalizedScale(glm::vec2(1.0)),
-              mTransformMatrix(glm::mat4(1)),
               mZOrder(0),
               mWidth(0),
               mHeight(0),
@@ -35,9 +34,9 @@ namespace EngineCore
               mParent(parent),
               mParentCanvas(parentCanvas),
               mChildren(),
-              mIsVisible(true)
+              mIsVisible(true),
+              mIsTransformDirty(true)
         {
-            TransformChanged();
         }
 
         std::weak_ptr<Scene> UiItemBase::GetScene() const
@@ -85,17 +84,12 @@ namespace EngineCore
             return mNormalizedScale;
         }
 
-        glm::mat4 UiItemBase::GetTransformMatrix() const
-        {
-            return mTransformMatrix;
-        }
-
         void UiItemBase::SetAbsoluteOrigin(const glm::ivec2 &transform)
         {
             if (!CheckSimilarityIVec2(mAbsoluteOrigin, transform))
             {
                 mAbsoluteOrigin = transform;
-                TransformChanged();
+                SetIsTransformDirty(true);
             }
         }
 
@@ -104,7 +98,6 @@ namespace EngineCore
             if (mZOrder != zOrder)
             {
                 mZOrder = zOrder;
-                TransformChanged();
                 SyncDataOnRenderThread();
             }
         }
@@ -114,7 +107,7 @@ namespace EngineCore
             if (mWidth != width)
             {
                 mWidth = width;
-                TransformChanged();
+                SetIsTransformDirty(true);
             }
         }
 
@@ -123,7 +116,42 @@ namespace EngineCore
             if (mHeight != height)
             {
                 mHeight = height;
-                TransformChanged();
+                SetIsTransformDirty(true);
+            }
+        }
+
+        bool UiItemBase::IsVisible() const
+        {
+            return mIsVisible;
+        }
+
+        void UiItemBase::SetIsVisible(const bool isVisible)
+        {
+            if (mIsVisible != isVisible)
+            {
+                mIsVisible = isVisible;
+                SyncDataOnRenderThread();
+            }
+        }
+
+        void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
+        {
+            assert(UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor)); // Wrong anchor binding. srcAnchor
+            assert(TryFindAncestryUiItem(dstUiItemName));                                    // Try to anchor to ui item which is not parent or sibling
+
+            if (mAnchors.count(srcAnchor))
+            {
+                const auto &anchorTargetPair = mAnchors.at(srcAnchor);
+                if (anchorTargetPair.first != dstAnchor && anchorTargetPair.second != dstUiItemName)
+                {
+                    mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
+                    SetIsTransformDirty(true);
+                }
+            }
+            else
+            {
+                mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
+                SetIsTransformDirty(true);
             }
         }
 
@@ -149,9 +177,9 @@ namespace EngineCore
             return foundIt != mChildren.end() ? (*foundIt) : nullptr;
         }
 
-        std::shared_ptr<UiItemBase> UiItemBase::TryFindAncestryUiItem(const std::string &name) const
+        std::shared_ptr<IUiTransformable> UiItemBase::TryFindAncestryUiItem(const std::string &name) const
         {
-            std::shared_ptr<UiItemBase> result;
+            std::shared_ptr<IUiTransformable> result;
             auto parentWp = mParent;
 
             while (const auto &parentSp = parentWp.lock())
@@ -159,33 +187,18 @@ namespace EngineCore
                 const auto &child = parentSp->TryFindChildByName(name);
                 if (child)
                 {
-                    result = std::static_pointer_cast<UiItemBase>(child);
+                    result = child;
                     break;
+                }
+                else
+                {
+                    result = parentSp;
                 }
 
                 parentWp = parentSp->GetParent();
             }
 
             return result;
-        }
-
-        void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
-        {
-            if (UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor))
-            {
-                if (TryFindAncestryUiItem(dstUiItemName))
-                {
-                    mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
-                }
-                else
-                {
-                    LogInfo("UiItemBase::SetAnchor => Warning! Try to anchor to ui item which is not parent or sibling");
-                }
-            }
-            else
-            {
-                LogInfo("UiItemBase::SetAnchor => Warning! Wrong anchor binding. srcAnchor: ", static_cast<uint8_t>(srcAnchor), " dstAnchor: ", static_cast<uint8_t>(dstAnchor));
-            }
         }
 
         std::weak_ptr<IUiTransformable> UiItemBase::GetRootParent() const
@@ -207,73 +220,50 @@ namespace EngineCore
             return mParent;
         }
 
-        void UiItemBase::TransformChanged()
+        bool UiItemBase::IsTransformDirty() const
         {
-            UpdateHierarchyTransform();
-            OnTransformChanged();
+            return mIsTransformDirty;
         }
 
-        void UiItemBase::RebuildTransform()
+        void UiItemBase::SetIsTransformDirty(const bool isDirty)
         {
-            if (const auto parentSp = mParent.lock())
+            mIsTransformDirty = isDirty;
+        }
+
+        void UiItemBase::RebuildNormalizedTransform()
+        {
+            if (const auto &rootParentSp = GetRootParent().lock())
             {
-                const auto parentWidth = parentSp->GetWidth();
-                const auto parentHeight = parentSp->GetHeight();
-                const auto parentAbsoluteOrigin = parentSp->GetAbsoluteOrigin();
+                const auto rootWidth = rootParentSp->GetWidth();
+                const auto rootHeight = rootParentSp->GetHeight();
+                assert(rootWidth != 0 && rootHeight != 0);
+                mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth),
+                                                   static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(rootHeight));
 
-                if (mAnchors.size())
-                {
-                    RecalculateAnchorPositions();
-                }
-                else
-                {
-                    const auto& translation = glm::clamp(mAbsoluteOrigin, glm::ivec2(), glm::ivec2(parentWidth, parentHeight));
-                    mAbsoluteOrigin = translation + parentAbsoluteOrigin;
-                }
+                mNormalizedScale = glm::vec2(static_cast<float>(mWidth) / static_cast<float>(rootWidth),
+                                             static_cast<float>(mHeight) / static_cast<float>(rootHeight));
 
-                RebuildNormalizedTransform(parentSp);
-                RebuildTransformMatrix();
+                LogInfo("UiItemBase::RebuildNormalizedTransform => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin,
+                        " mWidth: ", mWidth, " mHeight: ", mHeight, " rootWidth: ", rootWidth, " rootHeight: ", rootHeight);
+
+                SyncDataOnRenderThread();
             }
-        }
-
-        void UiItemBase::RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent)
-        {
-            auto rootParentSp = parent->GetRootParent().lock();
-            rootParentSp = rootParentSp ? rootParentSp : parent;
-            const auto rootWidth = rootParentSp->GetWidth();
-            const auto rootHeight = rootParentSp->GetHeight();
-            assert(rootWidth != 0 && rootHeight != 0);
-            mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth),
-                                               static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(rootHeight));
-
-            mNormalizedScale = glm::vec2(static_cast<float>(mWidth) / static_cast<float>(rootWidth),
-                                         static_cast<float>(mHeight) / static_cast<float>(rootHeight));
-        }
-
-        void UiItemBase::RebuildTransformMatrix()
-        {
-            mTransformMatrix = glm::mat4(1);
-            const auto &tranlsationToLeftBottomCorner = (glm::vec2(1.0f) - mNormalizedScale);
-            const auto translationFromCenter = mNormalizedTranslation - tranlsationToLeftBottomCorner;
-            mTransformMatrix *= glm::translate(glm::mat4(1), glm::vec3(translationFromCenter.x, translationFromCenter.y, 0.0f));
-            mTransformMatrix *= glm::scale(glm::mat4(1), glm::vec3(mNormalizedScale.x, mNormalizedScale.y, 1.0f));
-
-            SyncDataOnRenderThread();
         }
 
         void UiItemBase::RebuildBoundingArea()
         {
             const auto halfExtent = glm::ivec2(mWidth / 2, mHeight / 2);
             mBoundingArea = BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
+            LogInfo("UiItemBase::RebuildBoundingArea => uid: ", mUId, " bounding box: ", mBoundingArea);
         }
 
         void UiItemBase::RecalculateAnchorPositions()
         {
-            if (mAnchors.size())
-            {
-                CalculateHorizontalAnchorPositions();
-                CalculateVerticalAnchorPositions();
-            }
+            CalculateHorizontalAnchorPositions();
+            CalculateVerticalAnchorPositions();
+
+            RebuildBoundingArea();
+            RebuildNormalizedTransform();
         }
 
         void UiItemBase::CalculateHorizontalAnchorPositions()
@@ -288,7 +278,58 @@ namespace EngineCore
             }
             else
             {
+                if (mAnchors.count(eUiAnchor::LEFT) && mAnchors.count(eUiAnchor::RIGHT))
+                {
+                    const auto &leftAnchor = mAnchors.at(eUiAnchor::LEFT);
+                    const auto &rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
+                    std::shared_ptr<IUiTransformable> leftAnchorUiItem, rightAnchorUiItem;
+                    if (leftAnchor.second == rightAnchor.second)
+                    {
+                        leftAnchorUiItem = rightAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
+                    }
+                    else
+                    {
+                        leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
+                        rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.second);
+                    }
+
+                    assert(leftAnchorUiItem && rightAnchorUiItem);
+                    const auto &leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
+                    const auto &rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
+
+                    const int32_t originX = eUiAnchor::LEFT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                 : 0;
+                    const int32_t width = eUiAnchor::LEFT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                  : 0;
+
+                    mAbsoluteOrigin.x = originX;
+                    mWidth = width;
+                }
+                else if (mAnchors.count(eUiAnchor::LEFT))
+                {
+                    const auto &leftAnchor = mAnchors.at(eUiAnchor::LEFT);
+                    const auto &leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
+                    assert(leftAnchorUiItem);
+                    const auto &leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
+
+                    const int32_t originX = eUiAnchor::LEFT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                 : 0;
+                    mAbsoluteOrigin.x = originX;
+                }
+                else if (mAnchors.count(eUiAnchor::RIGHT))
+                {
+                    const auto &rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
+                    const auto &rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.second);
+                    assert(rightAnchorUiItem);
+
+                    const auto &rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
+
+                    const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                          : 0;
+                    mAbsoluteOrigin.x = anchorOriginX - mWidth;
+                }
             }
+            LogInfo("UiItemBase::CalculateHorizontalAnchorPositions => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin, " mWidth: ", mWidth, " mHeight: ", mHeight);
         }
 
         void UiItemBase::CalculateVerticalAnchorPositions()
@@ -303,36 +344,58 @@ namespace EngineCore
             }
             else
             {
+                if (mAnchors.count(eUiAnchor::BOTTOM) && mAnchors.count(eUiAnchor::TOP))
+                {
+                    const auto &bottomAnchor = mAnchors.at(eUiAnchor::BOTTOM);
+                    const auto &topAnchor = mAnchors.at(eUiAnchor::TOP);
+                    std::shared_ptr<IUiTransformable> bottomAnchorUiItem, topAnchorUiItem;
+                    if (bottomAnchor.second == topAnchor.second)
+                    {
+                        bottomAnchorUiItem = topAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
+                    }
+                    else
+                    {
+                        bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
+                        topAnchorUiItem = TryFindAncestryUiItem(topAnchor.second);
+                    }
+
+                    assert(bottomAnchorUiItem && topAnchorUiItem);
+                    const auto &bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
+                    const auto &topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
+
+                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMax().y
+                                                                                                                                                                       : 0;
+                    const int32_t height = eUiAnchor::BOTTOM == topAnchor.first ? topAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == topAnchor.first ? topAnchorUiItemBoundingArea.GetMax().y
+                                                                                                                                                             : 0;
+
+                    mAbsoluteOrigin.y = originY;
+                    mHeight = height;
+                }
+                else if (mAnchors.count(eUiAnchor::BOTTOM))
+                {
+                    const auto &bottomAnchor = mAnchors.at(eUiAnchor::BOTTOM);
+                    const auto &bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
+                    assert(bottomAnchorUiItem);
+                    const auto &bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
+
+                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                       : 0;
+                    mAbsoluteOrigin.y = originY;
+                }
+                else if (mAnchors.count(eUiAnchor::TOP))
+                {
+                    const auto &topAnchor = mAnchors.at(eUiAnchor::TOP);
+                    const auto &topAnchorUiItem = TryFindAncestryUiItem(topAnchor.second);
+                    assert(topAnchorUiItem);
+
+                    const auto &topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
+
+                    const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.first ? topAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == topAnchor.first ? topAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                    : 0;
+                    mAbsoluteOrigin.y = anchorOriginY - mHeight;
+                }
             }
-        }
-
-        void UiItemBase::OnTransformChanged()
-        {
-        }
-
-        bool UiItemBase::IsVisible() const
-        {
-            return mIsVisible;
-        }
-
-        void UiItemBase::SetIsVisible(const bool isVisible)
-        {
-            if (mIsVisible != isVisible)
-            {
-                mIsVisible = isVisible;
-                SyncDataOnRenderThread();
-            }
-        }
-
-        void UiItemBase::UpdateHierarchyTransform()
-        {
-            RebuildTransform();
-            RebuildBoundingArea();
-
-            for (const auto &child : mChildren)
-            {
-                child->UpdateHierarchyTransform();
-            }
+            LogInfo("UiItemBase::CalculateVerticalAnchorPositions => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin, " mWidth: ", mWidth, " mHeight: ", mHeight);
         }
 
         void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
@@ -377,7 +440,16 @@ namespace EngineCore
 
         void UiItemBase::Tick(const float deltaTime)
         {
-            
+            if (mIsTransformDirty)
+            {
+                UpdateAnchorTransform();
+                mIsTransformDirty = false;
+            }
+
+            for (const auto &child : mChildren)
+            {
+                child->Tick(deltaTime);
+            }
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
@@ -396,6 +468,44 @@ namespace EngineCore
             return result;
         }
 
+        void UiItemBase::UpdateAnchorTransform()
+        {
+            RecalculateAnchorPositions();
+
+            if (const auto &canvasSp = mParentCanvas.lock())
+            {
+                const auto &dependentItems = canvasSp->GetDependentByTransformChildren(GetName());
+                for (const auto &dependentItem : dependentItems)
+                {
+                    dependentItem->UpdateDependentChildrenAnchorTransform();
+                }
+            }
+        }
+
+        void UiItemBase::UpdateDependentChildrenAnchorTransform()
+        {
+            UpdateAnchorTransform();
+        }
+
+        bool UiItemBase::IsTransformDependentToUiItem(const std::string &uiItemName) const
+        {
+            return std::any_of(mAnchors.cbegin(), mAnchors.cend(), [&uiItemName](const auto &keyValueAnchor)
+                               { return keyValueAnchor.second.second == uiItemName; });
+        }
+
+        void UiItemBase::GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems)
+        {
+            for (const auto &child : mChildren)
+            {
+                if (child->IsTransformDependentToUiItem(nameOfRelatedUiItem))
+                {
+                    affectedUiItems.emplace_back(child);
+                }
+
+                child->GetDependentByTransformChildren(nameOfRelatedUiItem, affectedUiItems);
+            }
+        }
+
         void UiItemBase::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
@@ -405,14 +515,15 @@ namespace EngineCore
                 {
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
                     {
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer, canvasSp]()
+                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp]()
                                                        {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                             if (uiSceneProxy)
                             {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
-                                uiSceneProxy->SetTransformMatrix(mTransformMatrix);
+                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale);
+                                LogInfo("UiItemBase::SyncDataOnRenderThread => name: ", GetName(), " translation = ", mNormalizedTranslation, " scale = ", mNormalizedScale);
                             } });
                     }
                 }

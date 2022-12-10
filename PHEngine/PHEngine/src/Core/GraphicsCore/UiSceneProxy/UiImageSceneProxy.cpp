@@ -27,9 +27,8 @@ namespace Graphics
 
         void UiImageSceneProxy::Render()
         {
-            const auto &transformMatrix = GetTransformMatrix();
             mUiTestShader->ExecuteShader();
-            mUiTestShader->SetTransformMatrix(transformMatrix);
+            mUiTestShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
             if (mTexture)
             {
                 mTexture->BindTexture(0);

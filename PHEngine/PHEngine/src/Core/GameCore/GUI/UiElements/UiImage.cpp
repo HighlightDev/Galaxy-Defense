@@ -47,11 +47,6 @@ namespace EngineCore
         {
         }
 
-        void UiImage::UpdateHierarchyTransform()
-        {
-            UiItemBase::UpdateHierarchyTransform();
-        }
-
         void UiImage::ReallocateTexture()
         {
             const auto &texturePool = TexturePool::GetInstance();

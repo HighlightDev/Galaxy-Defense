@@ -42,6 +42,8 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            bool mIsTransformDirty;
+
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
@@ -63,6 +65,7 @@ namespace EngineCore
             virtual std::string GetName() const override;
             virtual bool IsVisible() const override;
             virtual BoundingBox2D GetBoundingArea() const override;
+            virtual bool IsTransformDirty() const override;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
@@ -80,17 +83,24 @@ namespace EngineCore
 
             std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
-        private:
-            void UpdateHierarchyTransform();
+            std::vector<std::shared_ptr<UiItemBase>> GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const;
 
+        protected:
+            void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
+
+            void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
+
+        private:
             void SyncDataOnRenderThread();
 
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
 
-        protected:
-            void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
-            void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
             virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
+
+            void SetIsTransformDirty(const bool isDirty);
+
+            void UpdateAnchorTransform();
+            void UpdateDependentChildrenAnchorTransform();
         };
     }
 }

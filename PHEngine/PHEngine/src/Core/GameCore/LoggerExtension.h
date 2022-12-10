@@ -8,6 +8,9 @@
 #include <utility>
 
 #include "Core/CommonCore/ThreadHelper.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
+using namespace EngineCore::GUI;
 
 namespace EngineCore
 {
@@ -29,6 +32,15 @@ namespace TinyLogger
          static std::string Do(const glm::vec2 &value)
          {
             return "vec2:{x=" + TinyLogger::LogHelp::ToString<float>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<float>::Value(value.y) + "}";
+         }
+      };
+
+      template <>
+      struct CastTypeToString<glm::ivec2>
+      {
+         static std::string Do(const glm::ivec2 &value)
+         {
+            return "ivec2:{x=" + TinyLogger::LogHelp::ToString<int32_t>::Value(value.x) + " y=" + TinyLogger::LogHelp::ToString<int32_t>::Value(value.y) + "}";
          }
       };
 
@@ -95,6 +107,15 @@ namespace TinyLogger
                    TinyLogger::LogHelp::ToString<float>::Value(value[3][2]) + ","
                                                                               "[3][3]=" +
                    TinyLogger::LogHelp::ToString<float>::Value(value[3][3]) + "}";
+         }
+      };
+
+      template <>
+      struct CastTypeToString<BoundingBox2D>
+      {
+         static std::string Do(const BoundingBox2D &value)
+         {
+            return "origin = " + CastTypeToString<glm::ivec2>::Do(value.GetOrigin()) + "; half extent = " + CastTypeToString<glm::ivec2>::Do(value.GetHalfExtent());
          }
       };
    }

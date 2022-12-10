@@ -42,8 +42,6 @@ namespace EngineCore
 
             glm::vec2 mNormalizedScale;
 
-            glm::mat4 mTransformMatrix;
-
             size_t mZOrder;
 
             size_t mWidth;
@@ -63,8 +61,10 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            bool mIsTransformDirty;
+
         public:
-            explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent = std::weak_ptr<IUiTransformable>());
+            explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
             virtual ~UiItemBase() = default;
 
@@ -80,10 +80,10 @@ namespace EngineCore
             virtual std::string GetName() const override;
             virtual size_t GetUId() const override;
             virtual BoundingBox2D GetBoundingArea() const override;
-
+            bool IsTransformDirty() const override;
             const std::weak_ptr<UiCanvas> &GetParentCanvas() const;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
-            glm::mat4 GetTransformMatrix() const;
+            virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
@@ -96,29 +96,31 @@ namespace EngineCore
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             virtual void RegisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             virtual void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;
-            virtual void UpdateHierarchyTransform();
-
-            virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             virtual void OnRegistered();
             virtual void OnUnregistered();
 
             virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
-            std::shared_ptr<UiItemBase> TryFindAncestryUiItem(const std::string &name) const;
+            std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string &name) const;
 
             virtual void Tick(const float deltaTime) override;
 
+            bool IsTransformDependentToUiItem(const std::string &uiItemName) const;
+
+            void GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems);
+
+            void UpdateAnchorTransform();
+            void UpdateDependentChildrenAnchorTransform();
+
         protected:
-            virtual void OnTransformChanged();
+            void SetIsTransformDirty(const bool isDirty);
 
         private:
             void TransformChanged();
 
-            void RebuildTransform();
             void RebuildBoundingArea();
-            void RebuildNormalizedTransform(const std::shared_ptr<IUiTransformable> &parent);
-            void RebuildTransformMatrix();
+            void RebuildNormalizedTransform();
 
             void RecalculateAnchorPositions();
             void CalculateHorizontalAnchorPositions();

@@ -13,7 +13,8 @@ namespace Graphics
               mIsVisible(uiItemBase->IsVisible()),
               mZOrder(uiItemBase->GetZOrder()),
               mParentCanvasProxy(),
-              mTransformMatrix(uiItemBase->GetTransformMatrix())
+              mNormalizedTranslation(uiItemBase->GetNormalizedTranslation()),
+              mNormalizedScale(uiItemBase->GetNormalizedScale())
         {
         }
 
@@ -51,14 +52,10 @@ namespace Graphics
             return mZOrder;
         }
 
-        glm::mat4 UiSceneProxyBase::GetTransformMatrix() const
+        void UiSceneProxyBase::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)
         {
-            return mTransformMatrix;
-        }
-
-        void UiSceneProxyBase::SetTransformMatrix(const glm::mat4& transformMatrix)
-        {
-            mTransformMatrix = transformMatrix;
+            mNormalizedTranslation = normalizedTranslation;
+            mNormalizedScale = normalizedScale;
         }
 
         void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy)

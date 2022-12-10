@@ -24,7 +24,8 @@ namespace EngineCore
               mChildren(),
               mRegisteredUIds(),
               mRegisteredNames(),
-              mIsVisible(true)
+              mIsVisible(true),
+              mIsTransformDirty(true)
         {
         }
 
@@ -36,6 +37,11 @@ namespace EngineCore
         size_t UiCanvas::GetUId() const
         {
             return mUId;
+        }
+
+        bool UiCanvas::IsTransformDirty() const
+        {
+            return mIsTransformDirty;
         }
 
         std::weak_ptr<Scene> UiCanvas::GetScene() const
@@ -88,6 +94,11 @@ namespace EngineCore
             return mIsVisible;
         }
 
+        void UiCanvas::SetIsTransformDirty(const bool isDirty)
+        {
+            mIsTransformDirty = isDirty;
+        }
+
         void UiCanvas::SetIsVisible(const bool isVisible)
         {
             if (mIsVisible != isVisible)
@@ -102,8 +113,7 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityIVec2(transform, mAbsoluteOrigin))
             {
                 mAbsoluteOrigin = transform;
-                UpdateHierarchyTransform();
-                SyncDataOnRenderThread();
+                SetIsTransformDirty(true);
             }
         }
 
@@ -116,8 +126,7 @@ namespace EngineCore
             if (mWidthHeight.x != width)
             {
                 mWidthHeight.x = width;
-                UpdateHierarchyTransform();
-                SyncDataOnRenderThread();
+                SetIsTransformDirty(true);
             }
         }
 
@@ -126,8 +135,7 @@ namespace EngineCore
             if (mWidthHeight.y != height)
             {
                 mWidthHeight.y = height;
-                UpdateHierarchyTransform();
-                SyncDataOnRenderThread();
+                SetIsTransformDirty(true);
             }
         }
 
@@ -138,20 +146,12 @@ namespace EngineCore
 
         BoundingBox2D UiCanvas::GetBoundingArea() const
         {
-            const auto& halfExtent = mWidthHeight / 2;
+            const auto &halfExtent = mWidthHeight / 2;
             return BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
         }
 
         void UiCanvas::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
         {
-        }
-
-        void UiCanvas::UpdateHierarchyTransform()
-        {
-            for (const auto &child : mChildren)
-            {
-                child->UpdateHierarchyTransform();
-            }
         }
 
         void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
@@ -161,14 +161,14 @@ namespace EngineCore
             uiItem->OnRegistered();
         }
 
-        void UiCanvas::RegisterUiItem(const size_t uiId,  const std::string& uiItemName)
+        void UiCanvas::RegisterUiItem(const size_t uiId, const std::string &uiItemName)
         {
             assert(!mRegisteredUIds.count(uiId) && !mRegisteredNames.count(uiItemName));
             mRegisteredUIds.insert(uiId);
             mRegisteredNames.insert(uiItemName);
         }
 
-        void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string& uiItemName)
+        void UiCanvas::UnregisterUiItem(const size_t uiId, const std::string &uiItemName)
         {
             assert(mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName));
             mRegisteredUIds.erase(uiId);
@@ -188,7 +188,15 @@ namespace EngineCore
 
         void UiCanvas::Tick(const float deltaTime)
         {
-            for (const auto& child: mChildren)
+            if (mIsTransformDirty)
+            {
+                UpdateAnchorTransform();
+                UpdateDependentChildrenAnchorTransform();
+                SyncDataOnRenderThread();
+                mIsTransformDirty = false;
+            }
+
+            for (const auto &child : mChildren)
             {
                 child->Tick(deltaTime);
             }
@@ -199,9 +207,40 @@ namespace EngineCore
             return std::make_shared<UiCanvasSceneProxy>(this);
         }
 
-        std::shared_ptr<IUiTransformable> UiCanvas::TryFindChildByName(const std::string& name) const
+        std::shared_ptr<IUiTransformable> UiCanvas::TryFindChildByName(const std::string &name) const
         {
             return nullptr;
+        }
+
+        std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const
+        {
+            std::vector<std::shared_ptr<UiItemBase>> result;
+
+            for (const auto &child : mChildren)
+            {
+                if (child->IsTransformDependentToUiItem(nameOfChangedTransformUiItem))
+                {
+                    result.emplace_back(child);
+                }
+
+                child->GetDependentByTransformChildren(nameOfChangedTransformUiItem, result);
+            }
+
+            return result;
+        }
+
+        void UiCanvas::UpdateAnchorTransform()
+        {
+        }
+
+        void UiCanvas::UpdateDependentChildrenAnchorTransform()
+        {
+            const auto& dependentUiItems = GetDependentByTransformChildren(GetName());
+
+            for (const auto &dependentItem : dependentUiItems)
+            {
+                dependentItem->UpdateDependentChildrenAnchorTransform();
+            }
         }
 
         void UiCanvas::SyncDataOnRenderThread()
