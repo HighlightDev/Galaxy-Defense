@@ -2,6 +2,7 @@
 
 #include "IUiTransformable.h"
 #include "Transform2D/UiAnchorType.h"
+#include "Transform2D/UiAnchorData.h"
 #include "Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/ITickable.h"
 
@@ -34,7 +35,7 @@ namespace EngineCore
 
         protected:
             /**
-             *@brief botton left corner of ui item
+             *@brief bottom left corner of ui item
              **/
             glm::ivec2 mAbsoluteOrigin;
 
@@ -50,7 +51,7 @@ namespace EngineCore
 
             BoundingBox2D mBoundingArea;
 
-            std::unordered_map<eUiAnchor /*src anchor*/, std::pair<eUiAnchor /*dst anchor*/, std::string /*dst ui item*/>> mAnchors;
+            std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
             std::weak_ptr<IUiTransformable> mParent;
             std::weak_ptr<UiCanvas> mParentCanvas;
@@ -91,6 +92,7 @@ namespace EngineCore
             virtual void SetHeight(const size_t height) override;
             virtual void SetIsVisible(const bool isVisible) override;
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+            virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);

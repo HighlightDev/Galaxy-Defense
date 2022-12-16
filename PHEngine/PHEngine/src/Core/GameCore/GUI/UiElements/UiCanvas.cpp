@@ -154,6 +154,10 @@ namespace EngineCore
         {
         }
 
+        void UiCanvas::SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin)
+        {
+        }
+
         void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());

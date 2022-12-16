@@ -541,7 +541,7 @@ namespace EngineCore
 
    void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
    {
-      LogInfo("Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName);
+      LogInfo("Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName, "proxyId = ", materialProxyIndex);
 
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");

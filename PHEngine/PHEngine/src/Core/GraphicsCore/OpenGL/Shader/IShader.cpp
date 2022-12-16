@@ -220,7 +220,7 @@ namespace Graphics
                                                    [=](const auto &array)
                                                    {
                                                       const auto arrayBeginningStr = "const " + array.m_InnerTypeName + " " + array.m_Name;
-                                                      return (it->find(arrayBeginningStr) != std::string::npos); 
+                                                      return (it->find(arrayBeginningStr) != std::string::npos);
                                                    });
 
             if (foundArrayIt != constantArrays.end())
@@ -438,7 +438,7 @@ namespace Graphics
 
                std::vector<char> message(log_length);
                glGetShaderInfoLog(m_vertexShaderID, log_length, nullptr, message.data());
-               EngineUtility::StringStreamWrapper::ToString("Vertex shader : ", std::string(message.begin(), message.end()), '\n');
+               EngineUtility::StringStreamWrapper::ToString("\tVertex shader : ", std::string(message.begin(), message.end()), "\n\t");
             }
          }
 
@@ -454,7 +454,7 @@ namespace Graphics
 
                std::vector<char> message(log_length);
                glGetShaderInfoLog(m_fragmentShaderID, log_length, nullptr, message.data());
-               EngineUtility::StringStreamWrapper::ToString("Fragment shader : ", std::string(message.begin(), message.end()), '\n');
+               EngineUtility::StringStreamWrapper::ToString("\tFragment shader : ", std::string(message.begin(), message.end()), "\n\t");
             }
          }
 
@@ -470,12 +470,14 @@ namespace Graphics
 
                std::vector<char> message(log_length);
                glGetShaderInfoLog(m_geometryShaderID, log_length, nullptr, message.data());
-               EngineUtility::StringStreamWrapper::ToString("Geometry shader : ", std::string(message.begin(), message.end()), '\n');
+               EngineUtility::StringStreamWrapper::ToString("\tGeometry shader : ", std::string(message.begin(), message.end()), "\n\t");
             }
          }
 
          if ((m_vertexShaderID != -1 && vertex_compiled != GL_TRUE) || (m_fragmentShaderID != -1 && fragment_compiled != GL_TRUE) || (m_geometryShaderID != -1 && geometry_compiled != GL_TRUE))
-            compileLog += std::string("Unresolved mistakes at :" + mShaderName + '\n') + EngineUtility::StringStreamWrapper::FlushString() + "\n";
+         {
+            compileLog += std::string("Unresolved mistakes at : " + mShaderName + '\n') + EngineUtility::StringStreamWrapper::FlushString() + "\n";
+         }
 
          return compileLog;
       }
@@ -522,7 +524,14 @@ namespace Graphics
       {
          m_shaderProgramID = shaderProgramId;
 #if DEBUG
-         LogInfo("IShader::AccessAllUniformLocations => shaderProgramId = ", shaderProgramId, " issues: ", GetCompileLogInfo() + "\n", GetLinkLogInfo());
+         const auto compileErrorString = GetCompileLogInfo();
+         const auto linkErrorString = GetLinkLogInfo();
+         LogInfo("IShader::AccessAllUniformLocations => shaderProgramId = ", shaderProgramId);
+         if (compileErrorString != "" || linkErrorString != "")
+         {
+            LogInfo("ERROR: Shader compilation errors: ", compileErrorString);
+            LogInfo("ERROR: Shader linkage errors: ", linkErrorString);
+         }
 #endif
       }
 

@@ -46,6 +46,8 @@ function CreateTestLevel(host)
 
 	_LazyLoadResourcesAsync(host,
 		[[fern.png
+		,path.png
+		,grass.png
 		]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

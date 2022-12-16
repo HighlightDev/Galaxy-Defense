@@ -141,16 +141,32 @@ namespace EngineCore
 
             if (mAnchors.count(srcAnchor))
             {
-                const auto &anchorTargetPair = mAnchors.at(srcAnchor);
-                if (anchorTargetPair.first != dstAnchor && anchorTargetPair.second != dstUiItemName)
+                const auto &anchorData = mAnchors.at(srcAnchor);
+                if (anchorData.GetDstAnchor() != dstAnchor && anchorData.GetDstUiItemName() != dstUiItemName)
                 {
-                    mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
+                    UiAnchorData anchorData;
+                    anchorData.SetDstAnchor(dstAnchor);
+                    anchorData.SetDstUiItemName(dstUiItemName);
+                    mAnchors[srcAnchor] = anchorData;
                     SetIsTransformDirty(true);
                 }
             }
             else
             {
-                mAnchors[srcAnchor] = std::make_pair(dstAnchor, dstUiItemName);
+                UiAnchorData anchorData;
+                anchorData.SetDstAnchor(dstAnchor);
+                anchorData.SetDstUiItemName(dstUiItemName);
+                mAnchors[srcAnchor] = anchorData;
+                SetIsTransformDirty(true);
+            }
+        }
+
+        void UiItemBase::SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin)
+        {
+            assert(mAnchors.count(anchor) && mAnchors.at(anchor).GetDstAnchor() != eUiAnchor::NONE);
+            if (mAnchors.at(anchor).GetSrcAnchorMargin() != anchorMargin)
+            {
+                mAnchors[anchor].SetSrcAnchorMargin(anchorMargin);
                 SetIsTransformDirty(true);
             }
         }
@@ -184,15 +200,13 @@ namespace EngineCore
 
             while (const auto &parentSp = parentWp.lock())
             {
-                const auto &child = parentSp->TryFindChildByName(name);
-                if (child)
+                if (parentSp->GetName() == name)
                 {
-                    result = child;
-                    break;
+                    return parentSp;
                 }
-                else
+                else if (const auto &child = parentSp->TryFindChildByName(name))
                 {
-                    result = parentSp;
+                    return child;
                 }
 
                 parentWp = parentSp->GetParent();
@@ -271,7 +285,7 @@ namespace EngineCore
             if (mAnchors.count(eUiAnchor::HORIZONTAL_CENTER))
             {
                 const auto &dstAnchor = mAnchors.at(eUiAnchor::HORIZONTAL_CENTER);
-                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.second);
+                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
                 assert(dstAnchoringUiItem);
                 const auto &dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
                 mAbsoluteOrigin.x = dstBoundingArea.GetOrigin().x - (mWidth / 2);
@@ -283,50 +297,65 @@ namespace EngineCore
                     const auto &leftAnchor = mAnchors.at(eUiAnchor::LEFT);
                     const auto &rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
                     std::shared_ptr<IUiTransformable> leftAnchorUiItem, rightAnchorUiItem;
-                    if (leftAnchor.second == rightAnchor.second)
+                    if (leftAnchor.GetDstUiItemName() == rightAnchor.GetDstUiItemName())
                     {
-                        leftAnchorUiItem = rightAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
+                        leftAnchorUiItem = rightAnchorUiItem = TryFindAncestryUiItem(leftAnchor.GetDstUiItemName());
                     }
                     else
                     {
-                        leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
-                        rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.second);
+                        leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.GetDstUiItemName());
+                        rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.GetDstUiItemName());
                     }
 
                     assert(leftAnchorUiItem && rightAnchorUiItem);
                     const auto &leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
                     const auto &rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
-                    const int32_t originX = eUiAnchor::LEFT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                 : 0;
-                    const int32_t width = eUiAnchor::LEFT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                  : 0;
+                    int32_t originX = 0, width = 0;
 
-                    mAbsoluteOrigin.x = originX;
+                    if (eUiAnchor::LEFT == leftAnchor.GetDstAnchor())
+                    {
+                        originX = leftAnchorUiItemBoundingArea.GetMin().x;
+                    }
+                    else if (eUiAnchor::RIGHT == leftAnchor.GetDstAnchor())
+                    {
+                        originX = leftAnchorUiItemBoundingArea.GetMax().x;
+                    };
+
+                    if (eUiAnchor::LEFT == rightAnchor.GetDstAnchor())
+                    {
+                        width = (rightAnchorUiItemBoundingArea.GetMin().x - originX) - (rightAnchor.GetSrcAnchorMargin() + leftAnchor.GetSrcAnchorMargin());
+                    }
+                    else if (eUiAnchor::RIGHT == rightAnchor.GetDstAnchor())
+                    {
+                        width = (rightAnchorUiItemBoundingArea.GetMax().x - originX) - (rightAnchor.GetSrcAnchorMargin() + leftAnchor.GetSrcAnchorMargin());
+                    }
+
+                    mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin();
                     mWidth = width;
                 }
                 else if (mAnchors.count(eUiAnchor::LEFT))
                 {
                     const auto &leftAnchor = mAnchors.at(eUiAnchor::LEFT);
-                    const auto &leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.second);
+                    const auto &leftAnchorUiItem = TryFindAncestryUiItem(leftAnchor.GetDstUiItemName());
                     assert(leftAnchorUiItem);
                     const auto &leftAnchorUiItemBoundingArea = leftAnchorUiItem->GetBoundingArea();
 
-                    const int32_t originX = eUiAnchor::LEFT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == leftAnchor.first ? leftAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                 : 0;
-                    mAbsoluteOrigin.x = originX;
+                    const int32_t originX = eUiAnchor::LEFT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == leftAnchor.GetDstAnchor() ? leftAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                                   : 0;
+                    mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin();
                 }
                 else if (mAnchors.count(eUiAnchor::RIGHT))
                 {
                     const auto &rightAnchor = mAnchors.at(eUiAnchor::RIGHT);
-                    const auto &rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.second);
+                    const auto &rightAnchorUiItem = TryFindAncestryUiItem(rightAnchor.GetDstUiItemName());
                     assert(rightAnchorUiItem);
 
                     const auto &rightAnchorUiItemBoundingArea = rightAnchorUiItem->GetBoundingArea();
 
-                    const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == rightAnchor.first ? rightAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                          : 0;
-                    mAbsoluteOrigin.x = anchorOriginX - mWidth;
+                    const int32_t anchorOriginX = eUiAnchor::LEFT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::RIGHT == rightAnchor.GetDstAnchor() ? rightAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                                            : 0;
+                    mAbsoluteOrigin.x = anchorOriginX - mWidth - rightAnchor.GetSrcAnchorMargin();
                 }
             }
             LogInfo("UiItemBase::CalculateHorizontalAnchorPositions => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin, " mWidth: ", mWidth, " mHeight: ", mHeight);
@@ -337,7 +366,7 @@ namespace EngineCore
             if (mAnchors.count(eUiAnchor::VERTICAL_CENTER))
             {
                 const auto &dstAnchor = mAnchors.at(eUiAnchor::VERTICAL_CENTER);
-                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.second);
+                const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
                 assert(dstAnchoringUiItem);
                 const auto &dstBoundingArea = dstAnchoringUiItem->GetBoundingArea();
                 mAbsoluteOrigin.y = dstBoundingArea.GetOrigin().y - (mHeight / 2);
@@ -349,50 +378,64 @@ namespace EngineCore
                     const auto &bottomAnchor = mAnchors.at(eUiAnchor::BOTTOM);
                     const auto &topAnchor = mAnchors.at(eUiAnchor::TOP);
                     std::shared_ptr<IUiTransformable> bottomAnchorUiItem, topAnchorUiItem;
-                    if (bottomAnchor.second == topAnchor.second)
+                    if (bottomAnchor.GetDstUiItemName() == topAnchor.GetDstUiItemName())
                     {
-                        bottomAnchorUiItem = topAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
+                        bottomAnchorUiItem = topAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.GetDstUiItemName());
                     }
                     else
                     {
-                        bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
-                        topAnchorUiItem = TryFindAncestryUiItem(topAnchor.second);
+                        bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.GetDstUiItemName());
+                        topAnchorUiItem = TryFindAncestryUiItem(topAnchor.GetDstUiItemName());
                     }
 
                     assert(bottomAnchorUiItem && topAnchorUiItem);
                     const auto &bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
                     const auto &topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMax().y
-                                                                                                                                                                       : 0;
-                    const int32_t height = eUiAnchor::BOTTOM == topAnchor.first ? topAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == topAnchor.first ? topAnchorUiItemBoundingArea.GetMax().y
-                                                                                                                                                             : 0;
+                    int32_t originY, height;
+                    if (eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor())
+                    {
+                        originY = bottomAnchorUiItemBoundingArea.GetMin().y;
+                    }
+                    else if (eUiAnchor::TOP == bottomAnchor.GetDstAnchor())
+                    {
+                        originY = bottomAnchorUiItemBoundingArea.GetMax().y;
+                    }
 
-                    mAbsoluteOrigin.y = originY;
+                    if (eUiAnchor::BOTTOM == topAnchor.GetDstAnchor())
+                    {
+                        height = (topAnchorUiItemBoundingArea.GetMin().y - originY) - (topAnchor.GetSrcAnchorMargin() + bottomAnchor.GetSrcAnchorMargin());
+                    }
+                    else if (eUiAnchor::TOP == topAnchor.GetDstAnchor())
+                    {
+                        height = (topAnchorUiItemBoundingArea.GetMax().y - originY) - (topAnchor.GetSrcAnchorMargin() + bottomAnchor.GetSrcAnchorMargin());
+                    }
+
+                    mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin();
                     mHeight = height;
                 }
                 else if (mAnchors.count(eUiAnchor::BOTTOM))
                 {
                     const auto &bottomAnchor = mAnchors.at(eUiAnchor::BOTTOM);
-                    const auto &bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.second);
+                    const auto &bottomAnchorUiItem = TryFindAncestryUiItem(bottomAnchor.GetDstUiItemName());
                     assert(bottomAnchorUiItem);
                     const auto &bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
-                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == bottomAnchor.first ? bottomAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                       : 0;
-                    mAbsoluteOrigin.y = originY;
+                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                                         : 0;
+                    mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin();
                 }
                 else if (mAnchors.count(eUiAnchor::TOP))
                 {
                     const auto &topAnchor = mAnchors.at(eUiAnchor::TOP);
-                    const auto &topAnchorUiItem = TryFindAncestryUiItem(topAnchor.second);
+                    const auto &topAnchorUiItem = TryFindAncestryUiItem(topAnchor.GetDstUiItemName());
                     assert(topAnchorUiItem);
 
                     const auto &topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-                    const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.first ? topAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == topAnchor.first ? topAnchorUiItemBoundingArea.GetMax().x
-                                                                                                                                                                    : 0;
-                    mAbsoluteOrigin.y = anchorOriginY - mHeight;
+                    const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().x
+                                                                                                                                                                                      : 0;
+                    mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin();
                 }
             }
             LogInfo("UiItemBase::CalculateVerticalAnchorPositions => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin, " mWidth: ", mWidth, " mHeight: ", mHeight);
@@ -484,17 +527,19 @@ namespace EngineCore
 
         void UiItemBase::UpdateDependentChildrenAnchorTransform()
         {
+            LogInfo("UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name: ", GetName());
             UpdateAnchorTransform();
         }
 
         bool UiItemBase::IsTransformDependentToUiItem(const std::string &uiItemName) const
         {
             return std::any_of(mAnchors.cbegin(), mAnchors.cend(), [&uiItemName](const auto &keyValueAnchor)
-                               { return keyValueAnchor.second.second == uiItemName; });
+                               { return keyValueAnchor.second.GetDstUiItemName() == uiItemName; });
         }
 
         void UiItemBase::GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems)
         {
+            LogInfo("UiItemBase::GetDependentByTransformChildren => UiItem name: ", GetName());
             for (const auto &child : mChildren)
             {
                 if (child->IsTransformDependentToUiItem(nameOfRelatedUiItem))

@@ -94,6 +94,7 @@ namespace EngineCore
             void SyncDataOnRenderThread();
 
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+            virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
             virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 

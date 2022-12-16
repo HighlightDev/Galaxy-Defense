@@ -93,38 +93,49 @@ namespace Game
             uiImage->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mTestCanvas->GetName());
             uiImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mTestCanvas->GetName());
             uiImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mTestCanvas->GetName());
+            uiImage->SetAnchorMargin(eUiAnchor::LEFT, 50);
+            uiImage->SetAnchorMargin(eUiAnchor::BOTTOM, 50);
             uiImage->SetTextureSrc("path.png");
             uiImage->SetOpacity(1);
             uiImage->SetZOrder(1);
 
             const auto &uiImage1 = std::make_shared<UiImage>(mTestCanvas, uiImage);
-            uiImage1->SetWidth(100);
-            uiImage1->SetHeight(100);
             uiImage1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, uiImage->GetName());
+            uiImage1->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage->GetName());
+            uiImage1->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
             uiImage1->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
+
+            uiImage1->SetAnchorMargin(eUiAnchor::LEFT, 100);
+            uiImage1->SetAnchorMargin(eUiAnchor::RIGHT, 100);
+            uiImage1->SetAnchorMargin(eUiAnchor::TOP, 100);
+            uiImage1->SetAnchorMargin(eUiAnchor::BOTTOM, 100);
             uiImage1->SetTextureSrc("grass.png");
             uiImage1->SetZOrder(2);
 
-            const auto &uiImage2 = std::make_shared<UiImage>(mTestCanvas, uiImage);
-            uiImage2->SetWidth(100);
-            uiImage2->SetAnchor(eUiAnchor::LEFT, eUiAnchor::RIGHT, uiImage1->GetName());
-            uiImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
-            uiImage2->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
-            uiImage2->SetTextureSrc("grass.png");
-            uiImage2->SetZOrder(2);
+            const auto &uiImage2 = std::make_shared<UiImage>(mTestCanvas, uiImage1);
+            uiImage2->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, uiImage1->GetName());
+            uiImage2->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage1->GetName());
+            uiImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage1->GetName());
+            uiImage2->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage1->GetName());
+            uiImage2->SetAnchorMargin(eUiAnchor::LEFT, 100);
+            uiImage2->SetAnchorMargin(eUiAnchor::RIGHT, 100);
+            uiImage2->SetAnchorMargin(eUiAnchor::TOP, 100);
+            uiImage2->SetAnchorMargin(eUiAnchor::BOTTOM, 100);
+            uiImage2->SetTextureSrc("path.png");
+            uiImage2->SetZOrder(3);
 
-            const auto &uiImage3 = std::make_shared<UiImage>(mTestCanvas, uiImage);
+            /*const auto &uiImage3 = std::make_shared<UiImage>(mTestCanvas, uiImage);
             uiImage3->SetWidth(200);
             uiImage3->SetHeight(200);
             uiImage3->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage->GetName());
             uiImage3->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
             uiImage3->SetTextureSrc("grass.png");
-            uiImage3->SetZOrder(2);
+            uiImage3->SetZOrder(2);*/
 
             mTestCanvas->AddUiItem(uiImage);
             uiImage->AddUiItem(uiImage1);
-            uiImage->AddUiItem(uiImage2);
-            uiImage->AddUiItem(uiImage3);
+            uiImage1->AddUiItem(uiImage2);
+            //uiImage->AddUiItem(uiImage3);
         }
     }
 
