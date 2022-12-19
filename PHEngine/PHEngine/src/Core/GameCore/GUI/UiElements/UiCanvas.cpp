@@ -71,7 +71,8 @@ namespace EngineCore
 
         glm::vec2 UiCanvas::GetNormalizedTranslation() const
         {
-            return glm::vec2();
+            return glm::vec2(static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(mWidthHeight.x),
+                             static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(mWidthHeight.y));
         }
 
         glm::vec2 UiCanvas::GetNormalizedScale() const
@@ -216,7 +217,7 @@ namespace EngineCore
             return nullptr;
         }
 
-        std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const
+        std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const
         {
             std::vector<std::shared_ptr<UiItemBase>> result;
 
@@ -239,7 +240,7 @@ namespace EngineCore
 
         void UiCanvas::UpdateDependentChildrenAnchorTransform()
         {
-            const auto& dependentUiItems = GetDependentByTransformChildren(GetName());
+            const auto &dependentUiItems = GetDependentByTransformChildren(GetName());
 
             for (const auto &dependentItem : dependentUiItems)
             {

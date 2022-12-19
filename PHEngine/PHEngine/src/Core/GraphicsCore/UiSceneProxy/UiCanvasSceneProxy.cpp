@@ -12,7 +12,7 @@ namespace Graphics
     {
         UiCanvasSceneProxy::UiCanvasSceneProxy(const UiCanvas *canvas)
             : mUiItemUId(canvas->GetUId()),
-              mIsVisible(canvas->IsVisible()),
+              mIsVisible(false),
               mAbsoluteOrigin(canvas->GetAbsoluteOrigin()),
               mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight()))
         {
@@ -37,9 +37,12 @@ namespace Graphics
 
         void UiCanvasSceneProxy::Render()
         {
-            for (const auto &proxy : mUiProxies)
+            if (mIsVisible)
             {
-                proxy->Render();
+                for (const auto &proxy : mUiProxies)
+                {
+                    proxy->Render();
+                }
             }
         }
 

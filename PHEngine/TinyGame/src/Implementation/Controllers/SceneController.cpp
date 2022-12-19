@@ -10,6 +10,7 @@
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -19,6 +20,7 @@ using namespace EngineCore;
 using namespace EngineUtility;
 using namespace Graphics;
 using namespace EngineCore::GUI;
+using namespace IO;
 
 namespace Game
 {
@@ -86,15 +88,21 @@ namespace Game
 
         if (const auto &sceneSp = mScene.lock())
         {
+            const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+            const auto windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+            const auto halfWidth = windowWidth / 2;
+            const auto halfHeight = windowHeight / 2;
+            const auto originX = halfWidth - (halfWidth / 2);
+            const auto originY = halfHeight - (halfHeight / 2);
             const auto &uiHandler = sceneSp->GetUiHandler();
-            mTestCanvas = uiHandler->CreateCanvas(ViewPortInfo(0, 0, 600, 600));
+            mTestCanvas = uiHandler->CreateCanvas(ViewPortInfo(originX, originY, halfWidth, halfHeight));
             const auto &uiImage = std::make_shared<UiImage>(mTestCanvas, mTestCanvas);
             uiImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mTestCanvas->GetName());
             uiImage->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mTestCanvas->GetName());
             uiImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mTestCanvas->GetName());
             uiImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mTestCanvas->GetName());
-            uiImage->SetAnchorMargin(eUiAnchor::LEFT, 50);
-            uiImage->SetAnchorMargin(eUiAnchor::BOTTOM, 50);
+            uiImage->SetAnchorMargin(eUiAnchor::LEFT, 0);
+            uiImage->SetAnchorMargin(eUiAnchor::BOTTOM, 0);
             uiImage->SetTextureSrc("path.png");
             uiImage->SetOpacity(1);
             uiImage->SetZOrder(1);
@@ -106,8 +114,8 @@ namespace Game
             uiImage1->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
 
             uiImage1->SetAnchorMargin(eUiAnchor::LEFT, 100);
-            uiImage1->SetAnchorMargin(eUiAnchor::RIGHT, 100);
-            uiImage1->SetAnchorMargin(eUiAnchor::TOP, 100);
+            uiImage1->SetAnchorMargin(eUiAnchor::RIGHT, 50);
+            uiImage1->SetAnchorMargin(eUiAnchor::TOP, 50);
             uiImage1->SetAnchorMargin(eUiAnchor::BOTTOM, 100);
             uiImage1->SetTextureSrc("grass.png");
             uiImage1->SetZOrder(2);
@@ -117,10 +125,10 @@ namespace Game
             uiImage2->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage1->GetName());
             uiImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage1->GetName());
             uiImage2->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage1->GetName());
-            uiImage2->SetAnchorMargin(eUiAnchor::LEFT, 100);
-            uiImage2->SetAnchorMargin(eUiAnchor::RIGHT, 100);
-            uiImage2->SetAnchorMargin(eUiAnchor::TOP, 100);
-            uiImage2->SetAnchorMargin(eUiAnchor::BOTTOM, 100);
+            uiImage2->SetAnchorMargin(eUiAnchor::LEFT, 50);
+            uiImage2->SetAnchorMargin(eUiAnchor::RIGHT, 50);
+            uiImage2->SetAnchorMargin(eUiAnchor::TOP, 50);
+            uiImage2->SetAnchorMargin(eUiAnchor::BOTTOM, 50);
             uiImage2->SetTextureSrc("path.png");
             uiImage2->SetZOrder(3);
 

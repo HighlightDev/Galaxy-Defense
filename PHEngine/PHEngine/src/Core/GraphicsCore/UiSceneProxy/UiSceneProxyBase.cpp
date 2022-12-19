@@ -10,7 +10,7 @@ namespace Graphics
     {
         UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
             : mUiItemUId(uiItemBase->GetUId()),
-              mIsVisible(uiItemBase->IsVisible()),
+              mIsVisible(false),
               mZOrder(uiItemBase->GetZOrder()),
               mParentCanvasProxy(),
               mNormalizedTranslation(uiItemBase->GetNormalizedTranslation()),

@@ -130,7 +130,16 @@ namespace EngineCore
             if (mIsVisible != isVisible)
             {
                 mIsVisible = isVisible;
+                SetChildrenIsVisible(mIsVisible);
                 SyncDataOnRenderThread();
+            }
+        }
+
+        void UiItemBase::SetChildrenIsVisible(const bool isVisible)
+        {
+            for (const auto &child : mChildren)
+            {
+                child->SetIsVisible(isVisible);
             }
         }
 
@@ -250,9 +259,10 @@ namespace EngineCore
             {
                 const auto rootWidth = rootParentSp->GetWidth();
                 const auto rootHeight = rootParentSp->GetHeight();
+                const auto rootOrigin = rootParentSp->GetAbsoluteOrigin();
                 assert(rootWidth != 0 && rootHeight != 0);
-                mNormalizedTranslation = glm::vec2(static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth),
-                                                   static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(rootHeight));
+                mNormalizedTranslation = glm::vec2((static_cast<float>(mAbsoluteOrigin.x) / static_cast<float>(rootWidth)) - (static_cast<float>(rootOrigin.x) / static_cast<float>(rootWidth)),
+                                                   (static_cast<float>(mAbsoluteOrigin.y) / static_cast<float>(rootHeight)) - (static_cast<float>(rootOrigin.y) / static_cast<float>(rootHeight)));
 
                 mNormalizedScale = glm::vec2(static_cast<float>(mWidth) / static_cast<float>(rootWidth),
                                              static_cast<float>(mHeight) / static_cast<float>(rootHeight));

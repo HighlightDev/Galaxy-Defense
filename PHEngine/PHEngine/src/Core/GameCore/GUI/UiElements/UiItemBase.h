@@ -118,6 +118,8 @@ namespace EngineCore
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
+            void SetChildrenIsVisible(const bool isVisible);
+
         private:
             void TransformChanged();
 
