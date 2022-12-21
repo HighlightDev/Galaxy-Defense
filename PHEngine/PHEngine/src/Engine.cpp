@@ -222,11 +222,6 @@ namespace EngineCore
 
 #if DEBUG
 
-   void Engine::PushFrame()
-   {
-      m_sceneRenderer->PushRenderTargetToTextureRenderer();
-   }
-
    void Engine::RecompileAllShaders()
    {
       Resources::ShaderPool::GetInstance()->RecompileShaders();

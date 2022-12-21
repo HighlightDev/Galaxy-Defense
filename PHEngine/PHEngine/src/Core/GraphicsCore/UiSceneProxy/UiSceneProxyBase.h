@@ -36,6 +36,8 @@ namespace Graphics
         public:
             UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
+            virtual ~UiSceneProxyBase() = default;
+
             void SetUiItemUid(const size_t UId);
 
             size_t GetUiItemUId() const;
@@ -52,7 +54,9 @@ namespace Graphics
 
             void SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy);
 
-            virtual void Render();
+            virtual void Render() = 0;
+
+            virtual void CleanUp() = 0;
         };
     }
 }

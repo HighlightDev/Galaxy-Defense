@@ -55,8 +55,6 @@ namespace Graphics
             mDepthCollectShaderNonSkeletal(),
             mDepthCollectPointLightShaderSkeletal(),
             mDepthCollectPointLightShaderNonSkeletal(),
-            m_textureRenderer(),
-
             bProxiesDirty(false),
             bLightProxiesDirty(false),
             bPlanarReflectionProxiesDirty(false),
@@ -846,10 +844,6 @@ namespace Graphics
             // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
 #endif
          }
-
-#if DEBUG
-         DebugFramePanelsPass();
-#endif
       }
 
       void DeferredShadingSceneRenderer::SetProxiesAreDirty(const bool bDirty)
@@ -1064,19 +1058,6 @@ namespace Graphics
       }
 
 #if DEBUG
-
-      void DeferredShadingSceneRenderer::PushRenderTargetToTextureRenderer()
-      {
-         m_textureRenderer.PushDebugRenderTarget();
-      }
-
-      void DeferredShadingSceneRenderer::DebugFramePanelsPass()
-      {
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<false>> renderState;
-         renderState.BindRenderState();
-
-         m_textureRenderer.RenderFrames(m_gbuffer);
-      }
 
       void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {

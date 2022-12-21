@@ -431,7 +431,7 @@ namespace EngineCore
                     assert(bottomAnchorUiItem);
                     const auto &bottomAnchorUiItemBoundingArea = bottomAnchorUiItem->GetBoundingArea();
 
-                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().x
+                    const int32_t originY = eUiAnchor::BOTTOM == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == bottomAnchor.GetDstAnchor() ? bottomAnchorUiItemBoundingArea.GetMax().y
                                                                                                                                                                                          : 0;
                     mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin();
                 }
@@ -443,7 +443,7 @@ namespace EngineCore
 
                     const auto &topAnchorUiItemBoundingArea = topAnchorUiItem->GetBoundingArea();
 
-                    const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().x : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().x
+                    const int32_t anchorOriginY = eUiAnchor::BOTTOM == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMin().y : eUiAnchor::TOP == topAnchor.GetDstAnchor() ? topAnchorUiItemBoundingArea.GetMax().y
                                                                                                                                                                                       : 0;
                     mAbsoluteOrigin.y = anchorOriginY - mHeight - topAnchor.GetSrcAnchorMargin();
                 }

@@ -32,6 +32,8 @@ namespace EngineCore
 
             void SetTextureSrc(const std::string &textureSrc);
 
+            void SetTexture(const std::shared_ptr<ITexture>& texture);
+
             std::string GetTextureSrc() const;
 
             std::shared_ptr<ITexture> GetTexture() const;

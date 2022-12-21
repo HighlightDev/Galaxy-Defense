@@ -21,6 +21,16 @@ namespace EngineCore
       return INPUT_COMPONENT;
    }
 
+   void InputComponent::SetIsReceivingMouseEvents(const bool receiveMouseEvents)
+   {
+      m_mouseBindings.SetIsReceivingMouseEvents(receiveMouseEvents);
+   }
+
+   void InputComponent::SetIsReceivingKeyboardEvents(const bool receiveKeyboardEvents)
+   {
+      m_keyboardBindings.SetIsReceivingKeyboardEvents(receiveKeyboardEvents);
+   }
+
    std::vector<eKeyActionType> InputComponent::GetReleasedKeyActions()
    {
       std::vector<eKeyActionType> result;

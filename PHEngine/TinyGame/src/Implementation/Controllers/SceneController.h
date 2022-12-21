@@ -1,7 +1,9 @@
 #pragma once
 
+#include "UiController.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Actor.h"
+#include "ILevelController.h"
 
 #include <memory>
 
@@ -16,26 +18,29 @@ namespace Game
     class SpaceShipPlayerController;
     class CombatController;
 
-    class SceneController : public ITickable
+    class SceneController : public ITickable,
+                            public ILevelController
     {
         std::weak_ptr<::EngineCore::Scene> mScene;
-        
+
         std::unique_ptr<CombatController> mCombatController;
 
-        std::shared_ptr<Actor> mAmbientMusicDummy;// todo: should smth better
+        std::unique_ptr<UiController> mUiController;
+
+        std::shared_ptr<Actor> mAmbientMusicDummy;
 
     public:
         SceneController(const std::weak_ptr<::EngineCore::Scene> &scene);
 
         ~SceneController();
 
-        virtual void OnPreLevelInit();
+        virtual void OnPreLevelInit() override;
 
-        virtual void OnLevelInit();
+        virtual void OnLevelInit() override;
 
-        virtual void OnPostLevelInit();
+        virtual void OnPostLevelInit() override;
 
-        virtual void PostPlayLevelFinished();
+        virtual void PostPlayLevelFinished() override;
 
         virtual void Tick(const float deltaTime) override;
 

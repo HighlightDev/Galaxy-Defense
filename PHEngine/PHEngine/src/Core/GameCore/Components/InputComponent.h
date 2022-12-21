@@ -35,6 +35,10 @@ namespace EngineCore
       KeyboardBindings& GetKeyboardBindings();
 
       MouseBindings& GetMouseBindings();
+
+      void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
+
+      void SetIsReceivingKeyboardEvents(const bool receiveKeyboardEvents);
    };
 
 }

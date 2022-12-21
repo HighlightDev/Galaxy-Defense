@@ -72,8 +72,6 @@ namespace EngineCore
 
 #if DEBUG
 
-      void PushFrame();
-
       void RecompileAllShaders();
 
 #endif

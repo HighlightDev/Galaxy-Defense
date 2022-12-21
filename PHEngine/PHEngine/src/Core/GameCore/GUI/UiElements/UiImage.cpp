@@ -68,6 +68,19 @@ namespace EngineCore
             }
         }
 
+        void UiImage::SetTexture(const std::shared_ptr<ITexture> &texture)
+        {
+            if (mTexture && mTextureSrc != "")
+            {
+                assert(TexturePool::GetInstance()->TryToFreeMemory(mTexture));
+                mTextureSrc = "";
+                mTexture = nullptr;
+            }
+
+            mTexture = texture;
+            SyncDataOnRenderThread();
+        }
+
         std::string UiImage::GetTextureSrc() const
         {
             return mTextureSrc;
@@ -106,7 +119,7 @@ namespace EngineCore
                 {
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
                     {
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [=]()
+                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
                                                        {
                             const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                             if (uiSceneProxy)

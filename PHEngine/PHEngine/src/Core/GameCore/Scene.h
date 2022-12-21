@@ -13,6 +13,7 @@
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "TextHandler.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
+#include "Core/DebugCore/DebugUiController.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -23,6 +24,7 @@ using namespace Event;
 using namespace Resources;
 using namespace Graphics;
 using namespace GUI;
+using namespace EngineCore::Debug;
 
 namespace Graphics
 {
@@ -79,6 +81,10 @@ namespace EngineCore
       std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
 
       TextHandler mTextHandler;
+
+#ifdef DEBUG
+      std::unique_ptr<DebugUiController> mDebugUiController;
+#endif
 
       std::shared_ptr<UiHandler> mUiHandler;
 

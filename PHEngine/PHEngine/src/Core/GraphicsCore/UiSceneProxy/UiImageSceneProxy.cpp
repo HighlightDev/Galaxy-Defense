@@ -21,22 +21,27 @@ namespace Graphics
               mOpacity(uiImage->GetOpacity())
         {
             const auto &folderManager = FolderManager::GetInstance();
-            ShaderParams shaderParams("UiTest Shader", folderManager->GetShadersPath() + "uiTestVS.glsl", folderManager->GetShadersPath() + "uiTestFS.glsl", "", "", "", "");
-            mUiTestShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiTestShader>(shaderParams);
+            ShaderParams shaderParams("UiImage Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiImageFS.glsl", "", "", "", "");
+            mUiImageShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiImageShader>(shaderParams);
+        }
+
+        UiImageSceneProxy::~UiImageSceneProxy()
+        {
+            CleanUp();
         }
 
         void UiImageSceneProxy::Render()
         {
-            mUiTestShader->ExecuteShader();
-            mUiTestShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
+            mUiImageShader->ExecuteShader();
+            mUiImageShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
             if (mTexture)
             {
                 mTexture->BindTexture(0);
-                mUiTestShader->SetImageTexture(0);
+                mUiImageShader->SetImageTexture(0);
             }
-            mUiTestShader->SetOpacity(mOpacity);
+            mUiImageShader->SetOpacity(mOpacity);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-            mUiTestShader->StopShader();
+            mUiImageShader->StopShader();
         }
 
         void UiImageSceneProxy::SetTexture(const std::shared_ptr<ITexture> &texture)
@@ -47,6 +52,11 @@ namespace Graphics
         void UiImageSceneProxy::SetOpacity(const float opacity)
         {
             mOpacity = opacity;
+        }
+
+        void UiImageSceneProxy::CleanUp()
+        {
+             ShaderPool::GetInstance()->TryToFreeMemory(mUiImageShader);
         }
     }
 }

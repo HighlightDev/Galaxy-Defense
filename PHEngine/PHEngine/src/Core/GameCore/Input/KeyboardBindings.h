@@ -21,7 +21,7 @@ namespace EngineCore
       ACTION_MOVE_BACK,
       ACTION_JUMP
    };
-   
+
    struct IActionBinding
    {
       virtual eKeyboardKeys GetMappedWithActionKey(eKeyActionType actionType) = 0;
@@ -35,8 +35,8 @@ namespace EngineCore
       virtual eKeyActionType GetMappedWithKeyAction(eKeyboardKeys key) override;
    };
 
-   class KeyboardBindings 
-      : public KeyboardButtonDownEvent
+   class KeyboardBindings
+       : public KeyboardButtonDownEvent
    {
       std::shared_ptr<IActionBinding> mActionBindings;
 
@@ -46,26 +46,37 @@ namespace EngineCore
 
       std::vector<eKeyboardKeys> mPressedKeysOnCurrentTick;
 
-   public:
+      bool bReceiveKeyboardEvents{true};
 
+   public:
       KeyboardBindings(std::shared_ptr<IActionBinding> actionBindings);
 
       ~KeyboardBindings();
 
-      virtual void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t &data) override;
 
       void UpdateKyboardState();
 
       bool HasPressedKeys() const;
 
-      KeyState GetKeyState(eKeyActionType actionType) const;
+      KeyState GetKeyStateByActionType(eKeyActionType actionType) const;
+
+      KeyState GetStateByKey(const eKeyboardKeys key) const;
 
       std::shared_ptr<IActionBinding> GetActionBindings() const;
 
-      const std::vector<eKeyboardKeys>& GetReleasedKeys() const;
+      const std::vector<eKeyboardKeys> &GetReleasedKeys() const;
 
-      const std::vector<eKeyboardKeys>& GetPressedKeys() const;
+      const std::vector<eKeyboardKeys> &GetPressedKeys() const;
+
+      void SetIsReceivingKeyboardEvents(const bool receiveKeyboardEvents);
+
+      void ClearKeyboardCache();
+
+   private:
+      void UnsubscribeFromEvents();
+
+      void SubscribeOnEvents();
    };
 
 };
-

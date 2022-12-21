@@ -34,6 +34,9 @@ namespace EngineCore
          mDynamicMaterials(),
          mExternalTickableObjects(),
          mTextHandler(),
+#ifdef DEBUG
+         mDebugUiController(std::make_unique<DebugUiController>()),
+#endif
          mUiHandler(std::make_shared<UiHandler>())
    {
       LogInfo("Scene::ctor");
@@ -54,6 +57,9 @@ namespace EngineCore
 
       mTextHandler.SetScene(shared_from_this());
       mUiHandler->SetScene(shared_from_this());
+#ifdef DEBUG
+      mDebugUiController->SetScene(shared_from_this());
+#endif
 
       for (auto &actor : mActors)
       {
@@ -85,6 +91,8 @@ namespace EngineCore
       {
          actor->PostPlayLevelFinished();
       }
+      
+      mDebugUiController->PostPlayLevelFinished();
    }
 
    void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
@@ -810,6 +818,8 @@ namespace EngineCore
 
 #if DEBUG
       UpdatePhysicsRenderData(mPhysicsWorld->GetDebugPhysicsRenderData());
+
+      mDebugUiController->Tick(delta);
 #endif
 
       mUiHandler->Tick(delta);

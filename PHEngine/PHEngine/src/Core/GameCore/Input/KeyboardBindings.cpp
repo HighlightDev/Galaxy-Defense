@@ -103,7 +103,7 @@ namespace EngineCore
       return mPressedKeysOnCurrentTick.size() > 0;
    }
 
-   KeyState KeyboardBindings::GetKeyState(eKeyActionType actionType) const
+   KeyState KeyboardBindings::GetKeyStateByActionType(eKeyActionType actionType) const
    {
       KeyState state = KeyState::RELEASED;
 
@@ -120,6 +120,29 @@ namespace EngineCore
       return state;
    }
 
+   KeyState KeyboardBindings::GetStateByKey(const eKeyboardKeys key) const
+   {
+      KeyState state = KeyState::RELEASED;
+
+      auto it = std::find_if(mKeyboardMaskVec.begin(),
+                             mKeyboardMaskVec.end(), [=](const auto &keyData) -> bool
+                             { return keyData.Key == key; });
+
+      if (it != mKeyboardMaskVec.end())
+      {
+         state = it->State;
+      }
+
+      return state;
+   }
+
+   void KeyboardBindings::ClearKeyboardCache()
+   {
+      mKeyboardMaskVec.clear();
+      mReleasedKeysOnCurrentTick.clear();
+      mPressedKeysOnCurrentTick.clear();
+   }
+
    std::shared_ptr<IActionBinding> KeyboardBindings::GetActionBindings() const
    {
       return mActionBindings;
@@ -133,5 +156,32 @@ namespace EngineCore
    const std::vector<eKeyboardKeys> &KeyboardBindings::GetPressedKeys() const
    {
       return mPressedKeysOnCurrentTick;
+   }
+
+   void KeyboardBindings::SetIsReceivingKeyboardEvents(const bool receiveKeyboardEvents)
+   {
+      if (bReceiveKeyboardEvents != receiveKeyboardEvents)
+      {
+         bReceiveKeyboardEvents = receiveKeyboardEvents;
+         if (receiveKeyboardEvents)
+         {
+            SubscribeOnEvents();
+         }
+         else
+         {
+            UnsubscribeFromEvents();
+            ClearKeyboardCache();
+         }
+      }
+   }
+
+   void KeyboardBindings::UnsubscribeFromEvents()
+   {
+      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
+   }
+
+   void KeyboardBindings::SubscribeOnEvents()
+   {
+      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
    }
 }

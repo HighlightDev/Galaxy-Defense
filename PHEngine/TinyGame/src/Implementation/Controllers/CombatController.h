@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ILevelController.h"
 #include "Core/GameCore/ITickable.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Actors/MissileActor.h"
@@ -28,6 +29,7 @@ namespace Game
     class SpaceShipPlayerController;
 
     class CombatController : public ITickable,
+                             public ILevelController,
                              public MainPlayerActionEvent,
                              public PhysicsCollisionEvent,
                              public ICameraTransformChangeNotifyable
@@ -61,13 +63,13 @@ namespace Game
 
         ~CombatController();
 
-        virtual void OnPreLevelInit();
+        virtual void OnPreLevelInit() override;
 
-        virtual void OnLevelInit();
+        virtual void OnLevelInit() override;
 
-        virtual void OnPostLevelInit();
+        virtual void OnPostLevelInit() override;
 
-        virtual void PostPlayLevelFinished();
+        virtual void PostPlayLevelFinished() override;
 
         virtual void Tick(const float deltaTime) override;
 

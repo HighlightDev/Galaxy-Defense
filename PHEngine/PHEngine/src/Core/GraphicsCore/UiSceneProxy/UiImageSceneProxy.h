@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UiSceneProxyBase.h"
-#include "Core/GameCore/ShaderImplementation/UiTestShader.h"
+#include "Core/GameCore/ShaderImplementation/UiImageShader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
 namespace EngineCore
@@ -21,7 +21,7 @@ namespace Graphics
     {
         class UiImageSceneProxy : public UiSceneProxyBase
         {
-            std::shared_ptr<UiTestShader> mUiTestShader;
+            std::shared_ptr<UiImageShader> mUiImageShader;
 
             std::shared_ptr<ITexture> mTexture;
 
@@ -30,11 +30,15 @@ namespace Graphics
         public:
             UiImageSceneProxy(const ::EngineCore::GUI::UiImage* uiImage);
 
+            ~UiImageSceneProxy() override;
+
             virtual void Render() override;
 
             void SetTexture(const std::shared_ptr<ITexture>& texture);
 
             void SetOpacity(const float opacity);
+
+            virtual void CleanUp() override;
         };
     }
 }

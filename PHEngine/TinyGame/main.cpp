@@ -17,7 +17,6 @@ using namespace Game;
 using namespace IO;
 using namespace TinyLogger;
 
-bool bPushFrame = false;
 bool bShaderRecompile = false;
 bool bSerializeLevel = false;
 bool bDeserializeLevel = false;
@@ -88,13 +87,17 @@ void cursor_position_callback(GLFWwindow *window, double xpos, double ypos)
 void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
                           int32_t actionType, int32_t modifierKey)
 {
+  static const std::unordered_map<int32_t, eKeyboardKeys> s_modifierKeysMap = {
+      {GLFW_KEY_LEFT_SHIFT, eKeyboardKeys::Shift},
+      {GLFW_KEY_RIGHT_SHIFT, eKeyboardKeys::Shift},
+      {GLFW_KEY_LEFT_CONTROL, eKeyboardKeys::Control},
+      {GLFW_KEY_RIGHT_CONTROL, eKeyboardKeys::Control},
+      {GLFW_KEY_LEFT_ALT, eKeyboardKeys::Alt},
+      {GLFW_KEY_RIGHT_ALT, eKeyboardKeys::Alt}};
+
   if (actionType == GLFW_PRESS)
   {
-    if (key == 'P' || key == 'p')
-    {
-      bPushFrame = true;
-    }
-    else if (key == 'R' || key == 'p')
+    if (key == 'R' || key == 'p')
     {
       bShaderRecompile = true;
     }
@@ -114,13 +117,13 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
       bDeserializeLevel = true;
     }
 
-    engineInputManager->TriggerOnKeyboardKeyDown((eKeyboardKeys)key);
+    const eKeyboardKeys resultKey = s_modifierKeysMap.count(key) ? s_modifierKeysMap.at(key) : (eKeyboardKeys)key;
+    engineInputManager->TriggerOnKeyboardKeyDown(resultKey);
   }
-
   else if (actionType == GLFW_RELEASE)
   {
-    engineInputManager->TriggerOnKeyboardKeyUp((eKeyboardKeys)key);
-    bPushFrame = false;
+    const eKeyboardKeys resultKey = s_modifierKeysMap.count(key) ? s_modifierKeysMap.at(key) : (eKeyboardKeys)key;
+    engineInputManager->TriggerOnKeyboardKeyUp(resultKey);
   }
 }
 
@@ -163,7 +166,7 @@ int32_t main(int32_t argc, char **argv)
   auto width = 1200;
   auto height = 900;
   window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
-  LogInfo( "main => glfwWindow create with size: width = ", width, " height = ", height);
+  LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)
   {
@@ -184,7 +187,7 @@ int32_t main(int32_t argc, char **argv)
 
   if (initResult != GLEW_OK)
   {
-    LogInfo( "main => GLEW is NOK");
+    LogInfo("main => GLEW is NOK");
     glfwTerminate();
   }
 
@@ -209,12 +212,6 @@ int32_t main(int32_t argc, char **argv)
       if (bMouseButtonPressed)
       {
         glfwSetInputMode(window, GLFW_CURSOR, bShowCursor ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED);
-      }
-
-      if (bPushFrame)
-      {
-        engine.PushFrame();
-        bPushFrame = false;
       }
 
       if (bShaderRecompile)

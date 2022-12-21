@@ -35,12 +35,11 @@
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/DebugCore/TextureRenderer.h"
 #include "Core/GameCore/GUI/Text/FontHandler.h"
 
 #include <utility>
 
-using namespace Debug;
+//using namespace Debug;
 using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
@@ -67,8 +66,6 @@ namespace Graphics
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>> mDepthCollectShaderNonSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>> mDepthCollectPointLightShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> mDepthCollectPointLightShaderNonSkeletal;
-
-         TextureRenderer m_textureRenderer;
 
          bool bProxiesDirty;
 
@@ -173,12 +170,9 @@ namespace Graphics
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);
 
-         void PushRenderTargetToTextureRenderer();
-
       private:
          void DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
-         void DebugFramePanelsPass();
 #endif
       };
 

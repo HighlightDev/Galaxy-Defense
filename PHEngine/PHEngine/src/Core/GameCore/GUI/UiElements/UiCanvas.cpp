@@ -214,7 +214,9 @@ namespace EngineCore
 
         std::shared_ptr<IUiTransformable> UiCanvas::TryFindChildByName(const std::string &name) const
         {
-            return nullptr;
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&name](const auto &child)
+                                              { return child->GetName() == name; });
+            return foundIt != mChildren.end() ? (*foundIt) : nullptr;
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const

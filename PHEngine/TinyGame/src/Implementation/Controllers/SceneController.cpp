@@ -6,11 +6,6 @@
 #include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
-#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
-#include "Core/GameCore/GUI/UiElements/UiImage.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/GameCore/GUI/UiElements/UiHandler.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -20,15 +15,13 @@ using namespace EngineCore;
 using namespace EngineUtility;
 using namespace Graphics;
 using namespace EngineCore::GUI;
-using namespace IO;
 
 namespace Game
 {
-    std::shared_ptr<::EngineCore::GUI::UiCanvas> mTestCanvas;
-
     SceneController::SceneController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
           mCombatController(std::make_unique<CombatController>(scene)),
+          mUiController(std::make_unique<UiController>(scene)),
           mAmbientMusicDummy(std::make_shared<Actor>("Ambient Music Dummy",
                                                      std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent",
                                                                                       glm::vec3(),
@@ -44,11 +37,13 @@ namespace Game
     void SceneController::OnPreLevelInit()
     {
         mCombatController->OnPreLevelInit();
+        mUiController->OnPreLevelInit();
     }
 
     void SceneController::OnLevelInit()
     {
         mCombatController->OnLevelInit();
+        mUiController->OnLevelInit();
     }
 
     void SceneController::OnPostLevelInit()
@@ -73,11 +68,13 @@ namespace Game
 #endif
 
         mCombatController->OnPostLevelInit();
+        mUiController->OnPostLevelInit();
     }
 
     void SceneController::PostPlayLevelFinished()
     {
         mCombatController->PostPlayLevelFinished();
+        mUiController->PostPlayLevelFinished();
 
 #ifdef DEBUG
         if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
@@ -85,66 +82,6 @@ namespace Game
             mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
         }
 #endif
-
-        if (const auto &sceneSp = mScene.lock())
-        {
-            const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-            const auto windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
-            const auto halfWidth = windowWidth / 2;
-            const auto halfHeight = windowHeight / 2;
-            const auto originX = halfWidth - (halfWidth / 2);
-            const auto originY = halfHeight - (halfHeight / 2);
-            const auto &uiHandler = sceneSp->GetUiHandler();
-            mTestCanvas = uiHandler->CreateCanvas(ViewPortInfo(originX, originY, halfWidth, halfHeight));
-            const auto &uiImage = std::make_shared<UiImage>(mTestCanvas, mTestCanvas);
-            uiImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mTestCanvas->GetName());
-            uiImage->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mTestCanvas->GetName());
-            uiImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mTestCanvas->GetName());
-            uiImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mTestCanvas->GetName());
-            uiImage->SetAnchorMargin(eUiAnchor::LEFT, 0);
-            uiImage->SetAnchorMargin(eUiAnchor::BOTTOM, 0);
-            uiImage->SetTextureSrc("path.png");
-            uiImage->SetOpacity(1);
-            uiImage->SetZOrder(1);
-
-            const auto &uiImage1 = std::make_shared<UiImage>(mTestCanvas, uiImage);
-            uiImage1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, uiImage->GetName());
-            uiImage1->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage->GetName());
-            uiImage1->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
-            uiImage1->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage->GetName());
-
-            uiImage1->SetAnchorMargin(eUiAnchor::LEFT, 100);
-            uiImage1->SetAnchorMargin(eUiAnchor::RIGHT, 50);
-            uiImage1->SetAnchorMargin(eUiAnchor::TOP, 50);
-            uiImage1->SetAnchorMargin(eUiAnchor::BOTTOM, 100);
-            uiImage1->SetTextureSrc("grass.png");
-            uiImage1->SetZOrder(2);
-
-            const auto &uiImage2 = std::make_shared<UiImage>(mTestCanvas, uiImage1);
-            uiImage2->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, uiImage1->GetName());
-            uiImage2->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage1->GetName());
-            uiImage2->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage1->GetName());
-            uiImage2->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, uiImage1->GetName());
-            uiImage2->SetAnchorMargin(eUiAnchor::LEFT, 50);
-            uiImage2->SetAnchorMargin(eUiAnchor::RIGHT, 50);
-            uiImage2->SetAnchorMargin(eUiAnchor::TOP, 50);
-            uiImage2->SetAnchorMargin(eUiAnchor::BOTTOM, 50);
-            uiImage2->SetTextureSrc("path.png");
-            uiImage2->SetZOrder(3);
-
-            /*const auto &uiImage3 = std::make_shared<UiImage>(mTestCanvas, uiImage);
-            uiImage3->SetWidth(200);
-            uiImage3->SetHeight(200);
-            uiImage3->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, uiImage->GetName());
-            uiImage3->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, uiImage->GetName());
-            uiImage3->SetTextureSrc("grass.png");
-            uiImage3->SetZOrder(2);*/
-
-            mTestCanvas->AddUiItem(uiImage);
-            uiImage->AddUiItem(uiImage1);
-            uiImage1->AddUiItem(uiImage2);
-            //uiImage->AddUiItem(uiImage3);
-        }
     }
 
     void SceneController::SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController)
@@ -155,5 +92,6 @@ namespace Game
     void SceneController::Tick(const float deltaTime)
     {
         mCombatController->Tick(deltaTime);
+        mUiController->Tick(deltaTime);
     }
 }

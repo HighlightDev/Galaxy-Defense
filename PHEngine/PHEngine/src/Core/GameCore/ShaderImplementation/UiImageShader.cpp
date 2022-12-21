@@ -1,17 +1,17 @@
-#include "UiTestShader.h"
+#include "UiImageShader.h"
 
 namespace EngineCore
 {
    namespace ShaderImpl
    {
 
-      UiTestShader::UiTestShader(const ShaderParams &params)
+      UiImageShader::UiImageShader(const ShaderParams &params)
           : Shader(params)
       {
          Base::ShaderInit();
       }
 
-      void UiTestShader::AccessAllUniformLocations(uint32_t shaderProgramId)
+      void UiImageShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          Base::AccessAllUniformLocations(shaderProgramId);
 
@@ -21,23 +21,23 @@ namespace EngineCore
          u_scale = GetUniform("scale", shaderProgramId);
       }
 
-      void UiTestShader::SetImageTexture(const int32_t texSlot)
+      void UiImageShader::SetImageTexture(const int32_t texSlot)
       {
          u_image.LoadUniform(texSlot);
       }
 
-      void UiTestShader::SetOpacity(const float opacity)
+      void UiImageShader::SetOpacity(const float opacity)
       {
          u_opacity.LoadUniform(opacity);
       }
 
-      void UiTestShader::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)
+      void UiImageShader::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)
       {
          u_translation.LoadUniform(normalizedTranslation);
          u_scale.LoadUniform(normalizedScale);
       }
 
-      void UiTestShader::SetShaderPredefine()
+      void UiImageShader::SetShaderPredefine()
       {
       }
 

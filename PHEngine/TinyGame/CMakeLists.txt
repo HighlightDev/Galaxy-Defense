@@ -5,8 +5,10 @@ set(
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
+	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
 	src/Implementation/Controllers/CombatController.h
+	src/Implementation/Controllers/UiController.h
 	src/Implementation/Controllers/SceneController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
@@ -46,6 +48,7 @@ set(
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
+	src/Implementation/Controllers/UiController.cpp
 	src/Implementation/AiBrain.cpp
 	src/Implementation/Controllers/SceneController.cpp
 	src/Implementation/Controllers/AiActorController.cpp

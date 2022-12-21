@@ -3,6 +3,8 @@
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
 #include <string>
+#include <glm/mat4x4.hpp>
+#include <glm/vec2.hpp>
 
 using namespace Graphics::OpenGL;
 
@@ -10,26 +12,25 @@ namespace EngineCore
 {
    namespace ShaderImpl
    {
-
-      class TextureRendererShader :
+      class UiImageShader :
          public Shader
       {
-
          using Base = Shader;
 
-         Uniform u_uiTexture, u_screenSpaceMatrix, u_bPerspectiveDepthTexture, u_bSeparated;
+         Uniform u_image;
+         Uniform u_translation;
+         Uniform u_scale;
+         Uniform u_opacity;
 
       public:
 
-         TextureRendererShader(const ShaderParams& params);
+         UiImageShader(const ShaderParams& params);
 
-         void SetUiTextureSampler(int32_t uiTextureSampler);
+         void SetImageTexture(const int32_t texSlot);
 
-         void SetScreenSpaceMatrix(const glm::mat4& screenSpaceMatrix);
+         void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
-         void SetIsDepthTexture(bool bPerspectiveDepthTexture);
-
-         void SetIsSeparatedScreen(bool bSeparatedScreen);
+         void SetOpacity(const float opacity);
 
       protected:
 

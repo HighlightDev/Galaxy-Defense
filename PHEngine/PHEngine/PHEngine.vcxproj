@@ -618,7 +618,6 @@
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedPointLightShadowInfo.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedDirectionalLightShadowInfo.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.h" />
-    <ClInclude Include="src\Core\DebugCore\TextureRenderer.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.h" />
@@ -961,7 +960,6 @@
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\TextureRendererShader.h" />
     <ClInclude Include="src\Core\GameCore\Event\TEvent.h" />
     <ClInclude Include="src\Core\GameCore\ThirdPersonCamera.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
@@ -1127,7 +1125,6 @@
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedPointLightShadowInfo.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Shadow\ProjectedDirectionalLightShadowInfo.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\ShadowFramebuffer.cpp" />
-    <ClCompile Include="src\Core\DebugCore\TextureRenderer.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CapturePlanarReflectionShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\SkeletalMeshSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasSpaceRequest.cpp" />
@@ -1199,7 +1196,6 @@
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.cpp" />
-    <ClCompile Include="src\Core\GameCore\ShaderImplementation\TextureRendererShader.cpp" />
     <ClCompile Include="src\Core\GameCore\Event\TEvent.cpp" />
     <ClCompile Include="src\Core\GameCore\ThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.cpp" />

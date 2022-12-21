@@ -12,10 +12,10 @@ using namespace Event;
 
 namespace EngineCore
 {
-   class MouseBindings 
-      : public MouseMovedEvent
-      , public MouseScrollEvent
-      , public MouseButtonDownEvent
+   class MouseBindings
+       : public MouseMovedEvent,
+         public MouseScrollEvent,
+         public MouseButtonDownEvent
    {
       glm::ivec4 mLastMouseMoveEvent;
 
@@ -28,17 +28,19 @@ namespace EngineCore
       std::vector<MouseKeysData> mMouseKeysMaskVec;
 
       size_t mPressedMouseKeysCount;
-   public:
 
+      bool bReceiveMouseEvents{true};
+
+   public:
       MouseBindings();
 
       virtual ~MouseBindings();
 
-      virtual void ProcessEvent(const typename MouseMovedEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename MouseMovedEvent::EventData_t &data) override;
 
-      virtual void ProcessEvent(const typename MouseScrollEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename MouseScrollEvent::EventData_t &data) override;
 
-      virtual void ProcessEvent(const typename MouseButtonDownEvent::EventData_t& data) override;
+      virtual void ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data) override;
 
       bool IsMouseMoveEventDirty() const;
 
@@ -48,14 +50,23 @@ namespace EngineCore
 
       glm::ivec4 FlushMouseMoveEvent();
 
+      void ClearMouseScrollCache();
+
+      void ClearMouseMoveCache();
+
       KeyState GetKeyState(const eMouseKeys mouseButtonKey) const;
 
-      protected:
+      void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
 
-      void PushMouseMoveEvent(const glm::ivec4& moveEvent);
+   protected:
+      void PushMouseMoveEvent(const glm::ivec4 &moveEvent);
 
       void PushMouseScrollEvent(const eMouseScrollDirection mouseScrollEvent);
+
+   private:
+      void UnsubscribeFromEvents();
+
+      void SubscribeOnEvents();
    };
 
 };
-

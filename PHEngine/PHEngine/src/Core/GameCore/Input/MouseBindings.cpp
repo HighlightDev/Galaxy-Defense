@@ -13,18 +13,28 @@ namespace EngineCore
           mMouseKeysMaskVec(),
           mPressedMouseKeysCount(0)
     {
-        MouseMovedEvent::GetInstance()->AddListener(this);
-        MouseScrollEvent::GetInstance()->AddListener(this);
-        MouseButtonDownEvent::GetInstance()->AddListener(this);
+        SubscribeOnEvents();
 
         mMouseKeysMaskVec.reserve(3);
     }
 
     MouseBindings::~MouseBindings()
     {
+        UnsubscribeFromEvents();
+    }
+
+    void MouseBindings::UnsubscribeFromEvents()
+    {
         MouseMovedEvent::GetInstance()->RemoveListener(this);
         MouseScrollEvent::GetInstance()->RemoveListener(this);
         MouseButtonDownEvent::GetInstance()->RemoveListener(this);
+    }
+
+    void MouseBindings::SubscribeOnEvents()
+    {
+        MouseMovedEvent::GetInstance()->AddListener(this);
+        MouseScrollEvent::GetInstance()->AddListener(this);
+        MouseButtonDownEvent::GetInstance()->AddListener(this);
     }
 
     void MouseBindings::ProcessEvent(const typename MouseMovedEvent::EventData_t &mouseData)
@@ -58,6 +68,24 @@ namespace EngineCore
         }
 
         return state;
+    }
+
+    void MouseBindings::SetIsReceivingMouseEvents(const bool receiveMouseEvents)
+    {
+        if (bReceiveMouseEvents != receiveMouseEvents)
+        {
+            bReceiveMouseEvents = receiveMouseEvents;
+            if (bReceiveMouseEvents)
+            {
+                SubscribeOnEvents();
+            }
+            else
+            {
+                UnsubscribeFromEvents();
+                ClearMouseMoveCache();
+                ClearMouseScrollCache();
+            }
+        }
     }
 
     bool MouseBindings::IsMouseMoveEventDirty() const
@@ -106,5 +134,17 @@ namespace EngineCore
     {
         mLastMouseScrollDirectionEvent = mouseScrollEvent;
         bMouseScrollEventDirty = true;
+    }
+
+    void MouseBindings::ClearMouseScrollCache()
+    {
+        mLastMouseScrollDirectionEvent = eMouseScrollDirection::Undefined;
+        bMouseScrollEventDirty = false;
+    }
+
+    void MouseBindings::ClearMouseMoveCache()
+    {
+        mLastMouseMoveEvent = {};
+        bMouseMoveEventDirty = false;
     }
 }

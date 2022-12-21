@@ -105,7 +105,7 @@ namespace Game
 
             glm::vec3 direction(0.0f);
 
-            if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_FORWARD))
+            if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
             {
                if (shipMaxPos.z <= levelAreaMaxPos.z)
                {
@@ -118,7 +118,7 @@ namespace Game
                   m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_forward");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_LEFT))
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
             {
                if (shipMaxPos.x <= levelAreaMaxPos.x)
                {
@@ -131,7 +131,7 @@ namespace Game
                   m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_left");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_RIGHT))
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
             {
                if (shipMinPos.x >= levelAreaMinPos.x)
                {
@@ -144,7 +144,7 @@ namespace Game
                   m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_right");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyState(eKeyActionType::ACTION_MOVE_BACK))
+            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
             {
                if (shipMinPos.z >= (levelAreaMinPos.z + 25.0f))
                {
