@@ -4,6 +4,7 @@
 #include "IUiTransformable.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
 
 #include <unordered_set>
 #include <memory>
@@ -25,7 +26,8 @@ namespace EngineCore
     namespace GUI
     {
         class UiCanvas : public IUiTransformable,
-                         public ITickable
+                         public ITickable,
+                         public std::enable_shared_from_this<UiCanvas>
         {
         private:
             static size_t s_UId;
@@ -44,6 +46,10 @@ namespace EngineCore
 
             bool mIsTransformDirty;
 
+            std::unique_ptr<UiInputSystem> mInputSystem;
+
+            bool mWasHoveredLastFrame{false}; 
+
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
@@ -52,6 +58,8 @@ namespace EngineCore
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
+
+            void InitializeInputSystem();
 
             virtual size_t GetUId() const override;
             virtual const glm::ivec2 &GetAbsoluteOrigin() const override;
@@ -85,6 +93,12 @@ namespace EngineCore
 
             std::vector<std::shared_ptr<UiItemBase>> GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const;
 
+            // Input events
+            void OnMousePositionChanged(const glm::ivec2& mouseCursorPosition);
+            void OnMouseReleased(const glm::ivec2& mouseCursorPosition);
+            void OnMousePressed(const glm::ivec2& mouseCursorPosition);
+            void OnMouseClicked(const glm::ivec2& mouseCursorPosition);
+
         protected:
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 
@@ -102,6 +116,8 @@ namespace EngineCore
 
             void UpdateAnchorTransform();
             void UpdateDependentChildrenAnchorTransform();
+
+            std::vector<std::shared_ptr<UiItemBase>> GetChildrenWithDescendingZOrder() const;
         };
     }
 }

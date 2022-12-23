@@ -46,6 +46,7 @@ namespace EngineCore
 
                 const auto &uiHandler = sceneSp->GetUiHandler();
                 mCanvas = uiHandler->CreateCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));
+                mCanvas->InitializeInputSystem();
                 mCanvas->SetIsVisible(false);
                 const auto &image = std::make_shared<UiImage>(mCanvas, mCanvas);
                 mCanvas->AddUiItem(image);

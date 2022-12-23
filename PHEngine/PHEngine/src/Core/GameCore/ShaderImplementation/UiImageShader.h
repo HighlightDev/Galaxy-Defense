@@ -21,6 +21,7 @@ namespace EngineCore
          Uniform u_translation;
          Uniform u_scale;
          Uniform u_opacity;
+         Uniform u_hili;
 
       public:
 
@@ -31,6 +32,8 @@ namespace EngineCore
          void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
          void SetOpacity(const float opacity);
+
+         void SetHili(const bool isHili);
 
       protected:
 

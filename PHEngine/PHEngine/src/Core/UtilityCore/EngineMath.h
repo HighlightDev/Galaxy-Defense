@@ -52,6 +52,8 @@ namespace EngineMath
 
    bool TestPointInAABB(const glm::vec3 &aabbMin, const glm::vec3 &aabbMax, const glm::vec3 &point);
 
+   bool TestPointInAABB(const glm::ivec2 &aabbMin, const glm::ivec2 &aabbMax, const glm::ivec2 &point);
+
    glm::quat EulerAnglesToQuat(const glm::vec3 &eulerAngles);
 
    glm::mat4 BuildMirrorMatrix(const glm::vec4 &mirrorPlane);

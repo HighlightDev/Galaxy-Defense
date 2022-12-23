@@ -25,6 +25,8 @@ namespace EngineCore
 
             float mOpacity;
 
+            bool mHili{false};
+
         public:
             explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
 
@@ -32,7 +34,7 @@ namespace EngineCore
 
             void SetTextureSrc(const std::string &textureSrc);
 
-            void SetTexture(const std::shared_ptr<ITexture>& texture);
+            void SetTexture(const std::shared_ptr<ITexture> &texture);
 
             std::string GetTextureSrc() const;
 
@@ -43,6 +45,10 @@ namespace EngineCore
             float GetOpacity() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+
+            void OnMouseHoverEnter() override;
+
+            void OnMouseHoverLeave() override;
 
         protected:
             virtual void OnRegistered() override;

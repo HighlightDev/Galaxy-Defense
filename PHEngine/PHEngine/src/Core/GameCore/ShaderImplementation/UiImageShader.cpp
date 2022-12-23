@@ -19,6 +19,7 @@ namespace EngineCore
          u_opacity = GetUniform("opacity", shaderProgramId);
          u_translation = GetUniform("translation", shaderProgramId);
          u_scale = GetUniform("scale", shaderProgramId);
+         u_hili = GetUniform("hili", shaderProgramId);
       }
 
       void UiImageShader::SetImageTexture(const int32_t texSlot)
@@ -29,6 +30,11 @@ namespace EngineCore
       void UiImageShader::SetOpacity(const float opacity)
       {
          u_opacity.LoadUniform(opacity);
+      }
+
+      void UiImageShader::SetHili(const bool isHili)
+      {
+         u_hili.LoadUniform(isHili);
       }
 
       void UiImageShader::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)

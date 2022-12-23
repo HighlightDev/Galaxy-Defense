@@ -88,6 +88,16 @@ namespace EngineMath
       return true;
    }
 
+   bool TestPointInAABB(const glm::ivec2 &aabbMin, const glm::ivec2 &aabbMax, const glm::ivec2 &point)
+   {
+      if ((point.x < aabbMin.x || point.y < aabbMin.y) ||
+          (point.x > aabbMax.x || point.y > aabbMax.y))
+      {
+         return false;
+      }
+      return true;
+   }
+
    glm::quat EulerAnglesToQuat(const glm::vec3 &eulerAngles)
    {
       return glm::quat(glm::vec3(DEG_TO_RAD(eulerAngles.x), DEG_TO_RAD(eulerAngles.y), DEG_TO_RAD(eulerAngles.z)));

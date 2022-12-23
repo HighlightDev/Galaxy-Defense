@@ -81,6 +81,18 @@ namespace EngineCore
             SyncDataOnRenderThread();
         }
 
+        void UiImage::OnMouseHoverEnter()
+        {
+            mHili = true;
+            SyncDataOnRenderThread();
+        }
+
+        void UiImage::OnMouseHoverLeave()
+        {
+            mHili = false;
+            SyncDataOnRenderThread();
+        }
+
         std::string UiImage::GetTextureSrc() const
         {
             return mTextureSrc;
@@ -127,6 +139,7 @@ namespace EngineCore
                                 const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
                                 imageSceneProxy->SetTexture(mTexture);
                                 imageSceneProxy->SetOpacity(mOpacity);
+                                imageSceneProxy->SetHili(mHili);
                             } });
                     }
                 }

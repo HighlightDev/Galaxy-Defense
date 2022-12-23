@@ -27,6 +27,8 @@ namespace Graphics
 
             float mOpacity;
 
+            bool mIsHili{false};
+
         public:
             UiImageSceneProxy(const ::EngineCore::GUI::UiImage* uiImage);
 
@@ -37,6 +39,8 @@ namespace Graphics
             void SetTexture(const std::shared_ptr<ITexture>& texture);
 
             void SetOpacity(const float opacity);
+
+            void SetHili(const bool isHili);
 
             virtual void CleanUp() override;
         };

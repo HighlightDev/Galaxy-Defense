@@ -561,6 +561,46 @@ namespace EngineCore
             }
         }
 
+        void UiItemBase::CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>> &inCollection) const
+        {
+            for (const auto &child : mChildren)
+            {
+                inCollection.emplace_back(child);
+                child->CollectAllHierarchyChildren(inCollection);
+            }
+        }
+
+        void UiItemBase::OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition)
+        {
+            const auto &boundingBox = GetBoundingArea();
+            if (EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mouseCursorPosition))
+            {
+                if (!mWasHoveredLastFrame)
+                {
+                    mWasHoveredLastFrame = true;
+                    OnMouseHoverEnter();
+                }
+            }
+            else
+            {
+                if (mWasHoveredLastFrame)
+                {
+                    OnMouseHoverLeave();
+                    mWasHoveredLastFrame = false;
+                }
+            }
+        }
+
+        void UiItemBase::OnMouseHoverEnter()
+        {
+            LogInfo("UiItemBase::OnMouseHoverEnter =>", GetName());
+        }
+
+        void UiItemBase::OnMouseHoverLeave()
+        {
+            LogInfo("UiItemBase::OnMouseHoverLeave", GetName());
+        }
+
         void UiItemBase::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");

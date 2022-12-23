@@ -69,6 +69,8 @@ namespace EngineCore
 
         void SetCallback(std::function<void(void)> callback);
 
+        bool IsRunning() const;
+
     protected:
         virtual void TimerPulse();
     }; 

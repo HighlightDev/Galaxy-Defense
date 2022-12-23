@@ -25,10 +25,18 @@ namespace EngineCore
               mRegisteredUIds(),
               mRegisteredNames(),
               mIsVisible(true),
-              mIsTransformDirty(true)
+              mIsTransformDirty(true),
+              mInputSystem()
         {
         }
 
+        void UiCanvas::InitializeInputSystem()
+        {
+            if (!mInputSystem)
+            {
+                mInputSystem = std::make_unique<UiInputSystem>(shared_from_this());
+            }
+        }
         void UiCanvas::SetScene(const std::weak_ptr<Scene> &sceneWp)
         {
             mScene = sceneWp;
@@ -205,6 +213,11 @@ namespace EngineCore
             {
                 child->Tick(deltaTime);
             }
+
+            if (mInputSystem)
+            {
+                mInputSystem->Tick(deltaTime);
+            }
         }
 
         std::shared_ptr<UiCanvasSceneProxy> UiCanvas::CreateUiCanvasSceneProxy() const
@@ -265,6 +278,57 @@ namespace EngineCore
                         canvasProxy->SetWidthHeight(mWidthHeight); });
                 }
             }
+        }
+
+        std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetChildrenWithDescendingZOrder() const
+        {
+            std::vector<std::shared_ptr<UiItemBase>> childrenWithDescendingOrder;
+            for (const auto &child : mChildren)
+            {
+                childrenWithDescendingOrder.emplace_back(child);
+                child->CollectAllHierarchyChildren(childrenWithDescendingOrder);
+            }
+
+            std::sort(childrenWithDescendingOrder.begin(), childrenWithDescendingOrder.end(),
+                      [](const auto &left, const auto &right)
+                      { return left->GetZOrder() < right->GetZOrder(); });
+
+            return childrenWithDescendingOrder;
+        }
+
+        void UiCanvas::OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition)
+        {
+            const auto &boundingArea = GetBoundingArea();
+            if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition))
+            {
+                mWasHoveredLastFrame = true;
+                const auto &sortedChildren = GetChildrenWithDescendingZOrder();
+                for (const auto &child : sortedChildren)
+                {
+                    child->OnMousePositionChanged(mouseCursorPosition);
+                }
+            }
+            else if (mWasHoveredLastFrame)
+            {
+                mWasHoveredLastFrame = false;
+                const auto &sortedChildren = GetChildrenWithDescendingZOrder();
+                for (const auto &child : sortedChildren)
+                {
+                    child->OnMousePositionChanged(mouseCursorPosition);
+                }
+            }
+        }
+
+        void UiCanvas::OnMouseReleased(const glm::ivec2 &mouseCursorPosition)
+        {
+        }
+
+        void UiCanvas::OnMousePressed(const glm::ivec2 &mouseCursorPosition)
+        {
+        }
+
+        void UiCanvas::OnMouseClicked(const glm::ivec2 &mouseCursorPosition)
+        {
         }
     }
 }

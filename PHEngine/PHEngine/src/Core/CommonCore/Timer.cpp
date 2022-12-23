@@ -105,7 +105,7 @@ namespace EngineCore
 
     void GameThreadTimer::StopTimer()
     {
-        if (m_isRepeat)
+        if (m_isRunning)
         {
             m_isRunning = false;
         }
@@ -115,5 +115,10 @@ namespace EngineCore
     {
         assert(!mCallback);
         mCallback = callback;
+    }
+
+    bool GameThreadTimer::IsRunning() const
+    {
+        return m_isRunning;
     }
 }

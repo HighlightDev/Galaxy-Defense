@@ -64,6 +64,9 @@ namespace EngineCore
 
             bool mIsTransformDirty;
 
+            // Input events
+            bool mWasHoveredLastFrame{false};
+
         public:
             explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
@@ -115,10 +118,19 @@ namespace EngineCore
             void UpdateAnchorTransform();
             void UpdateDependentChildrenAnchorTransform();
 
+            void CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>>& inCollection) const;
+            
+            // Input events
+            void OnMousePositionChanged(const glm::ivec2& mouseCursorPosition);
+
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
             void SetChildrenIsVisible(const bool isVisible);
+
+            virtual void OnMouseHoverEnter();
+
+            virtual void OnMouseHoverLeave();
 
         private:
             void TransformChanged();
