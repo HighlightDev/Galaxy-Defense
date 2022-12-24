@@ -48,7 +48,11 @@ namespace EngineCore
 
             std::unique_ptr<UiInputSystem> mInputSystem;
 
-            bool mWasHoveredLastFrame{false}; 
+            bool mWasHoveredLastFrame{false};
+
+            bool mMouseButtonWasPressedLastFrame{false};
+
+            std::vector<std::weak_ptr<UiItemBase>> mDescendingByZOrderHierarchyChildren;
 
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
@@ -91,13 +95,14 @@ namespace EngineCore
 
             std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
-            std::vector<std::shared_ptr<UiItemBase>> GetDependentByTransformChildren(const std::string& nameOfChangedTransformUiItem) const;
+            std::vector<std::shared_ptr<UiItemBase>> GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const;
+            void CollectChildrenWithDescendingZOrder();
 
             // Input events
-            void OnMousePositionChanged(const glm::ivec2& mouseCursorPosition);
-            void OnMouseReleased(const glm::ivec2& mouseCursorPosition);
-            void OnMousePressed(const glm::ivec2& mouseCursorPosition);
-            void OnMouseClicked(const glm::ivec2& mouseCursorPosition);
+            void OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseReleased(const glm::ivec2 &mouseCursorPosition);
+            void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
 
         protected:
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
@@ -108,6 +113,7 @@ namespace EngineCore
             void SyncDataOnRenderThread();
 
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+
             virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
             virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
@@ -115,9 +121,8 @@ namespace EngineCore
             void SetIsTransformDirty(const bool isDirty);
 
             void UpdateAnchorTransform();
-            void UpdateDependentChildrenAnchorTransform();
 
-            std::vector<std::shared_ptr<UiItemBase>> GetChildrenWithDescendingZOrder() const;
+            void UpdateDependentChildrenAnchorTransform();
         };
     }
 }

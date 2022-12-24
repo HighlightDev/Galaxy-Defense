@@ -30,6 +30,8 @@ namespace EngineCore
 
             float mPressButtonCooldown;
 
+            bool mPoolNum{false};
+
         public:
             DebugUiController();
 
@@ -43,6 +45,8 @@ namespace EngineCore
             void Init();
 
             std::shared_ptr<ITexture> GetNextRenderTargetTexture() const;
+
+            void OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition);
         };
     }
 }

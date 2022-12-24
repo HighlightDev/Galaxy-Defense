@@ -106,6 +106,11 @@ namespace EngineCore
         return result;
     }
 
+    glm::ivec4 MouseBindings::GetLastMouseCursorPosition() const
+    {
+        return mLastMouseMoveEvent;
+    }
+
     void MouseBindings::PushMouseMoveEvent(const glm::ivec4 &moveEvent)
     {
         mLastMouseMoveEvent = moveEvent;

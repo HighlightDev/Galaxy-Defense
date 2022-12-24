@@ -5,6 +5,7 @@
 #include "Transform2D/UiAnchorData.h"
 #include "Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/GUI/UiInputSystem/IUiMouseInputReceivable.h"
 
 #include <memory>
 #include <vector>
@@ -54,18 +55,16 @@ namespace EngineCore
             std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
             std::weak_ptr<IUiTransformable> mParent;
+
             std::weak_ptr<UiCanvas> mParentCanvas;
 
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
-
-            eUiItemPositioningType mUiPositioningType{eUiItemPositioningType::ANCHORS};
 
             bool mIsVisible;
 
             bool mIsTransformDirty;
 
-            // Input events
-            bool mWasHoveredLastFrame{false};
+            std::shared_ptr<IUiMouseInputReceivable> mMouseInputReceiver;
 
         public:
             explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
@@ -88,6 +87,7 @@ namespace EngineCore
             const std::weak_ptr<UiCanvas> &GetParentCanvas() const;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
+            std::shared_ptr<IUiMouseInputReceivable> GetMouseInputReceiver() const;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             virtual void SetZOrder(const size_t z_order) override;
@@ -96,6 +96,7 @@ namespace EngineCore
             virtual void SetIsVisible(const bool isVisible) override;
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
             virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
+            void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
@@ -118,19 +119,18 @@ namespace EngineCore
             void UpdateAnchorTransform();
             void UpdateDependentChildrenAnchorTransform();
 
-            void CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>>& inCollection) const;
-            
+            void CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>> &inCollection) const;
+
             // Input events
-            void OnMousePositionChanged(const glm::ivec2& mouseCursorPosition);
+            void OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseReleased(const glm::ivec2 &mouseCursorPosition);
+            void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
 
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
             void SetChildrenIsVisible(const bool isVisible);
-
-            virtual void OnMouseHoverEnter();
-
-            virtual void OnMouseHoverLeave();
 
         private:
             void TransformChanged();

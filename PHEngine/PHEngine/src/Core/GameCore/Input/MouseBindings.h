@@ -50,6 +50,8 @@ namespace EngineCore
 
       glm::ivec4 FlushMouseMoveEvent();
 
+      glm::ivec4 GetLastMouseCursorPosition() const;
+
       void ClearMouseScrollCache();
 
       void ClearMouseMoveCache();

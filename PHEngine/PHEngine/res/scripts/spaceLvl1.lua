@@ -48,6 +48,7 @@ function CreateTestLevel(host)
 		[[fern.png
 		,path.png
 		,grass.png
+		,arrow_right_1.png
 		]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

@@ -1,0 +1,23 @@
+#pragma once
+
+#include <glm/vec2.hpp>
+
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
+namespace EngineCore
+{
+    namespace GUI
+    {
+        class IUiMouseInputReceivable
+        {
+        public:
+            virtual void OnMousePositionChanged(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+
+            virtual void OnMouseReleased(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+
+            virtual void OnMousePressed(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+
+            virtual void OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+        };
+    }
+}

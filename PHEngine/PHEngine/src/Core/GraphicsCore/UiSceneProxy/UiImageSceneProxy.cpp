@@ -40,7 +40,6 @@ namespace Graphics
                 mUiImageShader->SetImageTexture(0);
             }
             mUiImageShader->SetOpacity(mOpacity);
-            mUiImageShader->SetHili(mIsHili);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiImageShader->StopShader();
         }
@@ -55,14 +54,9 @@ namespace Graphics
             mOpacity = opacity;
         }
 
-         void UiImageSceneProxy::SetHili(const bool isHili)
-         {
-            mIsHili = isHili;
-         }
-
         void UiImageSceneProxy::CleanUp()
         {
-             ShaderPool::GetInstance()->TryToFreeMemory(mUiImageShader);
+            ShaderPool::GetInstance()->TryToFreeMemory(mUiImageShader);
         }
     }
 }

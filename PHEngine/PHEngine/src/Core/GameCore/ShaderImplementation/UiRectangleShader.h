@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/Uniform.h"
 
 #include <string>
+#include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
 
 using namespace Graphics::OpenGL;
@@ -11,25 +12,22 @@ namespace EngineCore
 {
    namespace ShaderImpl
    {
-      class UiImageShader :
+      class UiRectangleShader :
          public Shader
       {
          using Base = Shader;
 
-         Uniform u_image;
+         Uniform u_color;
          Uniform u_translation;
          Uniform u_scale;
-         Uniform u_opacity;
 
       public:
 
-         UiImageShader(const ShaderParams& params);
+         UiRectangleShader(const ShaderParams& params);
 
-         void SetImageTexture(const int32_t texSlot);
+         void SetColor(const glm::vec4& color);
 
          void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
-
-         void SetOpacity(const float opacity);
 
       protected:
 

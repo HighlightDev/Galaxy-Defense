@@ -36,6 +36,7 @@ namespace IO
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
 		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
 		CreateFilePathMap(GetMaskTexturePath(), GetShortMaskTexturePath());
+		CreateFilePathMap(GetUiTexturePath(), GetShortUiTexturePath());
 		CreateFilePathMap(GetLandscapeTexturePath(), GetShortLandscapeTexturePath());
 	}
 
@@ -167,6 +168,11 @@ namespace IO
 		return GetShortTexturesPath() + "mask" + SLASH;
 	}
 
+	std::string FolderManager::GetShortUiTexturePath() const
+	{
+		return GetShortTexturesPath() + "ui" + SLASH;
+	}
+
 	std::string FolderManager::GetShortScriptPath() const
 	{
 		return GetShortResPath() + "scripts" + SLASH;
@@ -285,6 +291,11 @@ namespace IO
 	std::string FolderManager::GetMaskTexturePath() const
 	{
 		return GetTexturesPath() + "mask" + SLASH;
+	}
+
+	std::string FolderManager::GetUiTexturePath() const
+	{
+		return GetTexturesPath() + "ui" + SLASH;
 	}
 
 	std::string FolderManager::GetScriptPath() const

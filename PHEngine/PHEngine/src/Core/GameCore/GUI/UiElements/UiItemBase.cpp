@@ -1,5 +1,4 @@
 #include "UiItemBase.h"
-#include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
@@ -9,7 +8,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-using namespace EngineMath;
 using namespace EngineCore;
 using namespace Graphics::Renderer;
 
@@ -243,6 +241,11 @@ namespace EngineCore
             return mParent;
         }
 
+        std::shared_ptr<IUiMouseInputReceivable> UiItemBase::GetMouseInputReceiver() const
+        {
+            return mMouseInputReceiver;
+        }
+
         bool UiItemBase::IsTransformDirty() const
         {
             return mIsTransformDirty;
@@ -251,6 +254,11 @@ namespace EngineCore
         void UiItemBase::SetIsTransformDirty(const bool isDirty)
         {
             mIsTransformDirty = isDirty;
+        }
+
+        void UiItemBase::SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver)
+        {
+            mMouseInputReceiver = inputReceiver;
         }
 
         void UiItemBase::RebuildNormalizedTransform()
@@ -453,9 +461,16 @@ namespace EngineCore
 
         void UiItemBase::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
+            assert(GetName() == uiItem->GetParent().lock()->GetName());
+
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
+
+            if (const auto &canvasSp = mParentCanvas.lock())
+            {
+                canvasSp->CollectChildrenWithDescendingZOrder();
+            }
         }
 
         void UiItemBase::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
@@ -465,6 +480,11 @@ namespace EngineCore
                                            { return childUi->GetUId() == uiItem->GetUId(); });
             mChildren.erase(it);
             uiItem->OnUnregistered();
+
+            if (const auto &canvasSp = mParentCanvas.lock())
+            {
+                canvasSp->CollectChildrenWithDescendingZOrder();
+            }
         }
 
         void UiItemBase::RegisterUiItem(const size_t uiId, const std::string &uiItemName)
@@ -572,33 +592,34 @@ namespace EngineCore
 
         void UiItemBase::OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition)
         {
-            const auto &boundingBox = GetBoundingArea();
-            if (EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), mouseCursorPosition))
+            if (mMouseInputReceiver)
             {
-                if (!mWasHoveredLastFrame)
-                {
-                    mWasHoveredLastFrame = true;
-                    OnMouseHoverEnter();
-                }
-            }
-            else
-            {
-                if (mWasHoveredLastFrame)
-                {
-                    OnMouseHoverLeave();
-                    mWasHoveredLastFrame = false;
-                }
+                mMouseInputReceiver->OnMousePositionChanged(GetBoundingArea(), mouseCursorPosition);
             }
         }
 
-        void UiItemBase::OnMouseHoverEnter()
+        void UiItemBase::OnMouseReleased(const glm::ivec2 &mouseCursorPosition)
         {
-            LogInfo("UiItemBase::OnMouseHoverEnter =>", GetName());
+            if (mMouseInputReceiver)
+            {
+                mMouseInputReceiver->OnMouseReleased(GetBoundingArea(), mouseCursorPosition);
+            }
         }
 
-        void UiItemBase::OnMouseHoverLeave()
+        void UiItemBase::OnMousePressed(const glm::ivec2 &mouseCursorPosition)
         {
-            LogInfo("UiItemBase::OnMouseHoverLeave", GetName());
+            if (mMouseInputReceiver)
+            {
+                mMouseInputReceiver->OnMousePressed(GetBoundingArea(), mouseCursorPosition);
+            }
+        }
+
+        void UiItemBase::OnMouseClicked(const glm::ivec2 &mouseCursorPosition)
+        {
+            if (mMouseInputReceiver)
+            {
+                mMouseInputReceiver->OnMouseClicked(GetBoundingArea(), mouseCursorPosition);
+            }
         }
 
         void UiItemBase::SyncDataOnRenderThread()

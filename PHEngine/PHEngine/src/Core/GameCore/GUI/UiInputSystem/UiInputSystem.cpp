@@ -34,11 +34,13 @@ namespace EngineCore
             {
                 if (ownerSp->IsVisible())
                 {
-                    const auto &mouseMoveEventData = mouseBindings.FlushMouseMoveEvent();
+                    const bool isMouseMoveEventDirty = mouseBindings.IsMouseMoveEventDirty();
+                    const auto &mouseMoveEventData = mouseBindings.GetLastMouseCursorPosition();
+                    mouseBindings.FlushMouseMoveEvent();
                     const auto invertedScreenYPosition = mScreenHeight - mouseMoveEventData.y;
                     mMouseKeyPressedPosition = glm::ivec2(mouseMoveEventData.x, invertedScreenYPosition);
 
-                    if (mouseBindings.IsMouseMoveEventDirty())
+                    if (isMouseMoveEventDirty)
                     {
                         ownerSp->OnMousePositionChanged(mMouseKeyPressedPosition);
                     }
@@ -47,9 +49,10 @@ namespace EngineCore
                     {
                         if (!mIsMouseKeyPressed)
                         {
-                            mIsMouseKeyPressed = true;
                             mMousePressedTimer.StartTimer();
                         }
+
+                        mIsMouseKeyPressed = true;
                     }
                     else if (mouseBindings.GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED)
                     {
@@ -57,14 +60,13 @@ namespace EngineCore
                         {
                             mMousePressedTimer.StopTimer();
                             ownerSp->OnMouseClicked(mMouseKeyPressedPosition);
-                            mIsMouseKeyPressed = false;
                         }
                         else if (mIsMouseKeyPressed)
                         {
                             ownerSp->OnMouseReleased(mMouseKeyPressedPosition);
-                            mIsMouseKeyPressed = false;
                         }
-                        
+
+                        mIsMouseKeyPressed = false;
                     }
                 }
             }

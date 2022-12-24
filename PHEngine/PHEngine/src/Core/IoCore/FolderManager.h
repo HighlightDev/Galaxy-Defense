@@ -57,6 +57,7 @@ namespace IO
 		std::string GetPostprocessTexturePath() const;
 		std::string GetEditorTexturePath() const;
 		std::string GetMaskTexturePath() const;
+		std::string GetUiTexturePath() const;
 		std::string GetPersistencyPath() const;
 		std::string GetScriptPath() const;
 		std::string GetMaterialPath() const;
@@ -81,6 +82,7 @@ namespace IO
 		std::string GetShortPostprocessTexturePath() const;
 		std::string GetShortEditorTexturePath() const;
 		std::string GetShortMaskTexturePath() const;
+		std::string GetShortUiTexturePath() const;
 		std::string GetShortScriptPath() const;
 		std::string GetShortMaterialPath() const;
 		std::string GetShortTweenerPath() const;

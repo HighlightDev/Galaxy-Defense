@@ -26,7 +26,8 @@ namespace EngineCore
               mRegisteredNames(),
               mIsVisible(true),
               mIsTransformDirty(true),
-              mInputSystem()
+              mInputSystem(),
+              mDescendingByZOrderHierarchyChildren()
         {
         }
 
@@ -172,6 +173,7 @@ namespace EngineCore
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
+            CollectChildrenWithDescendingZOrder();
         }
 
         void UiCanvas::RegisterUiItem(const size_t uiId, const std::string &uiItemName)
@@ -186,6 +188,7 @@ namespace EngineCore
             assert(mRegisteredUIds.count(uiId) && mRegisteredNames.count(uiItemName));
             mRegisteredUIds.erase(uiId);
             mRegisteredNames.erase(uiItemName);
+            CollectChildrenWithDescendingZOrder();
         }
 
         void UiCanvas::RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem)
@@ -280,7 +283,7 @@ namespace EngineCore
             }
         }
 
-        std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetChildrenWithDescendingZOrder() const
+        void UiCanvas::CollectChildrenWithDescendingZOrder()
         {
             std::vector<std::shared_ptr<UiItemBase>> childrenWithDescendingOrder;
             for (const auto &child : mChildren)
@@ -293,7 +296,12 @@ namespace EngineCore
                       [](const auto &left, const auto &right)
                       { return left->GetZOrder() < right->GetZOrder(); });
 
-            return childrenWithDescendingOrder;
+            mDescendingByZOrderHierarchyChildren.clear();
+
+            std::transform(childrenWithDescendingOrder.begin(), childrenWithDescendingOrder.end(),
+                           std::back_inserter(mDescendingByZOrderHierarchyChildren),
+                           [](const auto &childSp)
+                           { return std::weak_ptr<UiItemBase>(childSp); });
         }
 
         void UiCanvas::OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition)
@@ -302,33 +310,72 @@ namespace EngineCore
             if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition))
             {
                 mWasHoveredLastFrame = true;
-                const auto &sortedChildren = GetChildrenWithDescendingZOrder();
-                for (const auto &child : sortedChildren)
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
                 {
-                    child->OnMousePositionChanged(mouseCursorPosition);
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        childSp->OnMousePositionChanged(mouseCursorPosition);
+                    }
                 }
             }
             else if (mWasHoveredLastFrame)
             {
                 mWasHoveredLastFrame = false;
-                const auto &sortedChildren = GetChildrenWithDescendingZOrder();
-                for (const auto &child : sortedChildren)
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
                 {
-                    child->OnMousePositionChanged(mouseCursorPosition);
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        childSp->OnMousePositionChanged(mouseCursorPosition);
+                    }
                 }
             }
         }
 
         void UiCanvas::OnMouseReleased(const glm::ivec2 &mouseCursorPosition)
         {
+            if (mMouseButtonWasPressedLastFrame)
+            {
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
+                {
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        childSp->OnMouseReleased(mouseCursorPosition);
+                    }
+                }
+            }
+
+            mMouseButtonWasPressedLastFrame = false;
         }
 
         void UiCanvas::OnMousePressed(const glm::ivec2 &mouseCursorPosition)
         {
+            const auto &boundingArea = GetBoundingArea();
+            if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition))
+            {
+                mMouseButtonWasPressedLastFrame = true;
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
+                {
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        childSp->OnMousePressed(mouseCursorPosition);
+                    }
+                }
+            }
         }
 
         void UiCanvas::OnMouseClicked(const glm::ivec2 &mouseCursorPosition)
         {
+            const auto &boundingArea = GetBoundingArea();
+            if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), mouseCursorPosition))
+            {
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
+                {
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        childSp->OnMouseClicked(mouseCursorPosition);
+                    }
+                }
+            }
         }
     }
 }

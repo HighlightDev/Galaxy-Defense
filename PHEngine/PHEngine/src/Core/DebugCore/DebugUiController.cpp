@@ -1,11 +1,14 @@
 #include "DebugUiController.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/GameCore/GUI/UiElements/UiRectangle.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -48,27 +51,57 @@ namespace EngineCore
                 mCanvas = uiHandler->CreateCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));
                 mCanvas->InitializeInputSystem();
                 mCanvas->SetIsVisible(false);
-                const auto &image = std::make_shared<UiImage>(mCanvas, mCanvas);
-                mCanvas->AddUiItem(image);
+
+                const auto &rectangleBackground = std::make_shared<UiRectangle>(mCanvas, mCanvas);
+                mCanvas->AddUiItem(rectangleBackground);
+                rectangleBackground->SetColor(glm::vec4(0.94f, 0.968f, 0.709f, 1.0f));
+                rectangleBackground->SetWidth(imageHeight + (imageMargin * 2));
+                rectangleBackground->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
+                rectangleBackground->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
+                rectangleBackground->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
+                rectangleBackground->SetZOrder(1);
+
+                const auto &image = std::make_shared<UiImage>(mCanvas, rectangleBackground);
+                rectangleBackground->AddUiItem(image);
                 image->SetHeight(imageHeight);
                 image->SetWidth(imageHeight);
-                image->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
-                image->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
+                image->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
+                image->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());
+                image->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
                 image->SetAnchorMargin(eUiAnchor::LEFT, imageMargin);
                 image->SetAnchorMargin(eUiAnchor::TOP, imageMargin);
+                image->SetAnchorMargin(eUiAnchor::RIGHT, imageMargin);
                 image->SetOpacity(1);
-                image->SetZOrder(1);
+                image->SetZOrder(2);
 
-                const auto &image1 = std::make_shared<UiImage>(mCanvas, mCanvas);
-                mCanvas->AddUiItem(image1);
+                const auto &image1 = std::make_shared<UiImage>(mCanvas, rectangleBackground);
+                rectangleBackground->AddUiItem(image1);
                 image1->SetHeight(imageHeight);
                 image1->SetWidth(imageHeight);
-                image1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
+                image1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
                 image1->SetAnchor(eUiAnchor::TOP, eUiAnchor::BOTTOM, image->GetName());
+                image1->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
                 image1->SetAnchorMargin(eUiAnchor::LEFT, imageMargin);
                 image1->SetAnchorMargin(eUiAnchor::TOP, imageMargin);
+                image1->SetAnchorMargin(eUiAnchor::RIGHT, imageMargin);
                 image1->SetOpacity(1);
-                image1->SetZOrder(1);
+                image1->SetZOrder(2);
+
+                const auto &nextPoolsArrowImage = std::make_shared<UiImage>(mCanvas, rectangleBackground);
+                rectangleBackground->AddUiItem(nextPoolsArrowImage);
+                nextPoolsArrowImage->SetHeight(imageHeight / 2);
+                nextPoolsArrowImage->SetWidth(imageHeight / 2);
+                nextPoolsArrowImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());
+                nextPoolsArrowImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::RIGHT, rectangleBackground->GetName());
+                nextPoolsArrowImage->SetAnchorMargin(eUiAnchor::TOP, 35);
+                nextPoolsArrowImage->SetAnchorMargin(eUiAnchor::LEFT, 35);
+                nextPoolsArrowImage->SetOpacity(1);
+                nextPoolsArrowImage->SetZOrder(2);
+                nextPoolsArrowImage->SetTextureSrc("arrow_right_1.png");
+
+                const auto &arrowMouseInputReceiver = std::make_shared<UiMouseInputReceiver>();
+                arrowMouseInputReceiver->SetMouseClickedCallback(std::bind(&DebugUiController::OnNextPoolButtonClicked, this, std::placeholders::_1));
+                nextPoolsArrowImage->SetMouseInputReceiver(arrowMouseInputReceiver);
 
                 mImages.emplace_back(image);
                 mImages.emplace_back(image1);
@@ -109,10 +142,30 @@ namespace EngineCore
 
         std::shared_ptr<ITexture> DebugUiController::GetNextRenderTargetTexture() const
         {
-            const size_t totalCount = RenderTargetPool::GetInstance()->GetResourcesCount();
-            mRenderTargetIndex = mRenderTargetIndex > (totalCount - 1) ? 0 : mRenderTargetIndex;
+            if (!mPoolNum)
+            {
+                const size_t totalCount = RenderTargetPool::GetInstance()->GetResourcesCount();
+                mRenderTargetIndex = mRenderTargetIndex > (totalCount - 1) ? 0 : mRenderTargetIndex;
 
-            return RenderTargetPool::GetInstance()->GetRenderTargetAt(mRenderTargetIndex++);
+                return RenderTargetPool::GetInstance()->GetRenderTargetAt(mRenderTargetIndex++);
+            }
+            else
+            {
+                const size_t totalCount = TexturePool::GetInstance()->GetResourcesCount();
+                mRenderTargetIndex = mRenderTargetIndex > (totalCount - 1) ? 0 : mRenderTargetIndex;
+
+                return TexturePool::GetInstance()->GetTextureAt(mRenderTargetIndex++);
+            }
+        }
+
+        void DebugUiController::OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition)
+        {
+            mRenderTargetIndex = 0;
+            mPoolNum = !mPoolNum;
+            for (const auto &image : mImages)
+            {
+                image->SetTexture(GetNextRenderTargetTexture());
+            }
         }
     }
 }
