@@ -32,11 +32,12 @@ namespace EngineCore
         mTimerInstances.erase(removeIt);
     }
 
-    void GameThreadTimersHolder::UpdateTimers()
+    void GameThreadTimersHolder::Tick(const float deltaSeconds)
     {
+        const float deltaMilliseconds = deltaSeconds * 1000.0f;
         for (const auto &timer : mTimerInstances)
         {
-            timer->TimerPulse();
+            timer->TimerPulse(deltaMilliseconds);
         }
     }
 
@@ -45,7 +46,7 @@ namespace EngineCore
     GameThreadTimer::GameThreadTimer()
         : m_instanceId(s_instanceId++),
           m_intervalMs(0),
-          m_startTimerTime(),
+          m_timerTimeMilliseconds(0.0f),
           m_isRepeat(false),
           m_isRunning(false)
     {
@@ -62,11 +63,11 @@ namespace EngineCore
         return m_instanceId;
     }
 
-    void GameThreadTimer::TimerPulse()
+    void GameThreadTimer::TimerPulse(const float deltaMilliseconds)
     {
         if (m_isRunning)
         {
-            if (EngineTime::GetMillisecondsFromDuration(EngineTime::GetPassedDuration(m_startTimerTime)) >= (double)m_intervalMs)
+            if (m_timerTimeMilliseconds >= (float)m_intervalMs)
             {
                 mCallback();
                 if (m_isRepeat)
@@ -78,6 +79,7 @@ namespace EngineCore
                     StopTimer();
                 }
             }
+            m_timerTimeMilliseconds += deltaMilliseconds;
         }
     }
 
@@ -95,7 +97,7 @@ namespace EngineCore
     {
         assert(mCallback);
         m_isRunning = true;
-        m_startTimerTime = EngineTime::GetNowTime();
+        m_timerTimeMilliseconds = 0.0f;
     }
 
     void GameThreadTimer::RestartTimer()

@@ -45,8 +45,40 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityIVec4(color, mColor))
             {
                 mColor = color;
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
+        }
+
+        void UiRectangle::SetColor(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+        {
+            static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
+            glm::vec4 color = glm::vec4(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(a) * INV_COLOR_MAX_BYTE_VALUE);
+            SetColor(color);
+        }
+
+        void UiRectangle::OnPropertiesShouldBeUpdatedOnRenderThread()
+        {
+            UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+
+            SyncDataOnRenderThread();
+        }
+
+        void UiRectangle::SetColor(const uint32_t hexColor)
+        {
+            static constexpr auto mask_a = 0xFF;
+            static constexpr auto mask_b = 0xFF << 0x8;
+            static constexpr auto mask_g = 0xFF << 0x10;
+            static constexpr auto mask_r = 0xFF << 0x18;
+
+            const uint8_t r = (mask_r & hexColor) >> 0x18;
+            const uint8_t g = (mask_g & hexColor) >> 0x10;
+            const uint8_t b = (mask_b & hexColor) >> 0x8;
+            const uint8_t a = mask_a & hexColor;
+
+            SetColor(r, g, b, a);
         }
 
         glm::vec4 UiRectangle::GetColor() const

@@ -60,13 +60,19 @@ namespace EngineCore
             mTexture = texturePool->GetOrAllocateResource(mTextureSrc);
         }
 
+        void UiImage::OnPropertiesShouldBeUpdatedOnRenderThread()
+        {
+            UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+            SyncDataOnRenderThread();
+        }
+
         void UiImage::SetTextureSrc(const std::string &textureSrc)
         {
             if (mTextureSrc != textureSrc)
             {
                 mTextureSrc = textureSrc;
                 ReallocateTexture();
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
@@ -80,7 +86,7 @@ namespace EngineCore
             }
 
             mTexture = texture;
-            SyncDataOnRenderThread();
+            SetIsPropertiesShouldBeUpdated(true);
         }
 
         std::string UiImage::GetTextureSrc() const
@@ -98,7 +104,7 @@ namespace EngineCore
             if (glm::abs(mOpacity - opacity) > EngineMath::ENGINE_FLOAT_EPSILON)
             {
                 mOpacity = opacity;
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 

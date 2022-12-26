@@ -6,6 +6,7 @@
 #include "Core/GameCore/LevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/CommonCore/TimeHelper.h"
+#include "Core/GameCore/Event/PauseGameThreadEvent.h"
 
 #include <thread>
 #include <chrono>
@@ -19,6 +20,7 @@ namespace EngineCore
    class SoundDevice;
 
    class Engine
+       : public Event::PauseGameThreadEvent
    {
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -32,12 +34,13 @@ namespace EngineCore
 
       std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
-   private:
       std::thread m_gameThread;
 
       float mRenderThreadDeltaTimeSeconds;
 
       float mGameThreadDeltaTimeSeconds;
+
+      std::atomic_bool bPauseGameThreadExecution{false};
 
    public:
       Engine(InterThreadCommunicationMgr &interThreadMgr);
@@ -55,6 +58,8 @@ namespace EngineCore
       void PostPlayLevelFinished();
 
       void ProcessEvents(Event::eExecutionOrder order);
+
+      void ProcessEvent(const PauseGameThreadEvent::EventData_t& data) override;
 
       void GameThreadPulse();
 

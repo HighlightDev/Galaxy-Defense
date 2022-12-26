@@ -46,6 +46,8 @@ namespace EngineCore
 
             bool mIsTransformDirty;
 
+            bool mIsPropertiesShouldBeUpdatedOnRenderThread{false};
+
             std::unique_ptr<UiInputSystem> mInputSystem;
 
             bool mWasHoveredLastFrame{false};
@@ -92,6 +94,8 @@ namespace EngineCore
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
 
             virtual void Tick(const float deltaTime) override;
+
+            virtual void UnpausableTick(const float deltaTime) override;
 
             std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 

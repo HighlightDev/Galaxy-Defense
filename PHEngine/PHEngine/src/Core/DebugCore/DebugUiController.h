@@ -1,13 +1,16 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
+#include "Core/ResourceManagerCore/Pool/ITextureObtainable.h"
 
 using namespace EngineCore::GUI;
 using namespace Graphics::Texture;
+using namespace Resources;
 
 namespace EngineCore
 {
@@ -26,11 +29,13 @@ namespace EngineCore
 
             std::unique_ptr<InputComponent> mInputComponent;
 
-            mutable size_t mRenderTargetIndex{0};
+            mutable size_t mTextureIndex{0};
 
             float mPressButtonCooldown;
 
-            bool mPoolNum{false};
+            size_t mPoolIndex{0};
+
+            std::vector<std::shared_ptr<ITextureObtainable>> mPools;
 
         public:
             DebugUiController();
@@ -39,12 +44,14 @@ namespace EngineCore
 
             virtual void Tick(const float deltaTime) override;
 
+            virtual void UnpausableTick(const float deltaTime) override;
+
             void PostPlayLevelFinished();
 
         private:
             void Init();
 
-            std::shared_ptr<ITexture> GetNextRenderTargetTexture() const;
+            std::shared_ptr<ITexture> GetNextTexture() const;
 
             void OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition);
         };

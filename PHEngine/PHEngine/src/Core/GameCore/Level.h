@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/GUI/Text/TextField.h"
@@ -10,6 +11,7 @@ using namespace Thread;
 namespace EngineCore
 {
    class Level
+       : public ITickable
    {
 #ifdef DEBUG
       std::shared_ptr<Actor> mDebugDummyActor;
@@ -18,12 +20,10 @@ namespace EngineCore
 #endif
 
    protected:
-
       std::shared_ptr<Scene> mScene;
 
    public:
-
-      Level(InterThreadCommunicationMgr& interThreadMgr);
+      Level(InterThreadCommunicationMgr &interThreadMgr);
 
       virtual ~Level();
 
@@ -32,18 +32,20 @@ namespace EngineCore
       std::weak_ptr<Scene> GetSceneWP() const;
 
       virtual void PreLevelInit();
-      
+
       virtual void InitLevel();
 
       virtual void PostLevelInit();
 
       virtual void PostPlayLevelFinished();
 
-      virtual void TickLevel(const float deltaTime);
+      void Tick(const float deltaTime) override final;
 
-      void SerializeLevel(const std::string& pathToFolder);
+      void UnpausableTick(const float deltaTime) override final;
 
-      void DeserializeLevel(const std::string& pathToFile);
+      void SerializeLevel(const std::string &pathToFolder);
+
+      void DeserializeLevel(const std::string &pathToFile);
 
 #ifdef DEBUG
 
@@ -54,10 +56,8 @@ namespace EngineCore
 #endif
 
    private:
+      void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer &container);
 
-      void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer& container);
-
-      void CollectAllocatedResourcesForSerialization(struct SerializeDataContainer& container);
+      void CollectAllocatedResourcesForSerialization(struct SerializeDataContainer &container);
    };
 }
-

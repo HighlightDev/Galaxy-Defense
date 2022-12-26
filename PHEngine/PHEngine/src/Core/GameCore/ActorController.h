@@ -23,6 +23,8 @@ namespace EngineCore
 
         virtual void Tick(float deltaTime) = 0;
 
+        virtual void UnpausableTick(const float deltaTime) override {};
+
         std::shared_ptr<Actor> GetBindedActor() const;
 
         std::string GetBindedActorName() const;

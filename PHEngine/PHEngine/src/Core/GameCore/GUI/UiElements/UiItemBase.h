@@ -64,6 +64,8 @@ namespace EngineCore
 
             bool mIsTransformDirty;
 
+            bool mIsPropertiesShouldBeUpdatedOnRenderThread;
+
             std::shared_ptr<IUiMouseInputReceivable> mMouseInputReceiver;
 
         public:
@@ -112,6 +114,8 @@ namespace EngineCore
 
             virtual void Tick(const float deltaTime) override;
 
+            virtual void UnpausableTick(const float deltaTime) override;
+
             bool IsTransformDependentToUiItem(const std::string &uiItemName) const;
 
             void GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems);
@@ -127,10 +131,14 @@ namespace EngineCore
             void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
             void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
 
+            virtual void OnPropertiesShouldBeUpdatedOnRenderThread();
+
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
             void SetChildrenIsVisible(const bool isVisible);
+
+            void SetIsPropertiesShouldBeUpdated(const bool update);
 
         private:
             void TransformChanged();

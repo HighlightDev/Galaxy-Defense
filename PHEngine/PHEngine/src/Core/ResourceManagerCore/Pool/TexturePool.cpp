@@ -1,21 +1,21 @@
 #include "TexturePool.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Resources
 {
+   std::shared_ptr<TexturePool> TexturePool::m_instance;
 
-   std::unique_ptr<TexturePool> TexturePool::m_instance;
-
-   std::shared_ptr<ITexture> TexturePool::GetTextureAt(size_t index) const
+   std::shared_ptr<ITexture> TexturePool::GetTextureAt(const size_t index) const
    {
-      std::shared_ptr<ITexture> result(nullptr);
-      if (index < resourceMap.size())
-      {
-         resourceMap_t::const_iterator startIt = resourceMap.begin();
-         std::advance(startIt, index);
-         result = startIt->second;
-      }
+      assert(index < resourceMap.size());
+      resourceMap_t::const_iterator startIt = resourceMap.begin();
+      std::advance(startIt, index);
+      return startIt->second;
+   }
 
-      return result;
+   size_t TexturePool::GetTexturesCount() const
+   {
+      return GetResourcesCount();
    }
 
    std::string TexturePool::ToString() const
@@ -23,10 +23,10 @@ namespace Resources
       return "TexturePool";
    }
 
-   std::unique_ptr<TexturePool> &TexturePool::GetInstance()
+   std::shared_ptr<TexturePool> TexturePool::GetInstance()
    {
       if (!m_instance)
-         m_instance = std::move(std::make_unique<TexturePool>());
+         m_instance = std::make_shared<TexturePool>();
 
       return m_instance;
    }

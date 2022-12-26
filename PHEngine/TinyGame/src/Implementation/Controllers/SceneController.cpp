@@ -94,4 +94,10 @@ namespace Game
         mCombatController->Tick(deltaTime);
         mUiController->Tick(deltaTime);
     }
+
+    void SceneController::UnpausableTick(const float deltaTime)
+    {
+        mCombatController->UnpausableTick(deltaTime);
+        mUiController->UnpausableTick(deltaTime);
+    }
 }

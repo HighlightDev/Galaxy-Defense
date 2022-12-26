@@ -32,6 +32,8 @@ namespace Graphics
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void UnpausableTick(const float deltaTime) override {};
+
       virtual void SetIsEnabled(const bool bIsEnabled) override;
 
       void SetScene(std::weak_ptr<EngineCore::Scene> scene);

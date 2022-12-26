@@ -27,6 +27,8 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
+        virtual void UnpausableTick(const float deltaTime) override{};
+
         virtual bool IsExpired() const override;
 
         virtual void OnPreRemoved() override;

@@ -39,6 +39,8 @@ namespace EngineCore
 
             virtual void Tick(const float deltaTime) override;
 
+            virtual void UnpausableTick(const float deltaTime) override;
+
         private:
             void OnMousePressedTimerTimeout();
         };

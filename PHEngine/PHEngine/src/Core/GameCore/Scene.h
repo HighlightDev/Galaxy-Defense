@@ -53,7 +53,9 @@ namespace EngineCore
    struct ComponentData;
 
    class Scene : public GameObject,
+                 public ITickable,
                  public std::enable_shared_from_this<Scene>
+
    {
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
@@ -103,6 +105,10 @@ namespace EngineCore
       void PostPhysicsInitialize();
 
       void PostPlayLevelFinished();
+
+      void Tick(const float deltaTime) override;
+
+      void UnpausableTick(const float deltaTime) override;
 
       void RegisterCamera(std::shared_ptr<ACamera> camera);
 

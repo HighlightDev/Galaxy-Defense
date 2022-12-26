@@ -1,0 +1,18 @@
+#pragma once
+
+#include "Core/GameCore/Event/TEvent.h"
+
+namespace Event
+{
+   struct PauseGameThreadEvent
+      : public TEvent<SingleDataEventPolicy<bool>>
+   {
+   public:
+      using Event_t = TEvent<SingleDataEventPolicy<bool>>::Event_t;
+
+      virtual std::string ToString() const override {
+         return "PauseGameThreadEvent";
+      }
+   };
+
+}

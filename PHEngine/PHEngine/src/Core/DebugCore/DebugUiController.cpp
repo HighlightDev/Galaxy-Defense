@@ -12,7 +12,6 @@
 
 using namespace EngineCore;
 using namespace IO;
-using namespace Resources;
 using namespace Graphics;
 
 namespace EngineCore
@@ -40,6 +39,10 @@ namespace EngineCore
 
         void DebugUiController::Init()
         {
+            mPools.reserve(2);
+            mPools.emplace_back(RenderTargetPool::GetInstance());
+            mPools.emplace_back(TexturePool::GetInstance());
+
             if (const auto &sceneSp = mSceneWp.lock())
             {
                 const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
@@ -110,6 +113,10 @@ namespace EngineCore
 
         void DebugUiController::Tick(const float deltaTime)
         {
+        }
+
+        void DebugUiController::UnpausableTick(const float deltaTime)
+        {
             const auto &keyboardBindings = mInputComponent->GetKeyboardBindings();
             static constexpr float buttonCooldown = 0.5f;
 
@@ -131,7 +138,7 @@ namespace EngineCore
                         }
                         for (const auto &image : mImages)
                         {
-                            image->SetTexture(GetNextRenderTargetTexture());
+                            image->SetTexture(GetNextTexture());
                         }
                     }
                 }
@@ -140,31 +147,26 @@ namespace EngineCore
             mPressButtonCooldown += deltaTime;
         }
 
-        std::shared_ptr<ITexture> DebugUiController::GetNextRenderTargetTexture() const
+        std::shared_ptr<ITexture> DebugUiController::GetNextTexture() const
         {
-            if (!mPoolNum)
-            {
-                const size_t totalCount = RenderTargetPool::GetInstance()->GetResourcesCount();
-                mRenderTargetIndex = mRenderTargetIndex > (totalCount - 1) ? 0 : mRenderTargetIndex;
+            const auto &activePool = mPools[mPoolIndex];
+            const auto totalCount = activePool->GetTexturesCount();
+            mTextureIndex = mTextureIndex > (totalCount - 1) ? 0 : mTextureIndex;
 
-                return RenderTargetPool::GetInstance()->GetRenderTargetAt(mRenderTargetIndex++);
-            }
-            else
-            {
-                const size_t totalCount = TexturePool::GetInstance()->GetResourcesCount();
-                mRenderTargetIndex = mRenderTargetIndex > (totalCount - 1) ? 0 : mRenderTargetIndex;
-
-                return TexturePool::GetInstance()->GetTextureAt(mRenderTargetIndex++);
-            }
+            return activePool->GetTextureAt(mTextureIndex++);
         }
 
         void DebugUiController::OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition)
         {
-            mRenderTargetIndex = 0;
-            mPoolNum = !mPoolNum;
+            mTextureIndex = 0;
+            if ((++mPoolIndex) >= mPools.size())
+            {
+                mPoolIndex = 0;
+            }
+
             for (const auto &image : mImages)
             {
-                image->SetTexture(GetNextRenderTargetTexture());
+                image->SetTexture(GetNextTexture());
             }
         }
     }

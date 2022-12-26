@@ -91,7 +91,7 @@ namespace EngineCore
       {
          actor->PostPlayLevelFinished();
       }
-      
+
       mDebugUiController->PostPlayLevelFinished();
    }
 
@@ -785,7 +785,7 @@ namespace EngineCore
    }
 #endif
 
-   void Scene::Tick_GameThread(float delta)
+   void Scene::Tick(const float delta)
    {
       mGameThreadDeltaSec->SetValue(delta);
 
@@ -823,6 +823,42 @@ namespace EngineCore
 #endif
 
       mUiHandler->Tick(delta);
+   }
+
+   void Scene::UnpausableTick(const float deltaTime)
+   {
+      mPhysicsWorld->UnpausableTick(deltaTime);
+
+      for (const auto &cameraPtr : mActiveCameras)
+      {
+         cameraPtr->UnpausableTick(deltaTime);
+      }
+
+      for (auto &actor : mActors)
+      {
+         actor->UnpausableTick(deltaTime);
+      }
+
+      for (const auto &actorController : mActorControllers)
+      {
+         actorController->UnpausableTick(deltaTime);
+      }
+
+      for (auto &dynamicMaterial : mDynamicMaterials)
+      {
+         dynamicMaterial->UnpausableTick(deltaTime);
+      }
+
+      for (auto &externalTickable : mExternalTickableObjects)
+      {
+         externalTickable->UnpausableTick(deltaTime);
+      }
+
+#if DEBUG
+      mDebugUiController->UnpausableTick(deltaTime);
+#endif
+
+      mUiHandler->UnpausableTick(deltaTime);
    }
 
    void Scene::RemoveComponent(std::shared_ptr<Component> component)

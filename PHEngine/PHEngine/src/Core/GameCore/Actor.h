@@ -65,6 +65,8 @@ namespace EngineCore
       // Tick is executed on game thread
       virtual void Tick(const float deltaTime) override;
 
+      virtual void UnpausableTick(const float deltaTime) override {};
+
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       virtual void ChangeTweenerState(const std::string &tweenerName, const std::string &stateName);

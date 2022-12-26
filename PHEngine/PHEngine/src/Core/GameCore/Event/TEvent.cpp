@@ -23,10 +23,12 @@ namespace Event
    template class TEvent<SingleDataEventPolicy<eMouseScrollDirection>>;
    template class TEvent<SingleDataEventPolicy<std::vector<MouseKeysData>>>;
    template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EulerAnglesTransform>>;
+   template class TEvent<SingleDataEventPolicy<bool>>;
 
    template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
    template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>;
    template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>;
+
 }

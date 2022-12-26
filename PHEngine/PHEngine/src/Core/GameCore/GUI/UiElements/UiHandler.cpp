@@ -25,11 +25,11 @@ namespace EngineCore
 
         std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize)
         {
-            const auto& ownerSp = mOwner.lock();
+            const auto &ownerSp = mOwner.lock();
             assert(ownerSp);
             const auto &newCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
             LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
-            const auto& canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
+            const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
             ownerSp->RegisterUiCanvasProxy_OnRenderThread(canvasSceneProxy);
             newCanvas->SetScene(mOwner);
             mUiCanvases.emplace_back(newCanvas);
@@ -38,9 +38,17 @@ namespace EngineCore
 
         void UiHandler::Tick(const float deltaTime)
         {
-            for (const auto& canvas : mUiCanvases)
+            for (const auto &canvas : mUiCanvases)
             {
                 canvas->Tick(deltaTime);
+            }
+        }
+
+        void UiHandler::UnpausableTick(const float deltaTime)
+        {
+            for (const auto &canvas : mUiCanvases)
+            {
+                canvas->UnpausableTick(deltaTime);
             }
         }
     }

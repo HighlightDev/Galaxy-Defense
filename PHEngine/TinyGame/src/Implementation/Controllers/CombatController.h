@@ -73,6 +73,8 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
+        virtual void UnpausableTick(const float deltaTime) override {};
+
         void SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController);
 
     protected:

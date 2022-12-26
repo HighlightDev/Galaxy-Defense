@@ -39,6 +39,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
+	src/Implementation/Ui/PauseMenuUi.h
 )
 
 set(
@@ -75,6 +76,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
+	src/Implementation/Ui/PauseMenuUi.cpp
     main.cpp
 )
 

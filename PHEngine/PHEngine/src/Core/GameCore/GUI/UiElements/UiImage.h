@@ -44,6 +44,8 @@ namespace EngineCore
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
+            void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+
         protected:
             virtual void OnRegistered() override;
 

@@ -28,6 +28,10 @@ namespace EngineCore
 
         void UiInputSystem::Tick(const float deltaTime)
         {
+        }
+
+        void UiInputSystem::UnpausableTick(const float deltaTime)
+        {
             auto &mouseBindings = mInputComponent->GetMouseBindings();
 
             if (const auto &ownerSp = mOwnerWp.lock())

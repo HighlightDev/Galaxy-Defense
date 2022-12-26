@@ -1,21 +1,21 @@
 #include "RenderTargetPool.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Resources
 {
+   std::shared_ptr<RenderTargetPool> RenderTargetPool::m_instance;
 
-   std::unique_ptr<RenderTargetPool> RenderTargetPool::m_instance;
-
-   std::shared_ptr<ITexture> RenderTargetPool::GetRenderTargetAt(size_t index) const
+   std::shared_ptr<ITexture> RenderTargetPool::GetTextureAt(const size_t index) const
    {
-      std::shared_ptr<ITexture> result(nullptr);
-      if (index < resourceMap.size())
-      {
-         resourceMap_t::const_iterator startIt = resourceMap.begin();
-         std::advance(startIt, index);
-         result = startIt->second;
-      }
+      assert(index < resourceMap.size());
+      resourceMap_t::const_iterator startIt = resourceMap.begin();
+      std::advance(startIt, index);
+      return startIt->second;
+   }
 
-      return result;
+   size_t RenderTargetPool::GetTexturesCount() const
+   {
+      return GetResourcesCount();
    }
 
    std::string RenderTargetPool::ToString() const
@@ -23,11 +23,10 @@ namespace Resources
       return "RenderTargetPool";
    }
 
-   std::unique_ptr<RenderTargetPool> &RenderTargetPool::GetInstance()
+   std::shared_ptr<RenderTargetPool> RenderTargetPool::GetInstance()
    {
-
       if (!m_instance)
-         m_instance = std::make_unique<RenderTargetPool>();
+         m_instance = std::make_shared<RenderTargetPool>();
 
       return m_instance;
    }

@@ -51,6 +51,8 @@ namespace EngineCore
 
       virtual void Tick(const float deltaTime) override;
 
+      virtual void UnpausableTick(const float deltaTime) override {};
+
       virtual void SetIsEnabled(const bool bEnabled);
 
       virtual void OnPostInitialized();

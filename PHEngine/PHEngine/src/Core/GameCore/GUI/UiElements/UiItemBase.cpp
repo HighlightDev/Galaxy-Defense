@@ -33,7 +33,8 @@ namespace EngineCore
               mParentCanvas(parentCanvas),
               mChildren(),
               mIsVisible(true),
-              mIsTransformDirty(true)
+              mIsTransformDirty(true),
+              mIsPropertiesShouldBeUpdatedOnRenderThread(false)
         {
         }
 
@@ -96,7 +97,7 @@ namespace EngineCore
             if (mZOrder != zOrder)
             {
                 mZOrder = zOrder;
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
@@ -129,7 +130,7 @@ namespace EngineCore
             {
                 mIsVisible = isVisible;
                 SetChildrenIsVisible(mIsVisible);
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
@@ -256,6 +257,11 @@ namespace EngineCore
             mIsTransformDirty = isDirty;
         }
 
+        void UiItemBase::SetIsPropertiesShouldBeUpdated(const bool update)
+        {
+            mIsPropertiesShouldBeUpdatedOnRenderThread = update;
+        }
+
         void UiItemBase::SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver)
         {
             mMouseInputReceiver = inputReceiver;
@@ -278,7 +284,7 @@ namespace EngineCore
                 LogInfo("UiItemBase::RebuildNormalizedTransform => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin,
                         " mWidth: ", mWidth, " mHeight: ", mHeight, " rootWidth: ", rootWidth, " rootHeight: ", rootHeight);
 
-                SyncDataOnRenderThread();
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
@@ -511,7 +517,7 @@ namespace EngineCore
         {
         }
 
-        void UiItemBase::Tick(const float deltaTime)
+        void UiItemBase::UnpausableTick(const float deltaTime)
         {
             if (mIsTransformDirty)
             {
@@ -519,10 +525,25 @@ namespace EngineCore
                 mIsTransformDirty = false;
             }
 
+            if (mIsPropertiesShouldBeUpdatedOnRenderThread)
+            {
+                OnPropertiesShouldBeUpdatedOnRenderThread();
+                mIsPropertiesShouldBeUpdatedOnRenderThread = false;
+            }
+
             for (const auto &child : mChildren)
             {
-                child->Tick(deltaTime);
+                child->UnpausableTick(deltaTime);
             }
+        }
+
+        void UiItemBase::Tick(const float deltaTime)
+        {
+        }
+
+        void UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread()
+        {
+            SyncDataOnRenderThread();
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const

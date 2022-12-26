@@ -22,8 +22,8 @@ namespace Game
 
     public:
         GravityModifier(const std::weak_ptr<SpaceshipActor> &owner,
-                          const std::weak_ptr<MissileActor> &missile,
-                          const glm::vec3 &gravityCenterPosition);
+                        const std::weak_ptr<MissileActor> &missile,
+                        const glm::vec3 &gravityCenterPosition);
 
         virtual eModifierType GetModifierType() const override;
 
@@ -31,11 +31,12 @@ namespace Game
 
         virtual void Tick(const float deltaTime) override;
 
+        virtual void UnpausableTick(const float deltaTime) override{};
+
         virtual bool IsExpired() const override;
 
         virtual void OnPreRemoved() override;
 
         void SetGravityPower(const float power);
-
     };
 }

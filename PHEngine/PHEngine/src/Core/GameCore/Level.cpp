@@ -99,9 +99,14 @@ namespace EngineCore
 #endif
    }
 
-   void Level::TickLevel(const float deltaTime)
+   void Level::Tick(const float deltaTime)
    {
-      mScene->Tick_GameThread(deltaTime);
+      mScene->Tick(deltaTime);
+   }
+
+   void Level::UnpausableTick(const float deltaTime)
+   {
+      mScene->UnpausableTick(deltaTime);
    }
 
    std::weak_ptr<Scene> Level::GetSceneWP() const

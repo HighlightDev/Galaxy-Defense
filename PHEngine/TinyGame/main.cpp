@@ -95,18 +95,18 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
       {GLFW_KEY_LEFT_ALT, eKeyboardKeys::Alt},
       {GLFW_KEY_RIGHT_ALT, eKeyboardKeys::Alt}};
 
+  if (key == ESCAPE_KEY)
+  {
+    // bPollEvents = false;
+    key = static_cast<int32_t>(eKeyboardKeys::Escape);
+  }
+
   if (actionType == GLFW_PRESS)
   {
     if (key == 'R' || key == 'p')
     {
       bShaderRecompile = true;
     }
-
-    else if (key == ESCAPE_KEY)
-    {
-      bPollEvents = false;
-    }
-
     else if (key == 'M' || key == 'm')
     {
       bSerializeLevel = true;

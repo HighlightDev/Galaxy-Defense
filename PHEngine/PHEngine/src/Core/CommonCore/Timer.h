@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TimeHelper.h"
+#include "Core/GameCore/ITickable.h"
 
 #include <memory>
 #include <vector>
@@ -12,6 +12,7 @@ namespace EngineCore
     class GameThreadTimer;
 
     class GameThreadTimersHolder
+        : public ITickable
     {
     private:
         std::vector<GameThreadTimer *> mTimerInstances;
@@ -25,7 +26,9 @@ namespace EngineCore
 
         void UnregisterTimerInstance(GameThreadTimer *instance);
 
-        void UpdateTimers();
+        void Tick(const float deltaSeconds) override;
+
+        void UnpausableTick(const float deltaTime) override{};
     };
 
     class GameThreadTimer
@@ -38,7 +41,7 @@ namespace EngineCore
 
         size_t m_intervalMs;
 
-        Moment_t m_startTimerTime;
+        float m_timerTimeMilliseconds;
 
         bool m_isRepeat;
 
@@ -72,7 +75,7 @@ namespace EngineCore
         bool IsRunning() const;
 
     protected:
-        virtual void TimerPulse();
-    }; 
+        virtual void TimerPulse(const float deltaMilliseconds);
+    };
 
 }

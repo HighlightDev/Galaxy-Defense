@@ -114,7 +114,7 @@ namespace EngineCore
             if (mIsVisible != isVisible)
             {
                 mIsVisible = isVisible;
-                SyncDataOnRenderThread();
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
             }
         }
 
@@ -202,25 +202,34 @@ namespace EngineCore
             mChildren.erase(it);
         }
 
-        void UiCanvas::Tick(const float deltaTime)
+        void UiCanvas::UnpausableTick(const float deltaTime)
         {
             if (mIsTransformDirty)
             {
                 UpdateAnchorTransform();
                 UpdateDependentChildrenAnchorTransform();
-                SyncDataOnRenderThread();
                 mIsTransformDirty = false;
+            }
+
+            if (mIsPropertiesShouldBeUpdatedOnRenderThread)
+            {
+                SyncDataOnRenderThread();
+                mIsPropertiesShouldBeUpdatedOnRenderThread = false;
             }
 
             for (const auto &child : mChildren)
             {
-                child->Tick(deltaTime);
+                child->UnpausableTick(deltaTime);
             }
 
-            if (mInputSystem)
+            if (mInputSystem && mIsVisible)
             {
-                mInputSystem->Tick(deltaTime);
+                mInputSystem->UnpausableTick(deltaTime);
             }
+        }
+
+        void UiCanvas::Tick(const float deltaTime)
+        {
         }
 
         std::shared_ptr<UiCanvasSceneProxy> UiCanvas::CreateUiCanvasSceneProxy() const
@@ -254,6 +263,7 @@ namespace EngineCore
 
         void UiCanvas::UpdateAnchorTransform()
         {
+            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
         }
 
         void UiCanvas::UpdateDependentChildrenAnchorTransform()

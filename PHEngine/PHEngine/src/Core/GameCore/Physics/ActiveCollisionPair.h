@@ -28,6 +28,8 @@ namespace EnginePhysics
 
         virtual void Tick(const float deltaTime) override;
 
+        virtual void UnpausableTick(const float deltaTime) override {};
+
         uint32_t GetFirstCollisionBodyId() const;
         uint32_t GetSecondCollisionBodyId() const;
 

@@ -15,6 +15,7 @@
 #include "Core/AudioCore/SoundDevice.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/Event/PauseGameThreadEvent.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -33,10 +34,12 @@ namespace EngineCore
          mRenderThreadDeltaTimeSeconds(),
          mGameThreadDeltaTimeSeconds()
    {
+      PauseGameThreadEvent::GetInstance()->AddListener(this);
    }
 
    Engine::~Engine()
    {
+      PauseGameThreadEvent::GetInstance()->RemoveListener(this);
    }
 
    void Engine::CleanUp()
@@ -105,7 +108,8 @@ namespace EngineCore
                                  MouseButtonDownEvent,
                                  PhysicsCollisionEvent,
                                  TextRegisterEvent,
-                                 TextDataChangedEvent>();
+                                 TextDataChangedEvent,
+                                 PauseGameThreadEvent>();
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
@@ -134,6 +138,11 @@ namespace EngineCore
    float sumRtFramesTime = 0.0f;
    float sumGtFramesTime = 0.0f;
 
+   void Engine::ProcessEvent(const PauseGameThreadEvent::EventData_t &data)
+   {
+      bPauseGameThreadExecution.store(std::get<0>(data));
+   }
+
    void Engine::GameThreadPulse()
    {
       ThreadHelper::GetInstance()->RegisterThread("Game");
@@ -150,11 +159,16 @@ namespace EngineCore
             /* Work Jobs */
             m_interThreadMgr.SpinGameThreadJobs();
 
-            GameThreadTimersHolder::GetInstance()->UpdateTimers();
+            if (!bPauseGameThreadExecution.load())
+            {
+               GameThreadTimersHolder::GetInstance()->Tick(mGameThreadDeltaTimeSeconds);
+               m_level->Tick(mGameThreadDeltaTimeSeconds);
+            }
 
-            // This should be executed on game thread
-            m_level->TickLevel(mGameThreadDeltaTimeSeconds);
+            m_level->UnpausableTick(mGameThreadDeltaTimeSeconds);
 
+            /* Events: post execution */
+            ProcessEvents(Event::eExecutionOrder::POST_EXECUTION);
 #ifdef DEBUG
             if (gtCounter == 1000)
             {
@@ -166,9 +180,6 @@ namespace EngineCore
             sumGtFramesTime += mGameThreadDeltaTimeSeconds;
             ++gtCounter;
 #endif
-
-            /* Events: post execution */
-            ProcessEvents(Event::eExecutionOrder::POST_EXECUTION);
 
             mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
                 EngineTime::GetPassedDuration(gtStartTimePoint));
