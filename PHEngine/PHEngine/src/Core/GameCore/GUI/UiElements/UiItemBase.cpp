@@ -264,7 +264,11 @@ namespace EngineCore
 
         void UiItemBase::SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver)
         {
-            mMouseInputReceiver = inputReceiver;
+            if (const auto &canvasSp = mParentCanvas.lock())
+            {
+                assert(canvasSp->IsInputSystemInitialized());
+                mMouseInputReceiver = inputReceiver;
+            }
         }
 
         void UiItemBase::RebuildNormalizedTransform()

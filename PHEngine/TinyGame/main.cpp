@@ -21,7 +21,6 @@ bool bShaderRecompile = false;
 bool bSerializeLevel = false;
 bool bDeserializeLevel = false;
 
-bool bPollEvents = true;
 bool bShowCursor = true;
 bool bMouseButtonPressed = false;
 
@@ -97,7 +96,6 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
 
   if (key == ESCAPE_KEY)
   {
-    // bPollEvents = false;
     key = static_cast<int32_t>(eKeyboardKeys::Escape);
   }
 
@@ -200,7 +198,7 @@ int32_t main(int32_t argc, char **argv)
 
     engine.PlayLevel(level);
     // Loop until the user closes the window
-    while (!glfwWindowShouldClose(window) && bPollEvents)
+    while (!glfwWindowShouldClose(window) && !engine.IsExitGameState())
     {
       engine.TickWindow();
       // Swap front and back buffers

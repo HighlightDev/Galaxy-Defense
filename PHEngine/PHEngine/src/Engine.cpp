@@ -16,6 +16,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
+#include "Core/GameCore/Event/ExitGameThreadEvent.h"
 
 #include <TinyLogger/LogInterface.h>
 
@@ -26,7 +27,6 @@ using namespace Resources;
 
 namespace EngineCore
 {
-
    Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
        : m_interThreadMgr(interThreadMgr),
          mInputManager(std::make_shared<InputManager>()),
@@ -35,11 +35,13 @@ namespace EngineCore
          mGameThreadDeltaTimeSeconds()
    {
       PauseGameThreadEvent::GetInstance()->AddListener(this);
+      ExitGameThreadEvent::GetInstance()->AddListener(this);
    }
 
    Engine::~Engine()
    {
       PauseGameThreadEvent::GetInstance()->RemoveListener(this);
+      ExitGameThreadEvent::GetInstance()->RemoveListener(this);
    }
 
    void Engine::CleanUp()
@@ -109,7 +111,8 @@ namespace EngineCore
                                  PhysicsCollisionEvent,
                                  TextRegisterEvent,
                                  TextDataChangedEvent,
-                                 PauseGameThreadEvent>();
+                                 PauseGameThreadEvent,
+                                 ExitGameThreadEvent>();
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
@@ -141,6 +144,12 @@ namespace EngineCore
    void Engine::ProcessEvent(const PauseGameThreadEvent::EventData_t &data)
    {
       bPauseGameThreadExecution.store(std::get<0>(data));
+   }
+
+   void Engine::ProcessEvent(const ExitGameThreadEvent::EventData_t &data)
+   {
+      bExitGame = true;
+      StopGameThreadExecution();
    }
 
    void Engine::GameThreadPulse()
@@ -229,6 +238,11 @@ namespace EngineCore
    float Engine::GetGameThreadDeltaTime() const
    {
       return mGameThreadDeltaTimeSeconds;
+   }
+
+   bool Engine::IsExitGameState() const
+   {
+      return bExitGame;
    }
 
 #if DEBUG

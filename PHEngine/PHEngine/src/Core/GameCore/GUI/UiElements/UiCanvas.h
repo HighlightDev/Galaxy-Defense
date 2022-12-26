@@ -80,6 +80,7 @@ namespace EngineCore
             bool IsVisible() const override;
             BoundingBox2D GetBoundingArea() const override;
             bool IsTransformDirty() const override;
+            bool IsInputSystemInitialized() const;
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;

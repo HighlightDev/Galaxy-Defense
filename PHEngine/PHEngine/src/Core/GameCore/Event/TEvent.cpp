@@ -31,4 +31,6 @@ namespace Event
    template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>;
    template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>;
 
+   template class TEvent<NoDataEventPolicy>;
+
 }

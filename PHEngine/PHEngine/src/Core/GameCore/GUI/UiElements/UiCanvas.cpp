@@ -53,6 +53,11 @@ namespace EngineCore
             return mIsTransformDirty;
         }
 
+        bool UiCanvas::IsInputSystemInitialized() const
+        {
+            return mInputSystem != nullptr;
+        }
+
         std::weak_ptr<Scene> UiCanvas::GetScene() const
         {
             return mScene;

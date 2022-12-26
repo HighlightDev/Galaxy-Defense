@@ -35,5 +35,12 @@ namespace Game
         void UnpausableTick(const float deltaTime) override;
 
         bool IsVisible() const;
+
+    private:
+        void OnContinueButtonClicked(const glm::ivec2 &mouseCursorPosition);
+
+        void OnExitToMainMenuButtonClicked(const glm::ivec2 &mouseCursorPosition);
+
+        void OnExitGameButtonClicked(const glm::ivec2 &mouseCursorPosition);
     };
 }

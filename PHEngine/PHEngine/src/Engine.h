@@ -7,6 +7,7 @@
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
+#include "Core/GameCore/Event/ExitGameThreadEvent.h"
 
 #include <thread>
 #include <chrono>
@@ -20,7 +21,8 @@ namespace EngineCore
    class SoundDevice;
 
    class Engine
-       : public Event::PauseGameThreadEvent
+       : public Event::PauseGameThreadEvent,
+         public Event::ExitGameThreadEvent
    {
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -42,6 +44,8 @@ namespace EngineCore
 
       std::atomic_bool bPauseGameThreadExecution{false};
 
+      bool bExitGame{false};
+
    public:
       Engine(InterThreadCommunicationMgr &interThreadMgr);
 
@@ -59,7 +63,9 @@ namespace EngineCore
 
       void ProcessEvents(Event::eExecutionOrder order);
 
-      void ProcessEvent(const PauseGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const PauseGameThreadEvent::EventData_t &data) override;
+
+      void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
 
       void GameThreadPulse();
 
@@ -74,6 +80,8 @@ namespace EngineCore
       float GetGameThreadDeltaTime() const;
 
       InterThreadCommunicationMgr &GetThreadCommunicationManager();
+
+      bool IsExitGameState() const;
 
 #if DEBUG
 
