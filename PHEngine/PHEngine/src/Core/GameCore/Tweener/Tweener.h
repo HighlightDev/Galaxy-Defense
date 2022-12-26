@@ -51,11 +51,11 @@ namespace EngineCore
 
       void ChangeState(const std::string& dstStateName);
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override {};
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       void SubscribeOnStateChange(ITweenStateChangeNotifyable* observer);
 

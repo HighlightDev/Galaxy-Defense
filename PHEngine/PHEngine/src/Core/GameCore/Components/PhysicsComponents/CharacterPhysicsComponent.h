@@ -16,11 +16,11 @@ namespace EnginePhysics {
 
       CharacterPhysicsComponent(const PhysicsComponentData& data);
 
-      virtual ~CharacterPhysicsComponent();
+      ~CharacterPhysicsComponent() override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       void SetWalkVelocity(const glm::vec3& velocity);
 

@@ -17,7 +17,7 @@ namespace TinyLogger
       : public LoggerClientBase
    {
    public:
-      virtual void WriteLog(const std::string& message) override
+      void WriteLog(const std::string& message) override
       {
          std::cout << message << std::endl;
       }
@@ -47,7 +47,7 @@ namespace TinyLogger
 
    public:
 
-      virtual void WriteLog(const std::string& message) override
+      void WriteLog(const std::string& message) override
       {
          WriteToFile(message);
       }

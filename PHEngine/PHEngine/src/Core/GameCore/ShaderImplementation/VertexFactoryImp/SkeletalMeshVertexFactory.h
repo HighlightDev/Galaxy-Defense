@@ -32,7 +32,7 @@ namespace EngineCore
         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "SkeletalMeshVertexFactory.glsl");
      }
 
-     virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override
+     void AccessAllUniformLocations(uint32_t shaderProgramID) override
      {
         u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
         u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
@@ -53,7 +53,7 @@ namespace EngineCore
            u_boneMatrices.LoadUniform(index, skinningMatrices[index]);
      }
 
-     virtual void SetShaderPredefine() override
+     void SetShaderPredefine() override
      {
         DefineConstant<int32_t>("MaxBones", (int32_t)MaxBones);
         DefineConstant<int32_t>("MaxWeights", (int32_t)MaxWeightsIndices);

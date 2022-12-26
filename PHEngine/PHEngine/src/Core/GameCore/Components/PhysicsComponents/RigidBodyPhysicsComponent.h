@@ -18,11 +18,11 @@ namespace EnginePhysics {
 
       RigidBodyPhysicsComponent(const PhysicsComponentData& data);
 
-      virtual ~RigidBodyPhysicsComponent();
+      ~RigidBodyPhysicsComponent() override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
    };
 }

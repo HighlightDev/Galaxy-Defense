@@ -29,7 +29,7 @@ namespace Event
    public:
       using Event = ParentEvent_t::Event_t;
 
-      virtual std::string ToString() const override {
+      std::string ToString() const override {
          return "PhysicsCollisionEvent";
       }
    };

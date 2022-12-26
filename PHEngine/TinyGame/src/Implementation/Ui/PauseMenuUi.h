@@ -32,7 +32,7 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        virtual void UnpausableTick(const float deltaTime) override;
+        void UnpausableTick(const float deltaTime) override;
 
         bool IsVisible() const;
     };

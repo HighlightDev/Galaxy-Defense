@@ -30,16 +30,16 @@ namespace Game
     public:
         UiController(const std::weak_ptr<::EngineCore::Scene> &scene);
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void UnpausableTick(const float deltaTime) override;
+        void UnpausableTick(const float deltaTime) override;
 
-        virtual void OnPreLevelInit() override;
+        void OnPreLevelInit() override;
 
-        virtual void OnLevelInit() override;
+        void OnLevelInit() override;
 
-        virtual void OnPostLevelInit() override;
+        void OnPostLevelInit() override;
 
-        virtual void PostPlayLevelFinished() override;
+        void PostPlayLevelFinished() override;
     };
 }

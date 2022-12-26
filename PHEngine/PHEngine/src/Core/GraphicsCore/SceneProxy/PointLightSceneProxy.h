@@ -24,9 +24,9 @@ namespace Graphics
          
          PointLightSceneProxy(const PointLightComponent* component);
 
-         virtual ~PointLightSceneProxy();
+         ~PointLightSceneProxy() override;
 
-         virtual void PostLevelInit() override;
+         void PostLevelInit() override;
 
          glm::vec3 GetPosition() const;
 
@@ -34,11 +34,11 @@ namespace Graphics
 
          float GetRadianceRadius() const;
 
-         virtual LightSceneProxyType GetLightProxyType() const override;
+         LightSceneProxyType GetLightProxyType() const override;
 
          ProjectedPointLightShadowInfo* GetProjectedPointShadowInfo();
 
-         virtual ProjectedShadowInfo* GetShadowInfo() override;
+         ProjectedShadowInfo* GetShadowInfo() override;
        
       };
 

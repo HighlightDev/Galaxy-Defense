@@ -17,11 +17,11 @@ namespace Graphics
 
      virtual ~MaterialBinaryOperationNode();
 
-     virtual eMaterialNodeType GetMaterialNodeType()  const override;
+     eMaterialNodeType GetMaterialNodeType()  const override;
 
-     virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
+     void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
-     virtual float TraverseGraph() override;
+     float TraverseGraph() override;
 
      virtual float DoOperation(const float& left, const float& right) = 0;
    };

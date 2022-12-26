@@ -25,24 +25,24 @@ namespace EngineCore
 
       DirectionalLightComponent(const LightComponentData& lightComponentData);
 
-      virtual ~DirectionalLightComponent();
+      ~DirectionalLightComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       std::shared_ptr<DirectionalLightRenderData> GetRenderData() const;
 
-      virtual void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
+      void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
    protected:
 
-      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 
    private:
 

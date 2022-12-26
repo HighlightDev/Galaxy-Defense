@@ -20,13 +20,13 @@ namespace EngineCore
     public:
         StreamingSoundComponent(const ComponentData &data);
 
-        virtual ~StreamingSoundComponent() override;
+        ~StreamingSoundComponent() override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+        void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-        virtual eComponentType GetComponentType() const override;
+        eComponentType GetComponentType() const override;
 
         void CreateStreamingSoundSource(const std::string &soundFileName);
 

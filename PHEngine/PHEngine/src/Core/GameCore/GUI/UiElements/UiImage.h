@@ -47,9 +47,9 @@ namespace EngineCore
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
         protected:
-            virtual void OnRegistered() override;
+            void OnRegistered() override;
 
-            virtual void OnUnregistered() override;
+            void OnUnregistered() override;
 
         private:
             void SyncDataOnRenderThread();

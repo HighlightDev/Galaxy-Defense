@@ -20,9 +20,9 @@ namespace Graphics
 
          SpotlightSceneProxy(const SpotlightComponent* component);
 
-         virtual ~SpotlightSceneProxy();
+         ~SpotlightSceneProxy() override;
 
-         virtual void PostLevelInit() override;
+         void PostLevelInit() override;
 
          glm::vec3 GetDirection() const;
 
@@ -30,11 +30,11 @@ namespace Graphics
 
          float GetCutoff() const;
 
-         virtual LightSceneProxyType GetLightProxyType() const override;
+         LightSceneProxyType GetLightProxyType() const override;
 
          ProjectedSpotlightShadowInfo* GetProjectedSpotLightShadowInfo();
 
-         virtual ProjectedShadowInfo* GetShadowInfo() override;
+         ProjectedShadowInfo* GetShadowInfo() override;
 
       };
 

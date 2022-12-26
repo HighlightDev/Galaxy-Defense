@@ -30,11 +30,11 @@ namespace Graphics
 
             ~UiRectangleSceneProxy() override;
 
-            virtual void Render() override;
+            void Render() override;
 
             void SetColor(const glm::vec4& color);
 
-            virtual void CleanUp() override;
+            void CleanUp() override;
         };
     }
 }

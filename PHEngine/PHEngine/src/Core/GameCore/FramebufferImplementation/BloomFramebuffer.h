@@ -29,15 +29,15 @@ namespace EngineCore
          // Buffer should be recreated when window size was changed
          BloomFramebuffer(const ViewPortInfo &viewPortInfo);
 
-         virtual ~BloomFramebuffer();
+         ~BloomFramebuffer() override;
 
-         virtual void SetTextures() override;
+         void SetTextures() override;
 
-         virtual void SetFramebuffers() override;
+         void SetFramebuffers() override;
 
-         virtual void SetRenderbuffers() override;
+         void SetRenderbuffers() override;
 
-         virtual void CleanUp() override;
+         void CleanUp() override;
 
          void BindColor1Framebuffer();
          void BindColor2Framebuffer();

@@ -39,7 +39,7 @@ namespace Event
          return &m_instance;
       }
 
-      virtual std::string ToString() const override
+      std::string ToString() const override
       {
          return "TEvent";
       }
@@ -50,7 +50,7 @@ namespace Event
          mPolicy[(int32_t)order].EmplaceData(std::forward<DataTypesT>(data)...);
       }
 
-      virtual void ProcessCachedEvents(const eExecutionOrder currentOrder) override
+      void ProcessCachedEvents(const eExecutionOrder currentOrder) override
       {
          while (mPolicy[currentOrder].HasData())
          {

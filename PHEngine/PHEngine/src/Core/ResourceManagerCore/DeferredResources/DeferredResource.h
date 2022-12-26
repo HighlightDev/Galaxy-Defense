@@ -91,7 +91,7 @@ namespace Resources
          return mResourceFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
       }
 
-      virtual eResourceType GetResourceType() const override
+      eResourceType GetResourceType() const override
       {
          return resourceType;
       }

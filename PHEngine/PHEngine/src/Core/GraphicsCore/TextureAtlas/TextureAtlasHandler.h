@@ -71,7 +71,7 @@ namespace Graphics
          return mTextureAtlasOffset;
       }
 
-      virtual void NotifyTextureAtlasBuilded() override
+      void NotifyTextureAtlasBuilded() override
       {
          CalculatePosOffsetShadowMapAtlas();
       }
@@ -107,7 +107,7 @@ namespace Graphics
          m_texType = eTextureType::TEXTURE_CUBE;
       }
 
-      virtual void NotifyTextureAtlasBuilded() override
+      void NotifyTextureAtlasBuilded() override
       {
       }
 

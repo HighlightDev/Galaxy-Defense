@@ -26,9 +26,9 @@ namespace EnginePhysics
 
         explicit ActiveCollisionPair(const PhysicsDescriptor *collisionBody1, const PhysicsDescriptor *collisionBody2);
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void UnpausableTick(const float deltaTime) override {};
+        void UnpausableTick(const float deltaTime) override {};
 
         uint32_t GetFirstCollisionBodyId() const;
         uint32_t GetSecondCollisionBodyId() const;

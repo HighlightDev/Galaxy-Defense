@@ -8,6 +8,6 @@ namespace Graphics
 
       virtual eMaterialOperationType GetMaterialOperationType() const;
 
-      virtual float DoOperation(const float& value) override;
+      float DoOperation(const float& value) override;
    };
 }

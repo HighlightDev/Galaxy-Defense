@@ -30,25 +30,25 @@ namespace EngineCore
 
       ~FirstPersonCamera();
 
-      virtual void Tick(const float DeltaTime) override;
+      void Tick(const float DeltaTime) override;
 
-      virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
 
-      virtual glm::vec3 GetEyeVector() const override;
+      glm::vec3 GetEyeVector() const override;
 
-      virtual glm::vec3 GetTargetVector() const override;
+      glm::vec3 GetTargetVector() const override;
 
-      virtual glm::vec3 GetLocalSpaceUpVector() const override;
+      glm::vec3 GetLocalSpaceUpVector() const override;
 
-      virtual std::string GetCameraTypeName() const override;
+      std::string GetCameraTypeName() const override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       void MoveCamera(int32_t direction);
 
       float GetCameraMoveSpeed() const;
 
-      virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) override;
+      void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) override;
    };
 
 }

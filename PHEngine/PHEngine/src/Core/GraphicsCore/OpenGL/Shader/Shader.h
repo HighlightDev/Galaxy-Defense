@@ -62,9 +62,9 @@ namespace Graphics
 
          ShaderParams GetShaderParams() const;
 
-         virtual void ProcessAllPredefines() override;
+         void ProcessAllPredefines() override;
 #if DEBUG
-         virtual void RecompileShader() override;
+         void RecompileShader() override;
 #endif
       };
    }

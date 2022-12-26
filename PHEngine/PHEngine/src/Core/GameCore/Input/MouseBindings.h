@@ -36,11 +36,11 @@ namespace EngineCore
 
       virtual ~MouseBindings();
 
-      virtual void ProcessEvent(const typename MouseMovedEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseMovedEvent::EventData_t &data) override;
 
-      virtual void ProcessEvent(const typename MouseScrollEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseScrollEvent::EventData_t &data) override;
 
-      virtual void ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data) override;
 
       bool IsMouseMoveEventDirty() const;
 

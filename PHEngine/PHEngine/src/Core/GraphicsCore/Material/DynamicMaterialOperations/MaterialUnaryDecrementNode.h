@@ -6,8 +6,8 @@ namespace Graphics
    struct MaterialUnaryDecrementNode
       : public MaterialUnaryOperationNode {
 
-      virtual eMaterialOperationType GetMaterialOperationType() const override;
+      eMaterialOperationType GetMaterialOperationType() const override;
 
-      virtual float DoOperation(const float& value) override;
+      float DoOperation(const float& value) override;
    };
 }

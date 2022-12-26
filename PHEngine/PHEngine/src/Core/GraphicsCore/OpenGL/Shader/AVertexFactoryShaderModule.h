@@ -22,16 +22,16 @@ namespace Graphics
       protected:
          void Init();
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void ProcessAllPredefines() override;
+         void ProcessAllPredefines() override;
 
          virtual bool AssembleShaderSource();
 
          virtual std::shared_ptr<Shader> GetBaseShader() const = 0;
 
 #if DEBUG
-         virtual void RecompileShader() override;
+         void RecompileShader() override;
 #endif
       };
    }

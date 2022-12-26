@@ -23,11 +23,11 @@ namespace Graphics
 
       ProjectedDirectionalLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource, const float shadowOrthoHalfExtent);
 
-      virtual ~ProjectedDirectionalLightShadowInfo();
+      ~ProjectedDirectionalLightShadowInfo() override;
 
-      virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
+      void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      virtual void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
 
       glm::mat4 GetShadowViewMatrix() const;
 

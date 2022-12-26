@@ -10,6 +10,6 @@ namespace EngineCore
     public:
        ILifeTimeModule();
 
-       virtual eParticleModuleType GetParticleModuleType() const override;
+       eParticleModuleType GetParticleModuleType() const override;
     };
 }

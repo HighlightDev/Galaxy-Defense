@@ -29,15 +29,15 @@ namespace EngineCore
 
       PlatformTraverseComponent(const PlatformTraverseComponentData& data);
 
-      virtual ~PlatformTraverseComponent();
+      ~PlatformTraverseComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual void PostLevelInit() override;
+      void PostLevelInit() override;
 
       const std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>>& GetMovementPoints() const;
 

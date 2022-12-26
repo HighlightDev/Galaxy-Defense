@@ -27,18 +27,17 @@ namespace EngineCore
 
       CubemapComponent(const CubemapComponentData& data, const CubemapRenderData& renderData);
 
-      virtual ~CubemapComponent();
+      ~CubemapComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
       inline const CubemapRenderData& GetRenderData() const {
-
          return m_renderData;
       }
    };

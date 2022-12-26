@@ -24,15 +24,15 @@ namespace EngineCore
             u_transparencyDepth, u_mistEnable, u_mistDensity,
             u_mistGradient, u_mistColour, u_bEnableSun;
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
 
       public:
 
          WaterPlaneShader(const ShaderParams& params);
 
-         virtual ~WaterPlaneShader();
+         ~WaterPlaneShader() override;
 
          void SetTransformationMatrices(glm::mat4& modelMatrix, glm::mat4& viewMatrix, glm::mat4& projectionMatrix);
 

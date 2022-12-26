@@ -26,12 +26,12 @@ namespace Graphics {
       {
       }
 
-      virtual eMaterialPropertyType GetPropertyType() const override
+      eMaterialPropertyType GetPropertyType() const override
       {
          return MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY;
       }
 
-      virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
+      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override
       {
          int32_t slot = 10 + propertyIndex;
          if (m_value)

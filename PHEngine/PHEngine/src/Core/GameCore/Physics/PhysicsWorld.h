@@ -40,7 +40,7 @@ namespace EnginePhysics
 
       void Tick(const float deltaTime);
 
-      virtual void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override {};
 
       void PostPhysicsSimulationUpdate(const float deltaTime);
 
@@ -59,6 +59,6 @@ namespace EnginePhysics
 #endif
 
    protected:
-      virtual void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t &data) override;
+      void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t &data) override;
    };
 }

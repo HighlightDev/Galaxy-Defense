@@ -25,13 +25,13 @@ namespace EngineCore
 
          CapturePlanarReflectionShader(const ShaderParams& params);
 
-         virtual ~CapturePlanarReflectionShader();
+         ~CapturePlanarReflectionShader() override;
 
          void SetClipPlane(const glm::vec4& plane);
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
 
       };
    }

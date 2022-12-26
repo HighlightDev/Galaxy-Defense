@@ -18,8 +18,8 @@ namespace Graphics
 
       MainCameraSceneProxy(const class ACamera* camera);
 
-      virtual ~MainCameraSceneProxy();
+      ~MainCameraSceneProxy() override;
 
-      virtual eCameraSceneProxyType GetCameraSceneType() const override;
+      eCameraSceneProxyType GetCameraSceneType() const override;
    };
 }

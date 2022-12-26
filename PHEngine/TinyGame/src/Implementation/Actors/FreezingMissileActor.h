@@ -20,14 +20,14 @@ namespace Game
     public:
         FreezingMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        virtual void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position) override;
 
-        virtual void TriggerExplosion() override;
+        void TriggerExplosion() override;
 
-        virtual void TriggerExplosionFinished() override;
+        void TriggerExplosionFinished() override;
 
-        virtual void TriggerDisabled() override;
+        void TriggerDisabled() override;
 
-        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
+        std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
     };
 }

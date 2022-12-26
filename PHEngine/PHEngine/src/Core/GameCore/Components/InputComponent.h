@@ -21,12 +21,12 @@ namespace EngineCore
 
       virtual ~InputComponent();
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
       // Game thread tick
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       std::vector<eKeyActionType> GetReleasedKeyActions();
 

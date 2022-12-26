@@ -18,8 +18,8 @@ namespace Game
     public:
         AsteroidActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        virtual void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position) override;
 
-        virtual void TriggerDisabled() override;
+        void TriggerDisabled() override;
     };
 }

@@ -23,13 +23,13 @@ namespace EngineCore
 
         virtual void Tick(float deltaTime) = 0;
 
-        virtual void UnpausableTick(const float deltaTime) override {};
+        void UnpausableTick(const float deltaTime) override {};
 
         std::shared_ptr<Actor> GetBindedActor() const;
 
         std::string GetBindedActorName() const;
 
-        virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+        void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
         virtual void InitActorController();
     };

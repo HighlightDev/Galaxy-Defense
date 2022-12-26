@@ -40,7 +40,7 @@ namespace EngineCore {
          return mGoProperty->GetValue();
       }
 
-      virtual eBindingType GetBindingType() const override
+      eBindingType GetBindingType() const override
       {
          return eBindingType::FloatScalar;
       }

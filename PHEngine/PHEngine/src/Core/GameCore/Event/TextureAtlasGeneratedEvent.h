@@ -15,7 +15,7 @@ namespace Event
    public:
       using Event_t = TEvent<MultipleDataEventPolicy<eTextureType>>::Event_t;
 
-      virtual std::string ToString() const override {
+      std::string ToString() const override {
          return "TextureAtlasGeneratedEvent";
       }
    };

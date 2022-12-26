@@ -28,19 +28,19 @@ namespace EnginePhysics
       GhostController(class PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const float mass, const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
                       const int32_t collisionFilterMask = btBroadphaseProxy::AllFilter);
 
-      virtual ~GhostController();
+      ~GhostController() override;
 
-      virtual void CompletePhysicsDescriptorConstruction() override;
+      void CompletePhysicsDescriptorConstruction() override;
 
-      virtual void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) override;
+      void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) override;
 
-      virtual void SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation) override;
+      void SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation) override;
 
-      virtual void PostPhysicsSimulationUpdate(const float deltaTime) override;
+      void PostPhysicsSimulationUpdate(const float deltaTime) override;
 
-      virtual void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
+      void SetIsCollisionEnabled(const bool isCollisionEnabled) override;
 
-      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
+      ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
    private:
       void ParseGhostContacts();

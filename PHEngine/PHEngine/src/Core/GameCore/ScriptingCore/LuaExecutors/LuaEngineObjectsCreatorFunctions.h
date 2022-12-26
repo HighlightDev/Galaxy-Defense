@@ -30,9 +30,9 @@ namespace EngineCore
 
          ~LuaEngineObjectsCreatorFunctions();
 
-         virtual void RegisterCallbacks() override;
+         void RegisterCallbacks() override;
 
-         virtual void RunScript() override;
+         void RunScript() override;
 
          // Common callbacks
          /* -------------------  Load asynchronously resources by names ----------------------------*/

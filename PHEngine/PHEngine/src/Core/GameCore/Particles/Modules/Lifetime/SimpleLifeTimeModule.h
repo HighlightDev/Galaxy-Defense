@@ -12,10 +12,10 @@ namespace EngineCore
     public:
         SimpleLifeTimeModule();
 
-        virtual void Update(Particle &particle, const float deltaTime) override;
+        void Update(Particle &particle, const float deltaTime) override;
 
         void SetLifeTime(const float lifeTime);
 
-        virtual void OnEmitParticles() override;
+        void OnEmitParticles() override;
     };
 }

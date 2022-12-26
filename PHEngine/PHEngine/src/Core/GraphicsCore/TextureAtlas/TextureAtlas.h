@@ -42,7 +42,7 @@ namespace Graphics
 
       std::map<size_t, TextureAtlasCell> Cells;
 
-      virtual void AllocateReservedMemory() override;
+      void AllocateReservedMemory() override;
 
       void ShrinkReservedMemory();
 
@@ -61,7 +61,7 @@ namespace Graphics
 
       std::pair<size_t, std::tuple<glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2, glm::ivec2>> m_sizes;
 
-      virtual void AllocateReservedMemory() override;
+      void AllocateReservedMemory() override;
 
    public:
 

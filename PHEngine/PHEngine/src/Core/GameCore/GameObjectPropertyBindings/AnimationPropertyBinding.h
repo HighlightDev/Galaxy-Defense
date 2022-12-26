@@ -122,7 +122,7 @@ namespace EngineCore
          bPropertyConnected = true;
       }
 
-      virtual eBindingType GetBindingType() const override
+      eBindingType GetBindingType() const override
       {
          return eBindingType::Animation;
       }

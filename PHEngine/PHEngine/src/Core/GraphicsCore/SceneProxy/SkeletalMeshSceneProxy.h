@@ -36,7 +36,7 @@ namespace Graphics
       public:
          SkeletalMeshSceneProxy(const SkeletalMeshComponent *component);
 
-         virtual ~SkeletalMeshSceneProxy();
+         ~SkeletalMeshSceneProxy() override;
 
          virtual void Render(const glm::mat4 &viewMatrix,
                              const glm::mat4 &projectionMatrix) override;
@@ -60,13 +60,13 @@ namespace Graphics
                                   const size_t srcAnimationIndex,
                                   const size_t dstAnimationIndex);
 
-         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
+         ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
          const std::vector<glm::mat4> &GetSkinningMatrices() const;
 
          virtual bool IsDeferred() const;
 
-         virtual eMeshFacing GetMeshFrontFace() const override;
+         eMeshFacing GetMeshFrontFace() const override;
       };
 
    }

@@ -26,13 +26,13 @@ namespace Graphics
 
          DirectionalLightSceneProxy(const DirectionalLightComponent* component);
 
-         virtual ~DirectionalLightSceneProxy();
+         ~DirectionalLightSceneProxy() override;
 
-         virtual void PostLevelInit() override;
+         void PostLevelInit() override;
 
          ProjectedDirectionalLightShadowInfo* GetProjectedDirShadowInfo();
 
-         virtual LightSceneProxyType GetLightProxyType() const override;
+         LightSceneProxyType GetLightProxyType() const override;
 
          virtual ProjectedShadowInfo* GetShadowInfo();
 

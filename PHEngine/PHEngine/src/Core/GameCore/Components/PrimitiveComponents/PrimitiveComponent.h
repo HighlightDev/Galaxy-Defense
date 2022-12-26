@@ -36,19 +36,19 @@ namespace EngineCore
                                const glm::vec3 &scale,
                                const BoundingBox3D &boundingBox);
 
-            virtual ~PrimitiveComponent();
+            ~PrimitiveComponent() override;
 
             virtual void SetIsVisible(bool isVisible);
 
             bool IsVisible() const;
 
-            virtual void SetIsEnabled(const bool bEnabled) override;
+            void SetIsEnabled(const bool bEnabled) override;
 
-            virtual eComponentType GetComponentType() const override;
+            eComponentType GetComponentType() const override;
 
             virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const = 0;
 
-            virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
+            void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
 
             virtual void OnVisibilityChanged();
 

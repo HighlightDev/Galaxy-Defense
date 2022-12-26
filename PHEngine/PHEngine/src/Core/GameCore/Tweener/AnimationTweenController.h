@@ -21,13 +21,13 @@ namespace EngineCore
 
       AnimationTweenController();
 
-      virtual void OnTransitionStarted(const std::shared_ptr<BaseStateProperty>&, const std::shared_ptr<BaseStateProperty>& dstState, const float duration) override;
+      void OnTransitionStarted(const std::shared_ptr<BaseStateProperty>&, const std::shared_ptr<BaseStateProperty>& dstState, const float duration) override;
 
-      virtual void OnTransitionFinished() override;
+      void OnTransitionFinished() override;
 
-      virtual void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
+      void OnTransitionUpdate(const float deltaTime, const float transitionParameter) override;
 
-      virtual void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
+      void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty) override;
 
    private:
 

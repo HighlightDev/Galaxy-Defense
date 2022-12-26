@@ -29,15 +29,15 @@ namespace EngineCore
 
       BillboardComponent(const BillboardComponentData& data, const BillboardRenderData& renderData);
 
-      virtual ~BillboardComponent();
+      ~BillboardComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(float deltaTime) override;
+      void Tick(float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
       void SetBillboardExtent(const float extent);
 

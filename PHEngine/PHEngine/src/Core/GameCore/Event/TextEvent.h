@@ -17,7 +17,7 @@ namespace Event
    public:
       using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>::Event_t;
 
-      virtual std::string ToString() const override {
+      std::string ToString() const override {
          return "TextRegisterEvent";
       }
    };
@@ -28,7 +28,7 @@ namespace Event
    public:
       using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>::Event_t;
 
-      virtual std::string ToString() const override {
+      std::string ToString() const override {
          return "TextDataChangedEvent";
       }
    };

@@ -32,17 +32,17 @@ namespace Graphics
       public:
          StaticMeshSceneProxy(const StaticMeshComponent *component);
 
-         ~StaticMeshSceneProxy();
+         ~StaticMeshSceneProxy() override;
 
-         virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+         void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
-         virtual void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
-         
-         virtual bool IsDeferred() const override;
+         void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+      
+         bool IsDeferred() const override;
 
-         virtual eMeshFacing GetMeshFrontFace() const override;
+         eMeshFacing GetMeshFrontFace() const override;
 
-         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
+         ePrimitiveProxyType GetPrimitiveProxyType() const override;
       };
 
    }

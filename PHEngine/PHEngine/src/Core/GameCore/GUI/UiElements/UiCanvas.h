@@ -67,35 +67,35 @@ namespace EngineCore
 
             void InitializeInputSystem();
 
-            virtual size_t GetUId() const override;
-            virtual const glm::ivec2 &GetAbsoluteOrigin() const override;
-            virtual size_t GetZOrder() const override;
-            virtual size_t GetWidth() const override;
-            virtual size_t GetHeight() const override;
-            virtual glm::vec2 GetNormalizedTranslation() const override;
-            virtual glm::vec2 GetNormalizedScale() const override;
-            virtual std::weak_ptr<IUiTransformable> GetRootParent() const override;
-            virtual std::weak_ptr<IUiTransformable> GetParent() const override;
-            virtual std::string GetName() const override;
-            virtual bool IsVisible() const override;
-            virtual BoundingBox2D GetBoundingArea() const override;
-            virtual bool IsTransformDirty() const override;
+            size_t GetUId() const override;
+            const glm::ivec2 &GetAbsoluteOrigin() const override;
+            size_t GetZOrder() const override;
+            size_t GetWidth() const override;
+            size_t GetHeight() const override;
+            glm::vec2 GetNormalizedTranslation() const override;
+            glm::vec2 GetNormalizedScale() const override;
+            std::weak_ptr<IUiTransformable> GetRootParent() const override;
+            std::weak_ptr<IUiTransformable> GetParent() const override;
+            std::string GetName() const override;
+            bool IsVisible() const override;
+            BoundingBox2D GetBoundingArea() const override;
+            bool IsTransformDirty() const override;
 
-            virtual void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
-            virtual void SetZOrder(const size_t z_order) override;
-            virtual void SetWidth(const size_t width) override;
-            virtual void SetHeight(const size_t height) override;
-            virtual void SetIsVisible(const bool isVisible) override;
+            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
+            void SetZOrder(const size_t z_order) override;
+            void SetWidth(const size_t width) override;
+            void SetHeight(const size_t height) override;
+            void SetIsVisible(const bool isVisible) override;
 
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
-            virtual std::weak_ptr<::EngineCore::Scene> GetScene() const override;
+            std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
 
-            virtual void Tick(const float deltaTime) override;
+            void Tick(const float deltaTime) override;
 
-            virtual void UnpausableTick(const float deltaTime) override;
+            void UnpausableTick(const float deltaTime) override;
 
             std::shared_ptr<::Graphics::Proxy::UiCanvasSceneProxy> CreateUiCanvasSceneProxy() const;
 
@@ -116,11 +116,11 @@ namespace EngineCore
         private:
             void SyncDataOnRenderThread();
 
-            virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
+            void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
 
-            virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
+            void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
-            virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
+            std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
             void SetIsTransformDirty(const bool isDirty);
 

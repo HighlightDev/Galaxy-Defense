@@ -63,26 +63,26 @@ namespace Game
 
         ~CombatController();
 
-        virtual void OnPreLevelInit() override;
+        void OnPreLevelInit() override;
 
-        virtual void OnLevelInit() override;
+        void OnLevelInit() override;
 
-        virtual void OnPostLevelInit() override;
+        void OnPostLevelInit() override;
 
-        virtual void PostPlayLevelFinished() override;
+        void PostPlayLevelFinished() override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void UnpausableTick(const float deltaTime) override {};
+        void UnpausableTick(const float deltaTime) override {};
 
         void SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController);
 
     protected:
-        virtual void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
+        void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
-        virtual void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
 
-        virtual void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
+        void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
 
     private:
         void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);

@@ -38,7 +38,7 @@ namespace EngineCore
    {
       std::string AnimationName;
 
-      virtual eBindingType GetStatePropertyType() const override
+      eBindingType GetStatePropertyType() const override
       {
          return eBindingType::Animation;
       }
@@ -56,7 +56,7 @@ namespace EngineCore
    {
       float Value;
 
-      virtual eBindingType GetStatePropertyType() const override
+      eBindingType GetStatePropertyType() const override
       {
          return eBindingType::FloatScalar;
       }
@@ -75,7 +75,7 @@ namespace EngineCore
       glm::vec3 Value;
       glm::quat QuatValue;
 
-      virtual eBindingType GetStatePropertyType() const override
+      eBindingType GetStatePropertyType() const override
       {
          return eBindingType::EulerAnglesRotation;
       }
@@ -112,7 +112,7 @@ namespace EngineCore
    {
       bool Value;
 
-      virtual eBindingType GetStatePropertyType() const override
+      eBindingType GetStatePropertyType() const override
       {
          return eBindingType::Boolean;
       }
@@ -130,7 +130,7 @@ namespace EngineCore
    {
       glm::vec3 Value;
 
-      virtual eBindingType GetStatePropertyType() const override
+      eBindingType GetStatePropertyType() const override
       {
          return eBindingType::Vec3;
       }

@@ -9,7 +9,7 @@ namespace Graphics
    public:
       MaterialValueNode();
 
-      virtual ~MaterialValueNode();
+      ~MaterialValueNode() override;
 
       enum class eValueType
       {
@@ -17,11 +17,11 @@ namespace Graphics
          PROPERTY
       };
 
-      virtual eMaterialNodeType GetMaterialNodeType() const override;
+      eMaterialNodeType GetMaterialNodeType() const override;
 
       virtual eMaterialOperationType GetMaterialOperationType() const;
 
-      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
+      void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
       virtual eValueType GetValueType() const = 0;
    };

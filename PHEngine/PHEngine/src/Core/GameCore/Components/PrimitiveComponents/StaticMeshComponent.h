@@ -22,21 +22,21 @@ namespace EngineCore
 	public:
 		StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData);
 
-		virtual ~StaticMeshComponent();
+		~StaticMeshComponent() override;
 
-		virtual eComponentType GetComponentType() const override;
+		eComponentType GetComponentType() const override;
 
-		virtual void SetIsEnabled(const bool bEnabled) override;
+		void SetIsEnabled(const bool bEnabled) override;
 
-		virtual void SetIsVisible(bool isVisible) override;
+		void SetIsVisible(bool isVisible) override;
 
-		virtual void Tick(const float deltaTime) override;
+		void Tick(const float deltaTime) override;
 
-		virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+		void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-		virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
-		virtual void PostLevelInit() override;
+		void PostLevelInit() override;
 
 		inline const StaticMeshRenderData &GetRenderData() const
 		{

@@ -14,9 +14,9 @@ namespace Graphics
 
       explicit MaterialConstantFloatValueNode(const float value);
 
-      virtual eValueType GetValueType() const override;
+      eValueType GetValueType() const override;
 
-      virtual float TraverseGraph() override;
+      float TraverseGraph() override;
    };
 }
 

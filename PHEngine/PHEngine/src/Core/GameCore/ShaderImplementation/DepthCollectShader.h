@@ -18,7 +18,7 @@ namespace EngineCore
 
       protected:
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
       public:
 
@@ -30,7 +30,7 @@ namespace EngineCore
          
          void SetWriteDepthLinearly(const bool value);
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
       };
 
    }

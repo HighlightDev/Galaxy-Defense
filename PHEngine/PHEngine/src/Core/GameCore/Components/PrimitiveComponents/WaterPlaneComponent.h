@@ -38,11 +38,11 @@ namespace EngineCore
       WaterPlaneComponent(const WaterPlaneComponentData& data, const WaterPlaneRenderData& renderData,
          WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
 
-      virtual ~WaterPlaneComponent();
+      ~WaterPlaneComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
       
       inline const WaterPlaneRenderData& GetRenderData() const {
 

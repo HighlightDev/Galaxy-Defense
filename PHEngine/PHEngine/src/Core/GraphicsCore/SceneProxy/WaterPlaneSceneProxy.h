@@ -32,15 +32,15 @@ namespace Graphics
 
          WaterPlaneSceneProxy(const WaterPlaneComponent* component);
 
-         virtual ~WaterPlaneSceneProxy();
+         ~WaterPlaneSceneProxy() override;
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          virtual bool IsDeferred() const;
 
-         virtual eMeshFacing GetMeshFrontFace() const override;
+         eMeshFacing GetMeshFrontFace() const override;
 
-         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
+         ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
          void SetMoveFactor(float moveFactor);
          void SetWaveStrength(float waveStr);

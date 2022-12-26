@@ -10,6 +10,6 @@ namespace EngineCore
     public:
         IColorModule();
 
-        virtual eParticleModuleType GetParticleModuleType() const override;
+        eParticleModuleType GetParticleModuleType() const override;
     };
 }

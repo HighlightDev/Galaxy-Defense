@@ -102,12 +102,12 @@ namespace Graphics
 				return m_data;
 			}
 
-			virtual size_t GetElementByteSize() const override
+			size_t GetElementByteSize() const override
 			{
 				return sizeof(DataType);
 			}
 
-			virtual void SendDataToGPU() override
+			void SendDataToGPU() override
 			{
 				const size_t bufferSize = GetElementByteSize() * m_totalDataLength;
 				GenBuffer();
@@ -131,27 +131,27 @@ namespace Graphics
 				m_data.clear();
 			}
 
-			virtual size_t GetCountOfIndices() const override
+			size_t GetCountOfIndices() const override
 			{
 				return m_countOfIndices;
 			}
 
-			virtual size_t GetTotalLengthOfData() const override
+			size_t GetTotalLengthOfData() const override
 			{
 				return m_totalDataLength;
 			}
 
-			virtual size_t GetVectorSize() const override
+			size_t GetVectorSize() const override
 			{
 				return m_vectorSize;
 			}
 
-			virtual size_t GetVertexAttribIndex() const override
+			size_t GetVertexAttribIndex() const override
 			{
 				return m_vertexAttribIndex;
 			}
 
-			virtual void CleanUp() override
+			void CleanUp() override
 			{
 				LogInfo("VertexBufferObject::CleanUp => descriptor = ", m_descriptor);
 				UnbindVBO();

@@ -30,7 +30,7 @@ namespace Graphics
 
 			~TextureMipMap();
 
-			virtual void ExecuteTextureSampleFilteringInstructions() override;
+			void ExecuteTextureSampleFilteringInstructions() override;
 		};
 
 		/************************************************************************/
@@ -49,7 +49,7 @@ namespace Graphics
 
 			~TextureAnisotropy();
 
-			virtual void ExecuteTextureSampleFilteringInstructions() override;
+			void ExecuteTextureSampleFilteringInstructions() override;
 
 		private:
 

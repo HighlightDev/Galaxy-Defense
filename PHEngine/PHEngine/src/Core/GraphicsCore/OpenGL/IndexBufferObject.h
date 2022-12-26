@@ -26,7 +26,7 @@ namespace Graphics
 
 			IndexBufferObject(std::vector<uint32_t>&& indicesData, eDataCarryFlag dataCarryFlag = eDataCarryFlag::INVALIDATE);
 
-			virtual ~IndexBufferObject();
+			~IndexBufferObject() override;
 
 			void GenIndexBuffer();
 
@@ -38,15 +38,15 @@ namespace Graphics
 
 			void CleanUp() override;
 
-			virtual size_t GetCountOfIndices() const override;
+			size_t GetCountOfIndices() const override;
 
-			virtual size_t GetElementByteSize() const override;
+			size_t GetElementByteSize() const override;
 
-			virtual size_t GetTotalLengthOfData() const override;
+			size_t GetTotalLengthOfData() const override;
 
-			virtual size_t GetVectorSize() const override;
+			size_t GetVectorSize() const override;
 
-			virtual size_t GetVertexAttribIndex() const override;
+			size_t GetVertexAttribIndex() const override;
 		};
 	}
 }

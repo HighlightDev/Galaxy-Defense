@@ -32,13 +32,13 @@ namespace Graphics
 
             ~UiImageSceneProxy() override;
 
-            virtual void Render() override;
+            void Render() override;
 
             void SetTexture(const std::shared_ptr<ITexture>& texture);
 
             void SetOpacity(const float opacity);
 
-            virtual void CleanUp() override;
+            void CleanUp() override;
         };
     }
 }

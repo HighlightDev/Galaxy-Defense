@@ -16,7 +16,7 @@ namespace Game
    public:
       GameLevelFactory() = default;
 
-      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const override;
+      std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const override;
 
       static GameLevelFactory* GetInstance();
    };

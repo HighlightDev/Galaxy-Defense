@@ -100,7 +100,7 @@ struct SerializeDataMaterial
       archive(MaterialName, MaterialShaderName, Properties);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Material;
    }
@@ -125,7 +125,7 @@ struct SerializeDataStaticMesh
       archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::StaticMesh;
    }
@@ -151,7 +151,7 @@ struct SerializeDataSkeletalMesh
       archive(ModelName, Translation, Rotation, Scale, LuaScriptName, MeshMaterial);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::SkeletalMesh;
    }
@@ -178,7 +178,7 @@ struct SerializeDataDirLightComponent
       archive(Direction, Rotation, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::DirectionalLight;
    }
@@ -207,7 +207,7 @@ struct SerializeDataPointLightComponent
       archive(Translation, Attenuation, RadianceRadius, AmbientLight, DiffuseLight, SpecularLight, bHasShadowMap, ShadowMapSize);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::PointLight;
    }
@@ -228,7 +228,7 @@ struct SerializeDataSpotlightComponent
       archive(Rotation, Cutoff);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Spotlight;
    }
@@ -248,7 +248,7 @@ struct SerializeDataCharacterMovementComponent
       archive(LaunchDirection, CameraName);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Movement;
    }
@@ -267,7 +267,7 @@ struct SerializeDataPlatformTraverseComponent
       archive(ScriptName);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::PlatformTraverse;
    }
@@ -282,7 +282,7 @@ struct SerializeDataInputComponent
       SerializeDataComponent::serialize(archive);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Input;
    }
@@ -304,7 +304,7 @@ struct SerializeDataBoxPhysicsShape
       archive(HalfExtent);
    }
 
-   virtual int32_t GetShapeProxyType() override
+   int32_t GetShapeProxyType() override
    {
       return BOX_SHAPE_PROXYTYPE;
    }
@@ -322,7 +322,7 @@ struct SerializeDataCapsulePhysicsShape
       archive(Radius, Height);
    }
 
-   virtual int32_t GetShapeProxyType() override
+   int32_t GetShapeProxyType() override
    {
       return CAPSULE_SHAPE_PROXYTYPE;
    }
@@ -339,7 +339,7 @@ struct SerializeDataSpherePhysicsShape
       archive(Radius);
    }
 
-   virtual int32_t GetShapeProxyType() override
+   int32_t GetShapeProxyType() override
    {
       return SPHERE_SHAPE_PROXYTYPE;
    }
@@ -381,7 +381,7 @@ struct SerializeDataCompoundPhysicsShape
       archive(ChildrenWithRotation);
    }
 
-   virtual int32_t GetShapeProxyType() override
+   int32_t GetShapeProxyType() override
    {
       return COMPOUND_SHAPE_PROXYTYPE;
    }
@@ -407,7 +407,7 @@ struct SerializeDataPhysicsComponent
       archive(PhysicsShape, BodyType, LinearFactor, AngularFactor, Mass);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Physics;
    }
@@ -439,7 +439,7 @@ struct SerializeDataTweener
       archive(TweenerRelPath, Bindings);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Tweener;
    }
@@ -461,7 +461,7 @@ struct SerializeDataActor
       archive(ActorName, RootCompTranslation, RootCompRotation, RootCompScale, TweenerData, ComponentsData);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Actor;
    }
@@ -486,7 +486,7 @@ struct SerializeDataCamera
       archive(CameraName, CameraType, ViewPortInfo, InitPitchDeg, InitYawDeg, mPlanarReflectionComponentData);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Camera;
    }
@@ -540,7 +540,7 @@ struct SerializeDataCharacterPhysicsComponent
       archive(CapsuleRadius, CapsuleHeight, Mass, StepHeight);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::CharacterPhysics;
    }
@@ -561,7 +561,7 @@ struct SerializeDataSkyboxComponent
       archive(Scale, Material);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::Skybox;
    }
@@ -584,7 +584,7 @@ struct SerializeDataPlanarReflectionComponent
       archive(Translation, EulerAnglesRotation, Scale, OwnerCameraName, ViewPortInfo);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::PlanarReflection;
    }
@@ -601,7 +601,7 @@ struct SerializeDataPlayerController
       archive(BindedActorName);
    }
 
-   virtual SerializeDataType GetSerializeDataType() const override
+   SerializeDataType GetSerializeDataType() const override
    {
       return SerializeDataBase::SerializeDataType::HumanoidPlayerController;
    }

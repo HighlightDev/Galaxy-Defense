@@ -27,15 +27,15 @@ namespace Graphics
 
          BillboardSceneProxy(const BillboardComponent* component);
 
-         ~BillboardSceneProxy();
+         ~BillboardSceneProxy() override;
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         virtual bool IsDeferred() const override;
+         bool IsDeferred() const override;
 
-         virtual bool IsFrustumCullTestNeeded() const override;
+         bool IsFrustumCullTestNeeded() const override;
 
-         virtual eMeshFacing GetMeshFrontFace() const override;
+         eMeshFacing GetMeshFrontFace() const override;
 
          void SetBillboardExtent(const float extent);
 

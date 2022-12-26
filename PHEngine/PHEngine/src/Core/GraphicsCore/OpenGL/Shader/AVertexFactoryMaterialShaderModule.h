@@ -27,11 +27,11 @@ namespace Graphics
 
       private:
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void ProcessAllPredefines() override;
+         void ProcessAllPredefines() override;
 
-         virtual bool AssembleShaderSource() override;
+         bool AssembleShaderSource() override;
       };
 
    }

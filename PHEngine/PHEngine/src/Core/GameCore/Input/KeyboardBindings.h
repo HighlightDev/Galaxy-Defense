@@ -30,9 +30,9 @@ namespace EngineCore
 
    struct DefaultKeyboardBindings : public IActionBinding
    {
-      virtual eKeyboardKeys GetMappedWithActionKey(eKeyActionType actionType) override;
+      eKeyboardKeys GetMappedWithActionKey(eKeyActionType actionType) override;
 
-      virtual eKeyActionType GetMappedWithKeyAction(eKeyboardKeys key) override;
+      eKeyActionType GetMappedWithKeyAction(eKeyboardKeys key) override;
    };
 
    class KeyboardBindings
@@ -53,7 +53,7 @@ namespace EngineCore
 
       ~KeyboardBindings();
 
-      virtual void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t &data) override;
+      void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t &data) override;
 
       void UpdateKyboardState();
 

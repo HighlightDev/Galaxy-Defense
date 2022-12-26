@@ -19,18 +19,18 @@ namespace Game
     public:
         WeakSpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        virtual void PostLevelInit() override;
+        void PostLevelInit() override;
 
-        virtual void TriggerDamageReceived(const size_t damage) override;
+        void TriggerDamageReceived(const size_t damage) override;
 
-        virtual void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position) override;
 
-        virtual void TriggerExplosion() override;
+        void TriggerExplosion() override;
 
-        virtual void TriggerDisabled() override;
+        void TriggerDisabled() override;
 
     private:
-        virtual void OnTweenStateChanged(const std::string &stateName) override;
+        void OnTweenStateChanged(const std::string &stateName) override;
 
         void InitTweenerSubscriptions();
     };

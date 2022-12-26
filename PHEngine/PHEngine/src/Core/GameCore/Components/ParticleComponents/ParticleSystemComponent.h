@@ -36,17 +36,17 @@ namespace EngineCore
         ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
                                 const ParticleSystemRenderData &renderData);
 
-        virtual ~ParticleSystemComponent();
+        ~ParticleSystemComponent() override;
 
-        virtual void PostLevelInit() override;
+        void PostLevelInit() override;
 
-        virtual eComponentType GetComponentType() const override;
+        eComponentType GetComponentType() const override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+        void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-        virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
+        std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
         void AddParticleModule(const std::shared_ptr<IParticleModule> &particleModule);
 
@@ -59,7 +59,7 @@ namespace EngineCore
 
         size_t GetParticlesCount() const;
 
-        virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
+        void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
         
         void SetParticleEmitter(const std::shared_ptr<IEmitter>& emitter);
 

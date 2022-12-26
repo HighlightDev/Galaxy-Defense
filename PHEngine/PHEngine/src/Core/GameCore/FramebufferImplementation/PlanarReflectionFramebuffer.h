@@ -23,7 +23,7 @@ namespace EngineCore {
 
          PlanarReflectionFramebuffer(const ViewPortInfo& reflectionViewPortInfo);
 
-         virtual ~PlanarReflectionFramebuffer();
+         ~PlanarReflectionFramebuffer() override;
 
          void RenderToTexture();
 
@@ -33,13 +33,13 @@ namespace EngineCore {
 
       protected:
 
-         virtual void SetTextures() override;
+         void SetTextures() override;
 
-         virtual void SetFramebuffers() override;
+         void SetFramebuffers() override;
 
-         virtual void SetRenderbuffers() override;
+         void SetRenderbuffers() override;
 
-         virtual void CleanUp() override;
+         void CleanUp() override;
 
       };
    }

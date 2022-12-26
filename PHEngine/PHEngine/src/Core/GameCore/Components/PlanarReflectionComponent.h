@@ -37,15 +37,15 @@ namespace EngineCore
    public:
       PlanarReflectionComponent(const PlanarReflectionComponentData &data);
 
-      virtual ~PlanarReflectionComponent();
+      ~PlanarReflectionComponent() override;
 
       std::shared_ptr<PlanarReflectionProxy> CreatePlanarReflectionProxy();
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void OnPostInitialized() override;
+      void OnPostInitialized() override;
 
-      virtual void PostLevelInit() override;
+      void PostLevelInit() override;
 
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
 
@@ -57,11 +57,11 @@ namespace EngineCore
 
       void SetSceneProxyId(const size_t sceneProxyId);
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
       void SyncDataWithRenderThread();
 
-      virtual std::shared_ptr<IDeferredResourceBase> GetDeferredResource() override;
+      std::shared_ptr<IDeferredResourceBase> GetDeferredResource() override;
 
    private:
       void UpdateReflectionPlane();

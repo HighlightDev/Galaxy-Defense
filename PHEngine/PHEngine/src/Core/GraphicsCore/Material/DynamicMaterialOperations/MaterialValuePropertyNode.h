@@ -15,15 +15,15 @@ namespace Graphics
    public:
       MaterialValuePropertyNode();
 
-      virtual ~MaterialValuePropertyNode();
+      ~MaterialValuePropertyNode()  override;
 
       explicit MaterialValuePropertyNode(std::shared_ptr<MaterialProperty> valueProperty);
 
-      virtual eValueType GetValueType() const override;
+      eValueType GetValueType() const override;
 
       std::shared_ptr<MaterialProperty> GetValueProperty() const;
 
-      virtual float TraverseGraph() override;
+      float TraverseGraph() override;
    };
 }
 

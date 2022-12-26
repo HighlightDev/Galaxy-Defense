@@ -10,7 +10,7 @@ namespace Event
    public:
       using Event_t = TEvent<SingleDataEventPolicy<bool>>::Event_t;
 
-      virtual std::string ToString() const override {
+      std::string ToString() const override {
          return "PauseGameThreadEvent";
       }
    };

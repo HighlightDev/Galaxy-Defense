@@ -18,7 +18,7 @@ namespace Resources
 
 		using poolType_t = PoolBase<SoundBuffer, std::string, SoundBufferAllocationPolicy>;
 
-		virtual std::string ToString() const override;
+		std::string ToString() const override;
 
 		static std::unique_ptr<SoundBufferPool>& GetInstance();
 

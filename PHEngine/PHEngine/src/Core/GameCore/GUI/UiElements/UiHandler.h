@@ -25,9 +25,9 @@ namespace EngineCore
 
             std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo &canvasScreenSize);
 
-            virtual void Tick(const float deltaTime) override;
+            void Tick(const float deltaTime) override;
 
-            virtual void UnpausableTick(const float deltaTime) override;
+            void UnpausableTick(const float deltaTime) override;
         };
     }
 }

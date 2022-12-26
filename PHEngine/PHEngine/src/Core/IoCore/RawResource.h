@@ -32,7 +32,7 @@ namespace IO
          ResourceType = eResourceType::TEXTURE;
       }
 
-      virtual void Clear() override {
+      void Clear() override {
          free(DATA);
       }
    };
@@ -46,7 +46,7 @@ namespace IO
          ResourceType = eResourceType::MESH;
       }
 
-      virtual void Clear() override
+      void Clear() override
       {
          MeshResourceInfo* data = GetMeshResourceInfo();
          delete data;
@@ -69,7 +69,7 @@ namespace IO
          ResourceType = eResourceType::AUDIO;
       }
 
-      virtual void Clear() override
+      void Clear() override
       {
          free(DATA);
       }

@@ -10,6 +10,6 @@ namespace EngineCore
     public:
        ISizeModule();
 
-       virtual eParticleModuleType GetParticleModuleType() const override;
+       eParticleModuleType GetParticleModuleType() const override;
     };
 }

@@ -20,11 +20,11 @@ namespace EnginePhysics
    public:
       GhostPhysicsComponent(const PhysicsComponentData &data);
 
-      virtual ~GhostPhysicsComponent();
+      ~GhostPhysicsComponent() override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
    private:
       void SyncHitBoxScale(const glm::vec3 &scale);

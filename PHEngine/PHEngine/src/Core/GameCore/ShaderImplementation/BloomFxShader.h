@@ -24,7 +24,7 @@ namespace EngineCore
       public:
          BloomFxShader(const ShaderParams &params);
 
-         virtual ~BloomFxShader();
+         ~BloomFxShader() override;
 
          void SetSceneColorTexture(const int32_t textureSlot);
 
@@ -37,11 +37,11 @@ namespace EngineCore
          void LoadRunHorizontalBlurSubroutine();
 
       protected:
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void AccessAllSubroutineIndices(uint32_t shaderProgramID) override;
+         void AccessAllSubroutineIndices(uint32_t shaderProgramID) override;
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
       };
 
    }

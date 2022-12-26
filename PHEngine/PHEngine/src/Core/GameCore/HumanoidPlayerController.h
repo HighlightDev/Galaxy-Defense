@@ -25,13 +25,13 @@ namespace EngineCore
 
       HumanoidPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor);
 
-      virtual ~HumanoidPlayerController();
+      ~HumanoidPlayerController() override;
 
-      virtual void Tick(float deltaTime) override;
+      void Tick(float deltaTime) override;
 
-      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 
-      virtual void InitActorController() override;
+      void InitActorController() override;
    };
 
 }

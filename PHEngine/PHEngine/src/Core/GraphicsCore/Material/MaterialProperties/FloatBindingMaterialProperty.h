@@ -25,12 +25,12 @@ namespace Graphics {
       {
       }
 
-      virtual eMaterialPropertyType GetPropertyType() const override
+      eMaterialPropertyType GetPropertyType() const override
       {
          return MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY;
       }
 
-      virtual void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
+      void SetValueToUniform(Uniform uniform, const int32_t propertyIndex) const override { assert(false); } // this code should not be called, use proxy on render thread part 
 
       void SetValue(MaterialPropertyValueType value) {
          mPropertyBinding = value;

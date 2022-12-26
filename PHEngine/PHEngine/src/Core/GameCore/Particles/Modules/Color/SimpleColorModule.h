@@ -15,12 +15,12 @@ namespace EngineCore
     public:
         SimpleColorModule();
 
-        virtual void Update(Particle& particle, const float deltaTime) override;
+        void Update(Particle& particle, const float deltaTime) override;
 
         void SetColorBegin(const glm::vec4 &colorBegin);
 
         void SetColorEnd(const glm::vec4 &colorEnd);
 
-        virtual void OnEmitParticles() override;
+        void OnEmitParticles() override;
     };
 }

@@ -36,9 +36,9 @@ namespace EngineCore
 
         protected:
 
-            virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+            void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-            virtual void SetShaderPredefine() override;
+            void SetShaderPredefine() override;
         };
 
     }

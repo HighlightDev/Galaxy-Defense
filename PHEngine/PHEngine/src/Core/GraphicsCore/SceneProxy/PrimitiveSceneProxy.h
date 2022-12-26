@@ -61,7 +61,7 @@ namespace Graphics
                              const std::shared_ptr<IShader> &planarReflectionShader,
                              const std::shared_ptr<MaterialProxy> &materialProxy);
 
-         virtual ~PrimitiveSceneProxy();
+         ~PrimitiveSceneProxy() override;
 
          void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
 
@@ -73,7 +73,7 @@ namespace Graphics
 
          virtual ePrimitiveProxyType GetPrimitiveProxyType() const;
 
-         virtual bool IsFrustumCullTestNeeded() const override;
+         bool IsFrustumCullTestNeeded() const override;
 
          virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) = 0;
 

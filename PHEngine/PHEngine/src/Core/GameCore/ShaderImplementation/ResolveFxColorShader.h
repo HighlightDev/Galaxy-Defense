@@ -20,16 +20,16 @@ namespace EngineCore
       public:
          ResolveFxColorShader(const ShaderParams &params);
 
-         virtual ~ResolveFxColorShader();
+         ~ResolveFxColorShader() override;
 
          void SetSceneColorTexture(const int32_t textureSlot);
 
          void SetBloomColorTexture(const int32_t textureSlot);
 
       protected:
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
       };
 
    }

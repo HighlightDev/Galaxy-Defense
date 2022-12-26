@@ -12,13 +12,13 @@ namespace Graphics
 
       MaterialUnaryOperationNode();
 
-      virtual ~MaterialUnaryOperationNode();
+      ~MaterialUnaryOperationNode() override;
 
-      virtual eMaterialNodeType GetMaterialNodeType() const override;
+      eMaterialNodeType GetMaterialNodeType() const override;
 
       virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode);
 
-      virtual float TraverseGraph() override;
+      float TraverseGraph() override;
 
       virtual float DoOperation(const float& value) = 0;
    };

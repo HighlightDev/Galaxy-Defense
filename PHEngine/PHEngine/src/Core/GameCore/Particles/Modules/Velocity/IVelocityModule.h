@@ -10,6 +10,6 @@ namespace EngineCore
     public:
        IVelocityModule();
 
-       virtual eParticleModuleType GetParticleModuleType() const override;
+       eParticleModuleType GetParticleModuleType() const override;
     };
 }

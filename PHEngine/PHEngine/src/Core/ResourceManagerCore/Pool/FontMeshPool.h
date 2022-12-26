@@ -17,7 +17,7 @@ namespace Resources
 	public:
 		using poolType_t = PoolBase<TextMesh, FontParams, FontMeshAllocationPolicy>;
 
-		virtual std::string ToString() const override;
+		std::string ToString() const override;
 
 		static std::unique_ptr<FontMeshPool> &GetInstance();
 

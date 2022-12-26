@@ -20,7 +20,7 @@ namespace Resources
    public:
       using poolType_t = PoolBase<ITexture, TexParams, RenderTargetAllocationPolicy>;
 
-      virtual std::string ToString() const override;
+      std::string ToString() const override;
 
       std::shared_ptr<ITexture> GetTextureAt(const size_t index) const override;
 

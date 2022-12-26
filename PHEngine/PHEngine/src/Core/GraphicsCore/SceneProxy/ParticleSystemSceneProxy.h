@@ -37,17 +37,17 @@ namespace Graphics
         public:
             ParticleSystemSceneProxy(const ::EngineCore::ParticleSystemComponent *component);
 
-            ~ParticleSystemSceneProxy();
+            ~ParticleSystemSceneProxy() override;
 
-            virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+            void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
-            virtual bool IsDeferred() const override;
+            bool IsDeferred() const override;
 
-            virtual eMeshFacing GetMeshFrontFace() const override;
+            eMeshFacing GetMeshFrontFace() const override;
 
-            virtual bool IsFrustumCullTestNeeded() const override;
+            bool IsFrustumCullTestNeeded() const override;
 
-            virtual ePrimitiveSortOrder GetPrimitiveSortOrder() const override;
+            ePrimitiveSortOrder GetPrimitiveSortOrder() const override;
 
             void SetActiveParticlesCount(const size_t activeParticlesCount);
 

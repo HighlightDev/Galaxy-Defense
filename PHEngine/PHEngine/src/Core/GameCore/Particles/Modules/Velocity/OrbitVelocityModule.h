@@ -22,9 +22,9 @@ namespace EngineCore
     public:
         OrbitVelocityModule();
 
-        virtual void Update(Particle &particle, const float deltaTime) override;
+        void Update(Particle &particle, const float deltaTime) override;
 
-        virtual void OnEmitParticles() override;
+        void OnEmitParticles() override;
 
         void SetExtraVelocityDirectionType(const eOrbitExtraVelocityDirectionType velocityType);
 

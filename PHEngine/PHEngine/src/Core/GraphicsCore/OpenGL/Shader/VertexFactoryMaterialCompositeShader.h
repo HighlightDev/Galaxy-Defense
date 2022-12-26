@@ -31,7 +31,7 @@ namespace Graphics
             return std::static_pointer_cast<ShaderType>(mBaseShader);
          }
 
-         virtual std::shared_ptr<Shader> GetBaseShader() const override
+         std::shared_ptr<Shader> GetBaseShader() const override
          {
             return mBaseShader;
          }

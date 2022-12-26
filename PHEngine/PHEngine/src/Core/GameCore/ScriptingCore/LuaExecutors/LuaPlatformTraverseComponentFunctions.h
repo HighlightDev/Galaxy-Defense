@@ -22,7 +22,7 @@ namespace EngineCore
 
          void RegisterCallbacks();
 
-         virtual void RunScript() override;
+         void RunScript() override;
 
          // Add route point
          void AddRoutePoint(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, float> &data);

@@ -10,11 +10,11 @@ namespace EngineCore
    public:
       ExplosionInitialVelocityModule();
 
-      virtual eParticleModuleType GetParticleModuleType() const override;
+      eParticleModuleType GetParticleModuleType() const override;
 
-      virtual void Update(Particle& particle, const float deltaTime) override;
+      void Update(Particle& particle, const float deltaTime) override;
 
-      virtual void OnEmitParticles() override;
+      void OnEmitParticles() override;
 
    };
 }

@@ -30,11 +30,11 @@ namespace Game
 
       SpaceShipPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor);
 
-      virtual ~SpaceShipPlayerController();
+      ~SpaceShipPlayerController() override;
 
-      virtual void Tick(float deltaTime) override;
-      
-      virtual void InitActorController() override;
+      void Tick(float deltaTime) override;
+   
+      void InitActorController() override;
 
       void SetLevelBounds(const BoundingBox3D& mLevelBounds);
 

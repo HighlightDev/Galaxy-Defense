@@ -16,13 +16,13 @@ namespace EngineCore
     public:
        SimpleVelocityModule();
 
-       virtual void Update(Particle& particle, const float deltaTime) override;
+       void Update(Particle& particle, const float deltaTime) override;
 
        void SetVelocityDirection(const glm::vec3& velocityDirection);
 
        void SetVelocityDeviation(const glm::vec3& velocityDeviation);
 
-       virtual void OnEmitParticles() override;
+       void OnEmitParticles() override;
 
     };
 }

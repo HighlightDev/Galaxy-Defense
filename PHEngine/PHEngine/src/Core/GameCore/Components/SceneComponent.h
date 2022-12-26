@@ -30,13 +30,13 @@ namespace EngineCore
 
       SceneComponent(const std::string &gameObjectName, const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale);
 
-      ~SceneComponent();
+      ~SceneComponent() override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
       /* This method works every time when this component has dirty transform */
       virtual void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix = glm::mat4(1));

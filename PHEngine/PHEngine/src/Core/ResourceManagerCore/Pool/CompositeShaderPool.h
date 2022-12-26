@@ -16,7 +16,7 @@ namespace Resources
 
       using poolType_t = PoolBase<IShader, CompositeShaderParams, CompositeShaderAllocationPolicy>;
 
-      virtual std::string ToString() const override;
+      std::string ToString() const override;
 
       static CompositeShaderPool* GetInstance();
 

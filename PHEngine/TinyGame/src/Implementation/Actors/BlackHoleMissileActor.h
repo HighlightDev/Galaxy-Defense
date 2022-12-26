@@ -24,19 +24,19 @@ namespace Game
     public:
         BlackHoleMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        virtual void AttachTweener(std::shared_ptr<Tweener> tweener) override;
+        void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 
-        virtual void OnTweenStateChanged(const std::string &stateName) override;
+        void OnTweenStateChanged(const std::string &stateName) override;
 
-        virtual void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position) override;
 
-        virtual void TriggerExplosion() override;
+        void TriggerExplosion() override;
 
-        virtual void TriggerExplosionFinished() override;
+        void TriggerExplosionFinished() override;
 
-        virtual void TriggerDisabled() override;
+        void TriggerDisabled() override;
 
-        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
+        bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
 
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
 

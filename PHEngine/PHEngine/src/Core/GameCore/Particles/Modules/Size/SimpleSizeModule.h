@@ -14,12 +14,12 @@ namespace EngineCore
     public:
         SimpleSizeModule();
 
-        virtual void Update(Particle &particle, const float deltaTime) override;
+        void Update(Particle &particle, const float deltaTime) override;
 
         void SetSizeBegin(const float sizeBegin);
 
         void SetSizeEnd(const float sizeEnd);
 
-        virtual void OnEmitParticles() override;
+        void OnEmitParticles() override;
     };
 }

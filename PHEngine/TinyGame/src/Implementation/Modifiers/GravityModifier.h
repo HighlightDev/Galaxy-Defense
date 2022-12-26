@@ -25,17 +25,17 @@ namespace Game
                         const std::weak_ptr<MissileActor> &missile,
                         const glm::vec3 &gravityCenterPosition);
 
-        virtual eModifierType GetModifierType() const override;
+        eModifierType GetModifierType() const override;
 
-        virtual uint64_t CreatorObjectId() const override;
+        uint64_t CreatorObjectId() const override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void UnpausableTick(const float deltaTime) override{};
+        void UnpausableTick(const float deltaTime) override{};
 
-        virtual bool IsExpired() const override;
+        bool IsExpired() const override;
 
-        virtual void OnPreRemoved() override;
+        void OnPreRemoved() override;
 
         void SetGravityPower(const float power);
     };

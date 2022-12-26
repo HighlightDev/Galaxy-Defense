@@ -22,12 +22,12 @@ namespace EngineCore
 
          ShadowFramebuffer(std::shared_ptr<ITexture> shadowMapTexture);
 
-         virtual ~ShadowFramebuffer();
+         ~ShadowFramebuffer() override;
 
-         virtual void SetTextures() override;
-         virtual void SetFramebuffers()  override;
-         virtual void SetRenderbuffers() override;
-         virtual void CleanUp() override;
+         void SetTextures() override;
+         void SetFramebuffers()  override;
+         void SetRenderbuffers() override;
+         void CleanUp() override;
 
 
          void RenderToTexture(bool bBindFramebuffer, const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag);

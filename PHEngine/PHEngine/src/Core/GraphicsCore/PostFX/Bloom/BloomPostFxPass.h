@@ -23,13 +23,14 @@ namespace Graphics
 
    public:
       BloomPostFxPass(const ViewPortInfo &viewPortInfo);
+
       virtual ~BloomPostFxPass();
 
-      virtual void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
+      void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
 
       virtual std::shared_ptr<ITexture> GetPostFxResult() const;
 
-      virtual void CleanUp() override;
+      void CleanUp() override;
 
    private:
       void Init();

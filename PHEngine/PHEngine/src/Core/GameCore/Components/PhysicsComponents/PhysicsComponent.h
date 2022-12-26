@@ -27,21 +27,21 @@ namespace EnginePhysics
    public:
       PhysicsComponent(const PhysicsComponentData &data);
 
-      virtual ~PhysicsComponent();
+      ~PhysicsComponent() override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
       virtual void PostPhysicsInit();
 
-      virtual void SetIsEnabled(const bool isEnabled) override;
+      void SetIsEnabled(const bool isEnabled) override;
 
-      virtual void SetOwner(const std::weak_ptr<Actor> &ownerActor) override;
+      void SetOwner(const std::weak_ptr<Actor> &ownerActor) override;
 
       PhysicsDescriptor *GetDescriptor() const;
 
       bool IsTransformDirty() const;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
       glm::vec3 GetWorldTranslation() const;
 

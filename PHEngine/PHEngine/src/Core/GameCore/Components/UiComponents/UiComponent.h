@@ -21,13 +21,13 @@ namespace EngineCore
     public:
         UiComponent(const ComponentData &data);
 
-        virtual ~UiComponent() override;
+        ~UiComponent() override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+        void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-        virtual eComponentType GetComponentType() const override;
+        eComponentType GetComponentType() const override;
 
         int32_t CreateTextField(const std::string &fontName,
                                const float fontSize,

@@ -82,9 +82,9 @@ namespace EngineCore
 
       virtual ~ACamera();
 
-      virtual void Tick(const float DeltaTime) override;
+      void Tick(const float DeltaTime) override;
 
-      virtual void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override {};
 
       virtual void PostLevelInit();
 

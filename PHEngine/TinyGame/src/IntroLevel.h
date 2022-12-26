@@ -17,15 +17,15 @@ namespace Game
    public:
       IntroLevel(InterThreadCommunicationMgr &threadMgr);
 
-      virtual ~IntroLevel();
+      ~IntroLevel() override;
 
-      virtual void InitLevel() override;
+      void InitLevel() override;
 
-      virtual void PreLevelInit();
+      void PreLevelInit() override;
 
-      virtual void PostLevelInit();
+      void PostLevelInit() override;
 
-      virtual void PostPlayLevelFinished() override;
+      void PostPlayLevelFinished() override;
 
       void RunLuaBuildLevelScript();
 

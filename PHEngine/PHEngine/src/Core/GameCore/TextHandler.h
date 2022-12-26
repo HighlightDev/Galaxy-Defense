@@ -31,9 +31,9 @@ namespace EngineCore
         std::shared_ptr<TextField> GetTextFieldById(const int32_t fieldId) const;
 
     protected:
-        virtual void ProcessEvent(const TextRegisterEvent::EventData_t &data) override;
+        void ProcessEvent(const TextRegisterEvent::EventData_t &data) override;
 
-        virtual void ProcessEvent(const TextDataChangedEvent::EventData_t &data) override;
+        void ProcessEvent(const TextDataChangedEvent::EventData_t &data) override;
     };
 
 }

@@ -28,23 +28,23 @@ namespace EngineCore
 
       PointLightComponent(const LightComponentData& lightComponentData);
 
-      virtual ~PointLightComponent();
+      ~PointLightComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<LightSceneProxy> CreateSceneProxy() const override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
       std::shared_ptr<PointLightRenderData> GetRenderData() const;
 
    protected:
 
-      virtual void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const typename KinematicBodyMovedEvent::EventData_t& data) override;
-      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename KinematicBodyMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
 
    private:
 

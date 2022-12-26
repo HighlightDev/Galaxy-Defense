@@ -17,7 +17,7 @@ namespace Resources
 	public:
 		using poolType_t = PoolBase<Shader, ShaderParams, ShaderAllocationPolicy>;
 
-		virtual std::string ToString() const override;
+		std::string ToString() const override;
 
 		static std::unique_ptr<ShaderPool> &GetInstance();
 

@@ -26,15 +26,15 @@ namespace Graphics
    public:
       DynamicMaterial(const std::string &materialName, const std::string &materialShaderName);
 
-      virtual ~DynamicMaterial();
+      ~DynamicMaterial() override;
 
-      virtual eMaterialType GetMaterialType() const override;
+      eMaterialType GetMaterialType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override {};
 
-      virtual void SetIsEnabled(const bool bIsEnabled) override;
+      void SetIsEnabled(const bool bIsEnabled) override;
 
       void SetScene(std::weak_ptr<EngineCore::Scene> scene);
 

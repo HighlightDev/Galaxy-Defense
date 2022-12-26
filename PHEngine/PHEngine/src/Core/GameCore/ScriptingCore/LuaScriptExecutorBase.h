@@ -41,9 +41,9 @@ namespace EngineCore
         public:
             LuaScriptExecutorBase();
 
-            virtual std::string GetScriptName() const override;
+            std::string GetScriptName() const override;
 
-            virtual size_t GetUId() const override;
+            size_t GetUId() const override;
 
             const std::any &GetFunctorAny(const uint64_t functionHash) const;
 
@@ -52,7 +52,7 @@ namespace EngineCore
             void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
 
         protected:
-            virtual void SetScript(const std::string &scriptName) override;
+            void SetScript(const std::string &scriptName) override;
         };
     }
 }

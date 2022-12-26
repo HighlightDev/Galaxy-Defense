@@ -17,7 +17,7 @@ namespace Resources
 
       using poolType_t = PoolBase<Skin, ParticlePoolParameters, ParticlesAllocationPolicy>;
 
-      virtual std::string ToString() const override;
+      std::string ToString() const override;
 
       static std::unique_ptr<ParticlesPool>& GetInstance();
 

@@ -51,11 +51,11 @@ namespace Graphics
 
       void CleanUp();
 
-      virtual void BindFramebufferAsReadTarget() override;
+      void BindFramebufferAsReadTarget() override;
 
-      virtual void BindFramebufferAsDrawTarget() override;
+      void BindFramebufferAsDrawTarget() override;
 
-      virtual void BindFramebufferAsReadDrawTarget() override;
+      void BindFramebufferAsReadDrawTarget() override;
 
    private:
       void CollectAttachments();

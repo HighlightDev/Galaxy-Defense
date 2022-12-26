@@ -10,7 +10,7 @@ namespace EngineCore
       float mRadius = 1.0f;
       size_t mThetaSlicesCount {0};
 
-      virtual void EmitParticles(const size_t particlesCount = 0) override;
+      void EmitParticles(const size_t particlesCount = 0) override;
 
       public:
 

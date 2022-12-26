@@ -23,7 +23,7 @@ namespace EngineCore
          InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "InstancedStaticMeshVertexFactory.glsl");
       }
 
-      virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override
+      void AccessAllUniformLocations(uint32_t shaderProgramID) override
       {
          u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
          u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);

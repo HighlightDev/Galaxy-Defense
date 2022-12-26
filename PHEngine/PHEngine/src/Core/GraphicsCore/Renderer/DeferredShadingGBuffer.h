@@ -29,15 +29,15 @@ namespace Graphics
       // Buffer should be recreated when window size was changed
       DeferredShadingGBuffer(const ViewPortInfo &viewPortInfo);
 
-      virtual ~DeferredShadingGBuffer();
+      ~DeferredShadingGBuffer() override;
 
-      virtual void SetTextures() override;
+      void SetTextures() override;
 
-      virtual void SetFramebuffers() override;
+      void SetFramebuffers() override;
 
-      virtual void SetRenderbuffers() override;
+      void SetRenderbuffers() override;
 
-      virtual void CleanUp() override;
+      void CleanUp() override;
 
       void BindDeferredGBuffer();
 

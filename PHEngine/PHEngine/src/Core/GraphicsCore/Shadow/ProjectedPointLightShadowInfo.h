@@ -29,11 +29,11 @@ namespace Graphics
 
       ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource);
 
-      virtual ~ProjectedPointLightShadowInfo();
+      ~ProjectedPointLightShadowInfo() override;
 
-      virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
+      void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      virtual void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
 
       six_mat4x4 GetShadowViewMatrices() const;
 

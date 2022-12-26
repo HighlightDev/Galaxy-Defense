@@ -15,23 +15,23 @@ namespace EngineCore
    public:
       NoPhysicsMovementComponent(const MovementComponentData& movementComponentData);
 
-      virtual ~NoPhysicsMovementComponent();
+      ~NoPhysicsMovementComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
-      virtual void Tick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      virtual void Move(const float deltaTime) override;
+      void Move(const float deltaTime) override;
 
-      virtual void Move(const glm::vec3& direction, const float deltaTime) override;
+      void Move(const glm::vec3& direction, const float deltaTime) override;
 
-      virtual void Jump() override;
+      void Jump() override;
 
-      virtual void Teleport(const glm::vec3& teleportPosition) override;
+      void Teleport(const glm::vec3& teleportPosition) override;
 
-      virtual void PostLevelInit() override;
+      void PostLevelInit() override;
 
       glm::vec3 GetVelocity() const;
    };

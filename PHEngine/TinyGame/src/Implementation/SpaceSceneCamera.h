@@ -17,11 +17,11 @@ namespace Game
                          std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg,
                          const float initYawDeg, glm::vec3 camPos);
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
         void AddCameraTransformObserver(ICameraTransformChangeNotifyable* observer);
 
     protected:
-        virtual void OnTransformationUpdated() override;
+        void OnTransformationUpdated() override;
     };
 }

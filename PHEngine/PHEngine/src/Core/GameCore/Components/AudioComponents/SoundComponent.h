@@ -24,13 +24,13 @@ namespace EngineCore
     public:
         SoundComponent(const ComponentData &data);
 
-        virtual ~SoundComponent() override;
+        ~SoundComponent() override;
 
-        virtual void Tick(const float deltaTime) override;
+        void Tick(const float deltaTime) override;
 
-        virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+        void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-        virtual eComponentType GetComponentType() const override;
+        eComponentType GetComponentType() const override;
 
         void CreateSoundBuffer(const std::string& soundFileName, const std::string& bufferName);
 

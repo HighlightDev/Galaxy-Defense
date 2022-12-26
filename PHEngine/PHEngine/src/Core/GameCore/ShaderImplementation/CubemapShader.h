@@ -18,7 +18,7 @@ namespace EngineCore
       public:
          CubemapShader(const ShaderParams& params);
 
-         virtual ~CubemapShader();
+         ~CubemapShader() override;
 
          void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
@@ -26,9 +26,9 @@ namespace EngineCore
 
       protected:
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
       };
 
    }

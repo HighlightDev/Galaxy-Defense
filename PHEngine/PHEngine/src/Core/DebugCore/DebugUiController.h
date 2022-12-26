@@ -42,9 +42,9 @@ namespace EngineCore
 
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
-            virtual void Tick(const float deltaTime) override;
+            void Tick(const float deltaTime) override;
 
-            virtual void UnpausableTick(const float deltaTime) override;
+            void UnpausableTick(const float deltaTime) override;
 
             void PostPlayLevelFinished();
 

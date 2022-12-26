@@ -19,7 +19,7 @@ namespace EngineCore
       public:
          BillboardShader(const ShaderParams& params);
 
-         virtual ~BillboardShader();
+         ~BillboardShader() override;
 
          void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
 
@@ -29,7 +29,7 @@ namespace EngineCore
 
       protected:
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
       };
 
    }

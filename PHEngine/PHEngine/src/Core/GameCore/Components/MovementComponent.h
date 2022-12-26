@@ -23,9 +23,9 @@ namespace EngineCore
 
       MovementComponent(const MovementComponentData& movementComponentData);
 
-      virtual ~MovementComponent();
+      ~MovementComponent() override;
 
-      virtual eComponentType GetComponentType() const override;
+      eComponentType GetComponentType() const override;
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 

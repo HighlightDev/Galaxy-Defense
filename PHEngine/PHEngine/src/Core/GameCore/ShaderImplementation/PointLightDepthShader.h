@@ -25,7 +25,7 @@ namespace EngineCore
 
       protected:
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramId) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramId) override;
 
       public:
 
@@ -37,7 +37,7 @@ namespace EngineCore
 
          void SetFarPlane(const float distance);
 
-         virtual void SetShaderPredefine() override;
+         void SetShaderPredefine() override;
 
       };
    }

@@ -32,9 +32,10 @@ namespace Graphics
          MaterialShader(std::shared_ptr<MaterialProxy> materialProxy);
 
          std::string GetShaderSource() const;
+         
          virtual void LoadUniformValues(std::shared_ptr<MaterialProxy> materialProxy);
 
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
          template <typename ValueType>
          void DefineConstant(const std::string& name, ValueType&& value)

@@ -46,17 +46,17 @@ namespace EnginePhysics
 
       DynamicCharacterController(class PhysicsWorld* pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
 
-      virtual ~DynamicCharacterController();
+      ~DynamicCharacterController() override;
 
-      virtual void CompletePhysicsDescriptorConstruction() override;
+      void CompletePhysicsDescriptorConstruction() override;
 
-      virtual void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
+      void UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime) override;
 
-      virtual void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
+      void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      virtual void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
 
-      virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
+      ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
       // Acceleration vector in XZ plane
       void Walk(const glm::vec2& dir);

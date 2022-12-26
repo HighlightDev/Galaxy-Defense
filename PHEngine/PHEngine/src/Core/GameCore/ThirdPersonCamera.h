@@ -42,17 +42,17 @@ namespace EngineCore
                         const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg,
                         const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset = glm::vec3());
 
-      virtual ~ThirdPersonCamera();
+      ~ThirdPersonCamera() override;
 
-      virtual void Tick(const float DeltaTime) override;
+      void Tick(const float DeltaTime) override;
 
-      virtual void ProcessEvent(const typename PlayerMovedEvent::EventData_t &data);
+      void ProcessEvent(const typename PlayerMovedEvent::EventData_t &data) override;
 
-      virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
+      void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 
-      virtual void PostLevelInit() override;
+      void PostLevelInit() override;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
 
@@ -62,19 +62,19 @@ namespace EngineCore
 
       void SetTimeForInterpolation(float timeForInterpolation);
 
-      virtual std::string GetCameraTypeName() const override;
+      std::string GetCameraTypeName() const override;
 
-      virtual glm::vec3 GetLocalSpaceUpVector() const override;
+      glm::vec3 GetLocalSpaceUpVector() const override;
 
-      virtual glm::vec3 GetEyeVector() const override;
+      glm::vec3 GetEyeVector() const override;
 
-      virtual glm::vec3 GetTargetVector() const override;
+      glm::vec3 GetTargetVector() const override;
 
-      virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
+      std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const override;
+
+      void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) override;
 
       void SetDistanceFromTargetToCamera(float distanceFromTargetToCamera);
-
-      virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower);
 
       float GetDistanceFromTargetToCamera() const;
 

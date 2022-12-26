@@ -62,7 +62,7 @@ namespace EngineCore
 
       PlatformTraverseComponentVisitorNoPhys(std::weak_ptr<SceneComponent> ownerRootComponent);
 
-      virtual void CommitMove() override;
+      void CommitMove() override;
    };
 
    class PlatformTraverseComponentVisitorWithPhys
@@ -75,6 +75,6 @@ namespace EngineCore
 
       PlatformTraverseComponentVisitorWithPhys(std::weak_ptr<SceneComponent> ownerRootComponent, std::weak_ptr<PhysicsComponent> ownerPhysComponent);
 
-      virtual void CommitMove() override;
+      void CommitMove() override;
    };
 }

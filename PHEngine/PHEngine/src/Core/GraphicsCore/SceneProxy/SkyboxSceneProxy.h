@@ -32,21 +32,21 @@ namespace Graphics
 
          SkyboxSceneProxy(const SkyboxComponent* component);
 
-         ~SkyboxSceneProxy();
+         ~SkyboxSceneProxy() override;
 
-         virtual void PostConstructorInitialize() override;
+         void PostConstructorInitialize() override;
 
-         virtual void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         virtual void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
-         virtual ePrimitiveProxyType GetPrimitiveProxyType() const override;
+         ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
-         virtual bool IsFrustumCullTestNeeded() const override;
+         bool IsFrustumCullTestNeeded() const override;
 
          virtual bool IsDeferred() const;
 
-         virtual eMeshFacing GetMeshFrontFace() const override;
+         eMeshFacing GetMeshFrontFace() const override;
       };
 
    }

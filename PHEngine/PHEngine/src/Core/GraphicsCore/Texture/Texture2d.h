@@ -27,9 +27,9 @@ namespace Graphics
 
 			virtual ~Texture2d();
 
-			virtual void BindTexture(uint32_t textureSlot) const override;
+			void BindTexture(uint32_t textureSlot) const override;
 
-			virtual void UnbindTexture(uint32_t textureSlot) const override;
+			void UnbindTexture(uint32_t textureSlot) const override;
 
 			void CleanUp();
 
@@ -48,9 +48,9 @@ namespace Graphics
 				return m_textureParams;
 			}
 
-			virtual float GetTextureAspectRatio() const override;
+			float GetTextureAspectRatio() const override;
 
-			virtual eTextureType GetTextureType() const override;
+			eTextureType GetTextureType() const override;
 
 		private:
 			void InitEmptyTexture();

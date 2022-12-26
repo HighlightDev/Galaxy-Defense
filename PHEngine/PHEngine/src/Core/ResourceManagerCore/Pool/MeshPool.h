@@ -19,7 +19,7 @@ namespace Resources
 
 		using poolType_t = PoolBase<Skin, std::string, MeshAllocationPolicy>;
 
-		virtual std::string ToString() const override;
+		std::string ToString() const override;
 
 		static std::unique_ptr<MeshPool>& GetInstance();
 

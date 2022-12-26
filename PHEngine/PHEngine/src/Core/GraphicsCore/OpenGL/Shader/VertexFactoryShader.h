@@ -22,8 +22,9 @@ namespace Graphics
 
          virtual ~VertexFactoryShader();
 
-         virtual void ProcessAllPredefines() override;
-         virtual void AccessAllUniformLocations(uint32_t shaderProgramID) override;
+         void ProcessAllPredefines() override;
+         
+         void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
          std::string GetShaderSource() const;
 

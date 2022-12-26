@@ -14,18 +14,18 @@ namespace Graphics {
 
       MaterialEnterNode();
 
-      ~MaterialEnterNode();
+      ~MaterialEnterNode() override;
 
       virtual eMaterialNodeType GetMaterialNodeType() const;
 
-      virtual eMaterialOperationType GetMaterialOperationType() const override;
+      eMaterialOperationType GetMaterialOperationType() const override;
 
-      virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
+      void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
       float GetValue();
 
    protected:
 
-      virtual float TraverseGraph() override;
+      float TraverseGraph() override;
    };
 }
