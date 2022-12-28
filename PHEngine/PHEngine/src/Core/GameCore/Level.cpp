@@ -80,8 +80,8 @@ namespace EngineCore
       mDebugDummyActor->AddComponent(c_uiComponent);
       mScene->AddActor(mDebugDummyActor);
 
-      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("arial", 1, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, false);
-      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("arial", 1, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
+      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 1, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, false);
+      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 1, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
       mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
       mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
 

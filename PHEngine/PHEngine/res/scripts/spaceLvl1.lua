@@ -14,7 +14,6 @@ function CreateTestLevel(host)
 	,solar_cells_normal_512.jpg
 	,solar_cells_roughness_512.jpg
 	,solar_cells_metallic_512.jpg
-	,arial.png
 	,missile1_albedo.png
 	,water_dudv.jpg
 	,circle_mask1.png
@@ -49,6 +48,7 @@ function CreateTestLevel(host)
 		,path.png
 		,grass.png
 		,arrow_right_1.png
+		,nimbus_mono.png
 		]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",

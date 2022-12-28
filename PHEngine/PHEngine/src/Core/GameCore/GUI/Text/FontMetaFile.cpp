@@ -44,10 +44,10 @@ namespace EngineCore
         return mVerticalPerPixelSize;
     }
 
-    TextCharacter FontMetaFile::GetCharacter(const int32_t ascii) const
+    TextCharacter FontMetaFile::GetCharacter(const int32_t utf8_code) const
     {
-        assert(mMetaData.count(ascii));
-        return mMetaData.at(ascii);
+        assert(mMetaData.count(utf8_code));
+        return mMetaData.at(utf8_code);
     }
 
     bool FontMetaFile::TryProcessNextLine()

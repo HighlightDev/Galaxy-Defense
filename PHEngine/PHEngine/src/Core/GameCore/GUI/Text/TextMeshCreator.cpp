@@ -1,5 +1,8 @@
 #include "TextMeshCreator.h"
 
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/GameCore/LoggerExtension.h"
+
 namespace EngineCore
 {
 	TextMeshCreator::TextMeshCreator(const std::shared_ptr<FontMetaFile> &metaData)
@@ -12,35 +15,38 @@ namespace EngineCore
 		return CreateQuadVertices(text, CreateStructure(text));
 	}
 
-	std::vector<Line> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &text)
+	std::vector<Line> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &textField)
 	{
-		const auto &chars = text->mText;
+		const auto& text = textField->mText;
 		std::vector<Line> lines;
-		Line currentLine(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
-		Word currentWord(text->mFontSize);
-		for (const auto &c : chars)
+		Line currentLine(mMetaData->GetSpaceWidth(), textField->mFontSize, textField->mLineMaxSize);
+		Word currentWord(textField->mFontSize);
+
+		const auto& utf8_vector = EngineUtility::ExtractUtf8FromUnicodeString(text);
+
+		for (const auto &utf8_str : utf8_vector)
 		{
-			const int32_t ascii = (int32_t)c;
-			
-			if (0 == ascii)
+			const auto utf8_code = EngineUtility::Utf8_To_Unicode(utf8_str);
+
+			if (0 == utf8_code)
 				continue;
 
-			if (ascii == SPACE_ASCII)
+			if (utf8_code == SPACE_ASCII)
 			{
 				const bool bIsAdded = currentLine.TryToAddWord(currentWord);
 				if (!bIsAdded)
 				{
 					lines.emplace_back(currentLine);
-					currentLine = Line(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
+					currentLine = Line(mMetaData->GetSpaceWidth(), textField->mFontSize, textField->mLineMaxSize);
 					currentLine.TryToAddWord(currentWord);
 				}
-				currentWord = Word(text->mFontSize);
+				currentWord = Word(textField->mFontSize);
 				continue;
 			}
-			TextCharacter character = mMetaData->GetCharacter(ascii);
+			TextCharacter character = mMetaData->GetCharacter(utf8_code);
 			currentWord.AddCharacter(character);
 		}
-		CompleteStructure(lines, currentLine, currentWord, text);
+		CompleteStructure(lines, currentLine, currentWord, textField);
 		return lines;
 	}
 

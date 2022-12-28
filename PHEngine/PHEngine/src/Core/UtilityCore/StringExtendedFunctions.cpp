@@ -68,7 +68,7 @@ namespace EngineUtility
 		return str;
 	}
 
-	std::string Trim(const std::string& source)
+	std::string Trim(const std::string &source)
 	{
 		return TrimEnd(TrimStart(source));
 	}
@@ -103,5 +103,52 @@ namespace EngineUtility
 										  { return symb == symbol; });
 		result.erase(newIt, result.end());
 		return result;
+	}
+
+	int32_t Utf8_To_Unicode(const std::string &utf8_code)
+	{
+		const size_t utf8_size = utf8_code.length();
+		int32_t result_unicode = 0;
+
+		for (unsigned p = 0; p < utf8_size; ++p)
+		{
+			const int32_t bit_count = (p ? 6 : 8 - utf8_size - (utf8_size == 1 ? 0 : 1)),
+						  shift = (p < utf8_size - 1 ? (6 * (utf8_size - p - 1)) : 0);
+
+			for (int k = 0; k < bit_count; ++k)
+				result_unicode += ((utf8_code[p] & (1 << k)) << shift);
+		}
+
+		return result_unicode;
+	}
+
+	std::vector<std::string> ExtractUtf8FromUnicodeString(const std::string &unicodeString)
+	{
+		std::vector<std::string> utf8_vector;
+		for (size_t i = 0; i < unicodeString.length();)
+		{
+			int32_t cplen = 1;
+			if ((unicodeString[i] & 0xf8) == 0xf0)
+			{
+				cplen = 4;
+			}
+			else if ((unicodeString[i] & 0xf0) == 0xe0)
+			{
+				cplen = 3;
+			}
+			else if ((unicodeString[i] & 0xe0) == 0xc0)
+			{
+				cplen = 2;
+			}
+			if ((i + cplen) > unicodeString.length())
+			{
+				cplen = 1;
+			}
+
+			utf8_vector.push_back(unicodeString.substr(i, cplen));
+			i += cplen;
+		}
+
+		return utf8_vector;
 	}
 }

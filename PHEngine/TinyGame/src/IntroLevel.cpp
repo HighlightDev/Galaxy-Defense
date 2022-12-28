@@ -116,8 +116,6 @@ namespace Game
       mScene->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      TexturePool::GetInstance()->GetOrAllocateResource("arial.png");
-
       /*const auto groundActor = mScene->GetActorByName("Ground");
       const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();

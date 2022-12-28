@@ -34,7 +34,7 @@ namespace Game
         Actor::PostLevelInit();
 
         const auto c_uiComponent = GetComponentsByType<UiComponent>().back();
-        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("arial", 3, glm::vec3(1, 0.0, 0.0), true, 0.3, 1, false);
+        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 3, glm::vec3(1, 0.0, 0.0), true, 0.3, 1, false);
         mDamageTextFieldWp = c_uiComponent->GetTextFieldById(dmgTextFieldId);
     }
 

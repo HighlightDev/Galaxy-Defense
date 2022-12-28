@@ -53,7 +53,7 @@ namespace EngineCore
 
         float GetSpaceWidth() const;
 
-        TextCharacter GetCharacter(const int32_t ascii) const;
+        TextCharacter GetCharacter(const int32_t utf8_code) const;
 
         /**
          * Read in the next line and store the variable values.

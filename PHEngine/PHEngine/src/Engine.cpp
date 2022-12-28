@@ -17,8 +17,7 @@
 #include "Core/CommonCore/Timer.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
-
-#include <TinyLogger/LogInterface.h>
+#include "Core/UtilityCore/StringExtendedFunctions.h"
 
 using namespace TinyLogger;
 using namespace IO;
