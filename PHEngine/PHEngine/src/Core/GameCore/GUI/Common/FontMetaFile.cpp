@@ -1,16 +1,14 @@
 #include "FontMetaFile.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
-#include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/IoCore/FileFacade.h"
 
-using namespace IO;
 using namespace EngineUtility;
 
 namespace EngineCore
 {
-    FontMetaFile::FontMetaFile(const std::string &pathToFile)
-        : mAspectRatio(0.0f),
+    FontMetaFile::FontMetaFile(const std::string &pathToFile, const float viewPortAspectRatio)
+        : mAspectRatio(viewPortAspectRatio),
           mVerticalPerPixelSize(0.0f),
           mHorizontalPerPixelSize(0.0f),
           mSpaceWidth(0.0f),
@@ -21,7 +19,6 @@ namespace EngineCore
           mValues(),
           mFileSrc()
     {
-        mAspectRatio = DisplayDeviceDataProvider::GetInstance()->GetWidthToHeightRatio();
         OpenFile(pathToFile);
         LoadPaddingData();
         LoadLineSizes();
@@ -127,6 +124,7 @@ namespace EngineCore
                 mMetaData.emplace(optResult->GetId(), *optResult);
             }
         }
+        assert(mSpaceWidth >= 0.000001f); // no width was set for space character
     }
 
     std::optional<TextCharacter> FontMetaFile::TryLoadCharacter(const int32_t imageSize)

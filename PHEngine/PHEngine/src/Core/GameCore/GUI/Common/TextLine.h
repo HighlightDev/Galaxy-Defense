@@ -9,10 +9,9 @@ namespace EngineCore
     /**
      * Represents a line of text during the loading of a text.
      */
-    class Line
+    class TextLine
     {
-
-        float mMaxLength;
+        float mMaxWidth;
 
         float mSpaceSize;
 
@@ -31,18 +30,19 @@ namespace EngineCore
          * @param maxLength
          *            - the screen-space maximum length of a line.
          */
-        Line(const float spaceWidth, const float fontSize, const float maxLength);
+        TextLine(const float spaceWidth, const float fontSize, const float maxWidth);
 
-        /**
-         * Attempt to add a word to the line. If the line can fit the word in
-         * without reaching the maximum line length then the word is added and the
-         * line length increased.
-         *
-         * @param word
-         *            - the word to try to add.
-         * @return {@code true} if the word has successfully been added to the line.
-         */
-        bool TryToAddWord(const Word &word);
+        TextLine(const TextLine &line) = default;
+
+        TextLine(TextLine &&line);
+
+        TextLine &operator=(TextLine &&line);
+
+        TextLine &operator=(const TextLine &line) = default;
+
+        bool IsEnoughSpaceForWord(const Word &word) const;
+
+        void AddWord(Word word);
         /**
          * @return The max length of the line.
          */

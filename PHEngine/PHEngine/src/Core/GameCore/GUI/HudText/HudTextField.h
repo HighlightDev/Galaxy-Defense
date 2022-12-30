@@ -8,14 +8,12 @@
 
 namespace EngineCore
 {
-    class TextField
-        : public std::enable_shared_from_this<TextField>
+    class HudTextField
+        : public std::enable_shared_from_this<HudTextField>
     {
         friend class UiComponent;
 
         int32_t mTextFieldId;
-
-        static size_t s_TotalTextFieldId;
 
         bool mIsVisible;
 
@@ -29,7 +27,7 @@ namespace EngineCore
 
         glm::vec2 mPosition;
 
-        float mLineMaxSize;
+        float mLineMaxWidth;
 
         int32_t mNumberOfLines;
 
@@ -40,7 +38,7 @@ namespace EngineCore
         glm::vec2 mScreenSpaceSize;
 
     public:
-        TextField(const std::string &fontName,
+        HudTextField(const std::string &fontName,
                   const float fontSize,
                   const std::string &text,
                   const glm::vec3 &color,
@@ -49,14 +47,14 @@ namespace EngineCore
                   const int32_t numberOfLines,
                   const bool isCenteredText);
 
-        TextField(const std::string &fontName,
+        HudTextField(const std::string &fontName,
                   const float fontSize,
                   const glm::vec3 &color,
                   const float lineMaxSize,
                   const int32_t numberOfLines,
                   const bool isCenteredText);
 
-        std::shared_ptr<TextField> GetSharedFromThis() const;
+        std::shared_ptr<HudTextField> GetSharedFromThis() const;
 
         int32_t GetTextFieldId() const;
 

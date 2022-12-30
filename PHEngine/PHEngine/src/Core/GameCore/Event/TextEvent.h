@@ -5,17 +5,17 @@
 #include "TEvent.h"
 #include "eTextEventEnums.h"
 #include "Policy/Policies.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 using namespace EngineCore;
 
 namespace Event
 {
    class TextRegisterEvent
-       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>
+       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>
    {
    public:
-      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>::Event_t;
 
       std::string ToString() const override {
          return "TextRegisterEvent";
@@ -23,10 +23,10 @@ namespace Event
    };
 
    class TextDataChangedEvent
-       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>
+       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>
    {
    public:
-      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>::Event_t;
 
       std::string ToString() const override {
          return "TextDataChangedEvent";

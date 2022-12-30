@@ -24,16 +24,22 @@ namespace EngineCore
          */
         Word(const float fontSize);
 
+        Word(const Word &word) = default;
+
+        Word(Word &&word);
+
+        Word &operator=(Word &&word);
+
         /**
          * Adds a character to the end of the current word and increases the screen-space width of the word.
          * @param character - the character to be added.
          */
-        void AddCharacter(const TextCharacter& character);
+        void AddCharacter(const TextCharacter &character);
 
         /**
          * @return The list of characters in the word.
          */
-        const std::vector<TextCharacter>& GetCharacters() const;
+        const std::vector<TextCharacter> &GetCharacters() const;
 
         /**
          * @return The width of the word in terms of screen size.

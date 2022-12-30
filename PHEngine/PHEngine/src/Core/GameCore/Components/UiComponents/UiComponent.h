@@ -6,7 +6,7 @@
 #include <glm/vec3.hpp>
 
 #include "Core/GameCore/Components/Component.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 namespace EngineCore
 {
@@ -16,7 +16,7 @@ namespace EngineCore
         : public Component
     {
     protected:
-        std::vector<std::shared_ptr<TextField>> mTextFields;
+        std::vector<std::shared_ptr<HudTextField>> mTextFields;
 
     public:
         UiComponent(const ComponentData &data);
@@ -49,8 +49,8 @@ namespace EngineCore
 
         void DeleteTextField(const int32_t textFieldId);
 
-        std::weak_ptr<TextField> GetTextFieldById(const int32_t textFieldId) const;
+        std::weak_ptr<HudTextField> GetTextFieldById(const int32_t textFieldId) const;
 
-        const std::vector<std::shared_ptr<TextField>> &GetTextFields() const;
+        const std::vector<std::shared_ptr<HudTextField>> &GetTextFields() const;
     };
 }

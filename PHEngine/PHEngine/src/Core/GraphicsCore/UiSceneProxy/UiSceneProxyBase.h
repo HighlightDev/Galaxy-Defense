@@ -54,9 +54,12 @@ namespace Graphics
 
             void SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy);
 
+            virtual void OnSceneProxyRegistered() = 0;
+
             virtual void Render() = 0;
 
             virtual void CleanUp() = 0;
+
         };
     }
 }

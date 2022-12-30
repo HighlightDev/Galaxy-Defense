@@ -201,9 +201,9 @@ namespace EngineCore
 
       void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
 
-      void RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
+      void RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
 
-      void UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField);
+      void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField);
 
       void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
@@ -213,7 +213,7 @@ namespace EngineCore
 
       void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
 
-      void TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType);
+      void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 

@@ -2,7 +2,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
@@ -34,7 +34,7 @@ namespace Game
         Actor::PostLevelInit();
 
         const auto c_uiComponent = GetComponentsByType<UiComponent>().back();
-        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 3, glm::vec3(1, 0.0, 0.0), true, 0.3, 1, false);
+        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(1, 0.0, 0.0), true, 0.3, 1, false);
         mDamageTextFieldWp = c_uiComponent->GetTextFieldById(dmgTextFieldId);
     }
 

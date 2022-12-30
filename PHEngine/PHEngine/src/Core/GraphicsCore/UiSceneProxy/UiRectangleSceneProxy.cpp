@@ -18,14 +18,18 @@ namespace Graphics
             : UiSceneProxyBase(uiRectangle),
               mColor(uiRectangle->GetColor())
         {
-            const auto &folderManager = FolderManager::GetInstance();
-            ShaderParams shaderParams("UiRectangle Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiRectangleFS.glsl", "", "", "", "");
-            mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
         }
 
         UiRectangleSceneProxy::~UiRectangleSceneProxy()
         {
             CleanUp();
+        }
+
+        void UiRectangleSceneProxy::OnSceneProxyRegistered()
+        {
+            const auto &folderManager = FolderManager::GetInstance();
+            ShaderParams shaderParams("UiRectangle Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiRectangleFS.glsl", "", "", "", "");
+            mUiRectangleShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiRectangleShader>(shaderParams);
         }
 
         void UiRectangleSceneProxy::Render()

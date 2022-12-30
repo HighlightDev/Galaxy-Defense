@@ -17,6 +17,7 @@
 #include "Core/GameCore/TextHandler.h"
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
+#include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -69,7 +70,7 @@ namespace Graphics
             mSpotlightProxiesVec(),
             mPlanarReflectionProxiesVec(),
             mGroupedByShadowAtlasLights(),
-            mFontHandler(),
+            mFontHandler(std::make_shared<FontHandler>()),
             mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(0, 0,
                                                                           DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                           DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
@@ -145,7 +146,7 @@ namespace Graphics
          for (const auto &font : fonts)
          {
             FontParams fontParams(font, font + ".fnt", font + ".png");
-            mFontHandler.RegisterFont(fontParams);
+            mFontHandler->RegisterFont(fontParams);
          }
       }
 
@@ -651,9 +652,9 @@ namespace Graphics
          glDisable(GL_CLIP_DISTANCE0);
       }
 
-      void DeferredShadingSceneRenderer::GuiTextPass()
+      void DeferredShadingSceneRenderer::HudTextPass()
       {
-         const auto &renderDataMap = mFontHandler.GetFontRenderDataMap();
+         const auto &renderDataMap = mFontHandler->GetFontRenderDataMap();
 
          RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
@@ -667,11 +668,12 @@ namespace Graphics
             m_fontShader->SetFontAtlasSlot(0);
             for (const auto &textField : textFields)
             {
-               if (textField->mIsVisible)
+               if (textField->GetIsVisible() &&
+                   eTextFieldProxyType::HUD_TEXT_FIELD == textField->GetTextFieldProxyType())
                {
-                  m_fontShader->SetPosition(textField->mPosition);
-                  m_fontShader->SetColor(textField->mColor);
-                  renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->mVertexStart, textField->mVerticesCount, GL_TRIANGLES);
+                  m_fontShader->SetPosition(textField->GetPosition());
+                  m_fontShader->SetColor(textField->GetColor());
+                  renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(textField->GetVertexStart(), textField->GetVerticesCount(), GL_TRIANGLES);
                }
             }
             m_fontShader->StopShader();
@@ -830,7 +832,7 @@ namespace Graphics
                if (mPostFxRenderer)
                   mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
 
-               GuiTextPass();
+               HudTextPass();
 
                GuiPass(sceneView);
                // TODO: rendering to render texture later....
@@ -982,29 +984,29 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
       {
-         mFontHandler.RegisterText(textFieldProxy);
+         mFontHandler->RegisterText(textFieldProxy);
       }
 
       void DeferredShadingSceneRenderer::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
       {
-         mFontHandler.UnregisterText(fontName, textFieldProxyId);
+         mFontHandler->UnregisterText(fontName, textFieldProxyId);
       }
 
       void DeferredShadingSceneRenderer::TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position)
       {
-         mFontHandler.TextPositionChanged(fontName, textFieldProxyId, position);
+         mFontHandler->TextPositionChanged(fontName, textFieldProxyId, position);
       }
 
       void DeferredShadingSceneRenderer::TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color)
       {
-         mFontHandler.TextColorChanged(fontName, textFieldProxyId, color);
+         mFontHandler->TextColorChanged(fontName, textFieldProxyId, color);
       }
 
       void DeferredShadingSceneRenderer::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
       {
-         mFontHandler.TextChanged(fontName, textFieldProxyId, text);
+         mFontHandler->TextChanged(fontName, textFieldProxyId, text);
 
-         if (mFontHandler.IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId))
+         if (mFontHandler->IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId))
          {
             static constexpr uint64_t creatorObjectId = 0;
             static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextChanged");
@@ -1016,14 +1018,14 @@ namespace Graphics
                                                          { sceneSp->GetTextHandler()
                                                                .GetTextFieldById(textFieldProxyId)
                                                                ->SetTextScreenSpaceSize(mFontHandler
-                                                                                            .GetTextScreenSpaceSize(fontName, textFieldProxyId)); }));
+                                                                                            ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); }));
             }
          }
       }
 
       void DeferredShadingSceneRenderer::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
       {
-         mFontHandler.TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
+         mFontHandler->TextVisibilityChanged(fontName, textFieldProxyId, bIsVisible);
       }
 
       void DeferredShadingSceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
@@ -1032,6 +1034,7 @@ namespace Graphics
                                       { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); });
          assert(canvasIt == mUiCanvasProxies.end());
          mUiCanvasProxies.emplace_back(canvasSceneProxy);
+         canvasSceneProxy->SetFontHandler(mFontHandler);
       }
 
       void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
@@ -1047,6 +1050,7 @@ namespace Graphics
          assert(canvasIt != mUiCanvasProxies.end());
          sceneProxy->SetCanvasSceneProxy((*canvasIt));
          (*canvasIt)->AddUiSceneProxy(sceneProxy);
+         sceneProxy->OnSceneProxyRegistered();
       }
 
       void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)

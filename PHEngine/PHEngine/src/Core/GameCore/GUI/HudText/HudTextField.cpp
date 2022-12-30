@@ -1,19 +1,15 @@
-#include "TextField.h"
+#include "HudTextField.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Event/TextEvent.h"
+#include "Core/GameCore/GUI/Common/UniqueFontTextIdGenerator.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/LoggerExtension.h"
-
-#include <TinyLogger/LogInterface.h>
 
 using namespace Event;
 using namespace TinyLogger;
 
 namespace EngineCore
 {
-  size_t TextField::s_TotalTextFieldId = 0;
-
-  TextField::TextField(const std::string &fontName,
+  HudTextField::HudTextField(const std::string &fontName,
                        const float fontSize,
                        const std::string &text,
                        const glm::vec3 &color,
@@ -28,7 +24,7 @@ namespace EngineCore
         mText(text),
         mColor(color),
         mPosition(position),
-        mLineMaxSize(lineMaxSize),
+        mLineMaxWidth(lineMaxSize),
         mNumberOfLines(numberOfLines),
         mIsCenteredText(isCenteredText),
         mIsRegistered(false),
@@ -36,7 +32,7 @@ namespace EngineCore
   {
   }
 
-  TextField::TextField(const std::string &fontName,
+  HudTextField::HudTextField(const std::string &fontName,
                        const float fontSize,
                        const glm::vec3 &color,
                        const float lineMaxSize,
@@ -49,88 +45,88 @@ namespace EngineCore
         mText(),
         mColor(color),
         mPosition(),
-        mLineMaxSize(lineMaxSize),
+        mLineMaxWidth(lineMaxSize),
         mNumberOfLines(numberOfLines),
         mIsCenteredText(isCenteredText),
         mIsRegistered(false)
   {
   }
 
-  void TextField::RegisterText(const bool receiveUpdateOnTextScreenSpaceSizeChanged)
+  void HudTextField::RegisterText(const bool receiveUpdateOnTextScreenSpaceSizeChanged)
   {
     assert(!mIsRegistered);
-    mTextFieldId = s_TotalTextFieldId++;
+    mTextFieldId = UniqueFontTextIdGenerator::GenerateUniqueFontTextId();
     mIsRegistered = true;
     TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER, receiveUpdateOnTextScreenSpaceSizeChanged);
 
-    LogInfo( "TextField::RegisterText => Registered text with id = ", mTextFieldId);
+    LogInfo("HudTextField::RegisterText => Registered text with id = ", mTextFieldId);
   }
 
-  void TextField::UnregisterText()
+  void HudTextField::UnregisterText()
   {
     assert(mIsRegistered);
     mIsRegistered = false;
     TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER, false);
 
-    LogInfo( "TextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
+    LogInfo( "HudTextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
   }
 
-  std::string TextField::GetText() const
+  std::string HudTextField::GetText() const
   {
     return mText;
   }
 
-  int32_t TextField::GetTextFieldId() const
+  int32_t HudTextField::GetTextFieldId() const
   {
     return mTextFieldId;
   }
 
-  bool TextField::GetIsVisible() const
+  bool HudTextField::GetIsVisible() const
   {
     return mIsVisible;
   }
 
-  std::string TextField::GetFontName() const
+  std::string HudTextField::GetFontName() const
   {
     return mFontName;
   }
 
-  float TextField::GetFontSize() const
+  float HudTextField::GetFontSize() const
   {
     return mFontSize;
   }
 
-  glm::vec3 TextField::GetColor() const
+  glm::vec3 HudTextField::GetColor() const
   {
     return mColor;
   }
 
-  glm::vec2 TextField::GetPosition() const
+  glm::vec2 HudTextField::GetPosition() const
   {
     return mPosition;
   }
 
-  float TextField::GetLineMaxSize() const
+  float HudTextField::GetLineMaxSize() const
   {
-    return mLineMaxSize;
+    return mLineMaxWidth;
   }
 
-  int32_t TextField::GetNumberOfLines() const
+  int32_t HudTextField::GetNumberOfLines() const
   {
     return mNumberOfLines;
   }
 
-  bool TextField::GetIsCentered() const
+  bool HudTextField::GetIsCentered() const
   {
     return mIsCenteredText;
   }
 
-  bool TextField::GetIsRegistered() const
+  bool HudTextField::GetIsRegistered() const
   {
     return mIsRegistered;
   }
 
-  void TextField::SetText(const std::string &text)
+  void HudTextField::SetText(const std::string &text)
   {
     if (mText != text)
     {
@@ -145,7 +141,7 @@ namespace EngineCore
     }
   }
 
-  void TextField::SetVisibility(const bool isVisible)
+  void HudTextField::SetVisibility(const bool isVisible)
   {
     if (mIsVisible != isVisible)
     {
@@ -160,7 +156,7 @@ namespace EngineCore
     }
   }
 
-  void TextField::SetColor(const glm::vec3 &color)
+  void HudTextField::SetColor(const glm::vec3 &color)
   {
     mColor = color;
 
@@ -172,7 +168,7 @@ namespace EngineCore
     }
   }
 
-  void TextField::SetPosition(const glm::vec2 &position)
+  void HudTextField::SetPosition(const glm::vec2 &position)
   {
     mPosition = position;
 
@@ -184,12 +180,12 @@ namespace EngineCore
     }
   }
 
-  void TextField::SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize)
+  void HudTextField::SetTextScreenSpaceSize(const glm::vec2& screenSpaceSize)
   {
     mScreenSpaceSize = screenSpaceSize;
   }
 
-  glm::vec2 TextField::GetScreenSpaceSize() const
+  glm::vec2 HudTextField::GetScreenSpaceSize() const
   {
     return mScreenSpaceSize;
   }

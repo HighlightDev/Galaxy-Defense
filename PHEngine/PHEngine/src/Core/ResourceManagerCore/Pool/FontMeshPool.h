@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/ResourceManagerCore/Pool/PoolBase.h"
-#include "Core/GameCore/GUI/Text/TextMesh.h"
-#include "Core/GameCore/GUI/Text/FontParams.h"
+#include "Core/GameCore/GUI/Common/TextMesh.h"
+#include "Core/GameCore/GUI/Common/FontParams.h"
 #include "Core/ResourceManagerCore/Policy/FontMeshAllocationPolicy.h"
 
 using namespace Graphics::Mesh;

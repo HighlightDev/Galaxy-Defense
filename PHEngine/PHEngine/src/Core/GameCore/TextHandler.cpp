@@ -26,7 +26,7 @@ namespace EngineCore
         mSceneWp = sceneWp;
     }
 
-    std::shared_ptr<TextField> TextHandler::GetTextFieldById(const int32_t fieldId) const
+    std::shared_ptr<HudTextField> TextHandler::GetTextFieldById(const int32_t fieldId) const
     {
         auto foundIt = std::find_if(mRegisteredTexts.begin(), mRegisteredTexts.end(), [=](const auto &textField)
                                     { return fieldId == textField->GetTextFieldId(); });

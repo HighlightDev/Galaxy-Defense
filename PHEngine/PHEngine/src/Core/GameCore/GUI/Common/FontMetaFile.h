@@ -23,7 +23,6 @@ namespace EngineCore
 
         static constexpr int32_t DESIRED_PADDING = 3;
 
-        static constexpr float LINE_HEIGHT = 0.03f;
         static constexpr int32_t SPACE_ASCII = 32;
 
         static constexpr char SPLITTER = ' ';
@@ -43,13 +42,16 @@ namespace EngineCore
         std::list<std::string> mFileSrc;
 
     public:
+        static constexpr float LINE_HEIGHT = 0.005f;
+
+    public:
         /**
          * Opens a font file in preparation for reading.
          *
          * @param pathToFile
          *            - the font file.
          */
-        FontMetaFile(const std::string &pathToFile);
+        FontMetaFile(const std::string &pathToFile, const float viewPortAspectRatio);
 
         float GetSpaceWidth() const;
 
@@ -123,7 +125,7 @@ namespace EngineCore
         std::optional<TextCharacter> TryLoadCharacter(const int32_t imageSize);
 
         float GetHorizontalPerPixelSize() const;
-        
+
         float GetVerticalPerPixelSize() const;
     };
 }

@@ -35,6 +35,8 @@ namespace Graphics
             void SetColor(const glm::vec4& color);
 
             void CleanUp() override;
+
+            void OnSceneProxyRegistered() override;
         };
     }
 }

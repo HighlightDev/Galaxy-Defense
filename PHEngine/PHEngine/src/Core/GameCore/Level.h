@@ -4,7 +4,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 using namespace Thread;
 
@@ -15,8 +15,8 @@ namespace EngineCore
    {
 #ifdef DEBUG
       std::shared_ptr<Actor> mDebugDummyActor;
-      std::weak_ptr<TextField> mRtTextField;
-      std::weak_ptr<TextField> mGtTextField;
+      std::weak_ptr<HudTextField> mRtTextField;
+      std::weak_ptr<HudTextField> mGtTextField;
 #endif
 
    protected:

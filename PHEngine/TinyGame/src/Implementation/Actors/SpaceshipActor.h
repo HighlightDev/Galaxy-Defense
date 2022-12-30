@@ -12,7 +12,7 @@ using namespace EngineCore;
 
 namespace EngineCore
 {
-    class TextField;
+    class HudTextField;
 }
 
 enum class eSpaceshipActivityState
@@ -33,7 +33,7 @@ namespace Game
 
         size_t mLifePoints;
 
-        std::weak_ptr<TextField> mDamageTextFieldWp;
+        std::weak_ptr<HudTextField> mDamageTextFieldWp;
 
         float mDamageEffectTimePassed;
 

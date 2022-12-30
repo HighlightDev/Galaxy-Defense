@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 
-#include "Core/GameCore/GUI/Text/TextMesh.h"
-#include "Core/GameCore/GUI/Text/FontParams.h"
+#include "Core/GameCore/GUI/Common/TextMesh.h"
+#include "Core/GameCore/GUI/Common/FontParams.h"
 
 using namespace Graphics::Mesh;
 using namespace EngineCore;

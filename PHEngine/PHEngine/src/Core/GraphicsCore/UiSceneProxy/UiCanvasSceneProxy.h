@@ -7,6 +7,8 @@
 
 namespace EngineCore
 {
+    class FontHandler;
+
     namespace GUI
     {
         class UiCanvas;
@@ -31,8 +33,10 @@ namespace Graphics
 
             std::vector<std::shared_ptr<UiSceneProxyBase>> mUiProxies;
 
+            std::weak_ptr<::EngineCore::FontHandler> mFontHandlerWp;
+
         public:
-            UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas* canvas);
+            UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas *canvas);
 
             void AddUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy);
 
@@ -50,15 +54,19 @@ namespace Graphics
 
             bool IsVisible() const;
 
-            void SetAbsoluteOrigin(const glm::ivec2& position);
+            void SetAbsoluteOrigin(const glm::ivec2 &position);
 
-            void SetWidthHeight(const glm::ivec2& widthHeight);
+            void SetWidthHeight(const glm::ivec2 &widthHeight);
 
             glm::ivec2 GetAbsoluteOrigin() const;
 
             glm::ivec2 GetWidthHeight() const;
 
             std::shared_ptr<UiSceneProxyBase> GetSceneProxyById(const size_t uid) const;
+
+            void SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler> &fontHandlerWp);
+
+            std::weak_ptr<::EngineCore::FontHandler> GetFontHandler() const;
         };
     }
 }

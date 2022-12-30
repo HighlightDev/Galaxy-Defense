@@ -1,10 +1,12 @@
 #include "UiCanvasSceneProxy.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GameCore/GUI/Common/FontHandler.h"
 
 #include <algorithm>
 
 using namespace EngineCore::GUI;
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -14,7 +16,8 @@ namespace Graphics
             : mUiItemUId(canvas->GetUId()),
               mIsVisible(false),
               mAbsoluteOrigin(canvas->GetAbsoluteOrigin()),
-              mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight()))
+              mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight())),
+              mFontHandlerWp()
         {
         }
 
@@ -94,6 +97,16 @@ namespace Graphics
             const auto it = std::find_if(mUiProxies.begin(), mUiProxies.end(), [&](const auto &proxy)
                                          { return uid == proxy->GetUiItemUId(); });
             return (mUiProxies.end() != it ? *it : nullptr);
+        }
+
+        void UiCanvasSceneProxy::SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler> &fontHandlerWp)
+        {
+            mFontHandlerWp = fontHandlerWp;
+        }
+
+        std::weak_ptr<::EngineCore::FontHandler> UiCanvasSceneProxy::GetFontHandler() const
+        {
+            return mFontHandlerWp;
         }
     }
 }

@@ -41,7 +41,7 @@ namespace EngineCore
                                         const int32_t numberOfLines,
                                         const bool isCenteredText)
     {
-        const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, isCenteredText);
+        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, isCenteredText);
         mTextFields.emplace_back(textFieldSp);
         textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();
@@ -55,7 +55,7 @@ namespace EngineCore
                                              const int32_t numberOfLines,
                                              const bool isCenteredText)
     {
-        const auto &textFieldSp = std::make_shared<TextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, isCenteredText);
+        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, isCenteredText);
         mTextFields.emplace_back(textFieldSp);
         textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();
@@ -71,7 +71,7 @@ namespace EngineCore
         mTextFields.erase(it);
     }
 
-    std::weak_ptr<TextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
+    std::weak_ptr<HudTextField> UiComponent::GetTextFieldById(const int32_t textFieldId) const
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
@@ -80,7 +80,7 @@ namespace EngineCore
         return *it;
     }
 
-    const std::vector<std::shared_ptr<TextField>> &UiComponent::GetTextFields() const
+    const std::vector<std::shared_ptr<HudTextField>> &UiComponent::GetTextFields() const
     {
         return mTextFields;
     }

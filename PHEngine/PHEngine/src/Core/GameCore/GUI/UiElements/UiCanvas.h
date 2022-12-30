@@ -77,8 +77,9 @@ namespace EngineCore
             std::weak_ptr<IUiTransformable> GetRootParent() const override;
             std::weak_ptr<IUiTransformable> GetParent() const override;
             std::string GetName() const override;
-            bool IsVisible() const override;
+            std::weak_ptr<::EngineCore::Scene> GetScene() const override;
             BoundingBox2D GetBoundingArea() const override;
+            bool IsVisible() const override;
             bool IsTransformDirty() const override;
             bool IsInputSystemInitialized() const;
 
@@ -87,9 +88,7 @@ namespace EngineCore
             void SetWidth(const size_t width) override;
             void SetHeight(const size_t height) override;
             void SetIsVisible(const bool isVisible) override;
-
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
-            std::weak_ptr<::EngineCore::Scene> GetScene() const override;
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);

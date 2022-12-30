@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Event/TextEvent.h"
 
 using namespace Event;
@@ -17,7 +17,7 @@ namespace EngineCore
           public TextDataChangedEvent::Event_t
     {
 
-        std::vector<std::shared_ptr<TextField>> mRegisteredTexts;
+        std::vector<std::shared_ptr<HudTextField>> mRegisteredTexts;
 
     public:
         TextHandler();
@@ -28,7 +28,7 @@ namespace EngineCore
 
         void SetScene(const std::weak_ptr<Scene> &sceneWp);
 
-        std::shared_ptr<TextField> GetTextFieldById(const int32_t fieldId) const;
+        std::shared_ptr<HudTextField> GetTextFieldById(const int32_t fieldId) const;
 
     protected:
         void ProcessEvent(const TextRegisterEvent::EventData_t &data) override;

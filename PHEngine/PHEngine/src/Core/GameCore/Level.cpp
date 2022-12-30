@@ -80,20 +80,20 @@ namespace EngineCore
       mDebugDummyActor->AddComponent(c_uiComponent);
       mScene->AddActor(mDebugDummyActor);
 
-      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 1, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, false);
-      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 1, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
+      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, false);
+      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
       mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
       mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
 
       if (const auto &rtTextSp = mRtTextField.lock())
       {
-         rtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
+         rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
          rtTextSp->SetVisibility(true);
       }
 
       if (const auto &gtTextSp = mGtTextField.lock())
       {
-         gtTextSp->SetPosition(glm::vec2(0.0f, 0.1f));
+         gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
          gtTextSp->SetVisibility(true);
       }
 #endif

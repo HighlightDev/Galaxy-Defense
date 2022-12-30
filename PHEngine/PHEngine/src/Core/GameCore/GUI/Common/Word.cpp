@@ -9,6 +9,25 @@ namespace EngineCore
     {
     }
 
+    Word::Word(Word &&word)
+        : mCharacters(std::move(word.mCharacters)),
+          mWidth(word.mWidth),
+          mFontSize(word.mFontSize)
+    {
+    }
+
+    Word &Word::operator=(Word &&word)
+    {
+        if (&word != this)
+        {
+            mCharacters = std::move(word.mCharacters);
+            mWidth = word.mWidth;
+            mFontSize = word.mFontSize;
+        }
+
+        return *this;
+    }
+
     /**
      * Adds a character to the end of the current word and increases the screen-space width of the word.
      * @param character - the character to be added.

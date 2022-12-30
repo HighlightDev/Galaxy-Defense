@@ -1,9 +1,10 @@
 #include "FontHandler.h"
+#include "TextMeshCreator.h"
 #include "Core/ResourceManagerCore/Pool/FontMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
-#include "Core/GameCore/GUI/Text/TextMeshCreator.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include <algorithm>
 
@@ -34,11 +35,11 @@ namespace EngineCore
     void FontRenderData::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
     {
         const auto it = std::find_if(mTextFields.begin(), mTextFields.end(), [&](const auto &mProxy)
-                                     { return textFieldProxy->mTextFieldId == mProxy->mTextFieldId; });
+                                     { return textFieldProxy->GetTextFieldId() == mProxy->GetTextFieldId(); });
         assert(it == mTextFields.end());
         mTextFields.emplace_back(textFieldProxy);
 
-        if (textFieldProxy->mText != "") // if text is empty - skip allocation
+        if (textFieldProxy->GetText() != "") // if text is empty - skip allocation
         {
             AllocateTextSpace(textFieldProxy);
         }
@@ -47,12 +48,12 @@ namespace EngineCore
     void FontRenderData::UnregisterText(const int32_t textFieldId)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                          { return textFieldId == mProxy->mTextFieldId; });
+                                          { return textFieldId == mProxy->GetTextFieldId(); });
         assert(foundIt != mTextFields.end());
 
         auto deleteTextProxy = *foundIt;
         const auto removeIt = std::remove_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                             { return textFieldId == mProxy->mTextFieldId; });
+                                             { return textFieldId == mProxy->GetTextFieldId(); });
 
         mTextFields.erase(removeIt);
 
@@ -62,30 +63,30 @@ namespace EngineCore
     void FontRenderData::TextPositionChanged(const int32_t textFieldId, const glm::vec2 &position)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                          { return textFieldId == mProxy->mTextFieldId; });
+                                          { return textFieldId == mProxy->GetTextFieldId(); });
         if (foundIt != mTextFields.end())
         {
-            (*foundIt)->mPosition = position;
+            (*foundIt)->SetPosition(position);
         }
     }
 
     void FontRenderData::TextColorChanged(const int32_t textFieldProxyId, const glm::vec3 &color)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                          { return textFieldProxyId == mProxy->mTextFieldId; });
+                                          { return textFieldProxyId == mProxy->GetTextFieldId(); });
         if (foundIt != mTextFields.end())
         {
-            (*foundIt)->mColor = color;
+            (*foundIt)->SetColor(color);
         }
     }
 
     void FontRenderData::TextChanged(const int32_t textFieldProxyId, const std::string &text)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                          { return textFieldProxyId == mProxy->mTextFieldId; });
+                                          { return textFieldProxyId == mProxy->GetTextFieldId(); });
         if (foundIt != mTextFields.end())
         {
-            (*foundIt)->mText = text;
+            (*foundIt)->SetText(text);
         }
 
         ReallocateTextSpace();
@@ -94,10 +95,10 @@ namespace EngineCore
     void FontRenderData::TextVisibilityChanged(const int32_t textFieldProxyId, const bool isVisible)
     {
         const auto foundIt = std::find_if(mTextFields.begin(), mTextFields.end(), [=](const auto &mProxy)
-                                          { return textFieldProxyId == mProxy->mTextFieldId; });
-        if (foundIt != mTextFields.end() && (*foundIt)->mText != "")
+                                          { return textFieldProxyId == mProxy->GetTextFieldId(); });
+        if (foundIt != mTextFields.end() && (*foundIt)->GetText() != "")
         {
-            (*foundIt)->mIsVisible = isVisible;
+            (*foundIt)->SetIsVisible(isVisible);
         }
     }
 
@@ -112,15 +113,15 @@ namespace EngineCore
 
         // positions
         const size_t positionOffset = mPositionChunkData.mCurrentChunkOffset;
-        textFieldProxy->mVertexStart = positionOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize());
+        textFieldProxy->SetVertexStart(positionOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()));
         const size_t positionSizeUpdate = vertexPositions.size() * positionVBO->GetElementByteSize();
         assert(positionOffset + positionSizeUpdate <= mPositionChunkData.mTotalChunkSize);
         positionVBO->BindVBO();
         positionVBO->BufferSubData(positionOffset, positionSizeUpdate, vertexPositions.data());
         mPositionChunkData.mCurrentChunkOffset = positionOffset + positionSizeUpdate;
-        textFieldProxy->mPositionChunkOffset = positionOffset;
-        textFieldProxy->mPositionChunkSize = positionSizeUpdate;
-        textFieldProxy->mVerticesCount = mPositionChunkData.mCurrentChunkOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()) - textFieldProxy->mVertexStart;
+        textFieldProxy->SetPositionChunkOffset(positionOffset);
+        textFieldProxy->SetPositionChunkSize(positionSizeUpdate);
+        textFieldProxy->SetVerticesCount(mPositionChunkData.mCurrentChunkOffset / (positionVBO->GetElementByteSize() * positionVBO->GetVectorSize()) - textFieldProxy->GetVertexStart());
 
         // texture coordinates
         const size_t texCoordinatesOffset = mTextureCoordinatesChunkData.mCurrentChunkOffset;
@@ -129,10 +130,10 @@ namespace EngineCore
         textureCoordinatesVBO->BindVBO();
         textureCoordinatesVBO->BufferSubData(texCoordinatesOffset, texCoordinatesSizeUpdate, textCoordinates.data());
         mTextureCoordinatesChunkData.mCurrentChunkOffset = texCoordinatesOffset + texCoordinatesSizeUpdate;
-        textFieldProxy->mTextureCoordinatesChunkOffset = texCoordinatesOffset;
-        textFieldProxy->mTextureCoordinatesChunkSize = texCoordinatesSizeUpdate;
-        textFieldProxy->mCreatedMeshTextWidth = textMesh.mTextWidth;
-        textFieldProxy->mCreatedMeshTextHeight = textMesh.mTextHeight;
+        textFieldProxy->SetTextureCoordinatesChunkOffset(texCoordinatesOffset);
+        textFieldProxy->SetTextureCoordinatesChunkSize(texCoordinatesSizeUpdate);
+        textFieldProxy->SetCreatedMeshTextWidth(textMesh.mTextWidth);
+        textFieldProxy->SetCreatedMeshTextHeight(textMesh.mTextHeight);
     }
 
     void FontRenderData::AllocateTextSpace(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
@@ -158,7 +159,7 @@ namespace EngineCore
 
         for (auto &textProxy : mTextFields)
         {
-            if (textProxy->mText != "") // if text is empty - skip allocation
+            if (textProxy->GetText() != "") // if text is empty - skip allocation
             {
                 FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
             }
@@ -171,7 +172,7 @@ namespace EngineCore
         auto *const textureCoordinatesVBO = mTextMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
         assert(positionVBO && textureCoordinatesVBO);
 
-        if (0 == removeTextFieldProxy->mPositionChunkOffset) // text that should be removed is at the beginning
+        if (0 == removeTextFieldProxy->GetPositionChunkOffset()) // text that should be removed is at the beginning
         {
             mPositionChunkData.mCurrentChunkOffset = 0; // start filling buffer from the beginning
             mTextureCoordinatesChunkData.mCurrentChunkOffset = 0;
@@ -188,12 +189,12 @@ namespace EngineCore
                          mTextFields.end(),
                          std::back_inserter(textFieldProxiesToReallocate),
                          [&](const auto &textField)
-                         { return textField->mPositionChunkOffset > removeTextFieldProxy->mPositionChunkOffset; });
+                         { return textField->GetPositionChunkOffset() > removeTextFieldProxy->GetPositionChunkOffset(); });
 
             if (textFieldProxiesToReallocate.size()) // if need to reallocate for existing text
             {
-                mPositionChunkData.mCurrentChunkOffset = removeTextFieldProxy->mPositionChunkOffset;
-                mTextureCoordinatesChunkData.mCurrentChunkOffset = removeTextFieldProxy->mTextureCoordinatesChunkOffset;
+                mPositionChunkData.mCurrentChunkOffset = removeTextFieldProxy->GetPositionChunkOffset();
+                mTextureCoordinatesChunkData.mCurrentChunkOffset = removeTextFieldProxy->GetTextureCoordinatesChunkOffset();
                 for (auto &textProxy : textFieldProxiesToReallocate)
                 {
                     FontBufferSubData(textProxy, positionVBO, textureCoordinatesVBO);
@@ -201,8 +202,8 @@ namespace EngineCore
             }
             else
             {
-                mPositionChunkData.mCurrentChunkOffset -= removeTextFieldProxy->mPositionChunkSize;
-                mTextureCoordinatesChunkData.mCurrentChunkOffset -= removeTextFieldProxy->mTextureCoordinatesChunkSize;
+                mPositionChunkData.mCurrentChunkOffset -= removeTextFieldProxy->GetPositionChunkSize();
+                mTextureCoordinatesChunkData.mCurrentChunkOffset -= removeTextFieldProxy->GetTextureCoordinatesChunkSize();
             }
         }
 
@@ -249,7 +250,7 @@ namespace EngineCore
     {
         const auto it = std::find_if(
             mTextFields.begin(), mTextFields.end(), [=](const auto &textFieldSp)
-            { return textFieldSp->mTextFieldId == textFieldId; });
+            { return textFieldSp->GetTextFieldId() == textFieldId; });
         assert(it != mTextFields.end());
         return *it;
     }
@@ -265,7 +266,8 @@ namespace EngineCore
 
         const auto &fontMesh = FontMeshPool::GetInstance()->GetOrAllocateResource(fontParams);
         const auto &fontTextureAtlas = TexturePool::GetInstance()->GetOrAllocateResource(fontParams.FontTextureAtlas);
-        const auto &fontDescriptorFile = std::make_shared<FontMetaFile>(FolderManager::GetInstance()->GetFontsPath() + fontParams.FontDescriptorFile);
+        const auto &fontDescriptorFile = std::make_shared<FontMetaFile>(FolderManager::GetInstance()->GetFontsPath() + fontParams.FontDescriptorFile,
+                                                                        DisplayDeviceDataProvider::GetInstance()->GetWidthToHeightRatio());
         mFontRenderDataMap.emplace(fontParams.FontName, std::make_shared<FontRenderData>(fontMesh, fontTextureAtlas, fontDescriptorFile));
 
         const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;
@@ -302,8 +304,8 @@ namespace EngineCore
 
     void FontHandler::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
     {
-        assert(mFontRenderDataMap.count(textFieldProxy->mFontName));
-        mFontRenderDataMap.at(textFieldProxy->mFontName)->RegisterText(textFieldProxy);
+        assert(mFontRenderDataMap.count(textFieldProxy->GetFontName()));
+        mFontRenderDataMap.at(textFieldProxy->GetFontName())->RegisterText(textFieldProxy);
     }
 
     void FontHandler::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
@@ -339,25 +341,25 @@ namespace EngineCore
     float FontHandler::GetTextWidth(const std::string &fontName, const int32_t textFieldProxyId) const
     {
         assert(mFontRenderDataMap.count(fontName));
-        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mCreatedMeshTextWidth;
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidth();
     }
 
     float FontHandler::GetTextHeight(const std::string &fontName, const int32_t textFieldProxyId) const
     {
         assert(mFontRenderDataMap.count(fontName));
-        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mCreatedMeshTextHeight;
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeight();
     }
 
-    bool FontHandler::IsTextSubscribedOnSizeChangeUpdate(const std::string& fontName, const int32_t textFieldProxyId) const
+    bool FontHandler::IsTextSubscribedOnSizeChangeUpdate(const std::string &fontName, const int32_t textFieldProxyId) const
     {
         assert(mFontRenderDataMap.count(fontName));
-        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->mIsSubscribedOnTextScreenSpaceSizeUpdate;
+        return mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetIsSubscribedOnTextScreenSpaceSizeUpdate();
     }
 
     glm::vec2 FontHandler::GetTextScreenSpaceSize(const std::string &fontName, const int32_t textFieldProxyId) const
     {
         assert(mFontRenderDataMap.count(fontName));
         const auto &textFiledSp = mFontRenderDataMap.at(fontName)->GetTextFieldById(textFieldProxyId);
-        return glm::vec2(textFiledSp->mCreatedMeshTextWidth, textFiledSp->mCreatedMeshTextHeight);
+        return glm::vec2(textFiledSp->GetCreatedMeshTextWidth(), textFiledSp->GetCreatedMeshTextHeight());
     }
 }

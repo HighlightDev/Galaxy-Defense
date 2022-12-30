@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UiItemBase.h"
-#include "Core/GraphicsCore/Texture/ITexture.h"
 
 namespace Graphics
 {
@@ -11,33 +10,26 @@ namespace Graphics
     }
 }
 
-using namespace Graphics::Texture;
-
 namespace EngineCore
 {
     class UiCanvas;
+
     namespace GUI
     {
-        class UiImage : public UiItemBase
+        class UiLabel : public UiItemBase
         {
-            std::string mTextureSrc;
+            std::string mText;
             
-            std::shared_ptr<ITexture> mTexture;
-
             float mOpacity;
 
         public:
-            explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
+            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
 
-            ~UiImage() override;
+            ~UiLabel() override;
 
-            void SetTextureSrc(const std::string &textureSrc);
+            void SetText(const std::string &text);
 
-            void SetTexture(const std::shared_ptr<ITexture> &texture);
-
-            std::string GetTextureSrc() const;
-
-            std::shared_ptr<ITexture> GetTexture() const;
+            std::string GetText() const;
 
             void SetOpacity(const float opacity);
 
@@ -54,8 +46,6 @@ namespace EngineCore
 
         private:
             void SyncDataOnRenderThread();
-
-            void ReallocateTexture();
         };
     }
 }

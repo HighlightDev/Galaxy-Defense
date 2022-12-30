@@ -3,6 +3,8 @@
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/LoggerExtension.h"
 
+#include <algorithm>
+
 namespace EngineCore
 {
 	TextMeshCreator::TextMeshCreator(const std::shared_ptr<FontMetaFile> &metaData)
@@ -10,60 +12,70 @@ namespace EngineCore
 	{
 	}
 
+	Word TextMeshCreator::CreateEmptyWord(const std::shared_ptr<TextFieldProxy> &textField) const
+	{
+		return Word(textField->GetFontSize());
+	}
+
+	TextLine TextMeshCreator::CreateEmptyLine(const std::shared_ptr<TextFieldProxy> &textField) const
+	{
+		return TextLine(mMetaData->GetSpaceWidth(), textField->GetFontSize(), textField->GetLineMaxWidth());
+	}
+
 	TextMeshData TextMeshCreator::CreateTextMesh(const std::shared_ptr<TextFieldProxy> &text)
 	{
 		return CreateQuadVertices(text, CreateStructure(text));
 	}
 
-	std::vector<Line> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &textField)
+	std::vector<TextLine> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &textField)
 	{
-		const auto& text = textField->mText;
-		std::vector<Line> lines;
-		Line currentLine(mMetaData->GetSpaceWidth(), textField->mFontSize, textField->mLineMaxSize);
-		Word currentWord(textField->mFontSize);
+		const auto& text = textField->GetText();
+		assert(text.size()); // empty text
 
-		const auto& utf8_vector = EngineUtility::ExtractUtf8FromUnicodeString(text);
+		std::vector<TextLine> resultTextLines;
+		TextLine currentLine = CreateEmptyLine(textField);
+		Word currentWord = CreateEmptyWord(textField);
 
-		for (const auto &utf8_str : utf8_vector)
+		auto utf8_vector = EngineUtility::ExtractUtf8FromUnicodeString(text);
+		std::vector<int32_t> utf8_codes;
+		std::transform(utf8_vector.begin(), utf8_vector.end(), std::back_inserter(utf8_codes),
+					   [](const auto &utf8_char)
+					   { return EngineUtility::Utf8_To_Unicode(utf8_char); });
+
+		// iterate all characters and accumulate words
+		for (const auto &utf8_code : utf8_codes)
 		{
-			const auto utf8_code = EngineUtility::Utf8_To_Unicode(utf8_str);
-
-			if (0 == utf8_code)
-				continue;
-
-			if (utf8_code == SPACE_ASCII)
+			if (utf8_code == SPACE_UTF8_CODE)
 			{
-				const bool bIsAdded = currentLine.TryToAddWord(currentWord);
-				if (!bIsAdded)
+				if (!currentLine.IsEnoughSpaceForWord(currentWord))
 				{
-					lines.emplace_back(currentLine);
-					currentLine = Line(mMetaData->GetSpaceWidth(), textField->mFontSize, textField->mLineMaxSize);
-					currentLine.TryToAddWord(currentWord);
+					resultTextLines.emplace_back(std::move(currentLine));
+					currentLine = CreateEmptyLine(textField);
+					assert(currentLine.IsEnoughSpaceForWord(currentWord)); // Word is extremely big, even to fit inside empty line
 				}
-				currentWord = Word(textField->mFontSize);
-				continue;
+				currentLine.AddWord(std::move(currentWord));
+				currentWord = CreateEmptyWord(textField);
 			}
-			TextCharacter character = mMetaData->GetCharacter(utf8_code);
-			currentWord.AddCharacter(character);
+			else
+			{
+				currentWord.AddCharacter(mMetaData->GetCharacter(utf8_code));
+			}
 		}
-		CompleteStructure(lines, currentLine, currentWord, textField);
-		return lines;
-	}
 
-	void TextMeshCreator::CompleteStructure(std::vector<Line> &lines, Line &currentLine, const Word &currentWord, const std::shared_ptr<TextFieldProxy> &text)
-	{
-		const bool bAdded = currentLine.TryToAddWord(currentWord);
-		if (!bAdded)
+		// add final word
+		if (!currentLine.IsEnoughSpaceForWord(currentWord))
 		{
-			lines.emplace_back(currentLine);
-			Line newLine(mMetaData->GetSpaceWidth(), text->mFontSize, text->mLineMaxSize);
-			newLine.TryToAddWord(currentWord);
-			lines.emplace_back(newLine);
+			resultTextLines.emplace_back(std::move(currentLine));
+			currentLine = CreateEmptyLine(textField);
+			assert(currentLine.IsEnoughSpaceForWord(currentWord)); // Word is extremely big, even to fit inside empty line
 		}
-		lines.emplace_back(currentLine);
+
+		currentLine.AddWord(std::move(currentWord));
+		resultTextLines.emplace_back(std::move(currentLine));
+		return resultTextLines;
 	}
 
-	TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextFieldProxy> &text, const std::vector<Line> &lines)
+	TextMeshData TextMeshCreator::CreateQuadVertices(const std::shared_ptr<TextFieldProxy> &text, const std::vector<TextLine> &lines)
 	{
 		float textWidth = 0.0f, textHeight = 0.0f;
 		float curserX = 0.0f;
@@ -72,12 +84,12 @@ namespace EngineCore
 		std::vector<float> textureCoords;
 		for (const auto &line : lines)
 		{
-			if (text->mIsCenteredText)
+			if (text->GetIsCenteredText())
 			{
 				const auto &lineMaxLengthInScreenCoords = line.GetMaxLength();
 				curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
 			}
-			const float fontSize = text->mFontSize;
+			const float fontSize = text->GetFontSize();
 
 			for (const auto &word : line.GetWords())
 			{
@@ -92,7 +104,7 @@ namespace EngineCore
 			}
 			textWidth = std::max(curserX, textWidth);
 			curserX = 0;
-			curserY += LINE_HEIGHT * fontSize;
+			curserY += FontMetaFile::LINE_HEIGHT * fontSize;
 		}
 		textHeight = curserY;
 		return TextMeshData(vertices, textureCoords, textWidth, textHeight);

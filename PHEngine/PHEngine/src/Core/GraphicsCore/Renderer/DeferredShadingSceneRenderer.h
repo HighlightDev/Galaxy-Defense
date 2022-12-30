@@ -35,7 +35,7 @@
 
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/InterThreadCommunicationMgr.h"
-#include "Core/GameCore/GUI/Text/FontHandler.h"
+#include "Core/GameCore/GUI/Common/FontHandler.h"
 
 #include <utility>
 
@@ -86,7 +86,7 @@ namespace Graphics
          std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
-         FontHandler mFontHandler;
+         std::shared_ptr<FontHandler> mFontHandler;
 
          std::unique_ptr<PostFxRenderer> mPostFxRenderer;
 
@@ -114,7 +114,7 @@ namespace Graphics
 
          void PlanarReflectionPass();
 
-         void GuiTextPass();
+         void HudTextPass();
 
          void GuiPass(const std::shared_ptr<SceneView> &sceneView);
 

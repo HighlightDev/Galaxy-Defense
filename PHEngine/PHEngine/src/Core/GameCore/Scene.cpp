@@ -6,12 +6,13 @@
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/SceneProxy/PlanarReflectionProxy.h"
-#include "Core/GameCore/GUI/Text/TextFieldProxy.h"
+#include "Core/GameCore/GUI/Common/TextFieldProxy.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Components/ComponentCreators/IComponentCreatable.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
+#include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
@@ -566,7 +567,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::RegisterText_OnRenderThread(const std::shared_ptr<TextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
+   void Scene::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
    {
       LogInfo("Scene::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
@@ -577,24 +578,23 @@ namespace EngineCore
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
-                                                     {
-                                                      std::shared_ptr<TextFieldProxy> textFieldProxy = std::make_shared<TextFieldProxy>();
-                                                      textFieldProxy->mIsVisible = textField->GetIsVisible();
-                                                      textFieldProxy->mTextFieldId = textField->GetTextFieldId();
-                                                      textFieldProxy->mText = textField->GetText();
-                                                      textFieldProxy->mFontName = textField->GetFontName();
-                                                      textFieldProxy->mPosition = textField->GetPosition();
-                                                      textFieldProxy->mColor = textField->GetColor();
-                                                      textFieldProxy->mFontSize = textField->GetFontSize();
-                                                      textFieldProxy->mIsCenteredText = textField->GetIsCentered();
-                                                      textFieldProxy->mLineMaxSize = textField->GetLineMaxSize();
-                                                      textFieldProxy->mNumberOfLines = textField->GetNumberOfLines();
-                                                      textFieldProxy->mIsSubscribedOnTextScreenSpaceSizeUpdate = subscribeOnTextScreenSpaceSizeUpdate;
-                                                      sceneRenderer->RegisterText(textFieldProxy); }));
+                                                     { sceneRenderer->RegisterText(TextFieldProxy::CreateTextFieldProxyInstance(
+                                                           textField->GetTextFieldId(),
+                                                           eTextFieldProxyType::HUD_TEXT_FIELD,
+                                                           textField->GetIsVisible(),
+                                                           textField->GetText(),
+                                                           textField->GetFontName(),
+                                                           textField->GetPosition(),
+                                                           textField->GetColor(),
+                                                           textField->GetFontSize(),
+                                                           textField->GetIsCentered(),
+                                                           textField->GetLineMaxSize(),
+                                                           textField->GetNumberOfLines(),
+                                                           subscribeOnTextScreenSpaceSizeUpdate)); }));
       }
    }
 
-   void Scene::UnregisterText_OnRenderThread(const std::shared_ptr<TextField> &textField)
+   void Scene::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField)
    {
       LogInfo("Scene::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
@@ -669,7 +669,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<TextField> &textField, const eTextChangedDataType textChangedDataType)
+   void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType)
    {
       const uint64_t creatorObjectId = textField->GetTextFieldId();
       static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");

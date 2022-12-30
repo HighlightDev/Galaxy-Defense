@@ -39,6 +39,8 @@ namespace Graphics
             void SetOpacity(const float opacity);
 
             void CleanUp() override;
+
+            void OnSceneProxyRegistered() override;
         };
     }
 }

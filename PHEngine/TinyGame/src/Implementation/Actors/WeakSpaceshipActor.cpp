@@ -2,7 +2,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 

@@ -144,6 +144,7 @@ namespace EngineCore
 
         void UiItemBase::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)
         {
+            assert(dstUiItemName != GetName());
             assert(UiAnchorPositionHelper::CheckIsAnchorBindingValid(srcAnchor, dstAnchor)); // Wrong anchor binding. srcAnchor
             assert(TryFindAncestryUiItem(dstUiItemName));                                    // Try to anchor to ui item which is not parent or sibling
 

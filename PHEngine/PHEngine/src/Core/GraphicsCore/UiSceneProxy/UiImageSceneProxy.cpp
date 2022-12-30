@@ -20,9 +20,6 @@ namespace Graphics
               mTexture(uiImage->GetTexture()),
               mOpacity(uiImage->GetOpacity())
         {
-            const auto &folderManager = FolderManager::GetInstance();
-            ShaderParams shaderParams("UiImage Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiImageFS.glsl", "", "", "", "");
-            mUiImageShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiImageShader>(shaderParams);
         }
 
         UiImageSceneProxy::~UiImageSceneProxy()
@@ -57,6 +54,13 @@ namespace Graphics
         void UiImageSceneProxy::CleanUp()
         {
             ShaderPool::GetInstance()->TryToFreeMemory(mUiImageShader);
+        }
+
+        void UiImageSceneProxy::OnSceneProxyRegistered()
+        {
+            const auto &folderManager = FolderManager::GetInstance();
+            ShaderParams shaderParams("UiImage Shader", folderManager->GetShadersPath() + "uiVS.glsl", folderManager->GetShadersPath() + "uiImageFS.glsl", "", "", "", "");
+            mUiImageShader = ShaderPool::GetInstance()->template GetOrAllocateResource<UiImageShader>(shaderParams);
         }
     }
 }

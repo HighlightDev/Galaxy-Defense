@@ -7,7 +7,7 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
-#include "Core/GameCore/GUI/Text/TextField.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Event/TextEvent.h"
 #include "Core/GameCore/Input/InputDeviceKeyData.h"
 
@@ -28,8 +28,8 @@ namespace Event
    template class TEvent<MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
-   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eRegisterType, bool>>;
-   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<TextField>, eTextChangedDataType>>;
+   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
+   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>;
 
    template class TEvent<NoDataEventPolicy>;
 
