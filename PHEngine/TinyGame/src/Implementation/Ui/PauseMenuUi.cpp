@@ -88,7 +88,7 @@ namespace Game
             continueButton->SetColor(buttonColor);
             continueButton->SetZOrder(2);
 
-            const auto &continueButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, continueButton);
+            const auto &continueButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, continueButton, "nimbus_mono");
             continueButton->AddUiItem(continueButtonLabel);
             continueButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, continueButton->GetName());
             continueButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, continueButton->GetName());
@@ -109,7 +109,7 @@ namespace Game
             exitToMainMenuButton->SetColor(buttonColor);
             exitToMainMenuButton->SetZOrder(2);
 
-            const auto &exitToMainMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitToMainMenuButton);
+            const auto &exitToMainMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitToMainMenuButton, "nimbus_mono");
             exitToMainMenuButton->AddUiItem(exitToMainMenuButtonLabel);
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, exitToMainMenuButton->GetName());
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, exitToMainMenuButton->GetName());
@@ -130,7 +130,7 @@ namespace Game
             exitGameButton->SetColor(buttonColor);
             exitGameButton->SetZOrder(2);
 
-            const auto &exitGameMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitGameButton);
+            const auto &exitGameMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitGameButton, "nimbus_mono");
             exitGameButton->AddUiItem(exitGameMenuButtonLabel);
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, exitGameButton->GetName());
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, exitGameButton->GetName());

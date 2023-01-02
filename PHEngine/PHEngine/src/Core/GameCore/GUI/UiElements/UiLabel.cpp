@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <functional>
 
@@ -15,11 +16,13 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiLabel::UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent)
+        UiLabel::UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string& fontName)
             : UiItemBase(canvasParent, parent),
               mText(""),
-              mOpacity(1.0f)
+              mOpacity(1.0f),
+              mFontName(fontName)
         {
+            assert(mFontName.size());
         }
 
         UiLabel::~UiLabel()
@@ -73,6 +76,11 @@ namespace EngineCore
         float UiLabel::GetOpacity() const
         {
             return mOpacity;
+        }
+
+        std::string UiLabel::GetFontName() const
+        {
+            return mFontName;
         }
 
         std::shared_ptr<UiSceneProxyBase> UiLabel::CreateUiSceneProxy() const

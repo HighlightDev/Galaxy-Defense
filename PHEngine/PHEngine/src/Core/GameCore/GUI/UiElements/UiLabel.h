@@ -22,8 +22,10 @@ namespace EngineCore
             
             float mOpacity;
 
+            const std::string mFontName;
+
         public:
-            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
+            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string& fontName);
 
             ~UiLabel() override;
 
@@ -34,6 +36,8 @@ namespace EngineCore
             void SetOpacity(const float opacity);
 
             float GetOpacity() const;
+
+            std::string GetFontName() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 

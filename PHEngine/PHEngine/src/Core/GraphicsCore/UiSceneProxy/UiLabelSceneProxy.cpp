@@ -25,6 +25,7 @@ namespace Graphics
         UiLabelSceneProxy::UiLabelSceneProxy(const UiLabel *uiLabel)
             : UiSceneProxyBase(uiLabel),
               mText(""),
+              mFontName(uiLabel->GetFontName()),
               mOpacity(uiLabel->GetOpacity())
         {
         }
@@ -50,19 +51,18 @@ namespace Graphics
                     mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
 
                     // todo: remove this later
-                    static const std::string fontName = "nimbus_mono";
                     static const float fontSize = 20;
                     static const bool isCenteredText = false;
                     static const float lineMaxWidth = 1.0f;
 
-                    mFontTexture = fontHandlerSp->GetFontRenderData(fontName)->GetFontTextureAtlas();
+                    mFontTexture = fontHandlerSp->GetFontRenderData(mFontName)->GetFontTextureAtlas();
 
                     mTextFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
                         UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),
                         eTextFieldProxyType::GUI_TEXT_FIELD,
                         false,
                         mText,
-                        fontName,
+                        mFontName,
                         glm::vec2(),
                         glm::vec3(),
                         fontSize,
@@ -91,14 +91,13 @@ namespace Graphics
                 if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
                 {
                     // todo: remove this later
-                    static const std::string fontName = "nimbus_mono";
-                    const auto &renderDataSp = fontHandlerSp->GetFontRenderData(fontName);
+                    const auto &renderDataSp = fontHandlerSp->GetFontRenderData(mFontName);
                     mUiLabelShader->ExecuteShader();
                     const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
                     mUiLabelShader->SetPosition(glm::vec2(mNormalizedTranslation.x, 1.0f - (mNormalizedTranslation.y + textHeightScreenSpace)));
                     mFontTexture->BindTexture(0);
                     mUiLabelShader->SetFontAtlasSlot(0);
-                    // mUiLabelShader->SetOpacity(mOpacity);
+                    mUiLabelShader->SetOpacity(mOpacity);
                     renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
                     mUiLabelShader->StopShader();
                 }

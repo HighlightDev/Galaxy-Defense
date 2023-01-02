@@ -23,6 +23,7 @@ namespace EngineCore
             u_color = GetUniform("color", shaderProgramID);
             u_shadowWidth = GetUniform("shadowWidth", shaderProgramID);
             u_shadowOffset = GetUniform("shadowOffset", shaderProgramID);
+            u_opacity = GetUniform("opacity", shaderProgramID);
         }
 
         void FontRenderingShader::SetFontAtlasSlot(const int32_t slot)
@@ -48,6 +49,11 @@ namespace EngineCore
         void FontRenderingShader::SetShadowOffset(const glm::vec2 &shadowOffset)
         {
             u_shadowOffset.LoadUniform(shadowOffset);
+        }
+
+        void FontRenderingShader::SetOpacity(const float opacity)
+        {
+            u_opacity.LoadUniform(opacity);
         }
 
         void FontRenderingShader::SetShaderPredefine()

@@ -27,6 +27,8 @@ namespace Graphics
 
             std::string mText;
 
+            const std::string mFontName;
+
             std::shared_ptr<ITexture> mFontTexture;
 
             float mOpacity;

@@ -15,7 +15,7 @@ namespace EngineCore
         {
 
         private:
-            Uniform u_fontAtlas, u_position, u_color, u_shadowWidth, u_shadowOffset;
+            Uniform u_fontAtlas, u_position, u_color, u_shadowWidth, u_shadowOffset, u_opacity;
 
         public:
             FontRenderingShader();
@@ -29,6 +29,8 @@ namespace EngineCore
             void SetPosition(const glm::vec2& position);
 
             void SetColor(const glm::vec3& color);
+
+            void SetOpacity(const float opacity);
 
             void SetShadowWidth(const float shadowWidth);
 
