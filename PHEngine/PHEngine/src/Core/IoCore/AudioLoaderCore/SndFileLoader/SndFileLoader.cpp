@@ -29,14 +29,14 @@ namespace IO
 			short *membuf;
 			sf_count_t num_frames;
 
-			/* Open the audio file and check that it's usable. */
+			// Open the audio file and check that it's usable.
 			sndfile = sf_open(pathToFile.c_str(), SFM_READ, &sfinfo);
 			assert(sndfile);
 
 			const bool isBadSample = (sfinfo.frames < 1 || sfinfo.frames > (sf_count_t)(std::numeric_limits<int64_t>::max() / sizeof(short)) / sfinfo.channels);
 			assert(!isBadSample);
 
-			/* Get the sound format, and figure out the OpenAL format */
+			// Get the sound format, and figure out the OpenAL format
 
 			outAudioInfo.mAudioFormat = AL_NONE;
 			switch (sfinfo.channels)
@@ -66,7 +66,7 @@ namespace IO
 			outAudioInfo.mSampleRate = sfinfo.samplerate;
 			outAudioInfo.mChannelsCount = (size_t)sfinfo.channels;
 
-			/* Decode the whole audio file to a buffer. */
+			// Decode the whole audio file to a buffer.
 			membuf = static_cast<short *>(malloc((size_t)(sfinfo.frames * sfinfo.channels) * sizeof(short)));
 
 			num_frames = sf_readf_short(sndfile, membuf, sfinfo.frames);
@@ -77,7 +77,7 @@ namespace IO
 
 			m_lastAllocatedMemory = (void *)membuf;
 
-			return m_lastAllocatedMemory;
+         return m_lastAllocatedMemory;
 		}
 
 		void SndFileLoader::ReleaseAudioMemory()
