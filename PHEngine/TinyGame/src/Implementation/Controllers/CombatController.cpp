@@ -23,6 +23,9 @@ using namespace EnginePhysics;
 using namespace EngineCore;
 using namespace Resources;
 
+#undef min
+#undef max
+
 namespace Game
 {
     float mDeltaTime = 0.0f;

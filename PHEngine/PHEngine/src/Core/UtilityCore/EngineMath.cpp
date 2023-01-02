@@ -151,7 +151,7 @@ namespace EngineMath
 
    float GaussFunction(const float x, const float sigma)
    {
-      const float power = -((x * x) / (2.0 * (sigma * sigma)));
+      const float power = -((x * x) / (2.0f * (sigma * sigma)));
       return (1.0f / (std::sqrt(2.0f * PI * (sigma * sigma)))) * std::pow(glm::e<float>(), power);
    }
 
@@ -162,10 +162,10 @@ namespace EngineMath
 
       float sum = GaussFunction(0, sigma2); // The 1-D Gaussian function
       weights.emplace_back(sum);
-      for (int i = 1; i < blurWidth; ++i)
+      for (size_t i = 1; i < blurWidth; ++i)
       {
-         const float weight = GaussFunction(i, sigma2);
-         sum += 2.0 * weight;
+         const float weight = GaussFunction(static_cast<float>(i), sigma2);
+         sum += 2.0f * weight;
          weights.emplace_back(weight);
       }
 

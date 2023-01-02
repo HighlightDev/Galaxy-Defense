@@ -2,6 +2,7 @@
 
 #include <glm/vec2.hpp>
 #include <memory>
+#include <string>
 
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"

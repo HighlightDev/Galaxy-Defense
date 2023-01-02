@@ -66,8 +66,8 @@ namespace Game
 
    void IntroLevel::CreateScene()
    {
-      const float displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-      const float displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
+      const auto displayWidth =  DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+      const auto displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
                                                             eCameraType::MAIN_FIRST_PERSON_CAMERA,

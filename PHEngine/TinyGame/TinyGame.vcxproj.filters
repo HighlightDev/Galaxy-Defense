@@ -24,28 +24,13 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Implementation\AiActorController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Implementation\AiBrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Implementation\SceneController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Implementation\SpaceSceneCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Implementation\SpaceShipPlayerController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Implementation\Events\MainPlayerActionEvent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Implementation\CombatController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Implementation\CombatEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Implementation\Factories\BombMissileFactory.cpp">
@@ -126,6 +111,12 @@
     <ClCompile Include="src\Implementation\Actors\WeakSpaceshipActor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Implementation\Controllers\UiController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Implementation\Ui\PauseMenuUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameLevelFactory.h">
@@ -134,31 +125,16 @@
     <ClInclude Include="src\IntroLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Implementation\AiActorController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Implementation\AiBrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\MainPlayerActionEnum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Implementation\SceneController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Implementation\SpaceSceneCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Implementation\SpaceShipPlayerController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Implementation\Events\MainPlayerActionEvent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Implementation\CombatController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Implementation\CombatEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\Factories\ISpaceShipFactory.h">
@@ -254,5 +230,17 @@
     <ClInclude Include="src\Implementation\Actors\WeakSpaceshipActor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Implementation\Controllers\ILevelController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\Controllers\UiController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\Ui\PauseMenuUi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

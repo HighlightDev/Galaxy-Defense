@@ -3,6 +3,8 @@
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/IoCore/FileFacade.h"
 
+#include <algorithm>
+
 using namespace EngineUtility;
 
 namespace EngineCore
@@ -13,8 +15,8 @@ namespace EngineCore
           mHorizontalPerPixelSize(0.0f),
           mSpaceWidth(0.0f),
           mPadding(),
-          mPaddingWidth(0.0f),
-          mPaddingHeight(0.0f),
+          mPaddingWidth(0),
+          mPaddingHeight(0),
           mMetaData(),
           mValues(),
           mFileSrc()

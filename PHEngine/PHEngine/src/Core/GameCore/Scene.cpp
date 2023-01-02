@@ -255,7 +255,7 @@ namespace EngineCore
 
    IDeferredResourceCreator *Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
-      IDeferredResourceCreator *creatorInstance;
+      IDeferredResourceCreator *creatorInstance = nullptr;
 
       if (mDeferredResourceCreators.count(name))
       {

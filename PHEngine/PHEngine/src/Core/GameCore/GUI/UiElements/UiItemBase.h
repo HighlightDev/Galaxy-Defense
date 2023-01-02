@@ -12,6 +12,10 @@
 #include <unordered_map>
 #include <glm/mat4x4.hpp>
 
+// On win32 cause compilation error
+#undef ABSOLUTE
+#undef RELATIVE
+
 namespace EngineCore
 {
     class Scene;

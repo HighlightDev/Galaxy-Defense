@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <glm/vec3.hpp>
+#include <string>
 
 namespace EngineCore
 {

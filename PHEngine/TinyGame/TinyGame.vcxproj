@@ -93,15 +93,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;$(SolutionDir)PHEngine\Dependencies\OpenAL\lib\Win32;$(SolutionDir)PHEngine\Dependencies\SndFile\lib\Win32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;OpenAL32.lib;sndfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -113,14 +113,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>assimp-vc141-mtd.lib;glfw3.lib;Logger.lib;PHEngine.lib;Bullet3Collision.lib;Bullet3Common.lib;Bullet3Dynamics.lib;Bullet3Geometry.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;glew32.lib;glew32s.lib;liblua54.a;OpenGL32.lib;OpenAL32.lib;sndfile.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)PHEngine\Dependencies\Assimp\lib\Win32\Debug;$(SolutionDir)PHEngine\Dependencies\GLFW\lib-vc2015;$(SolutionDir)binaries\$(Configuration)\;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\lib\Win32\$(Configuration);$(SolutionDir)PHEngine\Dependencies\GLEW\lib\Win32\Release\x86;$(SolutionDir)PHEngine\Dependencies\Lua54\lib\Win32\Release;$(SolutionDir)PHEngine\Dependencies\GL;$(SolutionDir)PHEngine\Dependencies\OpenAL\lib\Win32;$(SolutionDir)PHEngine\Dependencies\SndFile\lib\Win32\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -173,15 +173,13 @@
     <ClCompile Include="src\Implementation\Actors\SpaceObjectActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\SpaceshipActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\WeakSpaceshipActor.cpp" />
-    <ClCompile Include="src\Implementation\AiActorController.cpp" />
     <ClCompile Include="src\Implementation\AiBrain.cpp" />
-    <ClCompile Include="src\Implementation\CombatController.cpp" />
-    <ClCompile Include="src\Implementation\CombatEntity.cpp" />
     <ClCompile Include="src\Implementation\Controllers\AiActorController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\AiSpaceshipActorController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\CombatController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\SceneController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\SpaceShipPlayerController.cpp" />
+    <ClCompile Include="src\Implementation\Controllers\UiController.cpp" />
     <ClCompile Include="src\Implementation\Events\MainPlayerActionEvent.cpp" />
     <ClCompile Include="src\Implementation\Factories\AsteroidFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\BackgroundPlanetsFactory.cpp" />
@@ -195,9 +193,8 @@
     <ClCompile Include="src\Implementation\MissileExplosionVisitors\MissileExplosionVisitorBase.cpp" />
     <ClCompile Include="src\Implementation\Modifiers\FreezingModifier.cpp" />
     <ClCompile Include="src\Implementation\Modifiers\GravityModifier.cpp" />
-    <ClCompile Include="src\Implementation\SceneController.cpp" />
     <ClCompile Include="src\Implementation\SpaceSceneCamera.cpp" />
-    <ClCompile Include="src\Implementation\SpaceShipPlayerController.cpp" />
+    <ClCompile Include="src\Implementation\Ui\PauseMenuUi.cpp" />
     <ClCompile Include="src\IntroLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -211,15 +208,14 @@
     <ClInclude Include="src\Implementation\Actors\SpaceObjectActor.h" />
     <ClInclude Include="src\Implementation\Actors\SpaceshipActor.h" />
     <ClInclude Include="src\Implementation\Actors\WeakSpaceshipActor.h" />
-    <ClInclude Include="src\Implementation\AiActorController.h" />
     <ClInclude Include="src\Implementation\AiBrain.h" />
-    <ClInclude Include="src\Implementation\CombatController.h" />
-    <ClInclude Include="src\Implementation\CombatEntity.h" />
     <ClInclude Include="src\Implementation\Controllers\AiActorController.h" />
     <ClInclude Include="src\Implementation\Controllers\AiSpaceshipActorController.h" />
     <ClInclude Include="src\Implementation\Controllers\CombatController.h" />
+    <ClInclude Include="src\Implementation\Controllers\ILevelController.h" />
     <ClInclude Include="src\Implementation\Controllers\SceneController.h" />
     <ClInclude Include="src\Implementation\Controllers\SpaceShipPlayerController.h" />
+    <ClInclude Include="src\Implementation\Controllers\UiController.h" />
     <ClInclude Include="src\Implementation\Events\MainPlayerActionEvent.h" />
     <ClInclude Include="src\Implementation\Factories\AsteroidFactory.h" />
     <ClInclude Include="src\Implementation\Factories\BackgroundPlanetsFactory.h" />
@@ -239,10 +235,12 @@
     <ClInclude Include="src\Implementation\Modifiers\FreezingModifier.h" />
     <ClInclude Include="src\Implementation\Modifiers\GravityModifier.h" />
     <ClInclude Include="src\Implementation\Modifiers\IModifiable.h" />
-    <ClInclude Include="src\Implementation\SceneController.h" />
     <ClInclude Include="src\Implementation\SpaceSceneCamera.h" />
-    <ClInclude Include="src\Implementation\SpaceShipPlayerController.h" />
+    <ClInclude Include="src\Implementation\Ui\PauseMenuUi.h" />
     <ClInclude Include="src\IntroLevel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

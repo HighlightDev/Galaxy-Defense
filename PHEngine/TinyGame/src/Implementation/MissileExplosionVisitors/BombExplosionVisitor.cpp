@@ -5,7 +5,12 @@
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 
+#include <algorithm>
+
 using namespace EngineCore;
+
+#undef min
+#undef max
 
 namespace Game
 {
@@ -22,7 +27,7 @@ namespace Game
         {
             if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState())
             {
-                const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1UL);
+                const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1U);
                 spaceship->TriggerDamageReceived(dmg);
                 ownerSp->TriggerExplosion();
             }

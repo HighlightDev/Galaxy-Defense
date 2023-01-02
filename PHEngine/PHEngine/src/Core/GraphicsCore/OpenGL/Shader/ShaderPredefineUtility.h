@@ -36,7 +36,7 @@ namespace Graphics
 			static std::string GetArrayValue(const std::string &nameVar, const std::vector<float> &vector)
 			{
 				std::string unwrappedValue = "";
-				for (int i = 0; i < vector.size(); ++i)
+				for (size_t i = 0; i < vector.size(); ++i)
 				{
 					const auto isLast = i == (vector.size() - 1);
 					unwrappedValue += std::to_string(vector[i]) + (isLast ? std::string("") : std::string(","));

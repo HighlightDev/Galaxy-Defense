@@ -1,7 +1,8 @@
 #pragma once
 #include <AL/al.h>
-#include <sndfile.h>
+#include <sndfile/sndfile.h>
 #include <memory>
+#include <string>
 
 #include "Core/AudioCore/SoundMemoryChunk.h"
 

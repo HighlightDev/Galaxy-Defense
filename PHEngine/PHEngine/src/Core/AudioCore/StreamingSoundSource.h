@@ -3,6 +3,7 @@
 #include <memory>
 #include <AL/al.h>
 #include <glm/vec3.hpp>
+#include <string>
 
 namespace EngineCore
 {
