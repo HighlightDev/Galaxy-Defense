@@ -1,6 +1,9 @@
 #pragma once
 
 #include "UiItemBase.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+
+#include <glm/vec3.hpp>
 
 namespace Graphics
 {
@@ -9,6 +12,8 @@ namespace Graphics
         class UiSceneProxyBase;
     }
 }
+
+using namespace EngineCore;
 
 namespace EngineCore
 {
@@ -19,13 +24,21 @@ namespace EngineCore
         class UiLabel : public UiItemBase
         {
             std::string mText;
-            
+
             float mOpacity;
 
             const std::string mFontName;
 
+            float mFontSize;
+
+            float mTextLineWidth;
+
+            glm::vec3 mTextColor;
+
+            eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
+
         public:
-            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string& fontName);
+            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string &fontName);
 
             ~UiLabel() override;
 
@@ -39,6 +52,22 @@ namespace EngineCore
 
             std::string GetFontName() const;
 
+            float GetTextLineWidth() const;
+
+            void SetFontSize(const float fontSize);
+
+            float GetFontSize() const;
+
+            void SetTextColor(const glm::vec3& color);
+
+            void SetTextColor(const uint32_t hexColor);
+
+            glm::vec3 GetTextColor() const;
+
+            void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+
+            eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
+            
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;

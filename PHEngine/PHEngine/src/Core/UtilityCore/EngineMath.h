@@ -69,6 +69,7 @@ namespace EngineMath
    bool CheckSimilarityVec2(const glm::vec2 &left, const glm::vec2 &right);
    bool CheckSimilarityIVec2(const glm::ivec2 &left, const glm::ivec2 &right);
 
-   bool CheckSimilarityIVec4(const glm::vec4& left, const glm::vec4& right);
+   bool CheckSimilarityVec3(const glm::vec3& left, const glm::vec3& right);
+   bool CheckSimilarityVec4(const glm::vec4& left, const glm::vec4& right);
 
 }

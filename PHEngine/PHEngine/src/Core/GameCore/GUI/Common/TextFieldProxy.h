@@ -6,6 +6,9 @@
 #include <memory>
 
 #include "TextFieldProxyType.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+
+using namespace EngineCore;
 
 namespace Graphics
 {
@@ -45,7 +48,7 @@ namespace Graphics
 
         int32_t mNumberOfLines;
 
-        bool mIsCenteredText;
+        eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
         float mCreatedMeshTextWidth;
 
@@ -65,7 +68,7 @@ namespace Graphics
             const glm::vec2 &position,
             const glm::vec3 &color,
             const float fontSize,
-            const bool isCenteredText,
+            const eTextHorizontalAlignmentType textHorizontalAlignment,
             const float lineMaxWidth,
             const int32_t numberOfLines,
             const bool isSubscribedOnTextScreenSpaceSizeUpdate);
@@ -102,7 +105,7 @@ namespace Graphics
 
         int32_t GetNumberOfLines() const;
 
-        bool GetIsCenteredText() const;
+        eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
         float GetCreatedMeshTextWidth() const;
 
@@ -138,7 +141,7 @@ namespace Graphics
 
         void SetNumberOfLines(const int32_t numberOfLines);
 
-        void SetIsCenteredText(const bool isCenteredText);
+        void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         void SetCreatedMeshTextWidth(const float createdMeshTextWidth);
 

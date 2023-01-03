@@ -1,31 +1,37 @@
 #include "UiMouseInputReceiver.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 
 namespace EngineCore
 {
     namespace GUI
     {
-        void UiMouseInputReceiver::SetMouseHoverEnteredCallback(std::function<void(glm::ivec2)> callback)
+        UiMouseInputReceiver::UiMouseInputReceiver(const std::weak_ptr<UiItemBase>& ownerWp)
+         : mOwnerWp(ownerWp)
+        {
+        }
+
+        void UiMouseInputReceiver::SetMouseHoverEnteredCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback)
         {
             mMouseHoverEnteredCallback = callback;
         }
 
-        void UiMouseInputReceiver::SetMouseHoverLeavedCallback(std::function<void(glm::ivec2)> callback)
+        void UiMouseInputReceiver::SetMouseHoverLeavedCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback)
         {
             mMouseHoverLeavedCallback = callback;
         }
 
-        void UiMouseInputReceiver::SetMouseReleasedCallback(std::function<void(glm::ivec2)> callback)
+        void UiMouseInputReceiver::SetMouseReleasedCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback)
         {
             mMouseReleasedCallback = callback;
         }
 
-        void UiMouseInputReceiver::SetMousePressedCallback(std::function<void(glm::ivec2)> callback)
+        void UiMouseInputReceiver::SetMousePressedCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback)
         {
             mMousePressedCallback = callback;
         }
 
-        void UiMouseInputReceiver::SetMouseClickedCallback(std::function<void(glm::ivec2)> callback)
+        void UiMouseInputReceiver::SetMouseClickedCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback)
         {
             mMouseClickedCallback = callback;
         }
@@ -39,14 +45,14 @@ namespace EngineCore
                     if (!mWasHoveredLastFrame)
                     {
                         mWasHoveredLastFrame = true;
-                        mMouseHoverEnteredCallback(mouseCursorPosition);
+                        mMouseHoverEnteredCallback(mOwnerWp, mouseCursorPosition);
                     }
                 }
                 else
                 {
                     if (mWasHoveredLastFrame)
                     {
-                        mMouseHoverLeavedCallback(mouseCursorPosition);
+                        mMouseHoverLeavedCallback(mOwnerWp, mouseCursorPosition);
                         mWasHoveredLastFrame = false;
                     }
                 }
@@ -59,7 +65,7 @@ namespace EngineCore
             {
                 if (mMouseButtonWasPressedLastFrame)
                 {
-                    mMouseReleasedCallback(mouseCursorPosition);
+                    mMouseReleasedCallback(mOwnerWp, mouseCursorPosition);
                     mMouseButtonWasPressedLastFrame = false;
                 }
             }
@@ -72,7 +78,7 @@ namespace EngineCore
                 if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition))
                 {
                     mMouseButtonWasPressedLastFrame = true;
-                    mMousePressedCallback(mouseCursorPosition);
+                    mMousePressedCallback(mOwnerWp, mouseCursorPosition);
                 }
             }
         }
@@ -83,7 +89,7 @@ namespace EngineCore
             {
                 if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition))
                 {
-                    mMouseClickedCallback(mouseCursorPosition);
+                    mMouseClickedCallback(mOwnerWp, mouseCursorPosition);
                 }
             }
         }

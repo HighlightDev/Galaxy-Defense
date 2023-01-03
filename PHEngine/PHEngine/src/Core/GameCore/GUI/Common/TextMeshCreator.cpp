@@ -2,6 +2,7 @@
 
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
 #include <algorithm>
 
@@ -84,11 +85,14 @@ namespace EngineCore
 		std::vector<float> textureCoords;
 		for (const auto &line : lines)
 		{
-			if (text->GetIsCenteredText())
+			// todo: 
+			if (eTextHorizontalAlignmentType::CENTER == text->GetTextHorizontalAlignment())
 			{
 				const auto &lineMaxLengthInScreenCoords = line.GetMaxLength();
 				curserX = (lineMaxLengthInScreenCoords * 0.5f) - (line.GetLineLength() * 0.5f);
 			}
+			// else LEFT
+			// else RIGHT
 			const float fontSize = text->GetFontSize();
 
 			for (const auto &word : line.GetWords())

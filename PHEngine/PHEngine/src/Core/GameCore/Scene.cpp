@@ -587,7 +587,7 @@ namespace EngineCore
                                                            textField->GetPosition(),
                                                            textField->GetColor(),
                                                            textField->GetFontSize(),
-                                                           textField->GetIsCentered(),
+                                                           textField->GetTextHorizontalAlignment(),
                                                            textField->GetLineMaxSize(),
                                                            textField->GetNumberOfLines(),
                                                            subscribeOnTextScreenSpaceSizeUpdate)); }));

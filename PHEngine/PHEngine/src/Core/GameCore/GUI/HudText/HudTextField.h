@@ -6,6 +6,8 @@
 #include <string>
 #include <memory>
 
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+
 namespace EngineCore
 {
     class HudTextField
@@ -31,7 +33,7 @@ namespace EngineCore
 
         int32_t mNumberOfLines;
 
-        bool mIsCenteredText;
+        eTextHorizontalAlignmentType mTextHorizontalAlignment;
 
         bool mIsRegistered;
 
@@ -45,14 +47,14 @@ namespace EngineCore
                   const glm::vec2 &position,
                   const float lineMaxSize,
                   const int32_t numberOfLines,
-                  const bool isCenteredText);
+                  const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         HudTextField(const std::string &fontName,
                   const float fontSize,
                   const glm::vec3 &color,
                   const float lineMaxSize,
                   const int32_t numberOfLines,
-                  const bool isCenteredText);
+                  const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         std::shared_ptr<HudTextField> GetSharedFromThis() const;
 
@@ -82,7 +84,7 @@ namespace EngineCore
 
         int32_t GetNumberOfLines() const;
 
-        bool GetIsCentered() const;
+        eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
 
         bool GetIsRegistered() const;
 

@@ -190,7 +190,15 @@ namespace EngineMath
       return left.x == right.x && left.y == right.y;
    }
 
-   bool CheckSimilarityIVec4(const glm::vec4 &left, const glm::vec4 &right)
+   bool CheckSimilarityVec3(const glm::vec3 &left, const glm::vec3 &right)
+   {
+      const auto absoluteDiff = glm::abs(left - right);
+      return absoluteDiff.x <= ENGINE_FLOAT_EPSILON &&
+             absoluteDiff.y <= ENGINE_FLOAT_EPSILON &&
+             absoluteDiff.z <= ENGINE_FLOAT_EPSILON;
+   }
+
+   bool CheckSimilarityVec4(const glm::vec4 &left, const glm::vec4 &right)
    {
       const auto absoluteDiff = glm::abs(left - right);
       return absoluteDiff.x <= ENGINE_FLOAT_EPSILON &&

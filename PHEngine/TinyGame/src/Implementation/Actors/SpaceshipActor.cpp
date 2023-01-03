@@ -8,6 +8,7 @@
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
 namespace Game
 {
@@ -34,7 +35,7 @@ namespace Game
         Actor::PostLevelInit();
 
         const auto c_uiComponent = GetComponentsByType<UiComponent>().back();
-        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(1.0f, 0.0f, 0.0f), true, 0.3f, 1, false);
+        const size_t dmgTextFieldId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(1.0f, 0.0f, 0.0f), true, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
         mDamageTextFieldWp = c_uiComponent->GetTextFieldById(dmgTextFieldId);
     }
 

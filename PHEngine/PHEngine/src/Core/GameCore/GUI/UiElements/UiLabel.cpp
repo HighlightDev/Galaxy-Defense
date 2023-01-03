@@ -16,11 +16,14 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiLabel::UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string& fontName)
+        UiLabel::UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string &fontName)
             : UiItemBase(canvasParent, parent),
               mText(""),
               mOpacity(1.0f),
-              mFontName(fontName)
+              mFontName(fontName),
+              mTextLineWidth(1.0f),
+              mFontSize(5.0f),
+              mTextColor(glm::vec3())
         {
             assert(mFontName.size());
         }
@@ -48,6 +51,7 @@ namespace EngineCore
         void UiLabel::OnPropertiesShouldBeUpdatedOnRenderThread()
         {
             UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread();
+            mTextLineWidth = mNormalizedScale.x;
             SyncDataOnRenderThread();
         }
 
@@ -56,6 +60,7 @@ namespace EngineCore
             if (text != mText)
             {
                 mText = text;
+                SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
@@ -83,6 +88,70 @@ namespace EngineCore
             return mFontName;
         }
 
+        float UiLabel::GetTextLineWidth() const
+        {
+            return mTextLineWidth;
+        }
+
+        void UiLabel::SetFontSize(const float fontSize)
+        {
+            if (glm::abs(mFontSize - fontSize) > EngineMath::ENGINE_FLOAT_EPSILON)
+            {
+                mFontSize = fontSize;
+                SetIsPropertiesShouldBeUpdated(true);
+            }
+        }
+
+        float UiLabel::GetFontSize() const
+        {
+            return mFontSize;
+        }
+
+        void UiLabel::SetTextColor(const glm::vec3 &color)
+        {
+            if (!EngineMath::CheckSimilarityVec3(color, mTextColor))
+            {
+                mTextColor = color;
+                SetIsPropertiesShouldBeUpdated(true);
+            }
+        }
+
+        void UiLabel::SetTextColor(const uint32_t hexColor)
+        {
+            static constexpr auto mask_b = 0xFF;
+            static constexpr auto mask_g = 0xFF << 0x8;
+            static constexpr auto mask_r = 0xFF << 0x10;
+
+            const uint8_t r = (mask_r & hexColor) >> 0x10;
+            const uint8_t g = (mask_g & hexColor) >> 0x8;
+            const uint8_t b = mask_b & hexColor;
+
+            static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
+            glm::vec3 color = glm::vec3(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE);
+            SetTextColor(color);
+        }
+
+        glm::vec3 UiLabel::GetTextColor() const
+        {
+            return mTextColor;
+        }
+
+        void UiLabel::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
+        {
+            if (mTextHorizontalAlignment != textHorizontalAlignment)
+            {
+                mTextHorizontalAlignment = textHorizontalAlignment;
+                SetIsPropertiesShouldBeUpdated(true);
+            }
+        }
+
+        eTextHorizontalAlignmentType UiLabel::GetTextHorizontalAlignment() const
+        {
+            return mTextHorizontalAlignment;
+        }
+
         std::shared_ptr<UiSceneProxyBase> UiLabel::CreateUiSceneProxy() const
         {
             return std::make_shared<UiLabelSceneProxy>(this);
@@ -105,6 +174,10 @@ namespace EngineCore
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
                                 labelSceneProxy->SetOpacity(mOpacity);
                                 labelSceneProxy->SetText(mText);
+                                labelSceneProxy->SetTextLineWidth(mTextLineWidth);
+                                labelSceneProxy->SetFontSize(mFontSize);
+                                labelSceneProxy->SetTextColor(mTextColor);
+                                labelSceneProxy->SetTextHorizontalAlignment(mTextHorizontalAlignment);
                             } });
                     }
                 }

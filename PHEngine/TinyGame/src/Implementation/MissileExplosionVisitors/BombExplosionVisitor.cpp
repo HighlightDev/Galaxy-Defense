@@ -27,7 +27,7 @@ namespace Game
         {
             if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState())
             {
-                const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), 1U);
+                const size_t dmg = std::max((size_t)(Random::Float() * 5.0f), static_cast<size_t>(1));
                 spaceship->TriggerDamageReceived(dmg);
                 ownerSp->TriggerExplosion();
             }

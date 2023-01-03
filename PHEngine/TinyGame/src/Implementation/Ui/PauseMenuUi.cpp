@@ -17,6 +17,9 @@ using namespace Event;
 
 namespace Game
 {
+    static constexpr uint32_t s_buttonColor = 0x403649FF;
+    static constexpr uint32_t s_hoveredButtonColor = 0x201b24FF;
+
     PauseMenuUi::PauseMenuUi(const std::weak_ptr<Scene> &sceneWp)
         : mSceneWp(sceneWp)
     {
@@ -51,7 +54,7 @@ namespace Game
             mPauseMenuCanvas->InitializeInputSystem();
             mPauseMenuCanvas->SetIsVisible(false);
 
-            const auto menuHorizontalMargin = windowWidth / 4;
+            const auto menuHorizontalMargin = static_cast<int32_t>(static_cast<float>(windowWidth) / 4.0f);
             const auto menuVerticalMargin = windowHeight / 7;
 
             const auto &backgroundRect = std::make_shared<UiRectangle>(mPauseMenuCanvas, mPauseMenuCanvas);
@@ -67,7 +70,6 @@ namespace Game
             backgroundRect->SetColor(0x6C5B7BFF);
             backgroundRect->SetZOrder(1);
 
-            const auto buttonColor = 0x403649FF;
             const auto pauseMenuHeight = (windowHeight - (menuVerticalMargin * 2));
             constexpr auto buttonsCount = 3;
             constexpr auto buttonsMarginCount = buttonsCount + 1;
@@ -85,7 +87,7 @@ namespace Game
             continueButton->SetAnchorMargin(eUiAnchor::RIGHT, 20);
             continueButton->SetAnchorMargin(eUiAnchor::TOP, buttonVerticalMarginHeight);
             continueButton->SetHeight(buttonHeight);
-            continueButton->SetColor(buttonColor);
+            continueButton->SetColor(s_buttonColor);
             continueButton->SetZOrder(2);
 
             const auto &continueButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, continueButton, "nimbus_mono");
@@ -95,6 +97,9 @@ namespace Game
             continueButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, continueButton->GetName());
             continueButtonLabel->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, continueButton->GetName());
             continueButtonLabel->SetText("Continue");
+            continueButtonLabel->SetTextColor(0xFFFFFF);
+            continueButtonLabel->SetFontSize(20.0f);
+            continueButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             continueButtonLabel->SetZOrder(3);
 
             const auto &exitToMainMenuButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
@@ -106,7 +111,7 @@ namespace Game
             exitToMainMenuButton->SetAnchorMargin(eUiAnchor::RIGHT, 20);
             exitToMainMenuButton->SetAnchorMargin(eUiAnchor::TOP, buttonVerticalMarginHeight);
             exitToMainMenuButton->SetHeight(buttonHeight);
-            exitToMainMenuButton->SetColor(buttonColor);
+            exitToMainMenuButton->SetColor(s_buttonColor);
             exitToMainMenuButton->SetZOrder(2);
 
             const auto &exitToMainMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitToMainMenuButton, "nimbus_mono");
@@ -116,6 +121,9 @@ namespace Game
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, exitToMainMenuButton->GetName());
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, exitToMainMenuButton->GetName());
             exitToMainMenuButtonLabel->SetText("Exit to main menu");
+            exitToMainMenuButtonLabel->SetTextColor(0xFFFFFF);
+            exitToMainMenuButtonLabel->SetFontSize(20.0f);
+            exitToMainMenuButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             exitToMainMenuButtonLabel->SetZOrder(3);
 
             const auto &exitGameButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
@@ -127,7 +135,7 @@ namespace Game
             exitGameButton->SetAnchorMargin(eUiAnchor::RIGHT, 20);
             exitGameButton->SetAnchorMargin(eUiAnchor::TOP, buttonVerticalMarginHeight);
             exitGameButton->SetHeight(buttonHeight);
-            exitGameButton->SetColor(buttonColor);
+            exitGameButton->SetColor(s_buttonColor);
             exitGameButton->SetZOrder(2);
 
             const auto &exitGameMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitGameButton, "nimbus_mono");
@@ -137,16 +145,25 @@ namespace Game
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, exitGameButton->GetName());
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, exitGameButton->GetName());
             exitGameMenuButtonLabel->SetText("Exit game");
+            exitGameMenuButtonLabel->SetTextColor(0xFFFFFF);
+            exitGameMenuButtonLabel->SetFontSize(20.0f);
+            exitGameMenuButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             exitGameMenuButtonLabel->SetZOrder(3);
 
-            const auto &continueButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>();
-            continueButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnContinueButtonClicked, this, std::placeholders::_1));
+            const auto &continueButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(continueButton);
+            continueButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnContinueButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
+            continueButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
+            continueButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &exitToMainMenuButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>();
-            exitToMainMenuButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitToMainMenuButtonClicked, this, std::placeholders::_1));
+            const auto &exitToMainMenuButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(exitToMainMenuButton);
+            exitToMainMenuButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitToMainMenuButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
+            exitToMainMenuButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
+            exitToMainMenuButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &exitGameButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>();
-            exitGameButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitGameButtonClicked, this, std::placeholders::_1));
+            const auto &exitGameButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(exitGameButton);
+            exitGameButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitGameButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
+            exitGameButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
+            exitGameButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
             continueButton->SetMouseInputReceiver(continueButtonMouseInputReceiver);
             exitToMainMenuButton->SetMouseInputReceiver(exitToMainMenuButtonMouseInputReceiver);
@@ -172,18 +189,38 @@ namespace Game
         return mPauseMenuCanvas ? mPauseMenuCanvas->IsVisible() : false;
     }
 
-    void PauseMenuUi::OnContinueButtonClicked(const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnContinueButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
     {
         HideMenu();
     }
 
-    void PauseMenuUi::OnExitToMainMenuButtonClicked(const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnExitToMainMenuButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
     {
         LogInfo("PauseMenuUi::OnExitToMainMenuButtonClicked => Not implemented yet.");
     }
 
-    void PauseMenuUi::OnExitGameButtonClicked(const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnExitGameButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
     {
         Event::ExitGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION);
+    }
+
+    void PauseMenuUi::OnButtonHoverEntered(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    {
+        if (const auto& senderSp = senderWp.lock())
+        {
+            const auto& rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
+            assert(rectangleSp);
+            rectangleSp->SetColor(s_hoveredButtonColor);
+        }
+    }
+
+    void PauseMenuUi::OnButtonHoverLeaved(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    {
+        if (const auto& senderSp = senderWp.lock())
+        {
+            const auto& rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
+            assert(rectangleSp);
+            rectangleSp->SetColor(s_buttonColor);
+        }
     }
 }

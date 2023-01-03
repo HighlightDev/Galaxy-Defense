@@ -34,13 +34,13 @@ namespace EngineCore
 
     bool TextLine::IsEnoughSpaceForWord(const Word &word) const
     {
-        const auto wordWithSpaceWidth = word.GetWordWidth() + !mWords.empty() ? mSpaceSize : 0;
+        const auto wordWithSpaceWidth = word.GetWordWidth() + (!mWords.empty() ? mSpaceSize : 0.0f);
         return (mCurrentLineLength + wordWithSpaceWidth) <= mMaxWidth;
     }
 
     void TextLine::AddWord(Word word)
     {
-        const auto wordWithSpaceWidth = word.GetWordWidth() + !mWords.empty() ? mSpaceSize : 0;
+        const auto wordWithSpaceWidth = word.GetWordWidth() + (!mWords.empty() ? mSpaceSize : 0.0f);
         mWords.emplace_back(std::move(word));
         mCurrentLineLength += wordWithSpaceWidth;
     }

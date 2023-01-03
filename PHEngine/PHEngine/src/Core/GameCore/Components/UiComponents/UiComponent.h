@@ -7,6 +7,7 @@
 
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
 namespace EngineCore
 {
@@ -37,7 +38,7 @@ namespace EngineCore
                                const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                const float lineMaxSize,
                                const int32_t numberOfLines,
-                               const bool isCenteredText);
+                               const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         int32_t CreateEmptyTextField(const std::string &fontName,
                                     const float fontSize,
@@ -45,7 +46,7 @@ namespace EngineCore
                                     const bool receiveUpdateOnTextScreenSpaceSizeChanged,
                                     const float lineMaxSize,
                                     const int32_t numberOfLines,
-                                    const bool isCenteredText);
+                                    const eTextHorizontalAlignmentType textHorizontalAlignment);
 
         void DeleteTextField(const int32_t textFieldId);
 

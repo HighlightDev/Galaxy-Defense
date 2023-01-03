@@ -102,8 +102,8 @@ namespace EngineCore
                 nextPoolsArrowImage->SetZOrder(2);
                 nextPoolsArrowImage->SetTextureSrc("arrow_right_1.png");
 
-                const auto &arrowMouseInputReceiver = std::make_shared<UiMouseInputReceiver>();
-                arrowMouseInputReceiver->SetMouseClickedCallback(std::bind(&DebugUiController::OnNextPoolButtonClicked, this, std::placeholders::_1));
+                const auto &arrowMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(nextPoolsArrowImage);
+                arrowMouseInputReceiver->SetMouseClickedCallback(std::bind(&DebugUiController::OnNextPoolButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
                 nextPoolsArrowImage->SetMouseInputReceiver(arrowMouseInputReceiver);
 
                 mImages.emplace_back(image);
@@ -156,7 +156,7 @@ namespace EngineCore
             return activePool->GetTextureAt(mTextureIndex++);
         }
 
-        void DebugUiController::OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition)
+        void DebugUiController::OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
         {
             mTextureIndex = 0;
             if ((++mPoolIndex) >= mPools.size())

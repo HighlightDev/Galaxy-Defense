@@ -16,7 +16,7 @@ namespace EngineCore
                        const glm::vec2 &position,
                        const float lineMaxSize,
                        const int32_t numberOfLines,
-                       const bool isCenteredText)
+                       const eTextHorizontalAlignmentType textHorizontalAlignment)
       : mTextFieldId(-1),
         mIsVisible(true),
         mFontName(fontName),
@@ -26,7 +26,7 @@ namespace EngineCore
         mPosition(position),
         mLineMaxWidth(lineMaxSize),
         mNumberOfLines(numberOfLines),
-        mIsCenteredText(isCenteredText),
+        mTextHorizontalAlignment(textHorizontalAlignment),
         mIsRegistered(false),
         mScreenSpaceSize(0.0f, 0.0f)
   {
@@ -37,7 +37,7 @@ namespace EngineCore
                        const glm::vec3 &color,
                        const float lineMaxSize,
                        const int32_t numberOfLines,
-                       const bool isCenteredText)
+                       const eTextHorizontalAlignmentType textHorizontalAlignment)
       : mTextFieldId(-1),
         mIsVisible(false),
         mFontName(fontName),
@@ -47,7 +47,7 @@ namespace EngineCore
         mPosition(),
         mLineMaxWidth(lineMaxSize),
         mNumberOfLines(numberOfLines),
-        mIsCenteredText(isCenteredText),
+        mTextHorizontalAlignment(textHorizontalAlignment),
         mIsRegistered(false)
   {
   }
@@ -116,9 +116,9 @@ namespace EngineCore
     return mNumberOfLines;
   }
 
-  bool HudTextField::GetIsCentered() const
+  eTextHorizontalAlignmentType HudTextField::GetTextHorizontalAlignment() const
   {
-    return mIsCenteredText;
+    return mTextHorizontalAlignment;
   }
 
   bool HudTextField::GetIsRegistered() const

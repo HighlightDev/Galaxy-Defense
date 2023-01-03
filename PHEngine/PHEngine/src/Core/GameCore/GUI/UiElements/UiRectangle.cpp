@@ -42,7 +42,7 @@ namespace EngineCore
 
         void UiRectangle::SetColor(const glm::vec4 &color)
         {
-            if (!EngineMath::CheckSimilarityIVec4(color, mColor))
+            if (!EngineMath::CheckSimilarityVec4(color, mColor))
             {
                 mColor = color;
                 SetIsPropertiesShouldBeUpdated(true);

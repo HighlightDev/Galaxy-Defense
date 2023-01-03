@@ -26,7 +26,11 @@ namespace Graphics
             : UiSceneProxyBase(uiLabel),
               mText(""),
               mFontName(uiLabel->GetFontName()),
-              mOpacity(uiLabel->GetOpacity())
+              mOpacity(uiLabel->GetOpacity()),
+              mTextLineWidth(uiLabel->GetTextLineWidth()),
+              mFontSize(uiLabel->GetFontSize()),
+              mTextHorizontalAlignment(uiLabel->GetTextHorizontalAlignment()),
+              mTextColor(uiLabel->GetTextColor())
         {
         }
 
@@ -50,11 +54,6 @@ namespace Graphics
                     ShaderParams shaderParams("UiLabel Shader", folderManager->GetShadersPath() + "fontVS.glsl", folderManager->GetShadersPath() + "fontFS.glsl", "", "", "", "");
                     mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
 
-                    // todo: remove this later
-                    static const float fontSize = 20;
-                    static const bool isCenteredText = false;
-                    static const float lineMaxWidth = 1.0f;
-
                     mFontTexture = fontHandlerSp->GetFontRenderData(mFontName)->GetFontTextureAtlas();
 
                     mTextFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
@@ -64,12 +63,12 @@ namespace Graphics
                         mText,
                         mFontName,
                         glm::vec2(),
-                        glm::vec3(),
-                        fontSize,
-                        isCenteredText,
-                        lineMaxWidth,
+                        mTextColor,
+                        mFontSize,
+                        mTextHorizontalAlignment,
+                        mTextLineWidth,
                         1,
-                        true);
+                        false);
 
                     fontHandlerSp->RegisterText(mTextFieldProxy);
                 }
@@ -98,6 +97,7 @@ namespace Graphics
                     mFontTexture->BindTexture(0);
                     mUiLabelShader->SetFontAtlasSlot(0);
                     mUiLabelShader->SetOpacity(mOpacity);
+                    mUiLabelShader->SetColor(mTextColor);
                     renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
                     mUiLabelShader->StopShader();
                 }
@@ -117,9 +117,56 @@ namespace Graphics
             }
         }
 
+        void UiLabelSceneProxy::SetTextLineWidth(const float textLineWidth)
+        {
+            mTextLineWidth = textLineWidth;
+            mTextFieldProxy->SetLineMaxWidth(mTextLineWidth);
+
+            if (const auto &canvasProxySp = mParentCanvasProxy.lock())
+            {
+                if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
+                {
+                    fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+                }
+            }
+        }
+
+        void UiLabelSceneProxy::SetFontSize(const float fontSize)
+        {
+            mFontSize = fontSize;
+            mTextFieldProxy->SetFontSize(mFontSize);
+
+            if (const auto &canvasProxySp = mParentCanvasProxy.lock())
+            {
+                if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
+                {
+                    fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+                }
+            }
+        }
+
         void UiLabelSceneProxy::SetOpacity(const float opacity)
         {
             mOpacity = opacity;
+        }
+
+        void UiLabelSceneProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
+        {
+            mTextHorizontalAlignment = textHorizontalAlignment;
+            mTextFieldProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+
+            if (const auto &canvasProxySp = mParentCanvasProxy.lock())
+            {
+                if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
+                {
+                    fontHandlerSp->TextChanged(mTextFieldProxy->GetFontName(), mTextFieldProxy->GetTextFieldId(), mText);
+                }
+            }
+        }
+
+        void UiLabelSceneProxy::SetTextColor(const glm::vec3 &textColor)
+        {
+            mTextColor = textColor;
         }
 
         void UiLabelSceneProxy::CleanUp()

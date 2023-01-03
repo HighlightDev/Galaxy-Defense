@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 
 #include <memory>
 
@@ -37,10 +38,14 @@ namespace Game
         bool IsVisible() const;
 
     private:
-        void OnContinueButtonClicked(const glm::ivec2 &mouseCursorPosition);
+        void OnContinueButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
 
-        void OnExitToMainMenuButtonClicked(const glm::ivec2 &mouseCursorPosition);
+        void OnExitToMainMenuButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
 
-        void OnExitGameButtonClicked(const glm::ivec2 &mouseCursorPosition);
+        void OnExitGameButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnButtonHoverEntered(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnButtonHoverLeaved(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
     };
 }

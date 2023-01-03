@@ -32,30 +32,30 @@ namespace EngineCore
     }
 
     int32_t UiComponent::CreateTextField(const std::string &fontName,
-                                        const float fontSize,
-                                        const std::string &text,
-                                        const glm::vec3 &color,
-                                        const glm::vec2 &position,
-                                        const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-                                        const float lineMaxSize,
-                                        const int32_t numberOfLines,
-                                        const bool isCenteredText)
+                                         const float fontSize,
+                                         const std::string &text,
+                                         const glm::vec3 &color,
+                                         const glm::vec2 &position,
+                                         const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                         const float lineMaxSize,
+                                         const int32_t numberOfLines,
+                                         const eTextHorizontalAlignmentType textHorizontalAlignment)
     {
-        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, isCenteredText);
+        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, text, color, position, lineMaxSize, numberOfLines, textHorizontalAlignment);
         mTextFields.emplace_back(textFieldSp);
         textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();
     }
 
     int32_t UiComponent::CreateEmptyTextField(const std::string &fontName,
-                                             const float fontSize,
-                                             const glm::vec3 &color,
-                                             const bool receiveUpdateOnTextScreenSpaceSizeChanged,
-                                             const float lineMaxSize,
-                                             const int32_t numberOfLines,
-                                             const bool isCenteredText)
+                                              const float fontSize,
+                                              const glm::vec3 &color,
+                                              const bool receiveUpdateOnTextScreenSpaceSizeChanged,
+                                              const float lineMaxSize,
+                                              const int32_t numberOfLines,
+                                              const eTextHorizontalAlignmentType textHorizontalAlignment)
     {
-        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, isCenteredText);
+        const auto &textFieldSp = std::make_shared<HudTextField>(fontName, fontSize, color, lineMaxSize, numberOfLines, textHorizontalAlignment);
         mTextFields.emplace_back(textFieldSp);
         textFieldSp->RegisterText(receiveUpdateOnTextScreenSpaceSizeChanged);
         return textFieldSp->GetTextFieldId();

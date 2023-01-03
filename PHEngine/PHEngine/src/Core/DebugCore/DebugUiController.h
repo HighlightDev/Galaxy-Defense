@@ -5,6 +5,7 @@
 
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/ITextureObtainable.h"
 
@@ -53,7 +54,7 @@ namespace EngineCore
 
             std::shared_ptr<ITexture> GetNextTexture() const;
 
-            void OnNextPoolButtonClicked(const glm::ivec2 &mouseCursorPosition);
+            void OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
         };
     }
 }

@@ -12,6 +12,7 @@
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -80,8 +81,8 @@ namespace EngineCore
       mDebugDummyActor->AddComponent(c_uiComponent);
       mScene->AddActor(mDebugDummyActor);
 
-      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, false);
-      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, false);
+      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3, 1, eTextHorizontalAlignmentType::LEFT);
+      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3, 1, eTextHorizontalAlignmentType::LEFT);
       mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
       mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
 

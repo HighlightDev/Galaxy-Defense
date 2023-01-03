@@ -103,6 +103,7 @@ namespace EngineCore
 
         void UiItemBase::SetWidth(const size_t width)
         {
+            assert(width > 0);
             if (mWidth != width)
             {
                 mWidth = width;
@@ -112,6 +113,7 @@ namespace EngineCore
 
         void UiItemBase::SetHeight(const size_t height)
         {
+            assert(height > 0);
             if (mHeight != height)
             {
                 mHeight = height;
@@ -362,6 +364,8 @@ namespace EngineCore
 
                     mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin();
                     mWidth = width;
+
+                    assert(mWidth > 0);
                 }
                 else if (mAnchors.count(eUiAnchor::LEFT))
                 {
@@ -442,6 +446,7 @@ namespace EngineCore
 
                     mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin();
                     mHeight = height;
+                    assert(mHeight > 0);
                 }
                 else if (mAnchors.count(eUiAnchor::BOTTOM))
                 {

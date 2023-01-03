@@ -22,7 +22,7 @@ namespace Graphics
           mPosition(),
           mLineMaxWidth(0.0f),
           mNumberOfLines(0),
-          mIsCenteredText(false),
+          mTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT),
           mCreatedMeshTextWidth(0.0f),
           mCreatedMeshTextHeight(0.0f),
           mIsSubscribedOnTextScreenSpaceSizeUpdate(false)
@@ -37,7 +37,7 @@ namespace Graphics
                                                                                  const glm::vec2 &position,
                                                                                  const glm::vec3 &color,
                                                                                  const float fontSize,
-                                                                                 const bool isCenteredText,
+                                                                                 const eTextHorizontalAlignmentType textHorizontalAlignment,
                                                                                  const float lineMaxWidth,
                                                                                  const int32_t numberOfLines,
                                                                                  const bool isSubscribedOnTextScreenSpaceSizeUpdate)
@@ -53,7 +53,7 @@ namespace Graphics
         result->mPosition = position;
         result->mLineMaxWidth = lineMaxWidth;
         result->mNumberOfLines = numberOfLines;
-        result->mIsCenteredText = isCenteredText;
+        result->mTextHorizontalAlignment = textHorizontalAlignment;
         result->mIsSubscribedOnTextScreenSpaceSizeUpdate = isSubscribedOnTextScreenSpaceSizeUpdate;
         return result;
     }
@@ -138,9 +138,9 @@ namespace Graphics
         return mNumberOfLines;
     }
 
-    bool TextFieldProxy::GetIsCenteredText() const
+    eTextHorizontalAlignmentType TextFieldProxy::GetTextHorizontalAlignment() const
     {
-        return mIsCenteredText;
+        return mTextHorizontalAlignment;
     }
 
     float TextFieldProxy::GetCreatedMeshTextWidth() const
@@ -228,9 +228,9 @@ namespace Graphics
         mNumberOfLines = numberOfLines;
     }
 
-    void TextFieldProxy::SetIsCenteredText(const bool isCenteredText)
+    void TextFieldProxy::SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment)
     {
-        mIsCenteredText = isCenteredText;
+        mTextHorizontalAlignment = textHorizontalAlignment;
     }
 
     void TextFieldProxy::SetCreatedMeshTextWidth(const float createdMeshTextWidth)
