@@ -12,7 +12,7 @@ namespace Graphics {
    struct DeferredTextureMaterialProperty
       : public MaterialProperty
    {
-      using MaterialPropertyValueType = IDeferredResource<std::shared_ptr<ITexture>, eResourceType::TEXTURE>;
+      using MaterialPropertyValueType = DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
 
    private:
 

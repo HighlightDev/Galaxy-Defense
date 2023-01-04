@@ -21,7 +21,7 @@ namespace EngineCore
          mReflectionPlane(),
          mOwnerCamera(data.m_ownerCamera),
          mRenderTargetViewPortInfo(data.m_fboViewPortInfo),
-         mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>())
+         mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>())
    {
    }
 
@@ -120,7 +120,7 @@ namespace EngineCore
       return PLANAR_REFLECTION_COMPONENT;
    }
 
-   std::shared_ptr<IDeferredResourceBase> PlanarReflectionComponent::GetDeferredResource()
+   std::shared_ptr<IDeferredResource> PlanarReflectionComponent::GetDeferredResource()
    {
       return mPlanarReflectionDeferredController->GetDeferredResource();
    }

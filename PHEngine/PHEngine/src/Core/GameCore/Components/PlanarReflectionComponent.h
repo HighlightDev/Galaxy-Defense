@@ -32,7 +32,7 @@ namespace EngineCore
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
-      std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>> mPlanarReflectionDeferredController;
+      std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>> mPlanarReflectionDeferredController;
 
    public:
       PlanarReflectionComponent(const PlanarReflectionComponentData &data);
@@ -61,7 +61,7 @@ namespace EngineCore
 
       void SyncDataWithRenderThread();
 
-      std::shared_ptr<IDeferredResourceBase> GetDeferredResource() override;
+      std::shared_ptr<IDeferredResource> GetDeferredResource() override;
 
    private:
       void UpdateReflectionPlane();

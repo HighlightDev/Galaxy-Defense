@@ -10,6 +10,7 @@
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "OverlayManager.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -20,12 +21,14 @@ namespace Game
     static constexpr uint32_t s_buttonColor = 0x403649FF;
     static constexpr uint32_t s_hoveredButtonColor = 0x201b24FF;
 
-    PauseMenuUi::PauseMenuUi(const std::weak_ptr<Scene> &sceneWp)
-        : mSceneWp(sceneWp)
+    PauseMenuUi::PauseMenuUi(const std::string& overlayName, const std::weak_ptr<Scene> &sceneWp, const std::weak_ptr<OverlayManager>& overlayManagerWp)
+        : mSceneWp(sceneWp),
+          mOverlayManagerWp(overlayManagerWp),
+          mOverlayName(overlayName)
     {
     }
 
-    void PauseMenuUi::ShowMenu()
+    void PauseMenuUi::OpenOverlay()
     {
         if (!mPauseMenuCanvas->IsVisible())
         {
@@ -34,13 +37,18 @@ namespace Game
         }
     }
 
-    void PauseMenuUi::HideMenu()
+    void PauseMenuUi::CloseOverlay()
     {
         if (mPauseMenuCanvas->IsVisible())
         {
             PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, false);
             mPauseMenuCanvas->SetIsVisible(false);
         }
+    }
+
+    std::string PauseMenuUi::GetOverlayName() const
+    {
+        return mOverlayName;
     }
 
     void PauseMenuUi::Initialize()
@@ -189,36 +197,39 @@ namespace Game
         return mPauseMenuCanvas ? mPauseMenuCanvas->IsVisible() : false;
     }
 
-    void PauseMenuUi::OnContinueButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnContinueButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-        HideMenu();
+        if (const auto& overlayManagerSp = mOverlayManagerWp.lock())
+        {
+            overlayManagerSp->CloseCurrentOverlay();
+        }
     }
 
-    void PauseMenuUi::OnExitToMainMenuButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnExitToMainMenuButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
         LogInfo("PauseMenuUi::OnExitToMainMenuButtonClicked => Not implemented yet.");
     }
 
-    void PauseMenuUi::OnExitGameButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnExitGameButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
         Event::ExitGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION);
     }
 
-    void PauseMenuUi::OnButtonHoverEntered(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnButtonHoverEntered(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-        if (const auto& senderSp = senderWp.lock())
+        if (const auto &senderSp = senderWp.lock())
         {
-            const auto& rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
+            const auto &rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
             assert(rectangleSp);
             rectangleSp->SetColor(s_hoveredButtonColor);
         }
     }
 
-    void PauseMenuUi::OnButtonHoverLeaved(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+    void PauseMenuUi::OnButtonHoverLeaved(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-        if (const auto& senderSp = senderWp.lock())
+        if (const auto &senderSp = senderWp.lock())
         {
-            const auto& rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
+            const auto &rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
             assert(rectangleSp);
             rectangleSp->SetColor(s_buttonColor);
         }

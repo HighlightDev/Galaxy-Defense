@@ -6,6 +6,6 @@ namespace Resources {
 
    struct IDeferredResourceCreator 
    {
-      virtual std::shared_ptr<IDeferredResourceBase> GetDeferredResource() = 0;
+      virtual std::shared_ptr<IDeferredResource> GetDeferredResource() = 0;
    };
 }

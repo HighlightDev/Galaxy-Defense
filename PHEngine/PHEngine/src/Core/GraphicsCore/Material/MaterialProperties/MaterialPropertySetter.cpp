@@ -56,7 +56,7 @@ namespace Graphics
       {
          auto deferredTextureProperty = std::static_pointer_cast<DeferredTextureMaterialProperty>(materialProperty);
          assert(deferredTextureProperty);
-         auto textureResource = std::static_pointer_cast<IDeferredResource<std::shared_ptr<ITexture>, eResourceType::TEXTURE>>(deferredResourceCreator->GetDeferredResource());
+         auto textureResource = std::static_pointer_cast<DeferredResource<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>(deferredResourceCreator->GetDeferredResource());
          assert(textureResource);
          deferredTextureProperty->SetValue(textureResource);
       }

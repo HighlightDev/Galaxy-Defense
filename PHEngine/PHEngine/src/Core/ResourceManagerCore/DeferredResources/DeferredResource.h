@@ -5,21 +5,21 @@
 
 namespace Resources
 {
-   enum class eResourceType
+   enum class eDeferredResourceType
    {
       NONE,
       TEXTURE,
       FLOAT
    };
 
-   struct IDeferredResourceBase
+   struct IDeferredResource
    {
-      virtual eResourceType GetResourceType() const = 0;
+      virtual eDeferredResourceType GetResourceType() const = 0;
    };
 
-   template <typename TResource, eResourceType resourceType>
-   struct IDeferredResource 
-      : public IDeferredResourceBase
+   template <typename TResource, eDeferredResourceType resourceType>
+   struct DeferredResource 
+      : public IDeferredResource
    {
       using arg_t = TResource;
 
@@ -35,13 +35,13 @@ namespace Resources
 
    public:
 
-      IDeferredResource()
+      DeferredResource()
          : bIsFutureInitialized(false)
          , bResourceSaved(false)
       {
       }
 
-      virtual ~IDeferredResource() {
+      virtual ~DeferredResource() {
 
       }
 
@@ -91,7 +91,7 @@ namespace Resources
          return mResourceFuture.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
       }
 
-      eResourceType GetResourceType() const override
+      eDeferredResourceType GetResourceType() const override
       {
          return resourceType;
       }

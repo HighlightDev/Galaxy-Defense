@@ -120,6 +120,10 @@ namespace EngineCore
 
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
+            void SetHorizontalCenterOffset(const int32_t offset) override;
+            
+            void SetVerticalCenterOffset(const int32_t offset) override;
+
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
             void SetIsTransformDirty(const bool isDirty);

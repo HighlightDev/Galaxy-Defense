@@ -2,7 +2,7 @@
 
 #include "ILevelController.h"
 #include "Core/GameCore/ITickable.h"
-#include "Implementation/Ui/PauseMenuUi.h"
+#include "Implementation/Ui/OverlayManager.h"
 
 #include <memory>
 
@@ -12,8 +12,6 @@ namespace EngineCore
     class InputComponent;
 }
 
-using namespace EngineCore::GUI;
-
 namespace Game
 {
     class UiController : public ITickable,
@@ -21,7 +19,7 @@ namespace Game
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-        std::unique_ptr<PauseMenuUi> mPauseMenu;
+        std::shared_ptr<OverlayManager> mOverlayManager;
 
         std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
 

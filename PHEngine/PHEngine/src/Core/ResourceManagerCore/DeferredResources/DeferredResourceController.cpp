@@ -6,5 +6,5 @@ using namespace Graphics::Texture;
 
 namespace Resources {
    
-   template struct DeferredResourceController<std::shared_ptr<ITexture>, eResourceType::TEXTURE>;
+   template struct DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>;
 }

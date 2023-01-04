@@ -173,6 +173,14 @@ namespace EngineCore
         {
         }
 
+        void UiCanvas::SetHorizontalCenterOffset(const int32_t offset)
+        {
+        }
+        
+        void UiCanvas::SetVerticalCenterOffset(const int32_t offset)
+        {
+        }
+
         void UiCanvas::AddUiItem(const std::shared_ptr<UiItemBase> &uiItem)
         {
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());

@@ -58,6 +58,9 @@ namespace EngineCore
 
             std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
+            int32_t mHorizontalCenterOffset;
+            int32_t mVerticalCenterOffset;
+
             std::weak_ptr<IUiTransformable> mParent;
 
             std::weak_ptr<UiCanvas> mParentCanvas;
@@ -102,6 +105,8 @@ namespace EngineCore
             void SetIsVisible(const bool isVisible) override;
             void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
+            void SetHorizontalCenterOffset(const int32_t offset) override;
+            void SetVerticalCenterOffset(const int32_t offset) override;
             void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);

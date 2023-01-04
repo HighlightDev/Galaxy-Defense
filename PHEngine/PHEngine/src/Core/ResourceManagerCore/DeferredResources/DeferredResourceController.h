@@ -4,10 +4,10 @@
 
 namespace Resources
 {
-   template <typename TResource, eResourceType resourceType>
+   template <typename TResource, eDeferredResourceType resourceType>
    struct DeferredResourceController
    {
-      using DeferredResource_t = IDeferredResource<TResource, resourceType>;
+      using DeferredResource_t = DeferredResource<TResource, resourceType>;
 
    private:
 
