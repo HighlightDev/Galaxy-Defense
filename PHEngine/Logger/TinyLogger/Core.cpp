@@ -49,8 +49,8 @@ namespace TinyLogger
    {
       if (mIsThreadRunning.load(std::memory_order::memory_order_seq_cst))
       {
-         mLogThread.join();
          mIsThreadRunning.store(false, std::memory_order::memory_order_seq_cst);
+         mLogThread.join();
       }
       WriteLogMessage();
    }

@@ -33,7 +33,7 @@ namespace Game
         return FindOverlay(name);
     }
 
-    void OverlayManager::ShowOverlay(const std::string &overlayName)
+    void OverlayManager::OpenOverlay(const std::string &overlayName)
     {
         const auto &foundOverlay = FindOverlay(overlayName);
         assert(foundOverlay);

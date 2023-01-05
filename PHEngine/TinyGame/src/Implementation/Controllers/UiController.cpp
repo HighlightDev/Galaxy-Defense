@@ -8,6 +8,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Implementation/Ui/PauseMenuUi.h"
 #include "Implementation/Ui/PauseSettingsMenuUi.h"
+#include "Core/GameCore/Event/PauseGameThreadEvent.h"
 
 using namespace IO;
 using namespace EngineCore;
@@ -41,10 +42,12 @@ namespace Game
                     if ("PauseMenu" == mOverlayManager->GetCurrentOpenedOverlayName())
                     {
                         mOverlayManager->CloseCurrentOverlay();
+                        Event::PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, false);
                     }
                     else
                     {
-                        mOverlayManager->ShowOverlay("PauseMenu");
+                        Event::PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, true);
+                        mOverlayManager->OpenOverlay("PauseMenu");
                     }
                 }
             }

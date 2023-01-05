@@ -29,6 +29,7 @@ namespace EngineCore
               mInputSystem(),
               mDescendingByZOrderHierarchyChildren()
         {
+            LogInfo("UiCanvas::ctor => ", mUId);
         }
 
         void UiCanvas::InitializeInputSystem()
@@ -176,7 +177,7 @@ namespace EngineCore
         void UiCanvas::SetHorizontalCenterOffset(const int32_t offset)
         {
         }
-        
+
         void UiCanvas::SetVerticalCenterOffset(const int32_t offset)
         {
         }
@@ -296,7 +297,7 @@ namespace EngineCore
             {
                 if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
                 {
-                    sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, sceneRenderer]()
+                    sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer]()
                                                    {
                         const auto& canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId());
                         canvasProxy->SetIsVisible(mIsVisible),

@@ -45,5 +45,15 @@ namespace Game
         bool IsVisible() const;
 
         std::string GetOverlayName() const override;
+
+        private:
+
+        void OnApplyButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnCancelButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnButtonHoverEntered(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnButtonHoverLeaved(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
     };
 }

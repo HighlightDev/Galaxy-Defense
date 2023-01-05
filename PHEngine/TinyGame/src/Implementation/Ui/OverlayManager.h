@@ -23,7 +23,7 @@ namespace Game
 
         std::shared_ptr<IUiOverlay> GetOverlayByName(const std::string &name);
 
-        void ShowOverlay(const std::string &overlayName);
+        void OpenOverlay(const std::string &overlayName);
 
         void CloseCurrentOverlay();
 

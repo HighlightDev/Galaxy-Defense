@@ -149,7 +149,7 @@ int32_t main(int32_t argc, char **argv)
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
   Logger::InitLog(std::make_shared<LoggerClientConsole>());
-  //Logger::StartLogThread();
+  Logger::StartLogThread();
 
   GLFWwindow *window;
   // Initialize the library
