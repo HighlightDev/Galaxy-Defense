@@ -10,9 +10,10 @@
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "OverlayManager.h"
+#include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
 
 using namespace EngineCore;
+using namespace EngineCore::GUI;
 using namespace IO;
 using namespace Event;
 

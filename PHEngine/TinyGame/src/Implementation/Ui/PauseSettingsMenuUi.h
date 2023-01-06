@@ -3,21 +3,23 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
-#include "IUiOverlay.h"
+#include "Core/GameCore/GUI/OverlayManagement/IUiOverlay.h"
 
 #include <memory>
 
 namespace EngineCore
 {
     class Scene;
+    namespace GUI
+    {
+        class OverlayManager;
+    }
 }
 
 using namespace EngineCore::GUI;
 
 namespace Game
 {
-    class OverlayManager;
-
     class PauseSettingsMenuUi
         : public IUiOverlay
     {

@@ -2,7 +2,7 @@
 
 #include "ILevelController.h"
 #include "Core/GameCore/ITickable.h"
-#include "Implementation/Ui/OverlayManager.h"
+#include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
 
 #include <memory>
 
@@ -11,6 +11,8 @@ namespace EngineCore
     class Scene;
     class InputComponent;
 }
+
+using namespace EngineCore::GUI;
 
 namespace Game
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IUiOverlay.h"
+#include "Core/GameCore/GUI/OverlayManagement/IUiOverlay.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 
@@ -9,26 +9,28 @@
 namespace EngineCore
 {
     class Scene;
+    namespace GUI
+    {
+        class OverlayManager;
+    }
 }
 
 using namespace EngineCore::GUI;
 
 namespace Game
 {
-    class OverlayManager;
-
     class PauseMenuUi : public IUiOverlay
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
-        std::weak_ptr<OverlayManager> mOverlayManagerWp;
+        std::weak_ptr<::EngineCore::GUI::OverlayManager> mOverlayManagerWp;
 
         std::shared_ptr<::EngineCore::GUI::UiCanvas> mPauseMenuCanvas;
 
         std::string mOverlayName;
 
     public:
-        PauseMenuUi(const std::string &overlayName, const std::weak_ptr<::EngineCore::Scene> &sceneWp, const std::weak_ptr<OverlayManager> &overlayManagerWp);
+        PauseMenuUi(const std::string &overlayName, const std::weak_ptr<::EngineCore::Scene> &sceneWp, const std::weak_ptr<::EngineCore::GUI::OverlayManager> &overlayManagerWp);
 
         void Initialize() override;
 
