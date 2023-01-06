@@ -34,7 +34,7 @@ namespace EngineMath
    /************************************************************************/
    /*                           Math Helper Functions                      */
    /************************************************************************/
-   bool CompareFloats(const float X, const float Y);
+   bool FloatsNearEqual(const float X, const float Y);
 
    float LerpNormalizedFloat(const float src, const float dst, const float factor);
 
@@ -71,5 +71,8 @@ namespace EngineMath
 
    bool CheckSimilarityVec3(const glm::vec3& left, const glm::vec3& right);
    bool CheckSimilarityVec4(const glm::vec4& left, const glm::vec4& right);
+
+   glm::vec3 FromHexColorToVec3Color(const uint32_t hexValue);
+   glm::vec4 FromHexColorToVec4Color(const uint32_t hexValue);
 
 }

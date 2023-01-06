@@ -1,0 +1,35 @@
+#include "UiMouseInputReceiverToggleButton.h"
+#include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
+
+namespace EngineCore
+{
+    namespace GUI
+    {
+        UiMouseInputReceiverToggleButton::UiMouseInputReceiverToggleButton(const std::shared_ptr<UiToggleButton> &ownerWp)
+            : UiMouseInputReceiverBase(ownerWp),
+              mOwnerWp(ownerWp)
+        {
+        }
+
+        void UiMouseInputReceiverToggleButton::OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        {
+            if (mButtonToggledCallback)
+            {
+                if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition))
+                {
+                    if (const auto &toggleButtonSp = mOwnerWp.lock())
+                    {
+                        toggleButtonSp->ToggleButton();
+                        mButtonToggledCallback(mOwnerWp, toggleButtonSp->IsButtonStateOn());
+                    }
+                }
+            }
+        }
+
+        void UiMouseInputReceiverToggleButton::SetButtonToggledCallback(std::function<void(std::weak_ptr<UiToggleButton>, bool)> callback)
+        {
+            mButtonToggledCallback = callback;
+        }
+    }
+}

@@ -16,7 +16,8 @@ namespace EngineCore
     {
         UiRectangle::UiRectangle(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent)
             : UiItemBase(canvasParent, parent),
-              mColor(glm::vec4(1))
+              mColor(glm::vec3(1.0f)),
+              mOpacity(1.0f)
         {
         }
 
@@ -40,22 +41,21 @@ namespace EngineCore
         {
         }
 
-        void UiRectangle::SetColor(const glm::vec4 &color)
+        void UiRectangle::SetColor(const glm::vec3 &color)
         {
-            if (!EngineMath::CheckSimilarityVec4(color, mColor))
+            if (!EngineMath::CheckSimilarityVec3(color, mColor))
             {
                 mColor = color;
                 SetIsPropertiesShouldBeUpdated(true);
             }
         }
 
-        void UiRectangle::SetColor(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+        void UiRectangle::SetColor(const uint8_t r, const uint8_t g, const uint8_t b)
         {
             static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
-            glm::vec4 color = glm::vec4(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+            glm::vec3 color = glm::vec3(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
                                         static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
-                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE,
-                                        static_cast<float>(a) * INV_COLOR_MAX_BYTE_VALUE);
+                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE);
             SetColor(color);
         }
 
@@ -68,20 +68,23 @@ namespace EngineCore
 
         void UiRectangle::SetColor(const uint32_t hexColor)
         {
-            static constexpr auto mask_a = 0xFF;
-            static constexpr auto mask_b = 0xFF << 0x8;
-            static constexpr auto mask_g = 0xFF << 0x10;
-            static constexpr auto mask_r = 0xFF << 0x18;
-
-            const uint8_t r = (mask_r & hexColor) >> 0x18;
-            const uint8_t g = (mask_g & hexColor) >> 0x10;
-            const uint8_t b = (mask_b & hexColor) >> 0x8;
-            const uint8_t a = mask_a & hexColor;
-
-            SetColor(r, g, b, a);
+            SetColor(EngineMath::FromHexColorToVec3Color(hexColor));
         }
 
-        glm::vec4 UiRectangle::GetColor() const
+        void UiRectangle::SetOpacity(const float opacity)
+        {
+            if (!EngineMath::FloatsNearEqual(opacity, mOpacity))
+            {
+                mOpacity = opacity;
+            }
+        }
+
+        float UiRectangle::GetOpacity() const
+        {
+            return mOpacity;
+        }
+
+        glm::vec3 UiRectangle::GetColor() const
         {
             return mColor;
         }
@@ -107,6 +110,7 @@ namespace EngineCore
                             {
                                 const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
                                 rectangleSceneProxy->SetColor(mColor);
+                                rectangleSceneProxy->SetOpacity(mOpacity);
                             } });
                     }
                 }

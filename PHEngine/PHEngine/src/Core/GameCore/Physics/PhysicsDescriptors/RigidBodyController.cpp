@@ -68,7 +68,7 @@ namespace EnginePhysics
             break;
          }
          case ePhysicsBodyType::KINEMATIC: mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); break;
-         case ePhysicsBodyType::STATIC: assert(EngineMath::CompareFloats(mMass, 0.0f)); break;
+         case ePhysicsBodyType::STATIC: assert(EngineMath::FloatsNearEqual(mMass, 0.0f)); break;
       }
 
       mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));

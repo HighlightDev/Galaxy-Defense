@@ -3,6 +3,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
+#include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
 #include "Core/GameCore/GUI/OverlayManagement/IUiOverlay.h"
 
 #include <memory>
@@ -57,5 +58,7 @@ namespace Game
         void OnButtonHoverEntered(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
 
         void OnButtonHoverLeaved(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
+
+        void OnSoundButtonToggled(const std::weak_ptr<UiToggleButton>& senderWp, const bool toggleButtonState);
     };
 }

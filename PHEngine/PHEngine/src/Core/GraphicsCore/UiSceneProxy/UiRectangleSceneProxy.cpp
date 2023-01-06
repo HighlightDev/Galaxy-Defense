@@ -16,7 +16,8 @@ namespace Graphics
     {
         UiRectangleSceneProxy::UiRectangleSceneProxy(const UiRectangle *uiRectangle)
             : UiSceneProxyBase(uiRectangle),
-              mColor(uiRectangle->GetColor())
+              mColor(uiRectangle->GetColor()),
+              mOpacity(uiRectangle->GetOpacity())
         {
         }
 
@@ -37,13 +38,19 @@ namespace Graphics
             mUiRectangleShader->ExecuteShader();
             mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
             mUiRectangleShader->SetColor(mColor);
+            mUiRectangleShader->SetOpacity(mOpacity);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiRectangleShader->StopShader();
         }
 
-        void UiRectangleSceneProxy::SetColor(const glm::vec4 &color)
+        void UiRectangleSceneProxy::SetColor(const glm::vec3 &color)
         {
             mColor = color;
+        }
+
+        void UiRectangleSceneProxy::SetOpacity(const float opacity)
+        {
+            mOpacity = opacity;
         }
 
         void UiRectangleSceneProxy::CleanUp()

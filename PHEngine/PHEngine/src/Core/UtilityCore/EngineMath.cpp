@@ -13,7 +13,7 @@ namespace EngineMath
    glm::vec3 AXIS_UP = glm::vec3(0, 1, 0);
    glm::vec3 AXIS_FORWARD = glm::vec3(0, 0, 1);
 
-   bool CompareFloats(const float X, const float Y)
+   bool FloatsNearEqual(const float X, const float Y)
    {
       return std::abs(X - Y) <= ENGINE_FLOAT_EPSILON;
    }
@@ -205,5 +205,42 @@ namespace EngineMath
              absoluteDiff.y <= ENGINE_FLOAT_EPSILON &&
              absoluteDiff.z <= ENGINE_FLOAT_EPSILON &&
              absoluteDiff.w <= ENGINE_FLOAT_EPSILON;
+   }
+
+   glm::vec3 FromHexColorToVec3Color(const uint32_t hexValue)
+   {
+      static constexpr auto mask_b = 0xFF;
+      static constexpr auto mask_g = 0xFF << 0x8;
+      static constexpr auto mask_r = 0xFF << 0x10;
+
+      const uint8_t r = (mask_r & hexValue) >> 0x10;
+      const uint8_t g = (mask_g & hexValue) >> 0x8;
+      const uint8_t b = mask_b & hexValue;
+
+      static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
+      glm::vec3 color = glm::vec3(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+                                  static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
+                                  static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE);
+      return color;
+   }
+
+   glm::vec4 FromHexColorToVec4Color(const uint32_t hexValue)
+   {
+      static constexpr auto mask_a = 0xFF;
+      static constexpr auto mask_b = 0xFF << 0x8;
+      static constexpr auto mask_g = 0xFF << 0x10;
+      static constexpr auto mask_r = 0xFF << 0x18;
+
+      const uint8_t r = (mask_r & hexValue) >> 0x18;
+      const uint8_t g = (mask_g & hexValue) >> 0x10;
+      const uint8_t b = (mask_b & hexValue) >> 0x8;
+      const uint8_t a = mask_a & hexValue;
+
+      static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
+      glm::vec4 color = glm::vec4(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+                                  static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
+                                  static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE,
+                                  static_cast<float>(a) * INV_COLOR_MAX_BYTE_VALUE);
+      return color;
    }
 }

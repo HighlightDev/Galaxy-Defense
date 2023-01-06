@@ -18,14 +18,20 @@ namespace EngineCore
          u_color = GetUniform("color", shaderProgramId);
          u_translation = GetUniform("translation", shaderProgramId);
          u_scale = GetUniform("scale", shaderProgramId);
+         u_opacity = GetUniform("opacity", shaderProgramId);
       }
 
-      void UiRectangleShader::SetColor(const glm::vec4& color)
+      void UiRectangleShader::SetColor(const glm::vec3 &color)
       {
          u_color.LoadUniform(color);
       }
 
-      void UiRectangleShader::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)
+      void UiRectangleShader::SetOpacity(const float opacity)
+      {
+         u_opacity.LoadUniform(opacity);
+      }
+
+      void UiRectangleShader::SetTransform(const glm::vec2 &normalizedTranslation, const glm::vec2 &normalizedScale)
       {
          u_translation.LoadUniform(normalizedTranslation);
          u_scale.LoadUniform(normalizedScale);

@@ -118,19 +118,7 @@ namespace EngineCore
 
         void UiLabel::SetTextColor(const uint32_t hexColor)
         {
-            static constexpr auto mask_b = 0xFF;
-            static constexpr auto mask_g = 0xFF << 0x8;
-            static constexpr auto mask_r = 0xFF << 0x10;
-
-            const uint8_t r = (mask_r & hexColor) >> 0x10;
-            const uint8_t g = (mask_g & hexColor) >> 0x8;
-            const uint8_t b = mask_b & hexColor;
-
-            static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
-            glm::vec3 color = glm::vec3(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
-                                        static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
-                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE);
-            SetTextColor(color);
+            SetTextColor(EngineMath::FromHexColorToVec3Color(hexColor));
         }
 
         glm::vec3 UiLabel::GetTextColor() const

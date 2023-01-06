@@ -47,7 +47,7 @@ namespace EnginePhysics
    {
       LogInfo("PhysicsDescriptor::ctor => my descriptor id=", mCurrentId);
 
-      if (!CompareFloats(mass, 0.0f))
+      if (!FloatsNearEqual(mass, 0.0f))
       {
          mShape->GetCollisionShape()->calculateLocalInertia(mass, mInertia);
       }

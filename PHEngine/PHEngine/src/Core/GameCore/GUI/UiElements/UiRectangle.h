@@ -2,7 +2,7 @@
 
 #include "UiItemBase.h"
 
-#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 namespace Graphics
 {
@@ -19,20 +19,26 @@ namespace EngineCore
     {
         class UiRectangle : public UiItemBase
         {
-            glm::vec4 mColor;
+            glm::vec3 mColor;
+
+            float mOpacity;
 
         public:
             explicit UiRectangle(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
 
             ~UiRectangle() override;
 
-            void SetColor(const glm::vec4 &color);
+            void SetColor(const glm::vec3 &color);
 
-            void SetColor(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
+            void SetColor(const uint8_t r, const uint8_t g, const uint8_t b);
 
             void SetColor(const uint32_t hexColor);
 
-            glm::vec4 GetColor() const;
+            void SetOpacity(const float opacity);
+
+            float GetOpacity() const;
+
+            glm::vec3 GetColor() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 

@@ -12,8 +12,9 @@ namespace EngineCore
     {
         class UiItemBase;
 
-        class UiMouseInputReceiver : public IUiMouseInputReceivable
+        class UiMouseInputReceiverBase : public IUiMouseInputReceivable
         {
+        protected:
             std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> mMouseHoverEnteredCallback;
 
             std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> mMouseHoverLeavedCallback;
@@ -31,8 +32,7 @@ namespace EngineCore
             std::weak_ptr<UiItemBase> mOwnerWp;
 
         public:
-
-            explicit UiMouseInputReceiver(const std::weak_ptr<UiItemBase>& ownerWp);
+            explicit UiMouseInputReceiverBase(const std::shared_ptr<UiItemBase> &ownerWp);
 
             void SetMouseHoverEnteredCallback(std::function<void(std::weak_ptr<UiItemBase>, glm::ivec2)> callback);
 

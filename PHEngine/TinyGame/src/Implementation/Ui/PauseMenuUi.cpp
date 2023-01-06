@@ -7,7 +7,7 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
-#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
@@ -19,8 +19,8 @@ using namespace EngineCore::GUI;
 
 namespace Game
 {
-    static constexpr uint32_t s_buttonColor = 0x403649FF;
-    static constexpr uint32_t s_hoveredButtonColor = 0x201b24FF;
+    static constexpr uint32_t s_buttonColor = 0x403649;
+    static constexpr uint32_t s_hoveredButtonColor = 0x201b24;
 
     PauseMenuUi::PauseMenuUi(const std::string& overlayName, const std::weak_ptr<Scene> &sceneWp, const std::weak_ptr<OverlayManager>& overlayManagerWp)
         : mSceneWp(sceneWp),
@@ -74,7 +74,7 @@ namespace Game
             backgroundRect->SetAnchorMargin(eUiAnchor::RIGHT, menuHorizontalMargin);
             backgroundRect->SetAnchorMargin(eUiAnchor::BOTTOM, menuVerticalMargin);
             backgroundRect->SetAnchorMargin(eUiAnchor::TOP, menuVerticalMargin);
-            backgroundRect->SetColor(0x6C5B7BFF);
+            backgroundRect->SetColor(0x6C5B7B);
             backgroundRect->SetZOrder(1);
 
             const auto pauseMenuHeight = (windowHeight - (menuVerticalMargin * 2));
@@ -181,22 +181,22 @@ namespace Game
             exitGameMenuButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             exitGameMenuButtonLabel->SetZOrder(3);
 
-            const auto &continueButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(continueButton);
+            const auto &continueButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(continueButton);
             continueButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnContinueButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             continueButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             continueButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &settingsButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(settingsButton);
+            const auto &settingsButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(settingsButton);
             settingsButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnSettingsButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             settingsButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             settingsButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &exitToMainMenuButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(exitToMainMenuButton);
+            const auto &exitToMainMenuButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(exitToMainMenuButton);
             exitToMainMenuButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitToMainMenuButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             exitToMainMenuButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             exitToMainMenuButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &exitGameButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(exitGameButton);
+            const auto &exitGameButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(exitGameButton);
             exitGameButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseMenuUi::OnExitGameButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             exitGameButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             exitGameButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));

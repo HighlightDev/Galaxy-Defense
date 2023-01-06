@@ -63,7 +63,7 @@ namespace EngineCore
          SetTransformationDirty();
 
          // If camera is at final position
-         if (EngineMath::CompareFloats(m_lerpTimeElapsed, m_timeForInterpolation))
+         if (EngineMath::FloatsNearEqual(m_lerpTimeElapsed, m_timeForInterpolation))
          {
             m_lerpTimeElapsed = 0.0f;
             m_bThirdPersonTargetTransformationDirty = false;

@@ -3,13 +3,13 @@
 #include "UiSceneProxyBase.h"
 #include "Core/GameCore/ShaderImplementation/UiRectangleShader.h"
 
-#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 namespace EngineCore
 {
     namespace GUI
     {
-        class UiRectangle;
+        class UiToggleButton;
     }
 }
 
@@ -19,24 +19,32 @@ namespace Graphics
 {
     namespace Proxy
     {
-        class UiRectangleSceneProxy : public UiSceneProxyBase
+        class UiToggleButtonSceneProxy : public UiSceneProxyBase
         {
             std::shared_ptr<UiRectangleShader> mUiRectangleShader;
 
-            glm::vec3 mColor;
+            glm::vec3 mToggleOffColor;
+
+            glm::vec3 mToggleOnColor;
 
             float mOpacity;
 
-        public:
-            UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
+            bool mIsStateOn;
 
-            ~UiRectangleSceneProxy() override;
+        public:
+            UiToggleButtonSceneProxy(const ::EngineCore::GUI::UiToggleButton* uiRectangle);
+
+            ~UiToggleButtonSceneProxy() override;
 
             void Render() override;
 
-            void SetColor(const glm::vec3& color);
+            void SetToggleOnColor(const glm::vec3 &color);
+
+            void SetToggleOffColor(const glm::vec3 &color);
 
             void SetOpacity(const float opacity);
+
+            void SetState(const bool state);
 
             void CleanUp() override;
 

@@ -86,7 +86,7 @@ namespace EngineCore
       mBehaviorVisitor->LerpTransformation(mTime, transitionTime);
 
       // If component is at final time position
-      if (EngineMath::CompareFloats(mTime, transitionTime))
+      if (EngineMath::FloatsNearEqual(mTime, transitionTime))
       {
          mTime = 0.0f;
          mDestinationPoint = "NO";

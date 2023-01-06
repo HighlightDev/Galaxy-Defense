@@ -374,7 +374,7 @@
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiRectangle.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\IUiMouseInputReceivable.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.h" />
-    <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiver.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutor.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaBindingHelper.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaHelper.h" />
@@ -1026,7 +1026,7 @@
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiLabel.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiRectangle.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.cpp" />
-    <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiver.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutorBase.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\BloomFxShader.cpp" />

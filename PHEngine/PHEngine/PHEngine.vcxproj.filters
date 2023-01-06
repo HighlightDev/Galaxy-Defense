@@ -2394,7 +2394,7 @@
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiver.h">
+    <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutor.h">
@@ -3197,7 +3197,7 @@
     <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiver.cpp">
+    <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaHelper.cpp">

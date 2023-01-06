@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
-#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -102,7 +102,7 @@ namespace EngineCore
                 nextPoolsArrowImage->SetZOrder(2);
                 nextPoolsArrowImage->SetTextureSrc("arrow_right_1.png");
 
-                const auto &arrowMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(nextPoolsArrowImage);
+                const auto &arrowMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(nextPoolsArrowImage);
                 arrowMouseInputReceiver->SetMouseClickedCallback(std::bind(&DebugUiController::OnNextPoolButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
                 nextPoolsArrowImage->SetMouseInputReceiver(arrowMouseInputReceiver);
 

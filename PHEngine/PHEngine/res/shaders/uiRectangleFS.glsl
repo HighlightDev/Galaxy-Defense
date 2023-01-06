@@ -4,9 +4,10 @@ layout (location = 0) out vec4 FragColor;
 
 in vec2 texCoords;
 
-uniform vec4 color;
+uniform vec3 color;
+uniform float opacity;
 
 void main(void)
 {
-	FragColor = color;
+	FragColor = vec4(color, opacity);
 }

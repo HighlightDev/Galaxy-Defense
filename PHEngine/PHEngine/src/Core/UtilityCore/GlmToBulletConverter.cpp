@@ -31,12 +31,12 @@ namespace Converter
       const btQuaternion& basisR = right.getRotation();
 
       return (
-         CompareFloats(originL.getX(), originR.getX()) &&
-         CompareFloats(originL.getY(), originR.getY()) &&
-         CompareFloats(originL.getZ(), originR.getZ()) &&
-         CompareFloats(basisL.getX(), basisR.getX()) &&
-         CompareFloats(basisL.getY(), basisR.getY()) &&
-         CompareFloats(basisL.getZ(), basisR.getZ()) &&
-         CompareFloats(basisL.getW(), basisR.getW()));
+         FloatsNearEqual(originL.getX(), originR.getX()) &&
+         FloatsNearEqual(originL.getY(), originR.getY()) &&
+         FloatsNearEqual(originL.getZ(), originR.getZ()) &&
+         FloatsNearEqual(basisL.getX(), basisR.getX()) &&
+         FloatsNearEqual(basisL.getY(), basisR.getY()) &&
+         FloatsNearEqual(basisL.getZ(), basisR.getZ()) &&
+         FloatsNearEqual(basisL.getW(), basisR.getW()));
    }
 }

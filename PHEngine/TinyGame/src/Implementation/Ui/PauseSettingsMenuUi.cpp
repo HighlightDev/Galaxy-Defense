@@ -1,13 +1,14 @@
 #include "PauseSettingsMenuUi.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiRectangle.h"
-#include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
-#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiver.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverToggleButton.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
@@ -19,8 +20,8 @@ using namespace Event;
 
 namespace Game
 {
-    static constexpr uint32_t s_buttonColor = 0x403649FF;
-    static constexpr uint32_t s_hoveredButtonColor = 0x201b24FF;
+    static constexpr uint32_t s_buttonColor = 0x403649;
+    static constexpr uint32_t s_hoveredButtonColor = 0x201b24;
 
     PauseSettingsMenuUi::PauseSettingsMenuUi(const std::string &overlayName, const std::weak_ptr<::EngineCore::Scene> &sceneWp, const std::weak_ptr<OverlayManager> &overlayManagerWp)
         : mSceneWp(sceneWp),
@@ -69,13 +70,39 @@ namespace Game
             backgroundRect->SetAnchorMargin(eUiAnchor::RIGHT, menuHorizontalMargin);
             backgroundRect->SetAnchorMargin(eUiAnchor::BOTTOM, menuVerticalMargin);
             backgroundRect->SetAnchorMargin(eUiAnchor::TOP, menuVerticalMargin);
-            backgroundRect->SetColor(0x6C5B7BFF);
+            backgroundRect->SetColor(0x6C5B7B);
             backgroundRect->SetZOrder(1);
 
             const auto rowButtonsCount = 2;
             const auto backgroundRectWidth = windowWidth - (menuHorizontalMargin * 2);
             const auto &buttonHorizontalMargin = static_cast<int32_t>(static_cast<float>(backgroundRectWidth) / 10.0f);
             const auto &buttonWidth = (backgroundRectWidth - (buttonHorizontalMargin * (rowButtonsCount + 1))) / rowButtonsCount;
+
+            const auto &soundToggleButton = std::make_shared<UiToggleButton>(false, mPauseSettingsMenuCanvas, backgroundRect);
+            backgroundRect->AddUiItem(soundToggleButton);
+            soundToggleButton->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, backgroundRect->GetName());
+            soundToggleButton->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, backgroundRect->GetName());
+            soundToggleButton->SetAnchorMargin(eUiAnchor::RIGHT, buttonHorizontalMargin);
+            soundToggleButton->SetAnchorMargin(eUiAnchor::TOP, 50);
+            soundToggleButton->SetWidth(buttonWidth / 4);
+            soundToggleButton->SetHeight(buttonWidth / 4);
+            soundToggleButton->SetZOrder(2);
+            soundToggleButton->SetToggleOffColor(s_buttonColor);
+            soundToggleButton->SetToggleOnColor(0xFFB732);
+
+            const auto &soundLabel = std::make_shared<UiLabel>(mPauseSettingsMenuCanvas, backgroundRect, "nimbus_mono");
+            backgroundRect->AddUiItem(soundLabel);
+            soundLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, backgroundRect->GetName());
+            soundLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::LEFT, soundToggleButton->GetName());
+            soundLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, backgroundRect->GetName());
+            soundLabel->SetAnchorMargin(eUiAnchor::LEFT, buttonHorizontalMargin);
+            soundLabel->SetAnchorMargin(eUiAnchor::RIGHT, buttonHorizontalMargin);
+            soundLabel->SetAnchorMargin(eUiAnchor::TOP, 100);
+            soundLabel->SetText("Enable sound effects");
+            soundLabel->SetTextColor(0xFFFFFF);
+            soundLabel->SetFontSize(11.0f);
+            soundLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+            soundLabel->SetZOrder(2);
 
             const auto &applyButton = std::make_shared<UiRectangle>(mPauseSettingsMenuCanvas, backgroundRect);
             backgroundRect->AddUiItem(applyButton);
@@ -123,18 +150,22 @@ namespace Game
             cancelButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             cancelButtonLabel->SetZOrder(3);
 
-            const auto &applyButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(applyButton);
+            const auto &applyButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(applyButton);
             applyButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseSettingsMenuUi::OnApplyButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             applyButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseSettingsMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             applyButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseSettingsMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
-            const auto &cancelButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiver>(cancelButton);
+            const auto &cancelButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverBase>(cancelButton);
             cancelButtonMouseInputReceiver->SetMouseClickedCallback(std::bind(&PauseSettingsMenuUi::OnCancelButtonClicked, this, std::placeholders::_1, std::placeholders::_2));
             cancelButtonMouseInputReceiver->SetMouseHoverEnteredCallback(std::bind(&PauseSettingsMenuUi::OnButtonHoverEntered, this, std::placeholders::_1, std::placeholders::_2));
             cancelButtonMouseInputReceiver->SetMouseHoverLeavedCallback(std::bind(&PauseSettingsMenuUi::OnButtonHoverLeaved, this, std::placeholders::_1, std::placeholders::_2));
 
+            const auto &soundToggleButtonMouseInputReceiver = std::make_shared<UiMouseInputReceiverToggleButton>(soundToggleButton);
+            soundToggleButtonMouseInputReceiver->SetButtonToggledCallback(std::bind(&PauseSettingsMenuUi::OnSoundButtonToggled, this, std::placeholders::_1, std::placeholders::_2));
+
             applyButton->SetMouseInputReceiver(applyButtonMouseInputReceiver);
             cancelButton->SetMouseInputReceiver(cancelButtonMouseInputReceiver);
+            soundToggleButton->SetMouseInputReceiver(soundToggleButtonMouseInputReceiver);
         }
     }
 
@@ -166,7 +197,7 @@ namespace Game
 
     void PauseSettingsMenuUi::OnApplyButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-        if (const auto& overlayManagerSp = mOverlayManagerWp.lock())
+        if (const auto &overlayManagerSp = mOverlayManagerWp.lock())
         {
             overlayManagerSp->OpenOverlay("PauseMenu");
         }
@@ -174,7 +205,7 @@ namespace Game
 
     void PauseSettingsMenuUi::OnCancelButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-        if (const auto& overlayManagerSp = mOverlayManagerWp.lock())
+        if (const auto &overlayManagerSp = mOverlayManagerWp.lock())
         {
             overlayManagerSp->OpenOverlay("PauseMenu");
         }
@@ -192,12 +223,19 @@ namespace Game
 
     void PauseSettingsMenuUi::OnButtonHoverLeaved(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
     {
-
         if (const auto &senderSp = senderWp.lock())
         {
             const auto &rectangleSp = std::static_pointer_cast<UiRectangle>(senderSp);
             assert(rectangleSp);
             rectangleSp->SetColor(s_buttonColor);
+        }
+    }
+
+    void PauseSettingsMenuUi::OnSoundButtonToggled(const std::weak_ptr<UiToggleButton> &senderWp, const bool toggleButtonState)
+    {
+        if (const auto &senderSp = senderWp.lock())
+        {
+            LogInfo("PauseSettingsMenuUi::OnSoundButtonToggled => toggleButtonState:", toggleButtonState);
         }
     }
 }
