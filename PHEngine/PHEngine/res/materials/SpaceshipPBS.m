@@ -53,10 +53,6 @@
 		type: "texture"
 	</property>
 	<property>
-		name: "environmentMap"
-		type: "texture"
-	</property>
-	<property>
 		name: "uvScale"
 		type: "float"
 	</property>

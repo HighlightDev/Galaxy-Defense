@@ -65,9 +65,12 @@ namespace EngineCore
     {
         if (auto sceneSp = mSceneWp.lock())
         {
-            const auto &textSp = std::get<0>(data);
-            const auto &changedDataType = std::get<1>(data);
-            sceneSp->TextDataChanged_OnRenderThread(textSp, changedDataType);
+            const auto &textWp = std::get<0>(data);
+            if (const auto &textSp = textWp.lock())
+            {
+                const auto &changedDataType = std::get<1>(data);
+                sceneSp->TextDataChanged_OnRenderThread(textSp, changedDataType);
+            }
         }
     }
 }

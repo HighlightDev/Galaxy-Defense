@@ -23,10 +23,10 @@ namespace Event
    };
 
    class TextDataChangedEvent
-       : public TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>
+       : public TEvent<MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>
    {
    public:
-      using Event_t = TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>::Event_t;
+      using Event_t = TEvent<MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>::Event_t;
 
       std::string ToString() const override {
          return "TextDataChangedEvent";

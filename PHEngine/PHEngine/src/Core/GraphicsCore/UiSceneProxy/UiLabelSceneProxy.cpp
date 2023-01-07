@@ -89,7 +89,6 @@ namespace Graphics
             {
                 if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
                 {
-                    // todo: remove this later
                     const auto &renderDataSp = fontHandlerSp->GetFontRenderData(mFontName);
                     mUiLabelShader->ExecuteShader();
                     const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();

@@ -80,6 +80,9 @@ namespace EngineCore
 
             virtual ~UiItemBase() = default;
 
+            virtual void OnRegistered() = 0;
+            virtual void OnUnregistered() = 0;
+
             const glm::ivec2 &GetAbsoluteOrigin() const override;
             size_t GetZOrder() const override;
             size_t GetWidth() const override;
@@ -107,15 +110,12 @@ namespace EngineCore
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
             void SetHorizontalCenterOffset(const int32_t offset) override;
             void SetVerticalCenterOffset(const int32_t offset) override;
-            void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable>& inputReceiver);
+            void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver);
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;
-
-            virtual void OnRegistered();
-            virtual void OnUnregistered();
 
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 

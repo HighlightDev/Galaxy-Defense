@@ -8,6 +8,7 @@
 #include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
+#include "Core/CommonCore/Timer.h"
 
 #include <thread>
 #include <chrono>
@@ -32,7 +33,7 @@ namespace EngineCore
 
       std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
-      std::atomic_bool bGameThreadExecution = true;
+      std::atomic_bool bGameThreadExecution{true};
 
       std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
@@ -45,6 +46,10 @@ namespace EngineCore
       std::atomic_bool bPauseGameThreadExecution{false};
 
       bool bExitGame{false};
+
+#if DEBUG
+      GameThreadTimer m_echoTimer;
+#endif
 
    public:
       Engine(InterThreadCommunicationMgr &interThreadMgr);

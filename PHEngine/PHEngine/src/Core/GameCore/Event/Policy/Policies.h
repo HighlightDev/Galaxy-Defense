@@ -77,9 +77,9 @@ namespace Event
          bHasData = true;
       }
 
-      const TupleData_t &PopData()
+      TupleData_t PopData()
       {
-         const auto &result = values.front();
+         auto result = std::move(values.front());
          values.pop();
          bHasData = values.size() > 0;
          return result;

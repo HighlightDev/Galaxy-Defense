@@ -29,7 +29,7 @@ namespace Event
    template class TEvent<MultipleDataEventPolicy<size_t>>;
 
    template class TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
-   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eTextChangedDataType>>;
+   template class TEvent<MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;
 
    template class TEvent<NoDataEventPolicy>;
 

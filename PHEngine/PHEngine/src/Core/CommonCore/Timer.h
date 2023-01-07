@@ -28,7 +28,7 @@ namespace EngineCore
 
         void Tick(const float deltaSeconds) override;
 
-        void UnpausableTick(const float deltaTime) override{};
+        void UnpausableTick(const float deltaTime) override;
     };
 
     class GameThreadTimer
@@ -47,6 +47,8 @@ namespace EngineCore
 
         bool m_isRunning;
 
+        bool m_isPausable;
+
         std::function<void(void)> mCallback;
 
     public:
@@ -63,6 +65,8 @@ namespace EngineCore
         void SetIntervalMs(const size_t intervalMs);
 
         void SetIsRepeat(const bool isRepeat);
+
+        void SetIsPausable(const bool isPausable);
 
         void StartTimer();
 

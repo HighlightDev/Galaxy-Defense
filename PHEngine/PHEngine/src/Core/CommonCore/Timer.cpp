@@ -37,7 +37,22 @@ namespace EngineCore
         const float deltaMilliseconds = deltaSeconds * 1000.0f;
         for (const auto &timer : mTimerInstances)
         {
-            timer->TimerPulse(deltaMilliseconds);
+            if (timer->m_isPausable)
+            {
+                timer->TimerPulse(deltaMilliseconds);
+            }
+        }
+    }
+
+    void GameThreadTimersHolder::UnpausableTick(const float deltaSeconds)
+    {
+        const float deltaMilliseconds = deltaSeconds * 1000.0f;
+        for (const auto &timer : mTimerInstances)
+        {
+            if (!timer->m_isPausable)
+            {
+                timer->TimerPulse(deltaMilliseconds);
+            }
         }
     }
 
@@ -48,7 +63,8 @@ namespace EngineCore
           m_intervalMs(0),
           m_timerTimeMilliseconds(0.0f),
           m_isRepeat(false),
-          m_isRunning(false)
+          m_isRunning(false),
+          m_isPausable(true)
     {
         GameThreadTimersHolder::GetInstance()->RegisterTimerInstance(this);
     }
@@ -91,6 +107,11 @@ namespace EngineCore
     void GameThreadTimer::SetIsRepeat(const bool isRepeat)
     {
         m_isRepeat = isRepeat;
+    }
+
+    void GameThreadTimer::SetIsPausable(const bool isPausable)
+    {
+        m_isPausable = isPausable;
     }
 
     void GameThreadTimer::StartTimer()

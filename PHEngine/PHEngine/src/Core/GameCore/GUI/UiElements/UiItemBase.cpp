@@ -384,8 +384,6 @@ namespace EngineCore
 
                     mAbsoluteOrigin.x = originX + leftAnchor.GetSrcAnchorMargin() + mHorizontalCenterOffset;
                     mWidth = width;
-
-                    assert(mWidth > 0);
                 }
                 else if (mAnchors.count(eUiAnchor::LEFT))
                 {
@@ -466,7 +464,6 @@ namespace EngineCore
 
                     mAbsoluteOrigin.y = originY + bottomAnchor.GetSrcAnchorMargin() + mVerticalCenterOffset;
                     mHeight = height;
-                    assert(mHeight > 0);
                 }
                 else if (mAnchors.count(eUiAnchor::BOTTOM))
                 {
@@ -539,19 +536,13 @@ namespace EngineCore
             }
         }
 
-        void UiItemBase::OnRegistered()
-        {
-        }
-
-        void UiItemBase::OnUnregistered()
-        {
-        }
-
         void UiItemBase::UnpausableTick(const float deltaTime)
         {
             if (mIsTransformDirty)
             {
                 UpdateAnchorTransform();
+                assert(mWidth > 0);
+                assert(mHeight > 0);
                 mIsTransformDirty = false;
             }
 
@@ -690,7 +681,6 @@ namespace EngineCore
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
                                 uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale);
-                                LogInfo("UiItemBase::SyncDataOnRenderThread => name: ", GetName(), " translation = ", mNormalizedTranslation, " scale = ", mNormalizedScale);
                             } });
                     }
                 }

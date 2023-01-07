@@ -97,7 +97,8 @@ namespace Game
             soundLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, backgroundRect->GetName());
             soundLabel->SetAnchorMargin(eUiAnchor::LEFT, buttonHorizontalMargin);
             soundLabel->SetAnchorMargin(eUiAnchor::RIGHT, buttonHorizontalMargin);
-            soundLabel->SetAnchorMargin(eUiAnchor::TOP, 100);
+            soundLabel->SetAnchorMargin(eUiAnchor::TOP, 50);
+            soundLabel->SetHeight(buttonWidth / 4);
             soundLabel->SetText("Enable sound effects");
             soundLabel->SetTextColor(0xFFFFFF);
             soundLabel->SetFontSize(11.0f);

@@ -35,6 +35,15 @@ namespace EngineCore
    {
       PauseGameThreadEvent::GetInstance()->AddListener(this);
       ExitGameThreadEvent::GetInstance()->AddListener(this);
+
+#if DEBUG
+      m_echoTimer.SetIntervalMs(2000);
+      m_echoTimer.SetIsRepeat(true);
+      m_echoTimer.SetIsPausable(false);
+      m_echoTimer.SetCallback([]()
+                              { LogInfo("EchoTimer::Timeout => Time passed: 2 seconds"); });
+      m_echoTimer.StartTimer();
+#endif
    }
 
    Engine::~Engine()
