@@ -114,9 +114,9 @@ namespace EngineCore
       SetIsTransformationDirty(true);
    }
 
-   void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationEuler)
+   void SceneComponent::SetAdditionalRotation(const glm::vec3 &rotationDegrees)
    {
-      m_additionalRotationEuler->SetValue(rotationEuler);
+      m_additionalRotationEuler->SetValue(rotationDegrees);
       SetIsTransformationDirty(true);
    }
 
@@ -140,7 +140,7 @@ namespace EngineCore
       return mTransform->Rotator;
    }
 
-   glm::vec3 SceneComponent::GetRotationEuler() const
+   glm::vec3 SceneComponent::GetRotationDegrees() const
    {
       return EngineMath::QuatToEulerAngles(GetRotator());
    }

@@ -27,6 +27,10 @@ namespace Graphics
 
             float mOpacity;
 
+            float mRotationDegrees;
+
+            bool mIsFlipped;
+
         public:
             UiImageSceneProxy(const ::EngineCore::GUI::UiImage* uiImage);
 
@@ -37,6 +41,10 @@ namespace Graphics
             void SetTexture(const std::shared_ptr<ITexture>& texture);
 
             void SetOpacity(const float opacity);
+
+            void SetRotationDegrees(const float rotationDegrees);
+
+            void SetIsFlipped(const bool isFlipped);
 
             void CleanUp() override;
 

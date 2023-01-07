@@ -19,6 +19,8 @@ namespace EngineCore
          u_opacity = GetUniform("opacity", shaderProgramId);
          u_translation = GetUniform("translation", shaderProgramId);
          u_scale = GetUniform("scale", shaderProgramId);
+         u_rotationRadians = GetUniform("rotationRadians", shaderProgramId);
+         u_isFlipped = GetUniform("isFlipped", shaderProgramId);
       }
 
       void UiImageShader::SetImageTexture(const int32_t texSlot)
@@ -35,6 +37,16 @@ namespace EngineCore
       {
          u_translation.LoadUniform(normalizedTranslation);
          u_scale.LoadUniform(normalizedScale);
+      }
+
+      void UiImageShader::SetRotationRadians(const float rotationRadians)
+      {
+         u_rotationRadians.LoadUniform(rotationRadians);
+      }
+
+      void UiImageShader::SetIsFlipped(const bool isFlipped)
+      {
+         u_isFlipped.LoadUniform(static_cast<int32_t>(isFlipped));
       }
 
       void UiImageShader::SetShaderPredefine()

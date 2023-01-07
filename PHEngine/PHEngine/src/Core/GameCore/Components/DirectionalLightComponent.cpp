@@ -63,7 +63,7 @@ namespace EngineCore
       lightCompData->DiffuseLight = renderData->Diffuse;
       lightCompData->SpecularLight = renderData->Specular;
       lightCompData->Direction = renderData->Direction;
-      lightCompData->Rotation = GetRotationEuler();
+      lightCompData->Rotation = GetRotationDegrees();
 
       const bool bHasShadowMap = renderData->ShadowInfo != nullptr;
 

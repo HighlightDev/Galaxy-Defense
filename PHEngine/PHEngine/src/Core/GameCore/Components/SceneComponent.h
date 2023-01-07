@@ -49,7 +49,7 @@ namespace EngineCore
 
       void SetScale(glm::vec3 scale);
 
-      void SetAdditionalRotation(const glm::vec3 &rotationEuler);
+      void SetAdditionalRotation(const glm::vec3 &rotationDegrees);
 
       std::weak_ptr<Transform> GetTransformWeakPtr() const;
 
@@ -59,7 +59,7 @@ namespace EngineCore
 
       glm::quat GetRotator() const;
 
-      glm::vec3 GetRotationEuler() const;
+      glm::vec3 GetRotationDegrees() const;
 
       glm::vec3 GetScale() const;
 

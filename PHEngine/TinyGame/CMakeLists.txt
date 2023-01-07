@@ -41,6 +41,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
 	src/Implementation/Ui/PauseMenuUi.h
 	src/Implementation/Ui/PauseSettingsMenuUi.h
+	src/Implementation/Ui/PlayerCombatUi.h
 )
 
 set(
@@ -79,6 +80,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
 	src/Implementation/Ui/PauseMenuUi.cpp
 	src/Implementation/Ui/PauseSettingsMenuUi.cpp
+	src/Implementation/Ui/PlayerCombatUi.cpp
     main.cpp
 )
 

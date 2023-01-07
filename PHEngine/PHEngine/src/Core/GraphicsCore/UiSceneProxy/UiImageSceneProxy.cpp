@@ -3,6 +3,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 #include <gl/glew.h>
 
@@ -18,7 +19,9 @@ namespace Graphics
         UiImageSceneProxy::UiImageSceneProxy(const UiImage *uiImage)
             : UiSceneProxyBase(uiImage),
               mTexture(uiImage->GetTexture()),
-              mOpacity(uiImage->GetOpacity())
+              mOpacity(uiImage->GetOpacity()),
+              mRotationDegrees(uiImage->GetRotationDegrees()),
+              mIsFlipped(false)
         {
         }
 
@@ -37,6 +40,8 @@ namespace Graphics
                 mUiImageShader->SetImageTexture(0);
             }
             mUiImageShader->SetOpacity(mOpacity);
+            mUiImageShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
+            mUiImageShader->SetIsFlipped(mIsFlipped);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiImageShader->StopShader();
         }
@@ -49,6 +54,16 @@ namespace Graphics
         void UiImageSceneProxy::SetOpacity(const float opacity)
         {
             mOpacity = opacity;
+        }
+
+        void UiImageSceneProxy::SetRotationDegrees(const float rotationDegrees)
+        {
+            mRotationDegrees = rotationDegrees;
+        }
+
+        void UiImageSceneProxy::SetIsFlipped(const bool isFlipped)
+        {
+            mIsFlipped = isFlipped;
         }
 
         void UiImageSceneProxy::CleanUp()

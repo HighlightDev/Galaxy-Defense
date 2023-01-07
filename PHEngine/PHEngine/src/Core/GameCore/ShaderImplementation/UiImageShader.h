@@ -19,6 +19,8 @@ namespace EngineCore
          Uniform u_image;
          Uniform u_translation;
          Uniform u_scale;
+         Uniform u_rotationRadians;
+         Uniform u_isFlipped;
          Uniform u_opacity;
 
       public:
@@ -29,7 +31,11 @@ namespace EngineCore
 
          void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
+         void SetRotationRadians(const float rotationRadians);
+
          void SetOpacity(const float opacity);
+
+         void SetIsFlipped(const bool isFlipped);
 
       protected:
 

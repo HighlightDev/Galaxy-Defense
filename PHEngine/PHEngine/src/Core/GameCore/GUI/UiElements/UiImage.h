@@ -26,6 +26,10 @@ namespace EngineCore
 
             float mOpacity;
 
+            float mRotationDegrees;
+
+            bool mIsFlipped;
+
         public:
             explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
 
@@ -42,6 +46,14 @@ namespace EngineCore
             void SetOpacity(const float opacity);
 
             float GetOpacity() const;
+
+            void SetRotationDegrees(const float rotationDegrees);
+
+            float GetRotationDegrees() const;
+            
+            void SetIsFlipped(const bool isFlipped);
+
+            bool GetIsFlipped() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 

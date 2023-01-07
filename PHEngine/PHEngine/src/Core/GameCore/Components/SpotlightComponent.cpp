@@ -49,7 +49,7 @@ namespace EngineCore
       lightCompData->DiffuseLight = renderData->Diffuse;
       lightCompData->SpecularLight = renderData->Specular;
       lightCompData->Translation = GetTranslation();
-      lightCompData->Rotation = GetRotationEuler();
+      lightCompData->Rotation = GetRotationDegrees();
       lightCompData->Attenuation = renderData->Attenuation;
       lightCompData->RadianceRadius = renderData->RadianceRadius;
       lightCompData->Cutoff = renderData->Cutoff;

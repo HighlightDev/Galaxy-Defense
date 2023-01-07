@@ -224,7 +224,7 @@ namespace EngineCore
               component->GetRenderData().m_skin));
       meshData->ModelName = generalUrlToModel;
       meshData->Translation = component->GetTranslation();
-      meshData->Rotation = component->GetRotationEuler();
+      meshData->Rotation = component->GetRotationDegrees();
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = ""; // TODO: for now
 
@@ -244,7 +244,7 @@ namespace EngineCore
               component->GetRenderData().m_skin));
       meshData->ModelName = generalUrlToModel;
       meshData->Translation = component->GetTranslation();
-      meshData->Rotation = component->GetRotationEuler();
+      meshData->Rotation = component->GetRotationDegrees();
       meshData->Scale = component->GetScale();
       meshData->LuaScriptName = component->LuaScriptName;
 
@@ -260,7 +260,7 @@ namespace EngineCore
       const auto &planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
       planarReflectionData->ComponentName = component->GetGameObjectName();
       planarReflectionData->Translation = component->GetTranslation();
-      planarReflectionData->EulerAnglesRotation = component->GetRotationEuler();
+      planarReflectionData->EulerAnglesRotation = component->GetRotationDegrees();
       planarReflectionData->Scale = component->GetScale();
       planarReflectionData->OwnerCameraName = component->GetOwnerCamera()->GetCameraName();
       const auto &viewPortInfo = component->GetRenderTargetViewPortInfo();

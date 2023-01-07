@@ -8,6 +8,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Implementation/Ui/PauseMenuUi.h"
 #include "Implementation/Ui/PauseSettingsMenuUi.h"
+#include "Implementation/Ui/PlayerCombatUi.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 
 using namespace IO;
@@ -23,6 +24,7 @@ namespace Game
     {
         mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", scene, mOverlayManager));
         mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", scene, mOverlayManager));
+        mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", scene, mOverlayManager));
     }
 
     void UiController::UnpausableTick(const float deltaTime)
@@ -75,5 +77,6 @@ namespace Game
     void UiController::PostPlayLevelFinished()
     {
         mOverlayManager->Initialize();
+        mOverlayManager->OpenOverlay("PlayerCombatHUD");
     }
 }

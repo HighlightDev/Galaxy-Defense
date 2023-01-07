@@ -21,7 +21,9 @@ namespace EngineCore
             : UiItemBase(canvasParent, parent),
               mTextureSrc(""),
               mTexture(),
-              mOpacity(1.0f)
+              mOpacity(1.0f),
+              mRotationDegrees(0.0f),
+              mIsFlipped(false)
         {
         }
 
@@ -101,7 +103,7 @@ namespace EngineCore
 
         void UiImage::SetOpacity(const float opacity)
         {
-            if (glm::abs(mOpacity - opacity) > EngineMath::ENGINE_FLOAT_EPSILON)
+            if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
             {
                 mOpacity = opacity;
                 SetIsPropertiesShouldBeUpdated(true);
@@ -111,6 +113,33 @@ namespace EngineCore
         float UiImage::GetOpacity() const
         {
             return mOpacity;
+        }
+
+        void UiImage::SetRotationDegrees(const float rotationDegrees)
+        {
+            if (!EngineMath::FloatsNearEqual(mRotationDegrees, rotationDegrees))
+            {
+                mRotationDegrees = rotationDegrees;
+                SetIsPropertiesShouldBeUpdated(true);
+            }
+        }
+
+        float UiImage::GetRotationDegrees() const
+        {
+            return mRotationDegrees;
+        }
+
+        void UiImage::SetIsFlipped(const bool isFlipped)
+        {
+            if (mIsFlipped != isFlipped)
+            {
+                mIsFlipped = isFlipped;
+            }
+        }
+
+        bool UiImage::GetIsFlipped() const
+        {
+            return mIsFlipped;
         }
 
         std::shared_ptr<UiSceneProxyBase> UiImage::CreateUiSceneProxy() const
@@ -135,6 +164,8 @@ namespace EngineCore
                                 const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
                                 imageSceneProxy->SetTexture(mTexture);
                                 imageSceneProxy->SetOpacity(mOpacity);
+                                imageSceneProxy->SetRotationDegrees(mRotationDegrees);
+                                imageSceneProxy->SetIsFlipped(mIsFlipped);
                             } });
                     }
                 }
