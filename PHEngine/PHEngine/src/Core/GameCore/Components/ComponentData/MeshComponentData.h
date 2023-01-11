@@ -8,6 +8,13 @@
 
 namespace EngineCore
 {
+   enum class eMeshComponentDataType
+   {
+      STATIC_OR_SKELETAL_MESH,
+      SIMPLE_MESH,
+      RUNTIME_GENERATED_MESH
+   };
+
    struct MeshComponentData : public ComponentData
    {
       MeshComponentData(const std::string &gameObjectName,
@@ -37,7 +44,7 @@ namespace EngineCore
 
       virtual ~MeshComponentData() {}
 
-      virtual bool IsSimpleMesh() const { return false; }
+      virtual eMeshComponentDataType GetMeshComponentDataType() const { return eMeshComponentDataType::STATIC_OR_SKELETAL_MESH; }
    };
 
    struct SimpleMeshComponentData
@@ -65,7 +72,34 @@ namespace EngineCore
 
       virtual ~SimpleMeshComponentData() {}
 
-      virtual bool IsSimpleMesh() const { return true; }
+      eMeshComponentDataType GetMeshComponentDataType() const override { return eMeshComponentDataType::SIMPLE_MESH; }
    };
 
+   struct RuntimeGeneratedMeshComponentData
+       : public MeshComponentData
+   {
+      RuntimeGeneratedMeshComponentData(const std::string &gameObjectName,
+                                        const size_t maxVerticesCount,
+                                        const glm::vec3 &translation,
+                                        const glm::vec3 &rotation,
+                                        const glm::vec3 &scale,
+                                        const std::string &mLuaScriptRelPath,
+                                        Graphics::IMaterial *material)
+          : MeshComponentData(gameObjectName,
+                              "",
+                              translation,
+                              rotation,
+                              scale,
+                              mLuaScriptRelPath,
+                              material),
+            mMaxVerticesCount(maxVerticesCount)
+      {
+      }
+
+      size_t mMaxVerticesCount;
+
+      virtual ~RuntimeGeneratedMeshComponentData() {}
+
+      eMeshComponentDataType GetMeshComponentDataType() const override { return eMeshComponentDataType::RUNTIME_GENERATED_MESH; }
+   };
 }

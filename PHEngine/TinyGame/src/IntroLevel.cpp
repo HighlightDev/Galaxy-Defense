@@ -18,6 +18,12 @@
 
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
+#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
+
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
@@ -66,7 +72,7 @@ namespace Game
 
    void IntroLevel::CreateScene()
    {
-      const auto displayWidth =  DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+      const auto displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
       const auto displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
@@ -126,6 +132,27 @@ namespace Game
       groundActor->AddComponent(cubemapRendererComponent);*/
 
       mSceneController->OnLevelInit();
+
+      /***********************************************************/
+
+      const auto &rootComponent1 = std::make_shared<EngineCore::SceneComponent>("c_runtime_line_root" + 1,
+                                                                                glm::vec3(), glm::vec3(0), glm::vec3(1));
+      const auto &actor = std::make_shared<Actor>("a_runtineLine_", rootComponent1);
+      mScene->AddActor(actor);
+
+      MaterialParser materialParser;
+      const auto &mat = materialParser.ParseMaterialDescriptor("Test.m");
+
+      const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+
+      MaterialPropertySetter::SetMaterialPropertyValue(mat, "noise", noiseTex);
+      MaterialPropertySetter::SetMaterialPropertyValue(mat, mScene.get(), "GT_DeltaSec", "gt_timeSec");
+
+      const RuntimeGeneratedMeshComponentData d_mesh("c_runtimeLineMesh_1", 4, glm::vec3(0),
+                                                     glm::vec3(), glm::vec3(1), "", mat);
+      const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
+      const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(mScene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+      actor->AddComponent(c_mesh);
    }
 
    void IntroLevel::PostLevelInit()

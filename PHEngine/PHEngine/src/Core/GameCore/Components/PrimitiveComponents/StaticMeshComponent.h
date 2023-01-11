@@ -16,7 +16,6 @@ namespace EngineCore
 	protected:
 		using Base = PrimitiveComponent;
 
-	private:
 		StaticMeshRenderData m_renderData;
 
 	public:

@@ -811,40 +811,42 @@ namespace Graphics
 
          for (const auto &sceneView : SceneViewsVector)
          {
-            auto cameraProxy = sceneView->GetCameraProxy();
-
-            sceneView->DoVisibilityTest();
-
-            // Deferred shading is done with main camera
-            if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType())
+            const auto &cameraProxy = sceneView->GetCameraProxy();
+            if (cameraProxy->IsInitializedFirstTime())
             {
-               PlanarReflectionPass();
+               sceneView->DoVisibilityTest();
 
-               DepthPass(sceneView);
+               // Deferred shading is done with main camera
+               if (eCameraSceneProxyType::MAIN_SCENE_CAMERA == cameraProxy->GetCameraSceneType())
+               {
+                  PlanarReflectionPass();
 
-               DeferredBasePass_RenderThread(sceneView);
+                  DepthPass(sceneView);
 
-               DeferredLightPass_RenderThread(cameraProxy);
+                  DeferredBasePass_RenderThread(sceneView);
 
-               if (mForwardRenderingProxiesVec.size())
-                  ForwardBasePass_RenderThread(sceneView);
+                  DeferredLightPass_RenderThread(cameraProxy);
 
-               if (mPostFxRenderer)
-                  mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
+                  if (mForwardRenderingProxiesVec.size())
+                     ForwardBasePass_RenderThread(sceneView);
 
-               HudTextPass();
+                  if (mPostFxRenderer)
+                     mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
 
-               GuiPass(sceneView);
-               // TODO: rendering to render texture later....
-            }
-            else
-            {
-               // TODO: rendering to render texture later....
-            }
+                  HudTextPass();
+
+                  GuiPass(sceneView);
+                  // TODO: rendering to render texture later....
+               }
+               else
+               {
+                  // TODO: rendering to render texture later....
+               }
 
 #if DEBUG
-            // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+               // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
 #endif
+            }
          }
       }
 

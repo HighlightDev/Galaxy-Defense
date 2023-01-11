@@ -79,8 +79,8 @@ namespace Game
             lifeImage->SetWidth(rootContainerHeight / 2);
             lifeImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rootContainer->GetName());
             lifeImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, rootContainer->GetName());
-            rootContainer->SetAnchorMargin(eUiAnchor::LEFT, rootContainerHeight / 4);
-            rootContainer->SetAnchorMargin(eUiAnchor::BOTTOM, rootContainerHeight / 4);
+            lifeImage->SetAnchorMargin(eUiAnchor::LEFT, rootContainerHeight / 4);
+            lifeImage->SetAnchorMargin(eUiAnchor::BOTTOM, rootContainerHeight / 4);
         }
     }
 

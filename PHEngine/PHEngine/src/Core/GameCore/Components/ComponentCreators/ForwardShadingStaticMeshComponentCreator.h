@@ -29,32 +29,29 @@ namespace EngineCore
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
         {
-            std::shared_ptr<Skin> skin;
+            std::shared_ptr<Skin> skin = nullptr;
 
             const MeshComponentData &mData = static_cast<const MeshComponentData &>(data);
 
-            if (mData.IsSimpleMesh())
+            if (eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData.GetMeshComponentDataType())
+            {
+                skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
+            }
+            else if (eMeshComponentDataType::SIMPLE_MESH == mData.GetMeshComponentDataType())
             {
                 const SimpleMeshComponentData &simpleMeshData = static_cast<const SimpleMeshComponentData &>(mData);
                 if ("PLANE" == simpleMeshData.mSimpleMeshType)
                 {
                     skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES);
                 }
-                else
-                {
-                    assert(false); // Not implemented
-                }
             }
-            else
-            {
-                skin =
-                    MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
-            }
+
+            assert(skin);
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
             const ShaderParams shaderParams(
-                "DeferredNonSkeletalBase Shader",
+                "ForwardNonSkeletalBase Shader",
                 FolderManager::GetInstance()->GetShadersPath() +
                     "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +

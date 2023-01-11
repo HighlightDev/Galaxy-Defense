@@ -8,6 +8,7 @@
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
 #include "Core/ResourceManagerCore/Pool/SoundMemoryChunkPool.h"
+#include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/Event/EventDispatcher.h"
 #include "Core/IoCore/FolderManager.h"
@@ -67,6 +68,7 @@ namespace EngineCore
       SimplePrimitivePool::GetInstance()->CleanUp();
       SoundBufferPool::GetInstance()->CleanUp();
       SoundMemoryChunkPool::GetInstance()->CleanUp();
+      RuntimeGeneratedMeshPool::GetInstance()->CleanUp();
 
       mActiveAudioOutputDevice->CleanUp();
    }

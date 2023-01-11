@@ -7,6 +7,6 @@ in MATERIAL_VS_OUTPUT VsOutput;
 void main()
 {
 	vec3 albedoColor = GetMaterialAlbedo(VsOutput);
-
-	FragColor = vec4(albedoColor, 1.0);
+	float alpha = GetMaterialAlphaMask(VsOutput);
+	FragColor = vec4(albedoColor, alpha);
 }

@@ -6,7 +6,6 @@
 #include "Core/CommonCore/Assertion.h"
 
 #include <stdlib.h>
-#include <TinyLogger/LogInterface.h>
 
 using namespace EngineMath;
 using namespace Resources;

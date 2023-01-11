@@ -49,7 +49,6 @@ namespace EngineCore
    {
       SceneComponent::SetIsEnabled(bEnabled);
 
-      // Update primitives proxy enabled
       static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
       if (const auto &sceneSP = m_sceneWP.lock())
       {

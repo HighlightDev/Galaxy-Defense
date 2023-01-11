@@ -34,6 +34,8 @@ namespace Graphics
 
       glm::mat4 mProjectionMatrix;
 
+      bool mIsInitializedFirstTime;
+
    public:
 
       CameraSceneProxy(const class ACamera* camera);
@@ -45,6 +47,8 @@ namespace Graphics
       glm::mat4 GetProjectionMatrix() const;
 
       bool IsCameraFrustumBuilt() const;
+
+      bool IsInitializedFirstTime() const;
 
       CameraFrustum GetCameraFrustum() const;
 

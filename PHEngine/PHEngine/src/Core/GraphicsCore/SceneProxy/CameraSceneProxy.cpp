@@ -14,7 +14,8 @@ namespace Graphics
          mViewPort(camera->GetViewPort()),
          mCameraFrustum(),
          mEyeVector(),
-         mViewMatrix()
+         mViewMatrix(),
+         mIsInitializedFirstTime(false)
    {
       const auto &perspectiveInfo = camera->GetViewPerspectiveInfo();
       mProjectionMatrix = glm::perspective<float>(perspectiveInfo.FoV, perspectiveInfo.AspectRatio, perspectiveInfo.NearPlane, perspectiveInfo.FarPlane);
@@ -22,6 +23,11 @@ namespace Graphics
 
    void CameraSceneProxy::UpdateViewMatrix(const glm::mat4 &viewMatrix)
    {
+      if (!mIsInitializedFirstTime)
+      {
+         mIsInitializedFirstTime = true;
+      }
+
       mViewMatrix = viewMatrix;
       RebuildCameraFrustum();
    }
@@ -55,6 +61,11 @@ namespace Graphics
    bool CameraSceneProxy::IsCameraFrustumBuilt() const
    {
       return mCameraFrustum != nullptr;
+   }
+
+   bool CameraSceneProxy::IsInitializedFirstTime() const
+   {
+      return mIsInitializedFirstTime;
    }
 
    CameraFrustum CameraSceneProxy::GetCameraFrustum() const

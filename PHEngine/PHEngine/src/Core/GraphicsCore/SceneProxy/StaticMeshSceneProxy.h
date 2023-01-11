@@ -21,10 +21,10 @@ namespace Graphics
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
-      private:
+      protected:
          bool mIsDeferredShaded;
 
-      private:
+      protected:
          std::shared_ptr<ShaderType> GetShader() const;
 
          std::shared_ptr<PlanarReflectionShaderType> GetPlanarReflectionShader() const;
@@ -37,7 +37,7 @@ namespace Graphics
          void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
-      
+
          bool IsDeferred() const override;
 
          eMeshFacing GetMeshFrontFace() const override;

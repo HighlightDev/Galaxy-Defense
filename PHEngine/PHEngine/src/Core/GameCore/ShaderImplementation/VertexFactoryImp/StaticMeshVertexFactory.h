@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryShader.h"
-#include "Core/IoCore/FolderManager.h"
 
 using namespace Graphics::OpenGL;
-using namespace IO;
 
 namespace EngineCore
 {
@@ -17,24 +15,10 @@ namespace EngineCore
       Uniform u_projectionMatrix;
 
    public:
-      StaticMeshVertexFactory()
-          : VertexFactoryShader("StaticMeshVertexFactory")
-      {
-         InitShader(FolderManager::GetInstance()->GetShadersPath() + "vertex_factory" + SLASH + "StaticMeshVertexFactory.glsl");
-      }
+      StaticMeshVertexFactory();
 
-      void AccessAllUniformLocations(uint32_t shaderProgramID) override
-      {
-         u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
-         u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-         u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
-      }
+      void AccessAllUniformLocations(uint32_t shaderProgramID) override;
 
-      void SetMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
-      {
-         u_worldMatrix.LoadUniform(worldMatrix);
-         u_viewMatrix.LoadUniform(viewMatrix);
-         u_projectionMatrix.LoadUniform(projectionMatrix);
-      }
+      void SetMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
    };
 }
