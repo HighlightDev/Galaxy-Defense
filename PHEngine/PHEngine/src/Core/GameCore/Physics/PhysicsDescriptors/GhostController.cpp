@@ -94,6 +94,11 @@ namespace EnginePhysics
       ParseGhostContacts();
    }
 
+   std::vector<btCollisionObject*> GhostController::GetCollisionObjects() const
+   {
+      return {mGhostObject};
+   }
+
    btScalar GhostController::addSingleResult(btManifoldPoint &cp, const btCollisionObjectWrapper *colObj0,
                                              int partId0, int index0,
                                              const btCollisionObjectWrapper *colObj1,

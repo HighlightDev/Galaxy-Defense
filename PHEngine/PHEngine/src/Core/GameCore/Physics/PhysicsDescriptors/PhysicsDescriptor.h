@@ -3,7 +3,9 @@
 #include "Shapes/PhysicsShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
+#include <vector>
 #include <BulletPhys/btBulletDynamicsCommon.h>
+#include <BulletPhys/BulletCollision/CollisionDispatch/btCollisionObject.h>
 
 namespace EnginePhysics
 {
@@ -69,6 +71,8 @@ namespace EnginePhysics
       virtual void PostPhysicsSimulationUpdate(const float deltaTime);
 
       virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
+
+      virtual std::vector<btCollisionObject*> GetCollisionObjects() const;
 
       PhysicsShapeBase *GetShape() const;
 

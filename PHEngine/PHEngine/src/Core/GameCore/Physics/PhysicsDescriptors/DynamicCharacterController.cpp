@@ -4,55 +4,32 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/Transform.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
+#include "Core/GameCore/Physics/CollisionTestImplementation/BulletRayCastWithFilter.h"
 
 #include <glm/gtx/projection.hpp>
 
 namespace EnginePhysics
 {
-
-   class IgnoreBodyAndGhostCast :
-      public btCollisionWorld::ClosestRayResultCallback
-   {
-   private:
-      btRigidBody* m_pBody;
-      btPairCachingGhostObject* mGhostObject;
-
-   public:
-      IgnoreBodyAndGhostCast(btRigidBody* pBody, btPairCachingGhostObject* pGhostObject)
-         : btCollisionWorld::ClosestRayResultCallback(btVector3(0.0, 0.0, 0.0), btVector3(0.0, 0.0, 0.0)),
-         m_pBody(pBody), mGhostObject(pGhostObject)
-      {
-      }
-
-      btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace)
-      {
-         if (rayResult.m_collisionObject == m_pBody || rayResult.m_collisionObject == mGhostObject)
-            return 1.0f;
-
-         return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
-      }
-   };
-
    DynamicCharacterController::DynamicCharacterController(
-      PhysicsWorld* pPhysicsWorld, float radius, float height, float mass, float stepHeight)
-      : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), ePhysicsBodyType::DYNAMIC, mass)
-      , mGhostObject(nullptr)
-      , mOnGround(false)
-      , mHittingWall(false)
-      , mDeceleration(0.1f)
-      , mMaxSpeed(15.0f)
-      , mJumpImpulse(150)
-      , mJumpRechargeTime(0.5f)
-      , mJumpRechargeTimer(0.0f)
-      , mBottomYOffset(height / 3.0f + radius)
-      , mBottomRoundedRegionYOffset((height + radius) / 3.0f)
-      , mStepHeight(stepHeight)
-      , mTimerMultiplier(0.0f)
-      , mMotionTransform()
-      , mPreviousPosition()
-      , mManualVelocity(0.0f, 0.0f, 0.0f)
-      , mSurfaceHitNormals()
-      , mLastRayCastObjectResult(nullptr)
+       PhysicsWorld *pPhysicsWorld, float radius, float height, float mass, float stepHeight)
+       : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), ePhysicsBodyType::DYNAMIC, mass),
+         mGhostObject(nullptr),
+         mOnGround(false),
+         mHittingWall(false),
+         mDeceleration(0.1f),
+         mMaxSpeed(15.0f),
+         mJumpImpulse(150),
+         mJumpRechargeTime(0.5f),
+         mJumpRechargeTimer(0.0f),
+         mBottomYOffset(height / 3.0f + radius),
+         mBottomRoundedRegionYOffset((height + radius) / 3.0f),
+         mStepHeight(stepHeight),
+         mTimerMultiplier(0.0f),
+         mMotionTransform(),
+         mPreviousPosition(),
+         mManualVelocity(0.0f, 0.0f, 0.0f),
+         mSurfaceHitNormals(),
+         mLastRayCastObjectResult(nullptr)
    {
       KinematicBodyMovedEvent::GetInstance()->AddListener(this);
    }
@@ -67,7 +44,7 @@ namespace EnginePhysics
       delete mGhostObject;
    }
 
-   void DynamicCharacterController::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
+   void DynamicCharacterController::SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation)
    {
       btTransform worldTransform(btQuaternion(1.0f, 0.0f, 0.0f, 0.0f), translation);
       mMotionState->setWorldTransform(worldTransform);
@@ -79,9 +56,9 @@ namespace EnginePhysics
 
       // No friction, this is done manually
       rigidBodyCI.m_friction = 0.0f;
-      //rigidBodyCI.m_additionalDamping = true;
-      //rigidBodyCI.m_additionalLinearDampingThresholdSqr= 1.0f;
-      //rigidBodyCI.m_additionalLinearDampingThresholdSqr = 0.5f;
+      // rigidBodyCI.m_additionalDamping = true;
+      // rigidBodyCI.m_additionalLinearDampingThresholdSqr= 1.0f;
+      // rigidBodyCI.m_additionalLinearDampingThresholdSqr = 0.5f;
       rigidBodyCI.m_restitution = 0.0f;
 
       rigidBodyCI.m_linearDamping = 0.0f;
@@ -90,7 +67,7 @@ namespace EnginePhysics
 
       // Keep upright
       mRigidBody->setAngularFactor(0.0f);
-      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));
+      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor *>(this));
 
       // No sleeping (or else setLinearVelocity won't work)
       mRigidBody->setActivationState(DISABLE_DEACTIVATION);
@@ -101,12 +78,12 @@ namespace EnginePhysics
       mGhostObject = new btPairCachingGhostObject();
 
       mGhostObject->setCollisionShape(mShape->GetCollisionShape());
-      mGhostObject->setUserPointer(static_cast<PhysicsDescriptor*>(this));
+      mGhostObject->setUserPointer(static_cast<PhysicsDescriptor *>(this));
       mGhostObject->setCollisionFlags(btCollisionObject::CF_NO_CONTACT_RESPONSE);
       // Specify filters manually, otherwise ghost doesn't collide with statics for some reason
    }
 
-   void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
+   void DynamicCharacterController::UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime)
    {
       mTimerMultiplier = deltaTime; // from ms to sec
 
@@ -135,7 +112,7 @@ namespace EnginePhysics
       }
    }
 
-   void DynamicCharacterController::Walk(const glm::vec2& dir)
+   void DynamicCharacterController::Walk(const glm::vec2 &dir)
    {
       glm::vec2 velocityXZ(dir + glm::vec2(mManualVelocity.getX(), mManualVelocity.getZ()));
 
@@ -149,7 +126,7 @@ namespace EnginePhysics
       mManualVelocity.setZ(velocityXZ.y);
    }
 
-   void DynamicCharacterController::Walk(const glm::vec3& dir)
+   void DynamicCharacterController::Walk(const glm::vec3 &dir)
    {
       Walk(glm::vec2(dir.x, dir.z));
    }
@@ -157,6 +134,11 @@ namespace EnginePhysics
    ePhysicsDescriptorType DynamicCharacterController::GetPhysicsDescriptorType() const
    {
       return ePhysicsDescriptorType::DYNAMIC_CHARACTER_CONTROLLER;
+   }
+
+   std::vector<btCollisionObject*> DynamicCharacterController::GetCollisionObjects() const
+   {
+      return {mRigidBody, mGhostObject};
    }
 
    void DynamicCharacterController::ParseGhostContacts()
@@ -176,7 +158,7 @@ namespace EnginePhysics
 
          const btBroadphasePair &pair = pairArray[i];
 
-         btBroadphasePair* collisionPair = mPhysicsWorld->GetWorld()->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
+         btBroadphasePair *collisionPair = mPhysicsWorld->GetWorld()->getPairCache()->findPair(pair.m_pProxy0, pair.m_pProxy1);
 
          if (collisionPair == NULL)
             continue;
@@ -186,7 +168,7 @@ namespace EnginePhysics
 
          for (int j = 0; j < manifoldArray.size(); j++)
          {
-            btPersistentManifold* pManifold = manifoldArray[j];
+            btPersistentManifold *pManifold = manifoldArray[j];
 
             // Skip the rigid body the ghost monitors
             if (pManifold->getBody0() == mRigidBody)
@@ -198,10 +180,10 @@ namespace EnginePhysics
 
                if (point.getDistance() < 0.0f)
                {
-                  //const btVector3 &ptA = point.getPositionWorldOnA();
+                  // const btVector3 &ptA = point.getPositionWorldOnA();
                   const btVector3 &ptB = point.getPositionWorldOnB();
 
-                  //const btVector3 &normalOnB = point.m_normalWorldOnB;
+                  // const btVector3 &normalOnB = point.m_normalWorldOnB;
 
                   // If point is in rounded bottom region of capsule shape, it is on the ground
                   if (ptB.getY() < mMotionTransform.getOrigin().getY() - mBottomRoundedRegionYOffset)
@@ -248,16 +230,16 @@ namespace EnginePhysics
       }
    }
 
-   void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data)
+   void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
    {
-      PhysicsDescriptor* kinematicObjDesc = std::get<0>(data);
-      const btVector3& offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
+      PhysicsDescriptor *kinematicObjDesc = std::get<0>(data);
+      const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
 
       if (mLastRayCastObjectResult && kinematicObjDesc == mLastRayCastObjectResult)
       {
          // Collision
-         auto& worldTransform = mRigidBody->getWorldTransform();
-         const auto& offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
+         auto &worldTransform = mRigidBody->getWorldTransform();
+         const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
          worldTransform.setOrigin(offsetedTranslation);
       }
    }
@@ -265,24 +247,24 @@ namespace EnginePhysics
    void DynamicCharacterController::UpdatePosition()
    {
       // Ray cast, ignore rigid body
+      auto ignoreMeCast = BulletRayCastWithFilter({mRigidBody, mGhostObject});
+      auto &worldTransform = mRigidBody->getWorldTransform();
 
-      auto rayCastResult = IgnoreBodyAndGhostCast(mRigidBody, mGhostObject);
-      auto& worldTransform = mRigidBody->getWorldTransform();
-
-      mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(),
-         worldTransform.getOrigin() - btVector3(0.0f, mBottomYOffset + mStepHeight, 0.0f), rayCastResult);
+      ignoreMeCast.RayTest(mPhysicsWorld->GetWorld(),
+                           worldTransform.getOrigin(),
+                           worldTransform.getOrigin() - btVector3(0.0f, mBottomYOffset + mStepHeight, 0.0f));
 
       // Bump up if hit
-      if (rayCastResult.hasHit())
+      if (ignoreMeCast.IsRayHitCollision())
       {
-         if (auto collidedUserPtr = rayCastResult.m_collisionObject->getUserPointer())
+         if (auto collidedUserPtr = ignoreMeCast.GetCollisionHitObject()->getUserPointer())
          {
-            mLastRayCastObjectResult = static_cast<PhysicsDescriptor*>(collidedUserPtr);
+            mLastRayCastObjectResult = static_cast<PhysicsDescriptor *>(collidedUserPtr);
          }
 
          float previousY = worldTransform.getOrigin().getY();
 
-         worldTransform.getOrigin().setY(previousY + (mBottomYOffset + mStepHeight) * (1.0f - rayCastResult.m_closestHitFraction));
+         worldTransform.getOrigin().setY(previousY + (mBottomYOffset + mStepHeight) * (1.0f - ignoreMeCast.m_closestHitFraction));
 
          btVector3 vel(mRigidBody->getLinearVelocity());
 
@@ -296,12 +278,14 @@ namespace EnginePhysics
       float testOffset = 0.07f;
 
       // Ray cast, ignore rigid body
-      IgnoreBodyAndGhostCast rayCallBack_top(mRigidBody, mGhostObject);
+      BulletRayCastWithFilter rayTop({mRigidBody, mGhostObject});
 
-      mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(), worldTransform.getOrigin() + btVector3(0.0f, mBottomYOffset + testOffset, 0.0f), rayCallBack_top);
+      rayTop.RayTest(mPhysicsWorld->GetWorld(),
+                     worldTransform.getOrigin(),
+                     worldTransform.getOrigin() + btVector3(0.0f, mBottomYOffset + testOffset, 0.0f));
 
       // Bump up if hit
-      if (rayCallBack_top.hasHit())
+      if (rayTop.IsRayHitCollision())
       {
          worldTransform.setOrigin(mPreviousPosition);
 
@@ -325,7 +309,7 @@ namespace EnginePhysics
          // Move upwards slightly so velocity isn't immediately canceled when it detects it as on ground next frame
          const float jumpYOffset = 0.01f;
 
-         auto& worldTransform = mRigidBody->getWorldTransform();
+         auto &worldTransform = mRigidBody->getWorldTransform();
 
          float previousY = worldTransform.getOrigin().getY();
 
@@ -333,7 +317,8 @@ namespace EnginePhysics
       }
    }
 
-   float DynamicCharacterController::GetStepHeight() const {
+   float DynamicCharacterController::GetStepHeight() const
+   {
       return mStepHeight;
    }
 
@@ -344,12 +329,12 @@ namespace EnginePhysics
 
    float DynamicCharacterController::GetCapsuleHeight() const
    {
-      return static_cast<PhyCapsuleShape*>(GetShape())->GetHeight();
+      return static_cast<PhyCapsuleShape *>(GetShape())->GetHeight();
    }
 
-   float DynamicCharacterController::GetCapsuleRadius() const 
+   float DynamicCharacterController::GetCapsuleRadius() const
    {
-      return static_cast<PhyCapsuleShape*>(GetShape())->GetRadius();
+      return static_cast<PhyCapsuleShape *>(GetShape())->GetRadius();
    }
 
 }

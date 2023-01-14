@@ -148,9 +148,9 @@ int32_t main(int32_t argc, char **argv)
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-  Logger::InitLog(std::make_shared<LoggerClientConsole>());
-  Logger::InitLog(std::make_shared<LoggerClientFile>());
-  Logger::StartLogThread();
+  //Logger::InitLog(std::make_shared<LoggerClientConsole>());
+  //Logger::InitLog(std::make_shared<LoggerClientFile>());
+  //Logger::StartLogThread();
 
   GLFWwindow *window;
   // Initialize the library
@@ -238,7 +238,7 @@ int32_t main(int32_t argc, char **argv)
 
   glfwTerminate();
 
-  Logger::StopLogThread(); // join logger thread
+  //Logger::StopLogThread(); // join logger thread
 
   return 0;
 }

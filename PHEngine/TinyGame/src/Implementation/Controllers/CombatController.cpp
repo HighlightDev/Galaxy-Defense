@@ -14,6 +14,7 @@
 #include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/AsteroidFactory.h"
 #include "Implementation/Factories/BackgroundPlanetsFactory.h"
+#include "Implementation/Factories/ElectroRayFactory.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/SpaceSceneCamera.h"
@@ -181,7 +182,6 @@ namespace Game
         if (eMainPlayerActionEnum::SHOOT == playerAction && !bIsCoolDownInProgress)
         {
             bIsCoolDownInProgress = true;
-            const auto &playerAction = std::get<0>(data);
             if (const auto &sceneSp = mScene.lock())
             {
                 ShootBullet(mPlayerShip->GetRootComponent()->GetTranslation());
@@ -458,12 +458,25 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        FreezingMissileFactory freezingMissileFactory;
+        static constexpr auto freezingMissileCount = 1, bombMissileCount = 2, blackHoleMissileCount = 2, electroRayCount = 1;
 
-        static constexpr auto freezingMissileCount = 1, bombMissileCount = 2, blackHoleMissileCount = 2;
+        ElectroRayFactory electroRayFactory;
+        for (size_t i = 0; i < electroRayCount; ++i)
+        {
+            const auto &a_electroRay = electroRayFactory.CreateMissile(sceneSp,
+                                                                       mPlayerShip,
+                                                                       glm::vec3(0),
+                                                                       glm::vec3(),
+                                                                       glm::vec3(1.0));
+
+            mMissilesPool.emplace_back(a_electroRay);
+        }
+
+        /*FreezingMissileFactory freezingMissileFactory;
         for (size_t i = 0; i < freezingMissileCount; ++i)
         {
             const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
+                                                                         mPlayerShip,
                                                                          glm::vec3(0),
                                                                          glm::vec3(),
                                                                          glm::vec3(1.0));
@@ -475,6 +488,7 @@ namespace Game
         for (size_t i = 0; i < bombMissileCount; ++i)
         {
             const auto &a_missile = bombMissileFactory.CreateMissile(sceneSp,
+                                                                     mPlayerShip,
                                                                      glm::vec3(0),
                                                                      glm::vec3(),
                                                                      glm::vec3(1.0));
@@ -486,12 +500,13 @@ namespace Game
         for (size_t i = 0; i < blackHoleMissileCount; ++i)
         {
             const auto &a_missile = blackHoleMissileFactory.CreateMissile(sceneSp,
+                                                                          mPlayerShip,
                                                                           glm::vec3(0),
                                                                           glm::vec3(),
                                                                           glm::vec3(1.0));
 
             mMissilesPool.emplace_back(a_missile);
-        }
+        }*/
     }
 
     void CombatController::CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp)

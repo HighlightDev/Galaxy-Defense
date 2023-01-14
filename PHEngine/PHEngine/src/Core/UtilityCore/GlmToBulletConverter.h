@@ -5,7 +5,6 @@
 
 namespace Converter 
 {
-
    glm::quat bulletToGlm(const btQuaternion& q);
 
    btQuaternion glmToBullet(const glm::quat& q);

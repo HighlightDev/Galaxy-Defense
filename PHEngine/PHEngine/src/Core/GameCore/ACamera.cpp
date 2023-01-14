@@ -3,6 +3,7 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
+#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 
 #include <algorithm>
 
@@ -59,6 +60,7 @@ namespace EngineCore
    void ACamera::OnCameraSceneProxyDataUpdated()
    {
       OnTransformationUpdated();
+      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
    }
 
    void ACamera::OnTransformationUpdated()

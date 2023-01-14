@@ -35,9 +35,10 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     BombMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                          const glm::vec3 &translation,
-                                          const glm::vec3 &rotation,
-                                          const glm::vec3 &scale)
+                                      const std::shared_ptr<::EngineCore::Actor> &spawnerActor,
+                                      const glm::vec3 &translation,
+                                      const glm::vec3 &rotation,
+                                      const glm::vec3 &scale)
     {
         const auto &shipBulletIndexStr = std::to_string(s_bombBulletCounter++);
         const auto &rootComponent = std::make_shared<EngineCore::SceneComponent>("c_bombMissile_rootComponent_" + shipBulletIndexStr,
@@ -67,12 +68,12 @@ namespace Game
 
         const MeshComponentData d_mesh("c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0),
                                        glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
-        const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missile->AddComponent(c_mesh);
 
         MovementComponentData d_movement("c_bombMissileNoPhysMove_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
-        const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
+        const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(100.0f);
         c_movement->SetCurrentSpeedToReferenceValue();
@@ -80,16 +81,16 @@ namespace Game
         a_missile->AddComponent(c_movement);
 
         ComponentData d_audio("c_bombMissileSound_" + shipBulletIndexStr);
-        const auto& soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
+        const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
         const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
         c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
-        c_sound->GetSoundSource()->SetGain(0.2f);   
+        c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
         PhysicsComponentData physData("c_bombMissilePhysics_" + shipBulletIndexStr, ghostController);
-        const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+        const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_missile->AddComponent(c_ghostPhysics);
 

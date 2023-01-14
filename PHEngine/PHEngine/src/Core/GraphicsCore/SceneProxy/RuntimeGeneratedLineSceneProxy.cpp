@@ -60,20 +60,20 @@ namespace Graphics
             auto lineBeginViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineBeginWorldSpacePosition.x, mLineBeginWorldSpacePosition.y, mLineBeginWorldSpacePosition.z, 1.0f));
             auto lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition.x, mLineEndWorldSpacePosition.y, mLineEndWorldSpacePosition.z, 1.0f));
 
-            const float halfWidth = 3.5f;
+            const float halfWidth = 5.5f;
 
             const auto forwardVec = glm::normalize(lineEndViewSpacePosition - lineBeginViewSpacePosition);
             const auto rightVec = glm::normalize(glm::cross(forwardVec, EngineMath::AXIS_UP));
 
-            auto viewP1 = lineBeginViewSpacePosition - (rightVec * halfWidth);
-            auto viewP2 = lineBeginViewSpacePosition + (rightVec * halfWidth);
-            auto viewP3 = lineEndViewSpacePosition - (rightVec * halfWidth);
-            auto viewP4 = lineEndViewSpacePosition + (rightVec * halfWidth);
+            const auto viewP1 = lineBeginViewSpacePosition - (rightVec * halfWidth);
+            const auto viewP2 = lineBeginViewSpacePosition + (rightVec * halfWidth);
+            const auto viewP3 = lineEndViewSpacePosition - (rightVec * halfWidth);
+            const auto viewP4 = lineEndViewSpacePosition + (rightVec * halfWidth);
 
-            auto texP1 = glm::vec2(0, 1);
-            auto texP2 = glm::vec2(0, 0);
-            auto texP3 = glm::vec2(1, 1);
-            auto texP4 = glm::vec2(1, 0);
+            const auto texP1 = glm::vec2(0, 1);
+            const auto texP2 = glm::vec2(0, 0);
+            const auto texP3 = glm::vec2(1, 1);
+            const auto texP4 = glm::vec2(1, 0);
 
             std::vector<float> vertices = std::vector<float>({viewP1.x, viewP1.y, viewP1.z,
                                                               viewP2.x, viewP2.y, viewP2.z,
@@ -93,7 +93,6 @@ namespace Graphics
 
             textureCoordinatesVBO->BindVBO();
             textureCoordinatesVBO->BufferSubData(0, texCoordsBufferSize, (void *)texCoords.data());
-
             textureCoordinatesVBO->UnbindVBO();
 
             bUpdateLineGeometry = false;

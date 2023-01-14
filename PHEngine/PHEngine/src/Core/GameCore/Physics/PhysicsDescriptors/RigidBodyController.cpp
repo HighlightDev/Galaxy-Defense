@@ -1,35 +1,12 @@
 #include "RigidBodyController.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Physics/CollisionTestImplementation/BulletRayCastWithFilter.h"
 
 namespace EnginePhysics
 {
-
-   class IgnoreBodyCast :
-      public btCollisionWorld::ClosestRayResultCallback
-   {
-   private:
-      btRigidBody* m_pBody;
-
-   public:
-      IgnoreBodyCast(btRigidBody* pBody)
-         : btCollisionWorld::ClosestRayResultCallback(btVector3(0.0, 0.0, 0.0), btVector3(0.0, 0.0, 0.0)),
-         m_pBody(pBody)
-      {
-      }
-
-      btScalar addSingleResult(btCollisionWorld::LocalRayResult& rayResult, bool normalInWorldSpace)
-      {
-         if (rayResult.m_collisionObject == m_pBody)
-            return 1.0f;
-
-         return ClosestRayResultCallback::addSingleResult(rayResult, normalInWorldSpace);
-      }
-   };
-
-   RigidBodyController::RigidBodyController(PhysicsWorld* pPhysicsWorld, PhysicsShapeBase* shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers& motionModifier)
-      : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier)
-      , mLastRayCastObjectResult(nullptr)
+   RigidBodyController::RigidBodyController(PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers &motionModifier)
+       : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier), mLastRayCastObjectResult(nullptr)
    {
    }
 
@@ -44,7 +21,12 @@ namespace EnginePhysics
       return ePhysicsDescriptorType::RIGID_BODY_CONTROLLER;
    }
 
-   void RigidBodyController::SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation)
+   std::vector<btCollisionObject*> RigidBodyController::GetCollisionObjects() const
+   {
+      return {mRigidBody};
+   }
+
+   void RigidBodyController::SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation)
    {
       btTransform worldTransform(quat, translation);
       mMotionState->setWorldTransform(worldTransform);
@@ -61,61 +43,65 @@ namespace EnginePhysics
 
       switch (mBodyType)
       {
-         case ePhysicsBodyType::DYNAMIC: 
-         {
-            mRigidBody->setActivationState(DISABLE_DEACTIVATION); 
-            Event::KinematicBodyMovedEvent::GetInstance()->AddListener(this);
-            break;
-         }
-         case ePhysicsBodyType::KINEMATIC: mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT); break;
-         case ePhysicsBodyType::STATIC: assert(EngineMath::FloatsNearEqual(mMass, 0.0f)); break;
+      case ePhysicsBodyType::DYNAMIC:
+      {
+         mRigidBody->setActivationState(DISABLE_DEACTIVATION);
+         Event::KinematicBodyMovedEvent::GetInstance()->AddListener(this);
+         break;
+      }
+      case ePhysicsBodyType::KINEMATIC:
+         mRigidBody->setCollisionFlags(mRigidBody->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+         break;
+      case ePhysicsBodyType::STATIC:
+         assert(EngineMath::FloatsNearEqual(mMass, 0.0f));
+         break;
       }
 
-      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor*>(this));
+      mRigidBody->setUserPointer(static_cast<PhysicsDescriptor *>(this));
 
       mPhysicsWorld->GetWorld()->addRigidBody(mRigidBody);
    }
 
    bool RigidBodyController::DoRayCastDown()
    {
-      auto rayCastResult = IgnoreBodyCast(mRigidBody);
-      auto& worldTransform = mRigidBody->getWorldTransform();
+      auto ignoreMeRayCast = BulletRayCastWithFilter({mRigidBody});
+      auto &worldTransform = mRigidBody->getWorldTransform();
 
-      const btVector3& downDir = worldTransform.getOrigin() - btVector3(0, 5.0f, 0);
+      const btVector3 &downDir = worldTransform.getOrigin() - btVector3(0, 5.0f, 0);
 
-      mPhysicsWorld->GetWorld()->rayTest(worldTransform.getOrigin(), downDir, rayCastResult);
+      ignoreMeRayCast.RayTest(mPhysicsWorld->GetWorld(), worldTransform.getOrigin(), downDir);
 
-      const bool bResult = rayCastResult.hasHit();
+      const bool bResult = ignoreMeRayCast.IsRayHitCollision();
 
       if (bResult)
       {
-         if (auto collidedUserPtr = rayCastResult.m_collisionObject->getUserPointer())
+         if (auto collidedUserPtr = ignoreMeRayCast.GetCollisionHitObject()->getUserPointer())
          {
-            mLastRayCastObjectResult = static_cast<PhysicsDescriptor*>(collidedUserPtr);
+            mLastRayCastObjectResult = static_cast<PhysicsDescriptor *>(collidedUserPtr);
          }
       }
 
       return bResult;
    }
 
-   void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t& data)
+   void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
    {
-      PhysicsDescriptor* kinematicObjDesc = std::get<0>(data);
-      const btVector3& offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
+      PhysicsDescriptor *kinematicObjDesc = std::get<0>(data);
+      const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
 
       if (DoRayCastDown())
       {
          if (mLastRayCastObjectResult == kinematicObjDesc)
          {
             // Collision
-            auto& worldTransform = mRigidBody->getWorldTransform();
-            const auto& offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
+            auto &worldTransform = mRigidBody->getWorldTransform();
+            const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
             worldTransform.setOrigin(offsetedTranslation);
          }
       }
    }
 
-   void RigidBodyController::UpdateMotionWorldTransformLocalState(bool& bIsWorldTransformDiry, const float deltaTime)
+   void RigidBodyController::UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime)
    {
       btTransform transform;
       mMotionState->getWorldTransform(transform);

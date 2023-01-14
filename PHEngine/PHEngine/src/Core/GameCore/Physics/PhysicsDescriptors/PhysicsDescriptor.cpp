@@ -71,6 +71,11 @@ namespace EnginePhysics
    {
    }
 
+   std::vector<btCollisionObject*> PhysicsDescriptor::GetCollisionObjects() const
+   {
+      return {mRigidBody};
+   }
+
    float PhysicsDescriptor::GetMass() const
    {
       return mMass;

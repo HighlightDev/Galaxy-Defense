@@ -5,20 +5,19 @@
 namespace EngineCore
 {
     class Scene;
-    class Actor;
 }
 
 namespace Game
 {
     class MissileActor;
 
-    class BombMissileFactory
+    class ElectroRayFactory
         : public IMissileFactory
     {
-        static size_t s_bombBulletCounter;
+        static size_t s_rayCounter;
 
     public:
-        BombMissileFactory() = default;
+        ElectroRayFactory() = default;
 
         virtual std::shared_ptr<MissileActor>
         CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,

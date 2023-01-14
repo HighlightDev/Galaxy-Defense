@@ -18,7 +18,7 @@ namespace Game
          mLevelBounds(),
          mSpaceShipPrimitiveComponent()
    {
-      assert((eCameraType::SECONDARY_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::SECONDARY_FIRST_PERSON_CAMERA);
+      assert((eCameraType::MAIN_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::MAIN_FIRST_PERSON_CAMERA);
       m_camera = std::static_pointer_cast<FirstPersonCamera>(playerCamera);
    }
 

@@ -1,6 +1,5 @@
 #include "ThirdPersonCamera.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
@@ -37,7 +36,6 @@ namespace EngineCore
    void ThirdPersonCamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
    {
       ACamera::UpdateRotationMatrix(deltaX, deltaY);
-      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
    }
 
    void ThirdPersonCamera::PostLevelInit()

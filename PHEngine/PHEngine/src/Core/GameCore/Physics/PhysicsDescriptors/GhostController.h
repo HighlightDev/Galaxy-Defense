@@ -42,10 +42,12 @@ namespace EnginePhysics
 
       ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
+      std::vector<btCollisionObject*> GetCollisionObjects() const override;
+
    private:
       void ParseGhostContacts();
 
-      virtual btScalar addSingleResult(btManifoldPoint &cp, const btCollisionObjectWrapper *colObj0,
+      btScalar addSingleResult(btManifoldPoint &cp, const btCollisionObjectWrapper *colObj0,
                                        int partId0, int index0,
                                        const btCollisionObjectWrapper *colObj1,
                                        int partId1,

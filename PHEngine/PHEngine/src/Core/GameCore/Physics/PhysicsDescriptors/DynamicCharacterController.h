@@ -58,6 +58,8 @@ namespace EnginePhysics
 
       ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
+      std::vector<btCollisionObject*> GetCollisionObjects() const override;
+
       // Acceleration vector in XZ plane
       void Walk(const glm::vec2& dir);
 

@@ -243,4 +243,9 @@ namespace EngineMath
                                   static_cast<float>(a) * INV_COLOR_MAX_BYTE_VALUE);
       return color;
    }
+
+   float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection)
+   {
+      return glm::dot(projectedNonUnitVec, unitDirection);
+   }
 }
