@@ -48,7 +48,7 @@ namespace Game
         scene->AddActor(a_electroRay);
 
         MaterialParser materialParser;
-        const auto &electro_material = materialParser.ParseMaterialDescriptor("Test.m");
+        const auto &electro_material = materialParser.ParseMaterialDescriptor("ElectroRayMaterial.m");
 
         const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
 

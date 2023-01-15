@@ -1,6 +1,6 @@
 <general>
-	name: "Test material"
-	shader: "Test.glsl"
+	name: "ElectroRay material"
+	shader: "ElectroRayMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>

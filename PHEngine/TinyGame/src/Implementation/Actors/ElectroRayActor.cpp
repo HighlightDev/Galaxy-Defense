@@ -51,6 +51,8 @@ namespace Game
 
         assert(mLineComponent);
 
+        glm::vec3 electroLineDirection(0.0f, 0.0f, 1.0f);
+
         if (!bElectroLineCollided)
         {
             mElectroLineEnd += glm::vec3(0.0f, 0.0f, 1.0f) * mElectroLineDestinationSpeed * deltaTime;
@@ -83,11 +85,12 @@ namespace Game
         else if (const auto &collidedSpaceShipSp = mCollidedSpaceship.lock())
         {
             mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
+            electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
         }
 
         if (bLineOriginStartMovement)
         {
-            mElectroLineBegin += glm::vec3(0.0f, 0.0f, 1.0f) * mElectroLineOriginSpeed * deltaTime;
+            mElectroLineBegin += electroLineDirection * mElectroLineOriginSpeed * deltaTime;
             if (bElectroLineCollided &&
                 (EngineMath::CheckSimilarityVec3(mElectroLineBegin, mElectroLineEnd) ||
                  (EngineMath::ProjectVector3OnVector(mElectroLineBegin, glm::vec3(0.0f, 0.0f, 1.0f)) >=
