@@ -39,8 +39,7 @@ namespace Game
 
         std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;
         bool bElectroLineCollided;
-
-
+        
     public:
         ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
@@ -71,5 +70,9 @@ namespace Game
         void Initialize();
 
         void OnElectroLineOriginStartMovementDelayTimerTimeout();
+
+        void OnElectroLineFadeoutTimerTimeout();
+
+        void DropState();
     };
 }

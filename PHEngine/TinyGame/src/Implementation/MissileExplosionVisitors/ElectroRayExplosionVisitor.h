@@ -13,10 +13,10 @@ namespace Game
     class SpaceshipActor;
     class SpaceObjectActor;
 
-    class FreezingExplosionVisitor : public MissileExplosionVisitorBase
+    class ElectroRayExplosionVisitor : public MissileExplosionVisitorBase
     {
     public:
-        FreezingExplosionVisitor(const std::shared_ptr<MissileActor> &ownerMissile);
+        ElectroRayExplosionVisitor(const std::shared_ptr<MissileActor> &ownerMissile);
 
         virtual void StartExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
                                                 const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor) override;

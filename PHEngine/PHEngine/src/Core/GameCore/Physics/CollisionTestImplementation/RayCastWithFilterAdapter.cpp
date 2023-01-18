@@ -33,6 +33,8 @@ namespace EnginePhysics
                     insertPosition = excludeCollisionObjects.insert(insertPosition, collisionObjects.begin(), collisionObjects.end());
                 }
             }
+
+            mExcludeFilterBodies = std::move(excludeCollisionObjects);
         }
     }
 

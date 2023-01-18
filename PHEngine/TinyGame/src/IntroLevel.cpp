@@ -26,6 +26,7 @@
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
+#include "Implementation/Events/RayCollisionEvent.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -44,7 +45,7 @@ namespace Game
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
        : Level(threadMgr), mSceneController(std::make_shared<SceneController>(mScene))
    {
-      Event::EventDispatcher::GetInstance()->RegisterEventByType<Event::MainPlayerActionEvent>();
+      Event::EventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent>();
    }
 
    IntroLevel::~IntroLevel()

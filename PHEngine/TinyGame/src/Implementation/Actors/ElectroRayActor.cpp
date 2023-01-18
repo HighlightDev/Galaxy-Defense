@@ -7,10 +7,13 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/RayCastWithFilterAdapter.h"
 #include "Core/GameCore/Scene.h"
+#include "Implementation/Events/RayCollisionEvent.h"
+#include "Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h"
 
 #include <utility>
 
 using namespace EnginePhysics;
+using namespace Event;
 
 namespace Game
 {
@@ -77,6 +80,9 @@ namespace Game
                             mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                             mCollidedSpaceship = collidedActor;
                             bElectroLineCollided = true;
+                            RayCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                                        std::static_pointer_cast<MissileActor>(shared_from_this()),
+                                                                        collidedActor->shared_from_this());
                         }
                     }
                 }
@@ -86,6 +92,11 @@ namespace Game
         {
             mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
             electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
+            if (mElectroLineOriginStartMovementDelayTimer.IsRunning())
+            {
+                mElectroLineOriginStartMovementDelayTimer.StopTimer();
+                bLineOriginStartMovement = true;
+            }
         }
 
         if (bLineOriginStartMovement)
@@ -106,12 +117,10 @@ namespace Game
 
     void ElectroRayActor::TriggerSpawn(const glm::vec3 &position)
     {
-        mActivityState = eMissileActivityState::ACTIVE;
+        DropState();
         SetIsEnabled(true);
+        mActivityState = eMissileActivityState::ACTIVE;
 
-        bLineOriginStartMovement = false;
-        bElectroLineCollided = false;
-        mCollidedSpaceship.reset();
         if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
         {
             mElectroLineEnd = mElectroLineBegin = spaceshipWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
@@ -134,12 +143,13 @@ namespace Game
     void ElectroRayActor::TriggerDisabled()
     {
         mActivityState = eMissileActivityState::IDLE;
+        DropState();
         SetIsEnabled(false);
     }
 
     std::shared_ptr<MissileExplosionVisitorBase> ElectroRayActor::CreateMissileExplosionVisitor()
     {
-        return nullptr;
+        return std::make_shared<ElectroRayExplosionVisitor>(std::static_pointer_cast<ElectroRayActor>(shared_from_this()));
     }
 
     void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> &lineComponent)
@@ -165,5 +175,17 @@ namespace Game
     void ElectroRayActor::OnElectroLineOriginStartMovementDelayTimerTimeout()
     {
         bLineOriginStartMovement = true;
+    }
+
+    void ElectroRayActor::DropState()
+    {
+        mElectroLineOriginStartMovementDelayTimer.StopTimer();
+        mCollidedSpaceship.reset();
+        bLineOriginStartMovement = false;
+        bElectroLineCollided = false;
+        if (const auto &spaceshipWhoSpawnedMeSp = mSpaceshipWhoSpawnedMeWp.lock())
+        {
+            mElectroLineEnd = mElectroLineBegin = spaceshipWhoSpawnedMeSp->GetRootComponent()->GetTranslation();
+        }
     }
 }

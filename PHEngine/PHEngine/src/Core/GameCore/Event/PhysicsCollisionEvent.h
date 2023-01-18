@@ -10,13 +10,13 @@ using namespace EnginePhysics;
 
 namespace Event
 {
-   enum class ePhysicsCollisionEventType
+   enum class ePhysicsCollisionStateType
    {
       COLLISION_REGISTERED,
       COLLISION_UNREGISTER
    };
 
-   using ParentEvent_t = TEvent<MultipleDataEventPolicy<ePhysicsCollisionEventType,
+   using ParentEvent_t = TEvent<MultipleDataEventPolicy<ePhysicsCollisionStateType,
                                                       ePhysicsBodyType,
                                                       uint32_t /*this_phys_descriptor_id*/,
                                                       uint64_t /*this_actor_id*/,

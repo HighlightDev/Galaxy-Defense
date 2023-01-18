@@ -41,6 +41,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
+	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
 	src/Implementation/Ui/PauseMenuUi.h
 	src/Implementation/Ui/PauseSettingsMenuUi.h
 	src/Implementation/Ui/PlayerCombatUi.h
@@ -82,6 +83,7 @@ set(
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
+	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
 	src/Implementation/Ui/PauseMenuUi.cpp
 	src/Implementation/Ui/PauseSettingsMenuUi.cpp
 	src/Implementation/Ui/PlayerCombatUi.cpp

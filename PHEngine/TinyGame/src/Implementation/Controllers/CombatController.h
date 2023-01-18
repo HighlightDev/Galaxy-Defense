@@ -7,6 +7,7 @@
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
+#include "Implementation/Events/RayCollisionEvent.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/CommonCore/Timer.h"
@@ -32,6 +33,7 @@ namespace Game
                              public ILevelController,
                              public MainPlayerActionEvent,
                              public PhysicsCollisionEvent,
+                             public RayCollisionEvent,
                              public ICameraTransformChangeNotifyable
     {
         std::weak_ptr<Scene> mScene;
@@ -81,6 +83,8 @@ namespace Game
         void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
+
+        void ProcessEvent(const typename RayCollisionEvent::EventData_t &data) override;
 
         void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
 

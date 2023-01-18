@@ -53,8 +53,6 @@ namespace Game
 
     void WeakSpaceshipActor::OnTweenStateChanged(const std::string &stateName)
     {
-        // LogInfo("WeakSpaceshipActor::OnTweenStateChanged => New state: ", stateName);
-
         if ("s_LifecyclePreload" == stateName)
         {
         }

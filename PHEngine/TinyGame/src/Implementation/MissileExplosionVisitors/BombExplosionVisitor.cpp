@@ -20,8 +20,7 @@ namespace Game
     }
 
     void BombExplosionVisitor::StartExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
-                                                          const std::shared_ptr<Actor> &missileCollidedActor,
-                                                          const std::shared_ptr<Actor> &spaceshipCollidedActor)
+                                                          const std::shared_ptr<Actor> &missileCollidedActor)
     {
         if (const auto &ownerSp = mOwnerWp.lock())
         {
@@ -35,14 +34,12 @@ namespace Game
     }
 
     void BombExplosionVisitor::EndExplosionForSpaceship(const std::shared_ptr<SpaceshipActor> &spaceship,
-                                                        const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
-                                                        const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+                                                        const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor)
     {
     }
 
     void BombExplosionVisitor::StartExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
-                                                            const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
-                                                            const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+                                                            const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor)
     {
 
         if (const auto &ownerSp = mOwnerWp.lock())
@@ -56,8 +53,7 @@ namespace Game
     }
 
     void BombExplosionVisitor::EndExplosionForSpaceObject(const std::shared_ptr<SpaceObjectActor> &spaceObject,
-                                                          const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor,
-                                                          const std::shared_ptr<::EngineCore::Actor> &spaceshipCollidedActor)
+                                                          const std::shared_ptr<::EngineCore::Actor> &missileCollidedActor)
     {
     }
 }

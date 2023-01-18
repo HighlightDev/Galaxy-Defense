@@ -81,6 +81,8 @@ namespace Game
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
 
+        bool IsAlive() const;
+
         void SetDamageDeltaTime(const float deltaTime);
 
         float GetDamageDeltaTime() const;

@@ -1,0 +1,53 @@
+#include "SphereCollisionTestWithFilterAdapter.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
+#include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/UtilityCore/GlmToBulletConverter.h"
+#include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
+
+#include <algorithm>
+
+using namespace EngineCore;
+
+namespace EnginePhysics
+{
+    SphereCollisionTestWithFilterAdapter::SphereCollisionTestWithFilterAdapter(const float sphereRadius)
+        : BulletSphereCollisionTestWithFilter(sphereRadius)
+    {
+    }
+
+    SphereCollisionTestWithFilterAdapter::SphereCollisionTestWithFilterAdapter(const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents)
+        : BulletSphereCollisionTestWithFilter(sphereRadius)
+    {
+        Initialize(std::move(excludeCollisionComponents));
+    }
+
+    void SphereCollisionTestWithFilterAdapter::SphereCollisionTest(PhysicsWorld *physWorld, const glm::vec3 &translation)
+    {
+        BulletSphereCollisionTestWithFilter::SphereCollisionTest(physWorld->GetWorld(), Converter::glmToBullet(translation));
+    }
+
+    std::vector<const PhysicsDescriptor *> SphereCollisionTestWithFilterAdapter::GetCollisionHitPhysicsDescriptors() const
+    {
+        return {};
+    }
+
+    void SphereCollisionTestWithFilterAdapter::Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents)
+    {
+        if (excludeCollisionComponents.size())
+        {
+            std::vector<btCollisionObject *> excludeCollisionObjects;
+            auto insertPosition = excludeCollisionObjects.begin();
+            for (const auto &collisionComponent : excludeCollisionComponents)
+            {
+                auto collisionObjects = collisionComponent->GetDescriptor()->GetCollisionObjects();
+                if (collisionObjects.size())
+                {
+                    insertPosition = excludeCollisionObjects.insert(insertPosition, collisionObjects.begin(), collisionObjects.end());
+                }
+            }
+
+            mExcludeFilterBodies = std::move(excludeCollisionObjects);
+        }
+    }
+}

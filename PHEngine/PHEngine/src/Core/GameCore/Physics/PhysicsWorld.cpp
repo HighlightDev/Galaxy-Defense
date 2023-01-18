@@ -118,7 +118,7 @@ namespace EnginePhysics
          if (activeCollision.IsCollisionExpired())
          {
             PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
-                                                            ePhysicsCollisionEventType::COLLISION_UNREGISTER,
+                                                            ePhysicsCollisionStateType::COLLISION_UNREGISTER,
                                                             activeCollision.GetFirstCollisionBody()->GetPhysicsBodyType(),
                                                             activeCollision.GetFirstCollisionBody()->GetId(),
                                                             activeCollision.GetFirstCollisionBody()->GetOwnerActorGameObjectId(),
@@ -162,7 +162,7 @@ namespace EnginePhysics
       {
          mActiveCollisions.emplace_back(collisionBody1, collisionBody2);
          PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
-                                                         ePhysicsCollisionEventType::COLLISION_REGISTERED,
+                                                         ePhysicsCollisionStateType::COLLISION_REGISTERED,
                                                          collisionBody1->GetPhysicsBodyType(),
                                                          collisionBody1->GetId(),
                                                          collisionBody1->GetOwnerActorGameObjectId(),

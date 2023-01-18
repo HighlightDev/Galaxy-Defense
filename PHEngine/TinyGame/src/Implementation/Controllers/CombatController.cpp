@@ -39,6 +39,7 @@ namespace Game
     {
         MainPlayerActionEvent::GetInstance()->AddListener(this);
         PhysicsCollisionEvent::GetInstance()->AddListener(this);
+        RayCollisionEvent::GetInstance()->AddListener(this);
 
         mBackgroundPlanetsSpawnTimer.SetIntervalMs(1500);
         mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
@@ -49,6 +50,7 @@ namespace Game
     {
         MainPlayerActionEvent::GetInstance()->RemoveListener(this);
         PhysicsCollisionEvent::GetInstance()->RemoveListener(this);
+        RayCollisionEvent::GetInstance()->RemoveListener(this);
     }
 
     void CombatController::OnPreLevelInit()
@@ -191,7 +193,7 @@ namespace Game
 
     void CombatController::ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data)
     {
-        const ePhysicsCollisionEventType collisionEventType = std::get<0>(data);
+        const ePhysicsCollisionStateType collisionEventType = std::get<0>(data);
         const ePhysicsBodyType physBodyType = std::get<1>(data);
         const auto this_actor_id = std::get<3>(data);
         const auto that_actor_id = std::get<5>(data);
@@ -257,7 +259,7 @@ namespace Game
                     }
                 }
 
-                const std::string collisionType = ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType
+                const std::string collisionType = ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType
                                                       ? "collision registered"
                                                       : "collision unregister";
 
@@ -272,13 +274,13 @@ namespace Game
                             ownerSpaceObjectActor->GetName());
 
                     const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
-                    if (ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType)
+                    if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
                     {
-                        explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor, ownerSpaceObjectActor);
+                        explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
                     }
                     else
                     {
-                        explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor, ownerSpaceObjectActor);
+                        explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
                     }
                 }
                 else if (ownerEnemyShipActor && ownerSpaceObjectActor)
@@ -303,14 +305,41 @@ namespace Game
                             concreteSpaceshipActor->GetName());
 
                     const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
-                    if (ePhysicsCollisionEventType::COLLISION_REGISTERED == collisionEventType)
+                    if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
                     {
-                        explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor, concreteSpaceshipActor);
+                        explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
                     }
                     else
                     {
-                        explosionVisitor->EndExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor, concreteSpaceshipActor);
+                        explosionVisitor->EndExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
                     }
+                }
+            }
+        }
+    }
+
+    void CombatController::ProcessEvent(const typename RayCollisionEvent::EventData_t &data)
+    {
+        const auto &eventSenderMissileWp = std::get<0>(data);
+        const auto &collidedActorWp = std::get<1>(data);
+
+        if (const auto &rayMissileActorSp = eventSenderMissileWp.lock())
+        {
+            if (const auto &collidedActorSp = collidedActorWp.lock())
+            {
+                const auto &a_enemyShipIt = FindEnemyShipOwnerActorById(collidedActorSp->GetObjectId());
+                const auto &a_spaceObjectIt = FindSpaceObjectOwnerActorById(collidedActorSp->GetObjectId());
+
+                const auto explosionVisitor = rayMissileActorSp->CreateMissileExplosionVisitor();
+                if (a_enemyShipIt != mEnemies.end())
+                {
+                    const auto &a_enemyShip = (*a_enemyShipIt);
+                    explosionVisitor->StartExplosionForSpaceship(a_enemyShip, rayMissileActorSp);
+                }
+                else if (a_spaceObjectIt != mSpaceObjectsPool.end())
+                {
+                    const auto &a_spaceobject = (*a_spaceObjectIt);
+                    explosionVisitor->StartExplosionForSpaceObject(a_spaceobject, rayMissileActorSp);
                 }
             }
         }

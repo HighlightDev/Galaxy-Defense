@@ -233,6 +233,11 @@ namespace Game
         return 0 != mLifePoints;
     }
 
+    bool SpaceshipActor::IsAlive() const
+    {
+        return 0 != mLifePoints;
+    }
+
     void SpaceshipActor::SetDamageDeltaTime(const float deltaTime)
     {
         mDamageEffectTimePassed = deltaTime;

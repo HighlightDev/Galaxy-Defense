@@ -39,7 +39,7 @@ namespace Event
          return &m_instance;
       }
 
-      std::string ToString() const override
+      std::string ToString() const
       {
          return "TEvent";
       }
