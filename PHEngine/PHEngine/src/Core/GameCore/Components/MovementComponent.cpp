@@ -8,7 +8,7 @@ namespace EngineCore
 {
 
    MovementComponent::MovementComponent(const MovementComponentData &movementComponentData)
-       : Component(movementComponentData.GameObjectName),
+       : Component(movementComponentData.EngineObjectName),
          mReferenceSpeed(1.0f),
          mCurrentSpeed(1.0f),
          mDirection(movementComponentData.m_launchDirection)

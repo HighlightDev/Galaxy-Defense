@@ -8,9 +8,12 @@
 #include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Actors/BackgroundSpaceObjectActor.h"
 #include "Implementation/Events/RayCollisionEvent.h"
+#include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Core/CommonCore/Timer.h"
+#include "Implementation/GameObjectsType.h"
+#include "Implementation/GameObjectsCollisionType.h"
 
 #include <memory>
 #include <utility>
@@ -34,6 +37,7 @@ namespace Game
                              public MainPlayerActionEvent,
                              public PhysicsCollisionEvent,
                              public RayCollisionEvent,
+                             public SphereContactCollisionEvent,
                              public ICameraTransformChangeNotifyable
     {
         std::weak_ptr<Scene> mScene;
@@ -75,7 +79,7 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        void UnpausableTick(const float deltaTime) override {};
+        void UnpausableTick(const float deltaTime) override{};
 
         void SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController);
 
@@ -85,6 +89,8 @@ namespace Game
         void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename RayCollisionEvent::EventData_t &data) override;
+
+        void ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data) override;
 
         void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
 
@@ -99,15 +105,15 @@ namespace Game
 
         void FlushToPoolUsedBullets();
 
-        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipByName(const std::string &actorName);
+        std::shared_ptr<MissileActor> GetMissileOwnerActorById(const uint64_t actorId) const;
 
-        typename std::vector<std::shared_ptr<SpaceshipActor>>::iterator FindEnemyShipOwnerActorById(const uint64_t actorId);
+        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const uint64_t actorId) const;
 
-        typename std::vector<std::shared_ptr<SpaceObjectActor>>::iterator FindSpaceObjectOwnerActorById(const uint64_t actorId);
+        std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const uint64_t actorId) const;
 
-        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletByName(const std::string &actorName);
+        eGameObjectsType GetGameObjectTypeByActorId(const uint64_t actorId) const;
 
-        typename std::vector<std::shared_ptr<MissileActor>>::iterator FindBulletOwnerActorById(const uint64_t actorId);
+        eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 
         glm::vec3 GenRandomPositionForSpaceship() const;
         glm::vec3 GenRandomPositionForSpaceObject() const;

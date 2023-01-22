@@ -6,7 +6,7 @@ namespace EngineCore
 {
 
    InputComponent::InputComponent(const ComponentData& componentData)
-      : Component(componentData.GameObjectName)
+      : Component(componentData.EngineObjectName)
       , m_keyboardBindings(std::make_shared<DefaultKeyboardBindings>())
       , m_mouseBindings()
    {
@@ -53,7 +53,7 @@ namespace EngineCore
    {
       auto& dataActor = GetSerializeDataActor(dataContainer);
       std::shared_ptr<SerializeDataInputComponent> inputComp = std::make_shared<SerializeDataInputComponent>();
-      inputComp->ComponentName = GameObjectName;
+      inputComp->ComponentName = EngineObjectName;
       dataActor.ComponentsData.emplace_back(inputComp);
    }
 

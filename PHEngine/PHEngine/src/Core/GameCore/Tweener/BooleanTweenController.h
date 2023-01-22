@@ -1,7 +1,7 @@
 #pragma once
 #include "ITweenController.h"
 #include "StateProperty.h"
-#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
 
 namespace EngineCore
 {

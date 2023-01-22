@@ -28,9 +28,9 @@ namespace EnginePhysics
 
       size_t mCurrentId;
 
-      uint64_t mOwnerComponentGameObjectId;
+      uint64_t mOwnerComponentEngineObjectId;
 
-      uint64_t mOwnerActorGameObjectId;
+      uint64_t mOwnerActorEngineObjectId;
 
       class PhysicsWorld *mPhysicsWorld;
 
@@ -104,13 +104,13 @@ namespace EnginePhysics
 
       bool GetIsCollisionEnabled() const;
 
-      void SetOwnerComponentGameObjectId(const uint64_t ownerComponentGameObjectId);
+      void SetOwnerComponentEngineObjectId(const uint64_t ownerComponentEngineObjectId);
 
-      uint64_t GetOwnerComponentGameObjectId() const;
+      uint64_t GetOwnerComponentEngineObjectId() const;
 
-      void SetOwnerActorGameObjectId(const uint64_t ownerActorGameObjectId);
+      void SetOwnerActorEngineObjectId(const uint64_t ownerActorEngineObjectId);
 
-      uint64_t GetOwnerActorGameObjectId() const;
+      uint64_t GetOwnerActorEngineObjectId() const;
    };
 
 }

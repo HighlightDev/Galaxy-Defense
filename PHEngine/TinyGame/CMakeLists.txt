@@ -4,6 +4,8 @@ set(
 	src/IntroLevel.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
+	src/Implementation/GameObjectsType.h
+	src/Implementation/GameObjectsCollisionType.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
@@ -13,10 +15,13 @@ set(
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
 	src/Implementation/Events/MainPlayerActionEvent.h
+	src/Implementation/Events/SphereContactCollisionEvent.h
+	src/Implementation/Events/RayCollisionEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
 	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/ISpaceObjectFactory.h
+	src/Implementation/Factories/IMissileExplosionChainFactory.h
 	src/Implementation/Factories/WeakSpaceShipFactory.h
 	src/Implementation/Factories/BombMissileFactory.h
 	src/Implementation/Factories/FreezingMissileFactory.h
@@ -24,9 +29,13 @@ set(
 	src/Implementation/Factories/AsteroidFactory.h
 	src/Implementation/Factories/BackgroundPlanetsFactory.h
 	src/Implementation/Factories/ElectroRayFactory.h
+	src/Implementation/Factories/ElectroRayChainFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
 	src/Implementation/Modifiers/FreezingModifier.h
+	src/Implementation/Modifiers/ElectroRayChainModifier.h
+	src/Implementation/Modifiers/ModifiersHandler.h
+	src/Implementation/Actors/ElectroRayChainActor.h
 	src/Implementation/Actors/MissileActor.h
 	src/Implementation/Actors/BombMissileActor.h
 	src/Implementation/Actors/FreezingMissileActor.h
@@ -60,6 +69,8 @@ set(
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
+	src/Implementation/Events/SphereContactCollisionEvent.cpp
+	src/Implementation/Events/RayCollisionEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/BombMissileFactory.cpp
 	src/Implementation/Factories/FreezingMissileFactory.cpp
@@ -67,8 +78,12 @@ set(
 	src/Implementation/Factories/AsteroidFactory.cpp
 	src/Implementation/Factories/BackgroundPlanetsFactory.cpp
 	src/Implementation/Factories/ElectroRayFactory.cpp
+	src/Implementation/Factories/ElectroRayChainFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
 	src/Implementation/Modifiers/FreezingModifier.cpp
+	src/Implementation/Modifiers/ElectroRayChainModifier.cpp
+	src/Implementation/Modifiers/ModifiersHandler.cpp
+	src/Implementation/Actors/ElectroRayChainActor.cpp
 	src/Implementation/Actors/MissileActor.cpp
 	src/Implementation/Actors/BombMissileActor.cpp
 	src/Implementation/Actors/FreezingMissileActor.cpp

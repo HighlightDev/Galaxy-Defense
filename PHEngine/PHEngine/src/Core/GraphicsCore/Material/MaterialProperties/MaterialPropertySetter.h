@@ -10,7 +10,7 @@ namespace Resources {
 }
 
 namespace EngineCore {
-   class GameObject;
+   class EngineObject;
 }
 
 namespace Graphics
@@ -18,7 +18,7 @@ namespace Graphics
    using namespace Texture;
 
    using Resources::IDeferredResourceCreator;
-   using EngineCore::GameObject;
+   using EngineCore::EngineObject;
 
    struct MaterialPropertySetter
    {
@@ -26,7 +26,7 @@ namespace Graphics
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const float value);
       static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const class GameObject* gameObject,const std::string& gamePropertyName, const std::string& bindingName);
+      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const class EngineObject* gameObject,const std::string& gamePropertyName, const std::string& bindingName);
 
    private:
       static class DynamicMaterial* TryCastToDynamicMaterial(class IMaterial* materialIsntance);

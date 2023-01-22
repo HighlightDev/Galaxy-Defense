@@ -6,7 +6,7 @@
 namespace EngineCore
 {
     StreamingSoundComponent::StreamingSoundComponent(const ComponentData &data)
-        : Component(data.GameObjectName),
+        : Component(data.EngineObjectName),
           mStreamingSoundSource()
     {
     }

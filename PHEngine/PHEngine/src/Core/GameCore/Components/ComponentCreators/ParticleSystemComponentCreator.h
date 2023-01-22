@@ -29,7 +29,7 @@ namespace EngineCore
             const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
 
             ParticlePoolParameters params;
-            params.mParticleComponentName = mData.GameObjectName;
+            params.mParticleComponentName = mData.EngineObjectName;
             params.mParticleCount = mData.m_particlesCount;
 
             ParticlesPool::sharedValue_t particlesSkin =

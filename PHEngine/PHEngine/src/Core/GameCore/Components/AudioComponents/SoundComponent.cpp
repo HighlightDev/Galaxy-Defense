@@ -10,7 +10,7 @@ using namespace Resources;
 namespace EngineCore
 {
     SoundComponent::SoundComponent(const ComponentData &data)
-        : Component(data.GameObjectName),
+        : Component(data.EngineObjectName),
           mSoundBuffersMap(),
           mSoundSource(std::make_shared<SoundSource>())
     {

@@ -8,7 +8,7 @@
 #include <string>
 #include <optional>
 
-#include "Core/GameCore/GameObject.h"
+#include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -34,7 +34,7 @@ namespace EngineCore
       };
 
    class ACamera
-      : public GameObject
+      : public EngineObject
       , public ITickable
       , public ISerializable
    {

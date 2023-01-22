@@ -58,7 +58,7 @@ namespace EngineCore
       auto lightCompData = std::make_shared<SerializeDataDirLightComponent>();
       const auto &renderData = GetRenderData();
 
-      lightCompData->ComponentName = GameObjectName;
+      lightCompData->ComponentName = EngineObjectName;
       lightCompData->AmbientLight = renderData->Ambient;
       lightCompData->DiffuseLight = renderData->Diffuse;
       lightCompData->SpecularLight = renderData->Specular;

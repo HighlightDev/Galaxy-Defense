@@ -23,13 +23,13 @@ namespace EngineCore {
    public:
 
       std::string BindingName;
-      std::string GameObjectName;
-      std::string GameObjectPropertyName;
+      std::string EngineObjectName;
+      std::string EngineObjectPropertyName;
 
       PropertyBinding(const std::string& bindingName)
          : BindingName(bindingName)
-         , GameObjectName("")
-         , GameObjectPropertyName("")
+         , EngineObjectName("")
+         , EngineObjectPropertyName("")
       {
       }
 

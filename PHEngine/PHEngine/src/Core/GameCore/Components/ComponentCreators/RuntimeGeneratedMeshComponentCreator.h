@@ -38,7 +38,7 @@ namespace EngineCore
 
             if (eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData.GetMeshComponentDataType())
             {
-                skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(RuntimeGeneratedMeshPoolParameters(mData.GameObjectName, mData.mMaxVerticesCount));
+                skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(RuntimeGeneratedMeshPoolParameters(mData.EngineObjectName, mData.mMaxVerticesCount));
             }
 
             assert(skin);

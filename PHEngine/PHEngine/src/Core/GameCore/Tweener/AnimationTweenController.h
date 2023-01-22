@@ -2,7 +2,7 @@
 
 #include "ITweenController.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
-#include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/AnimationPropertyBinding.h"
 #include "StateProperty.h"
 
 using namespace Graphics::Mesh;

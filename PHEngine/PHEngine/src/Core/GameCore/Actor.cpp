@@ -13,7 +13,7 @@ using namespace EngineMath;
 namespace EngineCore
 {
    Actor::Actor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-       : GameObject(gameObjectName),
+       : EngineObject(gameObjectName),
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
          mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
@@ -101,14 +101,14 @@ namespace EngineCore
       }
    }
 
-   bool Actor::HasGameObjectIdInHierarchy(const uint64_t id) const
+   bool Actor::HasEngineObjectIdInHierarchy(const uint64_t id) const
    {
       if (GetObjectId() == id)
          return true;
 
       for (const auto &child : m_children)
       {
-         if (child->HasGameObjectIdInHierarchy(id))
+         if (child->HasEngineObjectIdInHierarchy(id))
             return true;
       }
 
@@ -118,7 +118,7 @@ namespace EngineCore
    void Actor::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       SerializeDataActor data;
-      data.ActorName = GameObject::GameObjectName;
+      data.ActorName = EngineObject::EngineObjectName;
       data.RootCompTranslation = m_rootComponent ? m_rootComponent->GetTranslation() : glm::vec3();
       const glm::vec3 eulerAngles = m_rootComponent ? EngineMath::QuatToEulerAngles(m_rootComponent->GetRotator()) : glm::vec3(0);
 
@@ -493,7 +493,7 @@ namespace EngineCore
 
    std::string Actor::GetName() const
    {
-      return GameObjectName;
+      return EngineObjectName;
    }
 
    std::shared_ptr<EngineCore::SceneComponent> Actor::GetRootComponent() const

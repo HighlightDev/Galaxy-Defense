@@ -8,7 +8,7 @@ namespace EngineCore
 {
 
    Component::Component(const std::string &gameObjectName)
-       : GameObject(gameObjectName),
+       : EngineObject(gameObjectName),
          m_owner(),
          mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true, "p_isEnabled", [=](const bool &isEnabled)
                                                              { SetIsEnabled(isEnabled); })),

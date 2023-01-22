@@ -94,10 +94,7 @@ namespace Game
 
     void WeakSpaceshipActor::TriggerDisabled()
     {
-        std::for_each(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
-                      { modifier->OnPreRemoved(); });
-
-        mModifiers.clear();
+        mModifiersHandler->RemoveAllModifiers();
         mActivityState = eSpaceshipActivityState::IDLE;
         mWeakSpaceshipTweener->InitRootState();
     }

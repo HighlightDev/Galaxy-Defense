@@ -17,11 +17,11 @@ using namespace TinyLogger;
 namespace EnginePhysics
 {
    PhysicsComponent::PhysicsComponent(const PhysicsComponentData &data)
-       : Component(data.GameObjectName),
+       : Component(data.EngineObjectName),
          mDescriptor(data.mPhysicsDescriptor),
          bIsTransformationDirty(true)
    {
-      mDescriptor->SetOwnerComponentGameObjectId(GetObjectId());
+      mDescriptor->SetOwnerComponentEngineObjectId(GetObjectId());
    }
 
    PhysicsComponent::~PhysicsComponent()
@@ -37,7 +37,7 @@ namespace EnginePhysics
       const auto &ownerActorSp = ownerActor.lock();
       assert(ownerActorSp);
 
-      mDescriptor->SetOwnerActorGameObjectId(ownerActorSp->GetObjectId());
+      mDescriptor->SetOwnerActorEngineObjectId(ownerActorSp->GetObjectId());
    }
 
    PhysicsDescriptor *PhysicsComponent::GetDescriptor() const

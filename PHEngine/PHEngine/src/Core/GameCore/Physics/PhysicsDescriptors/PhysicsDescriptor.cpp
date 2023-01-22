@@ -31,8 +31,8 @@ namespace EnginePhysics
        : mBodyType(bodyType),
          mPhysicsWorld(pPhysicsWorld),
          mCurrentId(PhysicsDescriptor::mTotalIds++),
-         mOwnerComponentGameObjectId(std::numeric_limits<uint64_t>::max()),
-         mOwnerActorGameObjectId(std::numeric_limits<uint64_t>::max()),
+         mOwnerComponentEngineObjectId(std::numeric_limits<uint64_t>::max()),
+         mOwnerActorEngineObjectId(std::numeric_limits<uint64_t>::max()),
          mShape(shape),
          mMotionState(new btDefaultMotionState()),
          mMass(mass),
@@ -173,25 +173,25 @@ namespace EnginePhysics
       return mIsCollisionEnabled;
    }
 
-   void PhysicsDescriptor::SetOwnerComponentGameObjectId(const uint64_t ownerComponentGameObjectId)
+   void PhysicsDescriptor::SetOwnerComponentEngineObjectId(const uint64_t ownerComponentEngineObjectId)
    {
-      LogInfo("PhysicsDescriptor::SetOwnerComponentGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentGameObjectId);
-      mOwnerComponentGameObjectId = ownerComponentGameObjectId;
+      LogInfo("PhysicsDescriptor::SetOwnerComponentEngineObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentEngineObjectId);
+      mOwnerComponentEngineObjectId = ownerComponentEngineObjectId;
    }
 
-   uint64_t PhysicsDescriptor::GetOwnerComponentGameObjectId() const
+   uint64_t PhysicsDescriptor::GetOwnerComponentEngineObjectId() const
    {
-      return mOwnerComponentGameObjectId;
+      return mOwnerComponentEngineObjectId;
    }
 
-   void PhysicsDescriptor::SetOwnerActorGameObjectId(const uint64_t ownerActorGameObjectId)
+   void PhysicsDescriptor::SetOwnerActorEngineObjectId(const uint64_t ownerActorEngineObjectId)
    {
-      LogInfo("PhysicsDescriptor::SetOwnerActorGameObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorGameObjectId);
-      mOwnerActorGameObjectId = ownerActorGameObjectId;
+      LogInfo("PhysicsDescriptor::SetOwnerActorEngineObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorEngineObjectId);
+      mOwnerActorEngineObjectId = ownerActorEngineObjectId;
    }
 
-   uint64_t PhysicsDescriptor::GetOwnerActorGameObjectId() const
+   uint64_t PhysicsDescriptor::GetOwnerActorEngineObjectId() const
    {
-      return mOwnerActorGameObjectId;
+      return mOwnerActorEngineObjectId;
    }
 }

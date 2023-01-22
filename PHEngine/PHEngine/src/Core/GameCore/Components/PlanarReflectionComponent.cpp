@@ -14,7 +14,7 @@ namespace EngineCore
 {
 
    PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData &data)
-       : SceneComponent(data.GameObjectName,
+       : SceneComponent(data.EngineObjectName,
                         data.m_translation,
                         data.m_eulerRotationDegrees,
                         data.m_scale),
@@ -53,7 +53,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         sceneSP->RegisterDeferredResourceCreator(this, GetGameObjectName());
+         sceneSP->RegisterDeferredResourceCreator(this, GetEngineObjectName());
       }
    }
 

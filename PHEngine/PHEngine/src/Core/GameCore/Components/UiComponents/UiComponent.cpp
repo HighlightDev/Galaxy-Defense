@@ -7,7 +7,7 @@
 namespace EngineCore
 {
     UiComponent::UiComponent(const ComponentData &data)
-        : Component(data.GameObjectName),
+        : Component(data.EngineObjectName),
           mTextFields()
     {
     }

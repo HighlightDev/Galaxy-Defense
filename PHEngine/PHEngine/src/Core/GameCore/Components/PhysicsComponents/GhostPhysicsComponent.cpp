@@ -49,7 +49,7 @@ namespace EnginePhysics
       // todo:
       // SerializeDataActor &actorData = Component::GetSerializeDataActor(dataContainer);
       // auto physCompData = SerializeHelper::GetSerializeDataPhysicsComponent(this);
-      // physCompData->ComponentName = GameObjectName;
+      // physCompData->ComponentName = EngineObjectName;
 
       // actorData.ComponentsData.emplace_back(physCompData);
    }

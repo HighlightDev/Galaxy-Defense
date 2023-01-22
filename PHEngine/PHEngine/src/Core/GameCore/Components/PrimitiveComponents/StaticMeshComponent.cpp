@@ -16,7 +16,7 @@ namespace EngineCore
 {
 
    StaticMeshComponent::StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData)
-       : PrimitiveComponent(meshComponentData.GameObjectName,
+       : PrimitiveComponent(meshComponentData.EngineObjectName,
                             meshComponentData.m_translation,
                             meshComponentData.m_eulerRotationDegrees,
                             meshComponentData.m_scale,

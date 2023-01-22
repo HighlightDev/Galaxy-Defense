@@ -76,7 +76,7 @@ namespace Game
                     {
                         if (const auto &collidedPhysDescriptor = rayWithoutSpawnSpaceship.GetCollisionHitPhysicsDescriptor())
                         {
-                            const auto &collidedActor = sceneSp->GetActorById(collidedPhysDescriptor->GetOwnerActorGameObjectId());
+                            const auto &collidedActor = sceneSp->GetActorById(collidedPhysDescriptor->GetOwnerActorEngineObjectId());
                             mElectroLineEnd = collidedActor->GetRootComponent()->GetTranslation();
                             mCollidedSpaceship = collidedActor;
                             bElectroLineCollided = true;

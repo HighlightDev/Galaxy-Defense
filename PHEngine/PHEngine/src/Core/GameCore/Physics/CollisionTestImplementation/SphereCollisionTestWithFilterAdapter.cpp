@@ -29,7 +29,15 @@ namespace EnginePhysics
 
     std::vector<const PhysicsDescriptor *> SphereCollisionTestWithFilterAdapter::GetCollisionHitPhysicsDescriptors() const
     {
-        return {};
+        std::vector<const PhysicsDescriptor *> result;
+        for (const auto &collisionObj : mCollisionResult)
+        {
+            if (const auto &collidedObjDescriptor = reinterpret_cast<const PhysicsDescriptor *>(collisionObj->getUserPointer()))
+            {
+                result.emplace_back(collidedObjDescriptor);
+            }
+        }
+        return result;
     }
 
     void SphereCollisionTestWithFilterAdapter::Initialize(std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MaterialProperty.h"
-#include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/PropertyBinding.h"
 
 using namespace EngineCore;
 

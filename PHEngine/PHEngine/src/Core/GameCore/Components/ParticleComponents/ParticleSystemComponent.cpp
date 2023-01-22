@@ -23,7 +23,7 @@ namespace EngineCore
 {
     ParticleSystemComponent::ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
                                                      const ParticleSystemRenderData &renderData)
-        : PrimitiveComponent(meshComponentData.GameObjectName,
+        : PrimitiveComponent(meshComponentData.EngineObjectName,
                              meshComponentData.m_translation,
                              glm::vec3(),
                              glm::vec3(1.0f),

@@ -27,11 +27,11 @@ namespace EngineCore
       {
          using LuaExecutor_t = LuaCommonEngineFunctions;
 
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGameObject"), GameObject *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGameObject, this, std::placeholders::_1), "_GetGameObject");
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValFloat"), float(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValFloat, this, std::placeholders::_1), "_GetGOPropertyValFloat");
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValInteger"), int32_t(GameObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValInteger, this, std::placeholders::_1), "_GetGOPropertyValInteger");
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValVec3"), void(GameObject *, std::string, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValVec3, this, std::placeholders::_1), "_SetGOPropertyValVec3");
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValBool"), void(GameObject *, std::string, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValBool, this, std::placeholders::_1), "_SetGOPropertyValBool");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetEngineObject"), EngineObject *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetEngineObject, this, std::placeholders::_1), "_GetEngineObject");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValFloat"), float(EngineObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValFloat, this, std::placeholders::_1), "_GetGOPropertyValFloat");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetGOPropertyValInteger"), int32_t(EngineObject *, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetGOPropertyValInteger, this, std::placeholders::_1), "_GetGOPropertyValInteger");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValVec3"), void(EngineObject *, std::string, glm::vec3)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValVec3, this, std::placeholders::_1), "_SetGOPropertyValVec3");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValBool"), void(EngineObject *, std::string, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValBool, this, std::placeholders::_1), "_SetGOPropertyValBool");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowHeight"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowHeight, this, std::placeholders::_1), "_GetWindowHeight");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowWidth"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowWidth, this, std::placeholders::_1), "_GetWindowWidth");
       }
@@ -59,48 +59,48 @@ namespace EngineCore
          }
       }
 
-      GameObject *LuaCommonEngineFunctions::GetGameObject(const std::tuple<std::string> &gameObjectName)
+      EngineObject *LuaCommonEngineFunctions::GetEngineObject(const std::tuple<std::string> &gameObjectName)
       {
-         GameObject *gameObject = nullptr;
+         EngineObject *gameObject = nullptr;
 
          if (const auto &sceneSP = mSceneWP.lock())
          {
-            gameObject = sceneSP->GetGameObjectByName(std::get<0>(gameObjectName));
+            gameObject = sceneSP->GetEngineObjectByName(std::get<0>(gameObjectName));
          }
 
          return gameObject;
       }
 
-      float LuaCommonEngineFunctions::GetGOPropertyValFloat(const std::tuple<GameObject *, std::string> &data)
+      float LuaCommonEngineFunctions::GetGOPropertyValFloat(const std::tuple<EngineObject *, std::string> &data)
       {
-         GameObject *gameObject = std::get<0>(data);
+         EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
          const auto &property = std::static_pointer_cast<EngineGOProperty<float>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
          assert(property);
          return property->GetValue();
       }
 
-      int32_t LuaCommonEngineFunctions::GetGOPropertyValInteger(const std::tuple<GameObject *, std::string> &data)
+      int32_t LuaCommonEngineFunctions::GetGOPropertyValInteger(const std::tuple<EngineObject *, std::string> &data)
       {
-         GameObject *gameObject = std::get<0>(data);
+         EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
          const auto &property = std::static_pointer_cast<EngineGOProperty<int32_t>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
          assert(property);
          return property->GetValue();
       }
 
-      void LuaCommonEngineFunctions::SetGOPropertyValVec3(const std::tuple<GameObject *, std::string, glm::vec3> &data)
+      void LuaCommonEngineFunctions::SetGOPropertyValVec3(const std::tuple<EngineObject *, std::string, glm::vec3> &data)
       {
-         GameObject *gameObject = std::get<0>(data);
+         EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
          auto property = std::static_pointer_cast<EngineGOProperty<glm::vec3>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
          assert(property);
          property->SetValue(std::get<2>(data));
       }
 
-      void LuaCommonEngineFunctions::SetGOPropertyValBool(const std::tuple<GameObject *, std::string, int32_t> &data)
+      void LuaCommonEngineFunctions::SetGOPropertyValBool(const std::tuple<EngineObject *, std::string, int32_t> &data)
       {
-         GameObject *gameObject = std::get<0>(data);
+         EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
          auto property = std::static_pointer_cast<EngineGOProperty<bool>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
          assert(property);

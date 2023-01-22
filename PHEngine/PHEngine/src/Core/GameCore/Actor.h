@@ -4,7 +4,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "GameObject.h"
+#include "EngineObject.h"
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
@@ -22,7 +22,7 @@ namespace EngineCore
    class Scene;
 
    class Actor
-       : public GameObject,
+       : public EngineObject,
          public ITickable,
          public ISerializable,
          public std::enable_shared_from_this<Actor>
@@ -107,7 +107,7 @@ namespace EngineCore
 
       std::weak_ptr<Scene> GetSceneOwner() const;
 
-      bool HasGameObjectIdInHierarchy(const uint64_t id) const;
+      bool HasEngineObjectIdInHierarchy(const uint64_t id) const;
 
       void AddChild(std::shared_ptr<Actor> actor);
 

@@ -419,8 +419,8 @@
     <ClInclude Include="src\Core\GameCore\Event\eTextEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseButtonDownEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\TextEvent.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\BooleanPropertyBinding.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\Vec3PropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\BooleanPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\Vec3PropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Particles\Emitters\IEmitter.h" />
     <ClInclude Include="src\Core\CommonCore\Random.h" />
     <ClInclude Include="src\Core\CommonCore\TimeHelper.h" />
@@ -435,7 +435,7 @@
     <ClInclude Include="src\Core\GameCore\Event\IEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseScrollEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PhysicsCollisionEvent.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\EulerAnglesRotationPropertyBinding.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseBindings.h" />
     <ClInclude Include="src\Core\GameCore\Input\MouseEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Particles\Modules\Color\IColorModule.h" />
@@ -486,14 +486,14 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialEnterNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\DynamicMaterialOperations\MaterialNode.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialNodeDecorator.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\AnimationPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\AnimationPropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\BindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\FloatPropertyBinding.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectPropertyBindings\PropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\FloatPropertyBinding.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\PropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\TextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryCompositeShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\PostFX\IPostFxPass.h" />
@@ -559,7 +559,7 @@
     <ClInclude Include="src\Core\GameCore\Serialize\ISerializable.h" />
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeDataContainer.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h" />
-    <ClInclude Include="src\Core\GameCore\GameObjectProperty.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObjectProperty.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaActorFunctions.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h" />
@@ -639,7 +639,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PhysicsComponentUpdatedEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\PlayerMovedEvent.h" />
-    <ClInclude Include="src\Core\GameCore\GameObject.h" />
+    <ClInclude Include="src\Core\GameCore\EngineObject.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\CubemapShader.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\BillboardSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\CubemapSceneProxy.h" />
@@ -1178,7 +1178,7 @@
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\CompositeShaderPool.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Material\IMaterial.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\CubemapComponent.cpp" />
-    <ClCompile Include="src\Core\GameCore\GameObject.cpp" />
+    <ClCompile Include="src\Core\GameCore\EngineObject.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\CubemapShader.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\BillboardSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\CubemapSceneProxy.cpp" />

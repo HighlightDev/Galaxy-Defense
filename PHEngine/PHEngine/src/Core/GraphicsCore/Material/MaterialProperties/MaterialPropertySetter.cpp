@@ -6,7 +6,7 @@
 #include "FloatMaterialProperty.h"
 #include "DeferredTextureMaterialProperty.h"
 #include "BindingMaterialProperty.h"
-#include "Core/GameCore/GameObject.h"
+#include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 
 using namespace Resources;
@@ -149,7 +149,7 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const GameObject *gameObject,
+   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const EngineObject *gameObject,
                                                          const std::string &gamePropertyName, const std::string &bindingName)
    {
       assert(materialInstance);

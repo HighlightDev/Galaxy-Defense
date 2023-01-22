@@ -21,9 +21,9 @@ namespace EngineCore
 {
 
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
-       : GameObject("EngineScene"),
+       : EngineObject("EngineScene"),
          mPhysicsWorld(new PhysicsWorld()),
-         GameObjects(),
+         EngineObjects(),
          m_interThreadMgr(interThreadMgr),
          mGameThreadDeltaSec(std::make_shared<EngineGOProperty<float>>(0.0f, "GT_DeltaSec")),
          mDeferredResourceCreators(),
@@ -42,7 +42,7 @@ namespace EngineCore
    {
       LogInfo("Scene::ctor");
 
-      RegisterGameObject(this);
+      RegisterEngineObject(this);
       AddEngineProperty(mGameThreadDeltaSec);
       mPhysicsWorld->InitPhysicsWorld();
    }
@@ -110,7 +110,7 @@ namespace EngineCore
       LogInfo("Scene::RegisterCamera => name = ", camera->GetCameraName());
 
       mActiveCameras.emplace_back(camera);
-      RegisterGameObject(camera.get());
+      RegisterEngineObject(camera.get());
       auto cameraProxyPtr = camera->CreateSceneProxy();
       camera->SceneProxyId = cameraProxyPtr->GetSceneProxyId();
       CameraSceneProxyAdded_OnRenderThread(cameraProxyPtr);
@@ -150,7 +150,7 @@ namespace EngineCore
    std::shared_ptr<ACamera> Scene::GetCamera(const std::string &cameraName) const
    {
       auto cameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [&](const auto &cameraPtr)
-                                   { return cameraPtr->GetGameObjectName() == cameraName; });
+                                   { return cameraPtr->GetEngineObjectName() == cameraName; });
 
       if (cameraIt != mActiveCameras.end())
       {
@@ -179,7 +179,7 @@ namespace EngineCore
    std::shared_ptr<Actor> Scene::GetActorByName(const std::string &name) const
    {
       auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto &actor)
-                                     { return actor->GetGameObjectName() == name; });
+                                     { return actor->GetEngineObjectName() == name; });
       assert(foundActor != mActors.end());
       return *foundActor;
    }
@@ -201,20 +201,20 @@ namespace EngineCore
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
    {
-      const std::string &goName = actor->GetGameObjectName();
-      RegisterGameObject(actor.get());
+      const std::string &goName = actor->GetEngineObjectName();
+      RegisterEngineObject(actor.get());
       mActors.emplace_back(actor);
    }
 
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
    {
-      const std::string &goName = actor->GetGameObjectName();
-      auto it = std::remove_if(GameObjects.begin(), GameObjects.end(), [&](const auto *gameObject)
-                               { return gameObject->GetGameObjectName() == goName; });
+      const std::string &goName = actor->GetEngineObjectName();
+      auto it = std::remove_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+                               { return gameObject->GetEngineObjectName() == goName; });
 
-      if (it != GameObjects.end())
+      if (it != EngineObjects.end())
       {
-         GameObjects.erase(it, GameObjects.end());
+         EngineObjects.erase(it, EngineObjects.end());
       }
    }
 
@@ -223,14 +223,14 @@ namespace EngineCore
       mExternalTickableObjects.emplace_back(externalTickableObject);
    }
 
-   GameObject *Scene::GetGameObjectByName(const std::string &name) const
+   EngineObject *Scene::GetEngineObjectByName(const std::string &name) const
    {
-      GameObject *go = nullptr;
+      EngineObject *go = nullptr;
 
-      auto it = std::find_if(GameObjects.begin(), GameObjects.end(), [&](const auto *gameObject)
-                             { return gameObject->GetGameObjectName() == name; });
+      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+                             { return gameObject->GetEngineObjectName() == name; });
 
-      if (it != GameObjects.end())
+      if (it != EngineObjects.end())
       {
          go = *it;
       }
@@ -238,14 +238,14 @@ namespace EngineCore
       return go;
    }
 
-   GameObject *Scene::GetGameObjectById(const uint64_t id) const
+   EngineObject *Scene::GetEngineObjectById(const uint64_t id) const
    {
-      GameObject *go = nullptr;
+      EngineObject *go = nullptr;
 
-      auto it = std::find_if(GameObjects.begin(), GameObjects.end(), [=](const auto *gameObject)
+      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [=](const auto *gameObject)
                              { return gameObject->GetObjectId() == id; });
 
-      if (it != GameObjects.end())
+      if (it != EngineObjects.end())
       {
          go = *it;
       }
@@ -899,12 +899,12 @@ namespace EngineCore
          }
       }
 
-      RemoveGameObject(component.get());
+      RemoveEngineObject(component.get());
    }
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
    {
-      LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", component->GetGameObjectName());
+      LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", component->GetEngineObjectName());
 
       const eComponentType type = component->GetComponentType();
       if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
@@ -944,7 +944,7 @@ namespace EngineCore
       const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
       component->SetScene(shared_from_this());
       RegisterComponentSceneProxy(component);
-      RegisterGameObject(component.get());
+      RegisterEngineObject(component.get());
       component->OnPostInitialized();
       return component;
    }
@@ -970,30 +970,30 @@ namespace EngineCore
       return false;
    }
 
-   bool Scene::RegisterGameObject(GameObject *const gameObjectPtr)
+   bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
    {
-      const std::string &goName = gameObjectPtr->GetGameObjectName();
-      auto it = std::find_if(GameObjects.begin(), GameObjects.end(), [&](const auto *gameObject)
-                             { return gameObject->GetGameObjectName() == goName; });
+      const std::string &goName = gameObjectPtr->GetEngineObjectName();
+      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+                             { return gameObject->GetEngineObjectName() == goName; });
 
-      assert(it == GameObjects.end());
+      assert(it == EngineObjects.end());
 
       // Add game object
-      GameObjects.emplace_back(gameObjectPtr);
+      EngineObjects.emplace_back(gameObjectPtr);
 
       return true;
    }
 
-   bool Scene::RemoveGameObject(GameObject *const gameObjectPtr)
+   bool Scene::RemoveEngineObject(EngineObject *const gameObjectPtr)
    {
-      const std::string &goName = gameObjectPtr->GetGameObjectName();
+      const std::string &goName = gameObjectPtr->GetEngineObjectName();
 
-      auto it = std::remove_if(GameObjects.begin(), GameObjects.end(), [&](const auto *gameObject)
-                               { return gameObject->GetGameObjectName() == goName; });
+      auto it = std::remove_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+                               { return gameObject->GetEngineObjectName() == goName; });
 
-      if (it != GameObjects.end())
+      if (it != EngineObjects.end())
       {
-         GameObjects.erase(it, GameObjects.end());
+         EngineObjects.erase(it, EngineObjects.end());
          return true;
       }
 

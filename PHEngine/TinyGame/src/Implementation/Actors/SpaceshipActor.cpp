@@ -14,7 +14,7 @@ namespace Game
 {
     SpaceshipActor::SpaceshipActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
         : Actor(gameObjectName, rootComponent),
-          mModifiers(),
+          mModifiersHandler(std::make_unique<ModifiersHandler>()),
           mLifePoints(10),
           mDamageTextFieldWp(),
           mDamageEffectTimePassed(0.0f),
@@ -54,41 +54,16 @@ namespace Game
 
     void SpaceshipActor::TriggerDisabled()
     {
-        std::for_each(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
-                      { modifier->OnPreRemoved(); });
-
-        mModifiers.clear();
+        mModifiersHandler->RemoveAllModifiers();
         mActivityState = eSpaceshipActivityState::IDLE;
         SetIsEnabled(false);
-    }
-
-    void SpaceshipActor::RemoveExpiredModifiers()
-    {
-        const auto expiredIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [](const auto &modifier)
-                                              { 
-                                                const bool isExpired = modifier->IsExpired();
-                                                if (isExpired)
-                                                {
-                                                    modifier->OnPreRemoved();
-                                                }
-                                                return isExpired; });
-
-        if (mModifiers.end() != expiredIt)
-        {
-            mModifiers.erase(expiredIt, mModifiers.end());
-        }
     }
 
     void SpaceshipActor::Tick(const float deltaTime)
     {
         Actor::Tick(deltaTime);
 
-        RemoveExpiredModifiers();
-
-        for (const auto &modifier : mModifiers)
-        {
-            modifier->Tick(deltaTime);
-        }
+        mModifiersHandler->Tick(deltaTime);
 
         if (mIsDamageEffectActive)
         {
@@ -193,38 +168,27 @@ namespace Game
 
     void SpaceshipActor::AddModifier(const std::shared_ptr<IModifiable> &modifier)
     {
-        mModifiers.emplace_back(modifier);
+        mModifiersHandler->AddModifier(modifier);
     }
 
     bool SpaceshipActor::HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const
     {
-        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
-                                    { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
-        return mModifiers.end() != foundIt;
+        return mModifiersHandler->HasModifier(modifierType, creatorObjectId);
     }
 
     bool SpaceshipActor::HasModifier(const eModifierType modifierType) const
     {
-        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
-                                    { return modifierType == modifier->GetModifierType(); });
-        return mModifiers.end() != foundIt;
+        return mModifiersHandler->HasModifier(modifierType);
     }
 
     std::shared_ptr<IModifiable> SpaceshipActor::GetModifier(const eModifierType modifierType) const
     {
-        auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
-                                    { return modifierType == modifier->GetModifierType(); });
-        return mModifiers.end() != foundIt ? *foundIt : nullptr;
+        return mModifiersHandler->GetModifier(modifierType);
     }
 
     void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId)
     {
-        auto removeIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
-                                       { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
-        if (mModifiers.end() != removeIt)
-        {
-            mModifiers.erase(removeIt, mModifiers.end());
-        }
+        mModifiersHandler->RemoveModifier(modifierType, creatorObjectId);
     }
 
     bool SpaceshipActor::CheckIsAliveAfterDamage(const size_t dmg)

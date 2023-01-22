@@ -10,7 +10,7 @@ namespace EngineCore
 {
 
    PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData& data)
-       : Component(data.GameObjectName), mScriptExecutor(this, data.mScriptName), mDestinationPoint("NO"), mTime(0.0f)
+       : Component(data.EngineObjectName), mScriptExecutor(this, data.mScriptName), mDestinationPoint("NO"), mTime(0.0f)
    {
    }
 
@@ -137,7 +137,7 @@ namespace EngineCore
       auto &actorData = GetSerializeDataActor(dataContainer);
 
       std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
-      data->ComponentName = GameObjectName;
+      data->ComponentName = EngineObjectName;
       data->ScriptName = mScriptExecutor.GetScriptName();
 
       actorData.ComponentsData.emplace_back(data);

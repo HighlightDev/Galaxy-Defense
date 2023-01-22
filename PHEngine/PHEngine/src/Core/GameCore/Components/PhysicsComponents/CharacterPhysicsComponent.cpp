@@ -41,7 +41,7 @@ namespace EnginePhysics
    {
       auto& actorData = GetSerializeDataActor(dataContainer);
       std::shared_ptr<SerializeDataCharacterPhysicsComponent> charPhysCompData = std::make_shared<SerializeDataCharacterPhysicsComponent>();
-      charPhysCompData->ComponentName = GameObjectName;
+      charPhysCompData->ComponentName = EngineObjectName;
       charPhysCompData->CapsuleHeight = characterController->GetCapsuleHeight();
       charPhysCompData->CapsuleRadius = characterController->GetCapsuleRadius();
       charPhysCompData->Mass = characterController->GetMass();

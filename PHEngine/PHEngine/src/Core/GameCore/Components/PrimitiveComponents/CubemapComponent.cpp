@@ -6,7 +6,7 @@ namespace EngineCore
 {
 
    CubemapComponent::CubemapComponent(const CubemapComponentData &data, const CubemapRenderData &renderData)
-       : PrimitiveComponent(data.GameObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale,
+       : PrimitiveComponent(data.EngineObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale,
                             renderData.m_skin->GetBoundingBox()),
          m_renderData(renderData)
    {

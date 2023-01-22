@@ -2,8 +2,6 @@
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/GameCore/LoggerExtension.h"
 
-#include <TinyLogger/LogInterface.h>
-
 using namespace TinyLogger;
 
 namespace EngineCore

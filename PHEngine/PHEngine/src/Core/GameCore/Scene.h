@@ -52,7 +52,7 @@ namespace EngineCore
    class IComponentCreatable;
    struct ComponentData;
 
-   class Scene : public GameObject,
+   class Scene : public EngineObject,
                  public ITickable,
                  public std::enable_shared_from_this<Scene>
 
@@ -60,7 +60,7 @@ namespace EngineCore
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      std::vector<GameObject *> GameObjects;
+      std::vector<EngineObject *> EngineObjects;
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -116,9 +116,9 @@ namespace EngineCore
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 
-      GameObject *GetGameObjectByName(const std::string &name) const;
+      EngineObject *GetEngineObjectByName(const std::string &name) const;
 
-      GameObject *GetGameObjectById(const uint64_t id) const;
+      EngineObject *GetEngineObjectById(const uint64_t id) const;
 
       IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 
@@ -152,9 +152,9 @@ namespace EngineCore
 
       void RemoveActor(std::shared_ptr<Actor> actor);
 
-      bool RegisterGameObject(GameObject *const gameObjectPtr);
+      bool RegisterEngineObject(EngineObject *const gameObjectPtr);
 
-      bool RemoveGameObject(GameObject *const gameObjectPtr);
+      bool RemoveEngineObject(EngineObject *const gameObjectPtr);
 
       void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
 

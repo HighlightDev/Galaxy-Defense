@@ -121,9 +121,9 @@ namespace EnginePhysics
                                                             ePhysicsCollisionStateType::COLLISION_UNREGISTER,
                                                             activeCollision.GetFirstCollisionBody()->GetPhysicsBodyType(),
                                                             activeCollision.GetFirstCollisionBody()->GetId(),
-                                                            activeCollision.GetFirstCollisionBody()->GetOwnerActorGameObjectId(),
+                                                            activeCollision.GetFirstCollisionBody()->GetOwnerActorEngineObjectId(),
                                                             activeCollision.GetSecondCollisionBody()->GetId(),
-                                                            activeCollision.GetSecondCollisionBody()->GetOwnerActorGameObjectId());
+                                                            activeCollision.GetSecondCollisionBody()->GetOwnerActorEngineObjectId());
          }
       }
 
@@ -165,9 +165,9 @@ namespace EnginePhysics
                                                          ePhysicsCollisionStateType::COLLISION_REGISTERED,
                                                          collisionBody1->GetPhysicsBodyType(),
                                                          collisionBody1->GetId(),
-                                                         collisionBody1->GetOwnerActorGameObjectId(),
+                                                         collisionBody1->GetOwnerActorEngineObjectId(),
                                                          collisionBody2->GetId(),
-                                                         collisionBody2->GetOwnerActorGameObjectId());
+                                                         collisionBody2->GetOwnerActorEngineObjectId());
       }
       else
       {

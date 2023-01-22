@@ -7,6 +7,8 @@
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Core/GameCore/Physics/CollisionTestImplementation/SphereCollisionTestWithFilterAdapter.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Implementation/Events/SphereContactCollisionEvent.h"
 
 #include <algorithm>
 
@@ -38,6 +40,13 @@ namespace Game
                 {
                     SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {});
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceship->GetRootComponent()->GetTranslation());
+                    const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
+                    std::vector<uint64_t> descriptorActorIds;
+                    std::transform(collidedDescriptors.begin(), collidedDescriptors.end(), std::back_inserter(descriptorActorIds),
+                                   [](const auto &collidedDescriptor)
+                                   { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
+
+                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, descriptorActorIds);
                 }
             }
         }

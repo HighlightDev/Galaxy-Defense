@@ -173,8 +173,8 @@ namespace EngineCore
       {
          SerializeDataTweener::SerializeTweenerBinding bindingData;
          bindingData.BindingName = binding.second->BindingName;
-         bindingData.GameObjectName = binding.second->GameObjectName;
-         bindingData.GameObjectPropertyName = binding.second->GameObjectPropertyName;
+         bindingData.EngineObjectName = binding.second->EngineObjectName;
+         bindingData.EngineObjectPropertyName = binding.second->EngineObjectPropertyName;
          tweenerData->Bindings.emplace_back(bindingData);
       }
 

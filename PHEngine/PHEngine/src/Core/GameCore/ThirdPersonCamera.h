@@ -82,7 +82,7 @@ namespace EngineCore
 
       std::shared_ptr<Actor> GetThirdPersonTarget() const;
 
-      void SetThirdPersonTargetDeferred(const std::string &targetGameObjectName);
+      void SetThirdPersonTargetDeferred(const std::string &targetEngineObjectName);
 
       void SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget);
 

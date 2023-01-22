@@ -13,7 +13,7 @@ namespace EngineCore
    using namespace EngineUtility;
 
    SkyboxComponent::SkyboxComponent(const SkyboxComponentData &data, const SkyboxRenderData &renderData)
-       : PrimitiveComponent(data.GameObjectName, glm::vec3(), glm::vec3(), data.m_scale, renderData.m_skin->GetBoundingBox()), m_rotateSpeed(2.0f), m_renderData(renderData)
+       : PrimitiveComponent(data.EngineObjectName, glm::vec3(), glm::vec3(), data.m_scale, renderData.m_skin->GetBoundingBox()), m_rotateSpeed(2.0f), m_renderData(renderData)
    {
    }
 
@@ -56,7 +56,7 @@ namespace EngineCore
 
       std::shared_ptr<SerializeDataSkyboxComponent> skyboxCompData = std::make_shared<SerializeDataSkyboxComponent>();
 
-      skyboxCompData->ComponentName = GameObjectName;
+      skyboxCompData->ComponentName = EngineObjectName;
       skyboxCompData->Scale = GetScale();
       skyboxCompData->Material = SerializeHelper::GetSerializeDataMaterial(GetMaterial());
       actorData.ComponentsData.emplace_back(skyboxCompData);

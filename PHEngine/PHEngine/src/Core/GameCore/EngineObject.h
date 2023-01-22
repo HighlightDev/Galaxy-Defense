@@ -4,11 +4,11 @@
 #include <string>
 #include <memory>
 
-#include "GameObjectProperty.h"
+#include "EngineObjectProperty.h"
 
 namespace EngineCore
 {
-   class GameObject 
+   class EngineObject 
    {
       static uint64_t mTotalObjectIdCounter;
 
@@ -18,11 +18,11 @@ namespace EngineCore
 
       std::unordered_map<std::string, std::shared_ptr<EngineGOPropertyBase>> mEngineProperties;
 
-      std::string GameObjectName;
+      std::string EngineObjectName;
 
    public:
 
-      GameObject(const std::string& gameObjectName);
+      EngineObject(const std::string& gameObjectName);
 
       uint64_t GetObjectId() const;
 
@@ -30,7 +30,7 @@ namespace EngineCore
 
       void AddEngineProperty(const std::shared_ptr<EngineGOPropertyBase>& goPtr);
 
-      std::string GetGameObjectName() const;
+      std::string GetEngineObjectName() const;
 
    };
 

@@ -17,7 +17,7 @@ using namespace EngineCore::Scripts;
 namespace EngineCore
 {
    SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData)
-       : PrimitiveComponent(meshComponentData.GameObjectName,
+       : PrimitiveComponent(meshComponentData.EngineObjectName,
                             meshComponentData.m_translation,
                             meshComponentData.m_eulerRotationDegrees,
                             meshComponentData.m_scale,

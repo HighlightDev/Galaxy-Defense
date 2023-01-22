@@ -418,14 +418,14 @@ struct SerializeDataTweener
 {
    struct SerializeTweenerBinding
    {
-      std::string GameObjectName;
+      std::string EngineObjectName;
       std::string BindingName;
-      std::string GameObjectPropertyName;
+      std::string EngineObjectPropertyName;
 
       template <typename Archive>
       void serialize(Archive& archive)
       {
-         archive(GameObjectName, BindingName, GameObjectPropertyName);
+         archive(EngineObjectName, BindingName, EngineObjectPropertyName);
       }
    };
 

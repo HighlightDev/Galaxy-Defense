@@ -214,7 +214,7 @@ namespace EngineCore
          {
             const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
 
-            LogInfo("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetGameObjectName());
+            LogInfo("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetEngineObjectName());
 
             if (component)
             {
@@ -242,13 +242,13 @@ namespace EngineCore
 
             for (const auto &bindingData : data->Bindings)
             {
-               auto gameObject = mScene->GetGameObjectByName(bindingData.GameObjectName);
+               auto gameObject = mScene->GetEngineObjectByName(bindingData.EngineObjectName);
                const auto &binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
-               BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.GameObjectPropertyName);
+               BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.EngineObjectPropertyName);
             }
 
             auto actorIt = std::find_if(mScene->GetActors().begin(), mScene->GetActors().end(), [&](const std::shared_ptr<Actor> actor)
-                                        { return actor->GetGameObjectName() == actorData.ActorName; });
+                                        { return actor->GetEngineObjectName() == actorData.ActorName; });
 
             assert(actorIt != mScene->GetActors().end());
 

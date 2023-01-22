@@ -22,7 +22,7 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTime)
-	--local a_skelet = _GetGameObject(host, "moveCompData")
+	--local a_skelet = _GetEngineObject(host, "moveCompData")
 	--local srcTime = _GetGOPropertyValFloat(host, a_skelet, "SrcAnimTime")
 	--print("srcTime is ", srcTime)
 end

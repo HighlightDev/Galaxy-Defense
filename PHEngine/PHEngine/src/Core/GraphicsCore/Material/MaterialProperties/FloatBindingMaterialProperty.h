@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BindingMaterialProperty.h"
-#include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
 
 using namespace EngineCore;
 

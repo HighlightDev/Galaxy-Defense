@@ -3,6 +3,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Implementation/Modifiers/IModifiable.h"
+#include "Implementation/Modifiers/ModifiersHandler.h"
 
 #include <functional>
 #include <unordered_map>
@@ -29,7 +30,7 @@ namespace Game
     protected:
         eSpaceshipActivityState mActivityState{eSpaceshipActivityState::IDLE};
 
-        std::vector<std::shared_ptr<IModifiable>> mModifiers;
+        std::unique_ptr<ModifiersHandler> mModifiersHandler;
 
         size_t mLifePoints;
 
@@ -99,8 +100,5 @@ namespace Game
 
     protected:
         virtual glm::vec2 CalculatePositionForDamageText() const;
-
-    private:
-        void RemoveExpiredModifiers();
     };
 }

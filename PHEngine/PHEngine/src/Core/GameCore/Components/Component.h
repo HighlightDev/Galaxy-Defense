@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ComponentType.h"
-#include "Core/GameCore/GameObject.h"
+#include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 
@@ -15,7 +15,7 @@ namespace EngineCore
 	// of all components which could be 
 	// picked by actor
 	class Component
-      : public GameObject
+      : public EngineObject
       , public ITickable
       , public ISerializable
 	{

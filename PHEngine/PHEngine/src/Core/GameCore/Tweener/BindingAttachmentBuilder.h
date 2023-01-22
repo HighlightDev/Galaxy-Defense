@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Core/GameCore/GameObjectPropertyBindings/AnimationPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/FloatPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/Vec3PropertyBinding.h"
-#include "Core/GameCore/GameObject.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/AnimationPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/FloatPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObject.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
@@ -19,10 +19,10 @@ namespace EngineCore
 
    struct BindingAttachmentBuilder
    {
-      static void SetAttachment(const GameObject *gameObject, PropertyBinding *binding, const std::string &gameObjectPropertyName)
+      static void SetAttachment(const EngineObject *gameObject, PropertyBinding *binding, const std::string &gameObjectPropertyName)
       {
-         binding->GameObjectName = gameObject->GetGameObjectName();
-         binding->GameObjectPropertyName = gameObjectPropertyName;
+         binding->EngineObjectName = gameObject->GetEngineObjectName();
+         binding->EngineObjectPropertyName = gameObjectPropertyName;
 
          switch (binding->GetBindingType())
          {
@@ -48,28 +48,28 @@ namespace EngineCore
          {
             const auto floatBinding = static_cast<FloatPropertyBinding *>(binding);
             auto gameObjectProperty = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
-            floatBinding->SetGameObjectProperty(gameObjectProperty);
+            floatBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eBindingType::EulerAnglesRotation:
          {
             const auto rotationBinding = static_cast<EulerAnglesRotationPropertyBinding *>(binding);
             auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
-            rotationBinding->SetGameObjectProperty(gameObjectProperty);
+            rotationBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eBindingType::Boolean:
          {
             const auto booleanBinding = static_cast<BooleanPropertyBinding*>(binding);
             auto gameObjectProperty = CastBasePropertyToType<bool>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
-            booleanBinding->SetGameObjectProperty(gameObjectProperty);
+            booleanBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eBindingType::Vec3:
          {
             const auto vec3Binding = static_cast<EulerAnglesRotationPropertyBinding *>(binding);
             auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
-            vec3Binding->SetGameObjectProperty(gameObjectProperty);
+            vec3Binding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          default:

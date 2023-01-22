@@ -4,7 +4,7 @@
 
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/GameObjectProperty.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 
 namespace EngineCore {
 
@@ -23,7 +23,7 @@ namespace EngineCore {
       {
       }
 
-      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<bool>>& gameObjectProperty)
+      void SetEngineObjectProperty(const std::shared_ptr<EngineGOProperty<bool>>& gameObjectProperty)
       {
          assert(gameObjectProperty);
          mGoProperty = gameObjectProperty;

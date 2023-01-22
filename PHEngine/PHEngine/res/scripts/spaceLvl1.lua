@@ -1,5 +1,18 @@
-function CreateTestLevel(host)
+--[[ BEGIN *** this snippet have to be inserted everywhere where your want to require custom modules *** BEGIN]] --
+local function setup()
+	local str = debug.getinfo(2, "S").source:sub(2)
+	local pathToCurrentScript = str:match("(.*/)")
+	if pathToCurrentScript ~= nil then
+		package.path = package.path .. ";" .. pathToCurrentScript .. "?.lua"
+	end
+end
 
+setup()
+--[[ END   *** this snippet have to be inserted everywhere where your want to require custom modules  ***  END]] --
+
+local Vec3 = require("core/vec3")
+
+function CreateTestLevel(host)
 	_LoadResourcesAsync(host,
 		[[nightRight.jpg
 	,nightLeft.jpg

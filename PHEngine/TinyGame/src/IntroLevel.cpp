@@ -27,6 +27,7 @@
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
+#include "Implementation/Events/SphereContactCollisionEvent.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -45,7 +46,7 @@ namespace Game
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
        : Level(threadMgr), mSceneController(std::make_shared<SceneController>(mScene))
    {
-      Event::EventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent>();
+      Event::EventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent>();
    }
 
    IntroLevel::~IntroLevel()
@@ -106,7 +107,7 @@ namespace Game
 
       if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
       {
-         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetGameObjectName());
+         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetEngineObjectName());
       }
 
       TweenerParser tweenerParser;

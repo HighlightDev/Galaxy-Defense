@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PropertyBinding.h"
-#include "Core/GameCore/GameObjectProperty.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore

@@ -2,7 +2,7 @@
 
 #include "PropertyBinding.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/GameObjectProperty.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 
 #include <string>
 #include <glm/vec3.hpp>
@@ -22,7 +22,7 @@ namespace EngineCore
       {
       }
 
-      void SetGameObjectProperty(const std::shared_ptr<EngineGOProperty<glm::vec3>> &engineGoProperty)
+      void SetEngineObjectProperty(const std::shared_ptr<EngineGOProperty<glm::vec3>> &engineGoProperty)
       {
          assert(engineGoProperty);
          mGoProperty = engineGoProperty;

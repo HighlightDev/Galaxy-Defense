@@ -58,7 +58,7 @@ namespace EngineCore
       auto &actorData = GetSerializeDataActor(dataContainer);
 
       std::shared_ptr<SerializeDataCharacterMovementComponent> data = std::make_shared<SerializeDataCharacterMovementComponent>();
-      data->ComponentName = GameObjectName;
+      data->ComponentName = EngineObjectName;
       data->CameraName = mCameraName;
       data->LaunchDirection = mDirection;
       actorData.ComponentsData.emplace_back(data);

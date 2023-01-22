@@ -7,7 +7,7 @@ namespace EngineCore
 {
 
    LightComponent::LightComponent(const LightComponentData& data)
-      : SceneComponent(data.GameObjectName, data.Translation, data.Rotation, data.Scale)
+      : SceneComponent(data.EngineObjectName, data.Translation, data.Rotation, data.Scale)
       , mLightRenderData()
    {
    }

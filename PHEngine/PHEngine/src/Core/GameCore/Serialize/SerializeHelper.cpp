@@ -218,7 +218,7 @@ namespace EngineCore
    std::shared_ptr<SerializeDataStaticMesh> SerializeHelper::GetSerializedDataStaticMesh(const StaticMeshComponent *component)
    {
       auto meshData = std::make_shared<SerializeDataStaticMesh>();
-      meshData->ComponentName = component->GetGameObjectName();
+      meshData->ComponentName = component->GetEngineObjectName();
       const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
           MeshPool::GetInstance()->GetKey(
               component->GetRenderData().m_skin));
@@ -238,7 +238,7 @@ namespace EngineCore
    std::shared_ptr<SerializeDataSkeletalMesh> SerializeHelper::GetSerializedDataSkeletalMesh(const SkeletalMeshComponent *component)
    {
       auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
-      meshData->ComponentName = component->GetGameObjectName();
+      meshData->ComponentName = component->GetEngineObjectName();
       const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
           MeshPool::GetInstance()->GetKey(
               component->GetRenderData().m_skin));
@@ -258,7 +258,7 @@ namespace EngineCore
    std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent *component)
    {
       const auto &planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
-      planarReflectionData->ComponentName = component->GetGameObjectName();
+      planarReflectionData->ComponentName = component->GetEngineObjectName();
       planarReflectionData->Translation = component->GetTranslation();
       planarReflectionData->EulerAnglesRotation = component->GetRotationDegrees();
       planarReflectionData->Scale = component->GetScale();

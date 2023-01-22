@@ -230,7 +230,7 @@ namespace EngineCore
 
             if (eCameraType::MAIN_THIRD_PERSON_CAMERA == camera->GetCameraType())
             {
-               std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetGameObjectName());
+               std::static_pointer_cast<ThirdPersonCamera>(camera)->SetThirdPersonTargetDeferred((*actorIt)->GetEngineObjectName());
             }
          }
       }
@@ -444,7 +444,7 @@ namespace EngineCore
             const std::string &gamePropertyName = std::get<2>(setBindingToMaterial);
             const std::string &bindingName = std::get<3>(setBindingToMaterial);
 
-            const GameObject *gameObject = scene->GetGameObjectByName(gameObjectName);
+            const EngineObject *gameObject = scene->GetEngineObjectByName(gameObjectName);
             MaterialPropertySetter::SetMaterialPropertyValue(material, gameObject, gamePropertyName, bindingName);
          }
       }
@@ -544,7 +544,7 @@ namespace EngineCore
 
          if (auto scene = mSceneWP.lock())
          {
-            GameObject *gameObject = scene->GetGameObjectByName(std::get<1>(tweenerData));
+            EngineObject *gameObject = scene->GetEngineObjectByName(std::get<1>(tweenerData));
             const auto &binding = tweener->GetPropertyBindingByName(std::get<2>(tweenerData));
             BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), std::get<3>(tweenerData));
          }

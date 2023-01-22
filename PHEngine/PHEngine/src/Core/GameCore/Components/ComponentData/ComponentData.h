@@ -6,10 +6,10 @@ namespace EngineCore
 {
    struct ComponentData
    {
-      std::string GameObjectName;
+      std::string EngineObjectName;
 
       ComponentData(const std::string &gameObjectName)
-          : GameObjectName(gameObjectName)
+          : EngineObjectName(gameObjectName)
       {
       }
 

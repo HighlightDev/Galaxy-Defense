@@ -11,7 +11,8 @@ namespace Game
     enum class eModifierType
     {
         Gravity,
-        Freezing
+        Freezing,
+        ElectroChain
     };
 
     class IModifiable : public ITickable

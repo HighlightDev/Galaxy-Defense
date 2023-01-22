@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Core/GameCore/GameObjectPropertyBindings/PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/PropertyBinding.h"
 
 namespace EngineCore
 {

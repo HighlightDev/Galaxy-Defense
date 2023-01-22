@@ -4,9 +4,9 @@
 #include "Core/CommonCore/XMLParserHelper.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
-#include "Core/GameCore/GameObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/BooleanPropertyBinding.h"
-#include "Core/GameCore/GameObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
 
 #include <unordered_map>
 #include <type_traits>

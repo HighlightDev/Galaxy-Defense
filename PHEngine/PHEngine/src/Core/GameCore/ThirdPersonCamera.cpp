@@ -171,10 +171,10 @@ namespace EngineCore
       dataContainer.Cameras.emplace_back(cameraData);
    }
 
-   void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string &targetGameObjectName)
+   void ThirdPersonCamera::SetThirdPersonTargetDeferred(const std::string &targetEngineObjectName)
    {
       bThirdPersonTargetDeferredDirty = true;
-      mThirdPersonTargetGOName = targetGameObjectName;
+      mThirdPersonTargetGOName = targetEngineObjectName;
    }
 
    void ThirdPersonCamera::SetThirdPersonTarget(std::shared_ptr<Actor> thirdPersonTarget)

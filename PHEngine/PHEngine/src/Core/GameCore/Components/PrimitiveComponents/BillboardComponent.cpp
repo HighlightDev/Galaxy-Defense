@@ -9,7 +9,7 @@ namespace EngineCore
 {
 
    BillboardComponent::BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData)
-       : PrimitiveComponent(data.GameObjectName,
+       : PrimitiveComponent(data.EngineObjectName,
                             data.m_translation,
                             glm::vec3(),
                             data.m_scale,
