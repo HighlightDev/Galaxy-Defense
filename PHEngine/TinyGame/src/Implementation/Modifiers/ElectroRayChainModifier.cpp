@@ -1,7 +1,9 @@
 #include "ElectroRayChainModifier.h"
 #include "Core/GameCore/Actor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
-#include "Implementation/Factories/ElectroRayChainFactory.h"
+#include "Implementation/Pools/ElectroRayChainActorPool.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
 
@@ -14,25 +16,19 @@ namespace Game
     {
     }
 
-    void ElectroRayChainModifier::Initialize()
+    void ElectroRayChainModifier::Initialize(const std::shared_ptr<::Game::ElectroRayChainActorPool> &mElectroRayChainActorPool)
     {
-        mElectroRayChainActor = CreateElectroRayChainActor();
-    }
+        mElectroRayChainActor = mElectroRayChainActorPool->GetFreeActor();
+        assert(mElectroRayChainActor);
+        mElectroRayChainActor->SetStartLineSpaceship(mChainSrc);
+        mElectroRayChainActor->SetEndLineSpaceship(mChainDst);
+        mElectroRayChainActor->TriggerSpawn({});
 
-    std::shared_ptr<ElectroRayChainActor> ElectroRayChainModifier::CreateElectroRayChainActor() const
-    {
-        std::shared_ptr<ElectroRayChainActor> chainActor;
-        if (const auto chainDstSp = mChainDst.lock())
-        {
-            if (const auto &sceneSp = chainDstSp->GetSceneOwner().lock())
-            {
-                ElectroRayChainFactory factory;
-                chainActor = std::static_pointer_cast<ElectroRayChainActor>(factory.CreateMissileExplosionChain(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1)));
-                chainActor->SetStartLineSpaceship(mChainSrc);
-                chainActor->SetEndLineSpaceship(mChainDst);
-            }
-        }
-        return chainActor;
+        mDisposeTimer.SetIntervalMs(2500);
+        mDisposeTimer.SetIsRepeat(false);
+        mDisposeTimer.SetIsPausable(true);
+        mDisposeTimer.SetCallback(std::bind(&ElectroRayChainModifier::OnDisposeTimerTimeout, this));
+        mDisposeTimer.StartTimer();
     }
 
     eModifierType ElectroRayChainModifier::GetModifierType() const
@@ -53,11 +49,16 @@ namespace Game
 
     void ElectroRayChainModifier::OnPreRemoved()
     {
-        //todo: Delete actor with all components
     }
 
     bool ElectroRayChainModifier::IsExpired() const
     {
-        return false;
+        return !mDisposeTimer.IsRunning();
+    }
+
+    void ElectroRayChainModifier::OnDisposeTimerTimeout()
+    {
+        LogInfo("ElectroRayChainModifier::OnDisposeTimerTimeout => Disable actor:", mElectroRayChainActor->GetName());
+        mElectroRayChainActor->TriggerDisabled();
     }
 }

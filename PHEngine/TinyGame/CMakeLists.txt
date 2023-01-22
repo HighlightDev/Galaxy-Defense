@@ -21,7 +21,6 @@ set(
 	src/Implementation/Factories/ISpaceShipFactory.h
 	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/ISpaceObjectFactory.h
-	src/Implementation/Factories/IMissileExplosionChainFactory.h
 	src/Implementation/Factories/WeakSpaceShipFactory.h
 	src/Implementation/Factories/BombMissileFactory.h
 	src/Implementation/Factories/FreezingMissileFactory.h
@@ -54,6 +53,7 @@ set(
 	src/Implementation/Ui/PauseMenuUi.h
 	src/Implementation/Ui/PauseSettingsMenuUi.h
 	src/Implementation/Ui/PlayerCombatUi.h
+	src/Implementation/Pools/ElectroRayChainActorPool.h
 )
 
 set(
@@ -102,6 +102,7 @@ set(
 	src/Implementation/Ui/PauseMenuUi.cpp
 	src/Implementation/Ui/PauseSettingsMenuUi.cpp
 	src/Implementation/Ui/PlayerCombatUi.cpp
+	src/Implementation/Pools/ElectroRayChainActorPool.cpp
     main.cpp
 )
 

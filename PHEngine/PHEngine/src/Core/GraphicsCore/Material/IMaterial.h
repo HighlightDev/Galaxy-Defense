@@ -49,6 +49,8 @@ namespace Graphics
       virtual std::shared_ptr<MaterialProxy> CreateMaterialProxy() const;
 
       virtual void SetIsEnabled(const bool bIsEnabled);
+
+      virtual bool IsEnabled() const;
    };
 
 }

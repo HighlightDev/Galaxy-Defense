@@ -36,7 +36,8 @@ namespace Game
         : mScene(scene),
           mEnemies(),
           mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(50, 50, 100))),
-          mCameraVisibilityArea()
+          mCameraVisibilityArea(),
+          mElectroRayChainActorPool(std::make_shared<ElectroRayChainActorPool>(scene))
     {
         SphereContactCollisionEvent::GetInstance()->AddListener(this);
         MainPlayerActionEvent::GetInstance()->AddListener(this);
@@ -312,20 +313,30 @@ namespace Game
 
     void CombatController::ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data)
     {
-        const auto &collidedActorIds = std::move(std::get<0>(data));
+        const auto &srcActorId = std::get<0>(data);
+        const auto &collidedActorIds = std::move(std::get<1>(data));
 
-        for (const auto &collidedActorId : collidedActorIds)
+        const auto &srcActorGameObjectType = GetGameObjectTypeByActorId(srcActorId);
+        if (eGameObjectsType::UNDEFINED != srcActorGameObjectType && eGameObjectsType::MISSILE != srcActorGameObjectType)
         {
-            const auto &gameObjectType = GetGameObjectTypeByActorId(collidedActorId);
-            if (eGameObjectsType::UNDEFINED != gameObjectType)
+            const std::shared_ptr<Actor> &srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
+                                                                  ? std::static_pointer_cast<Actor>(GetEnemyShipOwnerActorById(srcActorId))
+                                                              : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
+                                                                  ? std::static_pointer_cast<Actor>(GetSpaceObjectOwnerActorById(srcActorId))
+                                                                  : nullptr;
+            assert(srcCollisionActor);
+            for (const auto &collidedActorId : collidedActorIds)
             {
-                if (eGameObjectsType::SPACESHIP == gameObjectType)
+                const auto &gameObjectType = GetGameObjectTypeByActorId(collidedActorId);
+                if (eGameObjectsType::UNDEFINED != gameObjectType)
                 {
-                    const auto &ownerEnemyShipActor = GetEnemyShipOwnerActorById(collidedActorId);
-                    const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(ownerEnemyShipActor, _____);
-                    electroRayChainModifier->SetElectroRayChainActorPool(mElectroRayChainActorPool); // todo: this
-                    ownerEnemyShipActor->AddModifier(electroRayChainModifier);
-                    electroRayChainModifier->Initialize();
+                    if (eGameObjectsType::SPACESHIP == gameObjectType)
+                    {
+                        const auto &ownerEnemyShipActor = GetEnemyShipOwnerActorById(collidedActorId);
+                        const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(ownerEnemyShipActor, srcCollisionActor);
+                        electroRayChainModifier->Initialize(mElectroRayChainActorPool);
+                        ownerEnemyShipActor->AddModifier(electroRayChainModifier);
+                    }
                 }
             }
         }

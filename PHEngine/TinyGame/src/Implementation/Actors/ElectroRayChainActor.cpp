@@ -14,7 +14,7 @@ using namespace Event;
 namespace Game
 {
     ElectroRayChainActor::ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
-        : Actor(gameObjectName, rootComponent),
+        : MissileActor(gameObjectName, rootComponent),
           mLineComponent(),
           mElectroLineBegin(),
           mElectroLineEnd(),
@@ -30,12 +30,50 @@ namespace Game
 
     void ElectroRayChainActor::Tick(const float deltaTime)
     {
-        Actor::Tick(deltaTime);
+        MissileActor::Tick(deltaTime);
 
         assert(mLineComponent);
 
+        // todo: temporary
+        mElectroLineBegin = GetStartLinePosition();
+        mElectroLineEnd = GetStartLinePosition();
+
         mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
         mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
+    }
+
+    bool ElectroRayChainActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
+    {
+        return true;
+    }
+
+    void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position)
+    {
+        SetIsEnabled(true);
+        mActivityState = eMissileActivityState::ACTIVE;
+    }
+
+    void ElectroRayChainActor::TriggerExplosion()
+    {
+        mActivityState = eMissileActivityState::EXPLOSION;
+        TriggerExplosionFinished();
+    }
+
+    void ElectroRayChainActor::TriggerExplosionFinished()
+    {
+        mActivityState = eMissileActivityState::EXPLOSION_FINISHED;
+        TriggerDisabled();
+    }
+
+    void ElectroRayChainActor::TriggerDisabled()
+    {
+        mActivityState = eMissileActivityState::IDLE;
+        SetIsEnabled(false);
+    }
+
+    std::shared_ptr<MissileExplosionVisitorBase> ElectroRayChainActor::CreateMissileExplosionVisitor()
+    {
+        return nullptr;
     }
 
     void ElectroRayChainActor::SetStartLineSpaceship(const std::weak_ptr<Actor> &startLineSpaceship)
@@ -57,16 +95,18 @@ namespace Game
     {
         if (const auto &startLineSpaceshipSp = mStartLineSpaceship.lock())
         {
+            return startLineSpaceshipSp->GetRootComponent()->GetTranslation();
         }
-        return {};
+        return mElectroLineBegin;
     }
 
     glm::vec3 ElectroRayChainActor::GetEndLinePosition()
     {
         if (const auto &endLineSpaceshipSp = mEndLineSpaceship.lock())
         {
+            return endLineSpaceshipSp->GetRootComponent()->GetTranslation();
         }
-        return {};
+        return mElectroLineEnd;
     }
 
     void ElectroRayChainActor::DropState()

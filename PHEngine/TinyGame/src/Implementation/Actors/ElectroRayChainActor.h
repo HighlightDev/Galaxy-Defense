@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/GameCore/BoundingBox3D.h"
-#include "Core/GameCore/Actor.h"
-#include "Core/CommonCore/Timer.h"
+#include "Implementation/Actors/ElectroRayChainActor.h"
+#include "Implementation/Actors/MissileActor.h"
 
 #include <functional>
 #include <unordered_map>
@@ -14,6 +14,7 @@ using namespace EngineCore;
 namespace EngineCore
 {
     class RuntimeGeneratedLineComponent;
+    class Actor;
 }
 
 namespace Game
@@ -21,7 +22,7 @@ namespace Game
     class MissileExplosionVisitorBase;
 
     class ElectroRayChainActor
-        : public Actor
+        : public MissileActor
     {
         std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
 
@@ -35,6 +36,18 @@ namespace Game
         ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
         void Tick(const float deltaTime) override;
+
+        bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
+
+        void TriggerSpawn(const glm::vec3 &position) override;
+
+        void TriggerExplosion() override;
+
+        void TriggerExplosionFinished() override;
+
+        void TriggerDisabled() override;
+
+        std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
         void SetStartLineSpaceship(const std::weak_ptr<Actor> &startLineSpaceship);
 

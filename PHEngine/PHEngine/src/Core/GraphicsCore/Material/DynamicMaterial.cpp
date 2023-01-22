@@ -33,6 +33,11 @@ namespace Graphics
       mIsEnabled = bIsEnabled;
    }
 
+   bool DynamicMaterial::IsEnabled() const
+   {
+      return mIsEnabled;
+   }
+
    void DynamicMaterial::SyncDataWithRenderThread()
    {
       if (auto sceneSP = mScene.lock())
@@ -43,9 +48,6 @@ namespace Graphics
 
    void DynamicMaterial::Tick(const float deltaTime)
    {
-      if (!mIsEnabled)
-         return;
-
       for (auto dynProp : mDynamicProperties)
       {
          // Get proxy of dynamic property

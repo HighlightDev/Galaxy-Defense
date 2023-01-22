@@ -49,4 +49,9 @@ namespace Graphics
    {
       // for static material do nothing
    }
+
+   bool IMaterial::IsEnabled() const
+   {
+      return true;
+   }
 }

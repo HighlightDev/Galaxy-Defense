@@ -270,11 +270,6 @@ namespace EngineCore
 
    void Actor::Tick(const float deltaTime)
    {
-      if (!mIsEnabled->GetValue())
-      {
-         return;
-      }
-
       UpdateTransform();
 
       // Update physics

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IModifiable.h"
+#include "Core/CommonCore/Timer.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 
 #include <memory>
@@ -14,6 +15,7 @@ namespace EngineCore
 namespace Game
 {
     class SpaceshipActor;
+    class ElectroRayChainActorPool;
 
     class ElectroRayChainModifier : public IModifiable
     {
@@ -22,6 +24,8 @@ namespace Game
         std::weak_ptr<Actor> mChainSrc;
 
         std::shared_ptr<ElectroRayChainActor> mElectroRayChainActor;
+
+        GameThreadTimer mDisposeTimer;
 
     public:
         ElectroRayChainModifier(const std::weak_ptr<Actor> &chainDst, const std::weak_ptr<Actor> &chainSrc);
@@ -38,10 +42,9 @@ namespace Game
 
         void OnPreRemoved() override;
 
-        void Initialize();
+        void Initialize(const std::shared_ptr<::Game::ElectroRayChainActorPool> &mElectroRayChainActorPool);
 
-        private:
-
-        std::shared_ptr<ElectroRayChainActor> CreateElectroRayChainActor() const;
+    private:
+        void OnDisposeTimerTimeout();
     };
 }

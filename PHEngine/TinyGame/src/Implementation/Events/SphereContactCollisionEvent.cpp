@@ -4,5 +4,5 @@ using namespace Event;
 
 namespace Event
 {
-    template class TEvent<MultipleDataEventPolicy<std::vector<uint64_t>>>;
+    template class TEvent<MultipleDataEventPolicy<uint64_t, std::vector<uint64_t>>>;
 }

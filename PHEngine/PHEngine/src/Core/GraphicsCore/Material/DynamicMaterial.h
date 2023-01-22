@@ -36,6 +36,8 @@ namespace Graphics
 
       void SetIsEnabled(const bool bIsEnabled) override;
 
+      bool IsEnabled() const override;
+
       void SetScene(std::weak_ptr<EngineCore::Scene> scene);
 
       void SyncDataWithRenderThread();

@@ -46,7 +46,7 @@ namespace Game
                                    [](const auto &collidedDescriptor)
                                    { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
 
-                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, descriptorActorIds);
+                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceship->GetObjectId(), descriptorActorIds);
                 }
             }
         }

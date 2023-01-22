@@ -14,6 +14,7 @@
 #include "Core/CommonCore/Timer.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/GameObjectsCollisionType.h"
+#include "Implementation/Pools/ElectroRayChainActorPool.h"
 
 #include <memory>
 #include <utility>
@@ -53,6 +54,8 @@ namespace Game
         std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
 
         std::vector<std::shared_ptr<BackgroundSpaceObjectActor>> mBackgroundSpaceObjects;
+
+        std::shared_ptr<ElectroRayChainActorPool> mElectroRayChainActorPool; // todo: rework with pointer to generic interface
 
         float mCoolDownTime = 0.2f;
 

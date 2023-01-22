@@ -798,7 +798,10 @@ namespace EngineCore
 
       for (auto &actor : mActors)
       {
-         actor->Tick(delta);
+         if (actor->IsEnabled())
+         {
+            actor->Tick(delta);
+         }
       }
 
       for (const auto &actorController : mActorControllers)
@@ -808,7 +811,10 @@ namespace EngineCore
 
       for (auto &dynamicMaterial : mDynamicMaterials)
       {
-         dynamicMaterial->Tick(delta);
+         if (dynamicMaterial->IsEnabled())
+         {
+            dynamicMaterial->Tick(delta);
+         }
       }
 
       for (auto &externalTickable : mExternalTickableObjects)
