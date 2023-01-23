@@ -36,8 +36,7 @@ namespace Game
 
         // todo: temporary
         mElectroLineBegin = GetStartLinePosition();
-        mElectroLineEnd = GetStartLinePosition();
-
+        mElectroLineEnd = GetEndLinePosition();
         mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
         mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
     }

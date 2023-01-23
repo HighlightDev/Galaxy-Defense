@@ -5,6 +5,7 @@
 #include "Core/IoCore/FileFacade.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/CommonCore/ThreadHelper.h"
 
 #include <fstream>
 #include <algorithm>
@@ -173,6 +174,7 @@ namespace Graphics
       bool IShader::SendToGpuShadersSources(std::string &vsSource, std::string &gsSource, std::string &fsSource)
       {
          bool bVertexShaderLoaded = true, bFragmentShaderLoaded = true, bGeometryShaderLoaded = true;
+         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
          if (vsSource != "")
          {

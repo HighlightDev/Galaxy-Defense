@@ -30,7 +30,10 @@ namespace Graphics
 
    void DynamicMaterial::SetIsEnabled(const bool bIsEnabled)
    {
-      mIsEnabled = bIsEnabled;
+      if (mIsEnabled != bIsEnabled)
+      {
+         mIsEnabled = bIsEnabled;
+      }
    }
 
    bool DynamicMaterial::IsEnabled() const

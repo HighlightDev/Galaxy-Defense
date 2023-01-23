@@ -31,10 +31,17 @@ public:
         mKnownThreads.emplace(thisThreadId, threadName);
     }
 
-    std::string GetThreadName() const
+    std::string GetCurrentThreadNameFromRegisteredThreads() const
     {
         const size_t thisThreadId = mHasher(std::this_thread::get_id());
         assert(mKnownThreads.count(thisThreadId));
         return mKnownThreads.at(thisThreadId);
+    }
+
+    bool IsCurrentThreadEqualToProvidedByName(const std::string& providedName)
+    {
+        const size_t thisThreadId = mHasher(std::this_thread::get_id());
+        assert(mKnownThreads.count(thisThreadId));
+        return mKnownThreads.at(thisThreadId) == providedName;
     }
 };

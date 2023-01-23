@@ -1,5 +1,6 @@
 #include "FramebufferObject.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
@@ -27,6 +28,7 @@ namespace Graphics
    // should be called after all render textures are attached
    void FramebufferObject::CreateFramebuffer()
    {
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
       glGenFramebuffers(1, &mFramebufferId);
       glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
 
@@ -146,6 +148,7 @@ namespace Graphics
                                               const size_t screenResX, const size_t screenResY)
    {
       assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
       uint32_t renderBufferId;
       glGenRenderbuffers(1, &renderBufferId);
@@ -159,6 +162,7 @@ namespace Graphics
                                               const glm::ivec2 &screenResolution)
    {
       assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
       uint32_t renderBufferId;
       glGenRenderbuffers(1, &renderBufferId);

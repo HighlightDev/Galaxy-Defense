@@ -3,6 +3,7 @@
 #include "Core/IoCore/RawResource.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
@@ -36,6 +37,7 @@ namespace Graphics
 		uint32_t CubemapTexture::CreateEmptyCubemapTexture()
 		{
 			uint32_t resultTextureDescriptor = -1;
+			assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
 			glGenTextures(1, &resultTextureDescriptor);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);
@@ -61,6 +63,7 @@ namespace Graphics
 		{
 			uint32_t resultTextureDescriptor = -1;
 			size_t mutualPixelFormat = -1;
+			assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
 			glGenTextures(1, &resultTextureDescriptor);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, resultTextureDescriptor);

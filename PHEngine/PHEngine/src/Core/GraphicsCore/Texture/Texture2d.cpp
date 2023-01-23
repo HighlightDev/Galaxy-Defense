@@ -6,6 +6,7 @@
 #include "Core/IoCore/RawResource.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/ThreadHelper.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <TinyLogger/LogInterface.h>
@@ -49,6 +50,7 @@ namespace Graphics
 
       void Texture2d::InitEmptyTexture()
       {
+         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          glGenTextures(1, &m_texDescriptor);
          glBindTexture(GL_TEXTURE_2D, m_texDescriptor);
 
@@ -105,6 +107,7 @@ namespace Graphics
          uint32_t texObject = -1;
          int32_t &textureTarget = m_textureParams.TexTarget;
 
+         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          glGenTextures(1, &texObject);
 
          glBindTexture(textureTarget, texObject);

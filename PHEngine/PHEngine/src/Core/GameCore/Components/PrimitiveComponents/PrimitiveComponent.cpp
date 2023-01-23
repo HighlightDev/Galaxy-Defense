@@ -47,12 +47,15 @@ namespace EngineCore
 
    void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
    {
-      SceneComponent::SetIsEnabled(bEnabled);
-
-      static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (mIsEnabled->GetValue() != bEnabled)
       {
-         sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+         mIsEnabled->SetValue(bEnabled, false);
+         static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
+         
+         if (const auto &sceneSP = m_sceneWP.lock())
+         {
+            sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
+         }
       }
    }
 

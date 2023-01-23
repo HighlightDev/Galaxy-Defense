@@ -27,10 +27,6 @@ namespace Graphics
 
       void Shader::ShaderInit()
       {
-         std::string vsSourcePath = m_shaderParams.VertexShaderFile;
-         std::string fsSourcePath = m_shaderParams.FragmentShaderFile;
-         std::string gsSourcePath = m_shaderParams.GeometryShaderFile;
-
          SetShaderPredefine(); // start precompile shader customization
          ProcessAllPredefines();
 

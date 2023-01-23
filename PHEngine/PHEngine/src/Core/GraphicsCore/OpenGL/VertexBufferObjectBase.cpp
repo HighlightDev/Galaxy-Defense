@@ -1,4 +1,5 @@
 #include "VertexBufferObjectBase.h"
+#include "Core/CommonCore/ThreadHelper.h"
 
 namespace Graphics
 {
@@ -17,6 +18,7 @@ namespace Graphics
 
 		void VertexBufferObjectBase::GenBuffer()
 		{
+			assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 			glGenBuffers(1, &m_descriptor);
 		}
 

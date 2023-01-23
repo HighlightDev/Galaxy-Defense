@@ -17,7 +17,7 @@ namespace EngineCore
    template <typename... LogArgs>
    void LogInfo(LogArgs &&...args)
    {
-      TinyLogger::Logger::Out(ThreadHelper::GetInstance()->GetThreadName(), std::forward<LogArgs>(args)...);
+      TinyLogger::Logger::Out(ThreadHelper::GetInstance()->GetCurrentThreadNameFromRegisteredThreads(), std::forward<LogArgs>(args)...);
    }
 }
 

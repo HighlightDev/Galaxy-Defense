@@ -51,6 +51,7 @@ namespace Game
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         a_electroRayChain->SetLineComponent(c_mesh);
         a_electroRayChain->AddComponent(c_mesh);
+        a_electroRayChain->SetScene(scene);
 
         // todo:
         // ComponentData d_audio("c_bombMissileSound_" + rayChainIndexStr);

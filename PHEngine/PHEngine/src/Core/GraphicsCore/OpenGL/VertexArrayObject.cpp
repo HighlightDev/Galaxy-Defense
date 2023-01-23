@@ -1,7 +1,7 @@
 #include "VertexArrayObject.h"
 #include "Core/GameCore/LoggerExtension.h"
-
-#include <TinyLogger/LogInterface.h>
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace Graphics
 {
@@ -36,6 +36,7 @@ namespace Graphics
 
 		void VertexArrayObject::GenVAO()
 		{
+			assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 			glGenVertexArrays(1, &m_descriptor);
 			LogInfo( "VertexArrayObject::GenVAO => descriptor = ", m_descriptor);
 		}
