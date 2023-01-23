@@ -52,6 +52,8 @@ namespace EngineCore
 
             virtual void OnVisibilityChanged();
 
+            void SetBoundingBox(const BoundingBox3D& boundingBox);
+
             BoundingBox3D GetBoundingBox() const;
 
             BoundingBox3D GetTransformedBoundingBox() const;

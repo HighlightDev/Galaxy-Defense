@@ -12,6 +12,8 @@ namespace Graphics {
 
       size_t mSceneProxyId;
 
+      size_t mGameObjectId;
+
       bool mIsEnabled;
 
    public:
@@ -25,6 +27,10 @@ namespace Graphics {
       void SetEnabled(const bool bEnabled);
 
       bool IsEnabled() const;
+
+      void SetBindedGameObjectId(const size_t gameObjectId);
+
+      size_t GetGameObjectId() const;
 
    };
 }

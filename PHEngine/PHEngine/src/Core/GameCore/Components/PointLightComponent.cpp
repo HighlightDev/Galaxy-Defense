@@ -114,7 +114,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {

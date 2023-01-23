@@ -35,12 +35,12 @@ namespace Thread
       mScene = scene;
    }
 
-   std::weak_ptr<DeferredShadingSceneRenderer> InterThreadCommunicationMgr::TryGetSceneRendererWP() const
+   std::weak_ptr<DeferredShadingSceneRenderer> InterThreadCommunicationMgr::GetSceneRendererWP() const
    {
       return mSceneRenderer;
    }
 
-   std::weak_ptr<Scene> InterThreadCommunicationMgr::TryGetSceneWP() const
+   std::weak_ptr<Scene> InterThreadCommunicationMgr::GetSceneWP() const
    {
       return mScene;
    }

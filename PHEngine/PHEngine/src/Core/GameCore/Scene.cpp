@@ -302,7 +302,7 @@ namespace EngineCore
 
    void Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(
              eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -324,7 +324,7 @@ namespace EngineCore
 
    void Scene::UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(
              eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
@@ -347,7 +347,7 @@ namespace EngineCore
    void Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
                                                                 const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                  Job(creatorObjectId,
@@ -369,7 +369,7 @@ namespace EngineCore
 
    void Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera)
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
          if (sceneViewSp)
@@ -397,7 +397,7 @@ namespace EngineCore
 
    bool Scene::IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
          return sceneViewSp != nullptr;
@@ -408,7 +408,7 @@ namespace EngineCore
 
    void Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
    {
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                  Job(creatorObjectId,
@@ -432,7 +432,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyDeleted_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -455,7 +455,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -468,7 +468,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxyDeleted_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId,
@@ -492,7 +492,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxiesUpdated_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -505,7 +505,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::CameraSceneProxyAdded_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -518,7 +518,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyAdded_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -535,7 +535,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId,
@@ -555,7 +555,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -574,7 +574,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::RegisterText_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -601,7 +601,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::UnregisterText_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -616,7 +616,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiCanvasProxy_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -631,7 +631,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiCanvasProxy_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -646,7 +646,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiSceneProxy_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -661,7 +661,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiSceneProxy_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -674,7 +674,7 @@ namespace EngineCore
       const uint64_t creatorObjectId = textField->GetTextFieldId();
       static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -711,7 +711,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                  Job(creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
@@ -733,7 +733,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::PlanarReflectionSceneProxyAdded");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -750,7 +750,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto proxyId = cameraOwner->SceneProxyId;
 
@@ -776,7 +776,7 @@ namespace EngineCore
       static constexpr uint64_t creatorObjectId = 0;
       static const uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                  Job(creatorObjectId, functionId, [=]()
@@ -920,7 +920,10 @@ namespace EngineCore
          {
             PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreateSceneProxy();
+            sceneProxySp->SetDeferredShadingSceneRenderer(m_interThreadMgr.GetSceneRendererWP());
+            sceneProxySp->PostConstructorInitialize();
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
+            sceneProxySp->SetBindedGameObjectId(componentPtr->GetObjectId());
             PrimitiveSceneProxyAdded_OnRenderThread(componentPtr->SceneProxyId, sceneProxySp);
             LogInfo("Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =", componentPtr->SceneProxyId);
          }
@@ -1010,7 +1013,7 @@ namespace EngineCore
    {
       glm::vec4 result = worldPosition;
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
          if (sceneViewSp)
@@ -1035,7 +1038,7 @@ namespace EngineCore
    {
       std::optional<CameraFrustum> result(std::nullopt);
 
-      if (const auto &sceneRenderer = m_interThreadMgr.TryGetSceneRendererWP().lock())
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(cameraProxyId);
          if (sceneViewSp)

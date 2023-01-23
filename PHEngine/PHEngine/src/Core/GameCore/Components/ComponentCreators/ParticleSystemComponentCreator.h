@@ -6,7 +6,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Particles/ParticlePoolParameters.h"
-#include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
@@ -32,8 +31,6 @@ namespace EngineCore
             params.mParticleComponentName = mData.EngineObjectName;
             params.mParticleCount = mData.m_particlesCount;
 
-            ParticlesPool::sharedValue_t particlesSkin =
-                ParticlesPool::GetInstance()->GetOrAllocateResource(params);
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
             ShaderParams particlesShaderParams(
@@ -50,7 +47,7 @@ namespace EngineCore
                     "InstancedStaticMeshVertexFactory_SimpleShader_" + materialProxy->MaterialName,
                     particlesShaderParams, materialProxy);
 
-            return std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(particlesSkin, particleSystemShader, materialProxy));
+            return std::make_shared<ComponentInstantiationType>(mData, ParticleSystemRenderData(params, particleSystemShader, materialProxy));
         }
     };
 }

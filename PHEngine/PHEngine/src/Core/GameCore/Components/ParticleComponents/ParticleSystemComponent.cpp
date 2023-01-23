@@ -187,7 +187,7 @@ namespace EngineCore
         static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
         if (const auto &sceneSP = m_sceneWP.lock())
         {
-            if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+            if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
             {
                 sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                GetObjectId(),

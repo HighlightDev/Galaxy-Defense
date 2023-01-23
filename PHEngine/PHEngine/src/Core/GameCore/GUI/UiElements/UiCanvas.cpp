@@ -295,7 +295,7 @@ namespace EngineCore
             static constexpr uint64_t functionId = Hash64_CT("UiCanvas::SyncDataOnRenderThread");
             if (const auto &sceneSp = mScene.lock())
             {
-                if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+                if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
                 {
                     sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer]()
                                                    {

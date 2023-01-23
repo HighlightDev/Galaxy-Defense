@@ -100,7 +100,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
 
@@ -121,7 +121,7 @@ namespace EngineCore
    {
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
 

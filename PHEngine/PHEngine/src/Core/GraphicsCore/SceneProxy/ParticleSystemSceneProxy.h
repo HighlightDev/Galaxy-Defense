@@ -7,10 +7,13 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/InstancedStaticMeshVertexFactory.h"
+#include "Core/GameCore/Particles/ParticlePoolParameters.h"
+#include "Core/GraphicsCore/RenderData/ParticleSystemRenderData.h"
 
 #include <vector>
 
 using namespace IO;
+using namespace Graphics::Data;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 
@@ -27,6 +30,8 @@ namespace Graphics
         {
             ParticlesRawDataHandler mParticlesRawDataHandler;
 
+            ParticleSystemRenderData mRenderData;
+
             size_t mActiveParticlesCount;
 
             bool bIsParticlesTransformDirty{false};
@@ -40,6 +45,8 @@ namespace Graphics
             ~ParticleSystemSceneProxy() override;
 
             void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+
+            void PostConstructorInitialize() override;
 
             bool IsDeferred() const override;
 

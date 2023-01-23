@@ -38,7 +38,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
 
@@ -74,7 +74,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetWaveStrength");
 
@@ -95,7 +95,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetTransparencyDepth");
 
@@ -131,7 +131,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetNearClipPlane");
 
@@ -152,7 +152,7 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("WaterPlaneComponent: SetFarClipPlane");
 

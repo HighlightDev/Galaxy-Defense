@@ -19,6 +19,14 @@ using namespace EngineCore;
 
 namespace Graphics
 {
+   namespace Renderer
+   {
+      class DeferredShadingSceneRenderer;
+   }
+}
+
+namespace Graphics
+{
    namespace Proxy
    {
       enum class ePrimitiveProxyType
@@ -40,6 +48,8 @@ namespace Graphics
       {
 
          bool bTransformInitialized;
+
+         std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> mDeferredShadingSceneRenderer;
 
       protected:
          glm::mat4 m_relativeMatrix;
@@ -64,6 +74,10 @@ namespace Graphics
          ~PrimitiveSceneProxy() override;
 
          void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
+
+         void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> &deferredShadingSceneRenderer);
+
+         const std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> &GetDeferredShadingSceneRendererWp() const;
 
          virtual glm::mat4 GetMatrix() const;
 

@@ -48,7 +48,7 @@ namespace EngineCore
 
       if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
 
@@ -70,7 +70,7 @@ namespace EngineCore
    {
       if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
          {
             static const uint64_t functionId = Hash("BillboardComponent:SetBillboardTexture");
 

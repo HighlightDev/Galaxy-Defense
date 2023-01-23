@@ -92,4 +92,9 @@ namespace EngineCore
    {
       return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
    }
+
+   void PrimitiveComponent::SetBoundingBox(const BoundingBox3D& boundingBox)
+   {
+      mBoundingBox = boundingBox;
+   }
 }

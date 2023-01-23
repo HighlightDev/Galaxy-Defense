@@ -139,6 +139,11 @@ namespace Graphics
          RegisterFonts();
       }
 
+      const InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetThreadManager() const
+      {
+         return m_interThreadMgr;
+      }
+
       void DeferredShadingSceneRenderer::RegisterFonts()
       {
          const auto &fonts = EngineConfigHolder::GetInstance()->GetEngineConfig().FontsVector;
@@ -1013,7 +1018,7 @@ namespace Graphics
             static constexpr uint64_t creatorObjectId = 0;
             static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextChanged");
 
-            if (const auto &sceneSp = m_interThreadMgr.TryGetSceneWP().lock())
+            if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
             {
                m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                      Job(creatorObjectId, functionId, [=]()

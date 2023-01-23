@@ -1,32 +1,61 @@
 #include "ParticleSystemSceneProxy.h"
 
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
+#include "Core/ResourceManagerCore/Pool/ParticlesPool.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/StringHash.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/Scene.h"
 
 #include <stdlib.h>
 
 using namespace EngineMath;
 using namespace Resources;
 using namespace TinyLogger;
+using namespace Graphics::Renderer;
+using namespace EngineCore;
 
 namespace Graphics
 {
-
     namespace Proxy
     {
         ParticleSystemSceneProxy::ParticleSystemSceneProxy(const ParticleSystemComponent *component)
             : PrimitiveSceneProxy(component->IsEnabled(),
                                   component->IsVisible(),
                                   component->GetRelativeMatrix(),
-                                  component->GetRenderData().m_skin,
+                                  nullptr,
                                   component->GetRenderData().m_shader,
                                   nullptr,
                                   component->GetRenderData().mMaterialProxy),
               mParticlesRawDataHandler(component->GetParticlesCount()),
+              mRenderData(component->GetRenderData()),
               mActiveParticlesCount(0)
         {
+        }
+
+        void ParticleSystemSceneProxy::PostConstructorInitialize()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("ParticleSystemSceneProxy::PostConstructorInitialize");
+            m_skin = ParticlesPool::GetInstance()->GetOrAllocateResource(mRenderData.mParticleMeshParams);
+
+            if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
+            {
+                if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+                {
+                    sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                                                 [=]()
+                                                 {
+                                                     const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                     assert(engineObject);
+                                                     const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                                     assert(primitiveComponent);
+                                                     primitiveComponent->SetBoundingBox(m_skin->GetBoundingBox());
+                                                 });
+                }
+            }
         }
 
         ParticleSystemSceneProxy::~ParticleSystemSceneProxy()

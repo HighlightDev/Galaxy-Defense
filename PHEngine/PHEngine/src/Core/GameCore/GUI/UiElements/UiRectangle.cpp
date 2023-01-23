@@ -101,7 +101,7 @@ namespace EngineCore
             {
                 if (const auto &canvasSp = GetParentCanvas().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+                    if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
                     {
                         sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
                                                        {

@@ -1,4 +1,7 @@
 #include "PrimitiveSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+
+using namespace Graphics::Renderer;
 
 namespace Graphics
 {
@@ -64,6 +67,16 @@ namespace Graphics
       ePrimitiveSortOrder PrimitiveSceneProxy::GetPrimitiveSortOrder() const
       {
          return ePrimitiveSortOrder::ORDER_FIRST;
+      }
+
+      void PrimitiveSceneProxy::SetDeferredShadingSceneRenderer(const std::weak_ptr<DeferredShadingSceneRenderer>& deferredShadingSceneRenderer)
+      {
+         mDeferredShadingSceneRenderer = deferredShadingSceneRenderer;
+      }
+
+      const std::weak_ptr<DeferredShadingSceneRenderer>& PrimitiveSceneProxy::GetDeferredShadingSceneRendererWp() const
+      {
+         return mDeferredShadingSceneRenderer;
       }
 
    }

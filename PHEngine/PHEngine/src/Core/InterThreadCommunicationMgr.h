@@ -103,9 +103,9 @@ namespace Thread
 
       void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
 
-      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> TryGetSceneRendererWP() const;
+      std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> GetSceneRendererWP() const;
 
-      std::weak_ptr<EngineCore::Scene> TryGetSceneWP() const;
+      std::weak_ptr<EngineCore::Scene> GetSceneWP() const;
 
    private:
       void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);

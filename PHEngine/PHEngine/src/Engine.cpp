@@ -90,9 +90,9 @@ namespace EngineCore
       PreLevelInit();
       m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
       m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
+      m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
       m_level->InitLevel();
-      m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
 
       PostPhysicsInitialize();
       PostLevelInit();

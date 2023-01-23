@@ -128,7 +128,7 @@ namespace EngineCore
       static const uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
             SrcAnimationTime->SetValue(fmod(SrcAnimationTime->GetValue(), 100000.0f));
             sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()

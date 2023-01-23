@@ -87,7 +87,7 @@ namespace EngineCore
       static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineComponent::SyncRenderData");
       if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().TryGetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
          {
             sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
             {
