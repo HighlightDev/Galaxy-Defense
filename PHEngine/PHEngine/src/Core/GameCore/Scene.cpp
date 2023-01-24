@@ -525,6 +525,7 @@ namespace EngineCore
                                                      {
             const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
             assert(!primitiveProxySp);
+            primitiveSceneProxy->PostConstructorInitialize();
             sceneRenderer->PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
             sceneRenderer->SetProxiesAreDirty(true); }));
       }
@@ -921,7 +922,6 @@ namespace EngineCore
             PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             sceneProxySp->SetDeferredShadingSceneRenderer(m_interThreadMgr.GetSceneRendererWP());
-            sceneProxySp->PostConstructorInitialize();
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
             sceneProxySp->SetBindedGameObjectId(componentPtr->GetObjectId());
             PrimitiveSceneProxyAdded_OnRenderThread(componentPtr->SceneProxyId, sceneProxySp);

@@ -9,8 +9,10 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GraphicsCore/Mesh/AnimationPlayer.h"
+#include "Core/GraphicsCore/RenderData/SkeletalMeshRenderData.h"
 
 using namespace EngineCore::ShaderImpl;
+using namespace Graphics::Data;
 
 namespace Graphics
 {
@@ -24,8 +26,12 @@ namespace Graphics
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>;
          using Base = PrimitiveSceneProxy;
 
+         SkeletalMeshRenderData mRenderData;
+
+      protected:
          mutable std::shared_ptr<AnimationPlayer> mAnimationPlayer;
 
+      private:
          mutable bool bAnimationDataIsDirty = true;
 
       private:
@@ -38,10 +44,12 @@ namespace Graphics
 
          ~SkeletalMeshSceneProxy() override;
 
-         virtual void Render(const glm::mat4 &viewMatrix,
+         void PostConstructorInitialize() override;
+
+         void Render(const glm::mat4 &viewMatrix,
                              const glm::mat4 &projectionMatrix) override;
 
-         virtual void RenderPlanarReflection(const glm::vec4 &plane,
+         void RenderPlanarReflection(const glm::vec4 &plane,
                                              const glm::mat4 &mirrorMatrix,
                                              const glm::mat4 &viewMatrix,
                                              const glm::mat4 &projectionMatrix) override;

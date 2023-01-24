@@ -5,7 +5,9 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 
+using namespace Graphics::Data;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 
@@ -16,12 +18,14 @@ namespace Graphics
 
       class StaticMeshSceneProxy : public PrimitiveSceneProxy
       {
-
          using Base = PrimitiveSceneProxy;
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
       protected:
+
+         StaticMeshRenderData m_renderData;
+
          bool mIsDeferredShaded;
 
       protected:
@@ -33,6 +37,8 @@ namespace Graphics
          StaticMeshSceneProxy(const StaticMeshComponent *component);
 
          ~StaticMeshSceneProxy() override;
+
+         void PostConstructorInitialize() override;
 
          void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 

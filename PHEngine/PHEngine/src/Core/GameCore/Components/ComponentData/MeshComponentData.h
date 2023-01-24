@@ -11,7 +11,6 @@ namespace EngineCore
    enum class eMeshComponentDataType
    {
       STATIC_OR_SKELETAL_MESH,
-      SIMPLE_MESH,
       RUNTIME_GENERATED_MESH
    };
 
@@ -45,34 +44,6 @@ namespace EngineCore
       virtual ~MeshComponentData() {}
 
       virtual eMeshComponentDataType GetMeshComponentDataType() const { return eMeshComponentDataType::STATIC_OR_SKELETAL_MESH; }
-   };
-
-   struct SimpleMeshComponentData
-       : public MeshComponentData
-   {
-      SimpleMeshComponentData(const std::string &gameObjectName,
-                              const std::string &simpleMeshType,
-                              const glm::vec3 &translation,
-                              const glm::vec3 &rotation,
-                              const glm::vec3 &scale,
-                              const std::string &mLuaScriptRelPath,
-                              Graphics::IMaterial *material)
-          : MeshComponentData(gameObjectName,
-                              "",
-                              translation,
-                              rotation,
-                              scale,
-                              mLuaScriptRelPath,
-                              material),
-            mSimpleMeshType(simpleMeshType)
-      {
-      }
-
-      std::string mSimpleMeshType;
-
-      virtual ~SimpleMeshComponentData() {}
-
-      eMeshComponentDataType GetMeshComponentDataType() const override { return eMeshComponentDataType::SIMPLE_MESH; }
    };
 
    struct RuntimeGeneratedMeshComponentData

@@ -11,7 +11,6 @@
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-#include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/IoCore/FolderManager.h"
 
 using namespace EngineCore::ShaderImpl;
@@ -34,21 +33,7 @@ namespace EngineCore
             std::shared_ptr<Skin> skin = nullptr;
 
             const MeshComponentData &mData = static_cast<const MeshComponentData &>(data);
-
-            if (eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData.GetMeshComponentDataType())
-            {
-                skin = MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
-            }
-            else if (eMeshComponentDataType::SIMPLE_MESH == mData.GetMeshComponentDataType())
-            {
-                const SimpleMeshComponentData &simpleMeshData = static_cast<const SimpleMeshComponentData &>(mData);
-                if ("PLANE" == simpleMeshData.mSimpleMeshType)
-                {
-                    skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES);
-                }
-            }
-
-            assert(skin);
+            assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData.GetMeshComponentDataType());
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
@@ -76,7 +61,7 @@ namespace EngineCore
                     "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
-                                                                StaticMeshRenderData(skin,
+                                                                StaticMeshRenderData(mData.m_pathToMesh,
                                                                                      staticMeshShader,
                                                                                      planarReflectionShader,
                                                                                      materialProxy, true));

@@ -5,6 +5,7 @@
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
 
 #include <glm/vec3.hpp>
 
@@ -15,12 +16,13 @@ namespace Graphics
 {
    namespace Proxy
    {
-
       class RuntimeGeneratedLineSceneProxy : public StaticMeshSceneProxy
       {
          using Base = PrimitiveSceneProxy;
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
+
+         RuntimeGeneratedMeshPoolParameters mRtMeshPoolParams;
 
          glm::vec3 mLineBeginWorldSpacePosition;
 
@@ -30,6 +32,8 @@ namespace Graphics
 
       public:
          RuntimeGeneratedLineSceneProxy(const RuntimeGeneratedLineComponent *component);
+
+         void PostConstructorInitialize() override;
 
          void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 

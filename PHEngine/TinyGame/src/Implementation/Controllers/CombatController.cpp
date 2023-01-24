@@ -484,7 +484,7 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        static constexpr auto freezingMissileCount = 1, bombMissileCount = 2, blackHoleMissileCount = 2, electroRayCount = 1;
+        static constexpr auto freezingMissileCount = 0, bombMissileCount = 0, blackHoleMissileCount = 0, electroRayCount = 1;
 
         ElectroRayFactory electroRayFactory;
         for (size_t i = 0; i < electroRayCount; ++i)
@@ -498,7 +498,7 @@ namespace Game
             mMissilesPool.emplace_back(a_electroRay);
         }
 
-        /*FreezingMissileFactory freezingMissileFactory;
+        FreezingMissileFactory freezingMissileFactory;
         for (size_t i = 0; i < freezingMissileCount; ++i)
         {
             const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
@@ -532,7 +532,7 @@ namespace Game
                                                                           glm::vec3(1.0));
 
             mMissilesPool.emplace_back(a_missile);
-        }*/
+        }
     }
 
     void CombatController::CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp)

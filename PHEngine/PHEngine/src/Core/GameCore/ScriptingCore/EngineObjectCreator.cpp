@@ -80,14 +80,6 @@ namespace EngineCore
       return new MeshComponentData(gameObjectName, relativePathToMesh, translation, rotation, scale, luaPathToFile, material);
    }
 
-   ComponentData *EngineObjectCreator::CreateSimpleMeshComponentData(const std::string &gameObjectName, const std::string &simpleMeshType,
-                                                                     const glm::vec3 &translation,
-                                                                     const glm::vec3 &rotation, const glm::vec3 &scale,
-                                                                     const std::string &luaPathToFile, IMaterial *material)
-   {
-      return new SimpleMeshComponentData(gameObjectName, simpleMeshType, translation, rotation, scale, luaPathToFile, material);
-   }
-
    std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string &gameObjectName,
                                                                    std::shared_ptr<SceneComponent> rootComponent)
    {

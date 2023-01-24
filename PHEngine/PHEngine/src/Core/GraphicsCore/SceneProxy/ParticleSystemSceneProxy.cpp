@@ -45,14 +45,15 @@ namespace Graphics
             {
                 if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
                 {
+                    const auto boundingBox = m_skin->GetBoundingBox();
                     sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                                 [=]()
+                                                 [this, boundingBox, sceneSp]()
                                                  {
                                                      const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
                                                      assert(engineObject);
                                                      const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
                                                      assert(primitiveComponent);
-                                                     primitiveComponent->SetBoundingBox(m_skin->GetBoundingBox());
+                                                     primitiveComponent->SetBoundingBox(boundingBox);
                                                  });
                 }
             }

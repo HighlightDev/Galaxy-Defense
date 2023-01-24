@@ -1,16 +1,22 @@
 #include "SkyboxSceneProxy.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+
+using namespace Graphics::Renderer;
+using namespace EngineCore;
+using namespace Resources;
 
 namespace Graphics
 {
    namespace Proxy
    {
-
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent *component)
           : PrimitiveSceneProxy(
                 component->IsEnabled(),
                 component->IsVisible(),
                 component->GetRelativeMatrix(),
-                component->GetRenderData().m_skin,
+                nullptr,
                 component->GetRenderData().m_materialShader,
                 component->GetRenderData().m_planarReflectionShader,
                 component->GetRenderData().mMaterialProxy)
@@ -23,6 +29,25 @@ namespace Graphics
 
       void SkyboxSceneProxy::PostConstructorInitialize()
       {
+         static constexpr uint64_t functionId = Hash64_CT("SkyboxSceneProxy::PostConstructorInitialize");
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(static_cast<int32_t>(SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE));
+
+         if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
+         {
+            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+            {
+               const auto boundingBox = m_skin->GetBoundingBox();
+               sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                                            [this, sceneSp, boundingBox]()
+                                            {
+                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                               assert(engineObject);
+                                               const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                               assert(primitiveComponent);
+                                               primitiveComponent->SetBoundingBox(boundingBox);
+                                            });
+            }
+         }
       }
 
       std::shared_ptr<SkyboxSceneProxy::ShaderType> SkyboxSceneProxy::GetShader() const

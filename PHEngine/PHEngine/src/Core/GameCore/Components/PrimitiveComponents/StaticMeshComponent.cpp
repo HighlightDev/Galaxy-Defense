@@ -20,7 +20,7 @@ namespace EngineCore
                             meshComponentData.m_translation,
                             meshComponentData.m_eulerRotationDegrees,
                             meshComponentData.m_scale,
-                            renderData.m_skin->GetBoundingBox()),
+                            BoundingBox3D()),
          m_renderData(renderData)
    {
    }

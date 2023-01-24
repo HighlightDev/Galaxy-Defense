@@ -15,22 +15,21 @@ namespace Graphics
 {
    namespace Data
    {
-
       struct StaticMeshRenderData
       {
-         std::shared_ptr<Skin> m_skin;
+         std::string mModelPath;
          std::shared_ptr<IShader> m_materialShader;
          std::shared_ptr<IShader> m_planarReflectionShader;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
          bool mIsDeferredShaded;
 
          StaticMeshRenderData(
-             std::shared_ptr<Skin> staticMesh,
+             const std::string modelPath,
              std::shared_ptr<IShader> materialShader,
              std::shared_ptr<IShader> planarReflectionShader,
              std::shared_ptr<MaterialProxy> materialProxy,
              const bool isDeferredShaded)
-             : m_skin(staticMesh),
+             : mModelPath(modelPath),
                m_materialShader(materialShader),
                m_planarReflectionShader(planarReflectionShader),
                mMaterialProxy(materialProxy),

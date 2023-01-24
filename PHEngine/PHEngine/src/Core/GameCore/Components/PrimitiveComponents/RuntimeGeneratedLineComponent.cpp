@@ -14,8 +14,11 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
-   RuntimeGeneratedLineComponent::RuntimeGeneratedLineComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData)
+   RuntimeGeneratedLineComponent::RuntimeGeneratedLineComponent(const MeshComponentData &meshComponentData,
+                                                                const StaticMeshRenderData &renderData,
+                                                                const RuntimeGeneratedMeshPoolParameters &rtMeshParams)
        : StaticMeshComponent(meshComponentData, renderData),
+         mRtMeshParams(rtMeshParams),
          mLineBeginWorldSpacePosition(),
          mLineEndWorldSpacePosition()
    {
@@ -54,6 +57,11 @@ namespace EngineCore
       }
    }
 
+   const RuntimeGeneratedMeshPoolParameters& RuntimeGeneratedLineComponent::GetRuntimeMeshPoolParameters() const
+   {
+      return mRtMeshParams;
+   }
+
    glm::vec3 RuntimeGeneratedLineComponent::GetLineBeginWorldSpacePosition() const
    {
       return mLineEndWorldSpacePosition;
@@ -90,14 +98,13 @@ namespace EngineCore
          if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
          {
             sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-            {
+                                           {
                const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
                if (const auto& lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(primitiveProxySp))
                {
                   lineProxySp->SetLineBeginWorldSpacePosition(mLineBeginWorldSpacePosition);
                   lineProxySp->SetLineEndWorldSpacePosition(mLineEndWorldSpacePosition);
-               } 
-            });
+               } });
          }
       }
    }

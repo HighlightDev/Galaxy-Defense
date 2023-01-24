@@ -61,9 +61,6 @@ namespace EngineCore
          /* -------------------  Create mesh component data ----------------------------*/
          ComponentData *CreateMeshComponentData(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *> &meshComponentData);
 
-         /* -------------------  Create simple mesh component data ----------------------------*/
-         ComponentData *CreateSimpleMeshComponentData(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *> &meshComponentData);
-
          /* -------------------  Create water plane component data ----------------------------*/
          ComponentData *CreateWaterPlaneComponentData(const std::tuple<std::string, glm::vec3, glm::vec3, glm::vec3, IMaterial *> &data);
 

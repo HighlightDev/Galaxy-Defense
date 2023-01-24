@@ -24,7 +24,7 @@ namespace Game
         mElectroRayChainActor->SetEndLineSpaceship(mChainDst);
         mElectroRayChainActor->TriggerSpawn({});
 
-        mDisposeTimer.SetIntervalMs(2500);
+        mDisposeTimer.SetIntervalMs(1500);
         mDisposeTimer.SetIsRepeat(false);
         mDisposeTimer.SetIsPausable(true);
         mDisposeTimer.SetCallback(std::bind(&ElectroRayChainModifier::OnDisposeTimerTimeout, this));
@@ -49,6 +49,7 @@ namespace Game
 
     void ElectroRayChainModifier::OnPreRemoved()
     {
+        mElectroRayChainActor->TriggerDisabled();
     }
 
     bool ElectroRayChainModifier::IsExpired() const

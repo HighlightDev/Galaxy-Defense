@@ -31,6 +31,8 @@ namespace Graphics
 
          std::shared_ptr<IShader> GetShader() const;
 
+         void PostConstructorInitialize() override;
+
          void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          virtual bool IsDeferred() const;

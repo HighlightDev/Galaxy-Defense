@@ -27,16 +27,13 @@ namespace EngineCore
             const CubemapComponentData &mData =
                 static_cast<const CubemapComponentData &>(data);
 
-            const int32_t primitive = (int32_t)SimplePrimitiveType::CUBE;
-            SimplePrimitivePool::sharedValue_t skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
             ShaderParams shaderParams("Cubemap Shader", mData.m_vsShaderPath,
                                       mData.m_fsShaderPath);
             ShaderPool::sharedValue_t shader =
                 ShaderPool::GetInstance()
                     ->template GetOrAllocateResource<CubemapShader>(shaderParams);
 
-            CubemapRenderData renderData(skin, shader, mData.m_textureObtainer);
+            CubemapRenderData renderData(shader, mData.m_textureObtainer);
 
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }

@@ -5,7 +5,6 @@
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
@@ -30,9 +29,6 @@ namespace EngineCore
         {
             const SkyboxComponentData &mData =
                 static_cast<const SkyboxComponentData &>(data);
-
-            auto skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(static_cast<int32_t>(SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE));
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
@@ -60,7 +56,7 @@ namespace EngineCore
                                                                                          planarReflectionParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(
-                mData, SkyboxRenderData(skin, skyboxMeshShader, planarReflectionShader, materialProxy));
+                mData, SkyboxRenderData(skyboxMeshShader, planarReflectionShader, materialProxy));
         }
     };
 }

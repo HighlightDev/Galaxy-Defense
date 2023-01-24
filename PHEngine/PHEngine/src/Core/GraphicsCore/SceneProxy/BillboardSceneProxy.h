@@ -10,7 +10,6 @@ namespace Graphics
 {
    namespace Proxy
    {
-
       class BillboardSceneProxy :
          public PrimitiveSceneProxy
       {
@@ -29,6 +28,8 @@ namespace Graphics
 
          ~BillboardSceneProxy() override;
 
+         void PostConstructorInitialize() override;
+
          void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
 
          bool IsDeferred() const override;
@@ -40,6 +41,7 @@ namespace Graphics
          void SetBillboardExtent(const float extent);
 
          void SetBillboardTexture(const std::shared_ptr<ITexture>& texture);
+
       };
 
    }

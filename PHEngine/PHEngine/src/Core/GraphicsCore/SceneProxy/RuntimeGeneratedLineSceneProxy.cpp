@@ -1,8 +1,16 @@
 #include "RuntimeGeneratedLineSceneProxy.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/BoundingBox3D.h"
+#include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+
+using namespace Resources;
+using namespace EngineCore;
+using namespace Graphics::Renderer;
 
 namespace Graphics
 {
@@ -11,8 +19,32 @@ namespace Graphics
       RuntimeGeneratedLineSceneProxy::RuntimeGeneratedLineSceneProxy(const RuntimeGeneratedLineComponent *component)
           : StaticMeshSceneProxy(component),
             mLineBeginWorldSpacePosition(component->GetLineBeginWorldSpacePosition()),
-            mLineEndWorldSpacePosition(component->GetLineEndWorldSpacePosition())
+            mLineEndWorldSpacePosition(component->GetLineEndWorldSpacePosition()),
+            mRtMeshPoolParams(component->GetRuntimeMeshPoolParameters())
       {
+      }
+
+      void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
+      {
+         static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineSceneProxy::PostConstructorInitialize");
+         m_skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(mRtMeshPoolParams);
+
+         if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
+         {
+            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+            {
+               const auto boundingBox = m_skin->GetBoundingBox();
+               sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                                            [this, sceneSp, boundingBox]()
+                                            {
+                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                               assert(engineObject);
+                                               const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                               assert(primitiveComponent);
+                                               primitiveComponent->SetBoundingBox(boundingBox);
+                                            });
+            }
+         }
       }
 
       void RuntimeGeneratedLineSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
@@ -60,7 +92,7 @@ namespace Graphics
             auto lineBeginViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineBeginWorldSpacePosition.x, mLineBeginWorldSpacePosition.y, mLineBeginWorldSpacePosition.z, 1.0f));
             auto lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition.x, mLineEndWorldSpacePosition.y, mLineEndWorldSpacePosition.z, 1.0f));
 
-            const float halfWidth = 5.5f;
+            const float halfWidth = 3.5f;
 
             const auto forwardVec = glm::normalize(lineEndViewSpacePosition - lineBeginViewSpacePosition);
             const auto rightVec = glm::normalize(glm::cross(forwardVec, EngineMath::AXIS_UP));

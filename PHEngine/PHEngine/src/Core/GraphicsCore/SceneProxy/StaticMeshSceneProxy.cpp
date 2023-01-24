@@ -1,24 +1,54 @@
 #include "StaticMeshSceneProxy.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+
+using namespace Graphics::Renderer;
+using namespace EngineCore;
+using namespace Resources;
 
 namespace Graphics
 {
    namespace Proxy
    {
-
       StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent *component)
           : PrimitiveSceneProxy(
                 component->IsEnabled(), component->IsVisible(),
                 component->GetRelativeMatrix(),
-                component->GetRenderData().m_skin,
+                nullptr,
                 component->GetRenderData().m_materialShader,
                 component->GetRenderData().m_planarReflectionShader,
                 component->GetRenderData().mMaterialProxy),
+            m_renderData(component->GetRenderData()),
             mIsDeferredShaded(component->GetRenderData().mIsDeferredShaded)
       {
       }
 
       StaticMeshSceneProxy::~StaticMeshSceneProxy()
       {
+      }
+
+      void StaticMeshSceneProxy::PostConstructorInitialize()
+      {
+         static constexpr uint64_t functionId = Hash64_CT("StaticMeshSceneProxy::PostConstructorInitialize");
+         m_skin = MeshPool::GetInstance()->GetOrAllocateResource(m_renderData.mModelPath);
+
+         if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
+         {
+            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+            {
+               const auto boundingBox = m_skin->GetBoundingBox();
+               sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                                            [this, sceneSp, boundingBox]()
+                                            {
+                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                               assert(engineObject);
+                                               const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                               assert(primitiveComponent);
+                                               primitiveComponent->SetBoundingBox(boundingBox);
+                                            });
+            }
+         }
       }
 
       std::shared_ptr<StaticMeshSceneProxy::ShaderType> StaticMeshSceneProxy::GetShader() const

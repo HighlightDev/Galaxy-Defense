@@ -2,12 +2,11 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
-#include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 
-using namespace Graphics::Mesh;
 using namespace Graphics::OpenGL;
 using namespace Graphics::Texture;
 
@@ -17,22 +16,24 @@ namespace Graphics
    {
       struct SkeletalMeshRenderData
       {
-         std::shared_ptr<Skin> m_skin;
+         std::string mModelName;
 
          std::shared_ptr<IShader> m_materialShader;
          std::shared_ptr<IShader> m_planarReflectionShader;
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
-         SkeletalMeshRenderData(std::shared_ptr<Skin> mesh, std::shared_ptr<IShader> materialShader, std::shared_ptr<IShader> planarReflectionShader,
-            std::shared_ptr<MaterialProxy> materialProxy)
-            : m_skin(mesh)
-            , m_materialShader(materialShader)
-            , m_planarReflectionShader(planarReflectionShader)
-            , mMaterialProxy(materialProxy)
+         SkeletalMeshRenderData(const std::string &modelName,
+                                std::shared_ptr<IShader> materialShader,
+                                std::shared_ptr<IShader> planarReflectionShader,
+                                std::shared_ptr<MaterialProxy> materialProxy)
+             : mModelName(modelName),
+               m_materialShader(materialShader),
+               m_planarReflectionShader(planarReflectionShader),
+               mMaterialProxy(materialProxy)
          {
          }
 
-         ~SkeletalMeshRenderData() { }
+         ~SkeletalMeshRenderData() {}
       };
    }
 }

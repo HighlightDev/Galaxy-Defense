@@ -219,10 +219,7 @@ namespace EngineCore
    {
       auto meshData = std::make_shared<SerializeDataStaticMesh>();
       meshData->ComponentName = component->GetEngineObjectName();
-      const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
-          MeshPool::GetInstance()->GetKey(
-              component->GetRenderData().m_skin));
-      meshData->ModelName = generalUrlToModel;
+      meshData->ModelName = component->GetRenderData().mModelPath;
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationDegrees();
       meshData->Scale = component->GetScale();
@@ -239,10 +236,7 @@ namespace EngineCore
    {
       auto meshData = std::make_shared<SerializeDataSkeletalMesh>();
       meshData->ComponentName = component->GetEngineObjectName();
-      const std::string &generalUrlToModel = EngineUtility::FromOsSpecificUrlToGeneral(
-          MeshPool::GetInstance()->GetKey(
-              component->GetRenderData().m_skin));
-      meshData->ModelName = generalUrlToModel;
+      meshData->ModelName = component->GetRenderData().mModelName;
       meshData->Translation = component->GetTranslation();
       meshData->Rotation = component->GetRotationDegrees();
       meshData->Scale = component->GetScale();

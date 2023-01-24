@@ -13,7 +13,7 @@ namespace EngineCore
                             data.m_translation,
                             glm::vec3(),
                             data.m_scale,
-                            renderData.m_skin->GetBoundingBox()),
+                            BoundingBox3D()),
          mBillboardExtent(data.m_billboardExtent),
          m_renderData(renderData)
    {

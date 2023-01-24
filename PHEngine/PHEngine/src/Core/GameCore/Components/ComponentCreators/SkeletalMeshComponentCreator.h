@@ -27,11 +27,8 @@ namespace EngineCore
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
         {
-            const MeshComponentData &mData =
-                static_cast<const MeshComponentData &>(data);
-
-            typename MeshPool::sharedValue_t skin =
-                MeshPool::GetInstance()->GetOrAllocateResource(mData.m_pathToMesh);
+            const MeshComponentData &mData = static_cast<const MeshComponentData &>(data);
+            assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData.GetMeshComponentDataType());
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
@@ -60,7 +57,7 @@ namespace EngineCore
                     "SkeletalMeshVertexFactory<4>_CapturePlanarReflectionShader" + materialProxy->MaterialName,
                     planarReflectionParams, materialProxy);
 
-            SkeletalMeshRenderData renderData(skin, skeletalMeshShader,
+            SkeletalMeshRenderData renderData(mData.m_pathToMesh, skeletalMeshShader,
                                               planarReflectionShader, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(

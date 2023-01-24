@@ -136,6 +136,7 @@ namespace IO
          AsyncJob<Resource *, const std::string &> job(std::bind(&AudioResourceLoader::LoadResource, &mAudioLoader, std::placeholders::_1));
          std::future<Resource *> futureResult = job.StartAsync(fileFullPath);
          mAsyncDataProxy->ResourcesMap[key] = std::move(futureResult);
+         break;
       }
       default:
          break;
@@ -155,6 +156,7 @@ namespace IO
          break;
       case eResourceType::AUDIO:
          SoundBufferPool::GetInstance()->GetOrAllocateResource(key);
+         break;
       default:
          assert(false); // undefined type
          break;

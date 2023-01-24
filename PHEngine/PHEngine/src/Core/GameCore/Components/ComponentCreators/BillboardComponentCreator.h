@@ -29,8 +29,6 @@ namespace EngineCore
         {
             const BillboardComponentData &mData = static_cast<const BillboardComponentData &>(data);
 
-            int32_t primitive = (int32_t)SimplePrimitiveType::POINT;
-            SimplePrimitivePool::sharedValue_t skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
             typename TexturePool::sharedValue_t texture = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_pathToTexture);
             const ShaderParams shaderParams(
                 "Billboard Shader",
@@ -40,7 +38,7 @@ namespace EngineCore
 
             const auto &shader = ShaderPool::GetInstance()->template GetOrAllocateResource<BillboardShader>(shaderParams);
 
-            BillboardRenderData renderData(skin, shader, texture);
+            BillboardRenderData renderData(shader, texture);
 
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }

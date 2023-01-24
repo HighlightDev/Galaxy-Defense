@@ -30,11 +30,6 @@ namespace EngineCore
             const WaterPlaneComponentData &mData =
                 static_cast<const WaterPlaneComponentData &>(data);
 
-            const int32_t primitive =
-                (int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES;
-            auto skin =
-                SimplePrimitivePool::GetInstance()->GetOrAllocateResource(primitive);
-
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
             const ShaderParams shaderParams(
@@ -50,7 +45,7 @@ namespace EngineCore
                     shaderParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
-                                                                WaterPlaneRenderData(skin, waterPlaneShader, materialProxy));
+                                                                WaterPlaneRenderData(waterPlaneShader, materialProxy));
         }
     };
 }

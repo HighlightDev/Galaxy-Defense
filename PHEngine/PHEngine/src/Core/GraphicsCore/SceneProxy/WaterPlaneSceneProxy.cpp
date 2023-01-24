@@ -1,18 +1,24 @@
 #include "WaterPlaneSceneProxy.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <glm/vec3.hpp>
+
+using namespace Graphics::Renderer;
+using namespace EngineCore;
+using namespace Resources;
 
 namespace Graphics
 {
    namespace Proxy
    {
-
       WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent *component)
           : PrimitiveSceneProxy(
                 component->IsEnabled(),
                 component->IsVisible(),
                 component->GetRelativeMatrix(),
-                component->GetRenderData().m_skin,
+                nullptr,
                 component->GetRenderData().m_materialShader,
                 nullptr,
                 component->GetRenderData().mMaterialProxy),
@@ -23,6 +29,29 @@ namespace Graphics
             m_farClipPlane(component->GetFarClipPlane())
       {
          Init();
+      }
+
+      void WaterPlaneSceneProxy::PostConstructorInitialize()
+      {
+         static constexpr uint64_t functionId = Hash64_CT("WaterPlaneSceneProxy::PostConstructorInitialize");
+         m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::PLANE_WITH_ATTRIBUTES);
+
+         if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
+         {
+            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+            {
+               const auto boundingBox = m_skin->GetBoundingBox();
+               sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                                            [this, sceneSp, boundingBox]()
+                                            {
+                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                               assert(engineObject);
+                                               const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                               assert(primitiveComponent);
+                                               primitiveComponent->SetBoundingBox(boundingBox);
+                                            });
+            }
+         }
       }
 
       std::shared_ptr<WaterPlaneSceneProxy::ShaderType> WaterPlaneSceneProxy::GetShader() const

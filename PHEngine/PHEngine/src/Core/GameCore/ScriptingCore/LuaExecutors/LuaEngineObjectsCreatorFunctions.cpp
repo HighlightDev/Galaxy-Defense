@@ -57,7 +57,6 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreatePointLightComponentData"), ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePointLightComponentData, this, std::placeholders::_1), "_CreatePointLightComponentData");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateSpotlightComponentData"), ComponentData *(std::string, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, glm::vec3, float, float, ProjectedShadowInfo *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateSpotlightComponentData, this, std::placeholders::_1), "_CreateSpotlightComponentData");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateMeshComponentData"), ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateMeshComponentData, this, std::placeholders::_1), "_CreateMeshComponentData");
-         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateSimpleMeshComponentData"), ComponentData *(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateSimpleMeshComponentData, this, std::placeholders::_1), "_CreateSimpleMeshComponentData");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreatePhysicsComponentData"), ComponentData *(std::string, PhysicsDescriptor *)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreatePhysicsComponentData, this, std::placeholders::_1), "_CreatePhysicsComponentData");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateInputComponentData"), ComponentData *(std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateInputComponentData, this, std::placeholders::_1), "_CreateInputComponentData");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateCharacterMovementComponentData"), ComponentData *(std::string, glm::vec3, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::CreateCharacterMovementComponentData, this, std::placeholders::_1), "_CreateCharacterMovementComponentData");
@@ -259,16 +258,6 @@ namespace EngineCore
          auto dataPtr = EngineObjectCreator::CreateMeshComponentData(std::get<0>(meshComponentData),
                                                                      meshModelName, std::get<2>(meshComponentData),
                                                                      std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
-
-         mAllocatedComponentData.push_back(dataPtr);
-         return dataPtr;
-      }
-
-      /* -------------------  Create simple mesh component data ----------------------------*/
-      ComponentData *LuaEngineObjectsCreatorFunctions::CreateSimpleMeshComponentData(const std::tuple<std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string, IMaterial *> &meshComponentData)
-      {
-         auto dataPtr = EngineObjectCreator::CreateSimpleMeshComponentData(std::get<0>(meshComponentData), std::get<1>(meshComponentData), std::get<2>(meshComponentData),
-                                                                           std::get<3>(meshComponentData), std::get<4>(meshComponentData), std::get<5>(meshComponentData), std::get<6>(meshComponentData));
 
          mAllocatedComponentData.push_back(dataPtr);
          return dataPtr;

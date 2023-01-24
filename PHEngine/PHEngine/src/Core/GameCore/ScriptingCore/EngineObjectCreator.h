@@ -53,9 +53,6 @@ namespace EngineCore
       static ComponentData *CreateMeshComponentData(const std::string &gameObjectName, const std::string &relativePathToMesh,
                                                     const glm::vec3 &translation,
                                                     const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material);
-      static ComponentData *CreateSimpleMeshComponentData(const std::string &gameObjectName, const std::string &simpleMeshType,
-                                                          const glm::vec3 &translation,
-                                                          const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material);
       static ComponentData *CreatePhysicsComponentData(const std::string &gameObjectName, PhysicsDescriptor *physDescriptor);
       static ComponentData *CreateCharacterMovementComponentData(const std::string &gameObjectName, const glm::vec3 &launchDirection,
                                                                  const std::string &cameraName);

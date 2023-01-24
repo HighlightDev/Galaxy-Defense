@@ -15,7 +15,7 @@ namespace EngineCore
    WaterPlaneComponent::WaterPlaneComponent(const WaterPlaneComponentData &data, const WaterPlaneRenderData &renderData,
                                             WaterQualityFlag waterQuality)
        : PrimitiveComponent(data.EngineObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale,
-                            renderData.m_skin->GetBoundingBox()),
+                            BoundingBox3D()),
          m_waveSpeed(0.4f), m_moveFactor(0.0f),
          m_renderData(renderData), m_waterQuality(waterQuality)
    {

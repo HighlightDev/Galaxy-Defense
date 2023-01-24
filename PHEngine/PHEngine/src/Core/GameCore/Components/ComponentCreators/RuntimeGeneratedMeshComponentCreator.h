@@ -5,14 +5,12 @@
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
-#include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/IoCore/FolderManager.h"
 
 using namespace EngineCore::ShaderImpl;
@@ -36,12 +34,8 @@ namespace EngineCore
 
             const RuntimeGeneratedMeshComponentData &mData = static_cast<const RuntimeGeneratedMeshComponentData &>(data);
 
-            if (eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData.GetMeshComponentDataType())
-            {
-                skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(RuntimeGeneratedMeshPoolParameters(mData.EngineObjectName, mData.mMaxVerticesCount));
-            }
-
-            assert(skin);
+            assert(eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData.GetMeshComponentDataType());
+            RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData.EngineObjectName, mData.mMaxVerticesCount);
 
             const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
@@ -69,10 +63,11 @@ namespace EngineCore
                     "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
-                                                                StaticMeshRenderData(skin,
+                                                                StaticMeshRenderData("",
                                                                                      meshShader,
                                                                                      planarReflectionShader,
-                                                                                     materialProxy, false));
+                                                                                     materialProxy, false),
+                                                                runtimeMeshParams);
         }
     };
 }
