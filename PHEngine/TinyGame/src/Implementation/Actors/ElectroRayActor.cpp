@@ -39,7 +39,7 @@ namespace Game
     {
         mElectroLineOriginStartMovementDelayTimer.SetIsPausable(true);
         mElectroLineOriginStartMovementDelayTimer.SetIsRepeat(false);
-        mElectroLineOriginStartMovementDelayTimer.SetIntervalMs(2000);
+        mElectroLineOriginStartMovementDelayTimer.SetIntervalMs(1000);
         mElectroLineOriginStartMovementDelayTimer.SetCallback(std::bind(&ElectroRayActor::OnElectroLineOriginStartMovementDelayTimerTimeout, this));
     }
 
@@ -94,11 +94,11 @@ namespace Game
         {
             mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
             electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
-            if (mElectroLineOriginStartMovementDelayTimer.IsRunning())
+            /*if (mElectroLineOriginStartMovementDelayTimer.IsRunning())
             {
                 mElectroLineOriginStartMovementDelayTimer.StopTimer();
                 bLineOriginStartMovement = true;
-            }
+            }*/
         }
 
         if (bLineOriginStartMovement)

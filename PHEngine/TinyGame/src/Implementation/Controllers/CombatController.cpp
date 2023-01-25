@@ -338,6 +338,15 @@ namespace Game
                         electroRayChainModifier->Initialize(mElectroRayChainActorPool);
                         ownerEnemyShipActor->AddModifier(electroRayChainModifier);
                     }
+                    else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == gameObjectType)
+                    {
+                        const auto &ownerSpaceObjectActor = GetSpaceObjectOwnerActorById(collidedActorId);
+                        const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(std::make_pair(gameObjectType, ownerSpaceObjectActor),
+                                                                                                      std::make_pair(srcActorGameObjectType, srcCollisionActor));
+
+                        electroRayChainModifier->Initialize(mElectroRayChainActorPool);
+                        ownerSpaceObjectActor->AddModifier(electroRayChainModifier);
+                    }
                 }
             }
         }

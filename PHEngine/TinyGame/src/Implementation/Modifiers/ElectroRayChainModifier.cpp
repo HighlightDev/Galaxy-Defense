@@ -2,6 +2,7 @@
 #include "Core/GameCore/Actor.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Actors/SpaceObjectActor.h"
 #include "Implementation/Pools/ElectroRayChainActorPool.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/Random.h"
@@ -55,6 +56,14 @@ namespace Game
                     const auto &dstSpaceshipSp = std::static_pointer_cast<SpaceshipActor>(chainDstSp);
                     const size_t dmg = std::max((size_t)(Random::Float() * 2.0f), static_cast<size_t>(1));
                     dstSpaceshipSp->TriggerDamageReceived(dmg);
+                }
+            }
+            else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == mChainDst.first)
+            {
+                 if (const auto &chainDstSp = mChainDst.second.lock())
+                {
+                    const auto &dstSpaceobjectSp = std::static_pointer_cast<SpaceObjectActor>(chainDstSp);
+                    dstSpaceobjectSp->TriggerDisabled();
                 }
             }
         }

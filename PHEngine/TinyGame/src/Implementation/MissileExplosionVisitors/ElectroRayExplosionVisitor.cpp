@@ -36,6 +36,7 @@ namespace Game
                 {
                     ownerSp->TriggerDisabled();
                 }
+
                 if (const auto &sceneSp = ownerSp->GetSceneOwner().lock())
                 {
                     SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {spaceship->GetPhysicsComponent()});
@@ -67,6 +68,19 @@ namespace Game
             {
                 spaceObject->TriggerDisabled();
                 ownerSp->TriggerDisabled();
+
+                if (const auto &sceneSp = ownerSp->GetSceneOwner().lock())
+                {
+                    SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {spaceObject->GetPhysicsComponent()});
+                    collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceObject->GetRootComponent()->GetTranslation());
+                    const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
+                    std::vector<uint64_t> descriptorActorIds;
+                    std::transform(collidedDescriptors.begin(), collidedDescriptors.end(), std::back_inserter(descriptorActorIds),
+                                   [](const auto &collidedDescriptor)
+                                   { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
+
+                    Event::SphereContactCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, spaceObject->GetObjectId(), descriptorActorIds);
+                }
             }
         }
     }
