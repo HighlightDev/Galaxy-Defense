@@ -107,7 +107,7 @@ namespace Graphics
          return false;
       }
 
-      void WaterPlaneSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void WaterPlaneSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          const auto &shader = GetShader();
 

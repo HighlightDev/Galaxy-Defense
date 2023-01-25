@@ -387,7 +387,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
-         auto cameraProxy = sceneView->GetCameraProxy();
+         const auto& cameraProxy = sceneView->GetCameraProxy();
 
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
@@ -409,7 +409,7 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
-                  proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+                  proxy->Render(cameraProxy, cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
                }
             }
          }
@@ -424,7 +424,7 @@ namespace Graphics
                                           sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
                if (bShouldRender)
                {
-                  proxy->Render(cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+                  proxy->Render(cameraProxy, cameraProxy->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
                }
             }
          }
@@ -562,7 +562,7 @@ namespace Graphics
                                        sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender)
             {
-               proxy->Render(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+               proxy->Render(sceneView->GetCameraProxy(), sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
 

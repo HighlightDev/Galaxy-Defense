@@ -11,8 +11,7 @@ namespace Graphics
    namespace Proxy
    {
 
-      class CubemapSceneProxy :
-         public PrimitiveSceneProxy
+      class CubemapSceneProxy : public PrimitiveSceneProxy
       {
 
          std::shared_ptr<CubemapShader> m_shaderCubemap;
@@ -20,12 +19,10 @@ namespace Graphics
          TextureAtlasSpaceRequest m_textureObtainer;
 
       protected:
-
          using Base = PrimitiveSceneProxy;
 
       public:
-
-         CubemapSceneProxy(const CubemapComponent* component);
+         CubemapSceneProxy(const CubemapComponent *component);
 
          ~CubemapSceneProxy() override;
 
@@ -33,7 +30,7 @@ namespace Graphics
 
          void PostConstructorInitialize() override;
 
-         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          virtual bool IsDeferred() const;
 
@@ -42,4 +39,3 @@ namespace Graphics
 
    }
 }
-

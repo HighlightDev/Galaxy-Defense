@@ -93,4 +93,34 @@ namespace Graphics
    {
       return eCameraSceneProxyType::SECONDARY_SCENE_CAMERA;
    }
+
+   void CameraSceneProxy::SetForwardVector(const glm::vec3 &forwardVector)
+   {
+      mForwardVector = forwardVector;
+   }
+
+   void CameraSceneProxy::SetRightVector(const glm::vec3 &rightVector)
+   {
+      mRightVector = rightVector;
+   }
+
+   void CameraSceneProxy::SetUpVector(const glm::vec3 &upVector)
+   {
+      mUpVector = upVector;
+   }
+
+   glm::vec3 CameraSceneProxy::GetForwardVector() const
+   {
+      return mForwardVector;
+   }
+
+   glm::vec3 CameraSceneProxy::GetRightVector() const
+   {
+      return mRightVector;
+   }
+
+   glm::vec3 CameraSceneProxy::GetUpVector() const
+   {
+      return mUpVector;
+   }
 }

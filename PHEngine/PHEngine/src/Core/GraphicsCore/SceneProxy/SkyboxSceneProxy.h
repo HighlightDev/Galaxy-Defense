@@ -14,31 +14,28 @@ namespace Graphics
    namespace Proxy
    {
 
-      class SkyboxSceneProxy :
-         public PrimitiveSceneProxy
+      class SkyboxSceneProxy : public PrimitiveSceneProxy
       {
          using ShaderType = VertexFactoryMaterialCompositeShader<SkyboxVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<SkyboxVertexFactory, CapturePlanarReflectionShader>;
 
       protected:
-
          using Base = PrimitiveSceneProxy;
 
       public:
-
          std::shared_ptr<ShaderType> GetShader() const;
 
          std::shared_ptr<PlanarReflectionShaderType> GetPlanarReflectionShader() const;
 
-         SkyboxSceneProxy(const SkyboxComponent* component);
+         SkyboxSceneProxy(const SkyboxComponent *component);
 
          ~SkyboxSceneProxy() override;
 
          void PostConstructorInitialize() override;
 
-         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
-         void RenderPlanarReflection(const glm::vec4& plane, const glm::mat4& mirrorMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
@@ -51,4 +48,3 @@ namespace Graphics
 
    }
 }
-

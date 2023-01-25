@@ -10,6 +10,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
+#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 
 using namespace Graphics::OpenGL;
@@ -89,7 +90,7 @@ namespace Graphics
 
          bool IsFrustumCullTestNeeded() const override;
 
-         virtual void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) = 0;
+         virtual void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) = 0;
 
          virtual void RenderPlanarReflection(const glm::vec4 &plane, const glm::mat4 &mirrorMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) {}
 

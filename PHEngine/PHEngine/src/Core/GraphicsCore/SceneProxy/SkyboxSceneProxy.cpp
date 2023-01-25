@@ -65,7 +65,7 @@ namespace Graphics
          return ePrimitiveProxyType::PRIMITIVE_PROXY;
       }
 
-      void SkyboxSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void SkyboxSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          glm::mat4 viewMatrixNoTranslation = viewMatrix;
          viewMatrixNoTranslation[3] = glm::vec4(0.0f, 0.0f, 0.0f, viewMatrixNoTranslation[3].w);

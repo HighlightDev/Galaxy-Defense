@@ -10,8 +10,7 @@ namespace Graphics
 {
    namespace Proxy
    {
-      class BillboardSceneProxy :
-         public PrimitiveSceneProxy
+      class BillboardSceneProxy : public PrimitiveSceneProxy
       {
 
          std::shared_ptr<BillboardShader> m_billboardShader;
@@ -23,14 +22,13 @@ namespace Graphics
          using Base = PrimitiveSceneProxy;
 
       public:
-
-         BillboardSceneProxy(const BillboardComponent* component);
+         BillboardSceneProxy(const BillboardComponent *component);
 
          ~BillboardSceneProxy() override;
 
          void PostConstructorInitialize() override;
 
-         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          bool IsDeferred() const override;
 
@@ -40,10 +38,8 @@ namespace Graphics
 
          void SetBillboardExtent(const float extent);
 
-         void SetBillboardTexture(const std::shared_ptr<ITexture>& texture);
-
+         void SetBillboardTexture(const std::shared_ptr<ITexture> &texture);
       };
 
    }
 }
-

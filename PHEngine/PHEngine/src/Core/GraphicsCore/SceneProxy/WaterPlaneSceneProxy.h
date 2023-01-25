@@ -15,8 +15,7 @@ namespace Graphics
    namespace Proxy
    {
 
-      class WaterPlaneSceneProxy :
-         public PrimitiveSceneProxy
+      class WaterPlaneSceneProxy : public PrimitiveSceneProxy
       {
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
@@ -27,16 +26,15 @@ namespace Graphics
          float m_farClipPlane;
 
       public:
-      
          std::shared_ptr<ShaderType> GetShader() const;
 
-         WaterPlaneSceneProxy(const WaterPlaneComponent* component);
+         WaterPlaneSceneProxy(const WaterPlaneComponent *component);
 
          ~WaterPlaneSceneProxy() override;
 
          void PostConstructorInitialize() override;
 
-         void Render(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix) override;
+         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          virtual bool IsDeferred() const;
 
@@ -51,9 +49,7 @@ namespace Graphics
          void SetFarClipPlane(float farClipPlane);
 
       private:
-
          void Init();
       };
    }
 }
-

@@ -378,10 +378,14 @@ namespace EngineCore
                                                     Job(creatorObjectId,
                                                         functionId, [=]()
                                                         {
-                                                           sceneViewSp->GetCameraProxy()->UpdateEyeVector(camera->GetEyeVector());
-                                                           sceneViewSp->GetCameraProxy()->UpdateViewMatrix(camera->GetViewMatrix());
+                                                         const auto& cameraProxy = sceneViewSp->GetCameraProxy();
+                                                         cameraProxy->UpdateEyeVector(camera->GetEyeVector());
+                                                         cameraProxy->UpdateViewMatrix(camera->GetViewMatrix());
+                                                         cameraProxy->SetForwardVector(camera->GetEyeSpaceForwardVector());
+                                                         cameraProxy->SetRightVector(camera->GetEyeSpaceRightVector());
+                                                         cameraProxy->SetUpVector(camera->GetLocalSpaceUpVector());
 
-                                                           m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                         m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                                                                  Job(creatorObjectId,
                                                                                                      functionId, [=]()
                                                                                                      { camera->OnCameraSceneProxyDataUpdated(); })); }));

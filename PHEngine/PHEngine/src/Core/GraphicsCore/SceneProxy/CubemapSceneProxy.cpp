@@ -57,7 +57,7 @@ namespace Graphics
          return m_shaderCubemap;
       }
 
-      void CubemapSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void CubemapSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          std::shared_ptr<TextureAtlasHandler> texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
          if (texHandler && texHandler->GetTextureType() == eTextureType::TEXTURE_CUBE)

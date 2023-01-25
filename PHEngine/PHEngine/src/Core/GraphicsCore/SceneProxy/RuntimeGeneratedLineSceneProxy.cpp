@@ -5,12 +5,15 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
+#include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace Resources;
 using namespace EngineCore;
 using namespace Graphics::Renderer;
+using namespace Graphics;
 
 namespace Graphics
 {
@@ -48,9 +51,9 @@ namespace Graphics
          }
       }
 
-      void RuntimeGeneratedLineSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void RuntimeGeneratedLineSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         UpdateGeometry(viewMatrix);
+         UpdateGeometry(cameraSceneProxy, viewMatrix);
 
          const auto &shader = GetShader();
 
@@ -88,7 +91,7 @@ namespace Graphics
          bUpdateLineGeometry = true;
       }
 
-      void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4 &viewMatrix)
+      void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix)
       {
          if (bUpdateLineGeometry)
          {
@@ -100,13 +103,14 @@ namespace Graphics
             auto lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition.x, mLineEndWorldSpacePosition.y, mLineEndWorldSpacePosition.z, 1.0f));
 
             const float halfWidth = mLineWidth * 0.5f;
-            const auto forwardVec = glm::normalize(lineEndViewSpacePosition - lineBeginViewSpacePosition);
-            const auto rightVec = glm::normalize(glm::cross(forwardVec, EngineMath::AXIS_UP));
+            const auto forwardVec = glm::normalize(mLineEndWorldSpacePosition - mLineBeginWorldSpacePosition);
+            const auto &cameraForwardVec = cameraSceneProxy->GetForwardVector();
+            const auto &lineBasisVector = glm::normalize(glm::cross(glm::normalize(cameraForwardVec), forwardVec));
 
-            const auto viewP1 = lineBeginViewSpacePosition - (rightVec * halfWidth);
-            const auto viewP2 = lineBeginViewSpacePosition + (rightVec * halfWidth);
-            const auto viewP3 = lineEndViewSpacePosition - (rightVec * halfWidth);
-            const auto viewP4 = lineEndViewSpacePosition + (rightVec * halfWidth);
+            const auto viewP1 = lineBeginViewSpacePosition - (lineBasisVector * halfWidth);
+            const auto viewP2 = lineBeginViewSpacePosition + (lineBasisVector * halfWidth);
+            const auto viewP3 = lineEndViewSpacePosition - (lineBasisVector * halfWidth);
+            const auto viewP4 = lineEndViewSpacePosition + (lineBasisVector * halfWidth);
 
             const auto texP1 = glm::vec2(0, 1);
             const auto texP2 = glm::vec2(0, 0);

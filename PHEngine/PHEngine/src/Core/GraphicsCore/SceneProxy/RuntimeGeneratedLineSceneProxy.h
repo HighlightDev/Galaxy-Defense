@@ -37,7 +37,7 @@ namespace Graphics
 
          void PostConstructorInitialize() override;
 
-         void Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
+         void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
          void SetLineBeginWorldSpacePosition(const glm::vec3 &position);
 
@@ -46,7 +46,7 @@ namespace Graphics
          void SetLineWidth(const float lineWidth);
 
       private:
-         void UpdateGeometry(const glm::mat4& viewMatrix);
+         void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix);
       };
 
    }

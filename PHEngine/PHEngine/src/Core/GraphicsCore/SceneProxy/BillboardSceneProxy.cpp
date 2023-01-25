@@ -53,7 +53,7 @@ namespace Graphics
          }
       }
 
-      void BillboardSceneProxy::Render(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void BillboardSceneProxy::Render(const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          auto billboardShader = m_billboardShader;
 

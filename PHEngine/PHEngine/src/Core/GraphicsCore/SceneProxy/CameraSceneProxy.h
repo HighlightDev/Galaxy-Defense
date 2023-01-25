@@ -30,6 +30,10 @@ namespace Graphics
 
       glm::vec3 mEyeVector;
 
+      glm::vec3 mForwardVector;
+      glm::vec3 mRightVector;
+      glm::vec3 mUpVector;
+
       glm::mat4 mViewMatrix;
 
       glm::mat4 mProjectionMatrix;
@@ -61,6 +65,14 @@ namespace Graphics
       void UpdateProjectionMatrix(const glm::mat4& projectionMatrix);
 
       virtual eCameraSceneProxyType GetCameraSceneType() const;
+
+      void SetForwardVector(const glm::vec3& forwardVector);
+      void SetRightVector(const glm::vec3& rightVector);
+      void SetUpVector(const glm::vec3& upVector);
+
+      glm::vec3 GetForwardVector() const;
+      glm::vec3 GetRightVector() const;
+      glm::vec3 GetUpVector() const;
 
    private:
 
