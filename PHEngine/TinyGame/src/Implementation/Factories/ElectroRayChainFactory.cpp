@@ -40,15 +40,23 @@ namespace Game
 
         MaterialParser materialParser;
         const auto &electro_material = materialParser.ParseMaterialDescriptor("ElectroRayMaterial.m");
-
         const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
 
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, scene.get(), "GT_DeltaSec", "gt_timeSec");
+        MaterialPropertySetter::SetMaterialPropertyValue(electro_material, a_electroRayChain.get(), "p_opacity", "b_opacity");
 
         const RuntimeGeneratedMeshComponentData d_mesh("c_rayChainRuntineLineMesh_" + rayChainIndexStr, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        c_mesh->SetLineWidth(12.0f);
+
+        TweenerParser tweenerParser;
+        const auto &rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");
+        a_electroRayChain->AttachTweener(rayChainTweener);
+        const auto &b_rayOpacity = rayChainTweener->GetPropertyBindingByName("b_opacity");
+        BindingAttachmentBuilder::SetAttachment(a_electroRayChain.get(), b_rayOpacity.get(), "p_opacity");
+
         a_electroRayChain->SetLineComponent(c_mesh);
         a_electroRayChain->AddComponent(c_mesh);
         a_electroRayChain->SetScene(scene);

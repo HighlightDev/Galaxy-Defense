@@ -1,0 +1,45 @@
+<tweener>
+  <tweener_name>
+    name: "ElectroRayChain"
+  </tweener_name>
+  
+  <states>
+    <state>
+      name: "s_OnFadeOutStarted"
+    </state>
+    <state>
+      name: "s_OnFadeOutFinished"
+    </state>
+  </states>
+  <transitions>
+    <transition>
+      name: "t_OnFadeOutStarted_To_OnFadeOutFinished"
+      from_state: "s_OnFadeOutStarted"
+      to_state: "s_OnFadeOutFinished"
+      duration: "0.3"
+    </transition>
+  </transitions>
+  <bindings>
+    <binding>
+      binding_name: "b_opacity"
+      type: "scalar_float"
+    </binding>
+  </bindings>
+  <properties>
+    <property>
+      name: "p_opacity"
+      binding_name: "b_opacity"
+      type: "scalar_float"
+      value: "1.0"
+      state: "s_OnFadeOutStarted"
+    </property>
+
+    <property>
+      name: "p_opacity"
+      binding_name: "b_opacity"
+      type: "scalar_float"
+      value: "0.0"
+      state: "s_OnFadeOutFinished"
+    </property>
+  </properties>
+</tweener>

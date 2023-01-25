@@ -333,7 +333,8 @@ namespace Game
                     if (eGameObjectsType::SPACESHIP == gameObjectType)
                     {
                         const auto &ownerEnemyShipActor = GetEnemyShipOwnerActorById(collidedActorId);
-                        const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(ownerEnemyShipActor, srcCollisionActor);
+                        const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(std::make_pair(gameObjectType, ownerEnemyShipActor),
+                                                                                                       std::make_pair(srcActorGameObjectType, srcCollisionActor));
                         electroRayChainModifier->Initialize(mElectroRayChainActorPool);
                         ownerEnemyShipActor->AddModifier(electroRayChainModifier);
                     }

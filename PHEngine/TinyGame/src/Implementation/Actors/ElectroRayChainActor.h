@@ -3,6 +3,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/MissileActor.h"
+#include "Core/GameCore/Tweener/Tweener.h"
 
 #include <functional>
 #include <unordered_map>
@@ -22,7 +23,8 @@ namespace Game
     class MissileExplosionVisitorBase;
 
     class ElectroRayChainActor
-        : public MissileActor
+        : public MissileActor,
+          public ITweenStateChangeNotifyable
     {
         std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> mLineComponent;
 
@@ -32,8 +34,19 @@ namespace Game
         std::weak_ptr<::EngineCore::Actor> mStartLineSpaceship;
         std::weak_ptr<::EngineCore::Actor> mEndLineSpaceship;
 
+        float mChainingAnimationTimeDuration;
+        float mChainingAnimationTime{0.0f};
+        bool mIsPendingDisable{false};
+        bool mIsChainingAnimationPlaying{true};
+
+        std::shared_ptr<Tweener> mFadeoutTweener;
+
+        std::shared_ptr<EngineGOProperty<float>> mOpacity;
+
     public:
         ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+
+        void AttachTweener(std::shared_ptr<Tweener> tweener) override;
 
         void Tick(const float deltaTime) override;
 
@@ -55,13 +68,23 @@ namespace Game
 
         void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> &lineComponent);
 
+        void SetIsPendingDisable(const bool value);
+
+        bool IsPendingDisable() const;
+
     private:
-        void Initialize();
+        void OnTweenStateChanged(const std::string &stateName) override;
 
         void DropState();
 
         glm::vec3 GetStartLinePosition();
 
         glm::vec3 GetEndLinePosition();
+
+        void InitTweenerSubscriptions();
+
+        void TriggerLifecycle_OnFadeOutStarted();
+
+        void TriggerLifecycle_OnFadeOutFinished();
     };
 }

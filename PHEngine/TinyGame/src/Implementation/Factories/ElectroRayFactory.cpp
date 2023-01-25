@@ -54,6 +54,7 @@ namespace Game
 
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, scene.get(), "GT_DeltaSec", "gt_timeSec");
+        MaterialPropertySetter::SetMaterialPropertyValue(electro_material, a_electroRay.get(), "p_opacity", "b_opacity");
 
         const RuntimeGeneratedMeshComponentData d_mesh("c_runtimeLineMesh_" + rayIndexStr, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
@@ -64,6 +65,8 @@ namespace Game
 
         a_electroRay->SetElectroLineOriginSpeed(65.0f);
         a_electroRay->SetElectroLineDestinationSpeed(75.0f);
+
+        c_mesh->SetLineWidth(8.0f);
 
         // todo: 
         //ComponentData d_audio("c_bombMissileSound_" + rayChainIndexStr);

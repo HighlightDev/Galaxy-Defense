@@ -5,6 +5,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <utility>
 
@@ -19,13 +20,21 @@ namespace Game
           mElectroLineBegin(),
           mElectroLineEnd(),
           mStartLineSpaceship(),
-          mEndLineSpaceship()
+          mEndLineSpaceship(),
+          mChainingAnimationTimeDuration(0.5f),
+          mOpacity(std::make_shared<EngineGOProperty<float>>(1.0f, "p_opacity"))
     {
-        Initialize();
+        AddEngineProperty(mOpacity);
     }
 
-    void ElectroRayChainActor::Initialize()
+    void ElectroRayChainActor::AttachTweener(std::shared_ptr<Tweener> tweener)
     {
+        assert(tweener);
+        LogInfo("ElectroRayChainActor::AttachTweener => Path to tweener", tweener->GetRelPathTweener());
+
+        MissileActor::AttachTweener(tweener);
+        mFadeoutTweener = tweener;
+        InitTweenerSubscriptions();
     }
 
     void ElectroRayChainActor::Tick(const float deltaTime)
@@ -34,11 +43,28 @@ namespace Game
 
         assert(mLineComponent);
 
-        // todo: temporary
         mElectroLineBegin = GetStartLinePosition();
         mElectroLineEnd = GetEndLinePosition();
+
+        if (mIsChainingAnimationPlaying && mChainingAnimationTime >= mChainingAnimationTimeDuration)
+        {
+            mChainingAnimationTime = mChainingAnimationTimeDuration;
+            TriggerLifecycle_OnFadeOutStarted();
+        }
+        else
+        {
+            mChainingAnimationTime += deltaTime;
+        }
+
+        const auto &toEndLineVec = mElectroLineEnd - mElectroLineBegin;
+        const float distance = glm::length(toEndLineVec);
+        const auto &nToEndLineVec = toEndLineVec / distance;
+        const float t = std::clamp(EngineMath::LerpFloat(mChainingAnimationTime, 0.0f, mChainingAnimationTimeDuration, 0.0f, 1.0f), 0.0f, 1.0f);
+        const float endLineDistance = t * distance;
+        const auto &finalDestination = mElectroLineBegin + (nToEndLineVec * endLineDistance);
+
         mLineComponent->SetLineBeginWorldSpacePosition(mElectroLineBegin);
-        mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
+        mLineComponent->SetLineEndWorldSpacePosition(finalDestination);
     }
 
     bool ElectroRayChainActor::IsInsideLevel(const BoundingBox3D &boundingBox) const
@@ -48,6 +74,7 @@ namespace Game
 
     void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position)
     {
+        DropState();
         SetIsEnabled(true);
         mActivityState = eMissileActivityState::ACTIVE;
     }
@@ -66,6 +93,7 @@ namespace Game
 
     void ElectroRayChainActor::TriggerDisabled()
     {
+        mFadeoutTweener->InitRootState();
         mActivityState = eMissileActivityState::IDLE;
         SetIsEnabled(false);
     }
@@ -94,8 +122,9 @@ namespace Game
     {
         if (const auto &startLineSpaceshipSp = mStartLineSpaceship.lock())
         {
-            return startLineSpaceshipSp->GetRootComponent()->GetTranslation();
+            mElectroLineBegin = startLineSpaceshipSp->GetRootComponent()->GetTranslation();
         }
+
         return mElectroLineBegin;
     }
 
@@ -103,12 +132,48 @@ namespace Game
     {
         if (const auto &endLineSpaceshipSp = mEndLineSpaceship.lock())
         {
-            return endLineSpaceshipSp->GetRootComponent()->GetTranslation();
+            mElectroLineEnd = endLineSpaceshipSp->GetRootComponent()->GetTranslation();
         }
+
         return mElectroLineEnd;
+    }
+
+    void ElectroRayChainActor::SetIsPendingDisable(const bool value)
+    {
+        mIsPendingDisable = false;
+    }
+
+    bool ElectroRayChainActor::IsPendingDisable() const
+    {
+        return mIsPendingDisable;
     }
 
     void ElectroRayChainActor::DropState()
     {
+        mIsChainingAnimationPlaying = true;
+        mIsPendingDisable = false;
+        mChainingAnimationTime = 0.0f;
+        mElectroLineBegin = mElectroLineEnd = glm::vec3();
+    }
+
+    void ElectroRayChainActor::OnTweenStateChanged(const std::string &stateName)
+    {
+        LogInfo("ElectroRayChainActor::OnTweenStateChanged => stateName: ", stateName);
+        if ("s_OnFadeOutFinished" == stateName)
+        {
+            mIsPendingDisable = true;
+        }
+    }
+
+    void ElectroRayChainActor::InitTweenerSubscriptions()
+    {
+        mFadeoutTweener->SubscribeOnStateChange(this);
+    }
+
+    void ElectroRayChainActor::TriggerLifecycle_OnFadeOutStarted()
+    {
+        LogInfo("ElectroRayChainActor::TriggerLifecycle_OnFadeOutStarted");
+        mIsChainingAnimationPlaying = false;
+        mFadeoutTweener->ChangeState("s_OnFadeOutFinished");
     }
 }

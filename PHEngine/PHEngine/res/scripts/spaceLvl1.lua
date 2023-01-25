@@ -13,48 +13,6 @@ setup()
 local Vec3 = require("core/vec3")
 
 function CreateTestLevel(host)
-	_LoadResourcesAsync(host,
-		[[nightRight.jpg
-	,nightLeft.jpg
-	,nightTop.jpg
-	,nightBottom.jpg
-	,nightBack.jpg
-	,nightFront.jpg
-	,spaceship_albedo.jpg
-	,spaceship_normal.jpg
-	,spaceship_roughness.jpg
-	,spaceship_metallic.jpg
-	,solar_cells_normal_512.jpg
-	,solar_cells_roughness_512.jpg
-	,solar_cells_metallic_512.jpg
-	,missile1_albedo.png
-	,water_dudv.jpg
-	,circle_mask1.png
-	,Ice_Cracked_albedo.jpg
-	,Ice_Cracked_normal.jpg
-	,Ice_Cracked_metallic.jpg
-	,Ice_Cracked_roughness.jpg
-	,Asteroid_albedo.jpg
-	,Asteroid_normal.jpg
-	,Asteroid_roughness.jpg
-	,Asteroid_metallic.jpg
-	,sphere.obj
-	,spaceship.obj
-	,missile1_model.fbx
-	,asteroid.fbx
-	,explosion1.ogg
-	,piano-loop2.wav
-	,SciFiPanels1_albedo.jpg
-	,SciFiPanels1_height.jpg
-	,planet_1.png
-	,planet_2.png
-	,planet_3.png
-	,planet_4.png
-	,planet_5.png
-	,planet_6.png
-	,space_nebula_1.png
-	,space_nebula_2.png
-	]])
 
 	_LazyLoadResourcesAsync(host,
 		[[fern.png
@@ -64,6 +22,44 @@ function CreateTestLevel(host)
 		,nimbus_mono.png
 		,combat_life1.png
 		,perlin_noise.png
+		,nightRight.jpg
+		,nightLeft.jpg
+		,nightTop.jpg
+		,nightBottom.jpg
+		,nightBack.jpg
+		,nightFront.jpg
+		,spaceship_albedo.jpg
+		,spaceship_normal.jpg
+		,spaceship_roughness.jpg
+		,spaceship_metallic.jpg
+		,solar_cells_normal_512.jpg
+		,solar_cells_roughness_512.jpg
+		,solar_cells_metallic_512.jpg
+		,missile1_albedo.png
+		,water_dudv.jpg
+		,circle_mask1.png
+		,Ice_Cracked_albedo.jpg
+		,Ice_Cracked_normal.jpg
+		,Ice_Cracked_metallic.jpg
+		,Ice_Cracked_roughness.jpg
+		,Asteroid_albedo.jpg
+		,Asteroid_normal.jpg
+		,Asteroid_roughness.jpg
+		,Asteroid_metallic.jpg
+		,sphere.obj
+		,spaceship.obj
+		,missile1_model.fbx
+		,asteroid.fbx
+		,explosion1.ogg
+		,piano-loop2.wav
+		,SciFiPanels1_albedo.jpg
+		,SciFiPanels1_height.jpg
+		,planet_1.png
+		,planet_2.png
+		,planet_3.png
+		,planet_4.png
+		,planet_5.png
+		,planet_6.png
 		]])
 
 	--_CreateThirdPersonCamera(host, "MainCamera",
@@ -73,6 +69,10 @@ function CreateTestLevel(host)
 	--20.0,
 	--0, 5, 0,
 	--1) -- is main camera on scene
+
+	local translation = Vec3:new(0, 0, 0)
+	local rotation = Vec3:new(0, 0, 0)
+	local scale = Vec3:new(1, 1, 1)
 
 	local a_light = _CreateActor(host, "MainLightActor",
 		0, 0, 0,
@@ -94,7 +94,7 @@ function CreateTestLevel(host)
 			ambient.x, ambient.y, ambient.z,
 			diffuse.x, diffuse.y, diffuse.z,
 			specular.x, specular.y, specular.z,
-			dirShadowInfo
+			nil
 		)
 
 		local c_dirLight = _CreateComponent(host, "DirectionalLightComponent", d_dirLight)

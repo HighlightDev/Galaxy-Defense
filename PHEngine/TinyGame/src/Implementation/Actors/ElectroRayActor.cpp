@@ -28,8 +28,10 @@ namespace Game
           mElectroLineOriginStartMovementDelayTimer(),
           bLineOriginStartMovement(false),
           bElectroLineCollided(false),
-          mCollidedSpaceship()
+          mCollidedSpaceship(),
+          mOpacity(std::make_shared<EngineGOProperty<float>>(1.0f, "p_opacity"))
     {
+        AddEngineProperty(mOpacity);
         Initialize();
     }
 

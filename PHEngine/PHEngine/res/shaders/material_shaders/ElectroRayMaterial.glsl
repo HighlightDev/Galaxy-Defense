@@ -4,6 +4,7 @@
 
 uniform sampler2D noise;
 uniform float timeSec;
+uniform float opacity;
 
 float alpha;
 
@@ -44,7 +45,7 @@ float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return alpha;
+	return alpha * opacity;
 };
 
 vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)

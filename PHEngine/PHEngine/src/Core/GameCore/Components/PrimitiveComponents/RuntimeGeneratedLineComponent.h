@@ -26,6 +26,8 @@ namespace EngineCore
 
 		bool mIsRenderDataDirty{false};
 
+		float mLineWidth;
+
 	protected:
 		using Base = StaticMeshComponent;
 
@@ -42,11 +44,15 @@ namespace EngineCore
 
 		void Tick(const float deltaTime) override;
 
-		const RuntimeGeneratedMeshPoolParameters& GetRuntimeMeshPoolParameters() const; 
+		const RuntimeGeneratedMeshPoolParameters &GetRuntimeMeshPoolParameters() const;
 
 		void SetLineBeginWorldSpacePosition(const glm::vec3 &position);
 
 		void SetLineEndWorldSpacePosition(const glm::vec3 &position);
+
+		void SetLineWidth(const float lineWidth);
+
+		float GetLineWidth() const;
 
 		glm::vec3 GetLineBeginWorldSpacePosition() const;
 

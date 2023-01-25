@@ -38,7 +38,7 @@ namespace Game
                 }
                 if (const auto &sceneSp = ownerSp->GetSceneOwner().lock())
                 {
-                    SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {});
+                    SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {spaceship->GetPhysicsComponent()});
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceship->GetRootComponent()->GetTranslation());
                     const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
                     std::vector<uint64_t> descriptorActorIds;

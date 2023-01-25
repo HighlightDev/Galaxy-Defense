@@ -20,7 +20,8 @@ namespace EngineCore
        : StaticMeshComponent(meshComponentData, renderData),
          mRtMeshParams(rtMeshParams),
          mLineBeginWorldSpacePosition(),
-         mLineEndWorldSpacePosition()
+         mLineEndWorldSpacePosition(),
+         mLineWidth(1.0f)
    {
       Event::CameraTransformChangedEvent::GetInstance()->AddListener(this);
    }
@@ -57,7 +58,7 @@ namespace EngineCore
       }
    }
 
-   const RuntimeGeneratedMeshPoolParameters& RuntimeGeneratedLineComponent::GetRuntimeMeshPoolParameters() const
+   const RuntimeGeneratedMeshPoolParameters &RuntimeGeneratedLineComponent::GetRuntimeMeshPoolParameters() const
    {
       return mRtMeshParams;
    }
@@ -90,6 +91,20 @@ namespace EngineCore
       }
    }
 
+   void RuntimeGeneratedLineComponent::SetLineWidth(const float lineWidth)
+   {
+      if (!EngineMath::FloatsNearEqual(lineWidth, mLineWidth))
+      {
+         mLineWidth = lineWidth;
+         mIsRenderDataDirty = true;
+      }
+   }
+
+   float RuntimeGeneratedLineComponent::GetLineWidth() const
+   {
+      return mLineWidth;
+   }
+
    void RuntimeGeneratedLineComponent::SyncRenderData()
    {
       static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineComponent::SyncRenderData");
@@ -104,6 +119,7 @@ namespace EngineCore
                {
                   lineProxySp->SetLineBeginWorldSpacePosition(mLineBeginWorldSpacePosition);
                   lineProxySp->SetLineEndWorldSpacePosition(mLineEndWorldSpacePosition);
+                  lineProxySp->SetLineWidth(mLineWidth);
                } });
          }
       }

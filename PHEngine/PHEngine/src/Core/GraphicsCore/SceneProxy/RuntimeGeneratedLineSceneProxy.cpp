@@ -20,6 +20,7 @@ namespace Graphics
           : StaticMeshSceneProxy(component),
             mLineBeginWorldSpacePosition(component->GetLineBeginWorldSpacePosition()),
             mLineEndWorldSpacePosition(component->GetLineEndWorldSpacePosition()),
+            mLineWidth(component->GetLineWidth()),
             mRtMeshPoolParams(component->GetRuntimeMeshPoolParameters())
       {
       }
@@ -81,6 +82,12 @@ namespace Graphics
          bUpdateLineGeometry = true;
       }
 
+      void RuntimeGeneratedLineSceneProxy::SetLineWidth(const float lineWidth)
+      {
+         mLineWidth = lineWidth;
+         bUpdateLineGeometry = true;
+      }
+
       void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const glm::mat4 &viewMatrix)
       {
          if (bUpdateLineGeometry)
@@ -92,8 +99,7 @@ namespace Graphics
             auto lineBeginViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineBeginWorldSpacePosition.x, mLineBeginWorldSpacePosition.y, mLineBeginWorldSpacePosition.z, 1.0f));
             auto lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition.x, mLineEndWorldSpacePosition.y, mLineEndWorldSpacePosition.z, 1.0f));
 
-            const float halfWidth = 3.5f;
-
+            const float halfWidth = mLineWidth * 0.5f;
             const auto forwardVec = glm::normalize(lineEndViewSpacePosition - lineBeginViewSpacePosition);
             const auto rightVec = glm::normalize(glm::cross(forwardVec, EngineMath::AXIS_UP));
 

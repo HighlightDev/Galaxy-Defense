@@ -1,11 +1,12 @@
 #pragma once
 
 #include "IModifiable.h"
-#include "Core/CommonCore/Timer.h"
 #include "Implementation/Actors/ElectroRayChainActor.h"
+#include "Implementation/GameObjectsType.h"
 
 #include <memory>
 #include <glm/vec3.hpp>
+#include <utility>
 
 namespace EngineCore
 {
@@ -19,16 +20,17 @@ namespace Game
 
     class ElectroRayChainModifier : public IModifiable
     {
-        std::weak_ptr<Actor> mChainDst;
+        std::pair<eGameObjectsType, const std::weak_ptr<Actor>> mChainDst;
 
-        std::weak_ptr<Actor> mChainSrc;
+        std::pair<eGameObjectsType, const std::weak_ptr<Actor>> mChainSrc;
 
         std::shared_ptr<ElectroRayChainActor> mElectroRayChainActor;
 
-        GameThreadTimer mDisposeTimer;
+        bool mIsPendingRemoval{false};
 
     public:
-        ElectroRayChainModifier(const std::weak_ptr<Actor> &chainDst, const std::weak_ptr<Actor> &chainSrc);
+        ElectroRayChainModifier(const std::pair<eGameObjectsType, const std::weak_ptr<Actor>> &chainDstActor,
+                                const std::pair<eGameObjectsType, const std::weak_ptr<Actor>> &chainSrc);
 
         eModifierType GetModifierType() const override;
 
@@ -43,8 +45,5 @@ namespace Game
         void OnPreRemoved() override;
 
         void Initialize(const std::shared_ptr<::Game::ElectroRayChainActorPool> &mElectroRayChainActorPool);
-
-    private:
-        void OnDisposeTimerTimeout();
     };
 }

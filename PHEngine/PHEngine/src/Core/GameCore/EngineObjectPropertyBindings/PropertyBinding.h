@@ -34,5 +34,10 @@ namespace EngineCore {
       }
 
       virtual eBindingType GetBindingType() const = 0;
+
+      bool IsPropertyConnected() const
+      {
+         return bPropertyConnected;
+      }
    };
 }

@@ -28,6 +28,8 @@ namespace Graphics
 
          glm::vec3 mLineEndWorldSpacePosition;
 
+         float mLineWidth;
+
          bool bUpdateLineGeometry{true};
 
       public:
@@ -40,6 +42,8 @@ namespace Graphics
          void SetLineBeginWorldSpacePosition(const glm::vec3 &position);
 
          void SetLineEndWorldSpacePosition(const glm::vec3 &position);
+
+         void SetLineWidth(const float lineWidth);
 
       private:
          void UpdateGeometry(const glm::mat4& viewMatrix);
