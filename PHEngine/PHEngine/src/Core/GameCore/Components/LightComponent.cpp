@@ -29,7 +29,8 @@ namespace EngineCore
 
       if (const auto& sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdateLightComponentTransform_OnRenderThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+         const auto updateSuccessfull = sceneSP->UpdateLightComponentTransform_OnRenderThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+         SetIsTransformationDirty(!updateSuccessfull);
       }
    }
 

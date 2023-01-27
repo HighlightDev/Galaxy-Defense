@@ -90,6 +90,11 @@ namespace EngineCore
          {
             UpdateRelativeMatrix();
             UpdateReflectionPlane();
+            bIsRenderDataDirty = true;
+         }
+
+         if (bIsRenderDataDirty)
+         {
             SyncDataWithRenderThread();
          }
       }
@@ -127,19 +132,21 @@ namespace EngineCore
 
    void PlanarReflectionComponent::SyncDataWithRenderThread()
    {
-      static const uint64_t functionId = Hash("PlanarReflectionComponent: SyncDataWithRenderThread");
+      static const uint64_t functionId = Hash("PlanarReflectionComponent::SyncDataWithRenderThread");
       if (const auto &sceneSP = m_sceneWP.lock())
       {
          if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                           {
-               const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
-               assert(reflectionSp);
-               PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(reflectionSp.get());
+            const auto &reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
+            if (reflectionSp)
+            {
+               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+                                              {
+               const auto& proxyPtr = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
                proxyPtr->SetReflectionPlane(mReflectionPlane); });
+               bIsRenderDataDirty = false;
+            }
          }
       }
    }
-
 }

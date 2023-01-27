@@ -54,7 +54,6 @@ namespace EngineCore
       if (mIsRenderDataDirty)
       {
          SyncRenderData();
-         mIsRenderDataDirty = false;
       }
    }
 
@@ -112,15 +111,15 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
          {
-            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                           {
-               const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
-               if (const auto& lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(primitiveProxySp))
-               {
+            if (const auto &lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
+            {
+               mIsRenderDataDirty = false;
+               sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+                                              {
                   lineProxySp->SetLineBeginWorldSpacePosition(mLineBeginWorldSpacePosition);
                   lineProxySp->SetLineEndWorldSpacePosition(mLineEndWorldSpacePosition);
-                  lineProxySp->SetLineWidth(mLineWidth);
-               } });
+                  lineProxySp->SetLineWidth(mLineWidth); });
+            }
          }
       }
    }

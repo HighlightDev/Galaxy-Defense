@@ -17,11 +17,8 @@ namespace EngineCore
 
       LuaWrapper::~LuaWrapper()
       {
-         if (mState)
-         {
-            lua_close(mState);
-            mState = nullptr;
-         }
+         StopExecution();
+         mState = nullptr;
       }
 
       bool LuaWrapper::ExecuteScript(const std::string &absPath)
@@ -35,6 +32,14 @@ namespace EngineCore
          }
 
          return true;
+      }
+
+      void LuaWrapper::StopExecution()
+      {
+         if (mState)
+         {
+            lua_close(mState);
+         }
       }
 
       std::string LuaWrapper::GetErrorMessageAt(int32_t stackIndex) const

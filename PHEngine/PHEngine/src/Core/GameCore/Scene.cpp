@@ -300,80 +300,121 @@ namespace EngineCore
       m_interThreadMgr.EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
-   void Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+   bool Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
    {
+      auto result = false;
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(
-             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-             Job(creatorObjectId,
-                 functionId, [=]()
-                 {
-                  const auto& primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                  if (primitiveSp)
-                  {
-                     primitiveSp->SetEnabled(bEnabled);
-                  }
-                  else {
-                       LogInfo("Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
-                                       "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                                                                primitiveSceneProxyIndex);
-                  } }));
+         const auto &primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveSp)
+         {
+            auto result = true;
+            m_interThreadMgr.EmplaceRenderThreadJob(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                Job(creatorObjectId,
+                    functionId, [=]()
+                    { primitiveSp->SetEnabled(bEnabled); }));
+         }
+         else
+         {
+            LogInfo("Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
       }
+
+      return result;
    }
 
-   void Scene::UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
+   bool Scene::UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
    {
+      auto result = false;
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(
-             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-             Job(creatorObjectId,
-                 functionId, [=]()
-                 {
-                    const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                  if (primitiveProxySp)
-                  {
-                     primitiveProxySp->SetVisibility(visibility);
-                  }
-                  else {
-                       LogInfo("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
-                                       "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                                                                primitiveSceneProxyIndex);
-                  } }));
+         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveProxySp)
+         {
+            result = true;
+            m_interThreadMgr.EmplaceRenderThreadJob(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                Job(creatorObjectId,
+                    functionId, [=]()
+                    { primitiveProxySp->SetVisibility(visibility); }));
+         }
+         else
+         {
+            LogInfo("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
       }
+
+      return result;
    }
 
-   void Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+   bool Scene::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const int32_t sortOrderValue)
+   {
+      auto result = false;
+      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveProxySp)
+         {
+            result = true;
+            m_interThreadMgr.EmplaceRenderThreadJob(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                Job(creatorObjectId,
+                    functionId, [=]()
+                    { primitiveProxySp->SetSortOrderValue(sortOrderValue); }));
+         }
+         else
+         {
+            LogInfo("Scene::UpdatePrimitiveComponentSortOrderValue_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
+      }
+
+      return result;
+   }
+
+   bool Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
                                                                 const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
    {
+      auto result = false;
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 Job(creatorObjectId,
-                                                     functionId, [=]()
-                                                     {
-           const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                  if (primitiveProxySp)
-            {
+         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveProxySp)
+         {
+            result = true;
+            m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    Job(creatorObjectId,
+                                                        functionId, [=]()
+                                                        {
                primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
-               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox);
-            }
-            else
-            {
-               LogInfo("Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
-                              "Error !Current proxy index doesn't exist on RT. Proxy index = " , primitiveSceneProxyIndex);
-            } }));
+               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); }));
+         }
+         else
+         {
+            LogInfo("Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
+                    "Error !Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
       }
+
+      return result;
    }
 
-   void Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera)
+   bool Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera)
    {
+      auto result = false;
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
          if (sceneViewSp)
          {
+            result = true;
             m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                     Job(creatorObjectId,
                                                         functionId, [=]()
@@ -397,6 +438,8 @@ namespace EngineCore
                     sceneProxyId);
          }
       }
+
+      return result;
    }
 
    bool Scene::IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const
@@ -410,25 +453,28 @@ namespace EngineCore
       return false;
    }
 
-   void Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
+   bool Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
    {
+      auto result = false;
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 Job(creatorObjectId,
-                                                     functionId, [=]()
-                                                     {
-               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);  
-               if (lightProxySp)
-               {
-                 lightProxySp->SetTransformationMatrix(newRelativeMatrix);
-               }
-               else
-               {
-                  LogInfo("Scene::UpdateLightComponentTransform_OnRenderThread => "
-                              "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
-               } }));
+         const auto &lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
+         if (lightProxySp)
+         {
+            m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    Job(creatorObjectId,
+                                                        functionId, [=]()
+                                                        { lightProxySp->SetTransformationMatrix(newRelativeMatrix); }));
+         }
+         else
+         {
+            LogInfo("Scene::UpdateLightComponentTransform_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    lightSceneProxyIndex);
+         }
       }
+
+      return result;
    }
 
    void Scene::PrimitiveSceneProxyDeleted_OnRenderThread(size_t primitiveSceneProxyIndex)

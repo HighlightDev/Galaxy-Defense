@@ -11,7 +11,6 @@
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
-#include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
@@ -24,6 +23,11 @@ namespace Graphics
    {
       class DeferredShadingSceneRenderer;
    }
+}
+
+namespace EngineCore
+{
+   class PrimitiveComponent;
 }
 
 namespace Graphics
@@ -52,6 +56,8 @@ namespace Graphics
 
          std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> mDeferredShadingSceneRenderer;
 
+         int32_t mSortOrderValue{0};
+
       protected:
          glm::mat4 m_relativeMatrix;
 
@@ -64,9 +70,7 @@ namespace Graphics
          std::shared_ptr<MaterialProxy> mMaterialProxy;
 
       public:
-         PrimitiveSceneProxy(const bool isEnabled,
-                             const bool isVisible,
-                             const glm::mat4 &relativeMatrix,
+         PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
                              const std::shared_ptr<Skin> &skin,
                              const std::shared_ptr<IShader> &materialShader,
                              const std::shared_ptr<IShader> &planarReflectionShader,
@@ -100,7 +104,12 @@ namespace Graphics
 
          virtual bool IsTransformIntialized() const;
 
-         virtual ePrimitiveSortOrder GetPrimitiveSortOrder() const;
+         // [primitive with sort order value < 0 are the most early drawn primitives]
+         int32_t GetPrimitiveSortOrder() const;
+
+         void SetSortOrderValue(const int32_t sortOrderValue);
+
+         int32_t GetSortOrderValue() const;
       };
 
    }

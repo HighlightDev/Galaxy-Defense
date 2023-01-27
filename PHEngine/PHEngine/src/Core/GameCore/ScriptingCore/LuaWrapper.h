@@ -27,6 +27,8 @@ namespace EngineCore
 
          bool ExecuteScript(const std::string &absPath);
 
+         void StopExecution();
+
          std::string GetErrorMessageAt(int32_t stackIndex) const;
       };
    }

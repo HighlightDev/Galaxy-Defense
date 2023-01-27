@@ -59,6 +59,7 @@ namespace Game
         const RuntimeGeneratedMeshComponentData d_mesh("c_runtimeLineMesh_" + rayIndexStr, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        c_mesh->SetSortOrderValue(100);
         a_electroRay->SetLineComponent(c_mesh);
         a_electroRay->SetSpawnerSpaceship(spawnerActor);
         a_electroRay->AddComponent(c_mesh);

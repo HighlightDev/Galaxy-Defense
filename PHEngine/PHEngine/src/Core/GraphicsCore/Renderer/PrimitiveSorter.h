@@ -5,13 +5,6 @@
 
 namespace Graphics
 {
-    enum class ePrimitiveSortOrder
-    {
-        ORDER_FIRST,
-        ORDER_MIDDLE,
-        ORDER_LAST
-    };
-
     namespace Proxy
     {
         class PrimitiveSceneProxy;

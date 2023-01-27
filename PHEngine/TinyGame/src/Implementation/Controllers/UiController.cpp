@@ -20,11 +20,15 @@ namespace Game
         : mSceneWp(scene),
           mOverlayManager(std::make_shared<OverlayManager>()),
           mInputComponent(std::make_unique<InputComponent>(ComponentData("UiController Input Component"))),
-          mPressButtonCooldown(0.0f)
+          mPressButtonCooldown(0.0f),
+          mLuaScriptExecutor("test.lua")
     {
         mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", scene, mOverlayManager));
         mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", scene, mOverlayManager));
         mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", scene, mOverlayManager));
+
+        mLuaScriptExecutor.RunScript();
+        mLuaScriptExecutor.CallFooFunction();
     }
 
     void UiController::UnpausableTick(const float deltaTime)

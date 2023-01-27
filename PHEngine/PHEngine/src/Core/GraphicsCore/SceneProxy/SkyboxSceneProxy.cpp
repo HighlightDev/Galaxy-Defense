@@ -12,14 +12,11 @@ namespace Graphics
    namespace Proxy
    {
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent *component)
-          : PrimitiveSceneProxy(
-                component->IsEnabled(),
-                component->IsVisible(),
-                component->GetRelativeMatrix(),
-                nullptr,
-                component->GetRenderData().m_materialShader,
-                component->GetRenderData().m_planarReflectionShader,
-                component->GetRenderData().mMaterialProxy)
+          : PrimitiveSceneProxy(component,
+                                nullptr,
+                                component->GetRenderData().m_materialShader,
+                                component->GetRenderData().m_planarReflectionShader,
+                                component->GetRenderData().mMaterialProxy)
       {
       }
 

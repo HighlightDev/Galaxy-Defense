@@ -51,6 +51,11 @@ namespace EngineCore
          }
       }
 
+      void LuaCommonEngineFunctions::StopScript()
+      {
+         mLuaInstance.StopExecution();
+      }
+
       void LuaCommonEngineFunctions::OnUpdate(const float deltaTime)
       {
          if (mLuaCoreData.HasOnUpdate)

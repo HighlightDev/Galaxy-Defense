@@ -54,6 +54,7 @@ set(
 	src/Implementation/Ui/PauseSettingsMenuUi.h
 	src/Implementation/Ui/PlayerCombatUi.h
 	src/Implementation/Pools/ElectroRayChainActorPool.h
+	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 )
 
 set(
@@ -103,6 +104,7 @@ set(
 	src/Implementation/Ui/PauseSettingsMenuUi.cpp
 	src/Implementation/Ui/PlayerCombatUi.cpp
 	src/Implementation/Pools/ElectroRayChainActorPool.cpp
+	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
     main.cpp
 )
 

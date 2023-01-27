@@ -20,6 +20,8 @@ namespace EngineCore
    {
       using Base = PrimitiveComponent;
 
+      bool bIsRenderDataDirty{false};
+
    protected:
       // todo: should do something with render data on game thread.....
       SkeletalMeshRenderData m_renderData;

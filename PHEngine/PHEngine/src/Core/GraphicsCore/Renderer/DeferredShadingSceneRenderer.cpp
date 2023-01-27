@@ -949,16 +949,14 @@ namespace Graphics
       {
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasId == canvasProxy->GetUiItemUId(); });
-         assert(canvasIt != mUiCanvasProxies.end());
-         return (*canvasIt)->GetSceneProxyById(proxyId);
+         return canvasIt != mUiCanvasProxies.end() ? (*canvasIt)->GetSceneProxyById(proxyId) : nullptr;
       }
 
       std::shared_ptr<UiCanvasSceneProxy> DeferredShadingSceneRenderer::GetCanvasSceneProxyByProxyId(const size_t proxyId) const
       {
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return proxyId == canvasProxy->GetUiItemUId(); });
-         assert(canvasIt != mUiCanvasProxies.end());
-         return *canvasIt;
+         return canvasIt != mUiCanvasProxies.end() ? *canvasIt : nullptr;
       }
 
       bool DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const size_t proxyId)

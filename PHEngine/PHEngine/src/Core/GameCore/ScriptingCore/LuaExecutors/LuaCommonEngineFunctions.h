@@ -21,6 +21,8 @@ namespace EngineCore
 
          virtual void RunScript();
 
+         virtual void StopScript();
+
          virtual void OnUpdate(const float deltaTime);
 
          EngineObject *GetEngineObject(const std::tuple<std::string> &gameObjectName);

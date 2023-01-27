@@ -12,22 +12,21 @@ namespace EngineCore
 {
    struct BillboardComponentData;
 
-   class BillboardComponent :
-      public PrimitiveComponent
+   class BillboardComponent : public PrimitiveComponent
    {
    protected:
-
       using Base = PrimitiveComponent;
 
       float mBillboardExtent;
 
    private:
-
       BillboardRenderData m_renderData;
 
-   public:
+      bool bIsExtentDataDirty{false};
+      bool bIsTextureDataDirty{false};
 
-      BillboardComponent(const BillboardComponentData& data, const BillboardRenderData& renderData);
+   public:
+      BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData);
 
       ~BillboardComponent() override;
 
@@ -35,7 +34,7 @@ namespace EngineCore
 
       void Tick(float deltaTime) override;
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
@@ -43,13 +42,16 @@ namespace EngineCore
 
       float GetBillboardExtent() const;
 
-      void SetBillboardTexture(const std::shared_ptr<ITexture>& texture);
+      void SetBillboardTexture(const std::shared_ptr<ITexture> &texture);
 
-      inline const BillboardRenderData& GetRenderData() const {
+      inline const BillboardRenderData &GetRenderData() const
+      {
 
          return m_renderData;
       }
+
+   private:
+      void SyncRenderData();
    };
 
 }
-

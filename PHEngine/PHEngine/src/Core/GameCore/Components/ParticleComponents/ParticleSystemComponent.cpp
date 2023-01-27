@@ -33,6 +33,7 @@ namespace EngineCore
           mRenderData(renderData)
     {
         mParticlesPool.resize(meshComponentData.m_particlesCount);
+        mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
     }
 
     ParticleSystemComponent::~ParticleSystemComponent()
@@ -149,7 +150,6 @@ namespace EngineCore
             const auto &ownerScale = ownerSp->GetRootComponent()->GetScale();
 
             // Update current relative matrix
-
             const glm::mat4 identityMatrix(1);
             m_relativeMatrix = glm::mat4(1);
             m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
@@ -160,14 +160,14 @@ namespace EngineCore
 
             if (const auto &sceneSP = m_sceneWP.lock())
             {
-                sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
-                                                                          GetObjectId(),
-                                                                          functionId,
-                                                                          m_relativeMatrix,
-                                                                          GetTransformedBoundingBox());
-            }
+                const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
+                                                                                                         GetObjectId(),
+                                                                                                         functionId,
+                                                                                                         m_relativeMatrix,
+                                                                                                         GetTransformedBoundingBox());
 
-            SetIsTransformationDirty(false);
+                SetIsTransformationDirty(!updateSuccessfull);
+            }
         }
     }
 

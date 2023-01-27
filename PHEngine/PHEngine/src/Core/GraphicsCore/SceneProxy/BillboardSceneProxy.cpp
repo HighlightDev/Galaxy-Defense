@@ -13,9 +13,7 @@ namespace Graphics
    {
 
       BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent *component)
-          : PrimitiveSceneProxy(component->IsEnabled(),
-                                component->IsVisible(),
-                                component->GetRelativeMatrix(),
+          : PrimitiveSceneProxy(component,
                                 nullptr,
                                 nullptr,
                                 nullptr,
@@ -53,7 +51,7 @@ namespace Graphics
          }
       }
 
-      void BillboardSceneProxy::Render(const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+      void BillboardSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
          auto billboardShader = m_billboardShader;
 

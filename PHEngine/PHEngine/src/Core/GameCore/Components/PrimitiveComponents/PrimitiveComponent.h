@@ -27,6 +27,12 @@ namespace EngineCore
 
             std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
 
+            int32_t mSortOrderValue{0};
+
+            bool bIsEnabledStateDirty{false};
+            bool bIsVisibleStateDirty{false};
+            bool bIsSortOrderStateDirty{false};
+
       public:
             size_t SceneProxyId = 0;
 
@@ -40,6 +46,8 @@ namespace EngineCore
 
             virtual void SetIsVisible(bool isVisible);
 
+            void Tick(const float deltaTime) override;
+
             bool IsVisible() const;
 
             void SetIsEnabled(const bool bEnabled) override;
@@ -50,12 +58,17 @@ namespace EngineCore
 
             void UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix) override;
 
-            virtual void OnVisibilityChanged();
+            void SetBoundingBox(const BoundingBox3D &boundingBox);
 
-            void SetBoundingBox(const BoundingBox3D& boundingBox);
+            void SetSortOrderValue(const int32_t orderValue);
+
+            int32_t GetSortOrderValue() const;
 
             BoundingBox3D GetBoundingBox() const;
 
             BoundingBox3D GetTransformedBoundingBox() const;
+
+      private:
+            void SyncRenderData();
       };
 }

@@ -21,11 +21,17 @@ namespace EngineCore
 
       using Base = LightComponent;
 
+      glm::vec3 mPlayerTranslationOffset{};
+
+      bool bIsRenderDataDirty{false};
+
    public:
 
       DirectionalLightComponent(const LightComponentData& lightComponentData);
 
       ~DirectionalLightComponent() override;
+
+      void Tick(const float deltaTime) override;
 
       eComponentType GetComponentType() const override;
 
@@ -37,8 +43,6 @@ namespace EngineCore
 
       void UpdateRelativeMatrix(const glm::mat4& parentRelativeMatrix) override;
 
-      void Tick(const float deltaTime) override;
-
    protected:
 
       void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
@@ -46,7 +50,7 @@ namespace EngineCore
 
    private:
 
-      void ForceUpdateShadowMap();
+      void SyncRenderData();
    };
 
 }

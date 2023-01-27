@@ -42,17 +42,13 @@ namespace EngineCore
 
    void ACamera::UpdateCameraProxyData(const float DeltaTime)
    {
-      static const uint64_t functionId = Hash("ACamera: Update camera proxy data.");
-
       if (bTransformationDirty)
       {
          if (auto sceneSp = mScene.lock())
          {
-            if (sceneSp->IsCameraSceneProxyExistsOnRT(SceneProxyId))
-            {
-               sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
-               bTransformationDirty = false;
-            }
+            static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraSceneProxyData_OnRenderThread");
+            const auto updateSuccessfull = sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
+            bTransformationDirty = !updateSuccessfull;
          }
       }
    }

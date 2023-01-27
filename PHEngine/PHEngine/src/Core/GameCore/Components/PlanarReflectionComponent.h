@@ -34,6 +34,8 @@ namespace EngineCore
 
       std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>> mPlanarReflectionDeferredController;
 
+      bool bIsRenderDataDirty{false};
+
    public:
       PlanarReflectionComponent(const PlanarReflectionComponentData &data);
 

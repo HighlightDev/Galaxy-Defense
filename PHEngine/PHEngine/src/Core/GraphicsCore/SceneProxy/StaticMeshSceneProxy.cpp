@@ -12,13 +12,11 @@ namespace Graphics
    namespace Proxy
    {
       StaticMeshSceneProxy::StaticMeshSceneProxy(const StaticMeshComponent *component)
-          : PrimitiveSceneProxy(
-                component->IsEnabled(), component->IsVisible(),
-                component->GetRelativeMatrix(),
-                nullptr,
-                component->GetRenderData().m_materialShader,
-                component->GetRenderData().m_planarReflectionShader,
-                component->GetRenderData().mMaterialProxy),
+          : PrimitiveSceneProxy(component,
+                                nullptr,
+                                component->GetRenderData().m_materialShader,
+                                component->GetRenderData().m_planarReflectionShader,
+                                component->GetRenderData().mMaterialProxy),
             m_renderData(component->GetRenderData()),
             mIsDeferredShaded(component->GetRenderData().mIsDeferredShaded)
       {

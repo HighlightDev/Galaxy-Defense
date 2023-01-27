@@ -32,6 +32,18 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
+   void PrimitiveComponent::Tick(const float deltaTime)
+   {
+      SceneComponent::Tick(deltaTime);
+
+      if (bIsEnabledStateDirty ||
+          bIsVisibleStateDirty ||
+          bIsSortOrderStateDirty)
+      {
+         SyncRenderData();
+      }
+   }
+
    void PrimitiveComponent::UpdateRelativeMatrix(const glm::mat4 &parentRelativeMatrix)
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
@@ -41,7 +53,8 @@ namespace EngineCore
 
       if (const auto &sceneSP = m_sceneWP.lock())
       {
-         sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+         const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+         SetIsTransformationDirty(!updateSuccessfull);
       }
    }
 
@@ -50,12 +63,8 @@ namespace EngineCore
       if (mIsEnabled->GetValue() != bEnabled)
       {
          mIsEnabled->SetValue(bEnabled, false);
-         static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
-         
-         if (const auto &sceneSP = m_sceneWP.lock())
-         {
-            sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, bEnabled);
-         }
+         bIsEnabledStateDirty = true;
+         SyncRenderData();
       }
    }
 
@@ -64,7 +73,8 @@ namespace EngineCore
       if (isVisible != mIsVisible->GetValue())
       {
          mIsVisible->SetValue(isVisible);
-         OnVisibilityChanged();
+         bIsVisibleStateDirty = true;
+         SyncRenderData();
       }
    }
 
@@ -73,19 +83,24 @@ namespace EngineCore
       return mIsVisible->GetValue();
    }
 
-   void PrimitiveComponent::OnVisibilityChanged()
-   {
-      static const uint64_t functionId = Hash("PrimitiveComponent::OnVisibilityChanged()");
-
-      if (const auto &sceneSP = m_sceneWP.lock())
-      {
-         sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible->GetValue());
-      }
-   }
-
    BoundingBox3D PrimitiveComponent::GetBoundingBox() const
    {
       return mBoundingBox;
+   }
+
+   void PrimitiveComponent::SetSortOrderValue(const int32_t orderValue)
+   {
+      if (mSortOrderValue != orderValue)
+      {
+         mSortOrderValue = orderValue;
+         bIsSortOrderStateDirty = true;
+         SyncRenderData();
+      }
+   }
+
+   int32_t PrimitiveComponent::GetSortOrderValue() const
+   {
+      return mSortOrderValue;
    }
 
    BoundingBox3D PrimitiveComponent::GetTransformedBoundingBox() const
@@ -93,8 +108,35 @@ namespace EngineCore
       return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
    }
 
-   void PrimitiveComponent::SetBoundingBox(const BoundingBox3D& boundingBox)
+   void PrimitiveComponent::SetBoundingBox(const BoundingBox3D &boundingBox)
    {
       mBoundingBox = boundingBox;
+   }
+
+   void PrimitiveComponent::SyncRenderData()
+   {
+      if (const auto &sceneSP = m_sceneWP.lock())
+      {
+         if (bIsEnabledStateDirty)
+         {
+            static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
+            const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsEnabled->GetValue());
+            bIsEnabledStateDirty = !updateSuccessfull;
+         }
+
+         if (bIsVisibleStateDirty)
+         {
+            static const uint64_t functionId = Hash("PrimitiveComponent::UpdatePrimitiveComponentVisibility_OnRenderThread()");
+            const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible->GetValue());
+            bIsVisibleStateDirty = !updateSuccessfull;
+         }
+
+         if (bIsSortOrderStateDirty)
+         {
+            static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdatePrimitiveComponentSortOrderValue_OnRenderThread()");
+            const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentSortOrderValue_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mSortOrderValue);
+            bIsSortOrderStateDirty = !updateSuccessfull;
+         }
+      }
    }
 }

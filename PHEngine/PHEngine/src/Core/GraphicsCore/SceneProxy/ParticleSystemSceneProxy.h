@@ -54,8 +54,6 @@ namespace Graphics
 
             bool IsFrustumCullTestNeeded() const override;
 
-            ePrimitiveSortOrder GetPrimitiveSortOrder() const override;
-
             void SetActiveParticlesCount(const size_t activeParticlesCount);
 
             void CopyParticlesRawData(const void *translationBuffer,

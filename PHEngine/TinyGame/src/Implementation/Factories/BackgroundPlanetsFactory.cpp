@@ -59,7 +59,8 @@ namespace Game
 
         auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
         BillboardComponentData data("c_billboard_" + backgroundPlanetIndexStr, billboardSize, imageName, glm::vec3(0.0f), glm::vec3(1.0f));
-        const auto &billboardComponent = scene->CreateComponent_GameThread(billboardComponentCreator, data);
+        const auto &billboardComponent = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(billboardComponentCreator, data));
+        billboardComponent->SetSortOrderValue(-10000);
         a_backgroundPlanet->AddComponent(billboardComponent);
 
         MovementComponentData d_movement("c_backgroundPlanet_no_phys_movement_" + backgroundPlanetIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));

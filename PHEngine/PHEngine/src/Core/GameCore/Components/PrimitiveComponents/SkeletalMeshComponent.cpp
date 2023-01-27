@@ -104,10 +104,10 @@ namespace EngineCore
    {
       SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
       mUpdateDataResetTimeCounter += deltaTime;
-
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
+      mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-      if (bUpdateData)
+      if (bUpdateData || bIsRenderDataDirty)
       {
          SyncDataWithRenderThread();
       }
@@ -123,26 +123,24 @@ namespace EngineCore
 
    void SkeletalMeshComponent::SyncDataWithRenderThread()
    {
-      mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
-
-      static const uint64_t functionId = Hash("SkeletalMeshComponent: SetAnimationDeltaTime");
+      static const uint64_t functionId = Hash("SkeletalMeshComponent::SyncDataWithRenderThread");
       if (const auto &sceneSP = m_sceneWP.lock())
       {
          if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
          {
-            SrcAnimationTime->SetValue(fmod(SrcAnimationTime->GetValue(), 100000.0f));
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                           { 
-                              const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
-                              assert(primitiveProxySp);
-                              SkeletalMeshSceneProxy *proxyPtr 
-                              = static_cast<SkeletalMeshSceneProxy *>(primitiveProxySp.get()); 
+            if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
+            {
+               bIsRenderDataDirty = false;
+               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+                                              {
+                              const auto& proxyPtr = std::static_pointer_cast<SkeletalMeshSceneProxy>(primitiveProxySp); 
                                     proxyPtr->UpdateAnimationData(bTransitionEnabled->GetValue(),
                                     TransitionValue->GetValue(),
                                     SrcAnimationTime->GetValue(),
                                     DstAnimationTime->GetValue(),
                                     SrcAnimationName->GetValue(),
                                     DstAnimationName->GetValue()); });
+            }
          }
       }
    }

@@ -50,6 +50,7 @@ namespace Game
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetLineWidth(12.0f);
+        c_mesh->SetSortOrderValue(100);
 
         TweenerParser tweenerParser;
         const auto &rayChainTweener = tweenerParser.ParseTweenerDescriptor("electroRayChain.tween");

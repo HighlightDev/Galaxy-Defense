@@ -89,6 +89,11 @@ namespace EngineCore
    void DirectionalLightComponent::Tick(float deltaTime)
    {
       Base::Tick(deltaTime);
+
+      if (bIsRenderDataDirty)
+      {
+         SyncRenderData();
+      }
    }
 
    eComponentType DirectionalLightComponent::GetComponentType() const
@@ -96,56 +101,48 @@ namespace EngineCore
       return eComponentType::LIGHT_COMPONENT;
    }
 
-   void DirectionalLightComponent::ForceUpdateShadowMap()
-   {
-      if (const auto &sceneSP = m_sceneWP.lock())
-      {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
-         {
-            static const uint64_t functionId = Hash("DirectionalLightComponent: ForceUpdateShadowMap");
-
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                           {
-               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
-               assert(lightProxySp);                                       
-               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
-               if (shadowInfo)
-               {
-                  shadowInfo->SetIsShadowMapDirty(true);
-               } });
-         }
-      }
-   }
-
    void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t &data)
    {
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (const auto playerTranslationOffset = std::get<0>(data).lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+         if (!EngineMath::CheckSimilarityVec3(playerTranslationOffset->Translation, mPlayerTranslationOffset))
          {
-            static const uint64_t functionId = Hash("DirectionalLightComponent: Set shadowInfo->Offset");
-
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                           {
-               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
-               assert(lightProxySp);                                       
-               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
-               if (shadowInfo)
-               {
-                  if (const auto& transformSp = std::get<0>(data).lock())
-                  {
-                     shadowInfo->SetPlayerPositionOffset(transformSp->Translation);
-                  }
-                  lightProxySp->SetIsTransformationDirty(true);
-                  shadowInfo->SetIsShadowMapDirty(true);
-               } });
+            mPlayerTranslationOffset = playerTranslationOffset->Translation;
+            bIsRenderDataDirty = true;
+            SyncRenderData();
          }
       }
    }
 
    void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
    {
-      ForceUpdateShadowMap();
+      bIsRenderDataDirty = true;
+   }
+
+   void DirectionalLightComponent::SyncRenderData()
+   {
+      if (bIsRenderDataDirty)
+      {
+         if (const auto &sceneSP = m_sceneWP.lock())
+         {
+            if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+            {
+               static const uint64_t functionId = Hash("DirectionalLightComponent::SetPlayerPositionOffset");
+
+               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=](){
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+               assert(lightProxySp);                                       
+               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
+               if (shadowInfo)
+               {
+                  shadowInfo->SetPlayerPositionOffset(mPlayerTranslationOffset);
+                  lightProxySp->SetIsTransformationDirty(true);
+                  shadowInfo->SetIsShadowMapDirty(true);
+                  bIsRenderDataDirty = false;
+               } });
+            }
+         }
+      }
    }
 
 }

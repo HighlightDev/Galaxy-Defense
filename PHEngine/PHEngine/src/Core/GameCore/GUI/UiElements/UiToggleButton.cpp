@@ -128,17 +128,21 @@ namespace EngineCore
                 {
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
                     {
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
-                                                       {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                            if (uiSceneProxy)
-                            {
+                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
+                        if (uiSceneProxy)
+                        {
+                            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+                                                           {
                                 const auto& toggleButtonSceneProxy = std::static_pointer_cast<UiToggleButtonSceneProxy>(uiSceneProxy);
                                 toggleButtonSceneProxy->SetToggleOnColor(mToggleOnColor);
                                 toggleButtonSceneProxy->SetToggleOffColor(mToggleOffColor);
                                 toggleButtonSceneProxy->SetOpacity(mOpacity);
-                                toggleButtonSceneProxy->SetState(mIsStateOn);
-                            } });
+                                toggleButtonSceneProxy->SetState(mIsStateOn); });
+                        }
+                        else
+                        {
+                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                        }
                     }
                 }
             }

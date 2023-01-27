@@ -549,7 +549,6 @@ namespace EngineCore
             if (mIsPropertiesShouldBeUpdatedOnRenderThread)
             {
                 OnPropertiesShouldBeUpdatedOnRenderThread();
-                mIsPropertiesShouldBeUpdatedOnRenderThread = false;
             }
 
             for (const auto &child : mChildren)
@@ -673,15 +672,16 @@ namespace EngineCore
                 {
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
                     {
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp]()
-                                                       {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                            if (uiSceneProxy)
-                            {
+                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
+                        if (uiSceneProxy)
+                        {
+                            mIsPropertiesShouldBeUpdatedOnRenderThread = false;
+                            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]()
+                                                           {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
-                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale);
-                            } });
+                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); });
+                        }
                     }
                 }
             }

@@ -23,9 +23,7 @@ namespace Graphics
     namespace Proxy
     {
         ParticleSystemSceneProxy::ParticleSystemSceneProxy(const ParticleSystemComponent *component)
-            : PrimitiveSceneProxy(component->IsEnabled(),
-                                  component->IsVisible(),
-                                  component->GetRelativeMatrix(),
+            : PrimitiveSceneProxy(component,
                                   nullptr,
                                   component->GetRenderData().m_shader,
                                   nullptr,
@@ -96,11 +94,6 @@ namespace Graphics
         void ParticleSystemSceneProxy::SetActiveParticlesCount(const size_t activeParticlesCount)
         {
             mActiveParticlesCount = activeParticlesCount;
-        }
-
-        ePrimitiveSortOrder ParticleSystemSceneProxy::GetPrimitiveSortOrder() const
-        {
-            return ePrimitiveSortOrder::ORDER_LAST;
         }
 
         void ParticleSystemSceneProxy::CopyParticlesRawData(const void *translationBuffer,

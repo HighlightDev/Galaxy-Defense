@@ -14,14 +14,11 @@ namespace Graphics
    namespace Proxy
    {
       WaterPlaneSceneProxy::WaterPlaneSceneProxy(const WaterPlaneComponent *component)
-          : PrimitiveSceneProxy(
-                component->IsEnabled(),
-                component->IsVisible(),
-                component->GetRelativeMatrix(),
-                nullptr,
-                component->GetRenderData().m_materialShader,
-                nullptr,
-                component->GetRenderData().mMaterialProxy),
+          : PrimitiveSceneProxy(component,
+                                nullptr,
+                                component->GetRenderData().m_materialShader,
+                                nullptr,
+                                component->GetRenderData().mMaterialProxy),
             m_moveFactor(component->GetMoveFactor()),
             m_waveStrength(component->GetWaveStrength()),
             m_transparencyDepth(component->GetTransparencyDepth()),

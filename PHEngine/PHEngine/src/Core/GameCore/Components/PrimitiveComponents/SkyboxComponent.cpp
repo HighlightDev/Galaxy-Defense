@@ -21,6 +21,8 @@ namespace EngineCore
          m_rotateSpeed(2.0f),
          m_renderData(renderData)
    {
+      // skybox must be first rendered primitive
+      mSortOrderValue = std::numeric_limits<int32_t>::min();
    }
 
    SkyboxComponent::~SkyboxComponent()

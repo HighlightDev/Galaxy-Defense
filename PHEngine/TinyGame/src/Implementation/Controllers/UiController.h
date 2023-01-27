@@ -3,6 +3,7 @@
 #include "ILevelController.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/OverlayManagement/OverlayManager.h"
+#include "Implementation/LuaExecutors/LuaUiControllerExecutor.h"
 
 #include <memory>
 
@@ -24,6 +25,8 @@ namespace Game
         std::shared_ptr<OverlayManager> mOverlayManager;
 
         std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
+
+        LuaUiControllerExecutor mLuaScriptExecutor;
 
         float mPressButtonCooldown;
 

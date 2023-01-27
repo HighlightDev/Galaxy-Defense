@@ -30,6 +30,10 @@ namespace EngineCore
 
    void BillboardComponent::Tick(float deltaTime)
    {
+      if (bIsExtentDataDirty || bIsTextureDataDirty)
+      {
+         SyncRenderData();
+      }
    }
 
    void BillboardComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
@@ -44,20 +48,11 @@ namespace EngineCore
 
    void BillboardComponent::SetBillboardExtent(const float extent)
    {
-      mBillboardExtent = extent;
-
-      if (const auto &sceneSp = m_sceneWP.lock())
+      if (mBillboardExtent != extent)
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
-         {
-            static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
-
-            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                           {
-                                             const auto& billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId));
-                                             assert(billboardProxySp);        
-                                             billboardProxySp->SetBillboardExtent(extent); });
-         }
+         mBillboardExtent = extent;
+         bIsExtentDataDirty = true;
+         SyncRenderData();
       }
    }
 
@@ -68,17 +63,48 @@ namespace EngineCore
 
    void BillboardComponent::SetBillboardTexture(const std::shared_ptr<ITexture> &texture)
    {
-      if (const auto &sceneSp = m_sceneWP.lock())
+      if (m_renderData.m_texture->GetTextureDescriptor() != texture->GetTextureDescriptor())
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
-         {
-            static const uint64_t functionId = Hash("BillboardComponent:SetBillboardTexture");
+         m_renderData.m_texture = texture;
+         bIsTextureDataDirty = true;
+         SyncRenderData();
+      }
+   }
 
-            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                           {
-                                             const auto& billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId));
-                                             assert(billboardProxySp);        
-                                             billboardProxySp->SetBillboardTexture(texture); });
+   void BillboardComponent::SyncRenderData()
+   {
+      if (bIsTextureDataDirty)
+      {
+         if (const auto &sceneSp = m_sceneWP.lock())
+         {
+            if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+            {
+               if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
+               {
+                  bIsTextureDataDirty = false;
+                  static const uint64_t functionId = Hash("BillboardComponent:SetBillboardTexture");
+
+                  sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+                                                 { billboardProxySp->SetBillboardTexture(m_renderData.m_texture); });
+               }
+            }
+         }
+      }
+
+      if (bIsExtentDataDirty)
+      {
+         if (const auto &sceneSp = m_sceneWP.lock())
+         {
+            if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+            {
+               if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
+               {
+                  bIsExtentDataDirty = false;
+                  static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
+                  sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+                                                 { billboardProxySp->SetBillboardExtent(mBillboardExtent); });
+               }
+            }
          }
       }
    }

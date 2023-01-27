@@ -1,5 +1,6 @@
 #include "PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
 
 using namespace Graphics::Renderer;
 
@@ -8,20 +9,20 @@ namespace Graphics
    namespace Proxy
    {
 
-      PrimitiveSceneProxy::PrimitiveSceneProxy(const bool isEnabled,
-                                               const bool isVisible,
-                                               const glm::mat4 &relativeMatrix,
+      PrimitiveSceneProxy::PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
                                                const std::shared_ptr<Skin> &skin,
                                                const std::shared_ptr<IShader> &materialShader,
                                                const std::shared_ptr<IShader> &planarReflectionShader,
                                                const std::shared_ptr<MaterialProxy> &materialProxy)
-          : SceneProxyBase(isEnabled), AProxyVisibilityController(isVisible),
+          : SceneProxyBase(component->IsEnabled()),
+            AProxyVisibilityController(component->IsVisible()),
             bTransformInitialized(false),
-            m_relativeMatrix(relativeMatrix),
+            m_relativeMatrix(component->GetRelativeMatrix()),
             m_skin(skin),
             m_shader(materialShader),
             m_planarReflectionShader(planarReflectionShader),
-            mMaterialProxy(materialProxy)
+            mMaterialProxy(materialProxy),
+            mSortOrderValue(component->GetSortOrderValue())
       {
       }
 
@@ -64,19 +65,29 @@ namespace Graphics
          return bTransformInitialized;
       }
 
-      ePrimitiveSortOrder PrimitiveSceneProxy::GetPrimitiveSortOrder() const
+      int32_t PrimitiveSceneProxy::GetPrimitiveSortOrder() const
       {
-         return ePrimitiveSortOrder::ORDER_FIRST;
+         return mSortOrderValue;
       }
 
-      void PrimitiveSceneProxy::SetDeferredShadingSceneRenderer(const std::weak_ptr<DeferredShadingSceneRenderer>& deferredShadingSceneRenderer)
+      void PrimitiveSceneProxy::SetDeferredShadingSceneRenderer(const std::weak_ptr<DeferredShadingSceneRenderer> &deferredShadingSceneRenderer)
       {
          mDeferredShadingSceneRenderer = deferredShadingSceneRenderer;
       }
 
-      const std::weak_ptr<DeferredShadingSceneRenderer>& PrimitiveSceneProxy::GetDeferredShadingSceneRendererWp() const
+      const std::weak_ptr<DeferredShadingSceneRenderer> &PrimitiveSceneProxy::GetDeferredShadingSceneRendererWp() const
       {
          return mDeferredShadingSceneRenderer;
+      }
+
+      void PrimitiveSceneProxy::SetSortOrderValue(const int32_t sortOrderValue)
+      {
+         mSortOrderValue = sortOrderValue;
+      }
+
+      int32_t PrimitiveSceneProxy::GetSortOrderValue() const
+      {
+         return mSortOrderValue;
       }
 
    }

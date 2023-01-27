@@ -13,9 +13,7 @@ namespace Graphics
    namespace Proxy
    {
       CubemapSceneProxy::CubemapSceneProxy(const CubemapComponent *component)
-          : PrimitiveSceneProxy(component->IsEnabled(),
-                                component->IsVisible(),
-                                component->GetRelativeMatrix(),
+          : PrimitiveSceneProxy(component,
                                 nullptr,
                                 nullptr,
                                 nullptr,

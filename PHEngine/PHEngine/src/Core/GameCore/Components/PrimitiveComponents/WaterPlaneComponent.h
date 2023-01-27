@@ -18,8 +18,7 @@ namespace EngineCore
       REFRACT_PARTICLES = 0x100000
    };
 
-   class WaterPlaneComponent :
-      public PrimitiveComponent
+   class WaterPlaneComponent : public PrimitiveComponent
    {
 
       float m_transparencyDepth;
@@ -31,20 +30,23 @@ namespace EngineCore
       WaterQualityFlag m_waterQuality;
       WaterPlaneRenderData m_renderData;
 
-   public:
+      bool bIsRenderDataDirty{false};
+      bool bIsMoveFactorDirty{false};
 
+   public:
       using Base = PrimitiveComponent;
 
-      WaterPlaneComponent(const WaterPlaneComponentData& data, const WaterPlaneRenderData& renderData,
-         WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
+      WaterPlaneComponent(const WaterPlaneComponentData &data, const WaterPlaneRenderData &renderData,
+                          WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
 
       ~WaterPlaneComponent() override;
 
       eComponentType GetComponentType() const override;
 
       void Tick(const float deltaTime) override;
-      
-      inline const WaterPlaneRenderData& GetRenderData() const {
+
+      inline const WaterPlaneRenderData &GetRenderData() const
+      {
 
          return m_renderData;
       }
@@ -64,12 +66,13 @@ namespace EngineCore
       void SetTransparencyDepth(float transparencyDepth);
 
       void SetNearClipPlane(float nearClipPlane);
-      
+
       void SetFarClipPlane(float farClipPlane);
 
       virtual std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const;
 
+   private:
+      void SyncRenderData();
    };
 
 }
-

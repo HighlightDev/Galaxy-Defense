@@ -154,19 +154,23 @@ namespace EngineCore
                 {
                     if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
                     {
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
-                                                       {
-                            const auto& uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                            if (uiSceneProxy)
-                            {
+                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
+                        if (uiSceneProxy)
+                        {
+                            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+                                                           {
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
                                 labelSceneProxy->SetOpacity(mOpacity);
                                 labelSceneProxy->SetText(mText);
                                 labelSceneProxy->SetTextLineWidth(mTextLineWidth);
                                 labelSceneProxy->SetFontSize(mFontSize);
                                 labelSceneProxy->SetTextColor(mTextColor);
-                                labelSceneProxy->SetTextHorizontalAlignment(mTextHorizontalAlignment);
-                            } });
+                                labelSceneProxy->SetTextHorizontalAlignment(mTextHorizontalAlignment); });
+                        }
+                        else
+                        {
+                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                        }
                     }
                 }
             }
