@@ -19,8 +19,7 @@ namespace EngineCore
        : PrimitiveComponent(meshComponentData.EngineObjectName,
                             meshComponentData.m_translation,
                             meshComponentData.m_eulerRotationDegrees,
-                            meshComponentData.m_scale,
-                            BoundingBox3D()),
+                            meshComponentData.m_scale),
          m_renderData(renderData)
    {
    }

@@ -57,8 +57,14 @@ namespace Game
         const auto &a_backgroundPlanet = std::make_shared<BackgroundSpaceObjectActor>("a_backgroundPlanet_" + backgroundPlanetIndexStr, rootComponent);
         scene->AddActor(a_backgroundPlanet);
 
+        MaterialParser materialParser;
+        const auto &billboard_material = materialParser.ParseMaterialDescriptor("PlanetsMaterial.m");
+        const auto albedo_texture = TexturePool::GetInstance()->GetOrAllocateResource(imageName);
+
+        MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
+
         auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-        BillboardComponentData data("c_billboard_" + backgroundPlanetIndexStr, billboardSize, imageName, glm::vec3(0.0f), glm::vec3(1.0f));
+        BillboardComponentData data("c_billboard_" + backgroundPlanetIndexStr, billboardSize, glm::vec3(0.0f), glm::vec3(1.0f), billboard_material);
         const auto &billboardComponent = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(billboardComponentCreator, data));
         billboardComponent->SetSortOrderValue(-10000);
         a_backgroundPlanet->AddComponent(billboardComponent);

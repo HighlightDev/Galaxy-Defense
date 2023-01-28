@@ -15,18 +15,6 @@ namespace EngineCore
       {
       }
 
-      void BillboardShader::SetTransformMatrices(const glm::mat4 &worldMatrix, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
-      {
-         u_worldMatrix.LoadUniform(worldMatrix);
-         u_viewMatrix.LoadUniform(viewMatrix);
-         u_projectionMatrix.LoadUniform(projectionMatrix);
-      }
-
-      void BillboardShader::SetTexture(int32_t texSlot)
-      {
-         u_texture.LoadUniform(texSlot);
-      }
-
       void BillboardShader::SetExtent(const float extent)
       {
          u_billboardExtent.LoadUniform(extent);
@@ -36,10 +24,6 @@ namespace EngineCore
       {
          Shader::AccessAllUniformLocations(shaderProgramID);
 
-         u_worldMatrix = GetUniform("worldMatrix", shaderProgramID);
-         u_viewMatrix = GetUniform("viewMatrix", shaderProgramID);
-         u_projectionMatrix = GetUniform("projectionMatrix", shaderProgramID);
-         u_texture = GetUniform("billboardTexture", shaderProgramID);
          u_billboardExtent = GetUniform("extent", shaderProgramID);
       }
    }

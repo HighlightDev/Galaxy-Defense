@@ -6,8 +6,8 @@
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/GameCore/ShaderImplementation/BillboardShader.h"
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
-#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
+#include  "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/IoCore/FolderManager.h"
 
 using namespace EngineCore::ShaderImpl;
@@ -28,17 +28,19 @@ namespace EngineCore
         CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
         {
             const BillboardComponentData &mData = static_cast<const BillboardComponentData &>(data);
+            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
 
-            typename TexturePool::sharedValue_t texture = TexturePool::GetInstance()->GetOrAllocateResource(mData.m_pathToTexture);
             const ShaderParams shaderParams(
                 "Billboard Shader",
                 FolderManager::GetInstance()->GetShadersPath() + "billboardVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
 
-            const auto &shader = ShaderPool::GetInstance()->template GetOrAllocateResource<BillboardShader>(shaderParams);
+            typename CompositeShaderPool::sharedValue_t billboardMaterialShader =
+                CreateMaterialShader<StaticMeshVertexFactory, BillboardShader>(
+                    "StaticMeshVertexFactory_BillboardShader_" + materialProxy->MaterialName, shaderParams, materialProxy);
 
-            BillboardRenderData renderData(shader, texture);
+            BillboardRenderData renderData(billboardMaterialShader, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }

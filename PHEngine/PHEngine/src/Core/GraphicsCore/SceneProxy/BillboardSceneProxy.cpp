@@ -15,11 +15,10 @@ namespace Graphics
       BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent *component)
           : PrimitiveSceneProxy(component,
                                 nullptr,
+                                component->GetRenderData().m_shader,
                                 nullptr,
-                                nullptr,
-                                nullptr),
-            m_billboardShader(std::static_pointer_cast<BillboardShader>(component->GetRenderData().m_shader)),
-            m_billboardTexture(component->GetRenderData().m_texture),
+                                component->GetRenderData().mMaterialProxy),
+            mRenderData(component->GetRenderData()),
             mBillboardExtent(component->GetBillboardExtent())
       {
       }
@@ -51,18 +50,19 @@ namespace Graphics
          }
       }
 
+      std::shared_ptr<typename BillboardSceneProxy::Shader_t> BillboardSceneProxy::GetShader() const
+      {
+         return std::static_pointer_cast<typename BillboardSceneProxy::Shader_t>(m_shader);
+      }
+
       void BillboardSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         auto billboardShader = m_billboardShader;
+         const auto& billboardShader = GetShader();
 
          billboardShader->ExecuteShader();
-
-         m_billboardTexture->BindTexture(0);
-
-         billboardShader->SetTexture(0);
-         billboardShader->SetExtent(mBillboardExtent);
-         billboardShader->SetTransformMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
-
+         billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
+         billboardShader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+         billboardShader->GetShader()->SetExtent(mBillboardExtent);
          m_skin->GetBuffer()->RenderVAO(GL_POINTS);
          billboardShader->StopShader();
       }
@@ -85,14 +85,6 @@ namespace Graphics
       void BillboardSceneProxy::SetBillboardExtent(const float extent)
       {
          mBillboardExtent = extent;
-      }
-
-      void BillboardSceneProxy::SetBillboardTexture(const std::shared_ptr<ITexture> &texture)
-      {
-         if (m_billboardTexture->GetTextureDescriptor() != texture->GetTextureDescriptor())
-         {
-            m_billboardTexture = texture;
-         }
       }
 
    }

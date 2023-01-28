@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
 
 #include <string>
 #include <glm/vec3.hpp>
@@ -11,22 +12,22 @@ namespace EngineCore
    {
       BillboardComponentData(const std::string &gameObjectName,
                              const float billboardExtent,
-                             const std::string &pathToTexture,
                              const glm::vec3 &translation,
-                             const glm::vec3 &scale)
+                             const glm::vec3 &scale,
+                             Graphics::IMaterial *material)
           : ComponentData(gameObjectName),
             m_billboardExtent(billboardExtent),
-            m_pathToTexture(pathToTexture),
             m_translation(translation),
-            m_scale(scale)
-
+            m_scale(scale),
+            m_material(material)
       {
       }
 
       float m_billboardExtent;
       glm::vec3 m_translation;
       glm::vec3 m_scale;
-      std::string m_pathToTexture;
+
+      Graphics::IMaterial *m_material;
    };
 
 }

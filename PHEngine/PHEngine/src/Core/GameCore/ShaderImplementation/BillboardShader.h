@@ -14,18 +14,14 @@ namespace EngineCore
       {
 
       private:
-         Uniform u_worldMatrix, u_viewMatrix, u_projectionMatrix, u_texture, u_billboardExtent;
+         Uniform u_billboardExtent;
 
       public:
          BillboardShader(const ShaderParams& params);
 
          ~BillboardShader() override;
 
-         void SetTransformMatrices(const glm::mat4& worldMatrix, const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
-
          void SetExtent(const float extent);
-
-         void SetTexture(int32_t texSlot);
 
       protected:
 

@@ -5,7 +5,6 @@
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 
 using namespace Graphics::Mesh;
 using namespace Graphics::OpenGL;

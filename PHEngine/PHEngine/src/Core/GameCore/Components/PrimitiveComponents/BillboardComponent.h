@@ -23,7 +23,6 @@ namespace EngineCore
       BillboardRenderData m_renderData;
 
       bool bIsExtentDataDirty{false};
-      bool bIsTextureDataDirty{false};
 
    public:
       BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData);
@@ -42,11 +41,14 @@ namespace EngineCore
 
       float GetBillboardExtent() const;
 
-      void SetBillboardTexture(const std::shared_ptr<ITexture> &texture);
+      void SetIsEnabled(const bool bEnabled) override;
+
+      void SetIsVisible(bool isVisible) override;
+
+      std::shared_ptr<IMaterial> GetMaterial() const;
 
       inline const BillboardRenderData &GetRenderData() const
       {
-
          return m_renderData;
       }
 

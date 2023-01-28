@@ -16,8 +16,7 @@ namespace EngineCore
        : PrimitiveComponent(data.EngineObjectName,
                             glm::vec3(),
                             glm::vec3(),
-                            data.m_scale,
-                            BoundingBox3D()),
+                            data.m_scale),
          m_rotateSpeed(2.0f),
          m_renderData(renderData)
    {

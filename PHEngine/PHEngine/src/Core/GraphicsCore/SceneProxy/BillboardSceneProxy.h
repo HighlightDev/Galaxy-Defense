@@ -1,10 +1,15 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
 #include "Core/GameCore/Components/PrimitiveComponents/BillboardComponent.h"
+#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/BillboardShader.h"
+#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
 
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
+using namespace Graphics::Data;
+using namespace Graphics::OpenGL;
 
 namespace Graphics
 {
@@ -12,14 +17,14 @@ namespace Graphics
    {
       class BillboardSceneProxy : public PrimitiveSceneProxy
       {
+         using Base = PrimitiveSceneProxy;
 
-         std::shared_ptr<BillboardShader> m_billboardShader;
+      protected:
+         using Shader_t = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, BillboardShader>;
 
-         std::shared_ptr<ITexture> m_billboardTexture;
+         BillboardRenderData mRenderData;
 
          float mBillboardExtent;
-
-         using Base = PrimitiveSceneProxy;
 
       public:
          BillboardSceneProxy(const BillboardComponent *component);
@@ -38,7 +43,8 @@ namespace Graphics
 
          void SetBillboardExtent(const float extent);
 
-         void SetBillboardTexture(const std::shared_ptr<ITexture> &texture);
+      protected:
+         std::shared_ptr<Shader_t> GetShader() const;
       };
 
    }

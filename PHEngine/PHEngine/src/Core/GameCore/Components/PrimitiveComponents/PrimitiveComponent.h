@@ -39,8 +39,7 @@ namespace EngineCore
             PrimitiveComponent(const std::string &gameObjectName,
                                const glm::vec3 &translation,
                                const glm::vec3 &rotation,
-                               const glm::vec3 &scale,
-                               const BoundingBox3D &boundingBox);
+                               const glm::vec3 &scale);
 
             ~PrimitiveComponent() override;
 

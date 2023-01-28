@@ -26,8 +26,7 @@ namespace EngineCore
         : PrimitiveComponent(meshComponentData.EngineObjectName,
                              meshComponentData.m_translation,
                              glm::vec3(),
-                             glm::vec3(1.0f),
-                             BoundingBox3D()),
+                             glm::vec3(1.0f)),
           mParticlesPool(),
           mParticlesRawDataHandler(meshComponentData.m_particlesCount),
           mRenderData(renderData)

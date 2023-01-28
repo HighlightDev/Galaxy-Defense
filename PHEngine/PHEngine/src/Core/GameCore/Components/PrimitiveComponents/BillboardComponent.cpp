@@ -12,8 +12,7 @@ namespace EngineCore
        : PrimitiveComponent(data.EngineObjectName,
                             data.m_translation,
                             glm::vec3(),
-                            data.m_scale,
-                            BoundingBox3D()),
+                            data.m_scale),
          mBillboardExtent(data.m_billboardExtent),
          m_renderData(renderData)
    {
@@ -30,7 +29,7 @@ namespace EngineCore
 
    void BillboardComponent::Tick(float deltaTime)
    {
-      if (bIsExtentDataDirty || bIsTextureDataDirty)
+      if (bIsExtentDataDirty)
       {
          SyncRenderData();
       }
@@ -61,36 +60,41 @@ namespace EngineCore
       return mBillboardExtent;
    }
 
-   void BillboardComponent::SetBillboardTexture(const std::shared_ptr<ITexture> &texture)
+   void BillboardComponent::SetIsEnabled(const bool bEnabled)
    {
-      if (m_renderData.m_texture->GetTextureDescriptor() != texture->GetTextureDescriptor())
+      PrimitiveComponent::SetIsEnabled(bEnabled);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
       {
-         m_renderData.m_texture = texture;
-         bIsTextureDataDirty = true;
-         SyncRenderData();
+         material->SetIsEnabled(bEnabled);
       }
+   }
+
+   void BillboardComponent::SetIsVisible(bool isVisible)
+   {
+      PrimitiveComponent::SetIsVisible(isVisible);
+
+      const auto &material = GetMaterial();
+      if (IMaterial::eMaterialType::DYNAMIC == material->GetMaterialType())
+      {
+         material->SetIsEnabled(isVisible);
+      }
+   }
+
+   std::shared_ptr<IMaterial> BillboardComponent::GetMaterial() const
+   {
+      std::shared_ptr<IMaterial> materialResult = nullptr;
+      if (const auto &sceneSP = m_sceneWP.lock())
+      {
+         materialResult = sceneSP->GetMaterialByProxyId(m_renderData.mMaterialProxy->GetSceneProxyId());
+      }
+      assert(materialResult != nullptr);
+      return materialResult;
    }
 
    void BillboardComponent::SyncRenderData()
    {
-      if (bIsTextureDataDirty)
-      {
-         if (const auto &sceneSp = m_sceneWP.lock())
-         {
-            if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
-            {
-               if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
-               {
-                  bIsTextureDataDirty = false;
-                  static const uint64_t functionId = Hash("BillboardComponent:SetBillboardTexture");
-
-                  sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                                 { billboardProxySp->SetBillboardTexture(m_renderData.m_texture); });
-               }
-            }
-         }
-      }
-
       if (bIsExtentDataDirty)
       {
          if (const auto &sceneSp = m_sceneWP.lock())

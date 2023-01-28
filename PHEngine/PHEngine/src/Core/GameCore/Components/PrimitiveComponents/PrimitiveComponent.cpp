@@ -9,13 +9,12 @@ namespace EngineCore
    PrimitiveComponent::PrimitiveComponent(const std::string &gameObjectName,
                                           const glm::vec3 &translation,
                                           const glm::vec3 &rotation,
-                                          const glm::vec3 &scale,
-                                          const BoundingBox3D &boundingBox)
+                                          const glm::vec3 &scale)
        : SceneComponent(gameObjectName,
                         translation,
                         rotation,
                         scale),
-         mBoundingBox(boundingBox),
+         mBoundingBox(BoundingBox3D()),
          mIsVisible(std::make_shared<EngineGOProperty<bool>>(true, "p_isVisible"))
    {
       /******  HOOKS ****/
