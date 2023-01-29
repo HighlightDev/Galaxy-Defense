@@ -19,7 +19,6 @@ namespace Graphics
       {
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
-         float m_moveFactor;
          float m_waveStrength;
          float m_transparencyDepth;
          float m_nearClipPlane;
@@ -42,7 +41,6 @@ namespace Graphics
 
          ePrimitiveProxyType GetPrimitiveProxyType() const override;
 
-         void SetMoveFactor(float moveFactor);
          void SetWaveStrength(float waveStr);
          void SetTransparencyDepth(float transparencyDepth);
          void SetNearClipPlane(float nearClipPlane);

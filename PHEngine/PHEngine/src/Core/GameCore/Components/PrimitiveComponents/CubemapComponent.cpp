@@ -23,10 +23,6 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void CubemapComponent::Tick(const float deltaTime)
-   {
-   }
-
    void CubemapComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
       auto &actorData = GetSerializeDataActor(dataContainer);

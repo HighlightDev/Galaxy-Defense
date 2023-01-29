@@ -19,7 +19,6 @@ namespace Graphics
                                 component->GetRenderData().m_materialShader,
                                 nullptr,
                                 component->GetRenderData().mMaterialProxy),
-            m_moveFactor(component->GetMoveFactor()),
             m_waveStrength(component->GetWaveStrength()),
             m_transparencyDepth(component->GetTransparencyDepth()),
             m_nearClipPlane(component->GetNearClipPlane()),
@@ -62,11 +61,6 @@ namespace Graphics
 
       void WaterPlaneSceneProxy::Init()
       {
-      }
-
-      void WaterPlaneSceneProxy::SetMoveFactor(float moveFactor)
-      {
-         m_moveFactor = moveFactor;
       }
 
       void WaterPlaneSceneProxy::SetWaveStrength(float waveStr)

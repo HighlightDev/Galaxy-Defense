@@ -31,7 +31,7 @@ namespace EngineCore
 
       eComponentType GetComponentType() const override;
 
-      void Tick(float deltaTime) override;
+      void UnpausableTick(const float deltaTime) override;
 
       void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 

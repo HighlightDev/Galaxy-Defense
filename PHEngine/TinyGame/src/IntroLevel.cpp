@@ -29,6 +29,10 @@
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
+#include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
@@ -83,6 +87,22 @@ namespace Game
                                                             -2.72f,
                                                             glm::vec3(5.0f, 45.0f, -40.0f));
       mScene->RegisterMainCamera(spaceCamera);
+
+      const auto &a_skybox = mScene->GetActorByName("SkyboxActor");
+      assert(a_skybox);
+
+      MaterialParser materialParser;
+      const auto &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
+      const auto screenResolution = glm::vec2((float)displayWidth, (float)displayHeight);
+
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, mScene.get(), "GT_DeltaSec", "gt_timeSec");
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "resolution", screenResolution);
+
+      auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
+      BillboardComponentData backgroundBillboardComponentData("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
+      const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(mScene->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
+      billboardComponent->SetSortOrderValue(-100000);
+      a_skybox->AddComponent(billboardComponent);
 
       const auto &a_spaceship = mScene->GetActorByName("SpaceshipActor");
       assert(a_spaceship);

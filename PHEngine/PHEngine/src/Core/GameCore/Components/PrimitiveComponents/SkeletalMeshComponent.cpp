@@ -99,6 +99,16 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
+   void SkeletalMeshComponent::UnpausableTick(const float deltaTime)
+   {
+      PrimitiveComponent::UnpausableTick(deltaTime);
+
+      if (bIsRenderDataDirty)
+      {
+         SyncDataWithRenderThread();
+      }
+   }
+
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
       SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
@@ -106,7 +116,7 @@ namespace EngineCore
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-      if (bUpdateData || bIsRenderDataDirty)
+      if (bUpdateData)
       {
          SyncDataWithRenderThread();
       }

@@ -47,11 +47,11 @@ namespace EngineCore
       }
    }
 
-   void RuntimeGeneratedLineComponent::Tick(const float deltaTime)
+   void RuntimeGeneratedLineComponent::UnpausableTick(const float deltaTime)
    {
-      StaticMeshComponent::Tick(deltaTime);
+       StaticMeshComponent::UnpausableTick(deltaTime);
 
-      if (mIsRenderDataDirty)
+       if (mIsRenderDataDirty)
       {
          SyncRenderData();
       }

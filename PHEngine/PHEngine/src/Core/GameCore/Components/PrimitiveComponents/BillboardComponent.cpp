@@ -27,8 +27,10 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void BillboardComponent::Tick(float deltaTime)
+   void BillboardComponent::UnpausableTick(float deltaTime)
    {
+      PrimitiveComponent::UnpausableTick(deltaTime);
+
       if (bIsExtentDataDirty)
       {
          SyncRenderData();

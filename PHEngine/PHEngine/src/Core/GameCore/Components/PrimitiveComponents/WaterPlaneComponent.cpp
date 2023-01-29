@@ -16,7 +16,6 @@ namespace EngineCore
                                             WaterQualityFlag waterQuality)
        : PrimitiveComponent(data.EngineObjectName, data.m_translation, data.m_eulerRotationDegrees, data.m_scale),
          m_waveSpeed(0.4f),
-         m_moveFactor(0.0f),
          m_renderData(renderData),
          m_waterQuality(waterQuality)
    {
@@ -31,22 +30,14 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void WaterPlaneComponent::Tick(const float deltaTime)
+   void WaterPlaneComponent::UnpausableTick(const float deltaTime)
    {
-      Base::Tick(deltaTime);
+      PrimitiveComponent::UnpausableTick(deltaTime);
 
-      m_moveFactor += m_waveSpeed * deltaTime;
-      bIsMoveFactorDirty = true;
-
-      if (bIsMoveFactorDirty || bIsRenderDataDirty)
+      if (bIsRenderDataDirty)
       {
          SyncRenderData();
       }
-   }
-
-   float WaterPlaneComponent::GetMoveFactor() const
-   {
-      return m_moveFactor;
    }
 
    float WaterPlaneComponent::GetWaveStrength() const
@@ -129,26 +120,6 @@ namespace EngineCore
                proxyPtr->SetNearClipPlane(m_nearClipPlane);
                proxyPtr->SetTransparencyDepth(m_transparencyDepth);
                proxyPtr->SetWaveStrength(m_waveStrength); });
-               }
-            }
-         }
-      }
-
-      if (bIsMoveFactorDirty)
-      {
-         if (const auto &sceneSP = m_sceneWP.lock())
-         {
-            if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
-            {
-               static const uint64_t functionId = Hash("WaterPlaneComponent: SetMoveFactor");
-               if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
-               {
-                  bIsMoveFactorDirty = false;
-                  sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                                 {
-               
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
-               proxyPtr->SetMoveFactor(m_moveFactor); });
                }
             }
          }

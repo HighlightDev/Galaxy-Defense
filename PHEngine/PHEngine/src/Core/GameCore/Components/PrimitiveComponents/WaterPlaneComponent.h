@@ -24,14 +24,12 @@ namespace EngineCore
       float m_transparencyDepth;
       float m_waveSpeed;
       float m_waveStrength;
-      float m_moveFactor;
       float m_nearClipPlane;
       float m_farClipPlane;
       WaterQualityFlag m_waterQuality;
       WaterPlaneRenderData m_renderData;
 
       bool bIsRenderDataDirty{false};
-      bool bIsMoveFactorDirty{false};
 
    public:
       using Base = PrimitiveComponent;
@@ -43,15 +41,12 @@ namespace EngineCore
 
       eComponentType GetComponentType() const override;
 
-      void Tick(const float deltaTime) override;
+      void UnpausableTick(const float deltaTime) override;
 
       inline const WaterPlaneRenderData &GetRenderData() const
       {
-
          return m_renderData;
       }
-
-      float GetMoveFactor() const;
 
       float GetWaveStrength() const;
 

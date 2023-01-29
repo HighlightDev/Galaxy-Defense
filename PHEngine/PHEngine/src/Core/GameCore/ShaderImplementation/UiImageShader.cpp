@@ -1,12 +1,9 @@
 #include "UiImageShader.h"
 
-#include "Core/CommonCore/TimeHelper.h"
-
 namespace EngineCore
 {
    namespace ShaderImpl
    {
-      Uniform u_time;
       UiImageShader::UiImageShader(const ShaderParams &params)
           : Shader(params)
       {
@@ -23,7 +20,6 @@ namespace EngineCore
          u_scale = GetUniform("scale", shaderProgramId);
          u_rotationRadians = GetUniform("rotationRadians", shaderProgramId);
          u_isFlipped = GetUniform("isFlipped", shaderProgramId);
-         u_time = GetUniform("iTime", shaderProgramId);
       }
 
       void UiImageShader::SetImageTexture(const int32_t texSlot)
@@ -40,10 +36,6 @@ namespace EngineCore
       {
          u_translation.LoadUniform(normalizedTranslation);
          u_scale.LoadUniform(normalizedScale);
-
-         static Moment_t mtime = EngineTime::GetNowTime();
-
-         u_time.LoadUniform((float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(mtime)));
       }
 
       void UiImageShader::SetRotationRadians(const float rotationRadians)

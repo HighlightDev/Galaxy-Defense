@@ -106,7 +106,7 @@ function CreateTestLevel(host)
 		0, 0, 0,
 		1, 1, 1)
 
-	if a_skybox ~= nil then
+	if a_skybox ~= nil and false then
 		local m_skybox = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
 		_SetTextureToMaterial(host, m_skybox,
 			"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",

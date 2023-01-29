@@ -45,7 +45,7 @@ namespace EngineCore
 
             virtual void SetIsVisible(bool isVisible);
 
-            void Tick(const float deltaTime) override;
+            void UnpausableTick(const float deltaTime) override;
 
             bool IsVisible() const;
 

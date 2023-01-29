@@ -268,6 +268,48 @@ namespace EngineCore
       }
    }
 
+   void Actor::UnpausableTick(const float deltaTime)
+   {
+      if (m_physicsComponent)
+      {
+         m_physicsComponent->UnpausableTick(deltaTime);
+      }
+
+      if (m_rootComponent)
+      {
+         m_rootComponent->UnpausableTick(deltaTime);
+      }
+
+      for (auto &component : m_allComponents)
+      {
+         component->UnpausableTick(deltaTime);
+      }
+
+      for (const auto &childSp : m_children)
+      {
+         childSp->UnpausableTick(deltaTime);
+      }
+
+      if (m_inputComponent)
+      {
+         m_inputComponent->UnpausableTick(deltaTime);
+      }
+
+      if (m_movementComponent)
+      {
+         m_movementComponent->UnpausableTick(deltaTime);
+      }
+
+      if (mIsEnabled->GetValue())
+      {
+         for (const auto &tweener : mTweeners)
+         {
+            tweener->Tick(deltaTime);
+            tweener->NotifyStateChangedObservers();
+         }
+      }
+   }
+
    void Actor::Tick(const float deltaTime)
    {
       UpdateTransform();
@@ -418,7 +460,7 @@ namespace EngineCore
          }
          else
          {
-            const auto& hierarchyChild = child->GetChildByObjectId(id);
+            const auto &hierarchyChild = child->GetChildByObjectId(id);
             if (hierarchyChild)
             {
                resultChild = hierarchyChild;

@@ -5,6 +5,8 @@
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
@@ -53,6 +55,14 @@ namespace Graphics
       else if ("binding_float" == propertyType)
       {
          resultProperty = std::make_shared<FloatBindingMaterialProperty>(std::make_shared<FloatPropertyBinding>(propertyName), propertyName);
+      }
+      else if ("ivec2" == propertyType)
+      {
+         resultProperty = std::make_shared<iVec2MaterialProperty>(propertyName);
+      }
+      else if ("vec2" == propertyType)
+      {
+         resultProperty = std::make_shared<Vec2MaterialProperty>(propertyName);
       }
       else
       {

@@ -42,7 +42,7 @@ namespace EngineCore
 
 		void ProcessEvent(const typename Event::CameraTransformChangedEvent::EventData_t &data) override;
 
-		void Tick(const float deltaTime) override;
+		void UnpausableTick(const float deltaTime) override;
 
 		const RuntimeGeneratedMeshPoolParameters &GetRuntimeMeshPoolParameters() const;
 

@@ -4,6 +4,8 @@
 #include "Core/ResourceManagerCore/DeferredResources/DeferredResourceCreator.h"
 #include "TextureMaterialProperty.h"
 #include "FloatMaterialProperty.h"
+#include "iVec2MaterialProperty.h"
+#include "Vec2MaterialProperty.h"
 #include "DeferredTextureMaterialProperty.h"
 #include "BindingMaterialProperty.h"
 #include "Core/GameCore/EngineObject.h"
@@ -48,6 +50,24 @@ namespace Graphics
       auto floatProperty = std::static_pointer_cast<FloatMaterialProperty>(materialProperty);
       assert(floatProperty);
       floatProperty->SetValue(value);
+   }
+
+   void MaterialPropertySetter::SetIVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::ivec2 &value)
+   {
+      auto propertyType = materialProperty->GetPropertyType();
+      assert(propertyType == MaterialProperty::eMaterialPropertyType::IVEC2_PROPERTY);
+      auto ivec2Property = std::static_pointer_cast<iVec2MaterialProperty>(materialProperty);
+      assert(ivec2Property);
+      ivec2Property->SetValue(value);
+   }
+
+   void MaterialPropertySetter::SetVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::vec2& value)
+   {
+      auto propertyType = materialProperty->GetPropertyType();
+      assert(propertyType == MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY);
+      auto vec2Property = std::static_pointer_cast<Vec2MaterialProperty>(materialProperty);
+      assert(vec2Property);
+      vec2Property->SetValue(value);
    }
 
    void MaterialPropertySetter::SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator *deferredResourceCreator)
@@ -117,6 +137,42 @@ namespace Graphics
       else
       {
          SetFloatValue(materialInstance->GetMaterialPropertyByName(propertyName), value);
+      }
+   }
+
+   void MaterialPropertySetter::SetMaterialPropertyValue(class IMaterial *materialInstance, const std::string &propertyName, const glm::ivec2 &value)
+   {
+      assert(materialInstance);
+
+      // first try to find material property among related to dynamic property
+      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      {
+         if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+            SetIVec2Value(property, value);
+         else
+            assert(false);
+      }
+      else
+      {
+         SetIVec2Value(materialInstance->GetMaterialPropertyByName(propertyName), value);
+      }
+   }
+
+   void MaterialPropertySetter::SetMaterialPropertyValue(class IMaterial *materialInstance, const std::string &propertyName, const glm::vec2 &value)
+   {
+      assert(materialInstance);
+
+      // first try to find material property among related to dynamic property
+      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      {
+         if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
+            SetVec2Value(property, value);
+         else
+            assert(false);
+      }
+      else
+      {
+         SetVec2Value(materialInstance->GetMaterialPropertyByName(propertyName), value);
       }
    }
 
