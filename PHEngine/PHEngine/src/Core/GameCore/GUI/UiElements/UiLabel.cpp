@@ -38,7 +38,7 @@ namespace EngineCore
             {
                 if (const auto &parentCanvasSp = mParentCanvas.lock())
                 {
-                    const auto &thisSceneProxy = CreateUiSceneProxy();
+                    const auto thisSceneProxy = CreateUiSceneProxy();
                     sceneSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
                 }
             }

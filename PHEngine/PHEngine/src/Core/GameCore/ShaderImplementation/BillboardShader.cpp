@@ -8,7 +8,6 @@ namespace EngineCore
       BillboardShader::BillboardShader(const ShaderParams &params)
           : Shader(params)
       {
-         ShaderInit();
       }
 
       BillboardShader::~BillboardShader()

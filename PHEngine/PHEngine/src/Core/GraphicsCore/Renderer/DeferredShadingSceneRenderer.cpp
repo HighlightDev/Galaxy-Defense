@@ -1035,6 +1035,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
       {
+         assert(canvasSceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
                                       { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); });
          assert(canvasIt == mUiCanvasProxies.end());
@@ -1044,12 +1045,14 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
       {
+         assert(canvasSceneProxy);
          mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
                                                { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); }));
       }
 
       void DeferredShadingSceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
       {
+         assert(sceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasUId == canvasProxy->GetUiItemUId(); });
          assert(canvasIt != mUiCanvasProxies.end());
@@ -1060,6 +1063,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
       {
+         assert(sceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasUId == canvasProxy->GetUiItemUId(); });
          assert(canvasIt != mUiCanvasProxies.end());

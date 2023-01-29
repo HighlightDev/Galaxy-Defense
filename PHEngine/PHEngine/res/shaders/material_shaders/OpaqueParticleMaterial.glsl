@@ -21,7 +21,9 @@ float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return opacity;
+	vec2 texCoords = vec2(0.5) - materialIn.TextureCoordinates.xy;
+	float sqrDistance = dot(texCoords, texCoords);
+	return opacity * (1.0 - smoothstep(0.0, 0.25, sqrDistance));
 };
 
 vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)

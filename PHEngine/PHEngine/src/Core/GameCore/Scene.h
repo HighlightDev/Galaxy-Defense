@@ -211,9 +211,9 @@ namespace EngineCore
 
       void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
-      void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+      void RegisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId);
 
-      void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+      void UnregisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId);
 
       void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 

@@ -690,7 +690,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
+   void Scene::RegisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId)
    {
       LogInfo("Scene::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
@@ -705,7 +705,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId)
+   void Scene::UnregisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId)
    {
       LogInfo("Scene::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
