@@ -5,6 +5,7 @@
 #include "Core/IoCore/FolderManager.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/GraphicsCore/Renderer/ResolvedSceneFramebuffer.h"
 
 #include <type_traits>
 
@@ -37,23 +38,23 @@ namespace Graphics
       const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
       if (cfg.IsBloomEnabled)
       {
-         mPostFxStages.emplace(ePostFxStageIndex::STAGE_1, std::make_shared<BloomPostFxPass>(mViewPortInfo));
-         mEnabledFxBits.set(static_cast<uint8_t>(ePostFxStageIndex::STAGE_1), true);
+         mPostFxStages.emplace(ePostFxStageType::BLOOM_STAGE, std::make_shared<BloomPostFxPass>(mViewPortInfo));
+         mEnabledFxBits.set(static_cast<uint8_t>(ePostFxStageType::BLOOM_STAGE), true);
       }
    }
 
-   void PostFxRenderer::Execute(const std::shared_ptr<ITexture> &sceneColor)
+   void PostFxRenderer::Execute(const std::shared_ptr<ResolvedSceneFramebuffer> &resolveSceneColorFramebuffer)
    {
-      if (mEnabledFxBits.test(static_cast<uint8_t>(ePostFxStageIndex::STAGE_1)))
+      if (mEnabledFxBits.test(static_cast<uint8_t>(ePostFxStageType::BLOOM_STAGE)))
       {
-         const auto &postFx = mPostFxStages.at(ePostFxStageIndex::STAGE_1);
-         postFx->ExecutePostFx(sceneColor);
-         mFxColorResolver->Execute(sceneColor, postFx);
+         const auto &postFx = std::static_pointer_cast<BloomPostFxPass>(mPostFxStages.at(ePostFxStageType::BLOOM_STAGE));
+         postFx->TEST_EXECUTE(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), resolveSceneColorFramebuffer);
+         mFxColorResolver->Execute(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), postFx);
       }
 
       if (!mEnabledFxBits.any())
       {
-         mFxColorResolver->Execute(sceneColor, nullptr);
+         mFxColorResolver->Execute(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), nullptr);
       }
    }
 }

@@ -18,8 +18,15 @@ namespace Graphics
       glDrawBuffer(GL_COLOR_ATTACHMENT0);
       if (0 != clearFlag)
       {
-         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         glClear(clearFlag);
       }
+   }
+
+   void FramebufferBundle::FramebufferClear(const FramebufferObject& fbo, const GLbitfield clearFlag)
+   {
+      assert(clearFlag);
+      fbo.BindFramebuffer(GL_FRAMEBUFFER, true, true);
+      glClear(clearFlag);
    }
 
    void FramebufferBundle::Init()

@@ -26,5 +26,10 @@ namespace Graphics
          BillboardSceneProxy::Render(cameraSceneProxy, glm::mat4(1), glm::mat4(1));
       }
 
+      bool FullscreenBillboardSceneProxy::CanBloomBeApplied() const
+      {
+         return false;
+      }
+
    }
 }

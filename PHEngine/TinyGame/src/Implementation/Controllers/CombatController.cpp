@@ -494,7 +494,7 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        static constexpr auto freezingMissileCount = 0, bombMissileCount = 0, blackHoleMissileCount = 0, electroRayCount = 1;
+        static constexpr auto freezingMissileCount = 1, bombMissileCount = 2, blackHoleMissileCount = 1, electroRayCount = 0;
 
         ElectroRayFactory electroRayFactory;
         for (size_t i = 0; i < electroRayCount; ++i)

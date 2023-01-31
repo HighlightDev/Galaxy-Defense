@@ -90,5 +90,10 @@ namespace Graphics
          return mSortOrderValue;
       }
 
+      bool PrimitiveSceneProxy::CanBloomBeApplied() const
+      {
+         return true;
+      }
+
    }
 }

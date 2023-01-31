@@ -48,7 +48,7 @@ namespace Graphics
     void ResolvedSceneFramebuffer::SetRenderbuffers()
     {
         mFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
-        mFramebuffer->CreateRenderBuffer(GL_DEPTH_COMPONENT24, GL_DEPTH_ATTACHMENT, m_resolvedSceneColorBuffer->GetTextureRezolution());
+        mFramebuffer->CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_resolvedSceneColorBuffer->GetTextureRezolution());
     }
 
     void ResolvedSceneFramebuffer::CleanUp()
@@ -68,11 +68,6 @@ namespace Graphics
         RenderToFBO(*mFramebuffer, true, mViewPortInfo, clearBufferBit);
     }
 
-    void ResolvedSceneFramebuffer::UnbindResolvedSceneFramebuffer()
-    {
-        UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-    }
-
     void ResolvedSceneFramebuffer::BindResolvedSceneColorTexture(int32_t slot)
     {
         m_resolvedSceneColorBuffer->BindTexture(slot);
@@ -89,6 +84,15 @@ namespace Graphics
         mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+        glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
+    }
+
+    void ResolvedSceneFramebuffer::CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject> &framebufferObjectInstance, const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                                                       const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
+    {
+        mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
+
+        framebufferObjectInstance->BindFramebufferAsDrawTarget();
         glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
     }
 

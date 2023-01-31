@@ -12,7 +12,7 @@ namespace EngineCore
       // Buffer should be recreated when window size was changed
       BloomFramebuffer::BloomFramebuffer(const ViewPortInfo &viewPortInfo)
           : FramebufferBundle(),
-            mViewPortInfo(viewPortInfo),
+            mFullResolutionViewPortInfo(viewPortInfo),
             mColor1Framebuffer(std::make_shared<FramebufferObject>()),
             mColor2Framebuffer(std::make_shared<FramebufferObject>())
       {
@@ -21,8 +21,8 @@ namespace EngineCore
          const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
          // scale bloom render target resolution accordingly to config file
          const auto bloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
-         mViewPortInfo = ViewPortInfo(mViewPortInfo.OriginX, mViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mViewPortInfo.Width) * bloomResolutionMultiplier),
-                                      static_cast<int32_t>(static_cast<float>(mViewPortInfo.Height) * bloomResolutionMultiplier));
+         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullResolutionViewPortInfo.OriginX, mFullResolutionViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mFullResolutionViewPortInfo.Width) * bloomResolutionMultiplier),
+                                                        static_cast<int32_t>(static_cast<float>(mFullResolutionViewPortInfo.Height) * bloomResolutionMultiplier));
          Init();
       }
 
@@ -40,8 +40,8 @@ namespace EngineCore
          const bool isHdrEnabled = cfg.IsHdrEnabled;
          // Color1 texture
          {
-            TexParams color1Params(mViewPortInfo.Width,
-                                   mViewPortInfo.Height,
+            TexParams color1Params(mShrinkedResolutionViewPortInfo.Width,
+                                   mShrinkedResolutionViewPortInfo.Height,
                                    GL_TEXTURE_2D,
                                    GL_LINEAR,
                                    GL_LINEAR,
@@ -56,8 +56,8 @@ namespace EngineCore
 
          // Color2 texture
          {
-            TexParams color2Params(mViewPortInfo.Width,
-                                   mViewPortInfo.Height,
+            TexParams color2Params(mShrinkedResolutionViewPortInfo.Width,
+                                   mShrinkedResolutionViewPortInfo.Height,
                                    GL_TEXTURE_2D,
                                    GL_LINEAR,
                                    GL_LINEAR,
@@ -82,6 +82,8 @@ namespace EngineCore
 
       void BloomFramebuffer::SetRenderbuffers()
       {
+         mColor1Framebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
+         mColor1Framebuffer->CreateRenderBuffer(GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_color1->GetTextureRezolution());
       }
 
       void BloomFramebuffer::CleanUp()
@@ -89,9 +91,14 @@ namespace EngineCore
          DestroyBloomFramebuffer();
       }
 
+      void BloomFramebuffer::CleanColor1Framebuffer(const GLint clearBit)
+      {
+         FramebufferClear(*mColor1Framebuffer, clearBit);
+      }
+
       void BloomFramebuffer::DestroyBloomFramebuffer()
       {
-         UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+         UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
          mColor1Framebuffer->CleanUp();
          mColor2Framebuffer->CleanUp();
          RenderTargetPool::GetInstance()->TryToFreeMemory(m_color1);
@@ -99,14 +106,14 @@ namespace EngineCore
          m_color1 = m_color2 = nullptr;
       }
 
-      void BloomFramebuffer::BindColor1Framebuffer()
+      void BloomFramebuffer::BindColor1Framebuffer(const GLint clearBitFlag)
       {
-         RenderToFBO(*mColor1Framebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         RenderToFBO(*mColor1Framebuffer, true, mShrinkedResolutionViewPortInfo, clearBitFlag);
       }
 
       void BloomFramebuffer::BindColor2Framebuffer()
       {
-         RenderToFBO(*mColor2Framebuffer, true, mViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         RenderToFBO(*mColor2Framebuffer, true, mShrinkedResolutionViewPortInfo, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       }
 
       void BloomFramebuffer::BindColor1Texture(int32_t slot)
@@ -127,6 +134,11 @@ namespace EngineCore
       std::shared_ptr<ITexture> BloomFramebuffer::GetColor2Texture() const
       {
          return m_color2;
+      }
+
+      std::shared_ptr<IFramebufferObject> BloomFramebuffer::GetColor1FramebufferObjectInstance() const
+      {
+         return mColor1Framebuffer;
       }
    }
 }

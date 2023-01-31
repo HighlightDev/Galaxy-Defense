@@ -3,7 +3,6 @@
 #include "Core/GraphicsCore/Common/ScreenQuad.h"
 #include "Core/GraphicsCore/OpenGL/Shader/ShaderParams.h"
 #include "Core/ResourceManagerCore/Pool/ShaderPool.h"
-#include "Core/UtilityCore/EngineConfigHolder.h"
 
 using namespace Resources;
 using namespace EngineUtility;
@@ -27,7 +26,6 @@ namespace Graphics
                                                                                                                            IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/postFxVS.glsl",
                                                                                                                            IO::FolderManager::GetInstance()->GetShadersPath() + "postFX/resolveFxColorFS.glsl",
                                                                                                                            "", "", "", ""));
-      const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
    }
 
    void FxColorResolver::Execute(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<IPostFxPass> &prevPostFxPass)

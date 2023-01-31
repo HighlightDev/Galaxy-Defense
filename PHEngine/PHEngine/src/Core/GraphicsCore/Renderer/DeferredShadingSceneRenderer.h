@@ -39,7 +39,7 @@
 
 #include <utility>
 
-//using namespace Debug;
+// using namespace Debug;
 using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
@@ -57,7 +57,7 @@ namespace Graphics
          // G-buffers
          std::unique_ptr<DeferredShadingGBuffer> m_gbuffer;
 
-         std::unique_ptr<ResolvedSceneFramebuffer> m_resolvedSceneFramebuffer;
+         std::shared_ptr<ResolvedSceneFramebuffer> m_resolvedSceneFramebuffer;
 
          // Shaders
          std::shared_ptr<DeferredLightShader> m_deferredLightShader;
@@ -90,7 +90,7 @@ namespace Graphics
 
          std::unique_ptr<PostFxRenderer> mPostFxRenderer;
 
-         std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;         
+         std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;
 
       public:
          std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
@@ -159,13 +159,13 @@ namespace Graphics
 
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
-         void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy);
+         void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
 
-         void UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy>& canvasSceneProxy);
+         void UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
 
-         void RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId);
+         void RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
 
-         void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase>& sceneProxy, const size_t canvasUId);
+         void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
 
          const InterThreadCommunicationMgr &GetThreadManager() const;
 
@@ -176,6 +176,9 @@ namespace Graphics
          void DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
 #endif
+
+      private:
+         void Initialize();
       };
 
    }

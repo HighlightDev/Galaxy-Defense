@@ -36,6 +36,7 @@ namespace Graphics
       void RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, size_t viewportX, size_t viewportY, size_t viewportWidth, size_t viewportHeight, GLbitfield clearFlag) const;
       void RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, const glm::ivec4& viewport, GLbitfield clearFlag) const;
       void RenderToFBO(const FramebufferObject& fbo, bool bBindFramebuffer, const ViewPortInfo& viewport, GLbitfield clearFlag) const;
+      void FramebufferClear(const FramebufferObject& fbo, const GLbitfield clearFlag);
 
    private:
 

@@ -47,7 +47,7 @@ namespace Graphics
                 std::make_unique<DeferredShadingGBuffer>(ViewPortInfo(0, 0,
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                       DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
-            m_resolvedSceneFramebuffer(std::make_unique<ResolvedSceneFramebuffer>(ViewPortInfo(0, 0,
+            m_resolvedSceneFramebuffer(std::make_shared<ResolvedSceneFramebuffer>(ViewPortInfo(0, 0,
                                                                                                DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                                                DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
             m_deferredLightShader(),
@@ -82,6 +82,11 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::ctor");
 
+         Initialize();
+      }
+
+      void DeferredShadingSceneRenderer::Initialize()
+      {
          const auto &folderManager = FolderManager::GetInstance();
 
          const ShaderParams depthCollectShaderParams("DepthCollectShader",
@@ -162,7 +167,7 @@ namespace Graphics
             glEnable(GL_CULL_FACE);
             glFrontFace(GL_CCW);
             glCullFace(GL_BACK);
-            RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
+            RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
             renderState.BindRenderState();
 
             for (auto &atlasLightGroup : mGroupedByShadowAtlasLights)
@@ -387,13 +392,13 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
       {
-         const auto& cameraProxy = sceneView->GetCameraProxy();
+         const auto &cameraProxy = sceneView->GetCameraProxy();
 
          glEnable(GL_CULL_FACE);
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          // Deferred shading collect info
@@ -429,14 +434,15 @@ namespace Graphics
             }
          }
 
-         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+         m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
-         RenderState<DepthStencilState<false, GL_LEQUAL, false, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<DepthStencilState<false, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
+         glStencilMask(0x00);
          // TODO: Make some check if light source (point or spot light) is too far from current view position
          m_deferredLightShader->ExecuteShader();
 
@@ -548,7 +554,9 @@ namespace Graphics
          static constexpr int NoClearFlag = 0;
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthStencilState<true, GL_LEQUAL, true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 1, 0xFF, 0xFF>,
+                     BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
+             renderState;
          renderState.BindRenderState();
 
          PrimitiveSorter sorter;
@@ -562,6 +570,8 @@ namespace Graphics
                                        sceneView->IsPrimitiveVisible(proxy->GetSceneProxyId());
             if (bShouldRender)
             {
+               const int32_t stencilFuncRefValue = proxy->CanBloomBeApplied() ? 0 : 1;
+               glStencilFunc(GL_ALWAYS, stencilFuncRefValue, 0xFF); // write 0 to stencil
                proxy->Render(sceneView->GetCameraProxy(), sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
             }
          }
@@ -569,7 +579,7 @@ namespace Graphics
          glDisable(GL_BLEND);
          glDisable(GL_CULL_FACE);
 
-         m_resolvedSceneFramebuffer->UnbindResolvedSceneFramebuffer();
+         m_resolvedSceneFramebuffer->UnbindFramebuffer();
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
@@ -582,7 +592,7 @@ namespace Graphics
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0>,
+         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>,
                      BlendingState<false>>
              renderState;
 
@@ -661,7 +671,7 @@ namespace Graphics
       {
          const auto &renderDataMap = mFontHandler->GetFontRenderDataMap();
 
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto &renderData : renderDataMap)
@@ -689,7 +699,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
       {
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthStencilState<false, 0, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
          for (const auto &canvas : mUiCanvasProxies)
@@ -836,7 +846,7 @@ namespace Graphics
                      ForwardBasePass_RenderThread(sceneView);
 
                   if (mPostFxRenderer)
-                     mPostFxRenderer->Execute(m_resolvedSceneFramebuffer->GetResolvedSceneColorTexture());
+                     mPostFxRenderer->Execute(m_resolvedSceneFramebuffer);
 
                   HudTextPass();
 

@@ -8,17 +8,21 @@
 namespace Graphics
 {
    /* Depth / stencil state */
-   template<
-      bool depthTestEnabled,
-      int32_t depthFunc,
-      bool stencilTestEnabled,
-      int32_t stencilFunc,
-      int32_t stencilRef,
-      int32_t stencilMask>
-      struct DepthStencilState;
+   template <
+       bool depthTestEnabled,
+       int32_t depthFunc,
+       bool stencilTestEnabled,
+       int32_t sfail,
+       int32_t dpfail,
+       int32_t dppass,
+       int32_t func,
+       int32_t funcRef,
+       int32_t funcMask,
+       int32_t stencilMask>
+   struct DepthStencilState;
 
-   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
-   struct DepthStencilState<false, depthFunc, false, stencilFunc, stencilRef, stencilMask>
+   template <int32_t depthFunc, int32_t sfail, int32_t dpfail, int32_t dppass, int32_t func, int32_t funcRef, int32_t funcMask, int32_t stencilMask>
+   struct DepthStencilState<false, depthFunc, false, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
    {
       static void BindDepthStencilState()
       {
@@ -28,8 +32,8 @@ namespace Graphics
       }
    };
 
-   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
-   struct DepthStencilState<true, depthFunc, false, stencilFunc, stencilRef, stencilMask>
+   template <int32_t depthFunc, int32_t sfail, int32_t dpfail, int32_t dppass, int32_t func, int32_t funcRef, int32_t funcMask, int32_t stencilMask>
+   struct DepthStencilState<true, depthFunc, false, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
    {
       static void BindDepthStencilState()
       {
@@ -40,20 +44,22 @@ namespace Graphics
       }
    };
 
-   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
-   struct DepthStencilState<false, depthFunc, true, stencilFunc, stencilRef, stencilMask>
+   template <int32_t depthFunc, int32_t sfail, int32_t dpfail, int32_t dppass, int32_t func, int32_t funcRef, int32_t funcMask, int32_t stencilMask>
+   struct DepthStencilState<false, depthFunc, true, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
    {
       static void BindDepthStencilState()
       {
          glDisable(GL_DEPTH_TEST);
 
          glEnable(GL_STENCIL_TEST);
-         glStencilFunc(stencilFunc, stencilRef, stencilMask);
+         glStencilOp(sfail, dpfail, dppass);
+         glStencilFunc(func, funcRef, funcMask);
+         glStencilMask(stencilMask);
       }
    };
 
-   template <int32_t depthFunc, int32_t stencilFunc, int32_t stencilRef, int32_t stencilMask>
-   struct DepthStencilState<true, depthFunc, true, stencilFunc, stencilRef, stencilMask>
+   template <int32_t depthFunc, int32_t sfail, int32_t dpfail, int32_t dppass, int32_t func, int32_t funcRef, int32_t funcMask, int32_t stencilMask>
+   struct DepthStencilState<true, depthFunc, true, sfail, dpfail, dppass, func, funcRef, funcMask, stencilMask>
    {
       static void BindDepthStencilState()
       {
@@ -61,15 +67,17 @@ namespace Graphics
          glDepthFunc(depthFunc);
 
          glEnable(GL_STENCIL_TEST);
-         glStencilFunc(stencilFunc, stencilRef, stencilMask);
+         glStencilOp(sfail, dpfail, dppass);
+         glStencilFunc(func, funcRef, funcMask);
+         glStencilMask(stencilMask);
       }
    };
 
    /* Blending state */
    template <bool bEnableBlending = true,
-      int32_t srcFactor = GL_SRC_ALPHA,
-      int32_t dstFactor = GL_ONE_MINUS_SRC_ALPHA>
-      struct BlendingState
+             int32_t srcFactor = GL_SRC_ALPHA,
+             int32_t dstFactor = GL_ONE_MINUS_SRC_ALPHA>
+   struct BlendingState
    {
       static void BindBlendState()
       {
@@ -79,7 +87,7 @@ namespace Graphics
    };
 
    template <>
-      struct BlendingState<false>
+   struct BlendingState<false>
    {
       static void BindBlendState()
       {
@@ -95,7 +103,6 @@ namespace Graphics
       using blendState_t = BlendingStateType;
 
    public:
-
       void BindRenderState()
       {
          depthStencilState_t::BindDepthStencilState();

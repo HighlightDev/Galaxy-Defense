@@ -17,7 +17,9 @@ namespace EngineCore
       {
          using RenderTarget = std::shared_ptr<ITexture>;
 
-         ViewPortInfo mViewPortInfo;
+      public:
+         ViewPortInfo mFullResolutionViewPortInfo;
+         ViewPortInfo mShrinkedResolutionViewPortInfo;
 
          RenderTarget m_color1;
          RenderTarget m_color2;
@@ -39,7 +41,9 @@ namespace EngineCore
 
          void CleanUp() override;
 
-         void BindColor1Framebuffer();
+         void CleanColor1Framebuffer(const GLint clearBit);
+
+         void BindColor1Framebuffer(const GLint clearBitFlag);
          void BindColor2Framebuffer();
 
          void BindColor1Texture(int32_t slot);
@@ -47,6 +51,8 @@ namespace EngineCore
 
          std::shared_ptr<ITexture> GetColor1Texture() const;
          std::shared_ptr<ITexture> GetColor2Texture() const;
+
+         std::shared_ptr<IFramebufferObject> GetColor1FramebufferObjectInstance() const;
 
       private:
          void DestroyBloomFramebuffer();

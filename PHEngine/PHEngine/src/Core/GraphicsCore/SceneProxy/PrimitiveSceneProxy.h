@@ -100,6 +100,8 @@ namespace Graphics
 
          virtual bool IsDeferred() const = 0;
 
+         virtual bool CanBloomBeApplied() const;
+
          virtual eMeshFacing GetMeshFrontFace() const = 0;
 
          virtual bool IsTransformIntialized() const;

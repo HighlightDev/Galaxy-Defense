@@ -10,13 +10,12 @@
 
 namespace Graphics
 {
-   enum class ePostFxStageIndex
+   enum class ePostFxStageType
    {
-      STAGE_1,
-      STAGE_2,
-      STAGE_3,
-      STAGE_4
+      BLOOM_STAGE
    };
+
+   class ResolvedSceneFramebuffer;
 
    class PostFxRenderer
    {
@@ -25,7 +24,7 @@ namespace Graphics
 
       ViewPortInfo mViewPortInfo;
 
-      std::unordered_map<ePostFxStageIndex, std::shared_ptr<IPostFxPass>> mPostFxStages;
+      std::unordered_map<ePostFxStageType, std::shared_ptr<IPostFxPass>> mPostFxStages;
 
       std::unique_ptr<FxColorResolver> mFxColorResolver;
 
@@ -33,7 +32,7 @@ namespace Graphics
       PostFxRenderer(const ViewPortInfo &viewPortInfo);
       ~PostFxRenderer();
 
-      void Execute(const std::shared_ptr<ITexture> &sceneColor);
+      void Execute(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
 
    private:
       void Init();
