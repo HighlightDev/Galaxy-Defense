@@ -167,7 +167,7 @@ namespace Graphics
             glEnable(GL_CULL_FACE);
             glFrontFace(GL_CCW);
             glCullFace(GL_BACK);
-            RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+            RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
             renderState.BindRenderState();
 
             for (auto &atlasLightGroup : mGroupedByShadowAtlasLights)
@@ -398,7 +398,7 @@ namespace Graphics
          glFrontFace(GL_CCW);
          glCullFace(GL_BACK);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
          renderState.BindRenderState();
 
          // Deferred shading collect info
@@ -439,10 +439,9 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy)
       {
-         RenderState<DepthStencilState<false, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false>> renderState;
+         RenderState<DepthState<false, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>, BlendingState<false>> renderState;
          renderState.BindRenderState();
-         glDepthMask(false);
-         glStencilMask(0x00);
+         glDepthMask(0x00);
          // TODO: Make some check if light source (point or spot light) is too far from current view position
          m_deferredLightShader->ExecuteShader();
 
@@ -530,7 +529,7 @@ namespace Graphics
          m_deferredLightShader->StopShader();
 
          glDisable(GL_CULL_FACE);
-         glDepthMask(true);
+         glDepthMask(0xFF);
       }
 
       void DeferredShadingSceneRenderer::ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView)
@@ -554,7 +553,7 @@ namespace Graphics
          static constexpr int NoClearFlag = 0;
          m_resolvedSceneFramebuffer->BindResolvedSceneFramebuffer(NoClearFlag);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 1, 0xFF, 0xFF>,
+         RenderState<DepthState<true, GL_LEQUAL>, StencilState<true, GL_KEEP, GL_KEEP, GL_REPLACE, GL_ALWAYS, 0, 0xFF, 0xFF>,
                      BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>>
              renderState;
          renderState.BindRenderState();
@@ -578,8 +577,9 @@ namespace Graphics
 
          glDisable(GL_BLEND);
          glDisable(GL_CULL_FACE);
+         glDisable(GL_STENCIL_TEST);
 
-         m_resolvedSceneFramebuffer->UnbindFramebuffer();
+         m_resolvedSceneFramebuffer->UnbindFramebuffer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
       }
 
       void DeferredShadingSceneRenderer::PlanarReflectionPass()
@@ -592,7 +592,7 @@ namespace Graphics
          glCullFace(GL_BACK);
          glEnable(GL_CLIP_DISTANCE0);
 
-         RenderState<DepthStencilState<true, GL_LEQUAL, false, 0, 0, 0, 0, 0, 0, 0>,
+         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>,
                      BlendingState<false>>
              renderState;
 
@@ -671,7 +671,7 @@ namespace Graphics
       {
          const auto &renderDataMap = mFontHandler->GetFontRenderDataMap();
 
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
 
          for (const auto &renderData : renderDataMap)
@@ -699,7 +699,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::GuiPass(const std::shared_ptr<SceneView> &sceneView)
       {
-         RenderState<DepthStencilState<false, 0, false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
          for (const auto &canvas : mUiCanvasProxies)
