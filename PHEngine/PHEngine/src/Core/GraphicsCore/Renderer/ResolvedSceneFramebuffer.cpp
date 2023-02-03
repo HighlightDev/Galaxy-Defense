@@ -79,21 +79,23 @@ namespace Graphics
     }
 
     void ResolvedSceneFramebuffer::CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                                                           const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
+                                                                           const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
+                                                                           const int32_t bufferBit)
     {
-        mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
-
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-        glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
+        FramebufferBundle::CopySrcFramebufferDataToDefaultFramebufferImpl(mFramebuffer,
+                                                                          srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY,
+                                                                          bufferBit);
     }
 
-    void ResolvedSceneFramebuffer::CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject> &framebufferObjectInstance, const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                                                       const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit)
+    void ResolvedSceneFramebuffer::CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject> &dstFramebuffer,
+                                                                       const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                                                       const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
+                                                                       const int32_t bufferBit)
     {
-        mFramebuffer->BindFramebuffer(GL_READ_FRAMEBUFFER, true, false);
-
-        framebufferObjectInstance->BindFramebufferAsDrawTarget();
-        glBlitFramebuffer(srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY, bufferBit, GL_NEAREST);
+        FramebufferBundle::CopySrcFramebufferDataToDstFramebufferImpl(mFramebuffer,
+                                                                      dstFramebuffer,
+                                                                      srcX, srcY, srcResolutionX, srcResolutionY, dstX, dstY, dstResolutionX, dstResolutionY,
+                                                                      bufferBit);
     }
 
     std::shared_ptr<IFramebufferObject> ResolvedSceneFramebuffer::GetFramebufferObjectInstance() const

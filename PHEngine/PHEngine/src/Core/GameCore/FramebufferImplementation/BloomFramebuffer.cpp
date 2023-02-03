@@ -12,7 +12,7 @@ namespace EngineCore
       // Buffer should be recreated when window size was changed
       BloomFramebuffer::BloomFramebuffer(const ViewPortInfo &viewPortInfo)
           : FramebufferBundle(),
-            mFullResolutionViewPortInfo(viewPortInfo),
+            mFullScreenResolutionViewPortInfo(viewPortInfo),
             mColor1Framebuffer(std::make_shared<FramebufferObject>()),
             mColor2Framebuffer(std::make_shared<FramebufferObject>())
       {
@@ -21,8 +21,8 @@ namespace EngineCore
          const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
          // scale bloom render target resolution accordingly to config file
          const auto bloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
-         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullResolutionViewPortInfo.OriginX, mFullResolutionViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mFullResolutionViewPortInfo.Width) * bloomResolutionMultiplier),
-                                                        static_cast<int32_t>(static_cast<float>(mFullResolutionViewPortInfo.Height) * bloomResolutionMultiplier));
+         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullScreenResolutionViewPortInfo.OriginX, mFullScreenResolutionViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Width) * bloomResolutionMultiplier),
+                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Height) * bloomResolutionMultiplier));
          Init();
       }
 
@@ -139,6 +139,16 @@ namespace EngineCore
       std::shared_ptr<IFramebufferObject> BloomFramebuffer::GetColor1FramebufferObjectInstance() const
       {
          return mColor1Framebuffer;
+      }
+
+      ViewPortInfo BloomFramebuffer::GetFullScreenResolutionViewPortInfo() const
+      {
+         return mFullScreenResolutionViewPortInfo;
+      }
+
+      ViewPortInfo BloomFramebuffer::GetShrinkedResolutionViewPortInfo() const
+      {
+         return mShrinkedResolutionViewPortInfo;
       }
    }
 }

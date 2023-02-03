@@ -17,8 +17,8 @@ namespace EngineCore
       {
          using RenderTarget = std::shared_ptr<ITexture>;
 
-      public:
-         ViewPortInfo mFullResolutionViewPortInfo;
+      private:
+         ViewPortInfo mFullScreenResolutionViewPortInfo;
          ViewPortInfo mShrinkedResolutionViewPortInfo;
 
          RenderTarget m_color1;
@@ -53,6 +53,9 @@ namespace EngineCore
          std::shared_ptr<ITexture> GetColor2Texture() const;
 
          std::shared_ptr<IFramebufferObject> GetColor1FramebufferObjectInstance() const;
+
+         ViewPortInfo GetFullScreenResolutionViewPortInfo() const;
+         ViewPortInfo GetShrinkedResolutionViewPortInfo() const;
 
       private:
          void DestroyBloomFramebuffer();

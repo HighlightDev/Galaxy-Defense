@@ -56,10 +56,13 @@ namespace Graphics
       std::shared_ptr<IFramebufferObject> GetFramebufferObjectInstance() const;
 
       void CopyFramebufferDataToDefaultFramebuffer(const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                                   const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit);
+                                                   const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
+                                                   const int32_t bufferBit) override;
 
-      void CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject>& framebufferObjectInstance, const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
-                                               const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY, const int32_t bufferBit);
+      void CopyFramebufferDataToDstFramebuffer(const std::shared_ptr<IFramebufferObject> &framebufferObjectInstance,
+                                               const size_t srcX, const size_t srcY, const size_t srcResolutionX, const size_t srcResolutionY,
+                                               const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
+                                               const int32_t bufferBit) override;
 
    private:
       void DestroyGBuffer();

@@ -10,8 +10,6 @@ using namespace EngineCore::ShaderImpl;
 
 namespace Graphics
 {
-   class ResolvedSceneFramebuffer;
-
    class BloomPostFxPass : public IPostFxPass
    {
    private:
@@ -28,9 +26,7 @@ namespace Graphics
 
       virtual ~BloomPostFxPass();
 
-      void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture) override;
-
-      void TEST_EXECUTE(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<ResolvedSceneFramebuffer>& resolvedSceneFramebuffer);
+      void ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<FramebufferBundle>& previousStepFramebuffer) override;
 
       virtual std::shared_ptr<ITexture> GetPostFxResult() const;
 
