@@ -44,7 +44,10 @@ namespace Graphics
             {
                 for (const auto &proxy : mUiProxies)
                 {
-                    proxy->Render();
+                    if (proxy->IsVisible())
+                    {
+                        proxy->Render();
+                    }
                 }
             }
         }

@@ -499,6 +499,7 @@ namespace EngineCore
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
+            uiItem->SetIsVisible(mIsVisible);
 
             if (const auto &canvasSp = mParentCanvas.lock())
             {

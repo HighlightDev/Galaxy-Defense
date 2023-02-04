@@ -31,8 +31,7 @@ namespace EngineCore
             LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
             const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
             ownerSp->RegisterUiCanvasProxy_OnRenderThread(canvasSceneProxy);
-            newCanvas->SetScene(mOwner);
-            mUiCanvases.emplace_back(newCanvas);
+            mUiCanvases.emplace_back(newCanvas)->SetScene(mOwner);
             return newCanvas;
         }
 
