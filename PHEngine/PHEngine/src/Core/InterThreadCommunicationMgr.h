@@ -82,6 +82,10 @@ namespace Thread
 
       std::deque<Job> m_gameThreadJobs;
 
+      std::deque<Job> m_luaThreadJobs;
+
+      std::mutex m_luaThreadMutex;
+
       TasksSwapChain mRenderThreadSwapChain;
 
    public:
@@ -93,11 +97,15 @@ namespace Thread
 
       void EmplaceRenderThreadJob(const eEnqueueJobPolicy, Job &&job);
 
+      void EmplaceLuaThreadJob(const eEnqueueJobPolicy, Job &&job);
+
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();
 
       /* @ Should be executed only on render thread! */
       void SpinRenderThreadJobs();
+
+      void SpinLuaThreadJob();
 
       void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> sceneRenderer);
 
@@ -111,6 +119,8 @@ namespace Thread
       void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 
       void ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job);
+
+      void ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 
       void ProcessPushJob(const eEnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs);
 

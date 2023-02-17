@@ -34,10 +34,13 @@ namespace EngineCore
       std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
       std::atomic_bool bGameThreadExecution{true};
+      std::atomic_bool bLuaThreadExecution{true};
 
       std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
       std::thread m_gameThread;
+
+      std::thread m_luaThread;
 
       float mRenderThreadDeltaTimeSeconds;
 
@@ -76,6 +79,8 @@ namespace EngineCore
 
       void RenderThreadPulse();
 
+      void LuaThreadPulse();
+
       void TickWindow();
 
       std::shared_ptr<InputManager> GetInputManager() const;
@@ -98,5 +103,7 @@ namespace EngineCore
 
    private:
       void StopGameThreadExecution();
+
+      void StopLuaThreadExecution();
    };
 }

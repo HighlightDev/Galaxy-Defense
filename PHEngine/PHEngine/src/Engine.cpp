@@ -56,7 +56,9 @@ namespace EngineCore
    void Engine::CleanUp()
    {
       StopGameThreadExecution();
+      StopLuaThreadExecution();
       m_gameThread.join();
+      m_luaThread.join();
 
       CompositeShaderPool::GetInstance()->CleanUp();
       FontMeshPool::GetInstance()->CleanUp();
@@ -83,6 +85,11 @@ namespace EngineCore
       bGameThreadExecution.store(false);
    }
 
+   void Engine::StopLuaThreadExecution()
+   {
+      bLuaThreadExecution.store(false);
+   }
+
    void Engine::PlayLevel(std::shared_ptr<Level> level)
    {
       m_level = level;
@@ -99,6 +106,7 @@ namespace EngineCore
       PostPlayLevelFinished();
 
       m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
+      m_luaThread = std::thread(std::bind(&Engine::LuaThreadPulse, this));
    }
 
    InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
@@ -160,6 +168,19 @@ namespace EngineCore
    {
       bExitGame = true;
       StopGameThreadExecution();
+      StopLuaThreadExecution();
+   }
+
+   void Engine::LuaThreadPulse()
+   {
+      using namespace std::chrono_literals;
+      ThreadHelper::GetInstance()->RegisterThread("Lua");
+
+      while (bLuaThreadExecution.load(std::memory_order::memory_order_seq_cst))
+      {
+         m_level->TickLua(0.0f);
+         std::this_thread::sleep_for(1000ms);
+      }
    }
 
    void Engine::GameThreadPulse()

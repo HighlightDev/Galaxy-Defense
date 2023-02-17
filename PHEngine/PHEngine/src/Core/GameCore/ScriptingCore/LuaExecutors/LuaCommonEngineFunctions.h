@@ -17,13 +17,11 @@ namespace EngineCore
 
          virtual ~LuaCommonEngineFunctions();
 
-         virtual void RegisterCallbacks();
+         void RegisterCallbacks() override;
 
-         virtual void RunScript();
+         void StopScript() override;
 
-         virtual void StopScript();
-
-         virtual void OnUpdate(const float deltaTime);
+         void OnUpdate(const float deltaTime) override;
 
          EngineObject *GetEngineObject(const std::tuple<std::string> &gameObjectName);
 

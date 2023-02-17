@@ -1,9 +1,13 @@
 #include "LuaScriptExecutorBase.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/IoCore/FolderManager.h"
+#include "Core/GameCore/ScriptingCore/LuaCore.inl"
 
 #include <functional>
 #include <iostream>
 #include <string>
+
+using namespace IO;
 
 namespace EngineCore
 {
@@ -33,21 +37,37 @@ namespace EngineCore
             return mUId;
         }
 
-        const std::any& LuaScriptExecutorBase::GetFunctorAny(const uint64_t functionHash) const
+        const std::any &LuaScriptExecutorBase::GetFunctorAny(const uint64_t functionHash) const
         {
             assert(mFunctors.count(functionHash));
             return mFunctors.at(functionHash);
         }
 
-        void LuaScriptExecutorBase::PostInit(const std::weak_ptr<Scene>& scene)
+        void LuaScriptExecutorBase::SetScene(const std::weak_ptr<Scene> &scene)
         {
-           mSceneWP = scene;
+            mSceneWP = scene;
         }
 
-        void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std::any& functor)
+        void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std::any &functor)
         {
             assert(!mFunctors.count(functorNameHash));
             mFunctors[functorNameHash] = functor;
+        }
+
+        void LuaScriptExecutorBase::RunScript()
+        {
+            assert(mScriptName != "");
+            const auto &folderManager = FolderManager::GetInstance();
+            const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetScriptPath() + mScriptName);
+            assert(bScriptExecuted);
+
+            mHasOnStart = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnStart", -1);
+            mHasOnUpdate = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnUpdate", -1);
+
+            if (mHasOnStart)
+            {
+                LuaFunctionInvoker<void(void *)>::Invoke(mLuaInstance, "System_OnStart", (void *)this);
+            }
         }
     }
 }

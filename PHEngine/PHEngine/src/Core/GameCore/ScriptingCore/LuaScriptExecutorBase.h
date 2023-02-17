@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ILuaScriptExecutor.h"
+#include "ILuaScriptExecutable.h"
 #include "LuaWrapper.h"
 #include "Core/GameCore/Scene.h"
 
@@ -14,15 +14,8 @@ namespace EngineCore
 {
     namespace Scripts
     {
-        class LuaScriptExecutorBase : public ILuaScriptExecutor
+        class LuaScriptExecutorBase : public ILuaScriptExecutable
         {
-            struct LuaCorePOD
-            {
-                bool HasOnStart;
-                bool HasOnUpdate;
-            };
-
-        private:
             static size_t sUid;
 
             size_t mUId;
@@ -32,7 +25,9 @@ namespace EngineCore
         protected:
             std::string mScriptName;
 
-            LuaCorePOD mLuaCoreData;
+            bool mHasOnStart{false};
+
+            bool mHasOnUpdate{false};
 
             std::weak_ptr<Scene> mSceneWP;
 
@@ -41,18 +36,20 @@ namespace EngineCore
         public:
             LuaScriptExecutorBase();
 
-            std::string GetScriptName() const override;
+            std::string GetScriptName() const;
 
-            size_t GetUId() const override;
+            size_t GetUId() const;
 
             const std::any &GetFunctorAny(const uint64_t functionHash) const;
 
-            void PostInit(const std::weak_ptr<Scene> &scene);
+            void SetScene(const std::weak_ptr<Scene> &scene);
 
             void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
 
+            void RunScript() override;
+
         protected:
-            void SetScript(const std::string &scriptName) override;
+            void SetScript(const std::string &scriptName);
         };
     }
 }

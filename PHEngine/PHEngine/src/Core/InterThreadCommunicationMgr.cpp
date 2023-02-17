@@ -17,12 +17,12 @@ namespace Thread
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
        : mRenderThreadSwapChain()
    {
-      LogInfo( "InterThreadCommunicationMgr::ctor");
+      LogInfo("InterThreadCommunicationMgr::ctor");
    }
 
    InterThreadCommunicationMgr::~InterThreadCommunicationMgr()
    {
-      LogInfo( "InterThreadCommunicationMgr::dctor");
+      LogInfo("InterThreadCommunicationMgr::dctor");
    }
 
    void InterThreadCommunicationMgr::SetSceneRendererWP(std::weak_ptr<DeferredShadingSceneRenderer> sceneRenderer)
@@ -55,6 +55,11 @@ namespace Thread
       ProcessPushRenderThreadJob(policy, std::move(job));
    }
 
+   void InterThreadCommunicationMgr::EmplaceLuaThreadJob(const eEnqueueJobPolicy policy, Job &&job)
+   {
+      ProcessPushLuaThreadJob(policy, std::move(job));
+   }
+
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
@@ -65,6 +70,12 @@ namespace Thread
    {
       std::lock_guard<std::mutex> lock(m_gameThreadMutex);
       ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
+   }
+
+   void InterThreadCommunicationMgr::ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, Job &&job)
+   {
+      std::lock_guard<std::mutex> lock(m_luaThreadMutex);
+      ProcessPushJob(policy, std::move(job), m_luaThreadJobs);
    }
 
    void InterThreadCommunicationMgr::ProcessPushJob(const eEnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs)
@@ -141,6 +152,19 @@ namespace Thread
       }
 
       SwapRenderThreadChain();
+   }
+
+   void InterThreadCommunicationMgr::SpinLuaThreadJob()
+   {
+      std::lock_guard<std::mutex> lock(m_luaThreadMutex);
+      auto countLuaThreadJobs = m_luaThreadJobs.size();
+      while (countLuaThreadJobs)
+      {
+         auto jobIt = m_luaThreadJobs.begin();
+         (*jobIt)();
+         m_luaThreadJobs.pop_front();
+         --countLuaThreadJobs;
+      }
    }
 
    void InterThreadCommunicationMgr::SwapRenderThreadChain()

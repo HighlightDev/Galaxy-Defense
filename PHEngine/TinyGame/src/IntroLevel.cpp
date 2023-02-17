@@ -48,7 +48,8 @@ namespace Game
 {
 
    IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
-       : Level(threadMgr), mSceneController(std::make_shared<SceneController>(mScene))
+       : Level(threadMgr),
+         mSceneController(std::make_shared<SceneController>(mScene))
    {
       Event::EventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent>();
    }
@@ -63,9 +64,10 @@ namespace Game
           // = "createTestLevel.lua";
           = "spaceLvl1.lua";
       LuaEngineObjectsCreatorFunctions mLuaLevelBuilder = LuaEngineObjectsCreatorFunctions(lvlName);
-      mLuaLevelBuilder.PostInit(mScene);
+      mLuaLevelBuilder.SetScene(mScene);
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
+      mLuaLevelBuilder.StopScript();
    }
 
    void IntroLevel::PreLevelInit()

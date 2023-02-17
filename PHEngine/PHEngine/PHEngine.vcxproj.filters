@@ -2397,7 +2397,7 @@
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutor.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaBindingHelper.h">

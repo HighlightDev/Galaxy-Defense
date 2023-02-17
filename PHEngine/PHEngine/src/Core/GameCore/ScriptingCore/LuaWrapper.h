@@ -18,6 +18,8 @@ namespace EngineCore
       private:
          lua_State *mState;
 
+         bool mIsLuaScriptOpened{false};
+
       public:
          LuaWrapper();
 

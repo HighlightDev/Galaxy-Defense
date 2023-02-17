@@ -110,6 +110,11 @@ namespace EngineCore
       mScene->UnpausableTick(deltaTime);
    }
 
+   void Level::TickLua(const float deltaTime)
+   {
+      mScene->TickLua(deltaTime);
+   }
+
    std::weak_ptr<Scene> Level::GetSceneWP() const
    {
       return mScene;

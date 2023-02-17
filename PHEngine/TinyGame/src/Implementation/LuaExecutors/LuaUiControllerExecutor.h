@@ -18,7 +18,5 @@ namespace Game
       ~LuaUiControllerExecutor();
 
       void RegisterCallbacks();
-
-      void CallFooFunction();
    };
 }

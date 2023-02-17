@@ -31,14 +31,16 @@ namespace EngineCore
             return false;
          }
 
+         mIsLuaScriptOpened = true;
          return true;
       }
 
       void LuaWrapper::StopExecution()
       {
-         if (mState)
+         if (mIsLuaScriptOpened && mState)
          {
             lua_close(mState);
+            mIsLuaScriptOpened = false;
          }
       }
 

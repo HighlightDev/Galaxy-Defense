@@ -375,7 +375,7 @@
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\IUiMouseInputReceivable.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.h" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutor.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutable.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaBindingHelper.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaHelper.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutorBase.h" />

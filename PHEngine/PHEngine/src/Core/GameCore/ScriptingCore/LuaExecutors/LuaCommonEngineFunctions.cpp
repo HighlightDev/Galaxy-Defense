@@ -1,13 +1,14 @@
 #include "LuaCommonEngineFunctions.h"
 
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Core/IoCore/FolderManager.h"
 
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
 #include "Core/CommonCore/StringHash.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
 
-using namespace IO;
 using namespace EngineCore;
+using namespace IO;
 
 namespace EngineCore
 {
@@ -36,21 +37,6 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowWidth"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowWidth, this, std::placeholders::_1), "_GetWindowWidth");
       }
 
-      void LuaCommonEngineFunctions::RunScript()
-      {
-         const auto &folderManager = FolderManager::GetInstance();
-         const bool bScriptExecuted = mLuaInstance.ExecuteScript(folderManager->GetScriptPath() + mScriptName);
-         assert(bScriptExecuted);
-
-         mLuaCoreData.HasOnStart = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnStart", -1);
-         mLuaCoreData.HasOnUpdate = GetLuaGlobalVariable<int64_t>::Value(mLuaInstance, "HasOnUpdate", -1);
-
-         if (mLuaCoreData.HasOnStart)
-         {
-            LuaFunctionInvoker<void(void *)>::Invoke(mLuaInstance, "System_OnStart", (void *)this);
-         }
-      }
-
       void LuaCommonEngineFunctions::StopScript()
       {
          mLuaInstance.StopExecution();
@@ -58,8 +44,9 @@ namespace EngineCore
 
       void LuaCommonEngineFunctions::OnUpdate(const float deltaTime)
       {
-         if (mLuaCoreData.HasOnUpdate)
+         if (mHasOnUpdate)
          {
+            assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
             LuaFunctionInvoker<void(void *, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void *)this, deltaTime);
          }
       }

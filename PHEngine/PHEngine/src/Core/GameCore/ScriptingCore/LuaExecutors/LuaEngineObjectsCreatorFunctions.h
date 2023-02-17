@@ -32,8 +32,6 @@ namespace EngineCore
 
          void RegisterCallbacks() override;
 
-         void RunScript() override;
-
          // Common callbacks
          /* -------------------  Load asynchronously resources by names ----------------------------*/
          void LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData);

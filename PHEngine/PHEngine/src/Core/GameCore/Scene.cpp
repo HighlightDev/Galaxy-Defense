@@ -13,9 +13,11 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutorBase.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -34,6 +36,7 @@ namespace EngineCore
          mMaterials(),
          mDynamicMaterials(),
          mExternalTickableObjects(),
+         mLuaScriptExecutors(),
          mTextHandler(),
 #ifdef DEBUG
          mDebugUiController(std::make_unique<DebugUiController>()),
@@ -918,6 +921,14 @@ namespace EngineCore
       mUiHandler->UnpausableTick(deltaTime);
    }
 
+   void Scene::TickLua(const float deltaTime)
+   {
+      for (const auto& luaScriptExecutor : mLuaScriptExecutors)
+      {
+         luaScriptExecutor->OnUpdate(deltaTime);
+      }
+   }
+
    void Scene::RemoveComponent(std::shared_ptr<Component> component)
    {
       const eComponentType type = component->GetComponentType();
@@ -1057,6 +1068,15 @@ namespace EngineCore
       }
 
       return false;
+   }
+
+   void Scene::RegisterLuaScriptExecutor(const std::shared_ptr<::EngineCore::Scripts::LuaScriptExecutorBase> &luaExecutor)
+   {
+      assert(!std::any_of(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [&](const auto &scriptExecutor)
+                          { return scriptExecutor->GetUId() == luaExecutor->GetUId(); }));
+      mLuaScriptExecutors.emplace_back(luaExecutor);
+      luaExecutor->SetScene(shared_from_this());
+      luaExecutor->RegisterCallbacks();
    }
 
    glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition)

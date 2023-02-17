@@ -81,11 +81,6 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::SetTweenerBinding"), void(Tweener *, std::string, std::string, std::string)>::Bind(mLuaInstance, this, std::bind(&LuaEngineObjectsCreatorFunctions::SetTweenerBinding, this, std::placeholders::_1), "_SetTweenerBinding");
       }
 
-      void LuaEngineObjectsCreatorFunctions::RunScript()
-      {
-         LuaCommonEngineFunctions::RunScript();
-      }
-
       /* -------------------  Load asynchronously resources by names ----------------------------*/
       void LuaEngineObjectsCreatorFunctions::LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData)
       {

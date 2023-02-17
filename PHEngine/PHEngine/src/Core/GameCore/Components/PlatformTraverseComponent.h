@@ -16,7 +16,7 @@ namespace EngineCore
 
       std::unordered_map<std::string, std::tuple<EulerAnglesTransform, float>> mMovementPoints;
 
-      LuaPlatformTraverseComponentFunctions mScriptExecutor;
+      std::shared_ptr<LuaPlatformTraverseComponentFunctions> mScriptExecutor;
 
       std::unique_ptr<PlatformTraverseComponentVisitorBase> mBehaviorVisitor;
 

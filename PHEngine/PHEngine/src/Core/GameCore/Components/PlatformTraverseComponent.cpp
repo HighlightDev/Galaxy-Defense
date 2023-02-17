@@ -9,8 +9,11 @@
 namespace EngineCore
 {
 
-   PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData& data)
-       : Component(data.EngineObjectName), mScriptExecutor(this, data.mScriptName), mDestinationPoint("NO"), mTime(0.0f)
+   PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData &data)
+       : Component(data.EngineObjectName),
+         mScriptExecutor(std::make_shared<LuaPlatformTraverseComponentFunctions>(this, data.mScriptName)),
+         mDestinationPoint("NO"),
+         mTime(0.0f)
    {
    }
 
@@ -27,7 +30,10 @@ namespace EngineCore
          const auto &rootComponent = spOwner->GetRootComponent();
          assert(rootComponent);
 
-         mScriptExecutor.PostInit(spOwner->GetSceneOwner());
+         if (const auto &sceneSp = spOwner->GetSceneOwner().lock())
+         {
+            sceneSp->RegisterLuaScriptExecutor(mScriptExecutor);
+         }
 
          const auto &physComponent = spOwner->GetPhysicsComponent();
 
@@ -42,8 +48,7 @@ namespace EngineCore
 
          mBehaviorVisitor->Init();
 
-         mScriptExecutor.RegisterCallbacks();
-         mScriptExecutor.RunScript();
+         mScriptExecutor->RunScript();
       }
    }
 
@@ -98,8 +103,6 @@ namespace EngineCore
    {
       Component::Tick(deltaTime);
 
-      mScriptExecutor.OnUpdate(deltaTime);
-
       if (mDestinationPoint != "NO")
       {
          Move(deltaTime);
@@ -138,7 +141,7 @@ namespace EngineCore
 
       std::shared_ptr<SerializeDataPlatformTraverseComponent> data = std::make_shared<SerializeDataPlatformTraverseComponent>();
       data->ComponentName = EngineObjectName;
-      data->ScriptName = mScriptExecutor.GetScriptName();
+      data->ScriptName = mScriptExecutor->GetScriptName();
 
       actorData.ComponentsData.emplace_back(data);
    }
