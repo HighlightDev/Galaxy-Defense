@@ -38,6 +38,11 @@ namespace EngineCore
 
          /*Get Window width*/
          int32_t GetWindowWidth(const std::tuple<> &data);
+
+         /*Input callbacks*/
+         bool HasPressedKeyboardButtons(const std::tuple<>& data);
+
+         bool HasReleasedKeyboardButtons(const std::tuple<>& data);
       };
    }
 }

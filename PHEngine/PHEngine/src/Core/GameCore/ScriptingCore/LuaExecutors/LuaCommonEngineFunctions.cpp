@@ -3,6 +3,7 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/CommonCore/Assertion.h"
@@ -35,6 +36,8 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::SetGOPropertyValBool"), void(EngineObject *, std::string, int32_t)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::SetGOPropertyValBool, this, std::placeholders::_1), "_SetGOPropertyValBool");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowHeight"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowHeight, this, std::placeholders::_1), "_GetWindowHeight");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::GetWindowWidth"), int32_t(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::GetWindowWidth, this, std::placeholders::_1), "_GetWindowWidth");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::HasPressedKeyboardButtons"), bool(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::HasPressedKeyboardButtons, this, std::placeholders::_1), "_HasPressedKeyboardButtons");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonEngineFunctions::HasReleasedKeyboardButtons"), bool(void)>::Bind(mLuaInstance, this, std::bind(&LuaCommonEngineFunctions::HasReleasedKeyboardButtons, this, std::placeholders::_1), "_HasReleasedKeyboardButtons");
       }
 
       void LuaCommonEngineFunctions::StopScript()
@@ -107,6 +110,24 @@ namespace EngineCore
       int32_t LuaCommonEngineFunctions::GetWindowWidth(const std::tuple<> &data)
       {
          return DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
+      }
+
+      bool LuaCommonEngineFunctions::HasPressedKeyboardButtons(const std::tuple<>& data)
+      {
+         if (const auto& luaProcessorSp = mLuaScriptProcessor.lock())
+         {
+            return luaProcessorSp->GetEngineInputLuaProxy()->GetIsPressedKeyboardKeys();
+         }
+         return false;
+      }
+
+      bool LuaCommonEngineFunctions::HasReleasedKeyboardButtons(const std::tuple<>& data)
+      {
+          if (const auto& luaProcessorSp = mLuaScriptProcessor.lock())
+         {
+            return luaProcessorSp->GetEngineInputLuaProxy()->GetIsReleasedKeyboardKeys();
+         }
+         return false;
       }
    }
 }

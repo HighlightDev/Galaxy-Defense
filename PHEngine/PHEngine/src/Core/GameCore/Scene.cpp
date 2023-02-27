@@ -13,7 +13,6 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
-#include "Core/GameCore/ScriptingCore/LuaScriptExecutorBase.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
@@ -36,7 +35,6 @@ namespace EngineCore
          mMaterials(),
          mDynamicMaterials(),
          mExternalTickableObjects(),
-         mLuaScriptExecutors(),
          mTextHandler(),
 #ifdef DEBUG
          mDebugUiController(std::make_unique<DebugUiController>()),
@@ -301,6 +299,11 @@ namespace EngineCore
    void Scene::ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const
    {
       m_interThreadMgr.EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
+   }
+
+   void Scene::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback) const
+   {
+      m_interThreadMgr.EmplaceLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
    }
 
    bool Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
@@ -921,14 +924,6 @@ namespace EngineCore
       mUiHandler->UnpausableTick(deltaTime);
    }
 
-   void Scene::TickLua(const float deltaTime)
-   {
-      for (const auto& luaScriptExecutor : mLuaScriptExecutors)
-      {
-         luaScriptExecutor->OnUpdate(deltaTime);
-      }
-   }
-
    void Scene::RemoveComponent(std::shared_ptr<Component> component)
    {
       const eComponentType type = component->GetComponentType();
@@ -1068,15 +1063,6 @@ namespace EngineCore
       }
 
       return false;
-   }
-
-   void Scene::RegisterLuaScriptExecutor(const std::shared_ptr<::EngineCore::Scripts::LuaScriptExecutorBase> &luaExecutor)
-   {
-      assert(!std::any_of(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [&](const auto &scriptExecutor)
-                          { return scriptExecutor->GetUId() == luaExecutor->GetUId(); }));
-      mLuaScriptExecutors.emplace_back(luaExecutor);
-      luaExecutor->SetScene(shared_from_this());
-      luaExecutor->RegisterCallbacks();
    }
 
    glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition)

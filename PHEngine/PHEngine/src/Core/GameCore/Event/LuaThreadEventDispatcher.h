@@ -1,43 +1,29 @@
 #pragma once
 
-#include "PlayerMovedEvent.h"
-#include "CameraTransformChangedEvent.h"
-#include "PhysicsComponentUpdatedEvent.h"
-#include "KeyboardInputEvent.h"
-#include "KinematicBodyMovedEvent.h"
-#include "TextureAtlasGeneratedEvent.h"
-#include "MouseMovedEvent.h"
-#include "MouseScrollEvent.h"
-#include "MouseButtonDownEvent.h"
-#include "PhysicsCollisionEvent.h"
-#include "TextEvent.h"
-
 #include <type_traits>
 
 namespace Event
 {
-
    template <typename... EventTypes>
-   struct EventIterator;
-
+   struct LuaThreadEventIterator;
 
    template <>
-   struct EventIterator<>
+   struct LuaThreadEventIterator<>
    {
       static void IterateRegisterEvent()
       {
       }
    };
 
-   struct EventDispatcher
+   struct LuaThreadEventDispatcher
    {
    private:
       std::vector<IEvent *> m_eventInstances;
 
    public:
-      static EventDispatcher *GetInstance()
+      static LuaThreadEventDispatcher *GetInstance()
       {
-         static EventDispatcher m_instance = EventDispatcher();
+         static LuaThreadEventDispatcher m_instance = LuaThreadEventDispatcher();
          return &m_instance;
       }
 
@@ -50,7 +36,7 @@ namespace Event
       template <typename... EventTypes>
       void RegisterEventsByType()
       {
-         EventIterator<EventTypes...>::IterateRegisterEvent();
+         LuaThreadEventIterator<EventTypes...>::IterateRegisterEvent();
       }
 
       void UnregisterEvents()
@@ -67,19 +53,19 @@ namespace Event
       }
 
    private:
-      EventDispatcher()
+      LuaThreadEventDispatcher()
           : m_eventInstances()
       {
       }
    };
 
    template <typename EventType, typename... EventTypes>
-   struct EventIterator<EventType, EventTypes...>
+   struct LuaThreadEventIterator<EventType, EventTypes...>
    {
       static void IterateRegisterEvent()
       {
-         EventDispatcher::GetInstance()->RegisterEventByType<EventType>();
-         EventIterator<EventTypes...>::IterateRegisterEvent();
+         LuaThreadEventDispatcher::GetInstance()->RegisterEventByType<EventType>();
+         LuaThreadEventIterator<EventTypes...>::IterateRegisterEvent();
       }
    };
 }

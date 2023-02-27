@@ -4,5 +4,5 @@ using namespace Event;
 
 namespace Event
 {
-    template class TEvent<SingleDataEventPolicy<eMainPlayerActionEnum>>;
+    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMainPlayerActionEnum>>;
 }

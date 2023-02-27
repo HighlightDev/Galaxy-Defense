@@ -30,6 +30,11 @@ namespace Graphics
 namespace EngineCore
 {
    class Scene;
+
+   namespace Scripts
+   {
+      class LuaScriptProcessor;
+   }
 }
 
 namespace Thread
@@ -78,6 +83,8 @@ namespace Thread
 
       std::weak_ptr<EngineCore::Scene> mScene;
 
+      std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> mLuaScriptProcessor;
+
       std::mutex m_gameThreadMutex;
 
       std::deque<Job> m_gameThreadJobs;
@@ -111,9 +118,13 @@ namespace Thread
 
       void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
 
+      void SetLuaScriptProcessorWP(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>& scriptProcessor);
+
       std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> GetSceneRendererWP() const;
 
       std::weak_ptr<EngineCore::Scene> GetSceneWP() const;
+
+      std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessor() const;
 
    private:
       void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);

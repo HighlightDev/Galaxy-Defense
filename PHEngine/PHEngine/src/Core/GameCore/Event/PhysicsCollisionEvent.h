@@ -16,12 +16,12 @@ namespace Event
       COLLISION_UNREGISTER
    };
 
-   using ParentEvent_t = TEvent<MultipleDataEventPolicy<ePhysicsCollisionStateType,
-                                                      ePhysicsBodyType,
-                                                      uint32_t /*this_phys_descriptor_id*/,
-                                                      uint64_t /*this_actor_id*/,
-                                                      uint32_t /*that_phys_descriptor_id*/,
-                                                      uint64_t /*that_actor_id*/>>;
+   using ParentEvent_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<ePhysicsCollisionStateType,
+                                                        ePhysicsBodyType,
+                                                        uint32_t /*this_phys_descriptor_id*/,
+                                                        uint64_t /*this_actor_id*/,
+                                                        uint32_t /*that_phys_descriptor_id*/,
+                                                        uint64_t /*that_actor_id*/>>;
 
    class PhysicsCollisionEvent
        : public ParentEvent_t
@@ -29,8 +29,9 @@ namespace Event
    public:
       using Event = ParentEvent_t::Event_t;
 
-      std::string ToString() const override {
-         return "PhysicsCollisionEvent";
+      std::string ToString() const override
+      {
+         return "GameThreadPhysicsCollisionEvent";
       }
    };
 }

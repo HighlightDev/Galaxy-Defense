@@ -10,14 +10,24 @@ using namespace EngineCore;
 namespace Event
 {
    struct MouseButtonDownEvent
-      : public TEvent<SingleDataEventPolicy<std::vector<MouseKeysData>>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
 
       std::string ToString() const override {
-         return "MouseButtonDownEvent";
+         return "GameThreadMouseButtonDownEvent";
       }
    };
 
+   struct LuaThreadMouseButtonDownEvent
+      : public TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>
+   {
+   public:
+      using Event_t = TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>::Event_t;
+
+      std::string ToString() const override {
+         return "LuaThreadMouseButtonDownEvent";
+      }
+   };
 }

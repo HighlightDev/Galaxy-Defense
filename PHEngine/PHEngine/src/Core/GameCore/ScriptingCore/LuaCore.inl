@@ -89,6 +89,15 @@ namespace EngineCore
          };
 
          template <>
+         struct LuaValuePusher<bool>
+         {
+            FORCEINLINE static void Push(lua_State *state, const bool &value)
+            {
+               lua_pushboolean(state, value);
+            }
+         };
+
+         template <>
          struct LuaValuePusher<double>
          {
             FORCEINLINE static void Push(lua_State *state, const double &value)

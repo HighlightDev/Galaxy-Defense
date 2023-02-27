@@ -19,91 +19,103 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
-   class SoundDevice;
+    namespace Scripts
+    {
+        class LuaScriptProcessor;
+    }
+}
 
-   class Engine
-       : public Event::PauseGameThreadEvent,
-         public Event::ExitGameThreadEvent
-   {
-      InterThreadCommunicationMgr &m_interThreadMgr;
+namespace EngineCore
+{
+    class SoundDevice;
 
-      std::shared_ptr<InputManager> mInputManager;
+    class Engine
+        : public Event::PauseGameThreadEvent,
+          public Event::ExitGameThreadEvent
+    {
+        InterThreadCommunicationMgr &m_interThreadMgr;
 
-      std::shared_ptr<Level> m_level;
+        std::shared_ptr<InputManager> mInputManager;
 
-      std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
+        std::shared_ptr<Level> m_level;
 
-      std::atomic_bool bGameThreadExecution{true};
-      std::atomic_bool bLuaThreadExecution{true};
+        std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
 
-      std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
+        std::shared_ptr<::EngineCore::Scripts::LuaScriptProcessor> m_luaScriptProcessor;
 
-      std::thread m_gameThread;
+        std::atomic_bool bGameThreadExecution{true};
+        std::atomic_bool bLuaThreadExecution{true};
 
-      std::thread m_luaThread;
+        std::shared_ptr<SoundDevice> mActiveAudioOutputDevice;
 
-      float mRenderThreadDeltaTimeSeconds;
+        std::thread m_gameThread;
 
-      float mGameThreadDeltaTimeSeconds;
+        std::thread m_luaThread;
 
-      std::atomic_bool bPauseGameThreadExecution{false};
+        float mRenderThreadDeltaTimeSeconds;
 
-      bool bExitGame{false};
+        float mGameThreadDeltaTimeSeconds;
 
-#if DEBUG
-      GameThreadTimer m_echoTimer;
-#endif
+        std::atomic_bool bPauseGameThreadExecution{false};
 
-   public:
-      Engine(InterThreadCommunicationMgr &interThreadMgr);
-
-      ~Engine();
-
-      void PlayLevel(std::shared_ptr<Level> level);
-
-      void PreLevelInit();
-
-      void PostLevelInit();
-
-      void PostPhysicsInitialize();
-
-      void PostPlayLevelFinished();
-
-      void ProcessEvents(Event::eExecutionOrder order);
-
-      void ProcessEvent(const PauseGameThreadEvent::EventData_t &data) override;
-
-      void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
-
-      void GameThreadPulse();
-
-      void RenderThreadPulse();
-
-      void LuaThreadPulse();
-
-      void TickWindow();
-
-      std::shared_ptr<InputManager> GetInputManager() const;
-
-      float GetRenderThreadDeltaTime() const;
-
-      float GetGameThreadDeltaTime() const;
-
-      InterThreadCommunicationMgr &GetThreadCommunicationManager();
-
-      bool IsExitGameState() const;
+        bool bExitGame{false};
 
 #if DEBUG
+        GameThreadTimer m_echoTimer;
+#endif
 
-      void RecompileAllShaders();
+    public:
+        Engine(InterThreadCommunicationMgr &interThreadMgr);
+
+        ~Engine();
+
+        void PlayLevel(std::shared_ptr<Level> level);
+
+        void PreLevelInit();
+
+        void PostLevelInit();
+
+        void PostPhysicsInitialize();
+
+        void PostPlayLevelFinished();
+
+        void ProcessGameThreadEvents(Event::eExecutionOrder order);
+
+        void ProcessLuaThreadEvents(Event::eExecutionOrder order);
+
+        void ProcessEvent(const PauseGameThreadEvent::EventData_t &data) override;
+
+        void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
+
+        void GameThreadPulse();
+
+        void RenderThreadPulse();
+
+        void LuaThreadPulse();
+
+        void TickWindow();
+
+        std::shared_ptr<InputManager> GetInputManager() const;
+
+        float GetRenderThreadDeltaTime() const;
+
+        float GetGameThreadDeltaTime() const;
+
+        InterThreadCommunicationMgr &GetThreadCommunicationManager();
+
+        bool IsExitGameState() const;
+
+#if DEBUG
+
+        void RecompileAllShaders();
 
 #endif
 
-      void CleanUp();
+        void CleanUp();
 
-   private:
-      void StopGameThreadExecution();
+    private:
+        void StopGameThreadExecution();
 
-      void StopLuaThreadExecution();
-   };
+        void StopLuaThreadExecution();
+    };
 }

@@ -10,18 +10,20 @@
 namespace Event
 {
 
-   template <typename EventHandlePolicy>
+   template <eEventThreadType threadType, typename EventHandlePolicy>
    class TEvent : public IEvent
    {
    public:
       using EventHandlePolicy_t = EventHandlePolicy;
-      using Event_t = TEvent<EventHandlePolicy>;
+      using Event_t = TEvent<threadType, EventHandlePolicy>;
       using EventData_t = typename EventHandlePolicy_t::TupleData_t;
 
    private:
+      static constexpr eEventThreadType mThreadType = threadType;
+
       EventHandlePolicy mPolicy[2];
 
-      std::vector<TEvent<EventHandlePolicy_t> *> m_listeners;
+      std::vector<TEvent<threadType, EventHandlePolicy_t> *> m_listeners;
 
    protected:
       TEvent()

@@ -10,7 +10,8 @@
 #include "Core/ResourceManagerCore/Pool/SoundMemoryChunkPool.h"
 #include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
-#include "Core/GameCore/Event/EventDispatcher.h"
+#include "Core/GameCore/Event/GameThreadEventDispatcher.h"
+#include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/UtilityCore/EngineConfigHolder.h"
 #include "Core/AudioCore/SoundDevice.h"
@@ -19,11 +20,13 @@
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 using namespace TinyLogger;
 using namespace IO;
 using namespace EngineUtility;
 using namespace Resources;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -98,6 +101,8 @@ namespace EngineCore
       m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
       m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
       m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
+      m_luaScriptProcessor = std::make_shared<LuaScriptProcessor>(m_interThreadMgr);
+      m_interThreadMgr.SetLuaScriptProcessorWP(m_luaScriptProcessor);
 
       m_level->InitLevel();
 
@@ -116,7 +121,7 @@ namespace EngineCore
 
    void Engine::PreLevelInit()
    {
-      EventDispatcher::GetInstance()
+      GameThreadEventDispatcher::GetInstance()
           ->RegisterEventsByType<CameraTransformChangedEvent,
                                  PlayerMovedEvent,
                                  PhysicsComponentUpdatedEvent,
@@ -131,6 +136,12 @@ namespace EngineCore
                                  TextDataChangedEvent,
                                  PauseGameThreadEvent,
                                  ExitGameThreadEvent>();
+
+      LuaThreadEventDispatcher::GetInstance()
+          ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,
+                                 LuaThreadMouseMovedEvent,
+                                 LuaThreadMouseScrollEvent,
+                                 LuaThreadMouseButtonDownEvent>();
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
@@ -178,8 +189,13 @@ namespace EngineCore
 
       while (bLuaThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
-         m_level->TickLua(0.0f);
-         std::this_thread::sleep_for(1000ms);
+         ProcessLuaThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
+         m_interThreadMgr.SpinLuaThreadJob();
+
+         m_luaScriptProcessor->Tick(0.0f);
+
+         ProcessLuaThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
+         std::this_thread::sleep_for(100ms);
       }
    }
 
@@ -194,7 +210,7 @@ namespace EngineCore
             const auto gtStartTimePoint = EngineTime::GetNowTime();
 
             /* Events: pre execution */
-            ProcessEvents(Event::eExecutionOrder::PRE_EXECUTION);
+            ProcessGameThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
 
             /* Work Jobs */
             m_interThreadMgr.SpinGameThreadJobs();
@@ -208,7 +224,7 @@ namespace EngineCore
             m_level->UnpausableTick(mGameThreadDeltaTimeSeconds);
 
             /* Events: post execution */
-            ProcessEvents(Event::eExecutionOrder::POST_EXECUTION);
+            ProcessGameThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
 #ifdef DEBUG
             if (gtCounter == 1000)
             {
@@ -227,9 +243,14 @@ namespace EngineCore
       }
    }
 
-   void Engine::ProcessEvents(Event::eExecutionOrder order)
+   void Engine::ProcessGameThreadEvents(Event::eExecutionOrder order)
    {
-      Event::EventDispatcher::GetInstance()->ProcessEvents(order);
+      Event::GameThreadEventDispatcher::GetInstance()->ProcessEvents(order);
+   }
+
+   void Engine::ProcessLuaThreadEvents(Event::eExecutionOrder order)
+   {
+      Event::LuaThreadEventDispatcher::GetInstance()->ProcessEvents(order);
    }
 
    void Engine::RenderThreadPulse()

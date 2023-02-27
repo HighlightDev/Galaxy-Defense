@@ -48,6 +48,11 @@ namespace EngineCore
             mSceneWP = scene;
         }
 
+        void LuaScriptExecutorBase::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
+        {
+            mLuaScriptProcessor = scriptProcessor;
+        }
+
         void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std::any &functor)
         {
             assert(!mFunctors.count(functorNameHash));

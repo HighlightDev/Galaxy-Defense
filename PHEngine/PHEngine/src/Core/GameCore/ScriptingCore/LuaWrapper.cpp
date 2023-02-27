@@ -27,7 +27,8 @@ namespace EngineCore
 
          if (luaL_dofile(mState, pathToFile.c_str()) != LUA_OK)
          {
-            LogInfo(GetErrorMessageAt(-1));
+            const auto& message = GetErrorMessageAt(-1);
+            LogInfo(message);
             return false;
          }
 

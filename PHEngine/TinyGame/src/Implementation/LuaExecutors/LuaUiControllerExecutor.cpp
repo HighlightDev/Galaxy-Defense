@@ -19,6 +19,5 @@ namespace Game
    void LuaUiControllerExecutor::RegisterCallbacks()
    {
       LuaCommonEngineFunctions::RegisterCallbacks();
-      //LuaCallbackBindingHelper<Hash64_CT("LuaUiControllerExecutor::AddRoutePoint"), void(std::string, glm::vec3, glm::vec3, glm::vec3, float)>::Bind(mLuaInstance, this, std::bind(&LuaUiControllerExecutor::AddRoutePoint, this, std::placeholders::_1), "_AddRoutePoint");
    }
 }

@@ -15,22 +15,27 @@ using namespace Graphics::Texture;
 
 namespace Event
 {
-   template class TEvent<SingleDataEventPolicy<std::weak_ptr<Transform>>>;
-   template class TEvent<SingleDataEventPolicy<std::string>>;
-   template class TEvent<SingleDataEventPolicy<ACamera*>>;
-   template class TEvent<SingleDataEventPolicy<std::vector<KeyboardKeysData>>>;
-   template class TEvent<SingleDataEventPolicy<glm::ivec4>>;
-   template class TEvent<SingleDataEventPolicy<eMouseScrollDirection>>;
-   template class TEvent<SingleDataEventPolicy<std::vector<MouseKeysData>>>;
-   template class TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EulerAnglesTransform>>;
-   template class TEvent<SingleDataEventPolicy<bool>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<Transform>>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::string>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<ACamera*>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseScrollDirection>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EulerAnglesTransform>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>;
 
-   template class TEvent<MultipleDataEventPolicy<eTextureType>>;
-   template class TEvent<MultipleDataEventPolicy<size_t>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<size_t>>;
 
-   template class TEvent<MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
-   template class TEvent<MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;
 
-   template class TEvent<NoDataEventPolicy>;
+   template class TEvent<eEventThreadType::GAME_THREAD, NoDataEventPolicy>;
+
+   template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>;
+   template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eMouseScrollDirection>>;
+   template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
+   template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>;
 
 }

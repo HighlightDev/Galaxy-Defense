@@ -11,14 +11,24 @@ using namespace EngineCore;
 namespace Event
 {
    struct KeyboardButtonDownEvent
-      : public TEvent<SingleDataEventPolicy<std::vector<KeyboardKeysData>>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Event_t;
 
       std::string ToString() const override {
-         return "KeyboardButtonDownEvent";
+         return "GameThreadKeyboardButtonDownEvent";
       }
    };
 
+   struct LuaThreadKeyboardButtonDownEvent
+      : public TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>
+   {
+   public:
+      using Event_t = TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>::Event_t;
+
+      std::string ToString() const override {
+         return "LuaThreadKeyboardButtonDownEvent";
+      }
+   };
 }

@@ -84,23 +84,29 @@ namespace EngineCore
    void KeyboardBindings::UpdateKyboardState()
    {
       mPressedKeysOnCurrentTick.clear();
-      std::for_each(mKeyboardMaskVec.begin(), mKeyboardMaskVec.end(),
-                    [this](const auto &keyData)
-                    { if (KeyState::PRESSED == keyData.State) {
-                             mPressedKeysOnCurrentTick.emplace_back(keyData.Key);
-                          } });
-
       mReleasedKeysOnCurrentTick.clear();
-      std::for_each(mKeyboardMaskVec.begin(), mKeyboardMaskVec.end(),
-                    [this](const auto &keyData)
-                    { if (KeyState::RELEASED == keyData.State) {
-                             mReleasedKeysOnCurrentTick.emplace_back(keyData.Key);
-                          } });
+
+      for (const auto &keyboardKeyData : mKeyboardMaskVec)
+      {
+         if (KeyState::PRESSED == keyboardKeyData.State)
+         {
+            mPressedKeysOnCurrentTick.emplace_back(keyboardKeyData.Key);
+         }
+         else
+         {
+            mReleasedKeysOnCurrentTick.emplace_back(keyboardKeyData.Key);
+         }
+      }
    }
 
    bool KeyboardBindings::HasPressedKeys() const
    {
       return mPressedKeysOnCurrentTick.size() > 0;
+   }
+
+   bool KeyboardBindings::HasReleasedKeys() const
+   {
+      return mReleasedKeysOnCurrentTick.size() > 0;
    }
 
    KeyState KeyboardBindings::GetKeyStateByActionType(eKeyActionType actionType) const

@@ -9,14 +9,14 @@ using namespace Game;
 namespace Event
 {
    class MainPlayerActionEvent
-       : public TEvent<SingleDataEventPolicy<eMainPlayerActionEnum>>
+       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMainPlayerActionEnum>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<eMainPlayerActionEnum>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMainPlayerActionEnum>>::Event_t;
 
       std::string ToString() const override
       {
-         return "MainPlayerActionEvent";
+         return "GameThreadMainPlayerActionEvent";
       }
    };
 

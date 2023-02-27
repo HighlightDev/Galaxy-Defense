@@ -8,13 +8,13 @@ namespace Event
 {
 
    class PlayerMovedEvent
-      : public TEvent<SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>::Event_t;
 
       std::string ToString() const override {
-         return "PlayerMovedEvent";
+         return "GameThreadPlayerMovedEvent";
       }
    };
 

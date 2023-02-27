@@ -39,6 +39,7 @@ namespace EngineCore
       }
 
       KeyboardButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mKeyboardMaskVec);
+      LuaThreadKeyboardButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mKeyboardMaskVec);
    }
 
    void InputManager::TriggerOnMouseMove(const int32_t x, const int32_t y)
@@ -50,11 +51,13 @@ namespace EngineCore
       mPrevMouseY = y;
 
       MouseMovedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
+      LuaThreadMouseMovedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, glm::ivec4(x, y, deltaMouseX, deltaMouseY));
    }
 
    void InputManager::TriggeOnMouseScroll(const eMouseScrollDirection scrollDirection)
    {
       MouseScrollEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
+      LuaThreadMouseScrollEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, scrollDirection);
    }
 
    void InputManager::TriggerOnMouseButtonKeyDown(const eMouseKeys key)
@@ -83,6 +86,7 @@ namespace EngineCore
       }
 
       MouseButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mMouseButtonMaskVec);
+      LuaThreadMouseButtonDownEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mMouseButtonMaskVec);
    }
 
 }

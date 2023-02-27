@@ -1560,7 +1560,7 @@
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h">
+    <ClInclude Include="src\Core\GameCore\Event\GameThreadEventDispatcher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Event\Policy\Policies.h">

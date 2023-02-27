@@ -10,6 +10,12 @@ namespace Event
         POST_EXECUTION = 1
     };
 
+    enum eEventThreadType
+    {
+        GAME_THREAD,
+        LUA_THREAD
+    };
+
     class IEvent
     {
     public:

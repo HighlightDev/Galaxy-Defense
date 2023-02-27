@@ -59,6 +59,8 @@ namespace EngineCore
 
       bool HasPressedKeys() const;
 
+      bool HasReleasedKeys() const;
+
       KeyState GetKeyStateByActionType(eKeyActionType actionType) const;
 
       KeyState GetStateByKey(const eKeyboardKeys key) const;

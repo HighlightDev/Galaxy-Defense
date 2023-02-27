@@ -24,9 +24,7 @@ namespace Game
 
         std::shared_ptr<OverlayManager> mOverlayManager;
 
-        std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
-
-        LuaUiControllerExecutor mLuaScriptExecutor;
+        std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
 
         float mPressButtonCooldown;
 
@@ -44,5 +42,8 @@ namespace Game
         void OnPostLevelInit() override;
 
         void PostPlayLevelFinished() override;
+
+    private:
+        void Initialize();
     };
 }

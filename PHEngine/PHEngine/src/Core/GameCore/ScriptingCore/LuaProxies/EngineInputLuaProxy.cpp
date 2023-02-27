@@ -1,0 +1,101 @@
+#include "EngineInputLuaProxy.h"
+
+#include <json/json.hpp>
+
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        EngineInputLuaProxy::EngineInputLuaProxy()
+            : mIsPressedKeyboardKeys(false),
+              mIsReleasedKeyboardKeys(false),
+              mKeyboardJsonData("")
+        {
+            LuaThreadKeyboardButtonDownEvent::GetInstance()->AddListener(this);
+            LuaThreadMouseMovedEvent::GetInstance()->AddListener(this);
+            LuaThreadMouseScrollEvent::GetInstance()->AddListener(this);
+            LuaThreadMouseButtonDownEvent::GetInstance()->AddListener(this);
+        }
+
+        EngineInputLuaProxy::~EngineInputLuaProxy()
+        {
+            LuaThreadKeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
+            LuaThreadMouseMovedEvent::GetInstance()->RemoveListener(this);
+            LuaThreadMouseScrollEvent::GetInstance()->RemoveListener(this);
+            LuaThreadMouseButtonDownEvent::GetInstance()->RemoveListener(this);
+        }
+
+        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadKeyboardButtonDownEvent::EventData_t &data)
+        {
+            const auto &keyboardKeysState = std::get<0>(data);
+
+            mPressedKeysOnCurrentTick.clear();
+            mReleasedKeysOnCurrentTick.clear();
+
+            for (const auto &keyboardKeyData : keyboardKeysState)
+            {
+                if (KeyState::PRESSED == keyboardKeyData.State)
+                {
+                    mPressedKeysOnCurrentTick.emplace_back(keyboardKeyData.Key);
+                }
+                else
+                {
+                    mReleasedKeysOnCurrentTick.emplace_back(keyboardKeyData.Key);
+                }
+            }
+
+            const auto &isCurrentPressedKeyboardKeys = mPressedKeysOnCurrentTick.size() > 0;
+            const auto &isCurrentReleasedKeyboardKeys = mReleasedKeysOnCurrentTick.size() > 0;
+            bool isKeyboardDataDirty = false;
+            if (mIsPressedKeyboardKeys != isCurrentPressedKeyboardKeys)
+            {
+                mIsPressedKeyboardKeys = isCurrentPressedKeyboardKeys;
+                isKeyboardDataDirty = true;
+            }
+
+            if (mIsReleasedKeyboardKeys != isCurrentReleasedKeyboardKeys)
+            {
+                mIsReleasedKeyboardKeys = isCurrentReleasedKeyboardKeys;
+                isKeyboardDataDirty = true;
+            }
+
+            if (isKeyboardDataDirty)
+            {
+                PrepareKeyboardJsonData();
+            }
+        }
+
+        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data)
+        {
+        }
+
+        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseScrollEvent::EventData_t &data)
+        {
+        }
+
+        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data)
+        {
+        }
+
+        bool EngineInputLuaProxy::GetIsPressedKeyboardKeys() const
+        {
+            return mIsPressedKeyboardKeys;
+        }
+
+        bool EngineInputLuaProxy::GetIsReleasedKeyboardKeys() const
+        {
+            return mIsReleasedKeyboardKeys;
+        }
+
+        void EngineInputLuaProxy::PrepareKeyboardJsonData()
+        {
+            if (mPressedKeysOnCurrentTick.size())
+            {
+                nlohmann::json jsonObject;
+                jsonObject["pressed_keys"] = mPressedKeysOnCurrentTick;
+                auto str = jsonObject.dump();
+                volatile auto str1 = str;
+            }
+        }
+    }
+}

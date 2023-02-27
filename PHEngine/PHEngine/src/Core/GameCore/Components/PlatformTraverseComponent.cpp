@@ -5,10 +5,13 @@
 #include "Core/GameCore/Components/ComponentData/MovementComponentData.h"
 #include "Core/GameCore/Components/PhysicsComponents/PhysicsComponent.h"
 #include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/InterThreadCommunicationMgr.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-
    PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData &data)
        : Component(data.EngineObjectName),
          mScriptExecutor(std::make_shared<LuaPlatformTraverseComponentFunctions>(this, data.mScriptName)),
@@ -32,7 +35,10 @@ namespace EngineCore
 
          if (const auto &sceneSp = spOwner->GetSceneOwner().lock())
          {
-            sceneSp->RegisterLuaScriptExecutor(mScriptExecutor);
+            if (const auto& scriptProcessorSp = sceneSp->GetThreadManager().GetLuaScriptProcessor().lock())
+            {
+               scriptProcessorSp->RegisterLuaScriptExecutor(mScriptExecutor);
+            }
          }
 
          const auto &physComponent = spOwner->GetPhysicsComponent();

@@ -7,13 +7,24 @@
 namespace Event
 {
    struct MouseMovedEvent
-      : public TEvent<SingleDataEventPolicy<glm::ivec4/*X, Y, deltaX, deltaY*/>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4/*X, Y, deltaX, deltaY*/>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<glm::ivec4>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>::Event_t;
 
       std::string ToString() const override {
-         return "MouseMovedEvent";
+         return "GameThreadMouseMovedEvent";
+      }
+   };
+
+   struct LuaThreadMouseMovedEvent
+      : public TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4/*X, Y, deltaX, deltaY*/>>
+   {
+   public:
+      using Event_t = TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>::Event_t;
+
+      std::string ToString() const override {
+         return "LuaThreadMouseMovedEvent";
       }
    };
 

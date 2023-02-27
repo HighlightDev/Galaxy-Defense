@@ -3,6 +3,7 @@
 #include "ILuaScriptExecutable.h"
 #include "LuaWrapper.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 #include <unordered_map>
 #include <any>
@@ -31,6 +32,8 @@ namespace EngineCore
 
             std::weak_ptr<Scene> mSceneWP;
 
+            std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
+
             LuaWrapper mLuaInstance;
 
         public:
@@ -42,7 +45,10 @@ namespace EngineCore
 
             const std::any &GetFunctorAny(const uint64_t functionHash) const;
 
+            // todo: should not be used, istead LuaScriptProcessor should be used
             void SetScene(const std::weak_ptr<Scene> &scene);
+
+            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor);
 
             void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
 

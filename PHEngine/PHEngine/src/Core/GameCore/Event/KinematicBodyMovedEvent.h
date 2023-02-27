@@ -9,13 +9,13 @@ namespace Event
 {
 
    class KinematicBodyMovedEvent
-      : public TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>
    {
    public:
-      using Event_t = TEvent<SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>::Event_t;
 
       std::string ToString() const override {
-         return "KinematicBodyMovedEvent";
+         return "GameThreadKinematicBodyMovedEvent";
       }
    };
 

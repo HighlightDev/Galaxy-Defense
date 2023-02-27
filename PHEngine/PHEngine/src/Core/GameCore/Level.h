@@ -43,8 +43,6 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override final;
 
-      void TickLua(const float deltaTime);
-
       void SerializeLevel(const std::string &pathToFolder);
 
       void DeserializeLevel(const std::string &pathToFile);

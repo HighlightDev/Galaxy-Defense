@@ -3,11 +3,13 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 #include <algorithm>
 #include <TinyLogger/LogInterface.h>
 
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
 using namespace Graphics::Renderer;
 using namespace TinyLogger;
 
@@ -35,6 +37,11 @@ namespace Thread
       mScene = scene;
    }
 
+   void InterThreadCommunicationMgr::SetLuaScriptProcessorWP(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
+   {
+      mLuaScriptProcessor = scriptProcessor;
+   }
+
    std::weak_ptr<DeferredShadingSceneRenderer> InterThreadCommunicationMgr::GetSceneRendererWP() const
    {
       return mSceneRenderer;
@@ -43,6 +50,11 @@ namespace Thread
    std::weak_ptr<Scene> InterThreadCommunicationMgr::GetSceneWP() const
    {
       return mScene;
+   }
+
+   std::weak_ptr<LuaScriptProcessor> InterThreadCommunicationMgr::GetLuaScriptProcessor() const
+   {
+      return mLuaScriptProcessor;
    }
 
    void InterThreadCommunicationMgr::EmplaceGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)

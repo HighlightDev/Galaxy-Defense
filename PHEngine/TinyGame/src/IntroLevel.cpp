@@ -8,7 +8,7 @@
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Core/GameCore/Event/EventDispatcher.h"
+#include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
@@ -51,7 +51,7 @@ namespace Game
        : Level(threadMgr),
          mSceneController(std::make_shared<SceneController>(mScene))
    {
-      Event::EventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent>();
    }
 
    IntroLevel::~IntroLevel()

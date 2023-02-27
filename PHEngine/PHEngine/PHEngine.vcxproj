@@ -599,7 +599,7 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhySphereShape.h" />
-    <ClInclude Include="src\Core\GameCore\Event\EventDispatcher.h" />
+    <ClInclude Include="src\Core\GameCore\Event\GameThreadEventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
     <ClInclude Include="src\Core\GameCore\Event\CameraTransformChangedEvent.h" />

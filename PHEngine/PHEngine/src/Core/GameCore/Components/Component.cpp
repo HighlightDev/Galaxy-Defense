@@ -6,7 +6,6 @@
 
 namespace EngineCore
 {
-
    Component::Component(const std::string &gameObjectName)
        : EngineObject(gameObjectName),
          m_owner(),

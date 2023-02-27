@@ -10,22 +10,22 @@
 #include "Implementation/Ui/PauseSettingsMenuUi.h"
 #include "Implementation/Ui/PlayerCombatUi.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/InterThreadCommunicationMgr.h"
 
 using namespace IO;
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
+using namespace Thread;
 
 namespace Game
 {
     UiController::UiController(const std::weak_ptr<Scene> &scene)
         : mSceneWp(scene),
           mOverlayManager(std::make_shared<OverlayManager>()),
-          mInputComponent(std::make_unique<InputComponent>(ComponentData("UiController Input Component"))),
-          mPressButtonCooldown(0.0f),
-          mLuaScriptExecutor("test.lua") // todo: temp
+          mInputComponent(std::make_shared<InputComponent>(ComponentData("UiController Input Component"))),
+          mPressButtonCooldown(0.0f)
     {
-        mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", scene, mOverlayManager));
-        mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", scene, mOverlayManager));
-        mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", scene, mOverlayManager));
     }
 
     void UiController::UnpausableTick(const float deltaTime)
@@ -77,7 +77,27 @@ namespace Game
 
     void UiController::PostPlayLevelFinished()
     {
+        Initialize();
         mOverlayManager->Initialize();
         mOverlayManager->OpenOverlay("PlayerCombatHUD");
+    }
+
+    void UiController::Initialize()
+    {
+        mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", mSceneWp, mOverlayManager));
+        mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", mSceneWp, mOverlayManager));
+        mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", mSceneWp, mOverlayManager));
+
+        if (const auto &sceneSp = mSceneWp.lock())
+        {
+            if (const auto &luaScriptProcessorSp = sceneSp->GetThreadManager().GetLuaScriptProcessor().lock())
+            {
+                static constexpr uint64_t functionId = Hash64_CT("UiController::Initialize");
+                sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp]()
+                {
+                    luaScriptProcessorSp->RegisterLuaScriptExecutor(std::make_shared<LuaUiControllerExecutor>("uiController.lua")); 
+                });
+            }
+        }
     }
 }

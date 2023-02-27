@@ -6,12 +6,16 @@
 
 using namespace EngineCore::Scripts;
 
+namespace EngineCore
+{
+   class InputComponent;
+}
+
 namespace Game
 {
    class LuaUiControllerExecutor
        : public LuaCommonEngineFunctions
    {
-
    public:
       LuaUiControllerExecutor(const std::string &scriptName);
 

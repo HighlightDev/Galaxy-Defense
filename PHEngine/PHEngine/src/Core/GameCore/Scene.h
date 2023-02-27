@@ -49,14 +49,6 @@ namespace EnginePhysics
 
 namespace EngineCore
 {
-   namespace Scripts
-   {
-      class LuaScriptExecutorBase;
-   }
-}
-
-namespace EngineCore
-{
    class IComponentCreatable;
    struct ComponentData;
 
@@ -90,8 +82,6 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
 
-      std::vector<std::shared_ptr<::EngineCore::Scripts::LuaScriptExecutorBase>> mLuaScriptExecutors;
-
       TextHandler mTextHandler;
 
 #ifdef DEBUG
@@ -119,8 +109,6 @@ namespace EngineCore
       void Tick(const float deltaTime) override;
 
       void UnpausableTick(const float deltaTime) override;
-
-      void TickLua(const float deltaTime);
 
       void RegisterCamera(std::shared_ptr<ACamera> camera);
 
@@ -170,8 +158,6 @@ namespace EngineCore
 
       void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
 
-      void RegisterLuaScriptExecutor(const std::shared_ptr<::EngineCore::Scripts::LuaScriptExecutorBase>& luaExecutor);
-
       bool UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
                                                             const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox);
 
@@ -190,6 +176,8 @@ namespace EngineCore
       void ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const;
 
       void ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const;
+
+      void ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback) const;
 
       void CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
 
