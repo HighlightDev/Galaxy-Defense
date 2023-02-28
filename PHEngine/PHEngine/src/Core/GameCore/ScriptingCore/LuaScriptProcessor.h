@@ -2,6 +2,7 @@
 
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/EngineInputLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/OverlayManagerLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
 #include <memory>
@@ -33,6 +34,9 @@ namespace EngineCore
             // input events receiver for lua
             std::shared_ptr<EngineInputLuaProxy> mInputLuaProxy;
 
+            // overlay manager
+            std::shared_ptr<OverlayManagerLuaProxy> mOverlayManagerLuaProxy;
+
         public:
             explicit LuaScriptProcessor(InterThreadCommunicationMgr &interThreadMgr);
 
@@ -43,6 +47,10 @@ namespace EngineCore
             void RegisterLuaScriptExecutor(const std::shared_ptr<LuaScriptExecutorBase> &luaExecutor);
 
             std::shared_ptr<EngineInputLuaProxy> GetEngineInputLuaProxy() const;
+
+            std::shared_ptr<OverlayManagerLuaProxy> GetOverlayManagerLuaProxy() const;
+
+            void SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy);
 
             std::shared_ptr<LuaProxy> GetLuaProxy(const size_t luaProxyId) const;
 

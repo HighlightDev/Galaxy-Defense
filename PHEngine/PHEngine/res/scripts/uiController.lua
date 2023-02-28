@@ -13,28 +13,35 @@ setup()
 --
 
 local EngineInputReceiver = require("core/engineInputReceiver")
+local UiOverlayManager = require("core/uiOverlayManager")
 
 GlobalContext = {
 }
 
 local function addToGlobalContext(key, object)
-    print("addToGlobalContext => " .. tostring(object))
     GlobalContext[key] = object
 end
 
+local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
+    if keyboardPressedKeyNames ~= nil then
+        for _, value in pairs(keyboardPressedKeyNames) do
+            if value == "Escape" then
+                print("Overlay opened: " .. tostring(UiOverlayManager:getCurrentOverlayName(host)))
+                break
+            end
+        end
+    end
+end
+
 function System_OnStart(host)
-    print("System_OnStart")
     local obj = EngineInputReceiver:new()
     obj.subscribeToMouseEvents = false
-    obj:subscribeOnPressedKeyboardButton(function()
-        print("Keyboard buttons pressed!")
-    end)
+    obj:subscribeOnPressedKeyboardButton(onPressedKeyboardButtons)
 
     addToGlobalContext("testInpuReceiver", obj)
 end
 
 function System_OnUpdate(host)
-    --print("System_OnUpdate")
     for _, value in pairs(GlobalContext) do
         if value.canUpdate then
             value:update(host)

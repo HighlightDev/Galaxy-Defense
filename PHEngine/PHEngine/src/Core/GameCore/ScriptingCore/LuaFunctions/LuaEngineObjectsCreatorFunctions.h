@@ -8,7 +8,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ACamera.h"
-#include "LuaCommonEngineFunctions.h"
+#include "ILuaFunctionable.h"
 
 using namespace EngineCore;
 
@@ -16,9 +16,18 @@ namespace EngineCore
 {
    namespace Scripts
    {
+      class LuaScriptExecutorBase;
+      class LuaScriptProcessor;
+
       class LuaEngineObjectsCreatorFunctions
-          : public LuaCommonEngineFunctions
+          : public ILuaFunctionable
       {
+         LuaScriptExecutorBase *mOwnerPtr;
+
+         std::weak_ptr<Scene> mSceneWp;
+
+         std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
+
          // To make sure that shared ptr on component will live while raw pointers on that components are used only within Lua code
          std::unordered_map<uint64_t, std::shared_ptr<Component>> mActiveComponents;
 
@@ -26,12 +35,21 @@ namespace EngineCore
          std::vector<ComponentData *> mAllocatedComponentData;
 
       public:
-         LuaEngineObjectsCreatorFunctions(const std::string &scriptName);
+         LuaEngineObjectsCreatorFunctions(LuaScriptExecutorBase *ownerPtr);
 
          ~LuaEngineObjectsCreatorFunctions();
 
-         void RegisterCallbacks() override;
+         void SetScene(const std::weak_ptr<Scene> &sceneWp) override;
 
+         void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor) override;
+
+         void OnScriptStarted(const LuaWrapper &luaWrapper) override;
+
+         void OnScriptStopped(const LuaWrapper &luaWrapper) override;
+
+         void RegisterCallbacks(const LuaWrapper &luaWrapper) override;
+
+      private:
          // Common callbacks
          /* -------------------  Load asynchronously resources by names ----------------------------*/
          void LoadResourcesAsync(const std::tuple<std::string> &asyncLoadNamesData);

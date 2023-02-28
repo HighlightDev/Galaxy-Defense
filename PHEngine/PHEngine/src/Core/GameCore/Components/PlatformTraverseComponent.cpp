@@ -14,7 +14,7 @@ namespace EngineCore
 {
    PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData &data)
        : Component(data.EngineObjectName),
-         mScriptExecutor(std::make_shared<LuaPlatformTraverseComponentFunctions>(this, data.mScriptName)),
+         mScriptExecutor(std::make_shared<LuaPlatformTraverseScriptExecutor>(data.mScriptName, this)),
          mDestinationPoint("NO"),
          mTime(0.0f)
    {
@@ -37,6 +37,9 @@ namespace EngineCore
          {
             if (const auto& scriptProcessorSp = sceneSp->GetThreadManager().GetLuaScriptProcessor().lock())
             {
+               mScriptExecutor->SetScene(sceneSp);
+               mScriptExecutor->SetLuaScriptProcessor(scriptProcessorSp);
+
                scriptProcessorSp->RegisterLuaScriptExecutor(mScriptExecutor);
             }
          }

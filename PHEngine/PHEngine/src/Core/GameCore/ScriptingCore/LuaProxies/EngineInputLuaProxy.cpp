@@ -67,14 +67,17 @@ namespace EngineCore
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data)
         {
+            // todo: to be implemented lated
         }
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseScrollEvent::EventData_t &data)
         {
+            // todo: to be implemented lated
         }
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data)
         {
+            // todo: to be implemented lated
         }
 
         bool EngineInputLuaProxy::GetIsPressedKeyboardKeys() const
@@ -87,14 +90,18 @@ namespace EngineCore
             return mIsReleasedKeyboardKeys;
         }
 
+        std::string EngineInputLuaProxy::GetKeyboardJsonData() const
+        {
+            return mKeyboardJsonData;
+        }
+
         void EngineInputLuaProxy::PrepareKeyboardJsonData()
         {
             if (mPressedKeysOnCurrentTick.size())
             {
-                nlohmann::json jsonObject;
-                jsonObject["pressed_keys"] = mPressedKeysOnCurrentTick;
-                auto str = jsonObject.dump();
-                volatile auto str1 = str;
+                nlohmann::json pressedKeysJson;
+                pressedKeysJson["pressed_keys"] = mPressedKeysOnCurrentTick;
+                mKeyboardJsonData = pressedKeysJson.dump();
             }
         }
     }

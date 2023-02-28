@@ -55,6 +55,8 @@ namespace EngineCore
 
             bool GetIsReleasedKeyboardKeys() const;
 
+            std::string GetKeyboardJsonData() const;
+
         private:
             void PrepareKeyboardJsonData();
         };

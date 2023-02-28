@@ -19,7 +19,7 @@ extern "C"
 
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/ScriptingCore/LuaScriptExecutorBase.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "LuaWrapper.h"
 #include "LuaHelper.h"
 

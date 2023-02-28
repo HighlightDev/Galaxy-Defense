@@ -1,8 +1,25 @@
+--[[ BEGIN *** this snippet have to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--
+local function setup()
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match("(.*/)")
+    if pathToCurrentScript ~= nil then
+        package.path = package.path .. ";" .. pathToCurrentScript .. "?.lua"
+    end
+end
+
+setup()
+--[[ END   *** this snippet have to be inserted everywhere where your want to require custom modules  ***  END]]
+--
+
+local KeyboardKeys = require("keyboardKeys")
+local json = require("json")
+
 EngineInputReceiver = {
 }
 
 function EngineInputReceiver:new()
-    print("EngineInputReceiver::new")
+    print("EngineInputReceiver::ctor")
     local localObj = {
         subscribeToKeyboardEvents = true,
         subscribeToMouseEvents = true,
@@ -22,7 +39,20 @@ function EngineInputReceiver:update(host)
 
     if self.subscribeToKeyboardEvents then
         if self.hasPressedKeyboardButtons and self.onPressedKeyboardButtonCallback ~= nil then
-            self.onPressedKeyboardButtonCallback()
+            local keyboardPressedKeyNames = {}
+            if KeyboardKeys.ValuesToKeysPairs ~= nil then
+                local jsonValuesToKeys = _GetKeyboardJsonData(host)
+                local parsedJson = json.decode(jsonValuesToKeys)
+                if parsedJson["pressed_keys"] ~= nil then
+                    local keyboardValues = parsedJson["pressed_keys"]
+
+                    for _, value in pairs(keyboardValues) do
+                        table.insert(keyboardPressedKeyNames, KeyboardKeys.ValuesToKeysPairs[value])
+                    end
+                end
+            end
+
+            self.onPressedKeyboardButtonCallback(host, keyboardPressedKeyNames)
         end
         if self.hasReleasedKeyboardButtons and self.onReleasedKeyboardButtonCallback ~= nil then
             self.onReleasedKeyboardButtonCallback()
@@ -31,7 +61,7 @@ function EngineInputReceiver:update(host)
 end
 
 function EngineInputReceiver:__gc(self)
-    print("EngineInputReceiver::dctor: ")
+    print("EngineInputReceiver::dctor")
 end
 
 function EngineInputReceiver:subscribeOnPressedKeyboardButton(callback)

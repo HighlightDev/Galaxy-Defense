@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ILuaScriptExecutable.h"
-#include "LuaWrapper.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaWrapper.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 #include <unordered_map>
@@ -37,7 +37,7 @@ namespace EngineCore
             LuaWrapper mLuaInstance;
 
         public:
-            LuaScriptExecutorBase();
+            LuaScriptExecutorBase(const std::string &scriptName);
 
             std::string GetScriptName() const;
 
@@ -48,11 +48,19 @@ namespace EngineCore
             // todo: should not be used, istead LuaScriptProcessor should be used
             void SetScene(const std::weak_ptr<Scene> &scene);
 
-            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor);
+            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor);
+
+            std::weak_ptr<Scene> GetScene() const;
+
+            std::weak_ptr<LuaScriptProcessor> GetLuaScriptProcessor() const;
 
             void AddFunctor(const uint64_t functorNameHash, const std::any &functor);
 
             void RunScript() override;
+
+            void StopScript() override;
+
+            void OnUpdate(const float deltaTime);
 
         protected:
             void SetScript(const std::string &scriptName);

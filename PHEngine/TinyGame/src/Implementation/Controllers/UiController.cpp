@@ -22,7 +22,7 @@ namespace Game
 {
     UiController::UiController(const std::weak_ptr<Scene> &scene)
         : mSceneWp(scene),
-          mOverlayManager(std::make_shared<OverlayManager>()),
+          mOverlayManager(std::make_shared<OverlayManager>(mSceneWp)),
           mInputComponent(std::make_shared<InputComponent>(ComponentData("UiController Input Component"))),
           mPressButtonCooldown(0.0f)
     {

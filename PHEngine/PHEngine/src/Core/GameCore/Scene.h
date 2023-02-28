@@ -14,6 +14,7 @@
 #include "TextHandler.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/DebugCore/DebugUiController.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -25,6 +26,7 @@ using namespace Resources;
 using namespace Graphics;
 using namespace GUI;
 using namespace EngineCore::Debug;
+using namespace EngineCore::Scripts;
 
 namespace Graphics
 {
@@ -60,7 +62,9 @@ namespace EngineCore
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      std::vector<EngineObject *> EngineObjects;
+      std::vector<EngineObject *> mEngineObjects;
+
+      std::vector<std::shared_ptr<EngineToLuaReplicatorBase>> mLuaReplicators;
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
@@ -119,6 +123,12 @@ namespace EngineCore
       EngineObject *GetEngineObjectByName(const std::string &name) const;
 
       EngineObject *GetEngineObjectById(const uint64_t id) const;
+
+      bool RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase>& replicator);
+
+      bool RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase>& replicator);
+
+      std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorById(const int32_t id) const;
 
       IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 

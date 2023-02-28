@@ -1,16 +1,25 @@
 #include "OverlayManager.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/OverlayManagerLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/OverlayManagerLuaProxy.h"
 
 #include <algorithm>
+
+using namespace EngineCore;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
     namespace GUI
     {
-        OverlayManager::OverlayManager()
-            : mOverlays(),
-              mCurrentOpenedOverlay()
+        OverlayManager::OverlayManager(const std::weak_ptr<Scene> &scene)
+            : EngineToLuaReplicatorBase(),
+              mOverlays(),
+              mCurrentOpenedOverlay(),
+              mSceneWp(scene)
         {
         }
 
@@ -30,9 +39,19 @@ namespace EngineCore
             mOverlays.erase(remove_it);
         }
 
+        std::shared_ptr<LuaProxy> OverlayManager::ReplicateLuaProxy()
+        {
+            return std::make_shared<OverlayManagerLuaProxy>(std::static_pointer_cast<OverlayManager>(shared_from_this()));
+        }
+
         std::shared_ptr<IUiOverlay> OverlayManager::GetOverlayByName(const std::string &name)
         {
             return FindOverlay(name);
+        }
+
+        std::weak_ptr<::EngineCore::Scene> OverlayManager::GetSceneWp() const
+        {
+            return mSceneWp;
         }
 
         void OverlayManager::OpenOverlay(const std::string &overlayName)
@@ -45,6 +64,7 @@ namespace EngineCore
             }
             mCurrentOpenedOverlay = foundOverlay;
             mCurrentOpenedOverlay->OpenOverlay();
+            SyncLuaThreadData();
         }
 
         void OverlayManager::CloseCurrentOverlay()
@@ -53,6 +73,7 @@ namespace EngineCore
             {
                 mCurrentOpenedOverlay->CloseOverlay();
                 mCurrentOpenedOverlay = nullptr;
+                SyncLuaThreadData();
             }
         }
 
@@ -84,9 +105,25 @@ namespace EngineCore
 
         void OverlayManager::Initialize()
         {
-            for (const auto &overlay : mOverlays)
+            static constexpr auto functionId = Hash64_CT("OverlayManager::Initialize");
+
+            if (const auto &sceneSp = mSceneWp.lock())
             {
-                overlay->Initialize();
+                sceneSp->RegisterEngineToLuaReplicator(shared_from_this());
+                SetLuaScriptProcessor(sceneSp->GetThreadManager().GetLuaScriptProcessor());
+                const auto &overlayManagerLuaProxy = std::static_pointer_cast<OverlayManagerLuaProxy>(ReplicateLuaProxy());
+                sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetReplicatorId(), functionId, [this, overlayManagerLuaProxy]()
+                {
+                    if (const auto& luaProcessorSp = mLuaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->SetOverlayManagerLuaProxy(overlayManagerLuaProxy);
+                    }
+                });
+
+                for (const auto &overlay : mOverlays)
+                {
+                    overlay->Initialize();
+                }
             }
         }
 
@@ -95,6 +132,24 @@ namespace EngineCore
             const auto findIt = std::find_if(mOverlays.cbegin(), mOverlays.cend(), [&](const auto &overlay)
                                              { return overlay->GetOverlayName() == overlayName; });
             return findIt != mOverlays.end() ? *findIt : nullptr;
+        }
+
+        void OverlayManager::SyncLuaThreadData()
+        {
+            if (const auto &sceneSp = mSceneWp.lock())
+            {
+                if (const auto &luaProcessorSp = mLuaScriptProcessorWp.lock())
+                {
+                    if (const auto &overlayManagerLuaProxy = luaProcessorSp->GetOverlayManagerLuaProxy())
+                    {
+                        static constexpr auto functionId = Hash64_CT("OverlayManager::SyncLuaThreadData");
+                        sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [overlayManagerLuaProxy, overlayName = GetCurrentOpenedOverlayName()]()
+                        {
+                             overlayManagerLuaProxy->SetCurrentOverlay(overlayName); 
+                        });
+                    }
+                }
+            }
         }
     }
 }

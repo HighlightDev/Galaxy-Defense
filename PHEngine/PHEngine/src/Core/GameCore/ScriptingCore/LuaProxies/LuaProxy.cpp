@@ -4,27 +4,27 @@ namespace EngineCore
 {
     namespace Scripts
     {
-        size_t LuaProxy::s_LuaProxyIdCounter = 0;
+        int32_t LuaProxy::s_LuaProxyId = -1;
 
         LuaProxy::LuaProxy()
-            : mLuaProxyId(s_LuaProxyIdCounter++),
-              mGameObjectId()
+            : mLuaProxyId(++s_LuaProxyId),
+              mReplicatorId()
         {
         }
 
-        size_t LuaProxy::GetLuaProxyId() const
+        int32_t LuaProxy::GetLuaProxyId() const
         {
             return mLuaProxyId;
         }
 
-        size_t LuaProxy::GetGameObjectId() const
+        int32_t LuaProxy::GetReplicatorId() const
         {
-            return mGameObjectId;
+            return mReplicatorId;
         }
 
-        void LuaProxy::SetBindedGameObjectId(const uint64_t gameObjectId)
+        void LuaProxy::SetReplicatorId(const int32_t id)
         {
-            mGameObjectId = gameObjectId;
+            mReplicatorId = id;
         }
     }
 }

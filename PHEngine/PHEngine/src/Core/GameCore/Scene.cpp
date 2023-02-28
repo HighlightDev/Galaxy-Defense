@@ -24,7 +24,8 @@ namespace EngineCore
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
        : EngineObject("EngineScene"),
          mPhysicsWorld(new PhysicsWorld()),
-         EngineObjects(),
+         mEngineObjects(),
+         mLuaReplicators(),
          m_interThreadMgr(interThreadMgr),
          mGameThreadDeltaSec(std::make_shared<EngineGOProperty<float>>(0.0f, "GT_DeltaSec")),
          mDeferredResourceCreators(),
@@ -210,12 +211,12 @@ namespace EngineCore
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
    {
       const std::string &goName = actor->GetEngineObjectName();
-      auto it = std::remove_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+      auto it = std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
                                { return gameObject->GetEngineObjectName() == goName; });
 
-      if (it != EngineObjects.end())
+      if (it != mEngineObjects.end())
       {
-         EngineObjects.erase(it, EngineObjects.end());
+         mEngineObjects.erase(it, mEngineObjects.end());
       }
    }
 
@@ -228,10 +229,10 @@ namespace EngineCore
    {
       EngineObject *go = nullptr;
 
-      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
                              { return gameObject->GetEngineObjectName() == name; });
 
-      if (it != EngineObjects.end())
+      if (it != mEngineObjects.end())
       {
          go = *it;
       }
@@ -243,10 +244,10 @@ namespace EngineCore
    {
       EngineObject *go = nullptr;
 
-      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [=](const auto *gameObject)
+      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [=](const auto *gameObject)
                              { return gameObject->GetObjectId() == id; });
 
-      if (it != EngineObjects.end())
+      if (it != mEngineObjects.end())
       {
          go = *it;
       }
@@ -1035,16 +1036,53 @@ namespace EngineCore
       return false;
    }
 
-   bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
+   bool Scene::RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
    {
-      const std::string &goName = gameObjectPtr->GetEngineObjectName();
-      auto it = std::find_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
-                             { return gameObject->GetEngineObjectName() == goName; });
+      const auto replicatorId = replicator->GetReplicatorId();
+      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [replicatorId](const auto &luaReplicator)
+                             { return luaReplicator->GetReplicatorId() == replicatorId; });
 
-      assert(it == EngineObjects.end());
+      assert(it == mLuaReplicators.end());
 
       // Add game object
-      EngineObjects.emplace_back(gameObjectPtr);
+      mLuaReplicators.emplace_back(replicator);
+
+      return true;
+   }
+
+   bool Scene::RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
+   {
+      const auto replicatorId = replicator->GetReplicatorId();
+      auto it = std::remove_if(mLuaReplicators.begin(), mLuaReplicators.end(), [replicatorId](const auto &luaReplicator)
+                               { return luaReplicator->GetReplicatorId() == replicatorId; });
+
+      if (it != mLuaReplicators.end())
+      {
+         mLuaReplicators.erase(it, mLuaReplicators.end());
+         return true;
+      }
+
+      return false;
+   }
+
+   std::shared_ptr<EngineToLuaReplicatorBase> Scene::GetEngineToLuaReplicatorById(const int32_t id) const
+   {
+      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [id](const auto &luaReplicator)
+                             { return luaReplicator->GetReplicatorId() == id; });
+
+      return (it != mLuaReplicators.end()) ? *it : nullptr;
+   }
+
+   bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
+   {
+      const auto objectId = gameObjectPtr->GetObjectId();
+      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto *gameObject)
+                             { return gameObject->GetObjectId() == objectId; });
+
+      assert(it == mEngineObjects.end());
+
+      // Add game object
+      mEngineObjects.emplace_back(gameObjectPtr);
 
       return true;
    }
@@ -1053,12 +1091,12 @@ namespace EngineCore
    {
       const std::string &goName = gameObjectPtr->GetEngineObjectName();
 
-      auto it = std::remove_if(EngineObjects.begin(), EngineObjects.end(), [&](const auto *gameObject)
+      auto it = std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
                                { return gameObject->GetEngineObjectName() == goName; });
 
-      if (it != EngineObjects.end())
+      if (it != mEngineObjects.end())
       {
-         EngineObjects.erase(it, EngineObjects.end());
+         mEngineObjects.erase(it, mEngineObjects.end());
          return true;
       }
 

@@ -10,24 +10,23 @@ namespace EngineCore
     {
         class LuaProxy
         {
-            static size_t s_LuaProxyIdCounter;
+            static int32_t s_LuaProxyId;
 
         protected:
-            size_t mLuaProxyId;
+            int32_t mLuaProxyId;
 
-            uint64_t mGameObjectId;
+            int32_t mReplicatorId;
 
         public:
-
             LuaProxy();
 
             virtual ~LuaProxy() = default;
 
-            size_t GetLuaProxyId() const;
+            int32_t GetLuaProxyId() const;
 
-            uint64_t GetGameObjectId() const;
+            int32_t GetReplicatorId() const;
 
-            void SetBindedGameObjectId(const uint64_t gameObjectId);
+            void SetReplicatorId(const int32_t id);
         };
     }
 }

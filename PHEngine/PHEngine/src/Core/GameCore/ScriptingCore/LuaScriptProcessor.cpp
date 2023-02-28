@@ -1,5 +1,5 @@
 #include "LuaScriptProcessor.h"
-#include "LuaScriptExecutorBase.h"
+#include "LuaScriptExecutors/LuaScriptExecutorBase.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
@@ -47,6 +47,17 @@ namespace EngineCore
             return luaIt != mLuaProxies.end() ? *luaIt : nullptr;
         }
 
+        std::shared_ptr<OverlayManagerLuaProxy> LuaScriptProcessor::GetOverlayManagerLuaProxy() const
+        {
+            return mOverlayManagerLuaProxy;
+        }
+
+        void LuaScriptProcessor::SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy)
+        {
+            assert(overlayManagerLuaProxy);
+            mOverlayManagerLuaProxy = overlayManagerLuaProxy;
+        }
+
         void LuaScriptProcessor::AddLuaProxy(const std::shared_ptr<LuaProxy> &luaProxy)
         {
             assert(!GetLuaProxy(luaProxy->GetLuaProxyId()));
@@ -55,10 +66,7 @@ namespace EngineCore
 
         void LuaScriptProcessor::Initialize()
         {
-            if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
-            {
-                mInputLuaProxy = std::make_shared<EngineInputLuaProxy>();
-            }
+            mInputLuaProxy = std::make_shared<EngineInputLuaProxy>();
         }
     }
 }

@@ -1722,10 +1722,10 @@
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaEngineObjectsCreatorFunctions.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineObjectsCreatorFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaActorFunctions.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaActorFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\EngineObjectProperty.h">
@@ -1740,10 +1740,10 @@
     <ClInclude Include="src\Core\GameCore\Components\PlatformTraverseComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaPlatformTraverseComponentFunctions.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaPlatformTraverseComponentFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.h">
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaCommonEngineFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Event\KinematicBodyMovedEvent.h">
@@ -2759,10 +2759,10 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaEngineObjectsCreatorFunctions.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineObjectsCreatorFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaActorFunctions.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaActorFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp">
@@ -2774,10 +2774,10 @@
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaPlatformTraverseComponentFunctions.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaPlatformTraverseComponentFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaExecutors\LuaCommonEngineFunctions.cpp">
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaCommonEngineFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponentVisitor.cpp">

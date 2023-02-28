@@ -2,22 +2,40 @@
 
 #include "IUiOverlay.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 
 #include <memory>
 #include <vector>
 
 namespace EngineCore
 {
+    class Scene;
+
+    namespace Scripts
+    {
+        class LuaProxy;
+    }
+}
+
+using namespace EngineCore::Scripts;
+
+namespace EngineCore
+{
     namespace GUI
     {
-        class OverlayManager : public ITickable
+        class OverlayManager : public EngineToLuaReplicatorBase,
+                               public ITickable
         {
             std::vector<std::shared_ptr<IUiOverlay>> mOverlays;
 
             std::shared_ptr<IUiOverlay> mCurrentOpenedOverlay;
 
+            std::weak_ptr<::EngineCore::Scene> mSceneWp;
+
         public:
-            OverlayManager();
+            OverlayManager(const std::weak_ptr<Scene> &scene);
+
+            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
             void RegisterOverlay(std::shared_ptr<IUiOverlay> overlay);
 
@@ -39,8 +57,12 @@ namespace EngineCore
 
             void Initialize();
 
+            std::weak_ptr<::EngineCore::Scene> GetSceneWp() const;
+
         private:
             std::shared_ptr<IUiOverlay> FindOverlay(const std::string &overlayName) const;
+
+            void SyncLuaThreadData();
         };
     }
 }

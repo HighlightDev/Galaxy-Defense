@@ -1,4 +1,5 @@
 #include "LuaScriptExecutorBase.h"
+#include "Core/CommonCore/ThreadHelper.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GameCore/ScriptingCore/LuaCore.inl"
@@ -14,9 +15,9 @@ namespace EngineCore
     namespace Scripts
     {
         size_t LuaScriptExecutorBase::sUid = 0;
-        LuaScriptExecutorBase::LuaScriptExecutorBase()
+        LuaScriptExecutorBase::LuaScriptExecutorBase(const std::string &scriptName)
             : mUId(sUid++),
-              mScriptName(),
+              mScriptName(scriptName),
               mFunctors()
         {
         }
@@ -48,9 +49,19 @@ namespace EngineCore
             mSceneWP = scene;
         }
 
-        void LuaScriptExecutorBase::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
+        void LuaScriptExecutorBase::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor)
         {
             mLuaScriptProcessor = scriptProcessor;
+        }
+
+        std::weak_ptr<Scene> LuaScriptExecutorBase::GetScene() const
+        {
+            return mSceneWP;
+        }
+
+        std::weak_ptr<LuaScriptProcessor> LuaScriptExecutorBase::GetLuaScriptProcessor() const
+        {
+            return mLuaScriptProcessor;
         }
 
         void LuaScriptExecutorBase::AddFunctor(const uint64_t functorNameHash, const std::any &functor)
@@ -72,6 +83,20 @@ namespace EngineCore
             if (mHasOnStart)
             {
                 LuaFunctionInvoker<void(void *)>::Invoke(mLuaInstance, "System_OnStart", (void *)this);
+            }
+        }
+
+        void LuaScriptExecutorBase::StopScript()
+        {
+            mLuaInstance.StopExecution();
+        }
+
+        void LuaScriptExecutorBase::OnUpdate(const float deltaTime)
+        {
+            if (mHasOnUpdate)
+            {
+                assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+                LuaFunctionInvoker<void(void *, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void *)this, deltaTime);
             }
         }
     }
