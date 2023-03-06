@@ -47,6 +47,11 @@ namespace EngineCore
             return luaIt != mLuaProxies.end() ? *luaIt : nullptr;
         }
 
+        const InterThreadCommunicationMgr &LuaScriptProcessor::GetThreadManager() const
+        {
+            return m_interThreadMgr;
+        }
+
         std::shared_ptr<OverlayManagerLuaProxy> LuaScriptProcessor::GetOverlayManagerLuaProxy() const
         {
             return mOverlayManagerLuaProxy;

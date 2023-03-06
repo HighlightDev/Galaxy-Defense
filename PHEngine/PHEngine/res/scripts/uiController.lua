@@ -14,6 +14,7 @@ setup()
 
 local EngineInputReceiver = require("core/engineInputReceiver")
 local UiOverlayManager = require("core/uiOverlayManager")
+local EngineEventsHolder = require("core/engineEventsHolder")
 
 GlobalContext = {
 }
@@ -22,12 +23,22 @@ local function addToGlobalContext(key, object)
     GlobalContext[key] = object
 end
 
+local pressButtonCooldown = 0.0
+
 local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     if keyboardPressedKeyNames ~= nil then
         for _, value in pairs(keyboardPressedKeyNames) do
             if value == "Escape" then
-                print("Overlay opened: " .. tostring(UiOverlayManager:getCurrentOverlayName(host)))
-                break
+                if pressButtonCooldown >= 0.5 then
+                    pressButtonCooldown = 0.0
+                    if "PauseMenu" == UiOverlayManager:getCurrentOverlayName(host) then
+                        EngineEventsHolder:sendPauseGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
+                        UiOverlayManager:closeCurrentOverlay(host)
+                    else
+                        EngineEventsHolder:sendPauseGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+                        UiOverlayManager:openOverlay(host, "PauseMenu");
+                    end
+                end
             end
         end
     end
@@ -41,12 +52,13 @@ function System_OnStart(host)
     addToGlobalContext("testInpuReceiver", obj)
 end
 
-function System_OnUpdate(host)
+function System_OnUpdate(host, deltaTimeSec)
     for _, value in pairs(GlobalContext) do
         if value.canUpdate then
             value:update(host)
         end
     end
+    pressButtonCooldown = pressButtonCooldown + deltaTimeSec
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

@@ -29,6 +29,10 @@ namespace EngineCore
             void SetCurrentOverlay(const std::string& currentOverlayName);
 
             std::string GetCurrentOverlayName() const;
+
+            void OpenOverlay(const std::string &overlayName);
+
+            void CloseCurrentOverlay();
         };
     }
 }

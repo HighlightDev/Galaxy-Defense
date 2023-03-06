@@ -33,6 +33,8 @@ namespace EngineCore
             int32_t GetLuaProxyId() const;
 
             void SetLuaScriptProcessor(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> &luaScriptProcessor);
+
+            std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessorWp() const;
         };
     }
 }

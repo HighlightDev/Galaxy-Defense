@@ -189,13 +189,16 @@ namespace EngineCore
 
       while (bLuaThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
+         const auto ltStartTimePoint = EngineTime::GetNowTime();
          ProcessLuaThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
          m_interThreadMgr.SpinLuaThreadJob();
 
-         m_luaScriptProcessor->Tick(0.0f);
+         m_luaScriptProcessor->Tick(mLuaThreadDeltaTimeSeconds);
 
          ProcessLuaThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
-         std::this_thread::sleep_for(100ms);
+         std::this_thread::sleep_for(20ms);
+         mLuaThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
+                EngineTime::GetPassedDuration(ltStartTimePoint));
       }
    }
 
@@ -290,6 +293,11 @@ namespace EngineCore
    float Engine::GetGameThreadDeltaTime() const
    {
       return mGameThreadDeltaTimeSeconds;
+   }
+
+   float Engine::GetLuaThreadDeltaTime() const
+   {
+      return mLuaThreadDeltaTimeSeconds;
    }
 
    bool Engine::IsExitGameState() const

@@ -56,6 +56,8 @@ namespace EngineCore
 
         float mGameThreadDeltaTimeSeconds;
 
+        float mLuaThreadDeltaTimeSeconds;
+
         std::atomic_bool bPauseGameThreadExecution{false};
 
         bool bExitGame{false};
@@ -100,6 +102,8 @@ namespace EngineCore
         float GetRenderThreadDeltaTime() const;
 
         float GetGameThreadDeltaTime() const;
+
+        float GetLuaThreadDeltaTime() const;
 
         InterThreadCommunicationMgr &GetThreadCommunicationManager();
 

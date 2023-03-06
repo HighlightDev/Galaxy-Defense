@@ -214,6 +214,29 @@ namespace EngineCore
          };
 
          template <>
+         struct GetLuaValue<bool>
+         {
+         public:
+            FORCEINLINE static bool Value(const LuaWrapper &instanceWrapper, int32_t &stackIndex)
+            {
+               return Inner_Value(instanceWrapper.GetState(), stackIndex);
+            }
+
+            FORCEINLINE static bool Value(lua_State *state, int32_t &stackIndex)
+            {
+               return Inner_Value(state, stackIndex);
+            }
+
+         private:
+            FORCEINLINE static bool Inner_Value(lua_State *state, int32_t &stackIndex)
+            {
+               const int32_t currentStackIndex = stackIndex--;
+               assert(lua_isboolean(state, currentStackIndex));
+               return lua_toboolean(state, currentStackIndex);
+            }
+         };
+
+         template <>
          struct GetLuaValue<double>
          {
          public:

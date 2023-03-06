@@ -26,8 +26,6 @@ namespace Game
 
         std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
 
-        float mPressButtonCooldown;
-
     public:
         UiController(const std::weak_ptr<::EngineCore::Scene> &scene);
 

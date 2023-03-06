@@ -9,8 +9,9 @@ namespace Game
 {
    LuaUiControllerExecutor::LuaUiControllerExecutor(const std::string &scriptName)
        : LuaScriptExecutorBase(scriptName),
-         mLuaCommonUiCallbacks(std::make_unique<LuaCommonUiCallbacks>(this)),
-         mLuaCommonEngineFunctions(std::make_unique<LuaCommonEngineFunctions>(this))
+         mLuaCommonUiCallbacks(std::make_unique<LuaCommonUiFunctions>(this)),
+         mLuaCommonEngineFunctions(std::make_unique<LuaCommonEngineFunctions>(this)),
+         mLuaEngineEventsFunctions(std::make_unique<LuaEngineEventsFunctions>(this))
    {
    }
 
@@ -24,6 +25,7 @@ namespace Game
 
       mLuaCommonUiCallbacks->OnScriptStarted(mLuaInstance);
       mLuaCommonEngineFunctions->OnScriptStarted(mLuaInstance);
+      mLuaEngineEventsFunctions->OnScriptStarted(mLuaInstance);
    }
 
    void LuaUiControllerExecutor::StopScript()
@@ -32,17 +34,21 @@ namespace Game
 
       mLuaCommonUiCallbacks->OnScriptStopped(mLuaInstance);
       mLuaCommonEngineFunctions->OnScriptStopped(mLuaInstance);
+      mLuaEngineEventsFunctions->OnScriptStarted(mLuaInstance);
    }
 
    void LuaUiControllerExecutor::RegisterCallbacks()
    {
       mLuaCommonUiCallbacks->SetScene(GetScene());
-      mLuaCommonUiCallbacks->SetLuaScriptProcessor(GetLuaScriptProcessor());
-
       mLuaCommonEngineFunctions->SetScene(GetScene());
+      mLuaEngineEventsFunctions->SetScene(GetScene());
+
+      mLuaCommonUiCallbacks->SetLuaScriptProcessor(GetLuaScriptProcessor());
       mLuaCommonEngineFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
+      mLuaEngineEventsFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
 
       mLuaCommonUiCallbacks->RegisterCallbacks(mLuaInstance);
       mLuaCommonEngineFunctions->RegisterCallbacks(mLuaInstance);
+      mLuaEngineEventsFunctions->RegisterCallbacks(mLuaInstance);
    }
 }

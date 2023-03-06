@@ -16,7 +16,7 @@ namespace EngineCore
       class LuaScriptExecutorBase;
       class LuaScriptProcessor;
 
-      class LuaCommonUiCallbacks
+      class LuaEngineEventsFunctions
           : public ILuaFunctionable
       {
       protected:
@@ -27,7 +27,7 @@ namespace EngineCore
          std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessor;
 
       public:
-         LuaCommonUiCallbacks(LuaScriptExecutorBase *ownerPtr);
+         LuaEngineEventsFunctions(LuaScriptExecutorBase *ownerPtr);
 
          void SetScene(const std::weak_ptr<Scene> &sceneWp) override;
 
@@ -40,7 +40,7 @@ namespace EngineCore
          void RegisterCallbacks(const LuaWrapper &luaWrapper) override;
 
       private:
-         std::string GetCurrentOverlayName(const std::tuple<> &data);
+         void SendPauseGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/> &data);
       };
    }
 }

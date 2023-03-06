@@ -32,5 +32,10 @@ namespace EngineCore
         {
             mLuaScriptProcessorWp = luaScriptProcessor;
         }
+
+        std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> EngineToLuaReplicatorBase::GetLuaScriptProcessorWp() const
+        {
+            return mLuaScriptProcessorWp;
+        }
     }
 }

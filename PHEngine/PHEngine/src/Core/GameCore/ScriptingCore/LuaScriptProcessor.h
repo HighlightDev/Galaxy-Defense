@@ -55,6 +55,8 @@ namespace EngineCore
             std::shared_ptr<LuaProxy> GetLuaProxy(const size_t luaProxyId) const;
 
             void AddLuaProxy(const std::shared_ptr<LuaProxy> &luaProxy);
+
+            const InterThreadCommunicationMgr &GetThreadManager() const;
         };
     }
 }
