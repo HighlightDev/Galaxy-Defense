@@ -44,6 +44,10 @@ namespace EngineCore
             return std::make_shared<OverlayManagerLuaProxy>(std::static_pointer_cast<OverlayManager>(shared_from_this()));
         }
 
+        void OverlayManager::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
+        {
+        }
+
         std::shared_ptr<IUiOverlay> OverlayManager::GetOverlayByName(const std::string &name)
         {
             return FindOverlay(name);

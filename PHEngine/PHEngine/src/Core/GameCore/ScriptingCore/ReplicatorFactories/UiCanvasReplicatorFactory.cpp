@@ -1,0 +1,65 @@
+#include "UiCanvasReplicatorFactory.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/GameCore/GUI/UiElements/UiHandler.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <json/json.hpp>
+
+using namespace EngineCore;
+using namespace EngineCore::GUI;
+using namespace Graphics;
+
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        int32_t UiCanvasReplicatorFactory::CreateReplicator(const std::weak_ptr<Scene> &sceneWp,
+                                                            const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
+                                                            const std::string &jsonParamsStr) const
+        {
+            assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+            const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
+            const auto &originX = jsonObj["originX"].get<int32_t>();
+            const auto &originY = jsonObj["originY"].get<int32_t>();
+            const auto &width = jsonObj["width"].get<int32_t>();
+            const auto &height = jsonObj["height"].get<int32_t>();
+
+            const auto canvasLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
+
+            if (const auto &sceneSp = sceneWp.lock())
+            {
+                static constexpr auto functionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator");
+                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId]() {
+                    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                    const auto& createdUiCanvas = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height));
+                    createdUiCanvas->SetIsVisible(false);
+                    createdUiCanvas->SetLuaProxyId(canvasLuaProxyId);
+                    createdUiCanvas->SetLuaScriptProcessor(luaScriptProcessorWp);
+                    sceneSp->RegisterEngineToLuaReplicator(createdUiCanvas);
+                    const auto& canvasLuaProxy = createdUiCanvas->ReplicateLuaProxy();
+                    canvasLuaProxy->SetSceneWp(sceneSp);
+                    canvasLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
+
+                    static constexpr auto innerFunctionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator::RegisterLuaProxy");
+                    sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, createdUiCanvas->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, canvasLuaProxy]() {
+                        assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+                        if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                        {
+                            luaProcessorSp->AddLuaProxy(canvasLuaProxy);
+                        }
+                    });
+                });
+            }
+            else
+            {
+                LogInfo("UiCanvasReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+                return -1;
+            }
+
+            return canvasLuaProxyId;
+        }
+    }
+} // namespace EngineCore

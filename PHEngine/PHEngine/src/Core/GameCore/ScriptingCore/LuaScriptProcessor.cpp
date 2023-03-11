@@ -3,6 +3,7 @@
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 namespace EngineCore
 {
@@ -44,6 +45,10 @@ namespace EngineCore
         {
             const auto luaIt = std::find_if(mLuaProxies.begin(), mLuaProxies.end(), [=](const auto &luaProxy)
                                             { return luaProxyId == luaProxy->GetLuaProxyId(); });
+            if (mLuaProxies.end() == luaIt)
+            {
+                LogInfo("LuaScriptProcessor::GetLuaProxy => Error: luaProxy: ", luaProxyId, " doesn't exist");
+            }
             return luaIt != mLuaProxies.end() ? *luaIt : nullptr;
         }
 
@@ -57,7 +62,7 @@ namespace EngineCore
             return mOverlayManagerLuaProxy;
         }
 
-        void LuaScriptProcessor::SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy)
+        void LuaScriptProcessor::SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy> &overlayManagerLuaProxy)
         {
             assert(overlayManagerLuaProxy);
             mOverlayManagerLuaProxy = overlayManagerLuaProxy;

@@ -47,6 +47,10 @@ namespace EngineCore
 
             void ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data) override;
 
+            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
+
+            std::string GetGameThreadData() override;
+
             void SetIsPressedKeyboardKeys(const bool isPressedKeys);
 
             void SetIsReleasedKeyboardKeys(const bool isReleasedKeys);

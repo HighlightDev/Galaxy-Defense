@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <cstdint>
 #include <memory>
+#include <atomic>
 
 namespace EngineCore
 {
@@ -18,7 +19,7 @@ namespace EngineCore
 
         class LuaProxy
         {
-            static int32_t s_LuaProxyId;
+            static std::atomic<int32_t> s_LuaProxyId;
 
         protected:
             int32_t mLuaProxyId;
@@ -29,10 +30,18 @@ namespace EngineCore
 
             std::weak_ptr<LuaScriptProcessor> mLuaScriptProcessorWp;
 
+            bool mIsLuaDataDirty;
+
         public:
             LuaProxy();
 
             virtual ~LuaProxy() = default;
+
+            virtual void OnLuaThreadDataUpdated(const std::string &jsonParameters) = 0;
+
+            virtual std::string GetGameThreadData() = 0;
+
+            bool IsLuaDataDirty() const;
 
             int32_t GetLuaProxyId() const;
 
@@ -40,9 +49,11 @@ namespace EngineCore
 
             void SetReplicatorId(const int32_t id);
 
-            void SetSceneWp(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
+            void SetSceneWp(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
-            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& luaScriptProcessorWp);
+            void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp);
+
+            static int32_t CreateUniqueLuaProxyId();
         };
     }
 }

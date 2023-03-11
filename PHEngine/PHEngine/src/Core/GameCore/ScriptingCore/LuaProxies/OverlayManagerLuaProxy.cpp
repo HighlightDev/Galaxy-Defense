@@ -14,8 +14,9 @@ namespace EngineCore
             : LuaProxy(),
               mCurrentOverlayName()
         {
+            mLuaProxyId = CreateUniqueLuaProxyId();
             SetReplicatorId(owner->GetReplicatorId());
-            owner->SetLuaProxyId(GetLuaProxyId());
+            owner->SetLuaProxyId(mLuaProxyId);
         }
 
         void OverlayManagerLuaProxy::SetCurrentOverlay(const std::string &currentOverlayName)
@@ -58,6 +59,15 @@ namespace EngineCore
                     overlayManager->CloseCurrentOverlay(); 
                 });
             }
+        }
+
+        void OverlayManagerLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
+        {
+        }
+
+        std::string OverlayManagerLuaProxy::GetGameThreadData()
+        {
+            return "";
         }
     }
 }

@@ -32,6 +32,10 @@ namespace EngineCore
 
             void OpenOverlay(const std::string &overlayName);
 
+            void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
+
+            std::string GetGameThreadData() override;
+
             void CloseCurrentOverlay();
         };
     }

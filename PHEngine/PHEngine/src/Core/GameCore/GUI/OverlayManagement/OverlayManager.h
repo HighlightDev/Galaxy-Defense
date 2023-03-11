@@ -37,6 +37,8 @@ namespace EngineCore
 
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
+            void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
+
             void RegisterOverlay(std::shared_ptr<IUiOverlay> overlay);
 
             void UnregisterOverlay(std::shared_ptr<IUiOverlay> overlay);

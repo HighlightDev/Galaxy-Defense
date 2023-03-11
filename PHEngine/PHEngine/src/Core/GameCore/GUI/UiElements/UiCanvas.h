@@ -5,11 +5,13 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 
 #include <unordered_set>
 #include <memory>
 
 using namespace Graphics;
+using namespace EngineCore::Scripts;
 
 namespace Graphics
 {
@@ -21,13 +23,21 @@ namespace Graphics
 
 namespace EngineCore
 {
+    namespace Scripts
+    {
+        class LuaProxy;
+    }
+}
+
+namespace EngineCore
+{
     class Scene;
 
     namespace GUI
     {
-        class UiCanvas : public IUiTransformable,
-                         public ITickable,
-                         public std::enable_shared_from_this<UiCanvas>
+        class UiCanvas : public EngineToLuaReplicatorBase,
+                         public IUiTransformable,
+                         public ITickable
         {
         private:
             static size_t s_UId;
@@ -48,6 +58,8 @@ namespace EngineCore
 
             bool mIsPropertiesShouldBeUpdatedOnRenderThread{false};
 
+            bool mIsPropertiesShouldBeUpdatedOnLuaThread{false};
+
             std::unique_ptr<UiInputSystem> mInputSystem;
 
             bool mWasHoveredLastFrame{false};
@@ -55,6 +67,8 @@ namespace EngineCore
             bool mMouseButtonWasPressedLastFrame{false};
 
             std::vector<std::weak_ptr<UiItemBase>> mDescendingByZOrderHierarchyChildren;
+
+            bool mIsCreatedFromLua{false};
 
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
@@ -66,6 +80,10 @@ namespace EngineCore
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
 
             void InitializeInputSystem();
+
+            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+
+            void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
 
             size_t GetUId() const override;
             const glm::ivec2 &GetAbsoluteOrigin() const override;
@@ -116,12 +134,14 @@ namespace EngineCore
         private:
             void SyncDataOnRenderThread();
 
+            void SyncDataOnLuaThread();
+
             void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) override;
 
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
 
             void SetHorizontalCenterOffset(const int32_t offset) override;
-            
+
             void SetVerticalCenterOffset(const int32_t offset) override;
 
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;

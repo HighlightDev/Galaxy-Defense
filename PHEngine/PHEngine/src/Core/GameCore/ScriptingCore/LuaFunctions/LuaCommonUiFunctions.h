@@ -45,6 +45,14 @@ namespace EngineCore
          void OpenOverlay(const std::tuple<std::string> &overlayName);
 
          void CloseCurrentOverlay(const std::tuple<> &emptyData);
+
+         int32_t CreateCommonUiWidget(const std::tuple<int32_t, std::string> &data);
+
+         bool IsLuaProxyReady(const std::tuple<int32_t>& data);
+
+         void OnCommonUiWidgetDataUpdated(const std::tuple<int32_t/*lua proxy id*/, std::string/*json data*/>& data);
+
+         std::string GetGameThreadData(const std::tuple<int32_t/*lua proxy id*/>& data);
       };
    }
 }

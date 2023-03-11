@@ -8,21 +8,29 @@ namespace EngineCore
 {
     namespace Scripts
     {
-        int32_t LuaProxy::s_LuaProxyId = -1;
+        std::atomic<int32_t> LuaProxy::s_LuaProxyId = -1;
 
         LuaProxy::LuaProxy()
-            : mLuaProxyId(++s_LuaProxyId),
-              mReplicatorId()
+            : mLuaProxyId(-1),
+              mReplicatorId(-1),
+              mIsLuaDataDirty(true)
         {
+        }
+
+        bool LuaProxy::IsLuaDataDirty() const
+        {
+            return mIsLuaDataDirty;
         }
 
         int32_t LuaProxy::GetLuaProxyId() const
         {
+            assert(mLuaProxyId != -1);
             return mLuaProxyId;
         }
 
         int32_t LuaProxy::GetReplicatorId() const
         {
+            assert(mReplicatorId != -1);
             return mReplicatorId;
         }
 
@@ -39,6 +47,11 @@ namespace EngineCore
         void LuaProxy::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp)
         {
             mLuaScriptProcessorWp = luaScriptProcessorWp;
+        }
+
+        int32_t LuaProxy::CreateUniqueLuaProxyId()
+        {
+            return ++s_LuaProxyId;
         }
     }
 }

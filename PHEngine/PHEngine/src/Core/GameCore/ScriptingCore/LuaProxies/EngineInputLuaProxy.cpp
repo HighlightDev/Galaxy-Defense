@@ -11,6 +11,8 @@ namespace EngineCore
               mIsReleasedKeyboardKeys(false),
               mKeyboardJsonData("")
         {
+            mLuaProxyId = CreateUniqueLuaProxyId();
+
             LuaThreadKeyboardButtonDownEvent::GetInstance()->AddListener(this);
             LuaThreadMouseMovedEvent::GetInstance()->AddListener(this);
             LuaThreadMouseScrollEvent::GetInstance()->AddListener(this);
@@ -103,6 +105,15 @@ namespace EngineCore
                 pressedKeysJson["pressed_keys"] = mPressedKeysOnCurrentTick;
                 mKeyboardJsonData = pressedKeysJson.dump();
             }
+        }
+
+        void EngineInputLuaProxy::OnLuaThreadDataUpdated(const std::string &jsonParameters)
+        {
+        }
+
+        std::string EngineInputLuaProxy::GetGameThreadData()
+        {
+            return "";
         }
     }
 }

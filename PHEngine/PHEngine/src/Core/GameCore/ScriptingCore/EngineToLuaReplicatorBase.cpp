@@ -1,5 +1,6 @@
 #include "EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
 {
@@ -25,6 +26,7 @@ namespace EngineCore
 
         int32_t EngineToLuaReplicatorBase::GetLuaProxyId() const
         {
+            assert(mLuaProxyId != -1);
             return mLuaProxyId;
         }
 

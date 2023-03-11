@@ -2,13 +2,17 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/UtilityCore/EngineMath.h"
 
 #include <algorithm>
+#include <json/json.hpp>
 
 using namespace EngineCore;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -17,7 +21,8 @@ namespace EngineCore
         size_t UiCanvas::s_UId = 0;
 
         UiCanvas::UiCanvas(const ViewPortInfo &canvasScreenProperties)
-            : mUId(s_UId++),
+            : EngineToLuaReplicatorBase(),
+              mUId(s_UId++),
               mName("UiCanvas_" + std::to_string(mUId)),
               mAbsoluteOrigin(glm::ivec2(canvasScreenProperties.OriginX, canvasScreenProperties.OriginY)),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
@@ -36,9 +41,15 @@ namespace EngineCore
         {
             if (!mInputSystem)
             {
-                mInputSystem = std::make_unique<UiInputSystem>(shared_from_this());
+                mInputSystem = std::make_unique<UiInputSystem>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
             }
         }
+
+        std::shared_ptr<LuaProxy> UiCanvas::ReplicateLuaProxy()
+        {
+            return std::make_shared<UiCanvasLuaProxy>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
+        }
+
         void UiCanvas::SetScene(const std::weak_ptr<Scene> &sceneWp)
         {
             mScene = sceneWp;
@@ -121,6 +132,7 @@ namespace EngineCore
             {
                 mIsVisible = isVisible;
                 mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
             }
         }
 
@@ -230,6 +242,11 @@ namespace EngineCore
                 SyncDataOnRenderThread();
             }
 
+            if (mIsPropertiesShouldBeUpdatedOnLuaThread)
+            {
+                SyncDataOnLuaThread();
+            }
+
             for (const auto &child : mChildren)
             {
                 child->UnpausableTick(deltaTime);
@@ -299,11 +316,29 @@ namespace EngineCore
                     if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
                     {
                         mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasProxy]()
+                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]()
                                                        {
                                                         canvasProxy->SetIsVisible(mIsVisible);
                                                         canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin);
                                                         canvasProxy->SetWidthHeight(mWidthHeight); });
+                    }
+                }
+            }
+        }
+
+        void UiCanvas::SyncDataOnLuaThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::SyncDataOnLuaThread");
+            if (const auto &sceneSp = mScene.lock())
+            {
+                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                {
+                    if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    {
+                        mIsPropertiesShouldBeUpdatedOnLuaThread = false;
+                        sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]() {
+                            canvasProxy->SetIsVisible_FromGameThread(mIsVisible);
+                        });
                     }
                 }
             }
@@ -400,6 +435,21 @@ namespace EngineCore
                     {
                         childSp->OnMouseClicked(mouseCursorPosition);
                     }
+                }
+            }
+        }
+
+        void UiCanvas::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
+        {
+            const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+            if (jsonObj.contains("visible"))
+            {
+                const auto &isVisible = jsonObj["visible"].get<bool>();
+                // todo: mayby something better
+                if (mIsVisible != isVisible)
+                {
+                    mIsVisible = isVisible;
+                    mIsPropertiesShouldBeUpdatedOnRenderThread = true;
                 }
             }
         }

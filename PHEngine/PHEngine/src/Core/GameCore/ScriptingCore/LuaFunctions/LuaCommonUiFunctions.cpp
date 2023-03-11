@@ -7,6 +7,9 @@
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetType.h"
+#include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -43,6 +46,10 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetCurrentOverlayName"), std::string(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetCurrentOverlayName, this, std::placeholders::_1), "_GetCurrentOverlayName");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OpenOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OpenOverlay, this, std::placeholders::_1), "_OpenOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseCurrentOverlay"), void()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseCurrentOverlay, this, std::placeholders::_1), "_CloseCurrentOverlay");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CreateCommonUiWidget"), int32_t(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CreateCommonUiWidget, this, std::placeholders::_1), "_CreateCommonUiWidget");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::IsLuaProxyReady"), bool(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::IsLuaProxyReady, this, std::placeholders::_1), "_IsLuaProxyReady");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated, this, std::placeholders::_1), "_OnCommonUiWidgetDataUpdated");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetGameThreadData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetGameThreadData, this, std::placeholders::_1), "_GetGameThreadData");
       }
 
       std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<> &data)
@@ -65,12 +72,65 @@ namespace EngineCore
          }
       }
 
-      void LuaCommonUiFunctions::CloseCurrentOverlay(const std::tuple<>& emptyData)
+      void LuaCommonUiFunctions::CloseCurrentOverlay(const std::tuple<> &emptyData)
       {
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {
             luaProcessorSp->GetOverlayManagerLuaProxy()->CloseCurrentOverlay();
          }
+      }
+
+      int32_t LuaCommonUiFunctions::CreateCommonUiWidget(const std::tuple<int32_t, std::string> &data)
+      {
+         const auto commonUiWidgetType = static_cast<eCommonUiWidgetType>(std::get<0>(data));
+         const auto &jsonParametersStr = std::get<1>(data);
+         CommonUiWidgetFactoryCreator factoryCreator;
+         const auto &replicatorFactory = factoryCreator.GetReplicatorFactory(commonUiWidgetType);
+         const int32_t luaProxyId = replicatorFactory->CreateReplicator(mSceneWp, mLuaScriptProcessor, jsonParametersStr);
+         LogInfo("LuaCommonUiFunctions::CreateCommonUiWidget => widgetType: ", static_cast<uint8_t>(commonUiWidgetType), ", luaProxyId: ", luaProxyId);
+         return luaProxyId;
+      }
+
+      bool LuaCommonUiFunctions::IsLuaProxyReady(const std::tuple<int32_t> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            return nullptr != luaProcessorSp->GetLuaProxy(luaProxyId);
+         }
+
+         return false;
+      }
+
+      void LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated(const std::tuple<int32_t /*lua proxy id*/, std::string /*json data*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         const auto &jsonDataStr = std::get<1>(data);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            if (const auto &luaProxySp = luaProcessorSp->GetLuaProxy(luaProxyId))
+            {
+               luaProxySp->OnLuaThreadDataUpdated(jsonDataStr);
+            }
+         }
+      }
+
+      std::string LuaCommonUiFunctions::GetGameThreadData(const std::tuple<int32_t /*lua proxy id*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            if (const auto &luaProxySp = luaProcessorSp->GetLuaProxy(luaProxyId))
+            {
+               if (luaProxySp->IsLuaDataDirty())
+               {
+                  return luaProxySp->GetGameThreadData();
+               }
+            }
+         }
+         return "";
       }
    }
 }
