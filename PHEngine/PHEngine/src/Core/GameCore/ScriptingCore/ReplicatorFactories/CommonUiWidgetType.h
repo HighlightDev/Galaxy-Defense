@@ -6,7 +6,8 @@ namespace EngineCore
     {
         enum class eCommonUiWidgetType
         {
-            UI_CANVAS
+            UI_OVERLAY = 0,
+            UI_CANVAS = 1
         };
     }
 } // namespace EngineCore

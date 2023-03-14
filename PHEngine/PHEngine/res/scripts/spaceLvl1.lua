@@ -1,4 +1,5 @@
---[[ BEGIN *** this snippet have to be inserted everywhere where your want to require custom modules *** BEGIN]] --
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--
 local function setup()
 	local str = debug.getinfo(2, "S").source:sub(2)
 	local pathToCurrentScript = str:match("(.*/)")
@@ -8,7 +9,8 @@ local function setup()
 end
 
 setup()
---[[ END   *** this snippet have to be inserted everywhere where your want to require custom modules  ***  END]] --
+--
+--[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local Vec3 = require("core/vec3")
 

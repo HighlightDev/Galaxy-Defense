@@ -118,13 +118,10 @@ namespace EngineCore
                 const auto &overlayManagerLuaProxy = std::static_pointer_cast<OverlayManagerLuaProxy>(ReplicateLuaProxy());
                 overlayManagerLuaProxy->SetSceneWp(sceneSp);
                 overlayManagerLuaProxy->SetLuaScriptProcessor(sceneSp->GetThreadManager().GetLuaScriptProcessor());
-                sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetReplicatorId(), functionId, [this, overlayManagerLuaProxy]()
+                if (const auto& luaProcessorSp = mLuaScriptProcessorWp.lock())
                 {
-                    if (const auto& luaProcessorSp = mLuaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->SetOverlayManagerLuaProxy(overlayManagerLuaProxy);
-                    }
-                });
+                    luaProcessorSp->SetOverlayManagerLuaProxy(overlayManagerLuaProxy);
+                }
 
                 for (const auto &overlay : mOverlays)
                 {

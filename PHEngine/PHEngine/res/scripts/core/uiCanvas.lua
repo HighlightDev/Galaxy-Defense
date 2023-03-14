@@ -1,4 +1,4 @@
---[[ BEGIN *** this snippet have to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
     local str = debug.getinfo(2, "S").source:sub(2)
@@ -9,8 +9,8 @@ local function setup()
 end
 
 setup()
---[[ END   *** this snippet have to be inserted everywhere where your want to require custom modules  ***  END]]
 --
+--[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local CommonUiWidgetCreator = require("commonUiWidgetCreator")
 local json = require("json")
@@ -19,6 +19,7 @@ UiCanvas = {
 }
 
 function UiCanvas:new(host, originX, originY, width, height)
+    print("UiCanvas::ctor")
     assert(host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and height ~= nil)
     local canvasJsonParameters = json.encode({ originX = originX, originY = originY, width = width, height = height })
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS,

@@ -1073,6 +1073,14 @@ namespace EngineCore
       return (it != mLuaReplicators.end()) ? *it : nullptr;
    }
 
+   std::shared_ptr<EngineToLuaReplicatorBase> Scene::GetEngineToLuaReplicatorByLuaProxyId(const int32_t id) const
+   {
+      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [id](const auto &luaReplicator)
+                             { return luaReplicator->GetLuaProxyId() == id; });
+
+      return (it != mLuaReplicators.end()) ? *it : nullptr;
+   }
+
    bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
    {
       const auto objectId = gameObjectPtr->GetObjectId();

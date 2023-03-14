@@ -124,11 +124,13 @@ namespace EngineCore
 
       EngineObject *GetEngineObjectById(const uint64_t id) const;
 
-      bool RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase>& replicator);
+      bool RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator);
 
-      bool RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase>& replicator);
+      bool RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator);
 
       std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorById(const int32_t id) const;
+
+      std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorByLuaProxyId(const int32_t id) const;
 
       IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
 

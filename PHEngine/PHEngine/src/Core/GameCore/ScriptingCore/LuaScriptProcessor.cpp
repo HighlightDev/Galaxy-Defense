@@ -33,7 +33,6 @@ namespace EngineCore
             luaExecutor->SetLuaScriptProcessor(shared_from_this());
             luaExecutor->SetScene(m_interThreadMgr.GetSceneWP());
             luaExecutor->RegisterCallbacks();
-            luaExecutor->RunScript();
         }
 
         std::shared_ptr<EngineInputLuaProxy> LuaScriptProcessor::GetEngineInputLuaProxy() const

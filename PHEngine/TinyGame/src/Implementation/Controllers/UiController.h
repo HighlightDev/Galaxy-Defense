@@ -26,6 +26,8 @@ namespace Game
 
         std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
 
+        size_t mExecutorId;
+
     public:
         UiController(const std::weak_ptr<::EngineCore::Scene> &scene);
 

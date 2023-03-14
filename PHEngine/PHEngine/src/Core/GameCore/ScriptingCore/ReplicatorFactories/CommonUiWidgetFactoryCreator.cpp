@@ -1,5 +1,6 @@
 #include "CommonUiWidgetFactoryCreator.h"
 #include "UiCanvasReplicatorFactory.h"
+#include "UiOverlayReplicatorFactory.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
@@ -10,6 +11,8 @@ namespace EngineCore
         {
             switch (widgetType)
             {
+            case eCommonUiWidgetType::UI_OVERLAY:
+                return std::make_unique<UiOverlayReplicatorFactory>();
             case eCommonUiWidgetType::UI_CANVAS:
                 return std::make_unique<UiCanvasReplicatorFactory>();
 

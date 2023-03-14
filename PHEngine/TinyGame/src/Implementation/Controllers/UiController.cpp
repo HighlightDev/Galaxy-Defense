@@ -67,9 +67,12 @@ namespace Game
             if (const auto &luaScriptProcessorSp = sceneSp->GetThreadManager().GetLuaScriptProcessor().lock())
             {
                 static constexpr uint64_t functionId = Hash64_CT("UiController::Initialize");
-                sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp]()
+                const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("uiController.lua");
+                mExecutorId = luaScriptExecutor->GetUId();
+                sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                 {
-                    luaScriptProcessorSp->RegisterLuaScriptExecutor(std::make_shared<LuaUiControllerExecutor>("uiController.lua")); 
+                    luaScriptProcessorSp->RegisterLuaScriptExecutor(luaScriptExecutor);
+                    luaScriptExecutor->RunScript();
                 });
             }
         }

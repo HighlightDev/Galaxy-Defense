@@ -40,7 +40,7 @@ namespace EngineCore
                     assert(replicator);
                     const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
                     assert(overlayManager);
-                    overlayManager->OpenOverlay(overlayName); 
+                    overlayManager->OpenOverlay(overlayName);
                 });
             }
         }
