@@ -85,6 +85,16 @@ namespace EngineCore
             return mNormalizedScale;
         }
 
+        int32_t UiItemBase::GetHorizontalCenterOffset() const
+        {
+            return mHorizontalCenterOffset;
+        }
+
+        int32_t UiItemBase::GetVerticalCenterOffset() const
+        {
+            return mVerticalCenterOffset;
+        }
+
         void UiItemBase::SetAbsoluteOrigin(const glm::ivec2 &transform)
         {
             if (!CheckSimilarityIVec2(mAbsoluteOrigin, transform))
@@ -155,7 +165,7 @@ namespace EngineCore
             if (mAnchors.count(srcAnchor))
             {
                 const auto &anchorData = mAnchors.at(srcAnchor);
-                if (anchorData.GetDstAnchor() != dstAnchor && anchorData.GetDstUiItemName() != dstUiItemName)
+                if (anchorData.GetDstAnchor() != dstAnchor || anchorData.GetDstUiItemName() != dstUiItemName)
                 {
                     UiAnchorData anchorData;
                     anchorData.SetDstAnchor(dstAnchor);
@@ -662,6 +672,10 @@ namespace EngineCore
             {
                 mMouseInputReceiver->OnMouseClicked(GetBoundingArea(), mouseCursorPosition);
             }
+        }
+
+        void UiItemBase::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
+        {
         }
 
         void UiItemBase::SyncDataOnRenderThread()

@@ -4,8 +4,10 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 using namespace Resources;
@@ -117,6 +119,11 @@ namespace EngineCore
         std::shared_ptr<UiSceneProxyBase> UiToggleButton::CreateUiSceneProxy() const
         {
             return std::make_shared<UiToggleButtonSceneProxy>(this);
+        }
+
+        std::shared_ptr<LuaProxy> UiToggleButton::ReplicateLuaProxy()
+        {
+            return nullptr;
         }
 
         void UiToggleButton::SyncDataOnRenderThread()

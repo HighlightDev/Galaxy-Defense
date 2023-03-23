@@ -19,8 +19,4 @@ function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonPara
     return widgetLuaProxyId
 end
 
-function CommonUiWidgetCreator:isLuaProxyReady(host, widgetLuaProxyId)
-    return _IsLuaProxyReady(host, widgetLuaProxyId)
-end
-
 return CommonUiWidgetCreator

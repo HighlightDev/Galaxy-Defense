@@ -55,10 +55,10 @@ namespace TinyLogger
       WriteLogMessage();
    }
 
-   void LoggerServer::EnqueuLogMessage(const LogMessage &message)
+   void LoggerServer::EnqueuLogMessage(LogMessage message)
    {
       std::lock_guard<std::mutex> lock(mWriteToFileMutex);
-      mMessageQueue.emplace(message);
+      mMessageQueue.emplace(std::move(message));
    }
 
    std::string LoggerServer::ConcatMessages()

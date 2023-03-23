@@ -11,12 +11,11 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-
+local UiBaseWidget = require("uiBaseWidget")
 local CommonUiWidgetCreator = require("commonUiWidgetCreator")
 local json = require("json")
 
-UiCanvas = {
-}
+UiCanvas = UiBaseWidget:new()
 
 function UiCanvas:new(host, originX, originY, width, height)
     print("UiCanvas::ctor")
@@ -24,30 +23,35 @@ function UiCanvas:new(host, originX, originY, width, height)
     local canvasJsonParameters = json.encode({ originX = originX, originY = originY, width = width, height = height })
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS,
         canvasJsonParameters)
-    local newObj = {
-        luaProxyId = luaProxyId,
-        name = "",
-        originX = originX,
-        originY = originY,
-        width = width,
-        height = height,
-        properties = {
-            visible = {
-                value = false,
-                dirty = false
-            }
+
+    local canvasObj = UiCanvas.parentClass.new(self)
+    canvasObj.luaProxyId = luaProxyId
+    canvasObj.originX = originX
+    canvasObj.originY = originY
+    canvasObj.width = width
+    canvasObj.height = height
+    canvasObj.properties = {
+        visible = {
+            value = false,
+            dirty = false
         }
     }
 
-    self.__index = self
-    return setmetatable(newObj, self)
+    -- canvasObj:subscribeOnLuaProxyReady(canvasObj.foo)
+
+    return canvasObj
 end
+
+--[[ function UiCanvas:foo(host)
+    print("UiCanvas::onLuaProxyRead => Canvas proxy is ready now! self: " .. tostring(self) .. ", id: " .. self.luaProxyId)
+end ]]
 
 function UiCanvas:__gc(self)
     print("UiCanvas::dctor => luaProxyId: " .. tostring(self.luaProxyId))
 end
 
 function UiCanvas:updateFromReplicatorData(host)
+    self:checkLuaProxyReady(host)
     local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
     if replicatorJsonData ~= "" then
         local parsedJson = json.decode(replicatorJsonData)

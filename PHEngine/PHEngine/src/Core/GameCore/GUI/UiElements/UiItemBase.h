@@ -6,15 +6,14 @@
 #include "Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiInputSystem/IUiMouseInputReceivable.h"
+#include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 
 #include <memory>
 #include <vector>
 #include <unordered_map>
 #include <glm/mat4x4.hpp>
 
-// On win32 cause compilation error
-#undef ABSOLUTE
-#undef RELATIVE
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -22,15 +21,11 @@ namespace EngineCore
     namespace GUI
     {
         class UiCanvas;
-        enum class eUiItemPositioningType
-        {
-            ABSOLUTE,
-            RELATIVE,
-            ANCHORS
-        };
 
-        class UiItemBase : public IUiTransformable,
-                           public ITickable
+        class UiItemBase
+            : public EngineToLuaReplicatorBase,
+              public IUiTransformable,
+              public ITickable
         {
             size_t mUId;
 
@@ -59,6 +54,7 @@ namespace EngineCore
             std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
             int32_t mHorizontalCenterOffset;
+
             int32_t mVerticalCenterOffset;
 
             std::weak_ptr<IUiTransformable> mParent;
@@ -78,11 +74,40 @@ namespace EngineCore
         public:
             explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
-            virtual ~UiItemBase() = default;
-
             virtual void OnRegistered() = 0;
+
             virtual void OnUnregistered() = 0;
 
+            virtual void OnPropertiesShouldBeUpdatedOnRenderThread();
+
+            bool IsTransformDependentToUiItem(const std::string &uiItemName) const;
+
+            std::shared_ptr<IUiMouseInputReceivable> GetMouseInputReceiver() const;
+
+            void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver);
+
+            const std::weak_ptr<UiCanvas> &GetParentCanvas() const;
+
+            void GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems);
+
+            void UpdateDependentChildrenAnchorTransform();
+
+            void CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>> &inCollection) const;
+
+            int32_t GetHorizontalCenterOffset() const;
+
+            int32_t GetVerticalCenterOffset() const;
+
+            // Input events
+            void OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseReleased(const glm::ivec2 &mouseCursorPosition);
+            void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
+            void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
+
+            // Implementation of EngineToLuaReplicatorBase
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
+            // Implementation of IUiTransformable
             const glm::ivec2 &GetAbsoluteOrigin() const override;
             size_t GetZOrder() const override;
             size_t GetWidth() const override;
@@ -96,12 +121,9 @@ namespace EngineCore
             size_t GetUId() const override;
             BoundingBox2D GetBoundingArea() const override;
             bool IsTransformDirty() const override;
-            const std::weak_ptr<UiCanvas> &GetParentCanvas() const;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;
-            std::shared_ptr<IUiMouseInputReceivable> GetMouseInputReceiver() const;
 
-            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;
             void SetWidth(const size_t width) override;
             void SetHeight(const size_t height) override;
@@ -110,37 +132,15 @@ namespace EngineCore
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
             void SetHorizontalCenterOffset(const int32_t offset) override;
             void SetVerticalCenterOffset(const int32_t offset) override;
-            void SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver);
-
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;
-
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
-            std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string &name) const;
-
+            // Implementation of ITickable
             void Tick(const float deltaTime) override;
-
             void UnpausableTick(const float deltaTime) override;
-
-            bool IsTransformDependentToUiItem(const std::string &uiItemName) const;
-
-            void GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems);
-
-            void UpdateAnchorTransform();
-            void UpdateDependentChildrenAnchorTransform();
-
-            void CollectAllHierarchyChildren(std::vector<std::shared_ptr<UiItemBase>> &inCollection) const;
-
-            // Input events
-            void OnMousePositionChanged(const glm::ivec2 &mouseCursorPosition);
-            void OnMouseReleased(const glm::ivec2 &mouseCursorPosition);
-            void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
-            void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
-
-            virtual void OnPropertiesShouldBeUpdatedOnRenderThread();
 
         protected:
             void SetIsTransformDirty(const bool isDirty);
@@ -148,6 +148,10 @@ namespace EngineCore
             void SetChildrenIsVisible(const bool isVisible);
 
             void SetIsPropertiesShouldBeUpdated(const bool update);
+
+            void UpdateAnchorTransform();
+
+            std::shared_ptr<IUiTransformable> TryFindAncestryUiItem(const std::string &name) const;
 
         private:
             void TransformChanged();
@@ -160,6 +164,8 @@ namespace EngineCore
             void CalculateVerticalAnchorPositions();
 
             void SyncDataOnRenderThread();
+
+            void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
         };
     }
 }

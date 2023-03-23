@@ -13,6 +13,14 @@ namespace Graphics
     }
 }
 
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        class LuaProxy;
+    }
+}
+
 using namespace EngineCore;
 
 namespace EngineCore
@@ -70,6 +78,8 @@ namespace EngineCore
             
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
+            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+            
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
         protected:

@@ -46,7 +46,7 @@ namespace EngineCore
                     assert(replicator);
                     const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
                     assert(canvas);
-                    canvas->SyncFromLuaJsonProperties(jsonStr); 
+                    canvas->SyncFromLuaJsonProperties(jsonStr);
                 });
             }
         }

@@ -62,6 +62,8 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
+    pressButtonCooldown = pressButtonCooldown + deltaTimeSec
+
     for _, value in pairs(UiOverlays) do
         value:updateFromReplicatorData(host)
     end
@@ -75,7 +77,6 @@ function System_OnUpdate(host, deltaTimeSec)
             value:update(host)
         end
     end
-    pressButtonCooldown = pressButtonCooldown + deltaTimeSec
 
     for _, value in pairs(UiOverlays) do
         value:sendDataToReplicator(host)

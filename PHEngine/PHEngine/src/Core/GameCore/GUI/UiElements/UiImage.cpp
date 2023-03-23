@@ -5,10 +5,12 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 
 #include <functional>
 
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 using namespace Resources;
@@ -145,6 +147,11 @@ namespace EngineCore
         std::shared_ptr<UiSceneProxyBase> UiImage::CreateUiSceneProxy() const
         {
             return std::make_shared<UiImageSceneProxy>(this);
+        }
+
+        std::shared_ptr<LuaProxy> UiImage::ReplicateLuaProxy()
+        {
+            return nullptr;
         }
 
         void UiImage::SyncDataOnRenderThread()

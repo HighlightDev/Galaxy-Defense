@@ -24,6 +24,8 @@ namespace EngineCore
         public:
             EngineToLuaReplicatorBase();
 
+            virtual ~EngineToLuaReplicatorBase() = default;
+
             virtual std::shared_ptr<LuaProxy> ReplicateLuaProxy() = 0;
 
             virtual void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) = 0; 

@@ -9,6 +9,14 @@
 
 namespace EngineCore
 {
+    namespace Scripts
+    {
+        class LuaProxy;
+    }
+}
+
+namespace EngineCore
+{
     namespace GUI
     {
         class UiCanvas;
@@ -19,7 +27,10 @@ namespace EngineCore
             explicit UiItem(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
             void OnRegistered() override;
+            
             void OnUnregistered() override;
+
+            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
         };
     }
 }

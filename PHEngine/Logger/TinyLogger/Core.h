@@ -45,7 +45,7 @@ namespace TinyLogger
 
       void StopLogThread();
 
-      void EnqueuLogMessage(const LogMessage& message);
+      void EnqueuLogMessage(LogMessage message);
 
    private:
 

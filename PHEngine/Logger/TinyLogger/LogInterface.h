@@ -159,17 +159,14 @@ namespace TinyLogger
          static constexpr double invFromNanoToSec = 1e-9;
          const double timePassedSinceStart = static_cast<double>((timestampNow - logStartTimestamp).count()) * invFromNanoToSec;
 
-         auto argTuple = std::make_tuple(std::forward<LogArgs>(args)...);
-
-         using tuple_t = decltype(argTuple);
-
-         std::vector<std::string> result{std::to_string(index),
+         std::vector<std::string> result{std::to_string(index++),
                                          "| Timestamp: " + std::to_string(timePassedSinceStart),
                                          "| Thread: " + threadName + "| "};
-         ++index;
+
+         auto argTuple = std::make_tuple(std::forward<LogArgs>(args)...);
+         using tuple_t = decltype(argTuple);
          constexpr size_t size = std::tuple_size<tuple_t>();
          LogHelp::IterateTuple<tuple_t, size, 0>::Collect(result, argTuple);
-
          LoggerServer::GetInstance_()->EnqueuLogMessage(LogMessage(std::move(result)));
       }
 

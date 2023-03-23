@@ -14,6 +14,14 @@ namespace Graphics
 
 namespace EngineCore
 {
+    namespace Scripts
+    {
+        class LuaProxy;
+    }
+}
+
+namespace EngineCore
+{
     class UiCanvas;
     namespace GUI
     {
@@ -41,6 +49,8 @@ namespace EngineCore
             glm::vec3 GetColor() const;
 
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
+
+            std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 

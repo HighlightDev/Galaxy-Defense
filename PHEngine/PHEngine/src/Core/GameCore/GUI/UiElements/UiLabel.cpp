@@ -2,6 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiLabelSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
@@ -9,6 +10,7 @@
 #include <functional>
 
 using namespace EngineCore;
+using namespace EngineCore::Scripts;
 using namespace Graphics::Proxy;
 using namespace Graphics::Renderer;
 
@@ -143,6 +145,11 @@ namespace EngineCore
         std::shared_ptr<UiSceneProxyBase> UiLabel::CreateUiSceneProxy() const
         {
             return std::make_shared<UiLabelSceneProxy>(this);
+        }
+
+        std::shared_ptr<LuaProxy> UiLabel::ReplicateLuaProxy()
+        {
+            return nullptr;
         }
 
         void UiLabel::SyncDataOnRenderThread()
