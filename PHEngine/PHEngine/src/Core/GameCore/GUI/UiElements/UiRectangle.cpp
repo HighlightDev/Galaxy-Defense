@@ -108,16 +108,16 @@ namespace EngineCore
             {
                 if (const auto &canvasSp = GetParentCanvas().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                     {
                         const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                         if (uiSceneProxy)
                         {
-                            sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
-                                                           {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]() {
                                 const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
                                 rectangleSceneProxy->SetColor(mColor);
-                                rectangleSceneProxy->SetOpacity(mOpacity); });
+                                rectangleSceneProxy->SetOpacity(mOpacity); 
+                            });
                         }
                         else
                         {

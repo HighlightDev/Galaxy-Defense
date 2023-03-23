@@ -53,7 +53,7 @@ namespace EngineCore
          if (const auto& sceneSp = mSceneWp.lock())
          {
             static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendPauseGameThreadEvent");
-            sceneSp->ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [isPause]() { 
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [isPause]() { 
                PauseGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, isPause);
             });
          }

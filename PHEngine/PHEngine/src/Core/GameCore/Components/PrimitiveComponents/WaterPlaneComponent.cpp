@@ -104,22 +104,22 @@ namespace EngineCore
    {
       if (bIsRenderDataDirty)
       {
-         if (const auto &sceneSP = m_sceneWP.lock())
+         if (const auto &sceneSp = m_sceneWP.lock())
          {
-            if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
                if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
                {
                   bIsRenderDataDirty = false;
                   static const uint64_t functionId = Hash("WaterPlaneComponent::SyncRenderData");
 
-                  sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, functionId, GetObjectId(), [=]()
-                                                 {
-               WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
-               proxyPtr->SetFarClipPlane(m_farClipPlane); 
-               proxyPtr->SetNearClipPlane(m_nearClipPlane);
-               proxyPtr->SetTransparencyDepth(m_transparencyDepth);
-               proxyPtr->SetWaveStrength(m_waveStrength); });
+                  sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, functionId, GetObjectId(), [=]() {
+                     WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
+                     proxyPtr->SetFarClipPlane(m_farClipPlane); 
+                     proxyPtr->SetNearClipPlane(m_nearClipPlane);
+                     proxyPtr->SetTransparencyDepth(m_transparencyDepth);
+                     proxyPtr->SetWaveStrength(m_waveStrength); 
+                  });
                }
             }
          }

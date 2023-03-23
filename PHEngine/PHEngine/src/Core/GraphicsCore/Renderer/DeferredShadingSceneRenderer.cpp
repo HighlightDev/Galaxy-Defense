@@ -130,21 +130,21 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PostLevelInit()
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(
+         m_interThreadMgr.ExecuteOnRenderThread(
              eEnqueueJobPolicy::PUSH_ANYWAY,
-             Job(0, 0,
-                 [=]()
-                 {
-                    for (const auto &lightProxy : LightProxiesVector)
-                    {
-                       lightProxy->PostLevelInit();
-                    }
-                 }));
+             0, 0,
+             [=]()
+             {
+                for (const auto &lightProxy : LightProxiesVector)
+                {
+                   lightProxy->PostLevelInit();
+                }
+             });
 
          RegisterFonts();
       }
 
-      const InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetThreadManager() const
+      const InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager() const
       {
          return m_interThreadMgr;
       }
@@ -1028,12 +1028,12 @@ namespace Graphics
 
             if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
             {
-               m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                     Job(creatorObjectId, functionId, [=]()
-                                                         { sceneSp->GetTextHandler()
-                                                               .GetTextFieldById(textFieldProxyId)
-                                                               ->SetTextScreenSpaceSize(mFontHandler
-                                                                                            ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); }));
+               m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    creatorObjectId, functionId, [=]()
+                                                    { sceneSp->GetTextHandler()
+                                                          .GetTextFieldById(textFieldProxyId)
+                                                          ->SetTextScreenSpaceSize(mFontHandler
+                                                                                       ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
             }
          }
       }

@@ -112,11 +112,11 @@ namespace EngineCore
 
    void PointLightComponent::NotifySceneProxyThatShadowmapIsDirty(const uint64_t &functionId)
    {
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
                ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();

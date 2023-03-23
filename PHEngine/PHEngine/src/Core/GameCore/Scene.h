@@ -154,7 +154,7 @@ namespace EngineCore
 
       std::shared_ptr<ACamera> GetMainCamera() const;
 
-      const InterThreadCommunicationMgr &GetThreadManager() const;
+      InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
       const TextHandler &GetTextHandler() const;
 
@@ -184,12 +184,6 @@ namespace EngineCore
       bool UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera);
 
       void RemoveComponent(std::shared_ptr<Component> component);
-
-      void ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const;
-
-      void ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const;
-
-      void ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback) const;
 
       void CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
 

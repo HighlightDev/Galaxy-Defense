@@ -184,11 +184,11 @@ namespace EngineCore
     void ParticleSystemComponent::SyncDataWithRenderThread(const size_t activeParticlesCount)
     {
         static const uint64_t functionId = Hash("ParticleSystemComponent: SyncDataWithRenderThread");
-        if (const auto &sceneSP = m_sceneWP.lock())
+        if (const auto &sceneSp = m_sceneWP.lock())
         {
-            if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
-                sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                GetObjectId(),
                                                functionId,
                                                [=]() mutable

@@ -35,7 +35,7 @@ namespace EngineCore
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();
-                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
@@ -51,7 +51,7 @@ namespace EngineCore
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();
-                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);

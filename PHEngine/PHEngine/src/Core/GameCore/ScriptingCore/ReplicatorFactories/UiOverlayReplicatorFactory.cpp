@@ -34,7 +34,7 @@ namespace EngineCore
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiOverlayReplicatorFactory::CreateReplicator");
-                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId,
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId,
                 [sceneSp, luaScriptProcessorWp, overlayManagerReplicatorId, overlayName, canvasLuaProxyId, overlayLuaProxyId]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                     const auto& uiOverlay = std::make_shared<UiOverlay>(overlayName, sceneSp, luaScriptProcessorWp);
@@ -51,7 +51,7 @@ namespace EngineCore
                     overlayManager->RegisterOverlay(uiOverlay);
 
                     static constexpr auto innerFunctionId = Hash64_CT("UiOverlayReplicatorFactory::CreateReplicator::RegisterLuaProxy");
-                    sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiOverlay->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, uiOverlayLuaProxy]() {
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiOverlay->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, uiOverlayLuaProxy]() {
                         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
                         if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
                         {

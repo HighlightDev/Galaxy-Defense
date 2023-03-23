@@ -41,7 +41,7 @@ namespace EngineCore
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();
-                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, jsonStr = jsonParameters]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, jsonStr = jsonParameters]() {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);

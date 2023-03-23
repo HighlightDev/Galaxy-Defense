@@ -100,11 +100,11 @@ namespace Thread
 
       ~InterThreadCommunicationMgr();
 
-      void EmplaceGameThreadJob(const eEnqueueJobPolicy, Job &&job);
+      void ExecuteOnRenderThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback);
 
-      void EmplaceRenderThreadJob(const eEnqueueJobPolicy, Job &&job);
+      void ExecuteOnGameThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback);
 
-      void EmplaceLuaThreadJob(const eEnqueueJobPolicy, Job &&job);
+      void ExecuteOnLuaThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback);
 
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();
@@ -118,7 +118,7 @@ namespace Thread
 
       void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
 
-      void SetLuaScriptProcessorWP(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor>& scriptProcessor);
+      void SetLuaScriptProcessorWP(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> &scriptProcessor);
 
       std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> GetSceneRendererWP() const;
 
@@ -127,6 +127,12 @@ namespace Thread
       std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessor() const;
 
    private:
+      void EmplaceGameThreadJob(const eEnqueueJobPolicy, Job &&job);
+
+      void EmplaceRenderThreadJob(const eEnqueueJobPolicy, Job &&job);
+
+      void EmplaceLuaThreadJob(const eEnqueueJobPolicy, Job &&job);
+
       void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 
       void ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job);

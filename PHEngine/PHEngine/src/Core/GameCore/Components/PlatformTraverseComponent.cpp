@@ -35,7 +35,7 @@ namespace EngineCore
 
          if (const auto &sceneSp = spOwner->GetSceneOwner().lock())
          {
-            if (const auto& scriptProcessorSp = sceneSp->GetThreadManager().GetLuaScriptProcessor().lock())
+            if (const auto& scriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
                mScriptExecutor->SetScene(sceneSp);
                mScriptExecutor->SetLuaScriptProcessor(scriptProcessorSp);

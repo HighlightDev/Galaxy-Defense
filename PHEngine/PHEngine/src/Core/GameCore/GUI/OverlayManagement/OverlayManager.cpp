@@ -114,10 +114,10 @@ namespace EngineCore
             if (const auto &sceneSp = mSceneWp.lock())
             {
                 sceneSp->RegisterEngineToLuaReplicator(shared_from_this());
-                SetLuaScriptProcessor(sceneSp->GetThreadManager().GetLuaScriptProcessor());
+                SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
                 const auto &overlayManagerLuaProxy = std::static_pointer_cast<OverlayManagerLuaProxy>(ReplicateLuaProxy());
                 overlayManagerLuaProxy->SetSceneWp(sceneSp);
-                overlayManagerLuaProxy->SetLuaScriptProcessor(sceneSp->GetThreadManager().GetLuaScriptProcessor());
+                overlayManagerLuaProxy->SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
                 if (const auto& luaProcessorSp = mLuaScriptProcessorWp.lock())
                 {
                     luaProcessorSp->SetOverlayManagerLuaProxy(overlayManagerLuaProxy);
@@ -146,7 +146,7 @@ namespace EngineCore
                     if (const auto &overlayManagerLuaProxy = luaProcessorSp->GetOverlayManagerLuaProxy())
                     {
                         static constexpr auto functionId = Hash64_CT("OverlayManager::SyncLuaThreadData");
-                        sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [overlayManagerLuaProxy, overlayName = GetCurrentOpenedOverlayName()]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [overlayManagerLuaProxy, overlayName = GetCurrentOpenedOverlayName()]()
                         {
                              overlayManagerLuaProxy->SetCurrentOverlay(overlayName); 
                         });

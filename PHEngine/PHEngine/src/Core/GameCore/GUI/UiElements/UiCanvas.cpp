@@ -311,16 +311,16 @@ namespace EngineCore
             static constexpr uint64_t functionId = Hash64_CT("UiCanvas::SyncDataOnRenderThread");
             if (const auto &sceneSp = mScene.lock())
             {
-                if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+                if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
                     if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
                     {
                         mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                        sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]()
-                                                       {
-                                                        canvasProxy->SetIsVisible(mIsVisible);
-                                                        canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin);
-                                                        canvasProxy->SetWidthHeight(mWidthHeight); });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]() {
+                            canvasProxy->SetIsVisible(mIsVisible);
+                            canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin);
+                            canvasProxy->SetWidthHeight(mWidthHeight);
+                        });
                     }
                 }
             }
@@ -336,7 +336,7 @@ namespace EngineCore
                     if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
                     {
                         mIsPropertiesShouldBeUpdatedOnLuaThread = false;
-                        sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]() {
                             canvasProxy->SetIsVisible_FromGameThread(mIsVisible);
                         });
                     }

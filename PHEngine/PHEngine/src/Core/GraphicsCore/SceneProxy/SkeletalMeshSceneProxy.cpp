@@ -38,18 +38,18 @@ namespace Graphics
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {
-            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetThreadManager().GetSceneWP().lock())
+            if (const auto &sceneSp = deferredShadingSceneRendererSp->GetInterThreadCommunicationManager().GetSceneWP().lock())
             {
                const auto boundingBox = m_skin->GetBoundingBox();
-               sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                            [this, sceneSp, boundingBox]()
-                                            {
-                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                               assert(engineObject);
-                                               const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
-                                               assert(primitiveComponent);
-                                               primitiveComponent->SetBoundingBox(boundingBox);
-                                            });
+               sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
+                  [this, sceneSp, boundingBox]()
+                  {
+                     const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                     assert(engineObject);
+                     const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                     assert(primitiveComponent);
+                     primitiveComponent->SetBoundingBox(boundingBox);
+                  });
             }
          }
       }

@@ -51,7 +51,7 @@ namespace EngineCore
             return luaIt != mLuaProxies.end() ? *luaIt : nullptr;
         }
 
-        const InterThreadCommunicationMgr &LuaScriptProcessor::GetThreadManager() const
+        const InterThreadCommunicationMgr &LuaScriptProcessor::GetInterThreadCommunicationManager() const
         {
             return m_interThreadMgr;
         }

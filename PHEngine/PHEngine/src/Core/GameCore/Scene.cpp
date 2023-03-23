@@ -139,7 +139,7 @@ namespace EngineCore
       return materialProxy;
    }
 
-   const InterThreadCommunicationMgr &Scene::GetThreadManager() const
+   InterThreadCommunicationMgr &Scene::GetInterThreadCommunicationManager()
    {
       return m_interThreadMgr;
    }
@@ -292,21 +292,6 @@ namespace EngineCore
       return mUiHandler;
    }
 
-   void Scene::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback) const
-   {
-      m_interThreadMgr.EmplaceRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
-   }
-
-   void Scene::ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback) const
-   {
-      m_interThreadMgr.EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
-   }
-
-   void Scene::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback) const
-   {
-      m_interThreadMgr.EmplaceLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
-   }
-
    bool Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
    {
       auto result = false;
@@ -316,11 +301,9 @@ namespace EngineCore
          if (primitiveSp)
          {
             auto result = true;
-            m_interThreadMgr.EmplaceRenderThreadJob(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                Job(creatorObjectId,
-                    functionId, [=]()
-                    { primitiveSp->SetEnabled(bEnabled); }));
+            m_interThreadMgr.ExecuteOnRenderThread(
+                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [=]()
+                { primitiveSp->SetEnabled(bEnabled); });
          }
          else
          {
@@ -342,11 +325,11 @@ namespace EngineCore
          if (primitiveProxySp)
          {
             result = true;
-            m_interThreadMgr.EmplaceRenderThreadJob(
+            m_interThreadMgr.ExecuteOnRenderThread(
                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                Job(creatorObjectId,
-                    functionId, [=]()
-                    { primitiveProxySp->SetVisibility(visibility); }));
+                creatorObjectId,
+                functionId, [=]()
+                { primitiveProxySp->SetVisibility(visibility); });
          }
          else
          {
@@ -368,11 +351,8 @@ namespace EngineCore
          if (primitiveProxySp)
          {
             result = true;
-            m_interThreadMgr.EmplaceRenderThreadJob(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                Job(creatorObjectId,
-                    functionId, [=]()
-                    { primitiveProxySp->SetSortOrderValue(sortOrderValue); }));
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [=]()
+                                                   { primitiveProxySp->SetSortOrderValue(sortOrderValue); });
          }
          else
          {
@@ -395,12 +375,12 @@ namespace EngineCore
          if (primitiveProxySp)
          {
             result = true;
-            m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    Job(creatorObjectId,
-                                                        functionId, [=]()
-                                                        {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    creatorObjectId,
+                                                    functionId, [=]()
+                                                    {
                primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
-               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); }));
+               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); });
          }
          else
          {
@@ -422,10 +402,10 @@ namespace EngineCore
          if (sceneViewSp)
          {
             result = true;
-            m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    Job(creatorObjectId,
-                                                        functionId, [=]()
-                                                        {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    creatorObjectId,
+                                                    functionId, [=]()
+                                                    {
                                                          const auto& cameraProxy = sceneViewSp->GetCameraProxy();
                                                          cameraProxy->UpdateEyeVector(camera->GetEyeVector());
                                                          cameraProxy->UpdateViewMatrix(camera->GetViewMatrix());
@@ -433,10 +413,10 @@ namespace EngineCore
                                                          cameraProxy->SetRightVector(camera->GetEyeSpaceRightVector());
                                                          cameraProxy->SetUpVector(camera->GetLocalSpaceUpVector());
 
-                                                         m_interThreadMgr.EmplaceGameThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                                                                 Job(creatorObjectId,
+                                                         m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                                                                 creatorObjectId,
                                                                                                      functionId, [=]()
-                                                                                                     { camera->OnCameraSceneProxyDataUpdated(); })); }));
+                                                                                                     { camera->OnCameraSceneProxyDataUpdated(); }); });
          }
          else
          {
@@ -468,10 +448,10 @@ namespace EngineCore
          const auto &lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
          if (lightProxySp)
          {
-            m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    Job(creatorObjectId,
-                                                        functionId, [=]()
-                                                        { lightProxySp->SetTransformationMatrix(newRelativeMatrix); }));
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                    creatorObjectId,
+                                                    functionId, [=]()
+                                                    { lightProxySp->SetTransformationMatrix(newRelativeMatrix); });
          }
          else
          {
@@ -491,9 +471,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 {
                const bool bRemoved = sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
                   if (bRemoved)
                {
@@ -503,7 +483,7 @@ namespace EngineCore
                {
                    LogInfo("Scene::PrimitiveSceneProxyDeleted_OnRenderThread => "
                                "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
-               } }));
+               } });
       }
    }
 
@@ -514,9 +494,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->SetProxiesAreDirty(true); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->SetProxiesAreDirty(true); });
       }
    }
 
@@ -527,10 +507,10 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId,
-                                                     functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId,
+                                                 functionId, [=]()
+                                                 {
                const bool bRemoved = sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
                if (bRemoved)
                {
@@ -540,7 +520,7 @@ namespace EngineCore
                {
                   LogInfo("Scene::LightSceneProxyDeleted_OnRenderThread => "
                         "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
-               } }));
+               } });
       }
    }
 
@@ -551,9 +531,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->SetLightProxiesAreDirty(true); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->SetLightProxiesAreDirty(true); });
       }
    }
 
@@ -564,9 +544,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->PrimitiveProxiesVector)); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->PrimitiveProxiesVector)); });
       }
    }
 
@@ -577,14 +557,14 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 {
             const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
             assert(!primitiveProxySp);
             primitiveSceneProxy->PostConstructorInitialize();
             sceneRenderer->PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
-            sceneRenderer->SetProxiesAreDirty(true); }));
+            sceneRenderer->SetProxiesAreDirty(true); });
       }
    }
 
@@ -595,14 +575,14 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId,
-                                                     functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId,
+                                                 functionId, [=]()
+                                                 {
          const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);  
          assert(!lightProxySp);
          sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
-         sceneRenderer->SetLightProxiesAreDirty(true); }));
+         sceneRenderer->SetLightProxiesAreDirty(true); });
       }
    }
 
@@ -615,13 +595,13 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { 
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { 
                                                         const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
                                                         assert(!materialProxySp);
                                                         LogInfo("MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
-                                                        sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); }));
+                                                        sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); });
       }
    }
 
@@ -634,21 +614,21 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->RegisterText(TextFieldProxy::CreateTextFieldProxyInstance(
-                                                           textField->GetTextFieldId(),
-                                                           eTextFieldProxyType::HUD_TEXT_FIELD,
-                                                           textField->GetIsVisible(),
-                                                           textField->GetText(),
-                                                           textField->GetFontName(),
-                                                           textField->GetPosition(),
-                                                           textField->GetColor(),
-                                                           textField->GetFontSize(),
-                                                           textField->GetTextHorizontalAlignment(),
-                                                           textField->GetLineMaxSize(),
-                                                           textField->GetNumberOfLines(),
-                                                           subscribeOnTextScreenSpaceSizeUpdate)); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->RegisterText(TextFieldProxy::CreateTextFieldProxyInstance(
+                                                       textField->GetTextFieldId(),
+                                                       eTextFieldProxyType::HUD_TEXT_FIELD,
+                                                       textField->GetIsVisible(),
+                                                       textField->GetText(),
+                                                       textField->GetFontName(),
+                                                       textField->GetPosition(),
+                                                       textField->GetColor(),
+                                                       textField->GetFontSize(),
+                                                       textField->GetTextHorizontalAlignment(),
+                                                       textField->GetLineMaxSize(),
+                                                       textField->GetNumberOfLines(),
+                                                       subscribeOnTextScreenSpaceSizeUpdate)); });
       }
    }
 
@@ -661,9 +641,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->UnregisterText(textField->GetFontName(), textField->GetTextFieldId()); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->UnregisterText(textField->GetFontName(), textField->GetTextFieldId()); });
       }
    }
 
@@ -676,9 +656,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy); });
       }
    }
 
@@ -691,9 +671,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->UnregisterUiCanvasProxy(uiCanvasProxy); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->UnregisterUiCanvasProxy(uiCanvasProxy); });
       }
    }
 
@@ -706,9 +686,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId); });
       }
    }
 
@@ -721,9 +701,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->UnregisterUiSceneProxy(uiSceneProxy, canvasUId); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->UnregisterUiSceneProxy(uiSceneProxy, canvasUId); });
       }
    }
 
@@ -734,9 +714,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 {
                                                         if (eTextChangedDataType::OFFSET == textChangedDataType)
                                                         {
                                                          sceneRenderer->TextPositionChanged(textField->GetFontName(),
@@ -760,7 +740,7 @@ namespace EngineCore
                                                            sceneRenderer->TextVisibilityChanged(textField->GetFontName(),
                                                                                                 textField->GetTextFieldId(),
                                                                                                 textField->GetIsVisible());
-                                                        } }));
+                                                        } });
       }
    }
 
@@ -771,9 +751,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 Job(creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
-                                                     { 
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                 creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
+                                                 { 
                                                       const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
                                                       if (materialProxySp)
                                                       {
@@ -782,7 +762,7 @@ namespace EngineCore
                                                       else{
                                                          LogInfo("Scene::MaterialPropertiesUpdated_OnRenderThread => "
                                                             "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
-                                                      } }));
+                                                      } });
       }
    }
 
@@ -793,13 +773,13 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 {
             const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
             assert(!reflectionProxySp);
             sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
-            sceneRenderer->SetPlanarReflectionProxiesAreDirty(true); }));
+            sceneRenderer->SetPlanarReflectionProxiesAreDirty(true); });
       }
    }
 
@@ -812,9 +792,9 @@ namespace EngineCore
       {
          const auto proxyId = cameraOwner->SceneProxyId;
 
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
+                                                 creatorObjectId, functionId, [=]()
+                                                 {
          const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(proxyId);
          if (sceneViewSp)
             {
@@ -824,7 +804,7 @@ namespace EngineCore
             {
                LogInfo("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
                      "Error! Current proxy index doesn't exist on RT. Proxy index = ", proxyId);
-            } }));
+            } });
       }
    }
 
@@ -836,9 +816,9 @@ namespace EngineCore
 
       if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         m_interThreadMgr.EmplaceRenderThreadJob(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 Job(creatorObjectId, functionId, [=]()
-                                                     { sceneRenderer->SetDebugPhysicsRenderData(physRenderData); }));
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                 creatorObjectId, functionId, [=]()
+                                                 { sceneRenderer->SetDebugPhysicsRenderData(physRenderData); });
       }
    }
 #endif

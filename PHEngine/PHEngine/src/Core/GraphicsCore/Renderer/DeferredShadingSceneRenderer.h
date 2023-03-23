@@ -167,7 +167,7 @@ namespace Graphics
 
          void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
 
-         const InterThreadCommunicationMgr &GetThreadManager() const;
+         const InterThreadCommunicationMgr &GetInterThreadCommunicationManager() const;
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);

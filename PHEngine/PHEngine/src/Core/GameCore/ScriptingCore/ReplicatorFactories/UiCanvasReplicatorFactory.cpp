@@ -32,7 +32,7 @@ namespace EngineCore
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator");
-                sceneSp->ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                     const auto& createdUiCanvas = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height));
                     createdUiCanvas->SetIsVisible(false);
@@ -44,7 +44,7 @@ namespace EngineCore
                     canvasLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
 
                     static constexpr auto innerFunctionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator::RegisterLuaProxy");
-                    sceneSp->ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, createdUiCanvas->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, canvasLuaProxy]() {
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, createdUiCanvas->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, canvasLuaProxy]() {
                         assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
                         if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
                         {

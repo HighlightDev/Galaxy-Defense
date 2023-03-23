@@ -101,13 +101,13 @@ namespace EngineCore
       {
          if (const auto &sceneSp = m_sceneWP.lock())
          {
-            if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
                if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
                {
                   bIsExtentDataDirty = false;
                   static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
-                  sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
+                  sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                                  { billboardProxySp->SetBillboardExtent(mBillboardExtent); });
                }
             }

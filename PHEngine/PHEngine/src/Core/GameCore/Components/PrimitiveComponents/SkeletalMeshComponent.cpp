@@ -133,14 +133,14 @@ namespace EngineCore
    void SkeletalMeshComponent::SyncDataWithRenderThread()
    {
       static const uint64_t functionId = Hash("SkeletalMeshComponent::SyncDataWithRenderThread");
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSP->GetThreadManager().GetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
             if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
             {
                bIsRenderDataDirty = false;
-               sceneSP->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
                                               {
                               const auto& proxyPtr = std::static_pointer_cast<SkeletalMeshSceneProxy>(primitiveProxySp); 
                                     proxyPtr->UpdateAnimationData(bTransitionEnabled->GetValue(),

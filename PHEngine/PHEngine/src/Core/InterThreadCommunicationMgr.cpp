@@ -57,6 +57,21 @@ namespace Thread
       return mLuaScriptProcessor;
    }
 
+   void InterThreadCommunicationMgr::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback)
+   {
+      EmplaceRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
+   }
+
+   void InterThreadCommunicationMgr::ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback)
+   {
+      EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
+   }
+
+   void InterThreadCommunicationMgr::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback)
+   {
+      EmplaceLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
+   }
+
    void InterThreadCommunicationMgr::EmplaceGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       ProcessPushGameThreadJob(policy, std::move(job));

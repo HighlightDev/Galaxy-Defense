@@ -109,12 +109,12 @@ namespace EngineCore
       static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineComponent::SyncRenderData");
       if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneRenderer = sceneSp->GetThreadManager().GetSceneRendererWP().lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
             if (const auto &lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
             {
                mIsRenderDataDirty = false;
-               sceneSp->ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
                                               {
                   lineProxySp->SetLineBeginWorldSpacePosition(mLineBeginWorldSpacePosition);
                   lineProxySp->SetLineEndWorldSpacePosition(mLineEndWorldSpacePosition);

@@ -65,7 +65,7 @@ namespace Game
           = "spaceLvl1.lua";
       LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
       mLuaLevelBuilder.SetScene(mScene);
-      mLuaLevelBuilder.SetLuaScriptProcessor(mScene->GetThreadManager().GetLuaScriptProcessor());
+      mLuaLevelBuilder.SetLuaScriptProcessor(mScene->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
       mLuaLevelBuilder.StopScript();
