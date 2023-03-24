@@ -39,7 +39,7 @@ namespace EngineCore
             bool mIsFlipped;
 
         public:
-            explicit UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
+            UiImage();
 
             ~UiImage() override;
 

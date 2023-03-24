@@ -16,8 +16,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiRectangle::UiRectangle(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(canvasParent, parent),
+        UiRectangle::UiRectangle()
+            : UiItemBase(),
               mColor(glm::vec3(1.0f)),
               mOpacity(1.0f)
         {

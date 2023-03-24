@@ -53,6 +53,8 @@ namespace EngineCore
          void OnCommonUiWidgetDataUpdated(const std::tuple<int32_t/*lua proxy id*/, std::string/*json data*/>& data);
 
          std::string GetGameThreadData(const std::tuple<int32_t/*lua proxy id*/>& data);
+
+         void InitializeCanvasInputSystem(const std::tuple<int32_t/*lua proxy id*/>& data);
       };
    }
 }

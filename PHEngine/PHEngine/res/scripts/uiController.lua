@@ -49,6 +49,9 @@ end
 
 local function initialize(host)
     local testOverlayCanvas = UiCanvas:new(host, 0, 0, 900, 900)
+    testOverlayCanvas:subscribeOnLuaProxyReady(function (host)
+        _InitializeCanvasInputSystem(host, testOverlayCanvas.luaProxyId)
+    end)
     UiOverlays["TestOverlay"] = UiOverlay:new(host, "TestOverlay", testOverlayCanvas)
 end
 

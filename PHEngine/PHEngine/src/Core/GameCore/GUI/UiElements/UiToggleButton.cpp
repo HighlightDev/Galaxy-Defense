@@ -16,10 +16,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiToggleButton::UiToggleButton(const bool isInitialStateOn,
-                                       const std::weak_ptr<UiCanvas> &canvasParent,
-                                       const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(canvasParent, parent),
+        UiToggleButton::UiToggleButton(const bool isInitialStateOn)
+            : UiItemBase(),
               mToggleOffColor(),
               mToggleOnColor(),
               mOpacity(1.0f),

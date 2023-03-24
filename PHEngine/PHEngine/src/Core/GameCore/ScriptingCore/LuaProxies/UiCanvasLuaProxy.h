@@ -35,6 +35,8 @@ namespace EngineCore
             std::string GetGameThreadData() override;
 
             bool IsVisible() const;
+
+            void InitializeInputSystem();
         };
     }
 }

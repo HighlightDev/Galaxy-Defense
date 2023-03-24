@@ -13,6 +13,8 @@ namespace EngineCore
 
     namespace GUI
     {
+        class UiItemBase;
+
         class IUiTransformable
         {
         public:
@@ -46,6 +48,8 @@ namespace EngineCore
             virtual std::weak_ptr<::EngineCore::Scene> GetScene() const = 0;
 
             virtual std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string& name) const = 0;
+
+            virtual void AddUiItem(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &uiItem) = 0;
         };
     }
 }

@@ -10,6 +10,7 @@
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetType.h"
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -50,6 +51,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::IsLuaProxyReady"), bool(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::IsLuaProxyReady, this, std::placeholders::_1), "_IsLuaProxyReady");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated, this, std::placeholders::_1), "_OnCommonUiWidgetDataUpdated");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetGameThreadData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetGameThreadData, this, std::placeholders::_1), "_GetGameThreadData");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::InitializeCanvasInputSystem"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::InitializeCanvasInputSystem, this, std::placeholders::_1), "_InitializeCanvasInputSystem");
       }
 
       std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<> &data)
@@ -131,6 +133,17 @@ namespace EngineCore
             }
          }
          return "";
+      }
+
+      void LuaCommonUiFunctions::InitializeCanvasInputSystem(const std::tuple<int32_t/*lua proxy id*/>& data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            const auto &canvasSp = std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+            assert(canvasSp);
+            canvasSp->InitializeInputSystem();
+         }
       }
    }
 }

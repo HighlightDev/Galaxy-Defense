@@ -61,8 +61,8 @@ namespace Game
             const auto rootContainerWidth = static_cast<int32_t>(static_cast<float>(windowWidth) / 3.3f);
             const auto rootContainerHeight = static_cast<int32_t>(static_cast<float>(windowHeight) / 4.0f);
 
-            const auto &rootContainer = std::make_shared<UiItem>(mCanvas, mCanvas);
-            mCanvas->AddUiItem(rootContainer);
+            const auto &rootContainer = std::make_shared<UiItem>();
+            rootContainer->SetParents(mCanvas, mCanvas);
             rootContainer->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
             rootContainer->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
             rootContainer->SetAnchorMargin(eUiAnchor::LEFT, 50);
@@ -70,8 +70,8 @@ namespace Game
             rootContainer->SetWidth(rootContainerWidth);
             rootContainer->SetHeight(rootContainerHeight);
 
-            const auto &lifeImage = std::make_shared<UiImage>(mCanvas, rootContainer);
-            rootContainer->AddUiItem(lifeImage);
+            const auto &lifeImage = std::make_shared<UiImage>();
+            lifeImage->SetParents(mCanvas, rootContainer);
             lifeImage->SetTextureSrc("combat_life1.png");
             lifeImage->SetRotationDegrees(180.0f);
             lifeImage->SetZOrder(2);

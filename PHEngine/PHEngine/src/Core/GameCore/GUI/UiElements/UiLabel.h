@@ -46,7 +46,7 @@ namespace EngineCore
             eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
         public:
-            explicit UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string &fontName);
+            explicit UiLabel(const std::string &fontName);
 
             ~UiLabel() override;
 

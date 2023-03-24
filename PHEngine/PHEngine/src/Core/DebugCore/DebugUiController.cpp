@@ -55,8 +55,8 @@ namespace EngineCore
                 mCanvas->InitializeInputSystem();
                 mCanvas->SetIsVisible(false);
 
-                const auto &rectangleBackground = std::make_shared<UiRectangle>(mCanvas, mCanvas);
-                mCanvas->AddUiItem(rectangleBackground);
+                const auto &rectangleBackground = std::make_shared<UiRectangle>();
+                rectangleBackground->SetParents(mCanvas, mCanvas);
                 rectangleBackground->SetColor(glm::vec4(0.94f, 0.968f, 0.709f, 1.0f));
                 rectangleBackground->SetWidth(imageHeight + (imageMargin * 2));
                 rectangleBackground->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
@@ -64,8 +64,8 @@ namespace EngineCore
                 rectangleBackground->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
                 rectangleBackground->SetZOrder(1);
 
-                const auto &image = std::make_shared<UiImage>(mCanvas, rectangleBackground);
-                rectangleBackground->AddUiItem(image);
+                const auto &image = std::make_shared<UiImage>();
+                image->SetParents(mCanvas, rectangleBackground);
                 image->SetHeight(imageHeight);
                 image->SetWidth(imageHeight);
                 image->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
@@ -77,8 +77,8 @@ namespace EngineCore
                 image->SetOpacity(1);
                 image->SetZOrder(2);
 
-                const auto &image1 = std::make_shared<UiImage>(mCanvas, rectangleBackground);
-                rectangleBackground->AddUiItem(image1);
+                const auto &image1 = std::make_shared<UiImage>();
+                image1->SetParents(mCanvas, rectangleBackground);
                 image1->SetHeight(imageHeight);
                 image1->SetWidth(imageHeight);
                 image1->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
@@ -90,8 +90,8 @@ namespace EngineCore
                 image1->SetOpacity(1);
                 image1->SetZOrder(2);
 
-                const auto &nextPoolsArrowImage = std::make_shared<UiImage>(mCanvas, rectangleBackground);
-                rectangleBackground->AddUiItem(nextPoolsArrowImage);
+                const auto &nextPoolsArrowImage = std::make_shared<UiImage>();
+                nextPoolsArrowImage->SetParents(mCanvas, rectangleBackground);
                 nextPoolsArrowImage->SetHeight(imageHeight / 2);
                 nextPoolsArrowImage->SetWidth(imageHeight / 2);
                 nextPoolsArrowImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());

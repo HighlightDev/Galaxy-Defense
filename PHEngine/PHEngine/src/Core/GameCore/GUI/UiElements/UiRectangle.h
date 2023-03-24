@@ -32,7 +32,7 @@ namespace EngineCore
             float mOpacity;
 
         public:
-            explicit UiRectangle(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
+            UiRectangle();
 
             ~UiRectangle() override;
 

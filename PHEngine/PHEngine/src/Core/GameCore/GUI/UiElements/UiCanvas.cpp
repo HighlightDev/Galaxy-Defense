@@ -45,6 +45,14 @@ namespace EngineCore
             }
         }
 
+        void UiCanvas::DeinitializeInputSystem()
+        {
+            if (mInputSystem)
+            {
+                mInputSystem.reset();
+            }
+        }
+
         std::shared_ptr<LuaProxy> UiCanvas::ReplicateLuaProxy()
         {
             return std::make_shared<UiCanvasLuaProxy>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
@@ -199,6 +207,7 @@ namespace EngineCore
             RegisterUiItem(uiItem->GetUId(), uiItem->GetName());
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
+            SetIsTransformDirty(true);
             CollectChildrenWithDescendingZOrder();
         }
 

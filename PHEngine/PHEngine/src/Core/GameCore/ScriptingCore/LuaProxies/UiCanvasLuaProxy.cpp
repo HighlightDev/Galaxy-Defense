@@ -65,5 +65,21 @@ namespace EngineCore
         {
             return mIsVisible;
         }
+
+        void UiCanvasLuaProxy::InitializeInputSystem()
+        {
+            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::InitializeInputSystem");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                    assert(canvas);
+                    canvas->InitializeInputSystem();
+                });
+            }
+        }
     }
 }

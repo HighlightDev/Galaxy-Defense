@@ -19,8 +19,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiImage::UiImage(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(canvasParent, parent),
+        UiImage::UiImage()
+            : UiItemBase(),
               mTextureSrc(""),
               mTexture(),
               mOpacity(1.0f),

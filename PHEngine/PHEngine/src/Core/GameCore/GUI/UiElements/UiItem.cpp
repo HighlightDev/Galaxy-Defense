@@ -15,8 +15,8 @@ namespace EngineCore
     namespace GUI
     {
 
-        UiItem::UiItem(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
-            : UiItemBase(parentCanvas, parent)
+        UiItem::UiItem()
+            : UiItemBase()
         {
         }
 

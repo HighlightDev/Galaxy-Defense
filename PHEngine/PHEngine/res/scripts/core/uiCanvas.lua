@@ -30,6 +30,7 @@ function UiCanvas:new(host, originX, originY, width, height)
     canvasObj.originY = originY
     canvasObj.width = width
     canvasObj.height = height
+    canvasObj.name = ""
     canvasObj.properties = {
         visible = {
             value = false,
@@ -37,17 +38,7 @@ function UiCanvas:new(host, originX, originY, width, height)
         }
     }
 
-    -- canvasObj:subscribeOnLuaProxyReady(canvasObj.foo)
-
     return canvasObj
-end
-
---[[ function UiCanvas:foo(host)
-    print("UiCanvas::onLuaProxyRead => Canvas proxy is ready now! self: " .. tostring(self) .. ", id: " .. self.luaProxyId)
-end ]]
-
-function UiCanvas:__gc(self)
-    print("UiCanvas::dctor => luaProxyId: " .. tostring(self.luaProxyId))
 end
 
 function UiCanvas:updateFromReplicatorData(host)
@@ -59,7 +50,7 @@ function UiCanvas:updateFromReplicatorData(host)
             self.name = parsedJson["name"]
         end
         if parsedJson["visible"] ~= nil then
-            self.visible = parsedJson["visible"]
+            self.properties.visible.value = parsedJson["visible"]
         end
     end
 end
@@ -71,6 +62,7 @@ function UiCanvas:sendDataToReplicator(host)
         if value.dirty then
             propDataDirty = true
             propertiesData[tostring(key)] = value.value
+            value.dirty = false
         end
     end
 
@@ -79,14 +71,14 @@ function UiCanvas:sendDataToReplicator(host)
     end
 end
 
-function UiCanvas:update(host, deltaTime)
-end
-
 function UiCanvas:setIsVisible(isVisible)
     if self.properties.visible.value ~= isVisible then
         self.properties.visible.value = isVisible
         self.properties.visible.dirty = true
     end
+end
+
+function UiCanvas:update(host, deltaTime)
 end
 
 return UiCanvas

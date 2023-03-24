@@ -24,7 +24,7 @@ namespace EngineCore
         class UiItem : public UiItemBase
         {
         public:
-            explicit UiItem(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
+            UiItem();
 
             void OnRegistered() override;
             

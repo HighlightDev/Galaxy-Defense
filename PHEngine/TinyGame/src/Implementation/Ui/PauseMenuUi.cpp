@@ -64,8 +64,8 @@ namespace Game
             const auto menuHorizontalMargin = static_cast<int32_t>(static_cast<float>(windowWidth) / 4.0f);
             const auto menuVerticalMargin = windowHeight / 15;
 
-            const auto &backgroundRect = std::make_shared<UiRectangle>(mPauseMenuCanvas, mPauseMenuCanvas);
-            mPauseMenuCanvas->AddUiItem(backgroundRect);
+            const auto &backgroundRect = std::make_shared<UiRectangle>();
+            backgroundRect->SetParents(mPauseMenuCanvas, mPauseMenuCanvas);
             backgroundRect->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mPauseMenuCanvas->GetName());
             backgroundRect->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, mPauseMenuCanvas->GetName());
             backgroundRect->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mPauseMenuCanvas->GetName());
@@ -85,8 +85,8 @@ namespace Game
             const auto totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
             buttonHeight = (pauseMenuHeight - totalButtonMarginHeight) / buttonsCount;
 
-            const auto &continueButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
-            backgroundRect->AddUiItem(continueButton);
+            const auto &continueButton = std::make_shared<UiRectangle>();
+            continueButton->SetParents(mPauseMenuCanvas, backgroundRect);
             continueButton->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, backgroundRect->GetName());
             continueButton->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, backgroundRect->GetName());
             continueButton->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, backgroundRect->GetName());
@@ -97,8 +97,8 @@ namespace Game
             continueButton->SetColor(s_buttonColor);
             continueButton->SetZOrder(2);
 
-            const auto &continueButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, continueButton, "nimbus_mono");
-            continueButton->AddUiItem(continueButtonLabel);
+            const auto &continueButtonLabel = std::make_shared<UiLabel>("nimbus_mono");
+            continueButtonLabel->SetParents(mPauseMenuCanvas, continueButton);
             continueButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, continueButton->GetName());
             continueButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, continueButton->GetName());
             continueButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, continueButton->GetName());
@@ -109,8 +109,8 @@ namespace Game
             continueButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             continueButtonLabel->SetZOrder(3);
 
-            const auto &settingsButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
-            backgroundRect->AddUiItem(settingsButton);
+            const auto &settingsButton = std::make_shared<UiRectangle>();
+            settingsButton->SetParents(mPauseMenuCanvas, backgroundRect);
             settingsButton->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, backgroundRect->GetName());
             settingsButton->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, backgroundRect->GetName());
             settingsButton->SetAnchor(eUiAnchor::TOP, eUiAnchor::BOTTOM, continueButton->GetName());
@@ -121,8 +121,8 @@ namespace Game
             settingsButton->SetColor(s_buttonColor);
             settingsButton->SetZOrder(2);
 
-            const auto &settingsButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, settingsButton, "nimbus_mono");
-            settingsButton->AddUiItem(settingsButtonLabel);
+            const auto &settingsButtonLabel = std::make_shared<UiLabel>("nimbus_mono");
+            settingsButtonLabel->SetParents(mPauseMenuCanvas, settingsButton);
             settingsButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, settingsButton->GetName());
             settingsButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, settingsButton->GetName());
             settingsButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, settingsButton->GetName());
@@ -133,8 +133,8 @@ namespace Game
             settingsButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             settingsButtonLabel->SetZOrder(3);
 
-            const auto &exitToMainMenuButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
-            backgroundRect->AddUiItem(exitToMainMenuButton);
+            const auto &exitToMainMenuButton = std::make_shared<UiRectangle>();
+            exitToMainMenuButton->SetParents(mPauseMenuCanvas, backgroundRect);
             exitToMainMenuButton->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, backgroundRect->GetName());
             exitToMainMenuButton->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, backgroundRect->GetName());
             exitToMainMenuButton->SetAnchor(eUiAnchor::TOP, eUiAnchor::BOTTOM, settingsButton->GetName());
@@ -145,8 +145,8 @@ namespace Game
             exitToMainMenuButton->SetColor(s_buttonColor);
             exitToMainMenuButton->SetZOrder(2);
 
-            const auto &exitToMainMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitToMainMenuButton, "nimbus_mono");
-            exitToMainMenuButton->AddUiItem(exitToMainMenuButtonLabel);
+            const auto &exitToMainMenuButtonLabel = std::make_shared<UiLabel>("nimbus_mono");
+            exitToMainMenuButtonLabel->SetParents(mPauseMenuCanvas, exitToMainMenuButton);
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, exitToMainMenuButton->GetName());
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, exitToMainMenuButton->GetName());
             exitToMainMenuButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, exitToMainMenuButton->GetName());
@@ -157,8 +157,8 @@ namespace Game
             exitToMainMenuButtonLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::CENTER);
             exitToMainMenuButtonLabel->SetZOrder(3);
 
-            const auto &exitGameButton = std::make_shared<UiRectangle>(mPauseMenuCanvas, backgroundRect);
-            backgroundRect->AddUiItem(exitGameButton);
+            const auto &exitGameButton = std::make_shared<UiRectangle>();
+            exitGameButton->SetParents(mPauseMenuCanvas, backgroundRect);
             exitGameButton->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, backgroundRect->GetName());
             exitGameButton->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, backgroundRect->GetName());
             exitGameButton->SetAnchor(eUiAnchor::TOP, eUiAnchor::BOTTOM, exitToMainMenuButton->GetName());
@@ -169,8 +169,8 @@ namespace Game
             exitGameButton->SetColor(s_buttonColor);
             exitGameButton->SetZOrder(2);
 
-            const auto &exitGameMenuButtonLabel = std::make_shared<UiLabel>(mPauseMenuCanvas, exitGameButton, "nimbus_mono");
-            exitGameButton->AddUiItem(exitGameMenuButtonLabel);
+            const auto &exitGameMenuButtonLabel = std::make_shared<UiLabel>("nimbus_mono");
+            exitGameMenuButtonLabel->SetParents(mPauseMenuCanvas, exitGameButton);
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, exitGameButton->GetName());
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, exitGameButton->GetName());
             exitGameMenuButtonLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, exitGameButton->GetName());

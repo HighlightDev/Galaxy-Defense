@@ -72,7 +72,9 @@ namespace EngineCore
             std::shared_ptr<IUiMouseInputReceivable> mMouseInputReceiver;
 
         public:
-            explicit UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
+            UiItemBase();
+
+            void SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
             virtual void OnRegistered() = 0;
 
@@ -132,7 +134,7 @@ namespace EngineCore
             void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) override;
             void SetHorizontalCenterOffset(const int32_t offset) override;
             void SetVerticalCenterOffset(const int32_t offset) override;
-            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem) override;
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;

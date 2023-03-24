@@ -36,7 +36,7 @@ namespace EngineCore
             bool mIsStateOn;
 
         public:
-            explicit UiToggleButton(const bool isInitialStateOn, const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent);
+            UiToggleButton(const bool isInitialStateOn);
 
             ~UiToggleButton() override;
 

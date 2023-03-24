@@ -81,6 +81,8 @@ namespace EngineCore
 
             void InitializeInputSystem();
 
+            void DeinitializeInputSystem();
+
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
             void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
@@ -108,7 +110,7 @@ namespace EngineCore
             void SetIsVisible(const bool isVisible) override;
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
-            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem);
+            void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem) override;
             void RemoveUiItem(const std::shared_ptr<UiItemBase> &uiItem);
 
             void Tick(const float deltaTime) override;

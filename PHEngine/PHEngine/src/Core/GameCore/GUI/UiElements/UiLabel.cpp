@@ -18,8 +18,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiLabel::UiLabel(const std::weak_ptr<UiCanvas> &canvasParent, const std::weak_ptr<IUiTransformable> &parent, const std::string &fontName)
-            : UiItemBase(canvasParent, parent),
+        UiLabel::UiLabel(const std::string &fontName)
+            : UiItemBase(),
               mText(""),
               mOpacity(1.0f),
               mFontName(fontName),

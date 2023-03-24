@@ -18,7 +18,7 @@ namespace EngineCore
 
         size_t UiItemBase::s_UIds = 0;
 
-        UiItemBase::UiItemBase(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
+        UiItemBase::UiItemBase()
             : mUId(s_UIds++),
               mName("UiItemBase_" + std::to_string(mUId)),
               mAbsoluteOrigin(),
@@ -31,13 +31,22 @@ namespace EngineCore
               mAnchors(),
               mHorizontalCenterOffset(0),
               mVerticalCenterOffset(0),
-              mParent(parent),
-              mParentCanvas(parentCanvas),
+              mParent(),
+              mParentCanvas(),
               mChildren(),
               mIsVisible(true),
               mIsTransformDirty(true),
               mIsPropertiesShouldBeUpdatedOnRenderThread(false)
         {
+        }
+
+        void UiItemBase::SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
+        {
+            mParentCanvas = parentCanvas;
+            mParent = parent;
+            const auto& parentSp = mParent.lock();
+            assert(parentSp);
+            parentSp->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
         }
 
         std::weak_ptr<Scene> UiItemBase::GetScene() const
@@ -510,6 +519,7 @@ namespace EngineCore
             mChildren.emplace_back(uiItem);
             uiItem->OnRegistered();
             uiItem->SetIsVisible(mIsVisible);
+            SetIsTransformDirty(true);
 
             if (const auto &canvasSp = mParentCanvas.lock())
             {
@@ -692,7 +702,7 @@ namespace EngineCore
                         {
                             mIsPropertiesShouldBeUpdatedOnRenderThread = false;
                             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]()
-                                                           {
+                                                                                                {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
                                 uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); });
