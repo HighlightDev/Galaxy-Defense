@@ -41,10 +41,13 @@ namespace EngineCore
         {
             if (const auto &sceneSp = GetScene().lock())
             {
-                if (const auto &parentCanvasSp = mParentCanvas.lock())
+                if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
-                    const auto thisSceneProxy = CreateUiSceneProxy();
-                    sceneSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                    if (const auto &parentCanvasSp = mParentCanvas.lock())
+                    {
+                        const auto thisSceneProxy = CreateUiSceneProxy();
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                    }
                 }
             }
         }
@@ -166,13 +169,13 @@ namespace EngineCore
                         const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                         if (uiSceneProxy)
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]() {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+                                                                                                {
                                 const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
                                 imageSceneProxy->SetTexture(mTexture);
                                 imageSceneProxy->SetOpacity(mOpacity);
                                 imageSceneProxy->SetRotationDegrees(mRotationDegrees);
-                                imageSceneProxy->SetIsFlipped(mIsFlipped); 
-                            });
+                                imageSceneProxy->SetIsFlipped(mIsFlipped); });
                         }
                         else
                         {

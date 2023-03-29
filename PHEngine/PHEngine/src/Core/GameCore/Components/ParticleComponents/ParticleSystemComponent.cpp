@@ -15,6 +15,7 @@
 #include <iterator>
 
 using namespace Graphics::Proxy;
+using namespace Graphics::Renderer;
 using namespace Graphics;
 using namespace EngineMath;
 using namespace TinyLogger;
@@ -159,13 +160,16 @@ namespace EngineCore
 
             if (const auto &sceneSP = m_sceneWP.lock())
             {
-                const auto updateSuccessfull = sceneSP->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
-                                                                                                         GetObjectId(),
-                                                                                                         functionId,
-                                                                                                         m_relativeMatrix,
-                                                                                                         GetTransformedBoundingBox());
+                if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                {
+                    const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
+                                                                                                             GetObjectId(),
+                                                                                                             functionId,
+                                                                                                             m_relativeMatrix,
+                                                                                                             GetTransformedBoundingBox());
 
-                SetIsTransformationDirty(!updateSuccessfull);
+                    SetIsTransformationDirty(!updateSuccessfull);
+                }
             }
         }
     }
@@ -189,27 +193,27 @@ namespace EngineCore
             if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                               GetObjectId(),
-                                               functionId,
-                                               [=]() mutable
-                                               {
-                                                   const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
-                                                   assert(primitiveProxySp);
-                                                   const auto &proxyPtr =
-                                                       std::static_pointer_cast<ParticleSystemSceneProxy>(primitiveProxySp);
+                                                                                    GetObjectId(),
+                                                                                    functionId,
+                                                                                    [=]() mutable
+                                                                                    {
+                                                                                        const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
+                                                                                        assert(primitiveProxySp);
+                                                                                        const auto &proxyPtr =
+                                                                                            std::static_pointer_cast<ParticleSystemSceneProxy>(primitiveProxySp);
 
-                                                   if (activeParticlesCount > 0)
-                                                   {
-                                                       proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
-                                                                                      mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
-                                                                                      mParticlesRawDataHandler.GetRotationSizeData(),
-                                                                                      mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
-                                                                                      mParticlesRawDataHandler.GetColorData(),
-                                                                                      mParticlesRawDataHandler.GetColorActiveDataChunkSize());
-                                                   }
+                                                                                        if (activeParticlesCount > 0)
+                                                                                        {
+                                                                                            proxyPtr->CopyParticlesRawData(mParticlesRawDataHandler.GetTranslationData(),
+                                                                                                                           mParticlesRawDataHandler.GetTranslationActiveDataChunkSize(),
+                                                                                                                           mParticlesRawDataHandler.GetRotationSizeData(),
+                                                                                                                           mParticlesRawDataHandler.GetRotationSizeActiveDataChunkSize(),
+                                                                                                                           mParticlesRawDataHandler.GetColorData(),
+                                                                                                                           mParticlesRawDataHandler.GetColorActiveDataChunkSize());
+                                                                                        }
 
-                                                   proxyPtr->SetActiveParticlesCount(activeParticlesCount);
-                                               });
+                                                                                        proxyPtr->SetActiveParticlesCount(activeParticlesCount);
+                                                                                    });
             }
         }
     }

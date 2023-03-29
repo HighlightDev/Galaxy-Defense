@@ -156,7 +156,7 @@ namespace EngineCore
 
    private:
 
-      void UpdateCameraProxyData(const float DeltaTime);
+      bool UpdateCameraProxyData();
    };
 
 }

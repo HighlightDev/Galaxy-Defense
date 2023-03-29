@@ -1,9 +1,12 @@
 #include "TextHandler.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <algorithm>
 #include <glm/vec3.hpp>
+
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -36,27 +39,25 @@ namespace EngineCore
 
     void TextHandler::ProcessEvent(const TextRegisterEvent::EventData_t &data)
     {
-        if (auto sceneSp = mSceneWp.lock())
+        if (const auto &sceneSp = mSceneWp.lock())
         {
-            const auto &textSp = std::get<0>(data);
-            const auto registerType = std::get<1>(data);
-            const bool bSubscribeOnUpdateTextScreenSpaceSize = std::get<2>(data);
-
-            if (eRegisterType::REGISTER == registerType)
+            if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
-                mRegisteredTexts.emplace_back(textSp);
-                sceneSp->RegisterText_OnRenderThread(textSp, bSubscribeOnUpdateTextScreenSpaceSize);
-            }
-            else
-            {
-                auto removeIt = std::remove_if(mRegisteredTexts.begin(), mRegisteredTexts.end(), [=](const auto &textField)
-                                               { return textSp->GetTextFieldId() == textField->GetTextFieldId(); });
+                const auto &textSp = std::get<0>(data);
+                const auto registerType = std::get<1>(data);
+                const bool bSubscribeOnUpdateTextScreenSpaceSize = std::get<2>(data);
 
-                if (removeIt != mRegisteredTexts.end())
+                if (eRegisterType::REGISTER == registerType)
                 {
-                    mRegisteredTexts.erase(removeIt);
+                    mRegisteredTexts.emplace_back(textSp);
+                    sceneRendererSp->RegisterText_OnRenderThread(textSp, bSubscribeOnUpdateTextScreenSpaceSize);
                 }
-                sceneSp->UnregisterText_OnRenderThread(textSp);
+                else
+                {
+                    mRegisteredTexts.erase(std::remove_if(mRegisteredTexts.begin(), mRegisteredTexts.end(), [=](const auto &textField)
+                                                          { return textSp->GetTextFieldId() == textField->GetTextFieldId(); }));
+                    sceneRendererSp->UnregisterText_OnRenderThread(textSp);
+                }
             }
         }
     }
@@ -65,11 +66,14 @@ namespace EngineCore
     {
         if (auto sceneSp = mSceneWp.lock())
         {
-            const auto &textWp = std::get<0>(data);
-            if (const auto &textSp = textWp.lock())
+            if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
-                const auto &changedDataType = std::get<1>(data);
-                sceneSp->TextDataChanged_OnRenderThread(textSp, changedDataType);
+                const auto &textWp = std::get<0>(data);
+                if (const auto &textSp = textWp.lock())
+                {
+                    const auto &changedDataType = std::get<1>(data);
+                    sceneRendererSp->TextDataChanged_OnRenderThread(textSp, changedDataType);
+                }
             }
         }
     }

@@ -115,7 +115,11 @@ namespace EngineCore
       RegisterEngineObject(camera.get());
       auto cameraProxyPtr = camera->CreateSceneProxy();
       camera->SceneProxyId = cameraProxyPtr->GetSceneProxyId();
-      CameraSceneProxyAdded_OnRenderThread(cameraProxyPtr);
+
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         sceneRendererSp->CameraSceneProxyAdded_OnRenderThread(cameraProxyPtr);
+      }
    }
 
    std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
@@ -134,7 +138,10 @@ namespace EngineCore
       const auto &materialProxy = material->CreateMaterialProxy();
       material->MaterialProxyId = materialProxy->GetSceneProxyId();
 
-      MaterialProxyAdded_OnRenderThread(materialProxy->GetSceneProxyId(), materialProxy);
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         sceneRendererSp->MaterialProxyAdded_OnRenderThread(materialProxy);
+      }
 
       return materialProxy;
    }
@@ -292,537 +299,6 @@ namespace EngineCore
       return mUiHandler;
    }
 
-   bool Scene::UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &primitiveSp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveSp)
-         {
-            auto result = true;
-            m_interThreadMgr.ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [=]()
-                { primitiveSp->SetEnabled(bEnabled); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdatePrimitiveComponentEnable_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-      }
-
-      return result;
-   }
-
-   bool Scene::UpdatePrimitiveComponentVisibility_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveProxySp)
-         {
-            result = true;
-            m_interThreadMgr.ExecuteOnRenderThread(
-                eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                creatorObjectId,
-                functionId, [=]()
-                { primitiveProxySp->SetVisibility(visibility); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdatePrimitiveComponentVisibility_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-      }
-
-      return result;
-   }
-
-   bool Scene::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const int32_t sortOrderValue)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveProxySp)
-         {
-            result = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [=]()
-                                                   { primitiveProxySp->SetSortOrderValue(sortOrderValue); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdatePrimitiveComponentSortOrderValue_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-      }
-
-      return result;
-   }
-
-   bool Scene::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-                                                                const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveProxySp)
-         {
-            result = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    creatorObjectId,
-                                                    functionId, [=]()
-                                                    {
-               primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
-               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdatePrimitiveComponentTransform_OnRenderThread => "
-                    "Error !Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-      }
-
-      return result;
-   }
-
-   bool Scene::UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
-         if (sceneViewSp)
-         {
-            result = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    creatorObjectId,
-                                                    functionId, [=]()
-                                                    {
-                                                         const auto& cameraProxy = sceneViewSp->GetCameraProxy();
-                                                         cameraProxy->UpdateEyeVector(camera->GetEyeVector());
-                                                         cameraProxy->UpdateViewMatrix(camera->GetViewMatrix());
-                                                         cameraProxy->SetForwardVector(camera->GetEyeSpaceForwardVector());
-                                                         cameraProxy->SetRightVector(camera->GetEyeSpaceRightVector());
-                                                         cameraProxy->SetUpVector(camera->GetLocalSpaceUpVector());
-
-                                                         m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                                                                 creatorObjectId,
-                                                                                                     functionId, [=]()
-                                                                                                     { camera->OnCameraSceneProxyDataUpdated(); }); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdateCameraSceneProxyData_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    sceneProxyId);
-         }
-      }
-
-      return result;
-   }
-
-   bool Scene::IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const
-   {
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(sceneProxyId);
-         return sceneViewSp != nullptr;
-      }
-
-      return false;
-   }
-
-   bool Scene::UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix)
-   {
-      auto result = false;
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto &lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);
-         if (lightProxySp)
-         {
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                    creatorObjectId,
-                                                    functionId, [=]()
-                                                    { lightProxySp->SetTransformationMatrix(newRelativeMatrix); });
-         }
-         else
-         {
-            LogInfo("Scene::UpdateLightComponentTransform_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    lightSceneProxyIndex);
-         }
-      }
-
-      return result;
-   }
-
-   void Scene::PrimitiveSceneProxyDeleted_OnRenderThread(size_t primitiveSceneProxyIndex)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyDeleted_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 {
-               const bool bRemoved = sceneRenderer->RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-                  if (bRemoved)
-               {
-                  sceneRenderer->SetProxiesAreDirty(true);
-               }
-               else 
-               {
-                   LogInfo("Scene::PrimitiveSceneProxyDeleted_OnRenderThread => "
-                               "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
-               } });
-      }
-   }
-
-   void Scene::PrimitiveSceneProxiesUpdated_OnRenderThread()
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxiesUpdated_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->SetProxiesAreDirty(true); });
-      }
-   }
-
-   void Scene::LightSceneProxyDeleted_OnRenderThread(size_t lightSceneProxyIndex)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::LightSceneProxyDeleted_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId,
-                                                 functionId, [=]()
-                                                 {
-               const bool bRemoved = sceneRenderer->RemoveLightProxyByProxyId(lightSceneProxyIndex);
-               if (bRemoved)
-               {
-                  sceneRenderer->SetLightProxiesAreDirty(true); 
-               }
-               else
-               {
-                  LogInfo("Scene::LightSceneProxyDeleted_OnRenderThread => "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
-               } });
-      }
-   }
-
-   void Scene::LightSceneProxiesUpdated_OnRenderThread()
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::LightSceneProxiesUpdated_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->SetLightProxiesAreDirty(true); });
-      }
-   }
-
-   void Scene::CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::CameraSceneProxyAdded_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, sceneRenderer->PrimitiveProxiesVector)); });
-      }
-   }
-
-   void Scene::PrimitiveSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::PrimitiveSceneProxyAdded_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 {
-            const auto& primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            assert(!primitiveProxySp);
-            primitiveSceneProxy->PostConstructorInitialize();
-            sceneRenderer->PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
-            sceneRenderer->SetProxiesAreDirty(true); });
-      }
-   }
-
-   void Scene::LightSceneProxyAdded_OnRenderThread(size_t lightSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::LightSceneProxyAdded_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId,
-                                                 functionId, [=]()
-                                                 {
-         const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyIndex);  
-         assert(!lightProxySp);
-         sceneRenderer->LightProxiesVector.emplace_back(lightSceneProxy);
-         sceneRenderer->SetLightProxiesAreDirty(true); });
-      }
-   }
-
-   void Scene::MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy)
-   {
-      LogInfo("Scene::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName, "proxyId = ", materialProxyIndex);
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::MaterialProxyAdded_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { 
-                                                        const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
-                                                        assert(!materialProxySp);
-                                                        LogInfo("MaterialProxyAdded_OnRenderThread::Job => material name = ", materialProxy->MaterialName);
-                                                        sceneRenderer->MaterialProxiesVector.emplace_back(materialProxy); });
-      }
-   }
-
-   void Scene::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
-   {
-      LogInfo("Scene::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::RegisterText_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->RegisterText(TextFieldProxy::CreateTextFieldProxyInstance(
-                                                       textField->GetTextFieldId(),
-                                                       eTextFieldProxyType::HUD_TEXT_FIELD,
-                                                       textField->GetIsVisible(),
-                                                       textField->GetText(),
-                                                       textField->GetFontName(),
-                                                       textField->GetPosition(),
-                                                       textField->GetColor(),
-                                                       textField->GetFontSize(),
-                                                       textField->GetTextHorizontalAlignment(),
-                                                       textField->GetLineMaxSize(),
-                                                       textField->GetNumberOfLines(),
-                                                       subscribeOnTextScreenSpaceSizeUpdate)); });
-      }
-   }
-
-   void Scene::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField)
-   {
-      LogInfo("Scene::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::UnregisterText_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->UnregisterText(textField->GetFontName(), textField->GetTextFieldId()); });
-      }
-   }
-
-   void Scene::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
-   {
-      LogInfo("Scene::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiCanvasProxy_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->RegisterUiCanvasProxy(uiCanvasProxy); });
-      }
-   }
-
-   void Scene::UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
-   {
-      LogInfo("Scene::UnregisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiCanvasProxy_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->UnregisterUiCanvasProxy(uiCanvasProxy); });
-      }
-   }
-
-   void Scene::RegisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId)
-   {
-      LogInfo("Scene::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash64_CT("Scene::RegisterUiSceneProxy_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->RegisterUiSceneProxy(uiSceneProxy, canvasUId); });
-      }
-   }
-
-   void Scene::UnregisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId)
-   {
-      LogInfo("Scene::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
-
-      static constexpr uint64_t creatorObjectId = 0;
-      static constexpr uint64_t functionId = Hash64_CT("Scene::UnregisterUiSceneProxy_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->UnregisterUiSceneProxy(uiSceneProxy, canvasUId); });
-      }
-   }
-
-   void Scene::TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType)
-   {
-      const uint64_t creatorObjectId = textField->GetTextFieldId();
-      static const uint64_t functionId = Hash("Scene::TextDataChanged_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 {
-                                                        if (eTextChangedDataType::OFFSET == textChangedDataType)
-                                                        {
-                                                         sceneRenderer->TextPositionChanged(textField->GetFontName(),
-                                                                                          textField->GetTextFieldId(),
-                                                                                          textField->GetPosition());
-                                                        }
-                                                        else if (eTextChangedDataType::COLOR == textChangedDataType)
-                                                        {
-                                                         sceneRenderer->TextColorChanged(textField->GetFontName(),
-                                                                                          textField->GetTextFieldId(),
-                                                                                          textField->GetColor());
-                                                        }
-                                                        else if (eTextChangedDataType::TEXT == textChangedDataType)
-                                                        {
-                                                           sceneRenderer->TextChanged(textField->GetFontName(),
-                                                                                       textField->GetTextFieldId(),
-                                                                                       textField->GetText());
-                                                        }
-                                                        else if (eTextChangedDataType::VISIBILITY == textChangedDataType)
-                                                        {
-                                                           sceneRenderer->TextVisibilityChanged(textField->GetFontName(),
-                                                                                                textField->GetTextFieldId(),
-                                                                                                textField->GetIsVisible());
-                                                        } });
-      }
-   }
-
-   void Scene::MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::MaterialPropertiesUpdated_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 creatorObjectId, functionId, [=, properties = std::move(properties)]() mutable
-                                                 { 
-                                                      const auto& materialProxySp = sceneRenderer->GetMaterialProxyByProxyId(materialProxyIndex);
-                                                      if (materialProxySp)
-                                                      {
-                                                         materialProxySp->UpdateProperties(std::move(properties)); 
-                                                      }
-                                                      else{
-                                                         LogInfo("Scene::MaterialPropertiesUpdated_OnRenderThread => "
-                                                            "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
-                                                      } });
-      }
-   }
-
-   void Scene::PlanarReflectionSceneProxyAdded_OnRenderThread(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::PlanarReflectionSceneProxyAdded");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 {
-            const auto& reflectionProxySp = sceneRenderer->GetPlanarReflectionProxyByProxyId(planarReflectionSceneProxyId);
-            assert(!reflectionProxySp);
-            sceneRenderer->PlanarReflectionProxiesVector.emplace_back(proxy);
-            sceneRenderer->SetPlanarReflectionProxiesAreDirty(true); });
-      }
-   }
-
-   void Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         const auto proxyId = cameraOwner->SceneProxyId;
-
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY,
-                                                 creatorObjectId, functionId, [=]()
-                                                 {
-         const auto &sceneViewSp = sceneRenderer->GetSceneViewByProxyId(proxyId);
-         if (sceneViewSp)
-            {
-               planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
-            }
-             else
-            {
-               LogInfo("Scene::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => "
-                     "Error! Current proxy index doesn't exist on RT. Proxy index = ", proxyId);
-            } });
-      }
-   }
-
-#if DEBUG
-   void Scene::UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData)
-   {
-      static constexpr uint64_t creatorObjectId = 0;
-      static const uint64_t functionId = Hash("Scene::UpdatePhysicsRenderData");
-
-      if (const auto &sceneRenderer = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                 creatorObjectId, functionId, [=]()
-                                                 { sceneRenderer->SetDebugPhysicsRenderData(physRenderData); });
-      }
-   }
-#endif
-
    void Scene::Tick(const float delta)
    {
       mGameThreadDeltaSec->SetValue(delta);
@@ -861,7 +337,12 @@ namespace EngineCore
       }
 
 #if DEBUG
-      UpdatePhysicsRenderData(mPhysicsWorld->GetDebugPhysicsRenderData());
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(),
+                                                Hash("Scene::UpdatePhysicsRenderData"), [sceneRendererSp, physRenderData = mPhysicsWorld->GetDebugPhysicsRenderData()]()
+                                                { sceneRendererSp->SetDebugPhysicsRenderData(physRenderData); });
+      }
 
       mDebugUiController->Tick(delta);
 #endif
@@ -916,7 +397,10 @@ namespace EngineCore
          const size_t removeProxyIndex = componentPtr->SceneProxyId;
 
          // delete light proxy from render thread
-         PrimitiveSceneProxyDeleted_OnRenderThread(removeProxyIndex);
+         if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+         {
+            sceneRendererSp->PrimitiveSceneProxyDeleted_OnRenderThread(removeProxyIndex);
+         }
       }
       else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
       {
@@ -924,7 +408,10 @@ namespace EngineCore
          const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
 
          // delete light proxy from render thread
-         LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
+         if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+         {
+            sceneRendererSp->LightSceneProxyDeleted_OnRenderThread(removeProxyIndex);
+         }
       }
 
       if (const auto &spOwner = component->GetOwner().lock())
@@ -961,7 +448,10 @@ namespace EngineCore
             sceneProxySp->SetDeferredShadingSceneRenderer(m_interThreadMgr.GetSceneRendererWP());
             componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
             sceneProxySp->SetBindedGameObjectId(componentPtr->GetObjectId());
-            PrimitiveSceneProxyAdded_OnRenderThread(componentPtr->SceneProxyId, sceneProxySp);
+            if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+            {
+               sceneRendererSp->PrimitiveSceneProxyAdded_OnRenderThread(sceneProxySp);
+            }
             LogInfo("Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =", componentPtr->SceneProxyId);
          }
          else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
@@ -969,16 +459,22 @@ namespace EngineCore
             LightComponent *componentPtr = static_cast<LightComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreateSceneProxy();
             componentPtr->LightSceneProxyId = sceneProxySp->GetSceneProxyId();
-            LightSceneProxyAdded_OnRenderThread(componentPtr->LightSceneProxyId, sceneProxySp);
+            if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+            {
+               sceneRendererSp->LightSceneProxyAdded_OnRenderThread(sceneProxySp);
+            }
             LogInfo("Scene::RegisterComponentSceneProxy => ligth proxy added, sceneProxyId =", componentPtr->LightSceneProxyId);
          }
          else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT)
          {
             PlanarReflectionComponent *componentPtr = static_cast<PlanarReflectionComponent *>(sceneComponentPtr);
             auto sceneProxySp = componentPtr->CreatePlanarReflectionProxy();
-            BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, componentPtr->GetOwnerCamera());
             componentPtr->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
-            PlanarReflectionSceneProxyAdded_OnRenderThread(componentPtr->GetSceneProxyId(), sceneProxySp);
+            if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+            {
+               sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, componentPtr->GetOwnerCamera()->SceneProxyId);
+               sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(sceneProxySp);
+            }
             LogInfo("Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =", componentPtr->GetSceneProxyId());
          }
       }

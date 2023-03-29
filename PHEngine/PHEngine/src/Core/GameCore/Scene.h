@@ -170,58 +170,7 @@ namespace EngineCore
 
       void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
 
-      bool UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-                                                            const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox);
-
-      bool UpdatePrimitiveComponentEnable_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled);
-
-      bool UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool visibility);
-
-      bool UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const int32_t sortOrderValue);
-
-      bool UpdateLightComponentTransform_OnRenderThread(size_t lightSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const glm::mat4 &newRelativeMatrix);
-
-      bool UpdateCameraSceneProxyData_OnRenderThread(const size_t sceneProxyId, const uint64_t creatorObjectId, const uint64_t functionId, ACamera *camera);
-
       void RemoveComponent(std::shared_ptr<Component> component);
-
-      void CameraSceneProxyAdded_OnRenderThread(std::shared_ptr<CameraSceneProxy> cameraSceneProxy);
-
-      bool IsCameraSceneProxyExistsOnRT(const size_t sceneProxyId) const;
-
-      void PrimitiveSceneProxyDeleted_OnRenderThread(size_t primitiveSceneProxyIndex);
-
-      void PrimitiveSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<PrimitiveSceneProxy> primitiveSceneProxy);
-
-      void PrimitiveSceneProxiesUpdated_OnRenderThread();
-
-      void LightSceneProxyDeleted_OnRenderThread(size_t lightSceneProxyIndex);
-
-      void LightSceneProxyAdded_OnRenderThread(size_t primitiveSceneProxyIndex, std::shared_ptr<LightSceneProxy> lightSceneProxy);
-
-      void LightSceneProxiesUpdated_OnRenderThread();
-
-      void MaterialProxyAdded_OnRenderThread(size_t materialProxyIndex, std::shared_ptr<MaterialProxy> materialProxy);
-
-      void MaterialPropertiesUpdated_OnRenderThread(size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
-
-      void PlanarReflectionSceneProxyAdded_OnRenderThread(size_t planarReflectionSceneProxyId, std::shared_ptr<PlanarReflectionProxy> proxy);
-
-      void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(std::shared_ptr<PlanarReflectionProxy> planarReflectionProxy, ACamera *cameraOwner);
-
-      void RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
-
-      void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField);
-
-      void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
-
-      void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
-
-      void RegisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId);
-
-      void UnregisterUiSceneProxy_OnRenderThread(std::shared_ptr<UiSceneProxyBase> uiSceneProxy, const size_t canvasUId);
-
-      void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
 
@@ -230,10 +179,6 @@ namespace EngineCore
       glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition);
 
       std::optional<CameraFrustum> GetCameraFrustum(const size_t cameraProxyId);
-
-#if DEBUG
-      void UpdatePhysicsRenderData(const DebugPhysicsRenderData &physRenderData);
-#endif
 
    private:
       void RegisterComponentSceneProxy(const std::shared_ptr<Component> &component);

@@ -33,9 +33,12 @@ namespace EngineCore
         {
             if (const auto &sceneSp = GetScene().lock())
             {
-                if (const auto &parentCanvasSp = mParentCanvas.lock())
+                if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
-                    sceneSp->RegisterUiSceneProxy_OnRenderThread(CreateUiSceneProxy(), parentCanvasSp->GetUId());
+                    if (const auto &parentCanvasSp = mParentCanvas.lock())
+                    {
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(CreateUiSceneProxy(), parentCanvasSp->GetUId());
+                    }
                 }
             }
         }
@@ -136,13 +139,13 @@ namespace EngineCore
                         const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                         if (uiSceneProxy)
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]() {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+                                                                                                {
                                 const auto& toggleButtonSceneProxy = std::static_pointer_cast<UiToggleButtonSceneProxy>(uiSceneProxy);
                                 toggleButtonSceneProxy->SetToggleOnColor(mToggleOnColor);
                                 toggleButtonSceneProxy->SetToggleOffColor(mToggleOffColor);
                                 toggleButtonSceneProxy->SetOpacity(mOpacity);
-                                toggleButtonSceneProxy->SetState(mIsStateOn); 
-                            });
+                                toggleButtonSceneProxy->SetState(mIsStateOn); });
                         }
                         else
                         {

@@ -3,9 +3,11 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 using namespace EngineCore;
 using namespace Graphics::Proxy;
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -30,7 +32,10 @@ namespace EngineCore
             const auto &newCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
             LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
             const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
-            ownerSp->RegisterUiCanvasProxy_OnRenderThread(canvasSceneProxy);
+            if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+            {
+                sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(canvasSceneProxy);
+            }
             mUiCanvases.emplace_back(newCanvas)->SetScene(mOwner);
             return newCanvas;
         }

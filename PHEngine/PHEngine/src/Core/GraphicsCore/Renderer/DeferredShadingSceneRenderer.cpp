@@ -144,7 +144,7 @@ namespace Graphics
          RegisterFonts();
       }
 
-      const InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager() const
+      InterThreadCommunicationMgr &DeferredShadingSceneRenderer::GetInterThreadCommunicationManager()
       {
          return m_interThreadMgr;
       }
@@ -995,6 +995,385 @@ namespace Graphics
          }
 
          return false;
+      }
+
+      void DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy)
+      {
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, materialProxy->GetSceneProxyId(), functionId, [this, materialProxy]() { 
+            assert(!GetMaterialProxyByProxyId(materialProxy->GetSceneProxyId()));
+            LogInfo("DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread => material name = ", materialProxy->MaterialName, "proxyId = ", materialProxy->GetSceneProxyId());
+            MaterialProxiesVector.emplace_back(materialProxy); 
+         });
+      }
+
+      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+      {
+         bool updateSuccess = false;
+         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveSp)
+         {
+            updateSuccess = true;
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, bEnabled]() {
+               primitiveSp->SetEnabled(bEnabled);
+            });
+         }
+         else
+         {
+            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
+
+         return updateSuccess;
+      }
+
+      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
+                                                                                           const uint64_t creatorObjectId,
+                                                                                           const uint64_t functionId,
+                                                                                           const bool visibility)
+      {
+         bool updateSuccess = false;
+         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveSp)
+         {
+            updateSuccess = true;
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, visibility]() {
+               primitiveSp->SetVisibility(visibility); 
+            });
+         }
+         else
+         {
+            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
+
+         return updateSuccess;
+      }
+
+      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
+                                                                                               const uint64_t creatorObjectId,
+                                                                                               const uint64_t functionId,
+                                                                                               const int32_t sortOrderValue)
+      {
+         bool updateSuccess = false;
+         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveSp)
+         {
+            updateSuccess = true;
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, sortOrderValue]() {
+               primitiveSp->SetSortOrderValue(sortOrderValue); 
+            });
+         }
+         else
+         {
+            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread => "
+                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                    primitiveSceneProxyIndex);
+         }
+
+         return updateSuccess;
+      }
+
+      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+                                                                                          const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
+      {
+         auto updateSuccess = false;
+         const auto &primitiveProxySp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+         if (primitiveProxySp)
+         {
+            updateSuccess = true;
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveProxySp, newRelativeMatrix, newTransformedBoundingBox]() {
+               primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
+               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); 
+            });
+         }
+         else
+         {
+            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread => "
+                     "Error !Current proxy index doesn't exist on RT. Proxy index = ",
+                     primitiveSceneProxyIndex);
+         }
+         return updateSuccess;
+      }
+
+      bool DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+                                                                                      const uint64_t creatorObjectId,
+                                                                                      const uint64_t functionId,
+                                                                                      const glm::mat4 &newRelativeMatrix)
+      {
+         auto updateSuccess = false;
+         const auto &lightProxySp = GetLightProxyByProxyId(lightSceneProxyIndex);
+         if (lightProxySp)
+         {
+            updateSuccess = true;
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [newRelativeMatrix, lightProxySp]() {
+               lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+            });
+         }
+         else
+         {
+            LogInfo("DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread => "
+                     "Error! Current proxy index doesn't exist on RT. Proxy index = ",
+                     lightSceneProxyIndex);
+         }
+
+         return updateSuccess;
+      }
+
+      void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex)
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveSceneProxyIndex]() {
+            if (RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex))
+            {
+               SetProxiesAreDirty(true);
+            }
+            else 
+            {
+               LogInfo("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread => "
+                        "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
+            }
+         });
+      }
+
+      void DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]() {
+            SetProxiesAreDirty(true); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread(const size_t lightSceneProxyIndex)
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxyIndex]() {
+            if (RemoveLightProxyByProxyId(lightSceneProxyIndex))
+            {
+               SetLightProxiesAreDirty(true); 
+            }
+            else
+            {
+               LogInfo("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread => "
+                     "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
+            } 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]() {
+            SetLightProxiesAreDirty(true); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, cameraSceneProxy]() {
+            SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, PrimitiveProxiesVector)); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveSceneProxy>& primitiveSceneProxy)
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveSceneProxy]() {
+            assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
+            primitiveSceneProxy->PostConstructorInitialize();
+            PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
+            SetProxiesAreDirty(true); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightSceneProxy>& lightSceneProxy)
+      {
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxy]() {
+            assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
+            LightProxiesVector.emplace_back(lightSceneProxy);
+            SetLightProxiesAreDirty(true);
+         });
+      }
+
+      void DeferredShadingSceneRenderer::RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate)
+      {
+         LogInfo("DeferredShadingSceneRenderer::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::RegisterText_OnRenderThread");
+
+         const auto textFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
+             textField->GetTextFieldId(),
+             eTextFieldProxyType::HUD_TEXT_FIELD,
+             textField->GetIsVisible(),
+             textField->GetText(),
+             textField->GetFontName(),
+             textField->GetPosition(),
+             textField->GetColor(),
+             textField->GetFontSize(),
+             textField->GetTextHorizontalAlignment(),
+             textField->GetLineMaxSize(),
+             textField->GetNumberOfLines(),
+             subscribeOnTextScreenSpaceSizeUpdate);
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, textFieldProxy]() {
+            RegisterText(textFieldProxy); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField)
+      {
+         LogInfo("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]() {
+            UnregisterText(fontName, textFieldId); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+      {
+         LogInfo("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvasProxy]() {
+            RegisterUiCanvasProxy(uiCanvasProxy); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+      {
+         LogInfo("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
+            UnregisterUiCanvasProxy(uiCanvasProxy); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
+      {
+         LogInfo("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
+            RegisterUiSceneProxy(uiSceneProxy, canvasUId); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
+      {
+         LogInfo("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+
+         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
+
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
+            UnregisterUiSceneProxy(uiSceneProxy, canvasUId); 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType)
+      {
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextDataChanged_OnRenderThread");
+
+         const auto textFontName = textField->GetFontName();
+         const auto textFieldId = textField->GetTextFieldId();
+         if (eTextChangedDataType::OFFSET == textChangedDataType)
+         {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, textFieldId, functionId, [this, textFontName, textFieldId, textPosition = textField->GetPosition()]() {
+               TextPositionChanged(textFontName,textFieldId, textPosition);
+            });
+         }
+         else if (eTextChangedDataType::COLOR == textChangedDataType)
+         {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, textFieldId, functionId, [this, textFontName, textFieldId, textColor = textField->GetColor()]() {
+               TextColorChanged(textFontName, textFieldId, textColor);
+            });
+         }
+         else if (eTextChangedDataType::TEXT == textChangedDataType)
+         {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, textFieldId, functionId, [this, textFontName, textFieldId, text = textField->GetText()]() {
+               TextChanged(textFontName, textFieldId, text);
+            });
+         }
+         else if (eTextChangedDataType::VISIBILITY == textChangedDataType)
+         {
+             m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, textFieldId, functionId, [this, textFontName, textFieldId, isVisible = textField->GetIsVisible()]() {
+               TextVisibilityChanged(textFontName, textFieldId, isVisible);
+            });
+         }
+      }
+
+      void DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
+      {
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, materialProxyIndex, properties = std::move(properties)]() mutable { 
+            const auto& materialProxySp = GetMaterialProxyByProxyId(materialProxyIndex);
+            if (materialProxySp)
+            {
+               materialProxySp->UpdateProperties(std::move(properties)); 
+            }
+            else
+            {
+               LogInfo("DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread => "
+                  "Error! Current proxy index doesn't exist on RT. Proxy index = ", materialProxyIndex);
+            } 
+         });
+      }
+
+      void DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &proxy)
+      {
+            static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded");
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, proxy->GetSceneProxyId(), functionId, [proxy, this]() {
+               const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
+               assert(!reflectionProxySp);
+               PlanarReflectionProxiesVector.emplace_back(proxy);
+               SetPlanarReflectionProxiesAreDirty(true); 
+            });
+      }
+
+      void DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy,
+                                                                                                  const size_t cameraSceneProxyId)
+      {
+         static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, cameraSceneProxyId, functionId, [this, cameraSceneProxyId, planarReflectionProxy]() {
+            const auto &sceneViewSp = GetSceneViewByProxyId(cameraSceneProxyId);
+            if (sceneViewSp)
+            {
+               planarReflectionProxy->SetSceneViewWeakPtr(sceneViewSp);
+            }
+            else
+            {
+               LogInfo("DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread => Error! Current proxy index doesn't exist on RT. Proxy index = ", cameraSceneProxyId);
+            }
+         });
       }
 
       void DeferredShadingSceneRenderer::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)

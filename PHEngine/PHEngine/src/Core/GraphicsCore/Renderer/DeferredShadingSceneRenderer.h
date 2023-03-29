@@ -36,6 +36,9 @@
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/GUI/Common/FontHandler.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
+
+#include "Core/GameCore/Event/eTextEventEnums.h"
 
 #include <utility>
 
@@ -44,6 +47,7 @@ using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
+using namespace Event;
 
 namespace Graphics
 {
@@ -147,6 +151,67 @@ namespace Graphics
 
          void SetPlanarReflectionProxiesAreDirty(const bool bDirty);
 
+         void MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy);
+
+         bool UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex,
+                                                            const uint64_t creatorObjectId,
+                                                            const uint64_t functionId,
+                                                            const bool bEnabled);
+
+         bool UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
+                                                                const uint64_t creatorObjectId,
+                                                                const uint64_t functionId,
+                                                                const bool visibility);
+
+         bool UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
+                                                                    const uint64_t creatorObjectId,
+                                                                    const uint64_t functionId,
+                                                                    const int32_t sortOrderValue);
+
+         bool UpdatePrimitiveComponentTransform_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+                                                               const uint64_t functionId,
+                                                               const glm::mat4 &newRelativeMatrix,
+                                                               const BoundingBox3D &newTransformedBoundingBox);
+
+         bool UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+                                                           const uint64_t creatorObjectId,
+                                                           const uint64_t functionId,
+                                                           const glm::mat4 &newRelativeMatrix);
+
+         void PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex);
+
+         void PrimitiveSceneProxiesUpdated_OnRenderThread();
+
+         void LightSceneProxyDeleted_OnRenderThread(const size_t lightSceneProxyIndex);
+
+         void LightSceneProxiesUpdated_OnRenderThread();
+
+         void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
+
+         void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
+
+         void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightSceneProxy> &lightSceneProxy);
+
+         void RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
+
+         void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField);
+
+         void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+
+         void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+
+         void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+
+         void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+
+         void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
+
+         void MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
+
+         void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &proxy);
+
+         void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy, const size_t cameraSceneProxyId);
+
          void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
          void UnregisterText(const std::string &fontName, const int32_t textFieldProxyId);
@@ -167,7 +232,7 @@ namespace Graphics
 
          void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
 
-         const InterThreadCommunicationMgr &GetInterThreadCommunicationManager() const;
+         InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
 #if DEBUG
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);

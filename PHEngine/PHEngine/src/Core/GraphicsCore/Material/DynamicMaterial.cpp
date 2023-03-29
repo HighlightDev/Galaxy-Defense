@@ -1,4 +1,5 @@
 #include "DynamicMaterial.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/Assertion.h"
@@ -6,6 +7,7 @@
 #include <algorithm>
 
 using namespace EngineCore;
+using namespace Graphics::Renderer;
 
 namespace Graphics
 {
@@ -43,9 +45,12 @@ namespace Graphics
 
    void DynamicMaterial::SyncDataWithRenderThread()
    {
-      if (auto sceneSP = mScene.lock())
+      if (const auto &sceneSp = mScene.lock())
       {
-         sceneSP->MaterialPropertiesUpdated_OnRenderThread(MaterialProxyId, std::move(mDirtyProperties));
+         if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+         {
+            sceneRendererSp->MaterialPropertiesUpdated_OnRenderThread(MaterialProxyId, std::move(mDirtyProperties));
+         }
       }
    }
 

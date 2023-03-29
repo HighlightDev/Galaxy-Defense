@@ -31,10 +31,13 @@ namespace EngineCore
         {
             if (const auto &sceneSp = GetScene().lock())
             {
-                if (const auto &parentCanvasSp = mParentCanvas.lock())
+                if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
-                    const auto thisSceneProxy = CreateUiSceneProxy();
-                    sceneSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                    if (const auto &parentCanvasSp = mParentCanvas.lock())
+                    {
+                        const auto thisSceneProxy = CreateUiSceneProxy();
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                    }
                 }
             }
         }
@@ -113,11 +116,11 @@ namespace EngineCore
                         const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                         if (uiSceneProxy)
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]() {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+                                                                                                {
                                 const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
                                 rectangleSceneProxy->SetColor(mColor);
-                                rectangleSceneProxy->SetOpacity(mOpacity); 
-                            });
+                                rectangleSceneProxy->SetOpacity(mOpacity); });
                         }
                         else
                         {

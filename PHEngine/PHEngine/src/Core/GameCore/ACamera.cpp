@@ -4,11 +4,13 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Event/CameraTransformChangedEvent.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <algorithm>
 
 using namespace EngineMath;
 using namespace IO;
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -40,17 +42,49 @@ namespace EngineCore
       UpdateRotationMatrix(-deltaX, -deltaY);
    }
 
-   void ACamera::UpdateCameraProxyData(const float DeltaTime)
+   bool ACamera::UpdateCameraProxyData()
    {
-      if (bTransformationDirty)
+      auto updateSuccessfull = false;
+      if (auto sceneSp = mScene.lock())
       {
-         if (auto sceneSp = mScene.lock())
+         if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraSceneProxyData_OnRenderThread");
-            const auto updateSuccessfull = sceneSp->UpdateCameraSceneProxyData_OnRenderThread(SceneProxyId, GetObjectId(), functionId, this);
-            bTransformationDirty = !updateSuccessfull;
+            static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraProxyData");
+
+            const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(SceneProxyId);
+            if (sceneViewSp)
+            {
+               updateSuccessfull = true;
+               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
+                  [cameraPtr = this,
+                   eyeVector = GetEyeVector(),
+                   viewMatrix = GetViewMatrix(),
+                   eyeForwardVector = GetEyeSpaceForwardVector(),
+                   eyeRightVector = GetEyeSpaceRightVector(),
+                   eyeUpVector = GetLocalSpaceUpVector(),
+                   sceneViewSp,
+                   sceneRendererSp
+                   ]() {
+                  const auto& cameraProxy = sceneViewSp->GetCameraProxy();
+                  cameraProxy->UpdateEyeVector(eyeVector);
+                  cameraProxy->UpdateViewMatrix(viewMatrix);
+                  cameraProxy->SetForwardVector(eyeForwardVector);
+                  cameraProxy->SetRightVector(eyeRightVector);
+                  cameraProxy->SetUpVector(eyeUpVector);
+
+                  static constexpr uint64_t innerFunctionId = Hash64_CT("ACamera::UpdateCameraProxyData");
+                  sceneRendererSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, cameraProxy->GetSceneProxyId(), innerFunctionId, [cameraPtr]() {
+                     cameraPtr->OnCameraSceneProxyDataUpdated(); 
+                  }); 
+               });
+            }
+            else
+            {
+               LogInfo("ACamera::UpdateCameraProxyData => Error! Current proxy index doesn't exist on RT. Proxy index = ", SceneProxyId);
+            }
          }
       }
+      return updateSuccessfull;
    }
 
    void ACamera::OnCameraSceneProxyDataUpdated()
@@ -71,9 +105,14 @@ namespace EngineCore
    void ACamera::Tick(const float DeltaTime)
    {
       if (mPlanarReflectionComponent)
+      {
          mPlanarReflectionComponent->Tick(DeltaTime);
+      }
 
-      UpdateCameraProxyData(DeltaTime);
+      if (bTransformationDirty)
+      {
+         bTransformationDirty = !UpdateCameraProxyData();
+      }
    }
 
    void ACamera::PostLevelInit()
