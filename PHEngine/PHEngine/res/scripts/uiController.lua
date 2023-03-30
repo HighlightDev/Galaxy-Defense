@@ -80,7 +80,7 @@ function System_OnUpdate(host, deltaTimeSec)
             value:update(host)
         end
     end
-
+    
     for _, value in pairs(UiOverlays) do
         value:sendDataToReplicator(host)
     end

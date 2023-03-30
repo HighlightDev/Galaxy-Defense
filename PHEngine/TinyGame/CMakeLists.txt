@@ -115,6 +115,15 @@ add_compile_definitions(
 
 add_executable(TinyGame ${HEADERS} ${SOURCES})
 
+add_custom_command(TARGET TinyGame POST_BUILD
+				   COMMAND ${CMAKE_COMMAND} -E echo
+				   "Start copy of resources to build directory: $<TARGET_FILE_DIR:TinyGame>/res")					
+
+add_custom_command(TARGET TinyGame POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                   ${PROJECT_SOURCE_DIR}/PHEngine/res/ $<TARGET_FILE_DIR:TinyGame>/res)
+
+
 set_target_properties(TinyGame PROPERTIES LINKER_LANGUAGE CXX)
 
 set(GAME_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/TinyGame/src/)
