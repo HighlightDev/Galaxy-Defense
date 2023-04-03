@@ -33,6 +33,8 @@ namespace IO
 		}
 
 		void BuildSystemPathToFolders();
+		
+		std::string GetRelativePathToFile(const std::string& fileName) const;
 		std::string GetPathToExeFile() const;
 		std::string GetResPath() const;
 		std::string GetShortResPath() const;
@@ -60,6 +62,7 @@ namespace IO
 		std::string GetUiTexturePath() const;
 		std::string GetPersistencyPath() const;
 		std::string GetScriptPath() const;
+		std::string GetScriptCorePath() const;
 		std::string GetMaterialPath() const;
 		std::string GetTweenerPath() const;
 
@@ -84,6 +87,7 @@ namespace IO
 		std::string GetShortMaskTexturePath() const;
 		std::string GetShortUiTexturePath() const;
 		std::string GetShortScriptPath() const;
+		std::string GetShortScriptCorePath() const;
 		std::string GetShortMaterialPath() const;
 		std::string GetShortTweenerPath() const;
 

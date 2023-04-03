@@ -1,7 +1,8 @@
 CommonUiWidgetCreator = {
     CommonUiWidgetType = {
         UI_OVERLAY = 0,
-        UI_CANVAS = 1
+        UI_CANVAS = 1,
+        UI_ITEM = 2
     }
 }
 

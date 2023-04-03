@@ -25,9 +25,10 @@ namespace EngineCore
         std::string UiItemLuaProxy::GetGameThreadData()
         {
             const auto &baseJsonStr = UiItemBaseLuaProxy::GetGameThreadData();
-            auto jsonObj = nlohmann::json::parse(baseJsonStr);
-            jsonObj["test"] = 5;
-            return jsonObj.dump();
+            //auto jsonObj = nlohmann::json::parse(baseJsonStr);
+            //jsonObj["test"] = 5;
+            //return jsonObj.dump();
+            return baseJsonStr;
         }
     }
 }

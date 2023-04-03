@@ -12,6 +12,11 @@ namespace EngineUtility
 		return sourceStr.find(lookfor) == 0;
 	}
 
+	bool HasSubstringPresence(const std::string& sourceStr, const std::string& lookfor)
+	{
+		return sourceStr.find(lookfor) != std::string::npos;
+	}
+
 	size_t IndexOf(const std::string &sourceStr, const std::string &lookfor, size_t offset)
 	{
 		size_t result = std::string::npos;

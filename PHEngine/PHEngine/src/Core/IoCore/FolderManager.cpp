@@ -11,7 +11,7 @@ namespace IO
 		: mFilesPathMap(), m_pathToExe("")
 	{
 	}
-      
+
 	FolderManager::~FolderManager()
 	{
 	}
@@ -32,6 +32,7 @@ namespace IO
 		CreateFilePathMap(GetModelPath(), GetShortModelPath());
 		CreateFilePathMap(GetMaterialPath(), GetShortMaterialPath());
 		CreateFilePathMap(GetScriptPath(), GetShortScriptPath());
+		CreateFilePathMap(GetScriptCorePath(), GetShortScriptCorePath());
 		CreateFilePathMap(GetTweenerPath(), GetShortTweenerPath());
 		CreateFilePathMap(GetFontsPath(), GetShortFontsPath());
 		CreateFilePathMap(GetAudioPath(), GetShortAudioPath());
@@ -62,10 +63,19 @@ namespace IO
 	{
 		assert(m_pathToExe != ""); // if assert has fired, maybe you forget to invoke BuildSystemPathToFolders
 #ifdef _WIN32
-      return m_pathToExe + SLASH;
+		return m_pathToExe + SLASH;
 #elif __linux__
-      return m_pathToExe;
+		return m_pathToExe;
 #endif
+	}
+
+	std::string FolderManager::GetRelativePathToFile(const std::string &fileName) const
+	{
+		if (mFilesPathMap.count(fileName))
+		{
+			return mFilesPathMap.at(fileName);
+		}
+		return "";
 	}
 
 	std::string FolderManager::GetResPath() const
@@ -73,14 +83,14 @@ namespace IO
 #ifdef _WIN32
 		return GetPathToExeFile() + SLASH + "res" + SLASH;
 #elif __linux__
-      return GetPathToExeFile() + "res" + SLASH;
+		return GetPathToExeFile() + "res" + SLASH;
 #endif
 	}
 
 	std::string FolderManager::GetShortResPath() const
 	{
-      std::string result = "res";
-      return result + SLASH;
+		std::string result = "res";
+		return result + SLASH;
 	}
 
 	std::string FolderManager::GetShortModelPath() const
@@ -176,6 +186,11 @@ namespace IO
 	std::string FolderManager::GetShortScriptPath() const
 	{
 		return GetShortResPath() + "scripts" + SLASH;
+	}
+
+	std::string FolderManager::GetShortScriptCorePath() const
+	{
+		return GetShortScriptPath() + "core" + SLASH;
 	}
 
 	std::string FolderManager::GetShortMaterialPath() const
@@ -301,6 +316,11 @@ namespace IO
 	std::string FolderManager::GetScriptPath() const
 	{
 		return GetResPath() + "scripts" + SLASH;
+	}
+
+	std::string FolderManager::GetScriptCorePath() const
+	{
+		return GetScriptPath() + "core" + SLASH;
 	}
 
 	std::string FolderManager::GetMaterialPath() const

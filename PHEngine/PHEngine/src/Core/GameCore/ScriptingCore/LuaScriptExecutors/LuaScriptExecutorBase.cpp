@@ -97,6 +97,13 @@ namespace EngineCore
             {
                 assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
                 LuaFunctionInvoker<void(void *, float)>::Invoke(mLuaInstance, "System_OnUpdate", (void *)this, deltaTime);
+#ifdef DEBUG
+                const auto &errorMsg = mLuaInstance.GetErrorMessageAt(-1);
+                if (errorMsg.size() > 1)
+                {
+                    LogInfo("Lua runtime error: ", errorMsg);
+                }
+#endif
             }
         }
     }

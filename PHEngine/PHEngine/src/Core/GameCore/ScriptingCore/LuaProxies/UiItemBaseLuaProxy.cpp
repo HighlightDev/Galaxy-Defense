@@ -109,21 +109,33 @@ namespace EngineCore
                 const auto replicatorId = GetReplicatorId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
                     eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, jsonStr = jsonParameters]()
-                {
+                    {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
                     assert(uiItemBase);
-                    uiItemBase->SyncFromLuaJsonProperties(jsonStr); 
-                });
+                    uiItemBase->SyncFromLuaJsonProperties(jsonStr); });
             }
         }
 
         std::string UiItemBaseLuaProxy::GetGameThreadData()
         {
+            std::unordered_map<eUiAnchor, std::tuple<eUiAnchor /*dst anchor*/, int32_t /* dstLuaProxyId*/, int32_t /*anchor margin*/>> anchorConvertedData;
+            std::transform(mAnchors.cbegin(), mAnchors.cend(),
+                           std::inserter(anchorConvertedData, anchorConvertedData.begin()),
+                           [](const auto &pair)
+                           {
+                               return std::make_pair(pair.first, std::make_tuple(pair.second.GetDstAnchor(), pair.second.GetDstUiItemLuaProxyId(), pair.second.GetSrcAnchorMargin()));
+                           });
             nlohmann::json jsonObj;
             jsonObj["name"] = mUiItemName;
             jsonObj["visible"] = mIsVisible;
+            jsonObj["z_order"] = mZOrder;
+            jsonObj["width"] = mWidth;
+            jsonObj["height"] = mHeight;
+            jsonObj["horizontalCenterOffset"] = mHorizontalCenterOffset;
+            jsonObj["verticalCenterOffset"] = mVerticalCenterOffset;
+            jsonObj["anchors"] = anchorConvertedData;
 
             mIsLuaDataDirty = false;
             return jsonObj.dump();

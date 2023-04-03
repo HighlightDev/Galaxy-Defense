@@ -13,7 +13,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local KeyboardKeys = require("keyboardKeys")
-local json = require("json")
+local json = require("3rdparty/json")
 
 EngineInputReceiver = {
 }

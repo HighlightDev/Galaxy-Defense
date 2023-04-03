@@ -11,12 +11,12 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-
 local EngineInputReceiver = require("core/engineInputReceiver")
 local UiOverlayManager = require("core/uiOverlayManager")
 local EngineEventsHolder = require("core/engineEventsHolder")
 local UiCanvas = require("core/uiCanvas")
 local UiOverlay = require("core/uiOverlay")
+local UiItem = require("core/uiItem")
 
 GlobalContext = {
 }
@@ -49,10 +49,16 @@ end
 
 local function initialize(host)
     local testOverlayCanvas = UiCanvas:new(host, 0, 0, 900, 900)
-    testOverlayCanvas:subscribeOnLuaProxyReady(function (host)
+    testOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, testOverlayCanvas.luaProxyId)
     end)
+    local uiItem1 = UiItem:new(host)
+    uiItem1:subscribeOnLuaProxyReady(function(host)
+        print("UiItem::luaProxyReady: " .. tostring(uiItem1.luaProxyId))
+    end)
     UiOverlays["TestOverlay"] = UiOverlay:new(host, "TestOverlay", testOverlayCanvas)
+
+    UiOverlays["TestOverlay"]:addWidget(uiItem1)
 end
 
 function System_OnStart(host)
@@ -80,7 +86,7 @@ function System_OnUpdate(host, deltaTimeSec)
             value:update(host)
         end
     end
-    
+
     for _, value in pairs(UiOverlays) do
         value:sendDataToReplicator(host)
     end

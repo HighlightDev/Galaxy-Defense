@@ -11,10 +11,8 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-
-
 local CommonUiWidgetCreator = require("commonUiWidgetCreator")
-local json = require("json")
+local json = require("3rdparty/json")
 
 UiOverlay = {
 }
@@ -31,6 +29,7 @@ function UiOverlay:new(host, overlayName, overlayCanvas)
         luaProxyId = luaProxyId,
         overlayName = overlayName,
         overlayCanvas = overlayCanvas,
+        widgets = {}
     }
 
     self.__index = self
@@ -43,14 +42,27 @@ end
 
 function UiOverlay:updateFromReplicatorData(host)
     self.overlayCanvas:updateFromReplicatorData(host)
+
+    for key, value in pairs(self.widgets) do
+        value:updateFromReplicatorData(host)
+    end
 end
 
 function UiOverlay:sendDataToReplicator(host)
     self.overlayCanvas:sendDataToReplicator(host)
+
+    for key, value in pairs(self.widgets) do
+        value:sendDataToReplicator(host)
+    end
 end
 
 function UiOverlay:update(host, deltaTime)
     self.overlayCanvas:update(host, deltaTime)
+end
+
+function UiOverlay:addWidget(widget)
+    assert(widget ~= nil)
+    table.insert(self.widgets, widget)
 end
 
 return UiOverlay

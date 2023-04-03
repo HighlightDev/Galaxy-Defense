@@ -13,7 +13,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiBaseWidget = require("uiBaseWidget")
 local CommonUiWidgetCreator = require("commonUiWidgetCreator")
-local json = require("json")
+local json = require("3rdparty/json")
 
 UiCanvas = UiBaseWidget:new()
 
@@ -24,6 +24,13 @@ function UiCanvas:new(host, originX, originY, width, height)
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS,
         canvasJsonParameters)
 
+    local canvasProperties = {
+        visible = {
+            value = false,
+            dirty = false
+        }
+    }
+
     local canvasObj = UiCanvas.parentClass.new(self)
     canvasObj.luaProxyId = luaProxyId
     canvasObj.originX = originX
@@ -31,13 +38,7 @@ function UiCanvas:new(host, originX, originY, width, height)
     canvasObj.width = width
     canvasObj.height = height
     canvasObj.name = ""
-    canvasObj.properties = {
-        visible = {
-            value = false,
-            dirty = false
-        }
-    }
-
+    canvasObj.properties = canvasProperties
     return canvasObj
 end
 

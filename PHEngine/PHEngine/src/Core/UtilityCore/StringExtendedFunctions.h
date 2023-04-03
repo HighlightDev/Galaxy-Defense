@@ -7,6 +7,8 @@ namespace EngineUtility
 {
 
 	bool StartsWith(const std::string &source, const std::string &lookfor);
+	
+	bool HasSubstringPresence(const std::string& sourceStr, const std::string& lookfor);
 
 	size_t IndexOf(const std::string &source, const std::string &lookfor, size_t offset = 0);
 

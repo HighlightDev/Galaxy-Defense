@@ -208,18 +208,6 @@ if (UNIX)
 	find_library(CONVEXDECOMPOSITION_LIBRARIES ConvexDecomposition ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
 	find_library(BULLETROBOTICS_LIBRARIES BulletRobotics ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
 	find_library(BULLETSOFTBODY_LIBRARIES BulletSoftBody ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/BulletPhysics/lib/Unix/Release/)
-	message(STATUS "Bullet3Collision = ${BULLET3COLLISION_LIBRARIES} \n 
-	BulletCollision = ${BULLETCOLLISION_LIBRARIES} \n 
-	Bullet3Common = ${BULLET3COMMON_LIBRARIES} \n 
-	Bullet3Dynamics = ${BULLET3DYNAMICS_LIBRARIES} \n 
-	Bullet3Geometry = ${BULLET3GEOMETRY_LIBRARIES} \n 
-	BulletDynamics = ${BULLETDYNAMICS_LIBRARIES} \n 
-	LinearMath = ${BULLETLINEARMATH_LIBRARIES} \n 
-	BulletInverseDynamics = ${BULLETINVERSEDYNAMICS_LIBRARIES} \n 
-	ConvexDecomposition = ${CONVEXDECOMPOSITION_LIBRARIES} \n 
-	BulletRobotics = ${BULLETROBOTICS_LIBRARIES} \n 
-	BulletSoftBody = ${BULLETSOFTBODY_LIBRARIES} \n 
-	")
 	if (NOT BULLET3DYNAMICS_LIBRARIES 
     	OR NOT BULLET3COLLISION_LIBRARIES
 		OR NOT BULLETCOLLISION_LIBRARIES
