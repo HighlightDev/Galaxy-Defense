@@ -71,6 +71,10 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTimeSec)
+    if math.abs(pressButtonCooldown) > 1 then
+        pressButtonCooldown = 0
+    end
+
     pressButtonCooldown = pressButtonCooldown + deltaTimeSec
 
     for _, value in pairs(UiOverlays) do

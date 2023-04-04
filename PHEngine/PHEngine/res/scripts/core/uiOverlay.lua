@@ -29,7 +29,8 @@ function UiOverlay:new(host, overlayName, overlayCanvas)
         luaProxyId = luaProxyId,
         overlayName = overlayName,
         overlayCanvas = overlayCanvas,
-        widgets = {}
+        widgets = {},
+        allWidgetProxiesReady = false
     }
 
     self.__index = self
@@ -56,13 +57,34 @@ function UiOverlay:sendDataToReplicator(host)
     end
 end
 
-function UiOverlay:update(host, deltaTime)
-    self.overlayCanvas:update(host, deltaTime)
-end
-
 function UiOverlay:addWidget(widget)
     assert(widget ~= nil)
     table.insert(self.widgets, widget)
+end
+
+function UiOverlay:onAllWidgetProxiesReady(host)
+    print("UiOverlay:onAllWidgetProxiesReady => overlay [" .. tostring(self.overlayName) .. "]")
+end
+
+function UiOverlay:update(host, deltaTime)
+    self.overlayCanvas:update(host, deltaTime)
+
+    if self.allWidgetProxiesReady ~= true then
+        local allProxiesReady = true
+        for _, value in pairs(self.widgets) do
+            if value.luaProxyReady ~= true then
+                allProxiesReady = false
+            end
+        end
+        if allProxiesReady then
+            self.allWidgetProxiesReady = true
+            self:onAllWidgetProxiesReady(host)
+        end
+    end
+
+    for _, value in pairs(self.widgets) do
+        value:update(host)
+    end
 end
 
 return UiOverlay

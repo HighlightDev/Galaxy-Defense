@@ -58,8 +58,11 @@ namespace EngineCore
       {
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {
-            return luaProcessorSp->GetOverlayManagerLuaProxy()->GetCurrentOverlayName();
+            const auto overlayName = luaProcessorSp->GetOverlayManagerLuaProxy()->GetCurrentOverlayName();
+            LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName => overlayName:", overlayName);
+            return overlayName;
          }
+         LogInfo("LuaCommonUiFunctions::GetCurrentOverlayName => FAILED!");
 
          return "";
       }

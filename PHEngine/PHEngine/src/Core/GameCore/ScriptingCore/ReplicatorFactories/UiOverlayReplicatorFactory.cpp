@@ -50,14 +50,10 @@ namespace EngineCore
                     uiOverlayLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
                     overlayManager->RegisterOverlay(uiOverlay);
 
-                    static constexpr auto innerFunctionId = Hash64_CT("UiOverlayReplicatorFactory::CreateReplicator::RegisterLuaProxy");
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiOverlay->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, uiOverlayLuaProxy]() {
-                        assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
-                        if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                        {
-                            luaProcessorSp->AddLuaProxy(uiOverlayLuaProxy);
-                        }
-                    });
+                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->AddLuaProxy(uiOverlayLuaProxy);
+                    }
                 });
             }
             else

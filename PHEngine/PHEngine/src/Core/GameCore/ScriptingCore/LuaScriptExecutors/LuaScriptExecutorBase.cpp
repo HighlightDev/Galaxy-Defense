@@ -101,7 +101,7 @@ namespace EngineCore
                 const auto &errorMsg = mLuaInstance.GetErrorMessageAt(-1);
                 if (errorMsg.size() > 1)
                 {
-                    LogInfo("Lua runtime error: ", errorMsg);
+                    LogInfo("ERROR: Lua script execution failed:", errorMsg);
                 }
 #endif
             }

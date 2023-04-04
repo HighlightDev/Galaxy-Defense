@@ -90,16 +90,16 @@ end
 
 function UiItemBase:getUiItemBaseDataToReplicator()
     local propertiesData = {}
-    propertiesData.dirty = false
+    local isPropsDirty = false
     for key, value in pairs(self.properties) do
         if value.dirty then
-            propertiesData.dirty = true
+            isPropsDirty = true
             propertiesData[tostring(key)] = value.value
             value.dirty = false
         end
     end
 
-    return propertiesData
+    return propertiesData, isPropsDirty
 end
 
 function UiItemBase:setIsVisible(isVisible)

@@ -82,7 +82,7 @@ namespace EngineCore
                const auto errorMsg = CompileLuaModuleAndGetError(requiredModule + ".lua");
                if (errorMsg != "")
                {
-                  LogInfo("Lua script execution error:", errorMsg);
+                  LogInfo("ERROR: Lua script execution failed:", errorMsg);
                }
             }
          }

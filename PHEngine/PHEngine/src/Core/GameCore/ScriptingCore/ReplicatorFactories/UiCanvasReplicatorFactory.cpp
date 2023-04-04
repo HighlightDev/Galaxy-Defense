@@ -42,15 +42,10 @@ namespace EngineCore
                     const auto& canvasLuaProxy = createdUiCanvas->ReplicateLuaProxy();
                     canvasLuaProxy->SetSceneWp(sceneSp);
                     canvasLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
-
-                    static constexpr auto innerFunctionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator::RegisterLuaProxy");
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, createdUiCanvas->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, canvasLuaProxy]() {
-                        assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
-                        if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                        {
-                            luaProcessorSp->AddLuaProxy(canvasLuaProxy);
-                        }
-                    });
+                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->AddLuaProxy(canvasLuaProxy);
+                    }
                 });
             }
             else
