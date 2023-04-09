@@ -50,6 +50,8 @@ namespace EngineCore
 
          bool IsLuaProxyReady(const std::tuple<int32_t>& data);
 
+         std::string GetUiWidgetName(const std::tuple<int32_t>& data);
+
          void OnCommonUiWidgetDataUpdated(const std::tuple<int32_t/*lua proxy id*/, std::string/*json data*/>& data);
 
          std::string GetGameThreadData(const std::tuple<int32_t/*lua proxy id*/>& data);

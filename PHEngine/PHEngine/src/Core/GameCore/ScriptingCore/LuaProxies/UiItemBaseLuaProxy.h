@@ -1,8 +1,8 @@
 #pragma once
 
 #include "LuaProxy.h"
-#include "UiAnchorLuaData.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
+#include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorData.h"
 
 #include <string>
 #include <unordered_map>
@@ -35,7 +35,7 @@ namespace EngineCore
 
             size_t mHeight;
 
-            std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorLuaData> mAnchors;
+            std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
             int32_t mHorizontalCenterOffset;
             
@@ -54,7 +54,7 @@ namespace EngineCore
 
             void SetHeight_FromGameThread(const size_t height);
 
-            void SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const eUiAnchor &dstAnchor, const int32_t dstUiLuaProxyId);
+            void SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const UiAnchorData& uiAnchorData);
 
             void SetHorizontalCenterOffset_FromGameThread(const int32_t horizontalCenterOffset);
 

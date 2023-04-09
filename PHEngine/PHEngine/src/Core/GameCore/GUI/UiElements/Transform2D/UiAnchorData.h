@@ -17,7 +17,9 @@ namespace EngineCore
             int32_t mSrcAnchorMargin;
 
         public:
-            UiAnchorData();
+            explicit UiAnchorData();
+
+            UiAnchorData(const eUiAnchor dstAnchor, const std::string& dstUiItemName, const int32_t srcAnchorMargin);
 
             eUiAnchor GetDstAnchor() const;
 

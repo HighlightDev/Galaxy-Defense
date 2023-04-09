@@ -11,6 +11,7 @@
 #include "Core/GameCore/ScriptingCore/ReplicatorFactories/CommonUiWidgetFactoryCreator.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -52,6 +53,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated, this, std::placeholders::_1), "_OnCommonUiWidgetDataUpdated");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetGameThreadData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetGameThreadData, this, std::placeholders::_1), "_GetGameThreadData");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::InitializeCanvasInputSystem"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::InitializeCanvasInputSystem, this, std::placeholders::_1), "_InitializeCanvasInputSystem");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetUiWidgetName"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetUiWidgetName, this, std::placeholders::_1), "_GetUiWidgetName");
       }
 
       std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<> &data)
@@ -108,6 +110,35 @@ namespace EngineCore
          return false;
       }
 
+      std::string LuaCommonUiFunctions::GetUiWidgetName(const std::tuple<int32_t> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         std::string widgetName;
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            if (const auto &luaProxy = luaProcessorSp->GetLuaProxy(luaProxyId))
+            {
+               if (std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProxy))
+               {
+                  const auto &uiItemWidgetProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaProxy);
+                  widgetName = uiItemWidgetProxy->GetUiItemName();
+               }
+               else if (std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProxy))
+               {
+                  const auto &uiCanvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaProxy);
+                  widgetName = uiCanvasProxy->GetCanvasName();
+               }
+               else
+               {
+                  assert(false);
+               }
+            }
+         }
+
+         return widgetName;
+      }
+
       void LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated(const std::tuple<int32_t /*lua proxy id*/, std::string /*json data*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
@@ -138,7 +169,7 @@ namespace EngineCore
          return "";
       }
 
-      void LuaCommonUiFunctions::InitializeCanvasInputSystem(const std::tuple<int32_t/*lua proxy id*/>& data)
+      void LuaCommonUiFunctions::InitializeCanvasInputSystem(const std::tuple<int32_t /*lua proxy id*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())

@@ -11,6 +11,13 @@ namespace EngineCore
         {
         }
 
+        UiAnchorData::UiAnchorData(const eUiAnchor dstAnchor, const std::string &dstUiItemName, const int32_t srcAnchorMargin)
+            : mDstAnchor(dstAnchor),
+              mDstUiItemName(dstUiItemName),
+              mSrcAnchorMargin(srcAnchorMargin)
+        {
+        }
+
         eUiAnchor UiAnchorData::GetDstAnchor() const
         {
             return mDstAnchor;

@@ -4,18 +4,24 @@
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorPositionHelper.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/LoggerExtension.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <json/json.hpp>
+#include <unordered_map>
+#include <tuple>
+#include <iostream>
 
 using namespace EngineCore;
 using namespace Graphics::Renderer;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
     namespace GUI
     {
-
         size_t UiItemBase::s_UIds = 0;
 
         UiItemBase::UiItemBase()
@@ -36,7 +42,8 @@ namespace EngineCore
               mChildren(),
               mIsVisible(true),
               mIsTransformDirty(true),
-              mIsPropertiesShouldBeUpdatedOnRenderThread(false)
+              mIsPropertiesShouldBeUpdatedOnRenderThread(false),
+              mIsPropertiesShouldBeUpdatedOnLuaThread(false)
         {
         }
 
@@ -44,7 +51,7 @@ namespace EngineCore
         {
             mParentCanvas = parentCanvas;
             mParent = parent;
-            const auto& parentSp = mParent.lock();
+            const auto &parentSp = mParent.lock();
             assert(parentSp);
             parentSp->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
         }
@@ -119,6 +126,7 @@ namespace EngineCore
             {
                 mZOrder = zOrder;
                 SetIsPropertiesShouldBeUpdated(true);
+                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
             }
         }
 
@@ -154,6 +162,7 @@ namespace EngineCore
                 mIsVisible = isVisible;
                 SetChildrenIsVisible(mIsVisible);
                 SetIsPropertiesShouldBeUpdated(true);
+                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
             }
         }
 
@@ -348,6 +357,7 @@ namespace EngineCore
 
             RebuildBoundingArea();
             RebuildNormalizedTransform();
+            mIsPropertiesShouldBeUpdatedOnLuaThread = true;
         }
 
         void UiItemBase::CalculateHorizontalAnchorPositions()
@@ -572,6 +582,11 @@ namespace EngineCore
                 OnPropertiesShouldBeUpdatedOnRenderThread();
             }
 
+            if (mIsPropertiesShouldBeUpdatedOnLuaThread)
+            {
+                OnPropertiesShouldBeUpdatedOnLuaThread();
+            }
+
             for (const auto &child : mChildren)
             {
                 child->UnpausableTick(deltaTime);
@@ -585,6 +600,11 @@ namespace EngineCore
         void UiItemBase::OnPropertiesShouldBeUpdatedOnRenderThread()
         {
             SyncDataOnRenderThread();
+        }
+
+        void UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread()
+        {
+            SyncDataOnLuaThread();
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiItemBase::GetAllChildren() const
@@ -686,6 +706,90 @@ namespace EngineCore
 
         void UiItemBase::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
         {
+            const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+            if (jsonObj.contains("visible"))
+            {
+                const auto isVisible = jsonObj["visible"].get<bool>();
+                // todo: maybe something better
+                if (mIsVisible != isVisible)
+                {
+                    mIsVisible = isVisible;
+                    SetChildrenIsVisible(mIsVisible);
+                    SetIsPropertiesShouldBeUpdated(true);
+                }
+            }
+            if (jsonObj.contains("z_order"))
+            {
+                const auto z_order = jsonObj["z_order"].get<int32_t>();
+                if (mZOrder != z_order)
+                {
+                    mZOrder = z_order;
+                    SetIsPropertiesShouldBeUpdated(true);
+                }
+            }
+            if (jsonObj.contains("width"))
+            {
+                const auto width = jsonObj["width"].get<size_t>();
+                assert(width > 0);
+                if (mWidth != width)
+                {
+                    mWidth = width;
+                    SetIsTransformDirty(true);
+                }
+            }
+            if (jsonObj.contains("height"))
+            {
+                const auto height = jsonObj["height"].get<size_t>();
+                assert(height > 0);
+                if (mHeight != height)
+                {
+                    mHeight = height;
+                    SetIsTransformDirty(true);
+                }
+            }
+            if (jsonObj.contains("horizontalCenterOffset"))
+            {
+                const auto horizontalCenterOffset = jsonObj["horizontalCenterOffset"].get<int32_t>();
+                if (mHorizontalCenterOffset != horizontalCenterOffset)
+                {
+                    mHorizontalCenterOffset = horizontalCenterOffset;
+                    SetIsTransformDirty(true);
+                }
+            }
+            if (jsonObj.contains("verticalCenterOffset"))
+            {
+                const auto verticalCenterOffset = jsonObj["verticalCenterOffset"].get<int32_t>();
+                if (mVerticalCenterOffset != verticalCenterOffset)
+                {
+                    mVerticalCenterOffset = verticalCenterOffset;
+                    SetIsTransformDirty(true);
+                }
+            }
+            if (jsonObj.contains("anchors"))
+            {
+                const auto anchorsMap = jsonObj["anchors"];
+                bool anchorsTransfromChanged = false;
+                uint8_t srcAnchor = static_cast<uint8_t>(eUiAnchor::LEFT);
+                for (auto it = anchorsMap.begin(); it != anchorsMap.end(); ++it)
+                {
+                    const auto &srcAnchorMap = it.value();
+                    const auto dstAnchor = srcAnchorMap["dstAnchor"].get<uint8_t>();
+                    const auto dstUiItemWidgetName = srcAnchorMap["dstUiItemWidgetName"].get<std::string>();
+                    const auto srcAnchorMargin = srcAnchorMap["srcAnchorMargin"].get<int32_t>();
+
+                    if (eUiAnchor::NONE != static_cast<eUiAnchor>(dstAnchor))
+                    {
+                        assert(dstUiItemWidgetName != "");
+                        mAnchors[static_cast<eUiAnchor>(srcAnchor)] = UiAnchorData(static_cast<eUiAnchor>(dstAnchor), dstUiItemWidgetName, srcAnchorMargin);
+                        anchorsTransfromChanged = true;
+                    }
+                }
+
+                if (anchorsTransfromChanged)
+                {
+                    SetIsTransformDirty(true);
+                }
+            }
         }
 
         void UiItemBase::SyncDataOnRenderThread()
@@ -701,12 +805,45 @@ namespace EngineCore
                         if (uiSceneProxy)
                         {
                             mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]()
-                                                                                                {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]() {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
-                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); });
+                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); 
+                            });
                         }
+                    }
+                }
+            }
+        }
+
+        void UiItemBase::SyncDataOnLuaThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                {
+                    if (const auto &uiItemBaseLuaProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    {
+                        mIsPropertiesShouldBeUpdatedOnLuaThread = false;
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [uiItemBaseLuaProxy,
+                            visible = mIsVisible,
+                            zorder = mZOrder,
+                            width = mWidth,
+                            height = mHeight,
+                            horizontalOffset = mHorizontalCenterOffset,
+                            verticalOffset = mVerticalCenterOffset,
+                            anchorsMap = mAnchors]() {
+                            uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
+                            uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
+                            uiItemBaseLuaProxy->SetWidth_FromGameThread(width);
+                            uiItemBaseLuaProxy->SetHeight_FromGameThread(height);
+                            uiItemBaseLuaProxy->SetHorizontalCenterOffset_FromGameThread(horizontalOffset);
+                            uiItemBaseLuaProxy->SetVerticalCenterOffset_FromGameThread(verticalOffset);
+                            for (const auto& anchor : anchorsMap) {
+                                uiItemBaseLuaProxy->SetAnchor_FromGameThread(anchor.first, anchor.second);
+                            }
+                        });
                     }
                 }
             }

@@ -12,9 +12,17 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiBaseWidget = require("uiBaseWidget")
-local json = require("3rdparty/json")
 
 UiItemBase = UiBaseWidget:new()
+UiItemBase.UiAnchorType = {
+    NONE = 0,
+    LEFT = 1,
+    RIGHT = 2,
+    TOP = 3,
+    BOTTOM = 4,
+    VERTICAL_CENTER = 5,
+    HORIZONTAL_CENTER = 6
+}
 
 function UiItemBase:new()
     print("UiItemBase::ctor")
@@ -45,29 +53,54 @@ function UiItemBase:new()
             dirty = false
         },
         anchors = {
-
+            value = {
+                [UiItemBase.UiAnchorType.LEFT] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemLuaProxyId = -1,
+                    srcAnchorMargin = 0
+                },
+                [UiItemBase.UiAnchorType.RIGHT] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemWidgetName = "",
+                    srcAnchorMargin = 0
+                },
+                [UiItemBase.UiAnchorType.BOTTOM] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemWidgetName = "",
+                    srcAnchorMargin = 0
+                },
+                [UiItemBase.UiAnchorType.TOP] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemWidgetName = "",
+                    srcAnchorMargin = 0
+                },
+                [UiItemBase.UiAnchorType.VERTICAL_CENTER] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemWidgetName = "",
+                    srcAnchorMargin = 0
+                },
+                [UiItemBase.UiAnchorType.HORIZONTAL_CENTER] = {
+                    dstAnchor = UiItemBase.UiAnchorType.NONE,
+                    dstUiItemWidgetName = "",
+                    srcAnchorMargin = 0
+                }
+            },
+            dirty = false
         }
     }
 
     local uiItemBaseObj = UiItemBase.parentClass.new(self)
     uiItemBaseObj.uiItemBaseClass = self
-    uiItemBaseObj.uiWidgetName = ""
     uiItemBaseObj.properties = uiItemBaseProperties
 
     return uiItemBaseObj
 end
 
 function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
-    if self.uiWidgetName == "" and parsedJsonData["name"] ~= nil then
-        self.uiWidgetName = parsedJsonData["name"]
-        print("UiItemBase:extractUiItemBaseReplicatorData => name: " .. tostring(self.uiWidgetName))
-    end
     if parsedJsonData["visible"] ~= nil then
-        print("UiItemBase:extractUiItemBaseReplicatorData => visible")
         self.properties.visible.value = parsedJsonData["visible"]
     end
     if parsedJsonData["z_order"] ~= nil then
-        print("UiItemBase:extractUiItemBaseReplicatorData => visible")
         self.properties.z_order.value = parsedJsonData["z_order"]
     end
     if parsedJsonData["width"] ~= nil then
@@ -83,8 +116,24 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
         self.properties.verticalCenterOffset.value = parsedJsonData["verticalCenterOffset"]
     end
     if parsedJsonData["anchors"] ~= nil then
-        --self.properties.z_order.value
-        local anchors = parsedJsonData["anchors"]
+        local anchorsTable = parsedJsonData["anchors"]
+        print("UiItemBase:extractUiItemBaseReplicatorData => anchors :")
+        for _, value in pairs(anchorsTable) do
+            local srcAnchor = tonumber(value[1])
+            local dstAnchor = tonumber(value[2][1])
+            local dstUiItemWidgetName = tostring(value[2][2])
+            local srcAnchorMargin = tonumber(value[2][3])
+            print(string.format("srcAnchor[%d]: {dstAnchor: %d, dstUiItemWidgetName: %s, srcAnchorMargin: %d}", srcAnchor,
+                dstAnchor, dstUiItemWidgetName, srcAnchorMargin))
+
+            if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchorMargin ~= nil then
+                self.properties.anchors.value[srcAnchor] = {
+                    dstAnchor = dstAnchor,
+                    dstUiItemWidgetName = dstUiItemWidgetName,
+                    srcAnchorMargin = srcAnchorMargin
+                }
+            end
+        end
     end
 end
 
@@ -142,6 +191,17 @@ function UiItemBase:setHorizontalCenterOffset(horizontalCenterOffset)
         self.properties.horizontalCenterOffset.value = horizontalCenterOffset
         self.properties.horizontalCenterOffset.dirty = true
     end
+end
+
+function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
+        srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
+
+    print("UiItemBase:setAnchor => self: " .. tostring(self))
+    self.properties.anchors.dirty = true
+    self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
+    self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
+    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 return UiItemBase

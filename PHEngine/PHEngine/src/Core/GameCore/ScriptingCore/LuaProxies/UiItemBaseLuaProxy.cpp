@@ -67,20 +67,9 @@ namespace EngineCore
             }
         }
 
-        void UiItemBaseLuaProxy::SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const eUiAnchor &dstAnchor, const int32_t dstUiLuaProxyId)
+        void UiItemBaseLuaProxy::SetAnchor_FromGameThread(const eUiAnchor srcAnchor, const UiAnchorData& uiAnchorData)
         {
-            const bool anchorDataDidntChange =
-                mAnchors.count(srcAnchor) &&
-                (mAnchors.at(srcAnchor).GetDstAnchor() == dstAnchor &&
-                 mAnchors.at(srcAnchor).GetDstUiItemLuaProxyId() == dstUiLuaProxyId);
-
-            if (!anchorDataDidntChange)
-            {
-                UiAnchorLuaData anchorData;
-                anchorData.SetDstAnchor(dstAnchor);
-                anchorData.SetDstUiItemLuaProxyId(dstUiLuaProxyId);
-                mAnchors[srcAnchor] = anchorData;
-            }
+            mAnchors[srcAnchor] = uiAnchorData;
         }
 
         void UiItemBaseLuaProxy::SetHorizontalCenterOffset_FromGameThread(const int32_t horizontalCenterOffset)
@@ -120,15 +109,14 @@ namespace EngineCore
 
         std::string UiItemBaseLuaProxy::GetGameThreadData()
         {
-            std::unordered_map<eUiAnchor, std::tuple<eUiAnchor /*dst anchor*/, int32_t /* dstLuaProxyId*/, int32_t /*anchor margin*/>> anchorConvertedData;
+            std::unordered_map<eUiAnchor, std::tuple<eUiAnchor /*dst anchor*/, std::string /* dstUiItemName*/, int32_t /*anchor margin*/>> anchorConvertedData;
             std::transform(mAnchors.cbegin(), mAnchors.cend(),
                            std::inserter(anchorConvertedData, anchorConvertedData.begin()),
                            [](const auto &pair)
                            {
-                               return std::make_pair(pair.first, std::make_tuple(pair.second.GetDstAnchor(), pair.second.GetDstUiItemLuaProxyId(), pair.second.GetSrcAnchorMargin()));
+                               return std::make_pair(pair.first, std::make_tuple(pair.second.GetDstAnchor(), pair.second.GetDstUiItemName(), pair.second.GetSrcAnchorMargin()));
                            });
             nlohmann::json jsonObj;
-            jsonObj["name"] = mUiItemName;
             jsonObj["visible"] = mIsVisible;
             jsonObj["z_order"] = mZOrder;
             jsonObj["width"] = mWidth;

@@ -54,7 +54,9 @@ local function initialize(host)
     end)
     local uiItem1 = UiItem:new(host)
     uiItem1:subscribeOnLuaProxyReady(function(host)
-        print("UiItem::luaProxyReady: " .. tostring(uiItem1.luaProxyId))
+        print("UiItem::luaProxyReady => name: " .. tostring(uiItem1.widgetName) .. ", id: " .. tostring(uiItem1.luaProxyId))
+        UiItem.setAnchor(uiItem1.uiItemBaseClass, UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            uiItem1.widgetName, 10)
     end)
     UiOverlays["TestOverlay"] = UiOverlay:new(host, "TestOverlay", testOverlayCanvas)
 

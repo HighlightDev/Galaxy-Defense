@@ -453,8 +453,8 @@ namespace EngineCore
             const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
             if (jsonObj.contains("visible"))
             {
-                const auto &isVisible = jsonObj["visible"].get<bool>();
-                // todo: mayby something better
+                const auto isVisible = jsonObj["visible"].get<bool>();
+                // todo: maybe something better
                 if (mIsVisible != isVisible)
                 {
                     mIsVisible = isVisible;

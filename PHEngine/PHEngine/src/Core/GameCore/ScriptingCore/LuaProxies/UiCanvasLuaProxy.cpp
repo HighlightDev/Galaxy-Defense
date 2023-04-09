@@ -54,7 +54,6 @@ namespace EngineCore
         std::string UiCanvasLuaProxy::GetGameThreadData()
         {
             nlohmann::json jsonObj;
-            jsonObj["name"] = mCanvasName;
             jsonObj["visible"] = mIsVisible;
 
             mIsLuaDataDirty = false;

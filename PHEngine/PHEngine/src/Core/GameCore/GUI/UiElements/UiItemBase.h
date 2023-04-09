@@ -69,6 +69,8 @@ namespace EngineCore
 
             bool mIsPropertiesShouldBeUpdatedOnRenderThread;
 
+            bool mIsPropertiesShouldBeUpdatedOnLuaThread;
+
             std::shared_ptr<IUiMouseInputReceivable> mMouseInputReceiver;
 
         public:
@@ -81,6 +83,8 @@ namespace EngineCore
             virtual void OnUnregistered() = 0;
 
             virtual void OnPropertiesShouldBeUpdatedOnRenderThread();
+
+            virtual void OnPropertiesShouldBeUpdatedOnLuaThread();
 
             bool IsTransformDependentToUiItem(const std::string &uiItemName) const;
 
@@ -166,6 +170,8 @@ namespace EngineCore
             void CalculateVerticalAnchorPositions();
 
             void SyncDataOnRenderThread();
+
+            void SyncDataOnLuaThread();
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
         };
