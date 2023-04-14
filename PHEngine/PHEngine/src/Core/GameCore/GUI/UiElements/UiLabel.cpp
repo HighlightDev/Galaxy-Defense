@@ -65,7 +65,7 @@ namespace EngineCore
             if (text != mText)
             {
                 mText = text;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -79,7 +79,7 @@ namespace EngineCore
             if (glm::abs(mOpacity - opacity) > EngineMath::ENGINE_FLOAT_EPSILON)
             {
                 mOpacity = opacity;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -103,7 +103,7 @@ namespace EngineCore
             if (glm::abs(mFontSize - fontSize) > EngineMath::ENGINE_FLOAT_EPSILON)
             {
                 mFontSize = fontSize;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -117,7 +117,7 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityVec3(color, mTextColor))
             {
                 mTextColor = color;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -136,7 +136,7 @@ namespace EngineCore
             if (mTextHorizontalAlignment != textHorizontalAlignment)
             {
                 mTextHorizontalAlignment = textHorizontalAlignment;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 

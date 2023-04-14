@@ -25,7 +25,7 @@ namespace EngineCore
         TextVertexChunkData();
     };
 
-    class FontRenderData
+    class FontBatcher
     {
         TextVertexChunkData mPositionChunkData;
         TextVertexChunkData mTextureCoordinatesChunkData;
@@ -38,7 +38,7 @@ namespace EngineCore
         std::vector<std::shared_ptr<TextFieldProxy>> mTextFields;
 
     public:
-        FontRenderData(const std::shared_ptr<TextMesh> &textMesh,
+        FontBatcher(const std::shared_ptr<TextMesh> &textMesh,
                        const std::shared_ptr<ITexture> &fontTextureAtlas,
                        const std::shared_ptr<FontMetaFile> &fontMetaFile);
 
@@ -84,16 +84,16 @@ namespace EngineCore
 
     class FontHandler
     {
-        std::unordered_map<std::string, std::shared_ptr<FontRenderData>> mFontRenderDataMap;
+        std::unordered_map<std::string, std::shared_ptr<FontBatcher>> mFontBatcher;
 
     public:
         FontHandler();
 
         void RegisterFont(const FontParams &fontParams);
 
-        const std::shared_ptr<FontRenderData> &GetFontRenderData(const std::string &fontName) const;
+        const std::shared_ptr<FontBatcher> &GetFontBatcher(const std::string &fontName) const;
 
-        const std::unordered_map<std::string, std::shared_ptr<FontRenderData>> &GetFontRenderDataMap() const;
+        const std::unordered_map<std::string, std::shared_ptr<FontBatcher>> &GetFontBatcher() const;
 
         void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 

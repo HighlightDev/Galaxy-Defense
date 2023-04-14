@@ -17,6 +17,7 @@ local EngineEventsHolder = require("core/engineEventsHolder")
 local UiCanvas = require("core/uiCanvas")
 local UiOverlay = require("core/uiOverlay")
 local UiItem = require("core/uiItem")
+local UiRectangle = require("core/uiRectangle")
 
 GlobalContext = {
 }
@@ -47,20 +48,40 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     end
 end
 
-local function initialize(host)
-    local testOverlayCanvas = UiCanvas:new(host, 0, 0, 900, 900)
-    testOverlayCanvas:subscribeOnLuaProxyReady(function(host)
-        _InitializeCanvasInputSystem(host, testOverlayCanvas.luaProxyId)
+local function createTestOverlay(host)
+    TestOverlayCanvas = UiCanvas:new(host, 0, 0, 900, 900)
+    TestOverlayCanvas:subscribeOnLuaProxyReady(function(host)
+        _InitializeCanvasInputSystem(host, TestOverlayCanvas.luaProxyId)
     end)
-    local uiItem1 = UiItem:new(host)
-    uiItem1:subscribeOnLuaProxyReady(function(host)
-        print("UiItem::luaProxyReady => name: " .. tostring(uiItem1.widgetName) .. ", id: " .. tostring(uiItem1.luaProxyId))
-        UiItem.setAnchor(uiItem1.uiItemBaseClass, UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            uiItem1.widgetName, 10)
-    end)
-    UiOverlays["TestOverlay"] = UiOverlay:new(host, "TestOverlay", testOverlayCanvas)
 
-    UiOverlays["TestOverlay"]:addWidget(uiItem1)
+    TestRectangle = UiRectangle:new(host)
+    TestRectangle:subscribeOnLuaProxyReady(function(host)
+        print("UiRectangle::luaProxyReady => name: " ..
+            tostring(TestRectangle.widgetName) .. ", id: " .. tostring(TestRectangle.luaProxyId))
+    end)
+
+    TestOverlay = UiOverlay:new(host, "TestOverlay", TestOverlayCanvas)
+    TestOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
+        print("TestOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+        
+        TestRectangle:setParent(host, TestOverlayCanvas.widgetName, TestOverlayCanvas.widgetName)
+
+        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType
+            .LEFT, TestOverlayCanvas.widgetName, 0)
+        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.RIGHT,
+            UiItemBase.UiAnchorType.RIGHT, TestOverlayCanvas.widgetName, 0)
+        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+            TestOverlayCanvas.widgetName, 0)
+        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.BOTTOM,
+            UiItemBase.UiAnchorType.BOTTOM, TestOverlayCanvas.widgetName, 0)
+    end)
+    TestOverlay:addWidget(TestRectangle)
+
+    return TestOverlay
+end
+
+local function initialize(host)
+    UiOverlays["TestOverlay"] = createTestOverlay(host)
 end
 
 function System_OnStart(host)

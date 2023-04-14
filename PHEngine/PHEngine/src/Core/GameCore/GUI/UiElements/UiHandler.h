@@ -28,6 +28,8 @@ namespace EngineCore
             void Tick(const float deltaTime) override;
 
             void UnpausableTick(const float deltaTime) override;
+
+            std::shared_ptr<UiCanvas> GetCanvasByName(const std::string& canvasName) const;
         };
     }
 }

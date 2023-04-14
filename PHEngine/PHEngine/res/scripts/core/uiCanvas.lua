@@ -37,7 +37,6 @@ function UiCanvas:new(host, originX, originY, width, height)
     canvasObj.originY = originY
     canvasObj.width = width
     canvasObj.height = height
-    canvasObj.name = ""
     canvasObj.properties = canvasProperties
     return canvasObj
 end
@@ -47,9 +46,6 @@ function UiCanvas:updateFromReplicatorData(host)
     local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
     if replicatorJsonData ~= "" then
         local parsedJson = json.decode(replicatorJsonData)
-        if self.name == "" and parsedJson["name"] ~= nil then
-            self.name = parsedJson["name"]
-        end
         if parsedJson["visible"] ~= nil then
             self.properties.visible.value = parsedJson["visible"]
         end

@@ -669,7 +669,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::HudTextPass()
       {
-         const auto &renderDataMap = mFontHandler->GetFontRenderDataMap();
+         const auto &renderDataMap = mFontHandler->GetFontBatcher();
 
          RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();

@@ -19,11 +19,6 @@ namespace EngineCore
         {
         public:
             explicit UiItemLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItem> &ownerUiItem);
-
-            void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
-
-            std::string GetGameThreadData() override;
-
         };
     }
 }

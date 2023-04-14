@@ -4,7 +4,10 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiRectangleLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+
+#include <json/json.hpp>
 
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
@@ -51,7 +54,8 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityVec3(color, mColor))
             {
                 mColor = color;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -71,6 +75,13 @@ namespace EngineCore
             SyncDataOnRenderThread();
         }
 
+        void UiRectangle::OnPropertiesShouldBeUpdatedOnLuaThread()
+        {
+            UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
+
+            SyncDataOnLuaThread();
+        }
+
         void UiRectangle::SetColor(const uint32_t hexColor)
         {
             SetColor(EngineMath::FromHexColorToVec3Color(hexColor));
@@ -81,6 +92,8 @@ namespace EngineCore
             if (!EngineMath::FloatsNearEqual(opacity, mOpacity))
             {
                 mOpacity = opacity;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -101,7 +114,29 @@ namespace EngineCore
 
         std::shared_ptr<LuaProxy> UiRectangle::ReplicateLuaProxy()
         {
-            return nullptr;
+            return std::make_shared<UiRectangleLuaProxy>(std::static_pointer_cast<UiRectangle>(shared_from_this()));
+        }
+
+        void UiRectangle::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
+        {
+            UiItemBase::SyncFromLuaJsonProperties(luaJsonPropsStr);
+
+            const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+            if (jsonObj.contains("color"))
+            {
+                const auto colorVec = jsonObj["color"].get<std::vector<float>>();
+                assert(colorVec.size() >= 3);
+                const auto &color = glm::vec3(colorVec[0], colorVec[1], colorVec[2]);
+                if (!EngineMath::CheckSimilarityVec3(color, mColor))
+                {
+                    mColor = color;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("opacity"))
+            {
+                const auto opacity = jsonObj["opacity"].get<float>();
+            }
         }
 
         void UiRectangle::SyncDataOnRenderThread()
@@ -126,6 +161,27 @@ namespace EngineCore
                         {
                             mIsPropertiesShouldBeUpdatedOnRenderThread = true;
                         }
+                    }
+                }
+            }
+        }
+
+        void UiRectangle::SyncDataOnLuaThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnLuaThread");
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                {
+                    if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    {
+                        SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy,
+                            opacity = mOpacity,
+                            color = mColor]() {
+                            rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
+                            rectangleLuaProxy->SetColor_FromGameThread(color);
+                        });
                     }
                 }
             }

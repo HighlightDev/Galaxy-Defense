@@ -22,8 +22,11 @@ function UiBaseWidget:checkLuaProxyReady(host)
     if self.luaProxyReady ~= true then
         self.luaProxyReady = _IsLuaProxyReady(host, self.luaProxyId)
         self.widgetName = _GetUiWidgetName(host, self.luaProxyId)
-        if self.luaProxyReady and self.luaProxyReadyCallback ~= nil then
-            self.luaProxyReadyCallback(host)
+        if self.luaProxyReady == true then
+            print("UiBaseWidget:checkLuaProxyReady => " .. tostring(self.widgetName) .. " is now ready.")
+            if self.luaProxyReadyCallback ~= nil then
+                self.luaProxyReadyCallback(host)
+            end
         end
     end
 end

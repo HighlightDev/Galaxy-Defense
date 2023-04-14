@@ -55,5 +55,14 @@ namespace EngineCore
                 canvas->UnpausableTick(deltaTime);
             }
         }
+
+        std::shared_ptr<UiCanvas> UiHandler::GetCanvasByName(const std::string& canvasName) const
+        {
+            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasName](const auto& canvas) {
+                return canvasName == canvas->GetName();
+            });
+
+            return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
+        }
     }
 }

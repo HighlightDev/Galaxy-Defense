@@ -102,6 +102,7 @@ namespace EngineCore
             bool IsVisible() const override;
             bool IsTransformDirty() const override;
             bool IsInputSystemInitialized() const;
+            std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;
@@ -145,8 +146,6 @@ namespace EngineCore
             void SetHorizontalCenterOffset(const int32_t offset) override;
 
             void SetVerticalCenterOffset(const int32_t offset) override;
-
-            std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
 
             void SetIsTransformDirty(const bool isDirty);
 

@@ -46,6 +46,8 @@ namespace EngineCore
 
             std::string GetUiItemName() const;
 
+            void SetParent(const std::string& canvasName, const std::string& parentUiName);
+
             void SetIsVisible_FromGameThread(const bool isVisible);
 
             void SetZOrder_FromGameThread(const size_t zOrder);

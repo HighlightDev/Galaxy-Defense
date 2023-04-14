@@ -2,6 +2,7 @@
 #include "UiCanvasReplicatorFactory.h"
 #include "UiOverlayReplicatorFactory.h"
 #include "UiItemReplicatorFactory.h"
+#include "UiRectangleReplicatorFactory.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
@@ -18,6 +19,8 @@ namespace EngineCore
                 return std::make_unique<UiCanvasReplicatorFactory>();
             case eCommonUiWidgetType::UI_ITEM:
                 return std::make_unique<UiItemReplicatorFactory>();
+            case eCommonUiWidgetType::UI_RECTANGLE:
+                return std::make_unique<UiRectangleReplicatorFactory>();
 
             default:
                 assert(false);

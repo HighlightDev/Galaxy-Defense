@@ -30,7 +30,8 @@ function UiOverlay:new(host, overlayName, overlayCanvas)
         overlayName = overlayName,
         overlayCanvas = overlayCanvas,
         widgets = {},
-        allWidgetProxiesReady = false
+        allWidgetLuaProxiesReady = false,
+        allWidgetLuaProxiesReadyCallback = nil
     }
 
     self.__index = self
@@ -44,7 +45,7 @@ end
 function UiOverlay:updateFromReplicatorData(host)
     self.overlayCanvas:updateFromReplicatorData(host)
 
-    for key, value in pairs(self.widgets) do
+    for _, value in pairs(self.widgets) do
         value:updateFromReplicatorData(host)
     end
 end
@@ -52,7 +53,7 @@ end
 function UiOverlay:sendDataToReplicator(host)
     self.overlayCanvas:sendDataToReplicator(host)
 
-    for key, value in pairs(self.widgets) do
+    for _, value in pairs(self.widgets) do
         value:sendDataToReplicator(host)
     end
 end
@@ -62,23 +63,25 @@ function UiOverlay:addWidget(widget)
     table.insert(self.widgets, widget)
 end
 
-function UiOverlay:onAllWidgetProxiesReady(host)
-    print("UiOverlay:onAllWidgetProxiesReady => overlay [" .. tostring(self.overlayName) .. "]")
+function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)
+    self.allWidgetLuaProxiesReadyCallback = callback
 end
 
 function UiOverlay:update(host, deltaTime)
     self.overlayCanvas:update(host, deltaTime)
 
-    if self.allWidgetProxiesReady ~= true then
+    if self.allWidgetLuaProxiesReady ~= true then
         local allProxiesReady = true
         for _, value in pairs(self.widgets) do
             if value.luaProxyReady ~= true then
                 allProxiesReady = false
             end
         end
-        if allProxiesReady then
-            self.allWidgetProxiesReady = true
-            self:onAllWidgetProxiesReady(host)
+        if allProxiesReady and self.overlayCanvas.luaProxyReady then
+            self.allWidgetLuaProxiesReady = true
+            if self.allWidgetLuaProxiesReadyCallback ~= nil then
+                self.allWidgetLuaProxiesReadyCallback(host, self)
+            end
         end
     end
 

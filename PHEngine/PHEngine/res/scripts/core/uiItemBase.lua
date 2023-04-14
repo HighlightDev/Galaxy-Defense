@@ -96,6 +96,18 @@ function UiItemBase:new()
     return uiItemBaseObj
 end
 
+function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
+    print("UiItemBase:setParent => host :" ..
+        tostring(host) ..
+        ", uiWidgetParentName: " ..
+        tostring(uiWidgetParentName) ..
+        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
+    assert(self.luaProxyReady == true and host ~= nil and type(canvasName) == "string" and canvasName ~= "" and
+        type(uiWidgetParentName) == "string" and
+        uiWidgetParentName ~= "")
+    _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
+end
+
 function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
     if parsedJsonData["visible"] ~= nil then
         self.properties.visible.value = parsedJsonData["visible"]
@@ -197,7 +209,6 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
-    print("UiItemBase:setAnchor => self: " .. tostring(self))
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName

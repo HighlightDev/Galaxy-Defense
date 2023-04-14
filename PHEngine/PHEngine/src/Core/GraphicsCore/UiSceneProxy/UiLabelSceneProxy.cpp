@@ -54,7 +54,7 @@ namespace Graphics
                     ShaderParams shaderParams("UiLabel Shader", folderManager->GetShadersPath() + "fontVS.glsl", folderManager->GetShadersPath() + "fontFS.glsl", "", "", "", "");
                     mUiLabelShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(shaderParams);
 
-                    mFontTexture = fontHandlerSp->GetFontRenderData(mFontName)->GetFontTextureAtlas();
+                    mFontTexture = fontHandlerSp->GetFontBatcher(mFontName)->GetFontTextureAtlas();
 
                     mTextFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
                         UniqueFontTextIdGenerator::GenerateUniqueFontTextId(),
@@ -89,7 +89,7 @@ namespace Graphics
             {
                 if (const auto &fontHandlerSp = canvasProxySp->GetFontHandler().lock())
                 {
-                    const auto &renderDataSp = fontHandlerSp->GetFontRenderData(mFontName);
+                    const auto &renderDataSp = fontHandlerSp->GetFontBatcher(mFontName);
                     mUiLabelShader->ExecuteShader();
                     const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
                     mUiLabelShader->SetPosition(glm::vec2(mNormalizedTranslation.x, 1.0f - (mNormalizedTranslation.y + textHeightScreenSpace)));

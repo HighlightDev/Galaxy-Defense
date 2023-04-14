@@ -7,6 +7,7 @@
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/GUI/UiElements/UiHandler.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <json/json.hpp>
@@ -54,6 +55,31 @@ namespace EngineCore
             const auto &parentSp = mParent.lock();
             assert(parentSp);
             parentSp->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
+        }
+
+        void UiItemBase::SetParents(const std::string &uiCanvasName, const std::string &uiWidgetParentName)
+        {
+            if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+            {
+                if (const auto &sceneSp = luaScriptProcessorSp->GetInterThreadCommunicationManager().GetSceneWP().lock())
+                {
+                    const auto parentCanvas = sceneSp->GetUiHandler()->GetCanvasByName(uiCanvasName);
+                    assert(parentCanvas);
+                    mParentCanvas = parentCanvas;
+                    if (uiCanvasName == uiWidgetParentName)
+                    {
+                        mParent = parentCanvas;
+                        parentCanvas->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
+                    }
+                    else
+                    {
+                        const auto parent = parentCanvas->TryFindChildByName(uiWidgetParentName);
+                        assert(parent);
+                        mParent = parent;
+                        parent->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
+                    }
+                }
+            }
         }
 
         std::weak_ptr<Scene> UiItemBase::GetScene() const
@@ -125,8 +151,8 @@ namespace EngineCore
             if (mZOrder != zOrder)
             {
                 mZOrder = zOrder;
-                SetIsPropertiesShouldBeUpdated(true);
-                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -161,8 +187,8 @@ namespace EngineCore
             {
                 mIsVisible = isVisible;
                 SetChildrenIsVisible(mIsVisible);
-                SetIsPropertiesShouldBeUpdated(true);
-                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -308,9 +334,14 @@ namespace EngineCore
             mIsTransformDirty = isDirty;
         }
 
-        void UiItemBase::SetIsPropertiesShouldBeUpdated(const bool update)
+        void UiItemBase::SetIsPropertiesShouldBeUpdatedOnRenderThread(const bool update)
         {
             mIsPropertiesShouldBeUpdatedOnRenderThread = update;
+        }
+
+        void UiItemBase::SetIsPropertiesShouldBeUpdatedOnLuaThread(const bool update)
+        {
+            mIsPropertiesShouldBeUpdatedOnLuaThread = update;
         }
 
         void UiItemBase::SetMouseInputReceiver(const std::shared_ptr<IUiMouseInputReceivable> &inputReceiver)
@@ -339,7 +370,8 @@ namespace EngineCore
                 LogInfo("UiItemBase::RebuildNormalizedTransform => uid: ", mUId, " mAbsoluteOrigin: ", mAbsoluteOrigin,
                         " mWidth: ", mWidth, " mHeight: ", mHeight, " rootWidth: ", rootWidth, " rootHeight: ", rootHeight);
 
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -357,7 +389,6 @@ namespace EngineCore
 
             RebuildBoundingArea();
             RebuildNormalizedTransform();
-            mIsPropertiesShouldBeUpdatedOnLuaThread = true;
         }
 
         void UiItemBase::CalculateHorizontalAnchorPositions()
@@ -715,7 +746,7 @@ namespace EngineCore
                 {
                     mIsVisible = isVisible;
                     SetChildrenIsVisible(mIsVisible);
-                    SetIsPropertiesShouldBeUpdated(true);
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 }
             }
             if (jsonObj.contains("z_order"))
@@ -724,7 +755,7 @@ namespace EngineCore
                 if (mZOrder != z_order)
                 {
                     mZOrder = z_order;
-                    SetIsPropertiesShouldBeUpdated(true);
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 }
             }
             if (jsonObj.contains("width"))
@@ -768,26 +799,24 @@ namespace EngineCore
             if (jsonObj.contains("anchors"))
             {
                 const auto anchorsMap = jsonObj["anchors"];
-                bool anchorsTransfromChanged = false;
-                uint8_t srcAnchor = static_cast<uint8_t>(eUiAnchor::LEFT);
+                uint8_t srcAnchorValue = static_cast<uint8_t>(eUiAnchor::LEFT);
                 for (auto it = anchorsMap.begin(); it != anchorsMap.end(); ++it)
                 {
                     const auto &srcAnchorMap = it.value();
-                    const auto dstAnchor = srcAnchorMap["dstAnchor"].get<uint8_t>();
+                    const auto dstAnchorValue = srcAnchorMap["dstAnchor"].get<uint8_t>();
                     const auto dstUiItemWidgetName = srcAnchorMap["dstUiItemWidgetName"].get<std::string>();
                     const auto srcAnchorMargin = srcAnchorMap["srcAnchorMargin"].get<int32_t>();
 
-                    if (eUiAnchor::NONE != static_cast<eUiAnchor>(dstAnchor))
+                    const auto srcAnchor = static_cast<eUiAnchor>(srcAnchorValue);
+                    const auto dstAnchor = static_cast<eUiAnchor>(dstAnchorValue);
+
+                    if (eUiAnchor::NONE != dstAnchor)
                     {
                         assert(dstUiItemWidgetName != "");
-                        mAnchors[static_cast<eUiAnchor>(srcAnchor)] = UiAnchorData(static_cast<eUiAnchor>(dstAnchor), dstUiItemWidgetName, srcAnchorMargin);
-                        anchorsTransfromChanged = true;
+                        SetAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName);
+                        SetAnchorMargin(srcAnchor, srcAnchorMargin);
                     }
-                }
-
-                if (anchorsTransfromChanged)
-                {
-                    SetIsTransformDirty(true);
+                    ++srcAnchorValue;
                 }
             }
         }
@@ -804,12 +833,12 @@ namespace EngineCore
                         const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
                         if (uiSceneProxy)
                         {
-                            mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]() {
+                            SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]()
+                                                                                                {
                                 uiSceneProxy->SetIsVisible(mIsVisible);
                                 uiSceneProxy->SetZOrder(mZOrder);
-                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); 
-                            });
+                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); });
                         }
                     }
                 }
@@ -825,15 +854,9 @@ namespace EngineCore
                 {
                     if (const auto &uiItemBaseLuaProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
                     {
-                        mIsPropertiesShouldBeUpdatedOnLuaThread = false;
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [uiItemBaseLuaProxy,
-                            visible = mIsVisible,
-                            zorder = mZOrder,
-                            width = mWidth,
-                            height = mHeight,
-                            horizontalOffset = mHorizontalCenterOffset,
-                            verticalOffset = mVerticalCenterOffset,
-                            anchorsMap = mAnchors]() {
+                        SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [uiItemBaseLuaProxy, visible = mIsVisible, zorder = mZOrder, width = mWidth, height = mHeight, horizontalOffset = mHorizontalCenterOffset, verticalOffset = mVerticalCenterOffset, anchorsMap = mAnchors]()
+                                                                                         {
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);
@@ -842,8 +865,7 @@ namespace EngineCore
                             uiItemBaseLuaProxy->SetVerticalCenterOffset_FromGameThread(verticalOffset);
                             for (const auto& anchor : anchorsMap) {
                                 uiItemBaseLuaProxy->SetAnchor_FromGameThread(anchor.first, anchor.second);
-                            }
-                        });
+                            } });
                     }
                 }
             }

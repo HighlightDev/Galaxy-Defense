@@ -78,6 +78,8 @@ namespace EngineCore
 
             void SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
+            void SetParents(const std::string& uiCanvasName, const std::string& uiWidgetParentName);
+
             virtual void OnRegistered() = 0;
 
             virtual void OnUnregistered() = 0;
@@ -153,7 +155,9 @@ namespace EngineCore
 
             void SetChildrenIsVisible(const bool isVisible);
 
-            void SetIsPropertiesShouldBeUpdated(const bool update);
+            void SetIsPropertiesShouldBeUpdatedOnRenderThread(const bool update);
+
+            void SetIsPropertiesShouldBeUpdatedOnLuaThread(const bool update);
 
             void UpdateAnchorTransform();
 

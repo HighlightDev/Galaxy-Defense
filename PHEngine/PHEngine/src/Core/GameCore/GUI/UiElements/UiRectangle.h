@@ -54,6 +54,10 @@ namespace EngineCore
 
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
+            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+
+            void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
+
         protected:
             void OnRegistered() override;
 
@@ -61,6 +65,8 @@ namespace EngineCore
 
         private:
             void SyncDataOnRenderThread();
+
+            void SyncDataOnLuaThread();
         };
     }
 }

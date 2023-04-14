@@ -55,7 +55,7 @@ namespace EngineCore
         void UiToggleButton::ToggleButton()
         {
             mIsStateOn = !mIsStateOn;
-            SetIsPropertiesShouldBeUpdated(true);
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
 
         void UiToggleButton::SetToggleOnColor(const glm::vec3 &color)
@@ -63,7 +63,7 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityVec3(color, mToggleOnColor))
             {
                 mToggleOnColor = color;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -72,7 +72,7 @@ namespace EngineCore
             if (!EngineMath::CheckSimilarityVec3(color, mToggleOffColor))
             {
                 mToggleOffColor = color;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -106,7 +106,7 @@ namespace EngineCore
             if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
             {
                 mOpacity = opacity;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 

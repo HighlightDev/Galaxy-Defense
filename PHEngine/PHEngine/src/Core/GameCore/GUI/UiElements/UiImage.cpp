@@ -79,7 +79,7 @@ namespace EngineCore
             {
                 mTextureSrc = textureSrc;
                 ReallocateTexture();
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -93,7 +93,7 @@ namespace EngineCore
             }
 
             mTexture = texture;
-            SetIsPropertiesShouldBeUpdated(true);
+            SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
         }
 
         std::string UiImage::GetTextureSrc() const
@@ -111,7 +111,7 @@ namespace EngineCore
             if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
             {
                 mOpacity = opacity;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
@@ -125,7 +125,7 @@ namespace EngineCore
             if (!EngineMath::FloatsNearEqual(mRotationDegrees, rotationDegrees))
             {
                 mRotationDegrees = rotationDegrees;
-                SetIsPropertiesShouldBeUpdated(true);
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
             }
         }
 
