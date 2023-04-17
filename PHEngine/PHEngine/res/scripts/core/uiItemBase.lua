@@ -56,7 +56,7 @@ function UiItemBase:new()
             value = {
                 [UiItemBase.UiAnchorType.LEFT] = {
                     dstAnchor = UiItemBase.UiAnchorType.NONE,
-                    dstUiItemLuaProxyId = -1,
+                    dstUiItemWidgetName = "",
                     srcAnchorMargin = 0
                 },
                 [UiItemBase.UiAnchorType.RIGHT] = {
@@ -90,10 +90,20 @@ function UiItemBase:new()
     }
 
     local uiItemBaseObj = UiItemBase.parentClass.new(self)
+    uiItemBaseObj.typeName = "UiItemBase"
     uiItemBaseObj.uiItemBaseClass = self
     uiItemBaseObj.properties = uiItemBaseProperties
 
     return uiItemBaseObj
+end
+
+local function this(ptr)
+    if ptr.typeName == "UiItemBase" then
+        return ptr
+    else
+        assert(ptr.uiItemBaseClass ~= nil)
+        return ptr.uiItemBaseClass
+    end
 end
 
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
@@ -209,10 +219,10 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
-    self.properties.anchors.dirty = true
-    self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
-    self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
-    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
+    this(self).properties.anchors.dirty = true
+    this(self).properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
+    this(self).properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
+    this(self).properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 return UiItemBase

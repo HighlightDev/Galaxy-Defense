@@ -72,10 +72,7 @@ namespace EngineCore
                   cameraProxy->SetRightVector(eyeRightVector);
                   cameraProxy->SetUpVector(eyeUpVector);
 
-                  static constexpr uint64_t innerFunctionId = Hash64_CT("ACamera::UpdateCameraProxyData");
-                  sceneRendererSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, cameraProxy->GetSceneProxyId(), innerFunctionId, [cameraPtr]() {
-                     cameraPtr->OnCameraSceneProxyDataUpdated(); 
-                  }); 
+                  cameraPtr->OnCameraSceneProxyDataUpdated(); 
                });
             }
             else

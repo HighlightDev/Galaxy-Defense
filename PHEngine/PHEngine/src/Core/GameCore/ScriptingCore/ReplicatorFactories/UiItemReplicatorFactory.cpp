@@ -37,14 +37,10 @@ namespace EngineCore
                     uiItemLuaProxy->SetSceneWp(sceneSp);
                     uiItemLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
 
-                    static constexpr auto innerFunctionId = Hash64_CT("UiItemReplicatorFactory::CreateReplicator::RegisterLuaProxy");
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, createdUiItem->GetReplicatorId(), innerFunctionId, [luaScriptProcessorWp, uiItemLuaProxy]() {
-                        assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
-                        if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                        {
-                            luaProcessorSp->AddLuaProxy(uiItemLuaProxy);
-                        }
-                    });
+                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->AddLuaProxy(uiItemLuaProxy);
+                    }
                 });
             }
             else

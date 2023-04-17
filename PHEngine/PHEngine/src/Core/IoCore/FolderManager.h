@@ -60,7 +60,6 @@ namespace IO
 		std::string GetEditorTexturePath() const;
 		std::string GetMaskTexturePath() const;
 		std::string GetUiTexturePath() const;
-		std::string GetPersistencyPath() const;
 		std::string GetScriptPath() const;
 		std::string GetScriptCorePath() const;
 		std::string GetMaterialPath() const;

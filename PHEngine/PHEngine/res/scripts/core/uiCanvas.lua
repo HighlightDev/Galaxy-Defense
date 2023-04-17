@@ -48,6 +48,7 @@ function UiCanvas:updateFromReplicatorData(host)
         local parsedJson = json.decode(replicatorJsonData)
         if parsedJson["visible"] ~= nil then
             self.properties.visible.value = parsedJson["visible"]
+            print("UiCanvas:updateFromReplicatorData => visible: " .. tostring(self.properties.visible.value))
         end
     end
 end

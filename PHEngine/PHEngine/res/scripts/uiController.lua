@@ -63,17 +63,21 @@ local function createTestOverlay(host)
     TestOverlay = UiOverlay:new(host, "TestOverlay", TestOverlayCanvas)
     TestOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
         print("TestOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
-        
+
         TestRectangle:setParent(host, TestOverlayCanvas.widgetName, TestOverlayCanvas.widgetName)
 
-        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType
-            .LEFT, TestOverlayCanvas.widgetName, 0)
-        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.RIGHT,
-            UiItemBase.UiAnchorType.RIGHT, TestOverlayCanvas.widgetName, 0)
-        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+        TestRectangle:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             TestOverlayCanvas.widgetName, 0)
-        TestRectangle.setAnchor(TestRectangle.uiItemBaseClass, UiItemBase.UiAnchorType.BOTTOM,
-            UiItemBase.UiAnchorType.BOTTOM, TestOverlayCanvas.widgetName, 0)
+        TestRectangle:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            TestOverlayCanvas.widgetName, 0)
+        TestRectangle:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+            TestOverlayCanvas.widgetName, 0)
+        TestRectangle:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            TestOverlayCanvas.widgetName, 0)
+
+        TestRectangle:setColorHexValue(0xAFFFFF)
+
+        UiOverlayManager:openOverlay(host, "TestOverlay")
     end)
     TestOverlay:addWidget(TestRectangle)
 

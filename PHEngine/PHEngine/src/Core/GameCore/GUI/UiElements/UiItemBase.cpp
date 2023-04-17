@@ -42,7 +42,7 @@ namespace EngineCore
               mParentCanvas(),
               mChildren(),
               mIsVisible(true),
-              mIsTransformDirty(true),
+              mIsTransformDirty(false),
               mIsPropertiesShouldBeUpdatedOnRenderThread(false),
               mIsPropertiesShouldBeUpdatedOnLuaThread(false)
         {

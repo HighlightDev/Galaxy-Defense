@@ -124,9 +124,28 @@ namespace EngineCore
             const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
             if (jsonObj.contains("color"))
             {
-                const auto colorVec = jsonObj["color"].get<std::vector<float>>();
-                assert(colorVec.size() >= 3);
-                const auto &color = glm::vec3(colorVec[0], colorVec[1], colorVec[2]);
+                const auto colorProps = jsonObj["color"];
+                glm::vec3 color;
+                for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
+                {
+                    const auto key = it.key();
+                    if ("r" == key)
+                    {
+                        color.r = it->get<float>();
+                    }
+                    else if ("g" == key)
+                    {
+                        color.g = it->get<float>();
+                    }
+                    else if ("b" == key)
+                    {
+                        color.b = it->get<float>();
+                    }
+                    else
+                    {
+                        assert(false);
+                    }
+                }
                 if (!EngineMath::CheckSimilarityVec3(color, mColor))
                 {
                     mColor = color;
@@ -176,12 +195,10 @@ namespace EngineCore
                     if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy,
-                            opacity = mOpacity,
-                            color = mColor]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy, opacity = mOpacity, color = mColor]()
+                                                                                         {
                             rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
-                            rectangleLuaProxy->SetColor_FromGameThread(color);
-                        });
+                            rectangleLuaProxy->SetColor_FromGameThread(color); });
                     }
                 }
             }

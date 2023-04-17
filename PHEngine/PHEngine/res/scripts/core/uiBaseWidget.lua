@@ -3,6 +3,7 @@ UiBaseWidget = {
 
 function UiBaseWidget:new()
     local newObj = {
+        typeName = "UiBaseWidget",
         parentClass = self,
         luaProxyReady = false,
         luaProxyReadyCallback = nil,
