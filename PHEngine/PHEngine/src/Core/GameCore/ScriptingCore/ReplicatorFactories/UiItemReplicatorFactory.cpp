@@ -29,7 +29,6 @@ namespace EngineCore
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiItemLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiItemLuaProxyId]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                     const auto& createdUiItem = std::make_shared<UiItem>();
-                    createdUiItem->SetIsVisible(false);
                     createdUiItem->SetLuaProxyId(uiItemLuaProxyId);
                     createdUiItem->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiItem);

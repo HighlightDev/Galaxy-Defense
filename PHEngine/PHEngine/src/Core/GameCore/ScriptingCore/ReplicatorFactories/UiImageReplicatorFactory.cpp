@@ -1,0 +1,53 @@
+#include "UiImageReplicatorFactory.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <json/json.hpp>
+
+using namespace EngineCore;
+using namespace EngineCore::GUI;
+using namespace Graphics;
+
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        int32_t UiImageReplicatorFactory::CreateReplicator(const std::weak_ptr<Scene> &sceneWp,
+                                                            const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
+                                                            const std::string &jsonParamsStr) const
+        {
+            assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+            const auto uiImageLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
+
+            if (const auto &sceneSp = sceneWp.lock())
+            {
+                static constexpr auto functionId = Hash64_CT("UiImageReplicatorFactory::CreateReplicator");
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiImageLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiImageLuaProxyId]() {
+                    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                    const auto& createdUiImage = std::make_shared<UiImage>();
+                    createdUiImage->SetLuaProxyId(uiImageLuaProxyId);
+                    createdUiImage->SetLuaScriptProcessor(luaScriptProcessorWp);
+                    sceneSp->RegisterEngineToLuaReplicator(createdUiImage);
+                    const auto& uiImageLuaProxy = createdUiImage->ReplicateLuaProxy();
+                    uiImageLuaProxy->SetSceneWp(sceneSp);
+                    uiImageLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
+
+                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->AddLuaProxy(uiImageLuaProxy);
+                    }
+                });
+            }
+            else
+            {
+                LogInfo("UiImageReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+                return -1;
+            }
+
+            return uiImageLuaProxyId;
+        }
+    }
+} // namespace EngineCore

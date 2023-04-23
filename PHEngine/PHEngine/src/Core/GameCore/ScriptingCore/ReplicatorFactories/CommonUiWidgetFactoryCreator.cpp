@@ -3,6 +3,9 @@
 #include "UiOverlayReplicatorFactory.h"
 #include "UiItemReplicatorFactory.h"
 #include "UiRectangleReplicatorFactory.h"
+#include "UiImageReplicatorFactory.h"
+#include "UiLabelReplicatorFactory.h"
+#include "UiToggleButtonReplicatorFactory.h"
 #include "Core/CommonCore/Assertion.h"
 
 namespace EngineCore
@@ -21,6 +24,12 @@ namespace EngineCore
                 return std::make_unique<UiItemReplicatorFactory>();
             case eCommonUiWidgetType::UI_RECTANGLE:
                 return std::make_unique<UiRectangleReplicatorFactory>();
+            case eCommonUiWidgetType::UI_IMAGE:
+                return std::make_unique<UiImageReplicatorFactory>();
+            case eCommonUiWidgetType::UI_LABEL:
+                return std::make_unique<UiLabelReplicatorFactory>();
+            case eCommonUiWidgetType::UI_TOGGLE_BUTTON:
+                return std::make_unique<UiToggleButtonReplicatorFactory>();
 
             default:
                 assert(false);

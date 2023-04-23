@@ -66,7 +66,7 @@ namespace EngineCore
 
             float GetFontSize() const;
 
-            void SetTextColor(const glm::vec3& color);
+            void SetTextColor(const glm::vec3 &color);
 
             void SetTextColor(const uint32_t hexColor);
 
@@ -75,12 +75,16 @@ namespace EngineCore
             void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
 
             eTextHorizontalAlignmentType GetTextHorizontalAlignment() const;
-            
+
             std::shared_ptr<::Graphics::Proxy::UiSceneProxyBase> CreateUiSceneProxy() const;
 
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
-            
+
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
+
+            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
 
         protected:
             void OnRegistered() override;
@@ -89,6 +93,8 @@ namespace EngineCore
 
         private:
             void SyncDataOnRenderThread();
+
+            void SyncDataOnLuaThread();
         };
     }
 }

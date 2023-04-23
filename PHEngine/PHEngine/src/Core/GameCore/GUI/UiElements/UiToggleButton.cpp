@@ -4,7 +4,8 @@
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/UtilityCore/EngineMath.h"
-#include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiToggleButtonLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
@@ -56,6 +57,7 @@ namespace EngineCore
         {
             mIsStateOn = !mIsStateOn;
             SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+            SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
         }
 
         void UiToggleButton::SetToggleOnColor(const glm::vec3 &color)
@@ -64,6 +66,7 @@ namespace EngineCore
             {
                 mToggleOnColor = color;
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -73,6 +76,7 @@ namespace EngineCore
             {
                 mToggleOffColor = color;
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -107,6 +111,7 @@ namespace EngineCore
             {
                 mOpacity = opacity;
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
 
@@ -117,6 +122,56 @@ namespace EngineCore
             SyncDataOnRenderThread();
         }
 
+        void UiToggleButton::OnPropertiesShouldBeUpdatedOnLuaThread()
+        {
+            UiItemBase::OnPropertiesShouldBeUpdatedOnLuaThread();
+
+            SyncDataOnLuaThread();
+        }
+
+        void UiToggleButton::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
+        {
+            UiItemBase::SyncFromLuaJsonProperties(luaJsonPropsStr);
+
+            const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
+            if (jsonObj.contains("toggle_on_color"))
+            {
+                const auto &toggleOnColor = ExtractRGBColorFromJsonByKey(jsonObj, "toggle_on_color");
+                if (!EngineMath::CheckSimilarityVec3(toggleOnColor, mToggleOnColor))
+                {
+                    mToggleOnColor = toggleOnColor;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("toggle_off_color"))
+            {
+                const auto &toggleOffColor = ExtractRGBColorFromJsonByKey(jsonObj, "toggle_off_color");
+                if (!EngineMath::CheckSimilarityVec3(toggleOffColor, mToggleOffColor))
+                {
+                    mToggleOffColor = toggleOffColor;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("opacity"))
+            {
+                const auto opacity = jsonObj["opacity"].get<float>();
+                if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
+                {
+                    mOpacity = opacity;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("is_state_on"))
+            {
+                const auto is_state_on = jsonObj["is_state_on"].get<bool>();
+                if (!EngineMath::FloatsNearEqual(mIsStateOn, is_state_on))
+                {
+                    mIsStateOn = is_state_on;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+        }
+
         std::shared_ptr<UiSceneProxyBase> UiToggleButton::CreateUiSceneProxy() const
         {
             return std::make_shared<UiToggleButtonSceneProxy>(this);
@@ -124,7 +179,7 @@ namespace EngineCore
 
         std::shared_ptr<LuaProxy> UiToggleButton::ReplicateLuaProxy()
         {
-            return nullptr;
+            return std::make_shared<UiToggleButtonLuaProxy>(std::static_pointer_cast<UiToggleButton>(shared_from_this()));
         }
 
         void UiToggleButton::SyncDataOnRenderThread()
@@ -154,6 +209,54 @@ namespace EngineCore
                     }
                 }
             }
+        }
+
+        void UiToggleButton::SyncDataOnLuaThread()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiToggleButton::SyncDataOnLuaThread");
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                {
+                    if (const auto &toggleButtonLuaProxy = std::static_pointer_cast<UiToggleButtonLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    {
+                        SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [toggleButtonLuaProxy, opacity = mOpacity, toggleOnColor = mToggleOnColor, toggleOffColor = mToggleOffColor, isStateOn = mIsStateOn]()
+                                                                                         {
+                            toggleButtonLuaProxy->SetOpacity_FromGameThread(opacity);
+                            toggleButtonLuaProxy->SetToggleOnColor_FromGameThread(toggleOnColor);
+                            toggleButtonLuaProxy->SetToggleOffColor_FromGameThread(toggleOffColor);
+                            toggleButtonLuaProxy->SetIsStateOn_FromGameThread(isStateOn); });
+                    }
+                }
+            }
+        }
+
+        glm::vec3 UiToggleButton::ExtractRGBColorFromJsonByKey(const nlohmann::json &jsonObject, const std::string &key)
+        {
+            glm::vec3 color;
+            const auto colorProps = jsonObject[key];
+            for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
+            {
+                const auto key = it.key();
+                if ("r" == key)
+                {
+                    color.r = it->get<float>();
+                }
+                else if ("g" == key)
+                {
+                    color.g = it->get<float>();
+                }
+                else if ("b" == key)
+                {
+                    color.b = it->get<float>();
+                }
+                else
+                {
+                    assert(false);
+                }
+            }
+            return color;
         }
     }
 }

@@ -1,0 +1,62 @@
+#pragma once
+
+#include "UiItemBaseLuaProxy.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+
+#include <glm/vec3.hpp>
+#include <string>
+
+namespace EngineCore
+{
+    namespace GUI
+    {
+        class UiLabel;
+    }
+}
+
+using namespace EngineCore;
+
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        class UiLabelLuaProxy
+            : public UiItemBaseLuaProxy
+        {
+        protected:
+
+            std::string mText;
+
+            float mOpacity;
+
+            const std::string mFontName;
+
+            float mFontSize;
+
+            float mTextLineWidth;
+
+            glm::vec3 mTextColor;
+
+            eTextHorizontalAlignmentType mTextHorizontalAlignment;
+
+        public:
+            explicit UiLabelLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiLabel> &ownerUiItem);
+
+            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
+
+            std::string GetGameThreadData() override;
+
+            void SetText_FromGameThread(const std::string& text);
+
+            void SetOpacity_FromGameThread(const float opacity);
+
+            void SetFontSize_FromGameThread(const float fontSize);
+
+            void SetTextLineWidth_FromGameThread(const float textLineWidth);
+
+            void SetTextColor_FromGameThread(const glm::vec3& texColor);
+
+            void SetTextHorizontalAlignment(const eTextHorizontalAlignmentType textHorizontalAlignment);
+        };
+    }
+}

@@ -3,6 +3,7 @@
 #include "UiItemBase.h"
 
 #include <glm/vec3.hpp>
+#include <json/json.hpp>
 
 namespace Graphics
 {
@@ -66,6 +67,10 @@ namespace EngineCore
 
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
+            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
         protected:
             void OnRegistered() override;
 
@@ -73,6 +78,10 @@ namespace EngineCore
 
         private:
             void SyncDataOnRenderThread();
+
+            void SyncDataOnLuaThread();
+
+            glm::vec3 ExtractRGBColorFromJsonByKey(const nlohmann::json& jsonObject, const std::string& key);
         };
     }
 }

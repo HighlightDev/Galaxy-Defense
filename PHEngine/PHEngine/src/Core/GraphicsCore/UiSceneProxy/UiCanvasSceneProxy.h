@@ -38,7 +38,7 @@ namespace Graphics
         public:
             UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas *canvas);
 
-            void AddUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy);
+            void AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy);
 
             void RemoveUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy);
 

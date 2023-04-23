@@ -119,23 +119,27 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
 end
 
 function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
+    local this = this(self)
+
     if parsedJsonData["visible"] ~= nil then
-        self.properties.visible.value = parsedJsonData["visible"]
+        this.properties.visible.value = parsedJsonData["visible"]
+        print("UiItemBase:extractUiItemBaseReplicatorData => type: " ..
+            tostring(self.typeName) .. ", visible: " .. tostring(this.properties.visible.value))
     end
     if parsedJsonData["z_order"] ~= nil then
-        self.properties.z_order.value = parsedJsonData["z_order"]
+        this.properties.z_order.value = parsedJsonData["z_order"]
     end
     if parsedJsonData["width"] ~= nil then
-        self.properties.width.value = parsedJsonData["width"]
+        this.properties.width.value = parsedJsonData["width"]
     end
     if parsedJsonData["height"] ~= nil then
-        self.properties.height.value = parsedJsonData["height"]
+        this.properties.height.value = parsedJsonData["height"]
     end
     if parsedJsonData["horizontalCenterOffset"] ~= nil then
-        self.properties.horizontalCenterOffset.value = parsedJsonData["horizontalCenterOffset"]
+        this.properties.horizontalCenterOffset.value = parsedJsonData["horizontalCenterOffset"]
     end
     if parsedJsonData["verticalCenterOffset"] ~= nil then
-        self.properties.verticalCenterOffset.value = parsedJsonData["verticalCenterOffset"]
+        this.properties.verticalCenterOffset.value = parsedJsonData["verticalCenterOffset"]
     end
     if parsedJsonData["anchors"] ~= nil then
         local anchorsTable = parsedJsonData["anchors"]
@@ -149,7 +153,7 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
                 dstAnchor, dstUiItemWidgetName, srcAnchorMargin))
 
             if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchorMargin ~= nil then
-                self.properties.anchors.value[srcAnchor] = {
+                this.properties.anchors.value[srcAnchor] = {
                     dstAnchor = dstAnchor,
                     dstUiItemWidgetName = dstUiItemWidgetName,
                     srcAnchorMargin = srcAnchorMargin
@@ -160,9 +164,10 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
 end
 
 function UiItemBase:getUiItemBaseDataToReplicator()
+    local this = this(self)
     local propertiesData = {}
     local isPropsDirty = false
-    for key, value in pairs(self.properties) do
+    for key, value in pairs(this.properties) do
         if value.dirty then
             isPropsDirty = true
             propertiesData[tostring(key)] = value.value
@@ -174,55 +179,61 @@ function UiItemBase:getUiItemBaseDataToReplicator()
 end
 
 function UiItemBase:setIsVisible(isVisible)
-    if self.properties.visible.value ~= isVisible then
-        self.properties.visible.value = isVisible
-        self.properties.visible.dirty = true
+    local this = this(self)
+    if this.properties.visible.value ~= isVisible then
+        this.properties.visible.value = isVisible
+        this.properties.visible.dirty = true
     end
 end
 
 function UiItemBase:setZOrder(z_order)
-    if self.properties.z_order.value ~= z_order then
-        self.properties.z_order.value = z_order
-        self.properties.z_order.dirty = true
+    local this = this(self)
+    if this.properties.z_order.value ~= z_order then
+        this.properties.z_order.value = z_order
+        this.properties.z_order.dirty = true
     end
 end
 
 function UiItemBase:setWidth(width)
-    if self.properties.width.value ~= width then
-        self.properties.width.value = width
-        self.properties.width.dirty = true
+    local this = this(self)
+    if this.properties.width.value ~= width then
+        this.properties.width.value = width
+        this.properties.width.dirty = true
     end
 end
 
 function UiItemBase:setHeight(height)
-    if self.properties.height.value ~= height then
-        self.properties.height.value = height
-        self.properties.height.dirty = true
+    local this = this(self)
+    if this.properties.height.value ~= height then
+        this.properties.height.value = height
+        this.properties.height.dirty = true
     end
 end
 
 function UiItemBase:setVerticalCenterOffset(verticalCenterOffset)
-    if self.properties.verticalCenterOffset.value ~= verticalCenterOffset then
-        self.properties.verticalCenterOffset.value = verticalCenterOffset
-        self.properties.verticalCenterOffset.dirty = true
+    local this = this(self)
+    if this.properties.verticalCenterOffset.value ~= verticalCenterOffset then
+        this.properties.verticalCenterOffset.value = verticalCenterOffset
+        this.properties.verticalCenterOffset.dirty = true
     end
 end
 
 function UiItemBase:setHorizontalCenterOffset(horizontalCenterOffset)
-    if self.properties.horizontalCenterOffset.value ~= horizontalCenterOffset then
-        self.properties.horizontalCenterOffset.value = horizontalCenterOffset
-        self.properties.horizontalCenterOffset.dirty = true
+    local this = this(self)
+    if this.properties.horizontalCenterOffset.value ~= horizontalCenterOffset then
+        this.properties.horizontalCenterOffset.value = horizontalCenterOffset
+        this.properties.horizontalCenterOffset.dirty = true
     end
 end
 
 function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
-
-    this(self).properties.anchors.dirty = true
-    this(self).properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
-    this(self).properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
-    this(self).properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
+    local this = this(self)
+    this.properties.anchors.dirty = true
+    this.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
+    this.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
+    this.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 return UiItemBase

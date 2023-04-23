@@ -21,7 +21,7 @@ namespace Graphics
         {
         }
 
-        void UiCanvasSceneProxy::AddUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy)
+        void UiCanvasSceneProxy::AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy)
         {
             mUiProxies.emplace_back(uiProxy);
         }
@@ -97,7 +97,7 @@ namespace Graphics
 
         std::shared_ptr<UiSceneProxyBase> UiCanvasSceneProxy::GetSceneProxyById(const size_t uid) const
         {
-            const auto it = std::find_if(mUiProxies.begin(), mUiProxies.end(), [&](const auto &proxy)
+            const auto it = std::find_if(mUiProxies.begin(), mUiProxies.end(), [uid](const auto &proxy)
                                          { return uid == proxy->GetUiItemUId(); });
             return (mUiProxies.end() != it ? *it : nullptr);
         }

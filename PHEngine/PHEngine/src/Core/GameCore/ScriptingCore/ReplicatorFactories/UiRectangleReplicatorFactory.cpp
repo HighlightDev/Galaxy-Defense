@@ -29,7 +29,6 @@ namespace EngineCore
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiRectangleLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiRectangleLuaProxyId]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                     const auto& createdUiRectangle = std::make_shared<UiRectangle>();
-                    createdUiRectangle->SetIsVisible(false);
                     createdUiRectangle->SetLuaProxyId(uiRectangleLuaProxyId);
                     createdUiRectangle->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiRectangle);

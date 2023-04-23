@@ -9,7 +9,10 @@ namespace EngineCore
             UI_OVERLAY = 0,
             UI_CANVAS = 1,
             UI_ITEM = 2,
-            UI_RECTANGLE = 3
+            UI_RECTANGLE = 3,
+            UI_IMAGE = 4,
+            UI_LABEL = 5,
+            UI_TOGGLE_BUTTON = 6
         };
     }
 } // namespace EngineCore

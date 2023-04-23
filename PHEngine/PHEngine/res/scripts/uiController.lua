@@ -30,6 +30,9 @@ local pressButtonCooldown = 0.0
 local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
     if keyboardPressedKeyNames ~= nil then
         for _, value in pairs(keyboardPressedKeyNames) do
+            if value == "L" then
+                UiOverlayManager:openOverlay(host, "TestOverlay")
+            end
             if value == "Escape" then
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
@@ -76,8 +79,7 @@ local function createTestOverlay(host)
             TestOverlayCanvas.widgetName, 0)
 
         TestRectangle:setColorHexValue(0xAFFFFF)
-
-        UiOverlayManager:openOverlay(host, "TestOverlay")
+        TestRectangle:setZOrder(1)
     end)
     TestOverlay:addWidget(TestRectangle)
 

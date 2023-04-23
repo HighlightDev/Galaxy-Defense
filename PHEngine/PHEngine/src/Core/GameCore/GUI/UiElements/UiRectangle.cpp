@@ -155,6 +155,11 @@ namespace EngineCore
             if (jsonObj.contains("opacity"))
             {
                 const auto opacity = jsonObj["opacity"].get<float>();
+                if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
+                {
+                    mOpacity = opacity;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
             }
         }
 

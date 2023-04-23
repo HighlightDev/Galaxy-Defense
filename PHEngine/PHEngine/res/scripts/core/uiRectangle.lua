@@ -61,14 +61,12 @@ function UiRectangle:updateFromReplicatorData(host)
 
             if parsedJson["color"] ~= nil then
                 local colorArray = parsedJson["color"]
-                print("UiRectangle:updateFromReplicatorData => color")
                 this(self).rectangleProperties.color.value.r = colorArray[1]
                 this(self).rectangleProperties.color.value.g = colorArray[2]
                 this(self).rectangleProperties.color.value.b = colorArray[3]
             end
             if parsedJson["opacity"] ~= nil then
                 this(self).rectangleProperties.opacity.value = parsedJson["opacity"]
-                print("opacity: " .. tostring(this(self).rectangleProperties.opacity.value))
             end
         end
     end

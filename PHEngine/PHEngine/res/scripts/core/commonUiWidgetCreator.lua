@@ -3,16 +3,39 @@ CommonUiWidgetCreator = {
         UI_OVERLAY = 0,
         UI_CANVAS = 1,
         UI_ITEM = 2,
-        UI_RECTANGLE = 3
+        UI_RECTANGLE = 3,
+        UI_IMAGE = 4,
+        UI_LABEL = 5,
+        UI_TOGGLE_BUTTON = 6
     }
 }
+
+local function getTypeToString(commonUiWidgetType)
+    if commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_OVERLAY then
+        return "UI_OVERLAY"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS then
+        return "UI_CANVAS"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_ITEM then
+        return "UI_ITEM"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE then
+        return "UI_RECTANGLE"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE then
+        return "UI_IMAGE"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_LABEL then
+        return "UI_LABEL"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON then
+        return "UI_TOGGLE_BUTTON"
+    else
+        assert(false, "Wrong type of widget type.")
+    end
+end
 
 function CommonUiWidgetCreator:createUiWidget(host, commonUiWidgetType, jsonParameters)
     assert(host ~= nil and commonUiWidgetType ~= nil)
     jsonParameters = jsonParameters and jsonParameters or ""
     local widgetLuaProxyId = _CreateCommonUiWidget(host, commonUiWidgetType, jsonParameters)
     print("CommonUiWidgetCreator::createUiWidget => commonUiWidgetType: " ..
-        tostring(commonUiWidgetType) ..
+        tostring(getTypeToString(commonUiWidgetType)) ..
         " jsonParameters: " ..
         tostring(jsonParameters) ..
         " widgetLuaProxyId: " ..

@@ -29,7 +29,7 @@ namespace EngineCore
         class UiImage : public UiItemBase
         {
             std::string mTextureSrc;
-            
+
             std::shared_ptr<ITexture> mTexture;
 
             float mOpacity;
@@ -58,7 +58,7 @@ namespace EngineCore
             void SetRotationDegrees(const float rotationDegrees);
 
             float GetRotationDegrees() const;
-            
+
             void SetIsFlipped(const bool isFlipped);
 
             bool GetIsFlipped() const;
@@ -69,6 +69,10 @@ namespace EngineCore
 
             void OnPropertiesShouldBeUpdatedOnRenderThread() override;
 
+            void OnPropertiesShouldBeUpdatedOnLuaThread() override;
+
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
         protected:
             void OnRegistered() override;
 
@@ -76,6 +80,8 @@ namespace EngineCore
 
         private:
             void SyncDataOnRenderThread();
+
+            void SyncDataOnLuaThread();
 
             void ReallocateTexture();
         };

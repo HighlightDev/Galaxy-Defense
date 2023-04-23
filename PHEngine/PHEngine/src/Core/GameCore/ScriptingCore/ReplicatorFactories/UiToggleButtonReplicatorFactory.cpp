@@ -1,0 +1,55 @@
+#include "UiToggleButtonReplicatorFactory.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
+
+#include <json/json.hpp>
+
+using namespace EngineCore;
+using namespace EngineCore::GUI;
+using namespace Graphics;
+
+namespace EngineCore
+{
+    namespace Scripts
+    {
+        int32_t UiToggleButtonReplicatorFactory::CreateReplicator(const std::weak_ptr<Scene> &sceneWp,
+                                                            const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
+                                                            const std::string &jsonParamsStr) const
+        {
+            assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
+            const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
+            const auto isStateOn = jsonObj["is_state_on"].get<bool>();
+            const auto uiToggleButtonLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
+
+            if (const auto &sceneSp = sceneWp.lock())
+            {
+                static constexpr auto functionId = Hash64_CT("UiToggleButtonReplicatorFactory::CreateReplicator");
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiToggleButtonLuaProxyId, functionId, [sceneSp, isStateOn, luaScriptProcessorWp, uiToggleButtonLuaProxyId]() {
+                    assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
+                    const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn);
+                    createdUiToggleButton->SetLuaProxyId(uiToggleButtonLuaProxyId);
+                    createdUiToggleButton->SetLuaScriptProcessor(luaScriptProcessorWp);
+                    sceneSp->RegisterEngineToLuaReplicator(createdUiToggleButton);
+                    const auto& uiToggleButtonLuaProxy = createdUiToggleButton->ReplicateLuaProxy();
+                    uiToggleButtonLuaProxy->SetSceneWp(sceneSp);
+                    uiToggleButtonLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
+
+                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                        luaProcessorSp->AddLuaProxy(uiToggleButtonLuaProxy);
+                    }
+                });
+            }
+            else
+            {
+                LogInfo("UiToggleButtonReplicatorFactory::CreateReplicator => Scene weak_ptr lock failed");
+                return -1;
+            }
+
+            return uiToggleButtonLuaProxyId;
+        }
+    }
+} // namespace EngineCore
