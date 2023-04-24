@@ -24,7 +24,7 @@ function UiImage:new(host)
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE)
 
     local imageProperties = {
-        textureSource = {
+        texture_source = {
             value = "",
             dirty = false
         },
@@ -32,11 +32,11 @@ function UiImage:new(host)
             value = 1.0,
             dirty = false
         },
-        rotationDegrees = {
+        rotation_degrees = {
             value = 0.0,
             dirty = false
         },
-        isFlipped = {
+        is_flipped = {
             value = false,
             dirty = false
         }
@@ -63,16 +63,16 @@ function UiImage:updateFromReplicatorData(host)
             local parsedJson = json.decode(replicatorJsonData)
             this(self):extractUiItemBaseReplicatorData(parsedJson)
             if parsedJson["texture_source"] ~= nil then
-                this(self).imageProperties.textureSource.value = parsedJson["texture_source"]
+                this(self).imageProperties.texture_source.value = parsedJson["texture_source"]
             end
             if parsedJson["opacity"] ~= nil then
                 this(self).imageProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["rotation_degrees"] ~= nil then
-                this(self).imageProperties.rotationDegrees.value = parsedJson["rotation_degrees"]
+                this(self).imageProperties.rotation_degrees.value = parsedJson["rotation_degrees"]
             end
             if parsedJson["is_flipped"] ~= nil then
-                this(self).imageProperties.isFlipped.value = parsedJson["is_flipped"]
+                this(self).imageProperties.is_flipped.value = parsedJson["is_flipped"]
             end
         end
     end
@@ -99,9 +99,9 @@ end
 
 function UiImage:setTextureSource(textureSource)
     assert(textureSource ~= nil and type(textureSource) == "string")
-    if this(self).imageProperties.textureSource ~= textureSource then
-        this(self).imageProperties.textureSource = textureSource
-        this(self).imageProperties.textureSource.dirty = true
+    if this(self).imageProperties.texture_source.value ~= textureSource then
+        this(self).imageProperties.texture_source.value = textureSource
+        this(self).imageProperties.texture_source.dirty = true
     end
 end
 
@@ -115,17 +115,17 @@ end
 
 function UiImage:setRotationDegrees(rotationDegrees)
     assert(rotationDegrees ~= nil and type(rotationDegrees) == "number")
-    if this(self).imageProperties.rotationDegrees.value ~= rotationDegrees then
-        this(self).imageProperties.rotationDegrees.value = rotationDegrees
-        this(self).imageProperties.rotationDegrees.dirty = true
+    if this(self).imageProperties.rotation_degrees.value ~= rotationDegrees then
+        this(self).imageProperties.rotation_degrees.value = rotationDegrees
+        this(self).imageProperties.rotation_degrees.dirty = true
     end
 end
 
 function UiImage:setIsFlipped(isFlipped)
     assert(isFlipped ~= nil and type(isFlipped) == "boolean")
-    if this(self).imageProperties.isFlipped.value ~= isFlipped then
-        this(self).imageProperties.isFlipped.value = isFlipped
-        this(self).imageProperties.isFlipped.dirty = true
+    if this(self).imageProperties.is_flipped.value ~= isFlipped then
+        this(self).imageProperties.is_flipped.value = isFlipped
+        this(self).imageProperties.is_flipped.dirty = true
     end
 end
 

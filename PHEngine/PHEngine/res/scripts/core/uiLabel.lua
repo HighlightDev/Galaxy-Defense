@@ -38,7 +38,7 @@ function UiLabel:new(host, fontName)
             value = 1.0,
             dirty = false
         },
-        textColor = {
+        text_color = {
             value = {
                 r = 0.0,
                 g = 0.0,
@@ -46,15 +46,15 @@ function UiLabel:new(host, fontName)
             },
             dirty = false
         },
-        fontSize = {
+        font_size = {
             value = 5.0,
             dirty = false
         },
-        textLineWidth = {
+        text_line_width = {
             value = 1.0,
             dirty = false
         },
-        textHorizontalAlignment = {
+        text_horizontal_alignment = {
             value = UiLabel.TextHorizontalAlignmentType.LEFT,
             dirty = false
         }
@@ -85,21 +85,21 @@ function UiLabel:updateFromReplicatorData(host)
             end
             if parsedJson["text_color"] ~= nil then
                 local colorArray = parsedJson["text_color"]
-                this(self).labelProperties.textColor.value.r = colorArray[1]
-                this(self).labelProperties.textColor.value.g = colorArray[2]
-                this(self).labelProperties.textColor.value.b = colorArray[3]
+                this(self).labelProperties.text_color.value.r = colorArray[1]
+                this(self).labelProperties.text_color.value.g = colorArray[2]
+                this(self).labelProperties.text_color.value.b = colorArray[3]
             end
             if parsedJson["opacity"] ~= nil then
                 this(self).labelProperties.opacity.value = tonumber(parsedJson["opacity"])
             end
             if parsedJson["font_size"] ~= nil then
-                this(self).labelProperties.fontSize.value = tonumber(parsedJson["font_size"])
+                this(self).labelProperties.font_size.value = tonumber(parsedJson["font_size"])
             end
             if parsedJson["text_line_width"] ~= nil then
-                this(self).labelProperties.textLineWidth.value = tonumber(parsedJson["text_line_width"])
+                this(self).labelProperties.text_line_width.value = tonumber(parsedJson["text_line_width"])
             end
             if parsedJson["text_horizontal_alignment"] ~= nil then
-                this(self).labelProperties.textHorizontalAlignment.value = tonumber(parsedJson["text_horizontal_alignment"])
+                this(self).labelProperties.text_horizontal_alignment.value = tonumber(parsedJson["text_horizontal_alignment"])
             end
         end
     end
@@ -126,8 +126,8 @@ end
 
 function UiLabel:setText(text)
     assert(text ~= nil and type(text) == "string")
-    if this(self).labelProperties.text ~= text then
-        this(self).labelProperties.text = text
+    if this(self).labelProperties.text.value ~= text then
+        this(self).labelProperties.text.value = text
         this(self).labelProperties.text.dirty = true
     end
 end
@@ -159,26 +159,26 @@ function UiLabel:setTextColor(r, g, b)
     assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
         r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
-    this(self).labelProperties.textColor.value.r = r
-    this(self).labelProperties.textColor.value.g = g
-    this(self).labelProperties.textColor.value.b = b
+    this(self).labelProperties.text_color.value.r = r
+    this(self).labelProperties.text_color.value.g = g
+    this(self).labelProperties.text_color.value.b = b
 
-    this(self).labelProperties.textColor.dirty = true
+    this(self).labelProperties.text_color.dirty = true
 end
 
 function UiLabel:setFontSize(fontSize)
     assert(fontSize ~= nil and type(fontSize) == "number")
-    if this(self).labelProperties.fontSize.value ~= fontSize then
-        this(self).labelProperties.fontSize.value = fontSize
-        this(self).labelProperties.fontSize.dirty = true
+    if this(self).labelProperties.font_size.value ~= fontSize then
+        this(self).labelProperties.font_size.value = fontSize
+        this(self).labelProperties.font_size.dirty = true
     end
 end
 
 function UiLabel:setTextLineWidth(textLineWidth)
     assert(textLineWidth ~= nil and type(textLineWidth) == "number")
-    if this(self).labelProperties.textLineWidth.value ~= textLineWidth then
-        this(self).labelProperties.textLineWidth.value = textLineWidth
-        this(self).labelProperties.textLineWidth.dirty = true
+    if this(self).labelProperties.text_line_width.value ~= textLineWidth then
+        this(self).labelProperties.text_line_width.value = textLineWidth
+        this(self).labelProperties.text_line_width.dirty = true
     end
 end
 
@@ -186,9 +186,9 @@ function UiLabel:setTextHorizontalAlignment(textHorizontalAlignment)
     assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and
         textHorizontalAlignment >= UiLabel.TextHorizontalAlignmentType.LEFT and
         textHorizontalAlignment <= UiLabel.TextHorizontalAlignmentType.RIGHT)
-    if this(self).labelProperties.textHorizontalAlignment.value ~= textHorizontalAlignment then
-        this(self).labelProperties.textHorizontalAlignment.value = textHorizontalAlignment
-        this(self).labelProperties.textHorizontalAlignment.dirty = true
+    if this(self).labelProperties.text_horizontal_alignment.value ~= textHorizontalAlignment then
+        this(self).labelProperties.text_horizontal_alignment.value = textHorizontalAlignment
+        this(self).labelProperties.text_horizontal_alignment.dirty = true
     end
 end
 

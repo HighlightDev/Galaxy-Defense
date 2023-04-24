@@ -143,8 +143,8 @@ namespace EngineCore
       void LuaCommonUiFunctions::SetUiWidgetParent(const std::tuple<int32_t /*lua proxy id*/, std::string /*canvas name*/, std::string /*parent name*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
-         const auto parentName = std::get<1>(data);
-         const auto canvasName = std::get<2>(data);
+         const auto canvasName = std::get<1>(data);
+         const auto parentName = std::get<2>(data);
 
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {

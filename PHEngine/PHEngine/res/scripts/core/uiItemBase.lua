@@ -109,6 +109,7 @@ end
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
     print("UiItemBase:setParent => host :" ..
         tostring(host) ..
+        ", canvas name: " .. tostring(canvasName) ..
         ", uiWidgetParentName: " ..
         tostring(uiWidgetParentName) ..
         ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
