@@ -145,6 +145,7 @@ namespace EngineCore
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
+            std::shared_ptr<IUiTransformable> TryFindHierarchyChildByName(const std::string &name) const;
 
             // Implementation of ITickable
             void Tick(const float deltaTime) override;

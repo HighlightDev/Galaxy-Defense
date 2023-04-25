@@ -278,9 +278,25 @@ namespace EngineCore
 
         std::shared_ptr<IUiTransformable> UiCanvas::TryFindChildByName(const std::string &name) const
         {
-            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&name](const auto &child)
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [name](const auto &child)
                                               { return child->GetName() == name; });
             return foundIt != mChildren.end() ? (*foundIt) : nullptr;
+        }
+
+        std::shared_ptr<IUiTransformable> UiCanvas::TryFindHierarchyChildByName(const std::string &name) const
+        {
+            for (const auto &child : mChildren)
+            {
+                if (child->GetName() == name)
+                {
+                    return child;
+                }
+                else if (const auto foundChild = child->TryFindHierarchyChildByName(name))
+                {
+                    return foundChild;
+                }
+            }
+            return nullptr;
         }
 
         std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const
@@ -325,11 +341,11 @@ namespace EngineCore
                     if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
                     {
                         mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]()
+                                                                                            {
                             canvasProxy->SetIsVisible(mIsVisible);
                             canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin);
-                            canvasProxy->SetWidthHeight(mWidthHeight);
-                        });
+                            canvasProxy->SetWidthHeight(mWidthHeight); });
                     }
                 }
             }
@@ -345,9 +361,8 @@ namespace EngineCore
                     if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
                     {
                         mIsPropertiesShouldBeUpdatedOnLuaThread = false;
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]() {
-                            canvasProxy->SetIsVisible_FromGameThread(mIsVisible);
-                        });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]()
+                                                                                         { canvasProxy->SetIsVisible_FromGameThread(mIsVisible); });
                     }
                 }
             }
@@ -448,7 +463,7 @@ namespace EngineCore
             }
         }
 
-        void UiCanvas::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
+        void UiCanvas::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
         {
             const auto &jsonObj = nlohmann::json::parse(luaJsonPropsStr);
             if (jsonObj.contains("visible"))

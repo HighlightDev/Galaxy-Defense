@@ -74,6 +74,7 @@ end
 
 function UiRectangle:sendDataToReplicator(host)
     local propertiesData, basePropsDirty = UiRectangle:getUiItemBaseDataToReplicator()
+    print("UiRectangle:sendDataToReplicator => self: " .. tostring(self) ..", myName: " .. tostring(self.luaProxyId) .. ", basePropsDirty: " .. tostring(basePropsDirty))
 
     local isPropsDirty = false
     for key, value in pairs(this(self).rectangleProperties) do

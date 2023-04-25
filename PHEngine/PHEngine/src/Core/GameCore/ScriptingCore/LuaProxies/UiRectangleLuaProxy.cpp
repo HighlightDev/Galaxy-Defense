@@ -2,7 +2,9 @@
 #include "Core/GameCore/GUI/UiElements/UiRectangle.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/LoggerExtension.h"
 
+#include <iostream>
 #include <json/json.hpp>
 
 using namespace EngineCore;
@@ -22,6 +24,7 @@ namespace EngineCore
         void UiRectangleLuaProxy::OnLuaThreadDataUpdated(const std::string &jsonParameters)
         {
             static constexpr auto functionId = Hash64_CT("UiRectangleLuaProxy::OnLuaThreadDataUpdated");
+            std::cout << "UiRectangleLuaProxy::OnLuaThreadDataUpdated => mLuaProxyId" << mLuaProxyId << ", jsonParams: " << jsonParameters << std::endl;
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();

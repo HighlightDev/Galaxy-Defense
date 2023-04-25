@@ -54,13 +54,14 @@ function UiOverlay:sendDataToReplicator(host)
     self.overlayCanvas:sendDataToReplicator(host)
 
     for _, value in pairs(self.widgets) do
+        print("UiOverlay:sendDataToReplicator => widget: " .. tostring(value))
         value:sendDataToReplicator(host)
     end
 end
 
 function UiOverlay:addWidget(widget)
     assert(widget ~= nil)
-    table.insert(self.widgets, widget)
+    self.widgets[#self.widgets+1] = widget
 end
 
 function UiOverlay:subscribeOnAllWidgetLuaProxiesReady(callback)

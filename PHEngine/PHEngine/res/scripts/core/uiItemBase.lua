@@ -102,6 +102,7 @@ local function this(ptr)
         return ptr
     else
         assert(ptr.uiItemBaseClass ~= nil)
+        print("MY NAME: self: " .. tostring(ptr) .. ", name: " .. tostring(ptr.widgetName) .. ", ptr.uiItemBaseClass: " .. tostring(ptr.uiItemBaseClass) .. ", properties: " .. tostring(ptr.properties) .. ", parentClass: " .. tostring(ptr.parentClass))
         return ptr.uiItemBaseClass
     end
 end
@@ -113,9 +114,9 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
         ", uiWidgetParentName: " ..
         tostring(uiWidgetParentName) ..
         ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
-    assert(self.luaProxyReady == true and host ~= nil and type(canvasName) == "string" and canvasName ~= "" and
+    assert(self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and canvasName ~= "" and
         type(uiWidgetParentName) == "string" and
-        uiWidgetParentName ~= "")
+        uiWidgetParentName ~= "", debug.traceback())
     _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
 end
 
@@ -124,8 +125,6 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
 
     if parsedJsonData["visible"] ~= nil then
         this.properties.visible.value = parsedJsonData["visible"]
-        print("UiItemBase:extractUiItemBaseReplicatorData => type: " ..
-            tostring(self.typeName) .. ", visible: " .. tostring(this.properties.visible.value))
     end
     if parsedJsonData["z_order"] ~= nil then
         this.properties.z_order.value = parsedJsonData["z_order"]
@@ -231,6 +230,7 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
     local this = this(self)
+    print("UiItemBase:setAnchor => myName: " .. tostring(self.luaProxyId) .. ", srcAnchor: " .. tostring(srcAnchor) .. ", dstAnchor: " .. tostring(dstAnchor) .. ", dstUiItemWidgetName: " .. tostring(dstUiItemWidgetName))
     this.properties.anchors.dirty = true
     this.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     this.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName

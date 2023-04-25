@@ -42,13 +42,15 @@ namespace EngineCore
 
         std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const size_t luaProxyId) const
         {
-            const auto luaIt = std::find_if(mLuaProxies.begin(), mLuaProxies.end(), [=](const auto &luaProxy)
-                                            { return luaProxyId == luaProxy->GetLuaProxyId(); });
-            if (mLuaProxies.end() == luaIt)
+            for (const auto &luaProxy : mLuaProxies)
             {
-                LogInfo("LuaScriptProcessor::GetLuaProxy => Error: luaProxy: ", luaProxyId, " doesn't exist");
+                if (luaProxy->GetLuaProxyId() == luaProxyId)
+                {
+                    return luaProxy;
+                }
             }
-            return luaIt != mLuaProxies.end() ? *luaIt : nullptr;
+            LogInfo("LuaScriptProcessor::GetLuaProxy => Error: luaProxy: ", luaProxyId, " doesn't exist");
+            return nullptr;
         }
 
         const InterThreadCommunicationMgr &LuaScriptProcessor::GetInterThreadCommunicationManager() const

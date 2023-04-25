@@ -73,7 +73,7 @@ namespace EngineCore
                     }
                     else
                     {
-                        const auto parent = parentCanvas->TryFindChildByName(uiWidgetParentName);
+                        const auto parent = parentCanvas->TryFindHierarchyChildByName(uiWidgetParentName);
                         assert(parent);
                         mParent = parent;
                         parent->AddUiItem(std::static_pointer_cast<UiItemBase>(shared_from_this()));
@@ -273,9 +273,25 @@ namespace EngineCore
 
         std::shared_ptr<IUiTransformable> UiItemBase::TryFindChildByName(const std::string &name) const
         {
-            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [&name](const auto &child)
+            const auto foundIt = std::find_if(mChildren.begin(), mChildren.end(), [name](const auto &child)
                                               { return child->GetName() == name; });
             return foundIt != mChildren.end() ? (*foundIt) : nullptr;
+        }
+
+        std::shared_ptr<IUiTransformable> UiItemBase::TryFindHierarchyChildByName(const std::string &name) const
+        {
+            for (const auto& child: mChildren)
+            {
+                if (child->GetName() == name)
+                {
+                    return child;
+                }
+                else if (const auto foundChild = child->TryFindHierarchyChildByName(name))
+                {
+                    return foundChild;
+                }
+            }
+            return nullptr;
         }
 
         std::shared_ptr<IUiTransformable> UiItemBase::TryFindAncestryUiItem(const std::string &name) const
@@ -603,8 +619,6 @@ namespace EngineCore
             if (mIsTransformDirty)
             {
                 UpdateAnchorTransform();
-                assert(mWidth > 0);
-                assert(mHeight > 0);
                 mIsTransformDirty = false;
             }
 
