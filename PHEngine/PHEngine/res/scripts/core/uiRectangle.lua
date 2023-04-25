@@ -46,38 +46,32 @@ function UiRectangle:new(host)
     return uiRectangleObj
 end
 
-local function this(ptr)
-    assert(ptr.typeName == "UiRectangle")
-    return ptr
-end
-
 function UiRectangle:updateFromReplicatorData(host)
     self:checkLuaProxyReady(host)
     if self.luaProxyReady then
         local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
         if replicatorJsonData ~= "" then
             local parsedJson = json.decode(replicatorJsonData)
-            this(self):extractUiItemBaseReplicatorData(parsedJson)
+            self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["color"] ~= nil then
                 local colorArray = parsedJson["color"]
-                this(self).rectangleProperties.color.value.r = colorArray[1]
-                this(self).rectangleProperties.color.value.g = colorArray[2]
-                this(self).rectangleProperties.color.value.b = colorArray[3]
+                self.rectangleProperties.color.value.r = colorArray[1]
+                self.rectangleProperties.color.value.g = colorArray[2]
+                self.rectangleProperties.color.value.b = colorArray[3]
             end
             if parsedJson["opacity"] ~= nil then
-                this(self).rectangleProperties.opacity.value = parsedJson["opacity"]
+                self.rectangleProperties.opacity.value = parsedJson["opacity"]
             end
         end
     end
 end
 
 function UiRectangle:sendDataToReplicator(host)
-    local propertiesData, basePropsDirty = UiRectangle:getUiItemBaseDataToReplicator()
-    print("UiRectangle:sendDataToReplicator => self: " .. tostring(self) ..", myName: " .. tostring(self.luaProxyId) .. ", basePropsDirty: " .. tostring(basePropsDirty))
+    local propertiesData, basePropsDirty = self:getUiItemBaseDataToReplicator()
 
     local isPropsDirty = false
-    for key, value in pairs(this(self).rectangleProperties) do
+    for key, value in pairs(self.rectangleProperties) do
         if value.dirty then
             isPropsDirty = true
             propertiesData[tostring(key)] = value.value
@@ -104,25 +98,25 @@ function UiRectangle:setColorHexValue(colorHex)
     local b = mask_b & colorHex;
 
     local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
-    this(self):setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
+    self:setColor(r * INV_COLOR_MAX_BYTE_VALUE, g * INV_COLOR_MAX_BYTE_VALUE, b * INV_COLOR_MAX_BYTE_VALUE)
 end
 
 function UiRectangle:setColor(r, g, b)
     assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
         r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
 
-    this(self).rectangleProperties.color.value.r = r
-    this(self).rectangleProperties.color.value.g = g
-    this(self).rectangleProperties.color.value.b = b
+    self.rectangleProperties.color.value.r = r
+    self.rectangleProperties.color.value.g = g
+    self.rectangleProperties.color.value.b = b
 
-    this(self).rectangleProperties.color.dirty = true
+    self.rectangleProperties.color.dirty = true
 end
 
 function UiRectangle:setOpacity(opacity)
     assert(opacity ~= nil and type(opacity) == "number")
-    if this(self).rectangleProperties.opacity.value ~= opacity then
-        this(self).rectangleProperties.opacity.value = opacity
-        this(self).rectangleProperties.opacity.dirty = true
+    if self.rectangleProperties.opacity.value ~= opacity then
+        self.rectangleProperties.opacity.value = opacity
+        self.rectangleProperties.opacity.dirty = true
     end
 end
 

@@ -41,7 +41,7 @@ function UiItem:updateFromReplicatorData(host)
 end
 
 function UiItem:sendDataToReplicator(host)
-    local basePropertiesData, isPropsDirty = UiItem:getUiItemBaseDataToReplicator()
+    local basePropertiesData, isPropsDirty = self:getUiItemBaseDataToReplicator()
     if isPropsDirty then
         _OnCommonUiWidgetDataUpdated(host, self.luaProxyId, json.encode(basePropertiesData))
     end

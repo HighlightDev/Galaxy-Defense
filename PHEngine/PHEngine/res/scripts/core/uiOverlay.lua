@@ -54,7 +54,6 @@ function UiOverlay:sendDataToReplicator(host)
     self.overlayCanvas:sendDataToReplicator(host)
 
     for _, value in pairs(self.widgets) do
-        print("UiOverlay:sendDataToReplicator => widget: " .. tostring(value))
         value:sendDataToReplicator(host)
     end
 end

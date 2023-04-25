@@ -74,23 +74,23 @@ local function createTestOverlay(host)
     local backgroundRect = UiRectangle:new(host)
     testOverlay:addWidget(backgroundRect)
 
-    --[[local soundToggleButton = UiToggleButton:new(host, false)
+    local soundToggleButton = UiToggleButton:new(host, false)
     testOverlay:addWidget(soundToggleButton)
 
     local soundLabel = UiLabel:new(host, "nimbus_mono")
-    testOverlay:addWidget(soundLabel)]]
+    testOverlay:addWidget(soundLabel)
 
     local applyButton = UiRectangle:new(host)
     testOverlay:addWidget(applyButton)
 
-    --[[local applyButtonLabel = UiLabel:new(host, "nimbus_mono")
+    local applyButtonLabel = UiLabel:new(host, "nimbus_mono")
     testOverlay:addWidget(applyButtonLabel)
 
     local cancelButton = UiRectangle:new(host)
     testOverlay:addWidget(cancelButton)
 
     local cancelButtonLabel = UiLabel:new(host, "nimbus_mono")
-    testOverlay:addWidget(cancelButtonLabel)]]
+    testOverlay:addWidget(cancelButtonLabel)
 
     testOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
         print("testOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
@@ -100,10 +100,10 @@ local function createTestOverlay(host)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, testOverlayCanvas.widgetName, menuHorizontalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, testOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, testOverlayCanvas.widgetName, menuVerticalMargin)
-        backgroundRect:setColorHexValue(0xFFFFFF)
+        backgroundRect:setColorHexValue(0x6C5B7B)
         backgroundRect:setZOrder(1)
 
-        --[[soundToggleButton:setParent(host, testOverlayCanvas.widgetName, backgroundRect.widgetName)
+        soundToggleButton:setParent(host, testOverlayCanvas.widgetName, backgroundRect.widgetName)
         soundToggleButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName, buttonHorizontalMargin)
         soundToggleButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName, 50)
         soundToggleButton:setWidth(buttonWidth / 4.0)
@@ -121,8 +121,8 @@ local function createTestOverlay(host)
         soundLabel:setTextColorHexValue(0xFFFFFF);
         soundLabel:setFontSize(11.0);
         soundLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT);
-        soundLabel:setZOrder(2);]]
-        
+        soundLabel:setZOrder(2);
+
         applyButton:setParent(host, testOverlayCanvas.widgetName, backgroundRect.widgetName);
         applyButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName, buttonHorizontalMargin);
         applyButton:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, backgroundRect.widgetName, 50);
@@ -130,7 +130,7 @@ local function createTestOverlay(host)
         applyButton:setHeight(100);
         applyButton:setColorHexValue(0x403649);
         applyButton:setZOrder(2);
---[[
+
         applyButtonLabel:setParent(host, testOverlayCanvas.widgetName, applyButton.widgetName);
         applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, applyButton.widgetName, 0);
         applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, applyButton.widgetName, 0);
@@ -159,7 +159,7 @@ local function createTestOverlay(host)
         cancelButtonLabel:setTextColorHexValue(0xFFFFFF);
         cancelButtonLabel:setFontSize(20.0);
         cancelButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER);
-        cancelButtonLabel:setZOrder(3);]]
+        cancelButtonLabel:setZOrder(3);
     end)
 
     return testOverlay

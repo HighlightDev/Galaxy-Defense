@@ -50,39 +50,34 @@ function UiImage:new(host)
     return uiImageObj
 end
 
-local function this(ptr)
-    assert(ptr.typeName == "UiImage")
-    return ptr
-end
-
 function UiImage:updateFromReplicatorData(host)
     self:checkLuaProxyReady(host)
     if self.luaProxyReady then
         local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
         if replicatorJsonData ~= "" then
             local parsedJson = json.decode(replicatorJsonData)
-            this(self):extractUiItemBaseReplicatorData(parsedJson)
+            self:extractUiItemBaseReplicatorData(parsedJson)
             if parsedJson["texture_source"] ~= nil then
-                this(self).imageProperties.texture_source.value = parsedJson["texture_source"]
+                self.imageProperties.texture_source.value = parsedJson["texture_source"]
             end
             if parsedJson["opacity"] ~= nil then
-                this(self).imageProperties.opacity.value = parsedJson["opacity"]
+                self.imageProperties.opacity.value = parsedJson["opacity"]
             end
             if parsedJson["rotation_degrees"] ~= nil then
-                this(self).imageProperties.rotation_degrees.value = parsedJson["rotation_degrees"]
+                self.imageProperties.rotation_degrees.value = parsedJson["rotation_degrees"]
             end
             if parsedJson["is_flipped"] ~= nil then
-                this(self).imageProperties.is_flipped.value = parsedJson["is_flipped"]
+                self.imageProperties.is_flipped.value = parsedJson["is_flipped"]
             end
         end
     end
 end
 
 function UiImage:sendDataToReplicator(host)
-    local propertiesData, basePropsDirty = UiImage:getUiItemBaseDataToReplicator()
+    local propertiesData, basePropsDirty = self:getUiItemBaseDataToReplicator()
 
     local isPropsDirty = false
-    for key, value in pairs(this(self).imageProperties) do
+    for key, value in pairs(self.imageProperties) do
         if value.dirty then
             isPropsDirty = true
             propertiesData[tostring(key)] = value.value
@@ -99,33 +94,33 @@ end
 
 function UiImage:setTextureSource(textureSource)
     assert(textureSource ~= nil and type(textureSource) == "string")
-    if this(self).imageProperties.texture_source.value ~= textureSource then
-        this(self).imageProperties.texture_source.value = textureSource
-        this(self).imageProperties.texture_source.dirty = true
+    if self.imageProperties.texture_source.value ~= textureSource then
+        self.imageProperties.texture_source.value = textureSource
+        self.imageProperties.texture_source.dirty = true
     end
 end
 
 function UiImage:setOpacity(opacity)
     assert(opacity ~= nil and type(opacity) == "number")
-    if this(self).imageProperties.opacity.value ~= opacity then
-        this(self).imageProperties.opacity.value = opacity
-        this(self).imageProperties.opacity.dirty = true
+    if self.imageProperties.opacity.value ~= opacity then
+        self.imageProperties.opacity.value = opacity
+        self.imageProperties.opacity.dirty = true
     end
 end
 
 function UiImage:setRotationDegrees(rotationDegrees)
     assert(rotationDegrees ~= nil and type(rotationDegrees) == "number")
-    if this(self).imageProperties.rotation_degrees.value ~= rotationDegrees then
-        this(self).imageProperties.rotation_degrees.value = rotationDegrees
-        this(self).imageProperties.rotation_degrees.dirty = true
+    if self.imageProperties.rotation_degrees.value ~= rotationDegrees then
+        self.imageProperties.rotation_degrees.value = rotationDegrees
+        self.imageProperties.rotation_degrees.dirty = true
     end
 end
 
 function UiImage:setIsFlipped(isFlipped)
     assert(isFlipped ~= nil and type(isFlipped) == "boolean")
-    if this(self).imageProperties.is_flipped.value ~= isFlipped then
-        this(self).imageProperties.is_flipped.value = isFlipped
-        this(self).imageProperties.is_flipped.dirty = true
+    if self.imageProperties.is_flipped.value ~= isFlipped then
+        self.imageProperties.is_flipped.value = isFlipped
+        self.imageProperties.is_flipped.dirty = true
     end
 end
 
