@@ -56,8 +56,14 @@ function UiToggleButton:new(host, isStateOn)
     uiToggleObj.typeName = "UiToggleButton"
     uiToggleObj.luaProxyId = luaProxyId
     uiToggleObj.toggleButtonProperties = toggleButtonProperties
+    uiToggleObj.onStateChangedCallback = nil
 
     return uiToggleObj
+end
+
+function UiToggleButton:enableToggleButtonMouseInputReceiver(host)
+    assert(host ~= nil and type(host) == "userdata")
+    _EnableToggleButtonMouseInputReceiver(host, self.luaProxyId)
 end
 
 function UiToggleButton:updateFromReplicatorData(host)
@@ -69,7 +75,13 @@ function UiToggleButton:updateFromReplicatorData(host)
             self:extractUiItemBaseReplicatorData(parsedJson)
 
             if parsedJson["is_state_on"] ~= nil then
-                self.toggleButtonProperties.is_state_on.value = parsedJson["is_state_on"]
+                local newState = parsedJson["is_state_on"]
+                if self.toggleButtonProperties.is_state_on.value ~= newState then
+                    self.toggleButtonProperties.is_state_on.value = newState
+                    if self.onStateChangedCallback ~= nil then
+                        self.onStateChangedCallback(newState)
+                    end
+                end
             end
             if parsedJson["toggle_on_color"] ~= nil then
                 local colorArray = parsedJson["toggle_on_color"]
@@ -175,6 +187,11 @@ function UiToggleButton:setToggleOffColor(r, g, b)
     self.toggleButtonProperties.toggle_off_color.value.b = b
 
     self.toggleButtonProperties.toggle_off_color.dirty = true
+end
+
+function UiToggleButton:setOnIsStateChangedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.onStateChangedCallback = callback
 end
 
 return UiToggleButton

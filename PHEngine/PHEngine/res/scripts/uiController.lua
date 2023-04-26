@@ -77,6 +77,10 @@ local function createTestOverlay(host)
     local soundToggleButton = UiToggleButton:new(host, false)
     testOverlay:addWidget(soundToggleButton)
 
+    soundToggleButton:setOnIsStateChangedCallback(function (newState)
+        print("SoundButton:stateChanged => newState: " .. tostring(newState))
+    end)
+
     local soundLabel = UiLabel:new(host, "nimbus_mono")
     testOverlay:addWidget(soundLabel)
 
@@ -111,6 +115,7 @@ local function createTestOverlay(host)
         soundToggleButton:setZOrder(2)
         soundToggleButton:setToggleOnColorHexValue(0xFFB732)
         soundToggleButton:setToggleOffColorHexValue(0x403649)
+        soundToggleButton:enableToggleButtonMouseInputReceiver(host)
 
         soundLabel:setParent(host, testOverlayCanvas.widgetName, backgroundRect.widgetName)
         soundLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName, buttonHorizontalMargin)

@@ -32,8 +32,12 @@ namespace EngineCore
 
             bool mIsStateOn;
 
+            bool mIsMouseInputReceiverEnabled{false};
+
         public:
             explicit UiToggleButtonLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiToggleButton> &ownerUiItem);
+
+            void EnableMouseInputReceiver();
 
             void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
 

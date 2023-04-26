@@ -12,6 +12,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiItemBaseLuaProxy.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/UiToggleButtonLuaProxy.h"
 
 using namespace EngineCore;
 using namespace IO;
@@ -55,6 +56,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::InitializeCanvasInputSystem"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::InitializeCanvasInputSystem, this, std::placeholders::_1), "_InitializeCanvasInputSystem");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetUiWidgetName"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetUiWidgetName, this, std::placeholders::_1), "_GetUiWidgetName");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::SetUiWidgetParent"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::SetUiWidgetParent, this, std::placeholders::_1), "_SetUiWidgetParent");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver, this, std::placeholders::_1), "_EnableToggleButtonMouseInputReceiver");
       }
 
       std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<> &data)
@@ -195,6 +197,17 @@ namespace EngineCore
             const auto &canvasSp = std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
             assert(canvasSp);
             canvasSp->InitializeInputSystem();
+         }
+      }
+
+      void LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t/*lua proxy id*/>& data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            const auto &toggleButtonSp = std::dynamic_pointer_cast<UiToggleButtonLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+            assert(toggleButtonSp);
+            toggleButtonSp->EnableMouseInputReceiver();
          }
       }
    }

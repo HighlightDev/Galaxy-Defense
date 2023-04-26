@@ -131,14 +131,14 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
     end
     if parsedJsonData["anchors"] ~= nil then
         local anchorsTable = parsedJsonData["anchors"]
-        print("UiItemBase:extractUiItemBaseReplicatorData => anchors :")
+       -- print("UiItemBase:extractUiItemBaseReplicatorData => anchors :")
         for _, value in pairs(anchorsTable) do
             local srcAnchor = tonumber(value[1])
             local dstAnchor = tonumber(value[2][1])
             local dstUiItemWidgetName = tostring(value[2][2])
             local srcAnchorMargin = tonumber(value[2][3])
-            print(string.format("srcAnchor[%d]: {dstAnchor: %d, dstUiItemWidgetName: %s, srcAnchorMargin: %d}", srcAnchor,
-                dstAnchor, dstUiItemWidgetName, srcAnchorMargin))
+          --  print(string.format("srcAnchor[%d]: {dstAnchor: %d, dstUiItemWidgetName: %s, srcAnchorMargin: %d}", srcAnchor,
+            --    dstAnchor, dstUiItemWidgetName, srcAnchorMargin))
 
             if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchorMargin ~= nil then
                 self.properties.anchors.value[srcAnchor] = {

@@ -2,6 +2,7 @@
 #include "Core/GameCore/GUI/UiElements/UiToggleButton.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverToggleButton.h"
 
 #include <json/json.hpp>
 
@@ -49,6 +50,28 @@ namespace EngineCore
             jsonObj["opacity"] = mOpacity;
             jsonObj["is_state_on"] = mIsStateOn;
             return jsonObj.dump();
+        }
+
+        void UiToggleButtonLuaProxy::EnableMouseInputReceiver()
+        {
+            if (mIsMouseInputReceiverEnabled)
+                return;
+
+            static constexpr auto functionId = Hash64_CT("UiToggleButtonLuaProxy::EnableMouseInputReceiver");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                mIsMouseInputReceiverEnabled = true;
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+                    eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]()
+                    {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto &uiToggleButton = std::static_pointer_cast<::EngineCore::GUI::UiToggleButton>(replicator);
+                    assert(uiToggleButton);
+                    assert(uiToggleButton->GetParentCanvas().lock());
+                    uiToggleButton->SetMouseInputReceiver(std::make_shared<UiMouseInputReceiverToggleButton>(uiToggleButton)); });
+            }
         }
 
         void UiToggleButtonLuaProxy::SetToggleOnColor_FromGameThread(const glm::vec3 &color)

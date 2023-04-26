@@ -14,13 +14,13 @@ namespace EngineCore
 
         void UiMouseInputReceiverToggleButton::OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
-            if (mButtonToggledCallback)
+            if (const auto &toggleButtonSp = mOwnerWp.lock())
             {
                 if (EngineMath::TestPointInAABB(mouseInputArea.GetMin(), mouseInputArea.GetMax(), mouseCursorPosition))
                 {
-                    if (const auto &toggleButtonSp = mOwnerWp.lock())
+                    toggleButtonSp->ToggleButton();
+                    if (mButtonToggledCallback)
                     {
-                        toggleButtonSp->ToggleButton();
                         mButtonToggledCallback(mOwnerWp, toggleButtonSp->IsButtonStateOn());
                     }
                 }
