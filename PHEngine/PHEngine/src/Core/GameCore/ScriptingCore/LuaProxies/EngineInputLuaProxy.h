@@ -51,10 +51,6 @@ namespace EngineCore
 
             std::string GetGameThreadData() override;
 
-            void SetIsPressedKeyboardKeys(const bool isPressedKeys);
-
-            void SetIsReleasedKeyboardKeys(const bool isReleasedKeys);
-
             bool GetIsPressedKeyboardKeys() const;
 
             bool GetIsReleasedKeyboardKeys() const;

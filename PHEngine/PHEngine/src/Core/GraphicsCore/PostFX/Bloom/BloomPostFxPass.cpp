@@ -73,7 +73,7 @@ namespace Graphics
 
       // blur
       {
-         for (int32_t i = 0; i < mBlurPassCount; ++i)
+         for (uint32_t i = 0; i < mBlurPassCount; ++i)
          {
             mBloomFramebuffer->BindColor2Framebuffer(); // vertical blur target
             mBloomFramebuffer->BindColor1Texture(0);

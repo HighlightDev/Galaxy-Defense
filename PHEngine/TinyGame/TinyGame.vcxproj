@@ -93,7 +93,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include;$(SolutionDir)PHEngine\Dependencies\json\nlohmann\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLM_ENABLE_EXPERIMENTAL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\GLFW\include;$(SolutionDir)TinyGame\src;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include;$(SolutionDir)PHEngine\Dependencies\json\nlohmann\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -168,6 +168,8 @@
     <ClCompile Include="src\Implementation\Actors\BackgroundSpaceObjectActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\BlackHoleMissileActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\BombMissileActor.cpp" />
+    <ClCompile Include="src\Implementation\Actors\ElectroRayActor.cpp" />
+    <ClCompile Include="src\Implementation\Actors\ElectroRayChainActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\FreezingMissileActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\MissileActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\SpaceObjectActor.cpp" />
@@ -181,20 +183,31 @@
     <ClCompile Include="src\Implementation\Controllers\SpaceShipPlayerController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\UiController.cpp" />
     <ClCompile Include="src\Implementation\Events\MainPlayerActionEvent.cpp" />
+    <ClCompile Include="src\Implementation\Events\RayCollisionEvent.cpp" />
+    <ClCompile Include="src\Implementation\Events\SphereContactCollisionEvent.cpp" />
     <ClCompile Include="src\Implementation\Factories\AsteroidFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\BackgroundPlanetsFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\BlackHoleMissileFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\BombMissileFactory.cpp" />
+    <ClCompile Include="src\Implementation\Factories\ElectroRayChainFactory.cpp" />
+    <ClCompile Include="src\Implementation\Factories\ElectroRayFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\FreezingMissileFactory.cpp" />
     <ClCompile Include="src\Implementation\Factories\WeakSpaceShipFactory.cpp" />
+    <ClCompile Include="src\Implementation\LuaExecutors\LuaUiControllerExecutor.cpp" />
     <ClCompile Include="src\Implementation\MissileExplosionVisitors\BlackHoleExplosionVisitor.cpp" />
     <ClCompile Include="src\Implementation\MissileExplosionVisitors\BombExplosionVisitor.cpp" />
+    <ClCompile Include="src\Implementation\MissileExplosionVisitors\ElectroRayExplosionVisitor.cpp" />
     <ClCompile Include="src\Implementation\MissileExplosionVisitors\FreezingExplosionVisitor.cpp" />
     <ClCompile Include="src\Implementation\MissileExplosionVisitors\MissileExplosionVisitorBase.cpp" />
+    <ClCompile Include="src\Implementation\Modifiers\ElectroRayChainModifier.cpp" />
     <ClCompile Include="src\Implementation\Modifiers\FreezingModifier.cpp" />
     <ClCompile Include="src\Implementation\Modifiers\GravityModifier.cpp" />
+    <ClCompile Include="src\Implementation\Modifiers\ModifiersHandler.cpp" />
+    <ClCompile Include="src\Implementation\Pools\ElectroRayChainActorPool.cpp" />
     <ClCompile Include="src\Implementation\SpaceSceneCamera.cpp" />
     <ClCompile Include="src\Implementation\Ui\PauseMenuUi.cpp" />
+    <ClCompile Include="src\Implementation\Ui\PauseSettingsMenuUi.cpp" />
+    <ClCompile Include="src\Implementation\Ui\PlayerCombatUi.cpp" />
     <ClCompile Include="src\IntroLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,6 +216,8 @@
     <ClInclude Include="src\Implementation\Actors\BackgroundSpaceObjectActor.h" />
     <ClInclude Include="src\Implementation\Actors\BlackHoleMissileActor.h" />
     <ClInclude Include="src\Implementation\Actors\BombMissileActor.h" />
+    <ClInclude Include="src\Implementation\Actors\ElectroRayActor.h" />
+    <ClInclude Include="src\Implementation\Actors\ElectroRayChainActor.h" />
     <ClInclude Include="src\Implementation\Actors\FreezingMissileActor.h" />
     <ClInclude Include="src\Implementation\Actors\MissileActor.h" />
     <ClInclude Include="src\Implementation\Actors\SpaceObjectActor.h" />
@@ -217,26 +232,39 @@
     <ClInclude Include="src\Implementation\Controllers\SpaceShipPlayerController.h" />
     <ClInclude Include="src\Implementation\Controllers\UiController.h" />
     <ClInclude Include="src\Implementation\Events\MainPlayerActionEvent.h" />
+    <ClInclude Include="src\Implementation\Events\RayCollisionEvent.h" />
+    <ClInclude Include="src\Implementation\Events\SphereContactCollisionEvent.h" />
     <ClInclude Include="src\Implementation\Factories\AsteroidFactory.h" />
     <ClInclude Include="src\Implementation\Factories\BackgroundPlanetsFactory.h" />
     <ClInclude Include="src\Implementation\Factories\BlackHoleMissileFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\ElectroRayChainFactory.h" />
+    <ClInclude Include="src\Implementation\Factories\ElectroRayFactory.h" />
     <ClInclude Include="src\Implementation\Factories\FreezingMissileFactory.h" />
     <ClInclude Include="src\Implementation\Factories\ISpaceObjectFactory.h" />
     <ClInclude Include="src\Implementation\Factories\ISpaceShipFactory.h" />
     <ClInclude Include="src\Implementation\Factories\IMissileFactory.h" />
     <ClInclude Include="src\Implementation\Factories\BombMissileFactory.h" />
     <ClInclude Include="src\Implementation\Factories\WeakSpaceShipFactory.h" />
+    <ClInclude Include="src\Implementation\GameObjectsCollisionType.h" />
+    <ClInclude Include="src\Implementation\GameObjectsType.h" />
     <ClInclude Include="src\Implementation\ICameraTransformChangeNotifyable.h" />
+    <ClInclude Include="src\Implementation\LuaExecutors\LuaUiControllerExecutor.h" />
     <ClInclude Include="src\Implementation\MainPlayerActionEnum.h" />
     <ClInclude Include="src\Implementation\MissileExplosionVisitors\BlackHoleExplosionVisitor.h" />
     <ClInclude Include="src\Implementation\MissileExplosionVisitors\BombExplosionVisitor.h" />
+    <ClInclude Include="src\Implementation\MissileExplosionVisitors\ElectroRayExplosionVisitor.h" />
     <ClInclude Include="src\Implementation\MissileExplosionVisitors\FreezingExplosionVisitor.h" />
     <ClInclude Include="src\Implementation\MissileExplosionVisitors\MissileExplosionVisitorBase.h" />
+    <ClInclude Include="src\Implementation\Modifiers\ElectroRayChainModifier.h" />
     <ClInclude Include="src\Implementation\Modifiers\FreezingModifier.h" />
     <ClInclude Include="src\Implementation\Modifiers\GravityModifier.h" />
     <ClInclude Include="src\Implementation\Modifiers\IModifiable.h" />
+    <ClInclude Include="src\Implementation\Modifiers\ModifiersHandler.h" />
+    <ClInclude Include="src\Implementation\Pools\ElectroRayChainActorPool.h" />
     <ClInclude Include="src\Implementation\SpaceSceneCamera.h" />
     <ClInclude Include="src\Implementation\Ui\PauseMenuUi.h" />
+    <ClInclude Include="src\Implementation\Ui\PauseSettingsMenuUi.h" />
+    <ClInclude Include="src\Implementation\Ui\PlayerCombatUi.h" />
     <ClInclude Include="src\IntroLevel.h" />
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,20 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
+	local slash = package.config:sub(1,1)
+	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+	local pattern = ""
+	if slash == "/" then
+		pattern = "(.*/)"
+	elseif slash == "\\" then
+		pattern = "(.*\\)"
+	end
 	local str = debug.getinfo(2, "S").source:sub(2)
-	local pathToCurrentScript = str:match("(.*/)")
+	local pathToCurrentScript = str:match(pattern)
 	if pathToCurrentScript ~= nil then
-		package.path = package.path .. ";" .. pathToCurrentScript .. "?.lua"
+		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+		unixLikePath = unixLikePath:gsub("//", "/")
+		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
 	end
 end
 

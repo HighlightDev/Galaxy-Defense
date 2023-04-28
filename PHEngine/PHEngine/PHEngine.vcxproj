@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include;$(SolutionDir)PHEngine\Dependencies\json\nlohmann\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UndefinePreprocessorDefinitions>NO_LIT;</UndefinePreprocessorDefinitions>
@@ -102,7 +102,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)PHEngine\Dependencies\GLM\include;$(SolutionDir)PHEngine\Dependencies\Assimp\include;$(SolutionDir)PHEngine\src;$(SolutionDir)PHEngine\Dependencies\Lua54\include;$(SolutionDir)PHEngine\Dependencies\cereal\include;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include\BulletPhys;$(SolutionDir)PHEngine\Dependencies\BulletPhysics\include;$(SolutionDir)PHEngine\Dependencies\GLEW\include;$(SolutionDir)Logger;$(SolutionDir)PHEngine\Dependencies\STB\include;$(SolutionDir)PHEngine\Dependencies\OpenAL\include;$(SolutionDir)PHEngine\Dependencies\SndFile\include;$(SolutionDir)PHEngine\Dependencies\json\nlohmann\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>SHADING_MODEL_PBR;GLM_ENABLE_EXPERIMENTAL;DEBUG;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UndefinePreprocessorDefinitions>NO_LIT;</UndefinePreprocessorDefinitions>
@@ -283,7 +283,24 @@
     <None Include="Dependencies\GLM\include\glm\gtx\vector_angle.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\vector_query.inl" />
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
+    <None Include="res\scripts\core\3rdparty\json.lua" />
+    <None Include="res\scripts\core\commonUiWidgetCreator.lua" />
+    <None Include="res\scripts\core\engineEventsHolder.lua" />
+    <None Include="res\scripts\core\engineInputReceiver.lua" />
+    <None Include="res\scripts\core\keyboardKeys.lua" />
+    <None Include="res\scripts\core\uiBaseWidget.lua" />
+    <None Include="res\scripts\core\uiCanvas.lua" />
+    <None Include="res\scripts\core\uiImage.lua" />
+    <None Include="res\scripts\core\uiItem.lua" />
+    <None Include="res\scripts\core\uiItemBase.lua" />
+    <None Include="res\scripts\core\uiLabel.lua" />
+    <None Include="res\scripts\core\uiOverlay.lua" />
+    <None Include="res\scripts\core\uiOverlayManager.lua" />
+    <None Include="res\scripts\core\uiRectangle.lua" />
+    <None Include="res\scripts\core\uiToggleButton.lua" />
+    <None Include="res\scripts\core\vec3.lua" />
     <None Include="res\scripts\spaceLvl1.lua" />
+    <None Include="res\scripts\uiController.lua" />
     <None Include="res\shaders\composite_shaders\depthCollectFS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightFS.glsl" />
     <None Include="res\shaders\composite_shaders\depthCollectPointLightVS.glsl" />
@@ -345,7 +362,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Core\DebugCore\DebugUiController.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\RuntimeGeneratedMeshComponentCreator.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\FullscreenBillboardComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedLineComponent.h" />
+    <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedMeshPoolParameters.h" />
     <ClInclude Include="src\Core\GameCore\Event\ExitGameThreadEvent.h" />
+    <ClInclude Include="src\Core\GameCore\Event\LuaThreadEventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Event\PauseGameThreadEvent.h" />
     <ClInclude Include="src\Core\GameCore\FramebufferImplementation\BloomFramebuffer.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\FontHandler.h" />
@@ -354,6 +376,7 @@
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextCharacter.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextFieldProxy.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextFieldProxyType.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\Common\TextHorizontalAlignmentType.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextLine.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextMesh.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\TextMeshCreator.h" />
@@ -361,6 +384,9 @@
     <ClInclude Include="src\Core\GameCore\GUI\Common\UniqueFontTextIdGenerator.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\Word.h" />
     <ClInclude Include="src\Core\GameCore\GUI\HudText\HudTextField.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\IUiOverlay.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\OverlayManager.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\UiOverlay.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\IUiTransformable.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\Transform2D\BoundingBox2D.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\Transform2D\UiAnchorData.h" />
@@ -369,20 +395,58 @@
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiCanvas.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiHandler.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiImage.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiItem.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiItemBase.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiLabel.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiRectangle.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\UiElements\UiToggleButton.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\IUiMouseInputReceivable.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.h" />
     <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverToggleButton.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\BulletRayCastWithFilter.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\BulletSphereCollisionTestWithFilter.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\RayCastWithFilterAdapter.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\SphereCollisionTestWithFilterAdapter.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\EngineToLuaReplicatorBase.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutable.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaBindingHelper.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\ILuaFunctionable.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaCommonUiFunctions.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineEventsFunctions.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaHelper.h" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutorBase.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\EngineInputLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\LuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\OverlayManagerLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiCanvasLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiImageLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiItemBaseLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiItemLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiLabelLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiOverlayLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiRectangleLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiToggleButtonLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\ILuaScriptExecutable.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaEngineScriptExecutor.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaPlatformTraverseScriptExecutor.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaScriptExecutorBase.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaScriptProcessor.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetFactoryCreator.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetType.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\IReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiCanvasReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiImageReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiItemReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiLabelReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiOverlayReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiRectangleReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiToggleButtonReplicatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\BloomFxShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\ResolveFxColorShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\UiImageShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\UiRectangleShader.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\iVec2MaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\Vec2MaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\PostFX\Bloom\BloomConstants.h" />
     <ClInclude Include="src\Core\GraphicsCore\PostFX\FxColorResolver\FxColorResolver.h" />
     <ClInclude Include="src\Core\GraphicsCore\PostFX\PostFxRenderer.h" />
@@ -500,13 +564,16 @@
     <ClInclude Include="src\Core\GraphicsCore\RenderData\ParticleSystemRenderData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Renderer\PrimitiveSorter.h" />
     <ClInclude Include="src\Core\GraphicsCore\Renderer\ResolvedSceneFramebuffer.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\FullscreenBillboardSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\ParticleSystemSceneProxy.h" />
+    <ClInclude Include="src\Core\GraphicsCore\SceneProxy\RuntimeGeneratedLineSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneViewInfo\ViewPerspectiveInfo.h" />
     <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiCanvasSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiImageSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiLabelSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiRectangleSceneProxy.h" />
     <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiSceneProxyBase.h" />
+    <ClInclude Include="src\Core\GraphicsCore\UiSceneProxy\UiToggleButtonSceneProxy.h" />
     <ClInclude Include="src\Core\IoCore\AudioLoaderCore\AudioResourceInfo.h" />
     <ClInclude Include="src\Core\IoCore\AudioLoaderCore\SndFileLoader\SndFileLoader.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.h" />
@@ -529,11 +596,13 @@
     <ClInclude Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceCreator.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\FontMeshAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\ParticlesAllocationPolicy.h" />
+    <ClInclude Include="src\Core\ResourceManagerCore\Policy\RuntimeGeneratedMeshAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\SoundBufferAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\SoundMemoryChunkAllocationPolicy.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\FontMeshPool.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\ITextureObtainable.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\ParticlesPool.h" />
+    <ClInclude Include="src\Core\ResourceManagerCore\Pool\RuntimeGeneratedMeshPool.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\SoundBufferPool.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\SoundMemoryChunkPool.h" />
     <ClInclude Include="src\Core\ResourceManagerCore\RenderTargetStorage.h" />
@@ -560,7 +629,6 @@
     <ClInclude Include="src\Core\GameCore\Serialize\SerializeData\SerializeDataContainer.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\FloatTweenController.h" />
     <ClInclude Include="src\Core\GameCore\EngineObjectProperty.h" />
-    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaActorFunctions.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\BindingAttachmentBuilder.h" />
     <ClInclude Include="src\Core\GameCore\Tweener\TweenerParser.h" />
     <ClInclude Include="src\Core\CommonCore\XMLParserHelper.h" />
@@ -1003,6 +1071,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Core\DebugCore\DebugUiController.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\FullscreenBillboardComponent.cpp" />
+    <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedLineComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\BloomFramebuffer.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\Common\FontHandler.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\Common\FontMetaFile.cpp" />
@@ -1016,23 +1086,58 @@
     <ClCompile Include="src\Core\GameCore\GUI\Common\UniqueFontTextIdGenerator.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\Common\Word.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\HudText\HudTextField.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\OverlayManager.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\UiOverlay.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\Transform2D\BoundingBox2D.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\Transform2D\UiAnchorData.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\Transform2D\UiAnchorPositionHelper.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiCanvas.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiHandler.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiImage.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiItem.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiItemBase.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiLabel.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiRectangle.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\UiElements\UiToggleButton.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiInputSystem.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverBase.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\UiInputSystem\UiMouseInputReceiverToggleButton.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\CollisionTestImplementation\BulletRayCastWithFilter.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\CollisionTestImplementation\BulletSphereCollisionTestWithFilter.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\CollisionTestImplementation\RayCastWithFilterAdapter.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\CollisionTestImplementation\SphereCollisionTestWithFilterAdapter.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\EngineToLuaReplicatorBase.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaCommonUiFunctions.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineEventsFunctions.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaHelper.cpp" />
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutorBase.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\EngineInputLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\LuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\OverlayManagerLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiCanvasLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiImageLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiItemBaseLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiItemLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiLabelLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiOverlayLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiRectangleLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiToggleButtonLuaProxy.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaEngineScriptExecutor.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaPlatformTraverseScriptExecutor.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaScriptExecutorBase.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptProcessor.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetFactoryCreator.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiCanvasReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiImageReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiItemReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiLabelReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiOverlayReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiRectangleReplicatorFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiToggleButtonReplicatorFactory.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\BloomFxShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\ResolveFxColorShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\UiImageShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\UiRectangleShader.cpp" />
+    <ClCompile Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\StaticMeshVertexFactory.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\ShaderType.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\PostFX\Bloom\BloomConstants.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\PostFX\FxColorResolver\FxColorResolver.cpp" />
@@ -1100,12 +1205,15 @@
     <ClCompile Include="src\Core\GraphicsCore\Material\MaterialNodeDecorator.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\PrimitiveSorter.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\Renderer\ResolvedSceneFramebuffer.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\FullscreenBillboardSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\ParticleSystemSceneProxy.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\SceneProxy\RuntimeGeneratedLineSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiCanvasSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiImageSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiLabelSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiRectangleSceneProxy.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiSceneProxyBase.cpp" />
+    <ClCompile Include="src\Core\GraphicsCore\UiSceneProxy\UiToggleButtonSceneProxy.cpp" />
     <ClCompile Include="src\Core\IoCore\AudioLoaderCore\SndFileLoader\SndFileLoader.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResourceController.cpp" />
     <ClCompile Include="src\Core\GameCore\FramebufferImplementation\PlanarReflectionFramebuffer.cpp" />
@@ -1120,10 +1228,12 @@
     <ClCompile Include="src\Core\ResourceManagerCore\DeferredResources\DeferredResource.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\FontMeshAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\ParticlesAllocationPolicy.cpp" />
+    <ClCompile Include="src\Core\ResourceManagerCore\Policy\RuntimeGeneratedMeshAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\SoundBufferAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\SoundMemoryChunkAllocationPolicy.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\FontMeshPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\ParticlesPool.cpp" />
+    <ClCompile Include="src\Core\ResourceManagerCore\Pool\RuntimeGeneratedMeshPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\SoundBufferPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\SoundMemoryChunkPool.cpp" />
     <ClCompile Include="src\Core\ResourceManagerCore\RenderTargetStorage.cpp" />
@@ -1145,7 +1255,6 @@
     <ClCompile Include="src\Core\GameCore\Components\PlatformTraverseComponent.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaPlatformTraverseComponentFunctions.cpp" />
     <ClCompile Include="src\Core\GameCore\Tweener\FloatTweenController.cpp" />
-    <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaActorFunctions.cpp" />
     <ClCompile Include="src\Core\GameCore\Tweener\TweenerParser.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineObjectsCreatorFunctions.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.cpp" />

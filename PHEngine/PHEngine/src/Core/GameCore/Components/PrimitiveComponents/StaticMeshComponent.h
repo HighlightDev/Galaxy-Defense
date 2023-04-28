@@ -19,7 +19,7 @@ namespace EngineCore
 		StaticMeshRenderData m_renderData;
 
 	public:
-		StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData &renderData);
+		StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData renderData);
 
 		~StaticMeshComponent() override;
 

@@ -69,17 +69,17 @@ namespace EngineCore
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data)
         {
-            // todo: to be implemented lated
+            // todo: to be implemented later
         }
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseScrollEvent::EventData_t &data)
         {
-            // todo: to be implemented lated
+            // todo: to be implemented later
         }
 
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data)
         {
-            // todo: to be implemented lated
+            // todo: to be implemented later
         }
 
         bool EngineInputLuaProxy::GetIsPressedKeyboardKeys() const

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <atomic>
+#include <string>
 
 namespace EngineCore
 {

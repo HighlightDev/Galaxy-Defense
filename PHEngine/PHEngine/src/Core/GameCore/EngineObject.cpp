@@ -6,7 +6,7 @@
 namespace EngineCore
 {
 
-   uint64_t EngineObject::mTotalObjectIdCounter = 0;
+   uint32_t EngineObject::mTotalObjectIdCounter = 0;
 
    EngineObject::EngineObject(const std::string& gameObjectName)
       : mObjectId(mTotalObjectIdCounter++)
@@ -14,7 +14,7 @@ namespace EngineCore
    {
    }
 
-   uint64_t EngineObject::GetObjectId() const
+   uint32_t EngineObject::GetObjectId() const
    {
       return mObjectId;
    }
