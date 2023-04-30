@@ -2,6 +2,8 @@
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
+#include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 
 #include <json/json.hpp>
 
@@ -90,6 +92,24 @@ namespace EngineCore
             }
         }
 
+        void UiItemBaseLuaProxy::SetInputPressState_FromGameThread(const eLuaMouseInputPressState pressState)
+        {
+           if (mInputPressState != pressState)
+           {
+              mInputPressState = pressState;
+              mIsMouseInputDataDirty = true;
+           }
+        }
+
+        void UiItemBaseLuaProxy::SetInputCursorHoverState_FromGameThread(const eLuaMouseInputCursorHoverState cursorHoveState)
+        {
+           if (mInputCursorHoverState != cursorHoveState)
+           {
+              mInputCursorHoverState = cursorHoveState;
+              mIsMouseInputDataDirty = true;
+           }
+        }
+
         void UiItemBaseLuaProxy::SetParent(const std::string& canvasName, const std::string &parentName)
         {
             static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetParent");
@@ -145,9 +165,118 @@ namespace EngineCore
             return jsonObj.dump();
         }
 
+        std::string UiItemBaseLuaProxy::GetMouseInputData()
+        {
+           nlohmann::json jsonObj;
+           jsonObj["input_press_state"] = mInputPressState;
+           jsonObj["input_cursor_hover_state"] = mInputCursorHoverState;
+
+           mIsMouseInputDataDirty = false;
+           return jsonObj.dump();
+        }
+
         bool UiItemBaseLuaProxy::IsVisible() const
         {
             return mIsVisible;
+        }
+
+        bool UiItemBaseLuaProxy::IsMouseInputDataDirty() const
+        {
+           return mIsMouseInputDataDirty;
+        }
+
+        void UiItemBaseLuaProxy::EnableMouseInputReceiverBase()
+        {
+           if (mIsMouseInputReceiverEnabled)
+              return;
+
+           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::EnableMouseInputReceiver");
+           if (const auto sceneSp = mSceneWp.lock())
+           {
+              mIsMouseInputReceiverEnabled = true;
+              const auto replicatorId = GetReplicatorId();
+              sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(
+                 eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]()
+              {
+                 const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                 assert(replicator);
+                 const auto &uiItemBase = std::static_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
+                 assert(uiItemBase);
+                 const auto mouseInputReceiverBase = std::make_shared<UiMouseInputReceiverBase>(uiItemBase);
+                 uiItemBase->SetMouseInputReceiver(mouseInputReceiverBase);
+                 mouseInputReceiverBase->SetMousePressedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
+                    if (const auto senderSp = eventSender.lock())
+                    {
+                       if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
+                       {
+                          static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputPressState");
+                          luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, senderSp->GetReplicatorId(), functionId, 
+                             [luaScriptProcessorSp, luaProxyId]() {
+                             if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                             {
+                                baseLuaProxySp->SetInputPressState_FromGameThread(eLuaMouseInputPressState::MOUSE_BUTTON_PRESSED);
+                             }
+                          });
+                       }
+                    }
+                 });
+
+                 mouseInputReceiverBase->SetMouseReleasedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
+                    if (const auto senderSp = eventSender.lock())
+                    {
+                       if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
+                       {
+                          static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputPressState");
+                          luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, senderSp->GetReplicatorId(), functionId,
+                             [luaScriptProcessorSp, luaProxyId]() {
+                             if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                             {
+                                baseLuaProxySp->SetInputPressState_FromGameThread(eLuaMouseInputPressState::MOUSE_BUTTON_RELEASED);
+                             }
+                          });
+                       }
+                    }
+                 });
+
+                 mouseInputReceiverBase->SetMouseHoverEnteredCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
+                    if (const auto senderSp = eventSender.lock())
+                    {
+                       if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
+                       {
+                          static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputCursorHoverState");
+                          luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, senderSp->GetReplicatorId(), functionId,
+                             [luaScriptProcessorSp, luaProxyId]() {
+                             if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                             {
+                                baseLuaProxySp->SetInputCursorHoverState_FromGameThread(eLuaMouseInputCursorHoverState::CURSOR_HOVER_ENTERED);
+                             }
+                          });
+                       }
+                    }
+                 });
+
+                 mouseInputReceiverBase->SetMouseHoverLeavedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
+                    if (const auto senderSp = eventSender.lock())
+                    {
+                       if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
+                       {
+                          static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputCursorHoverState");
+                          luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(
+                             eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, senderSp->GetReplicatorId(), functionId,
+                             [luaScriptProcessorSp, luaProxyId]() {
+                             if (const auto& baseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                             {
+                                baseLuaProxySp->SetInputCursorHoverState_FromGameThread(eLuaMouseInputCursorHoverState::CURSOR_HOVER_LEAVED);
+                             }
+                          });
+                       }
+                    }
+                 });
+              });
+           }
         }
     }
 }

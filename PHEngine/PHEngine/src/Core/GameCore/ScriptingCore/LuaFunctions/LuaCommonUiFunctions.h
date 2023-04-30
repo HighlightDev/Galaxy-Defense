@@ -56,7 +56,11 @@ namespace EngineCore
 
          std::string GetGameThreadData(const std::tuple<int32_t/*lua proxy id*/>& data);
 
+         std::string GetMouseInputData(const std::tuple<int32_t/*lua proxy id*/>& data);
+
          void InitializeCanvasInputSystem(const std::tuple<int32_t/*lua proxy id*/>& data);
+
+         void EnableMouseInputReceiverBase(const std::tuple<int32_t/*lua proxy id*/>& data);
 
          void EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t/*lua proxy id*/>& data);
 

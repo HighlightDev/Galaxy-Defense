@@ -2618,6 +2618,9 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\RuntimeGeneratedMeshPool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\Common\LuaMouseInputState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">

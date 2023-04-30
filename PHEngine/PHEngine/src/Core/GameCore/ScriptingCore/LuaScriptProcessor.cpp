@@ -53,7 +53,7 @@ namespace EngineCore
             return nullptr;
         }
 
-        const InterThreadCommunicationMgr &LuaScriptProcessor::GetInterThreadCommunicationManager() const
+        InterThreadCommunicationMgr &LuaScriptProcessor::GetInterThreadCommunicationManager()
         {
             return m_interThreadMgr;
         }

@@ -3,6 +3,7 @@
 #include "LuaProxy.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorData.h"
+#include "Core/GameCore/ScriptingCore/Common/LuaMouseInputState.h"
 
 #include <string>
 #include <unordered_map>
@@ -41,6 +42,16 @@ namespace EngineCore
             
             int32_t mVerticalCenterOffset;
 
+        protected:
+           
+           bool mIsMouseInputDataDirty{ false };
+
+            eLuaMouseInputPressState mInputPressState{ eLuaMouseInputPressState::MOUSE_BUTTON_RELEASED };
+
+            eLuaMouseInputCursorHoverState mInputCursorHoverState{ eLuaMouseInputCursorHoverState::CURSOR_HOVER_LEAVED };
+
+            bool mIsMouseInputReceiverEnabled{ false };
+
         public:
             explicit UiItemBaseLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &ownerUiItemBase);
 
@@ -62,11 +73,21 @@ namespace EngineCore
 
             void SetVerticalCenterOffset_FromGameThread(const int32_t verticalCenterOffset);
 
+            void SetInputPressState_FromGameThread(const eLuaMouseInputPressState cursorHoverState);
+
+            void SetInputCursorHoverState_FromGameThread(const eLuaMouseInputCursorHoverState pressState);
+
             void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
 
             std::string GetGameThreadData() override;
 
+            std::string GetMouseInputData();
+
             bool IsVisible() const;
+
+            void EnableMouseInputReceiverBase();
+
+            bool IsMouseInputDataDirty() const;
         };
     }
 }

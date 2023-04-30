@@ -57,6 +57,9 @@ function UiOverlay:updateFromReplicatorData(host)
 
     for _, value in pairs(self.widgets) do
         value:updateFromReplicatorData(host)
+		if value.updateFromReplicatorMouseInputData ~= nil then
+			value:updateFromReplicatorMouseInputData(host)
+		end
     end
 end
 

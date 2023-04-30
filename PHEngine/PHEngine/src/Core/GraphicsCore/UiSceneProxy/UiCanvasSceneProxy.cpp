@@ -97,9 +97,12 @@ namespace Graphics
 
         std::shared_ptr<UiSceneProxyBase> UiCanvasSceneProxy::GetSceneProxyById(const size_t uid) const
         {
-            const auto it = std::find_if(mUiProxies.begin(), mUiProxies.end(), [uid](const auto &proxy)
-                                         { return uid == proxy->GetUiItemUId(); });
-            return (mUiProxies.end() != it ? *it : nullptr);
+           for (const auto proxy : mUiProxies)
+           {
+              if (uid == proxy->GetUiItemUId())
+                 return proxy;
+           }
+           return nullptr;
         }
 
         void UiCanvasSceneProxy::SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler> &fontHandlerWp)

@@ -69,7 +69,6 @@ namespace EngineCore
                     assert(replicator);
                     const auto &uiToggleButton = std::static_pointer_cast<::EngineCore::GUI::UiToggleButton>(replicator);
                     assert(uiToggleButton);
-                    assert(uiToggleButton->GetParentCanvas().lock());
                     uiToggleButton->SetMouseInputReceiver(std::make_shared<UiMouseInputReceiverToggleButton>(uiToggleButton)); });
             }
         }

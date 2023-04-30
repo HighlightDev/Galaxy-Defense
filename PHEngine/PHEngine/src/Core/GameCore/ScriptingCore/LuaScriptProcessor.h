@@ -56,7 +56,7 @@ namespace EngineCore
 
             void AddLuaProxy(const std::shared_ptr<LuaProxy> &luaProxy);
 
-            const InterThreadCommunicationMgr &GetInterThreadCommunicationManager() const;
+            InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
         };
     }
 }

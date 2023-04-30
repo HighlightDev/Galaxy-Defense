@@ -114,7 +114,6 @@ end
 function UiRectangle:setColor(r, g, b)
     assert(r ~= nil and type(r) == "number" and g ~= nil and type(g) == "number" and b ~= nil and type(b) == "number" and
         r >= 0.0 and r <= 1.0 and g >= 0.0 and g <= 1.0 and b >= 0.0 and b <= 1.0)
-
     self.rectangleProperties.color.value.r = r
     self.rectangleProperties.color.value.g = g
     self.rectangleProperties.color.value.b = b

@@ -57,6 +57,8 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetUiWidgetName"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetUiWidgetName, this, std::placeholders::_1), "_GetUiWidgetName");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::SetUiWidgetParent"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::SetUiWidgetParent, this, std::placeholders::_1), "_SetUiWidgetParent");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver, this, std::placeholders::_1), "_EnableToggleButtonMouseInputReceiver");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableMouseInputReceiverBase"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::EnableMouseInputReceiverBase, this, std::placeholders::_1), "_EnableMouseInputReceiverBase");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetMouseInputData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetMouseInputData, this, std::placeholders::_1), "_GetMouseInputData");
       }
 
       std::string LuaCommonUiFunctions::GetCurrentOverlayName(const std::tuple<> &data)
@@ -189,6 +191,22 @@ namespace EngineCore
          return "";
       }
 
+      std::string LuaCommonUiFunctions::GetMouseInputData(const std::tuple<int32_t /*lua proxy id*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            if (const auto &luaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId)))
+            {
+               if (luaProxySp->IsMouseInputDataDirty())
+               {
+                  return luaProxySp->GetMouseInputData();
+               }
+            }
+         }
+         return "";
+      }
+
       void LuaCommonUiFunctions::InitializeCanvasInputSystem(const std::tuple<int32_t /*lua proxy id*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
@@ -208,6 +226,17 @@ namespace EngineCore
             const auto &toggleButtonSp = std::dynamic_pointer_cast<UiToggleButtonLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
             assert(toggleButtonSp);
             toggleButtonSp->EnableMouseInputReceiver();
+         }
+      }
+
+      void LuaCommonUiFunctions::EnableMouseInputReceiverBase(const std::tuple<int32_t/*lua proxy id*/>& data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            const auto &uiItemBaseSp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+            assert(uiItemBaseSp);
+            uiItemBaseSp->EnableMouseInputReceiverBase();
          }
       }
    }

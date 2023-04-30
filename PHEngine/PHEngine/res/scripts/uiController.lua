@@ -86,7 +86,6 @@ local function createTestOverlay(host)
 
     local soundToggleButton = UiToggleButton:new(host, false)
     testOverlay:addWidget(soundToggleButton)
-
     soundToggleButton:setOnIsStateChangedCallback(function (newState)
         print("SoundButton:stateChanged => newState: " .. tostring(newState))
     end)
@@ -102,6 +101,14 @@ local function createTestOverlay(host)
 
     local cancelButton = UiRectangle:new(host)
     testOverlay:addWidget(cancelButton)
+	cancelButton:setOnMouseInputCursorHoverStateChangedCallback(function (newState)
+        print("CancelButton:hover stateChanged => newState: " .. tostring(newState))
+		if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+			cancelButton:setColorHexValue(0xFF0000)
+		else
+			cancelButton:setColorHexValue(0x403649)
+		end
+    end)
 
     local cancelButtonLabel = UiLabel:new(host, "nimbus_mono")
     testOverlay:addWidget(cancelButtonLabel)
@@ -164,6 +171,7 @@ local function createTestOverlay(host)
         cancelButton:setHeight(100);
         cancelButton:setColorHexValue(0x403649);
         cancelButton:setZOrder(2);
+		cancelButton:enableMouseInputReceiverBase(host)
 
         cancelButtonLabel:setParent(host, testOverlayCanvas.widgetName, cancelButton.widgetName);
         cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, cancelButton.widgetName, 0);

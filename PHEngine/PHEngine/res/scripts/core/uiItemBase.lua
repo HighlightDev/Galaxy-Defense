@@ -22,6 +22,7 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiBaseWidget = require("core/uiBaseWidget")
+local json = require("core/3rdparty/json")
 
 UiItemBase = UiBaseWidget:new()
 UiItemBase.UiAnchorType = {
@@ -32,6 +33,16 @@ UiItemBase.UiAnchorType = {
     BOTTOM = 4,
     VERTICAL_CENTER = 5,
     HORIZONTAL_CENTER = 6
+}
+
+UiItemBase.UiMouseInputPressState = {
+	RELEASED = 0,
+	PRESSED = 1
+}
+
+UiItemBase.UiMouseInputCursorHoverState = {
+	LEAVED = 0,
+	ENTERED = 1
 }
 
 function UiItemBase:new()
@@ -103,6 +114,10 @@ function UiItemBase:new()
     uiItemBaseObj.typeName = "UiItemBase"
     uiItemBaseObj.uiItemBaseClass = self
     uiItemBaseObj.properties = uiItemBaseProperties
+	uiItemBaseObj.mouseInputPressState = UiItemBase.UiMouseInputPressState.RELEASED
+	uiItemBaseObj.mouseInputCursorHoverState = UiItemBase.UiMouseInputCursorHoverState.LEAVED
+	uiItemBaseObj.onMouseInputPressStateChangedCallback = nil
+	uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
 
     return uiItemBaseObj
 end
@@ -175,6 +190,34 @@ function UiItemBase:getUiItemBaseDataToReplicator()
     return propertiesData, isPropsDirty
 end
 
+function UiItemBase:updateFromReplicatorMouseInputData(host)
+	assert(host ~= nil and type(host) == "userdata")
+	if self.luaProxyReady then
+		local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
+		if replicatorMouseInputJsonData ~= "" then
+            local parsedJson = json.decode(replicatorMouseInputJsonData)
+			if parsedJson["input_press_state"] ~= nil then
+				local newState = tonumber(parsedJson["input_press_state"])
+				if newState ~= self.mouseInputPressState then
+					self.mouseInputPressState = newState
+					if self.onMouseInputPressStateChangedCallback ~= nil then
+						self.onMouseInputPressStateChangedCallback(newState)
+					end
+				end
+			end
+			if parsedJson["input_cursor_hover_state"] ~= nil then
+				local newState = tonumber(parsedJson["input_cursor_hover_state"])
+				if newState ~= self.mouseInputCursorHoverState then
+					self.mouseInputCursorHoverState = newState
+					if self.onMouseInputCursorHoverStateChangedCallback ~= nil then
+						self.onMouseInputCursorHoverStateChangedCallback(newState)
+					end
+				end
+			end
+		end
+	end
+end
+
 function UiItemBase:setIsVisible(isVisible)
     if self.properties.visible.value ~= isVisible then
         self.properties.visible.value = isVisible
@@ -224,6 +267,21 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
+end
+
+function UiItemBase:enableMouseInputReceiverBase(host)
+    assert(host ~= nil and type(host) == "userdata")
+    _EnableMouseInputReceiverBase(host, self.luaProxyId)
+end
+
+function UiItemBase:setOnMouseInputPressStateChangedCallback(callback)
+	assert(callback ~= nil and type(callback) == "function")
+	self.onMouseInputPressStateChangedCallback = callback
+end
+
+function UiItemBase:setOnMouseInputCursorHoverStateChangedCallback(callback)
+	assert(callback ~= nil and type(callback) == "function")
+	self.onMouseInputCursorHoverStateChangedCallback = callback
 end
 
 return UiItemBase

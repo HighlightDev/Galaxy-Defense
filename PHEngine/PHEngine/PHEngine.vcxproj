@@ -408,6 +408,7 @@
     <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\BulletSphereCollisionTestWithFilter.h" />
     <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\RayCastWithFilterAdapter.h" />
     <ClInclude Include="src\Core\GameCore\Physics\CollisionTestImplementation\SphereCollisionTestWithFilterAdapter.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\Common\LuaMouseInputState.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\EngineToLuaReplicatorBase.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ILuaScriptExecutable.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaBindingHelper.h" />
