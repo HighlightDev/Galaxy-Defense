@@ -18,6 +18,8 @@
 #include "Core/GraphicsCore/SceneProxy/ParticleSystemSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/PrimitiveSorter.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
+#include "Core/GameCore/GUI/UiElements/UiCanvas.h"
+#include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -36,6 +38,7 @@ using namespace Graphics::OpenGL;
 using namespace EngineUtility;
 using namespace EngineCore;
 using namespace IO;
+using namespace EngineCore::GUI;
 
 namespace Graphics
 {
@@ -1448,6 +1451,18 @@ namespace Graphics
          sceneProxy->SetCanvasSceneProxy((*canvasIt));
          (*canvasIt)->AddUiSceneProxy(sceneProxy);
          sceneProxy->OnSceneProxyRegistered();
+
+         if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
+         {
+            static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiSceneProxy");
+            m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, sceneProxy->GetUiItemUId(), functionId, [sceneSp, canvasUId, uiItemUId = sceneProxy->GetUiItemUId()]() { 
+               const auto canvasOwnerSp = sceneSp->GetUiHandler()->GetCanvasByUId(canvasUId);
+               assert(canvasOwnerSp);
+               const auto uiItem = std::dynamic_pointer_cast<UiItemBase>(canvasOwnerSp->TryFindHierarchyChildByUId(uiItemUId));
+               assert(uiItem);
+               uiItem->SetIsSceneProxyReady(true);
+            });
+         }
       }
 
       void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
