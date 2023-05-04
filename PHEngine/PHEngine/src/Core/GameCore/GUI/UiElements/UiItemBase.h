@@ -63,6 +63,8 @@ namespace EngineCore
 
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
+            bool mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
+
             bool mIsVisible;
 
             bool mIsTransformDirty;
@@ -79,6 +81,8 @@ namespace EngineCore
             void SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
             void SetParents(const std::string& uiCanvasName, const std::string& uiWidgetParentName);
+
+            void SetIsSceneProxyReady(const bool isSceneProxyReady);
 
             virtual void OnRegistered() = 0;
 
@@ -146,6 +150,7 @@ namespace EngineCore
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName) override;
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
             std::shared_ptr<IUiTransformable> TryFindHierarchyChildByName(const std::string &name) const;
+            std::shared_ptr<IUiTransformable> TryFindHierarchyChildByUId(const uint32_t uid) const;
 
             // Implementation of ITickable
             void Tick(const float deltaTime) override;

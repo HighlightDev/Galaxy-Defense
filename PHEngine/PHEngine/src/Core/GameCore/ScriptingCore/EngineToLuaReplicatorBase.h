@@ -29,7 +29,7 @@ namespace EngineCore
 
             virtual std::shared_ptr<LuaProxy> ReplicateLuaProxy() = 0;
 
-            virtual void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) = 0; 
+            virtual void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) = 0;
 
             int32_t GetReplicatorId() const;
 

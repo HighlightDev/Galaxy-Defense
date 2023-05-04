@@ -299,6 +299,22 @@ namespace EngineCore
             return nullptr;
         }
 
+        std::shared_ptr<IUiTransformable> UiCanvas::TryFindHierarchyChildByUId(const uint32_t uid) const
+        {
+            for (const auto &child : mChildren)
+            {
+                if (child->GetUId() == uid)
+                {
+                    return child;
+                }
+                else if (const auto foundChild = child->TryFindHierarchyChildByUId(uid))
+                {
+                    return foundChild;
+                }
+            }
+            return nullptr;
+        }
+
         std::vector<std::shared_ptr<UiItemBase>> UiCanvas::GetDependentByTransformChildren(const std::string &nameOfChangedTransformUiItem) const
         {
             std::vector<std::shared_ptr<UiItemBase>> result;

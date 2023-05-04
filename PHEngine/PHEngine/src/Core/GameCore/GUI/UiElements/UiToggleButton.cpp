@@ -185,29 +185,33 @@ namespace EngineCore
         void UiToggleButton::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiToggleButton::SyncDataOnRenderThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsSceneProxyReady)
             {
-                if (const auto &canvasSp = GetParentCanvas().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &canvasSp = GetParentCanvas().lock())
                     {
-                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                        if (uiSceneProxy)
+                        if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId(), toggleOnColor = mToggleOnColor, toggleOffColor = mToggleOffColor, isStateOn = mIsStateOn, opacity = mOpacity]()
                                                                                                 {
-                                const auto& toggleButtonSceneProxy = std::static_pointer_cast<UiToggleButtonSceneProxy>(uiSceneProxy);
-                                toggleButtonSceneProxy->SetToggleOnColor(mToggleOnColor);
-                                toggleButtonSceneProxy->SetToggleOffColor(mToggleOffColor);
-                                toggleButtonSceneProxy->SetOpacity(mOpacity);
-                                toggleButtonSceneProxy->SetState(mIsStateOn); });
-                        }
-                        else
-                        {
-                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                                if (uiSceneProxy)
+                                {
+                                    const auto& toggleButtonSceneProxy = std::static_pointer_cast<UiToggleButtonSceneProxy>(uiSceneProxy);
+                                    toggleButtonSceneProxy->SetToggleOnColor(toggleOnColor);
+                                    toggleButtonSceneProxy->SetToggleOffColor(toggleOffColor);
+                                    toggleButtonSceneProxy->SetOpacity(opacity);
+                                    toggleButtonSceneProxy->SetState(isStateOn); 
+                                } });
                         }
                     }
                 }
+            }
+            else
+            {
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
             }
         }
 

@@ -104,6 +104,7 @@ namespace EngineCore
             bool IsInputSystemInitialized() const;
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
             std::shared_ptr<IUiTransformable> TryFindHierarchyChildByName(const std::string &name) const;
+            std::shared_ptr<IUiTransformable> TryFindHierarchyChildByUId(const uint32_t uid) const;
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
             void SetZOrder(const size_t z_order) override;

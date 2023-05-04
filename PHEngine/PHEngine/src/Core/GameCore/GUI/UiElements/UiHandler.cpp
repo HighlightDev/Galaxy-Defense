@@ -64,5 +64,14 @@ namespace EngineCore
 
             return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
         }
+
+        std::shared_ptr<UiCanvas> UiHandler::GetCanvasByUId(const uint32_t canvasId) const
+        {
+            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasId](const auto& canvas) {
+                return canvasId == canvas->GetUId();
+            });
+
+            return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
+        }
     }
 }

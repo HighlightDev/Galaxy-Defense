@@ -261,31 +261,35 @@ namespace EngineCore
         void UiLabel::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnRenderThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsSceneProxyReady)
             {
-                if (const auto &canvasSp = GetParentCanvas().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &canvasSp = GetParentCanvas().lock())
                     {
-                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                        if (uiSceneProxy)
+                        if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUid = GetUId(), canvasUId = canvasSp->GetUId(), opacity = mOpacity, text = mText, textLineWidth = mTextLineWidth, fontSize = mFontSize, textColor = mTextColor, textHorizontalAlignment = mTextHorizontalAlignment]()
                                                                                                 {
+                            const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUid, canvasUId);
+                            if (uiSceneProxy)
+                            {
                                 const auto& labelSceneProxy = std::static_pointer_cast<UiLabelSceneProxy>(uiSceneProxy);
-                                labelSceneProxy->SetOpacity(mOpacity);
-                                labelSceneProxy->SetText(mText);
-                                labelSceneProxy->SetTextLineWidth(mTextLineWidth);
-                                labelSceneProxy->SetFontSize(mFontSize);
-                                labelSceneProxy->SetTextColor(mTextColor);
-                                labelSceneProxy->SetTextHorizontalAlignment(mTextHorizontalAlignment); });
-                        }
-                        else
-                        {
-                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                                labelSceneProxy->SetOpacity(opacity);
+                                labelSceneProxy->SetText(text);
+                                labelSceneProxy->SetTextLineWidth(textLineWidth);
+                                labelSceneProxy->SetFontSize(fontSize);
+                                labelSceneProxy->SetTextColor(textColor);
+                                labelSceneProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                            } });
                         }
                     }
                 }
+            }
+            else
+            {
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
             }
         }
 

@@ -1,21 +1,21 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
-	local slash = package.config:sub(1,1)
-	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
-	local pattern = ""
-	if slash == "/" then
-		pattern = "(.*/)"
-	elseif slash == "\\" then
-		pattern = "(.*\\)"
-	end
-	local str = debug.getinfo(2, "S").source:sub(2)
-	local pathToCurrentScript = str:match(pattern)
-	if pathToCurrentScript ~= nil then
-		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
-		unixLikePath = unixLikePath:gsub("//", "/")
-		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
-	end
+    local slash = package.config:sub(1, 1)
+    assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+    local pattern = ""
+    if slash == "/" then
+        pattern = "(.*/)"
+    elseif slash == "\\" then
+        pattern = "(.*\\)"
+    end
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match(pattern)
+    if pathToCurrentScript ~= nil then
+        local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+        unixLikePath = unixLikePath:gsub("//", "/")
+        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+    end
 end
 
 setup()
@@ -36,13 +36,13 @@ UiItemBase.UiAnchorType = {
 }
 
 UiItemBase.UiMouseInputPressState = {
-	RELEASED = 0,
-	PRESSED = 1
+    RELEASED = 0,
+    PRESSED = 1
 }
 
 UiItemBase.UiMouseInputCursorHoverState = {
-	LEAVED = 0,
-	ENTERED = 1
+    LEAVED = 0,
+    ENTERED = 1
 }
 
 function UiItemBase:new()
@@ -114,10 +114,12 @@ function UiItemBase:new()
     uiItemBaseObj.typeName = "UiItemBase"
     uiItemBaseObj.uiItemBaseClass = self
     uiItemBaseObj.properties = uiItemBaseProperties
-	uiItemBaseObj.mouseInputPressState = UiItemBase.UiMouseInputPressState.RELEASED
-	uiItemBaseObj.mouseInputCursorHoverState = UiItemBase.UiMouseInputCursorHoverState.LEAVED
-	uiItemBaseObj.onMouseInputPressStateChangedCallback = nil
-	uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
+    uiItemBaseObj.mouseInputPressState = UiItemBase.UiMouseInputPressState.RELEASED
+    uiItemBaseObj.mouseInputCursorHoverState = UiItemBase.UiMouseInputCursorHoverState.LEAVED
+    uiItemBaseObj.mouseInputClicked = false
+    uiItemBaseObj.onMouseInputPressStateChangedCallback = nil
+    uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
+    uiItemBaseObj.onMouseInputClickedCallback = nil
 
     return uiItemBaseObj
 end
@@ -129,7 +131,9 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
         ", uiWidgetParentName: " ..
         tostring(uiWidgetParentName) ..
         ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
-    assert(self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and canvasName ~= "" and
+    assert(
+        self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
+        canvasName ~= "" and
         type(uiWidgetParentName) == "string" and
         uiWidgetParentName ~= "", debug.traceback())
     _SetUiWidgetParent(host, self.luaProxyId, canvasName, uiWidgetParentName)
@@ -156,13 +160,13 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
     end
     if parsedJsonData["anchors"] ~= nil then
         local anchorsTable = parsedJsonData["anchors"]
-       -- print("UiItemBase:extractUiItemBaseReplicatorData => anchors :")
+        -- print("UiItemBase:extractUiItemBaseReplicatorData => anchors :")
         for _, value in pairs(anchorsTable) do
             local srcAnchor = tonumber(value[1])
             local dstAnchor = tonumber(value[2][1])
             local dstUiItemWidgetName = tostring(value[2][2])
             local srcAnchorMargin = tonumber(value[2][3])
-          --  print(string.format("srcAnchor[%d]: {dstAnchor: %d, dstUiItemWidgetName: %s, srcAnchorMargin: %d}", srcAnchor,
+            --  print(string.format("srcAnchor[%d]: {dstAnchor: %d, dstUiItemWidgetName: %s, srcAnchorMargin: %d}", srcAnchor,
             --    dstAnchor, dstUiItemWidgetName, srcAnchorMargin))
 
             if srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and srcAnchorMargin ~= nil then
@@ -191,31 +195,39 @@ function UiItemBase:getUiItemBaseDataToReplicator()
 end
 
 function UiItemBase:updateFromReplicatorMouseInputData(host)
-	assert(host ~= nil and type(host) == "userdata")
-	if self.luaProxyReady then
-		local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
-		if replicatorMouseInputJsonData ~= "" then
+    assert(host ~= nil and type(host) == "userdata")
+    if self.luaProxyReady then
+        local replicatorMouseInputJsonData = _GetMouseInputData(host, self.luaProxyId)
+        if replicatorMouseInputJsonData ~= "" then
             local parsedJson = json.decode(replicatorMouseInputJsonData)
-			if parsedJson["input_press_state"] ~= nil then
-				local newState = tonumber(parsedJson["input_press_state"])
-				if newState ~= self.mouseInputPressState then
-					self.mouseInputPressState = newState
-					if self.onMouseInputPressStateChangedCallback ~= nil then
-						self.onMouseInputPressStateChangedCallback(newState)
-					end
-				end
-			end
-			if parsedJson["input_cursor_hover_state"] ~= nil then
-				local newState = tonumber(parsedJson["input_cursor_hover_state"])
-				if newState ~= self.mouseInputCursorHoverState then
-					self.mouseInputCursorHoverState = newState
-					if self.onMouseInputCursorHoverStateChangedCallback ~= nil then
-						self.onMouseInputCursorHoverStateChangedCallback(newState)
-					end
-				end
-			end
-		end
-	end
+            if parsedJson["input_press_state"] ~= nil then
+                local newState = tonumber(parsedJson["input_press_state"])
+                if newState ~= self.mouseInputPressState then
+                    self.mouseInputPressState = newState
+                    if self.onMouseInputPressStateChangedCallback ~= nil then
+                        self.onMouseInputPressStateChangedCallback(newState)
+                    end
+                end
+            end
+            if parsedJson["input_cursor_hover_state"] ~= nil then
+                local newState = tonumber(parsedJson["input_cursor_hover_state"])
+                if newState ~= self.mouseInputCursorHoverState then
+                    self.mouseInputCursorHoverState = newState
+                    if self.onMouseInputCursorHoverStateChangedCallback ~= nil then
+                        self.onMouseInputCursorHoverStateChangedCallback(newState)
+                    end
+                end
+            end
+            if parsedJson["input_clicked"] ~= nil then
+                local newState = parsedJson["input_clicked"]
+                if newState ~= self.mouseInputClicked then
+                    if self.onMouseInputClickedCallback ~= nil then
+                        self.onMouseInputClickedCallback()
+                    end
+                end
+            end
+        end
+    end
 end
 
 function UiItemBase:setIsVisible(isVisible)
@@ -266,7 +278,7 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     self.properties.anchors.dirty = true
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
-    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
+    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin ~= nil and anchorMargin or 0
 end
 
 function UiItemBase:enableMouseInputReceiverBase(host)
@@ -275,13 +287,18 @@ function UiItemBase:enableMouseInputReceiverBase(host)
 end
 
 function UiItemBase:setOnMouseInputPressStateChangedCallback(callback)
-	assert(callback ~= nil and type(callback) == "function")
-	self.onMouseInputPressStateChangedCallback = callback
+    assert(callback ~= nil and type(callback) == "function")
+    self.onMouseInputPressStateChangedCallback = callback
 end
 
 function UiItemBase:setOnMouseInputCursorHoverStateChangedCallback(callback)
-	assert(callback ~= nil and type(callback) == "function")
-	self.onMouseInputCursorHoverStateChangedCallback = callback
+    assert(callback ~= nil and type(callback) == "function")
+    self.onMouseInputCursorHoverStateChangedCallback = callback
+end
+
+function UiItemBase:setOnMouseInputClickedCallback(callback)
+    assert(callback ~= nil and type(callback) == "function")
+    self.onMouseInputClickedCallback = callback
 end
 
 return UiItemBase

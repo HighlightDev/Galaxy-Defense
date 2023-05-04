@@ -219,29 +219,32 @@ namespace EngineCore
         void UiImage::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnRenderThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsSceneProxyReady)
             {
-                if (const auto &canvasSp = GetParentCanvas().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &canvasSp = GetParentCanvas().lock())
                     {
-                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                        if (uiSceneProxy)
+                        if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
-                                                                                                {
-                                const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
-                                imageSceneProxy->SetTexture(mTexture);
-                                imageSceneProxy->SetOpacity(mOpacity);
-                                imageSceneProxy->SetRotationDegrees(mRotationDegrees);
-                                imageSceneProxy->SetIsFlipped(mIsFlipped); });
-                        }
-                        else
-                        {
-                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canasUId = canvasSp->GetUId(), textureSp = mTexture, opacity = mOpacity, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]() {
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canasUId);
+                                if (uiSceneProxy)
+                                {
+                                    const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
+                                    imageSceneProxy->SetTexture(textureSp);
+                                    imageSceneProxy->SetOpacity(opacity);
+                                    imageSceneProxy->SetRotationDegrees(rotationDegrees);
+                                    imageSceneProxy->SetIsFlipped(isFlipped); 
+                                } 
+                            });
                         }
                     }
                 }
+            }
+            else
+            {
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
             }
         }
 

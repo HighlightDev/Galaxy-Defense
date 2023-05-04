@@ -515,13 +515,8 @@ namespace EngineCore
    bool Scene::RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
    {
       const auto replicatorId = replicator->GetReplicatorId();
-      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [replicatorId](const auto &luaReplicator)
-                             { return luaReplicator->GetReplicatorId() == replicatorId; });
-
-      assert(it == mLuaReplicators.end());
-
-      // Add game object
-      mLuaReplicators.emplace_back(replicator);
+      assert(!mLuaReplicators.count(replicatorId));
+      mLuaReplicators.emplace(std::make_pair(replicatorId, replicator));
 
       return true;
    }
@@ -529,12 +524,9 @@ namespace EngineCore
    bool Scene::RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
    {
       const auto replicatorId = replicator->GetReplicatorId();
-      auto it = std::remove_if(mLuaReplicators.begin(), mLuaReplicators.end(), [replicatorId](const auto &luaReplicator)
-                               { return luaReplicator->GetReplicatorId() == replicatorId; });
-
-      if (it != mLuaReplicators.end())
+      if (mLuaReplicators.count(replicatorId))
       {
-         mLuaReplicators.erase(it, mLuaReplicators.end());
+         mLuaReplicators.erase(replicatorId);
          return true;
       }
 
@@ -543,18 +535,20 @@ namespace EngineCore
 
    std::shared_ptr<EngineToLuaReplicatorBase> Scene::GetEngineToLuaReplicatorById(const int32_t id) const
    {
-      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [id](const auto &luaReplicator)
-                             { return luaReplicator->GetReplicatorId() == id; });
+      if (mLuaReplicators.count(id))
+      {
+         return mLuaReplicators.at(id);
+      }
 
-      return (it != mLuaReplicators.end()) ? *it : nullptr;
+      return nullptr;
    }
 
    std::shared_ptr<EngineToLuaReplicatorBase> Scene::GetEngineToLuaReplicatorByLuaProxyId(const int32_t id) const
    {
-      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [id](const auto &luaReplicator)
-                             { return luaReplicator->GetLuaProxyId() == id; });
+      auto it = std::find_if(mLuaReplicators.cbegin(), mLuaReplicators.cend(), [id](const auto &luaReplicatorPair)
+                             { return luaReplicatorPair.second->GetLuaProxyId() == id; });
 
-      return (it != mLuaReplicators.end()) ? *it : nullptr;
+      return (it != mLuaReplicators.cend()) ? it->second : nullptr;
    }
 
    bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)

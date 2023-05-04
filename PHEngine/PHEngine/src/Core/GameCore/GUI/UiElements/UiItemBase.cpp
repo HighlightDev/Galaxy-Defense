@@ -82,6 +82,12 @@ namespace EngineCore
             }
         }
 
+        void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
+        {
+            LogInfo("UiItemBase::SetIsSceneProxyReady => name: ", mName, ", readiness value: ", isSceneProxyReady);
+            mIsSceneProxyReady = isSceneProxyReady;
+        }
+
         std::weak_ptr<Scene> UiItemBase::GetScene() const
         {
             if (const auto &parentSp = mParent.lock())
@@ -280,13 +286,29 @@ namespace EngineCore
 
         std::shared_ptr<IUiTransformable> UiItemBase::TryFindHierarchyChildByName(const std::string &name) const
         {
-            for (const auto& child: mChildren)
+            for (const auto &child : mChildren)
             {
                 if (child->GetName() == name)
                 {
                     return child;
                 }
                 else if (const auto foundChild = child->TryFindHierarchyChildByName(name))
+                {
+                    return foundChild;
+                }
+            }
+            return nullptr;
+        }
+
+        std::shared_ptr<IUiTransformable> UiItemBase::TryFindHierarchyChildByUId(const uint32_t uid) const
+        {
+            for (const auto &child : mChildren)
+            {
+                if (child->GetUId() == uid)
+                {
+                    return child;
+                }
+                else if (const auto foundChild = child->TryFindHierarchyChildByUId(uid))
                 {
                     return foundChild;
                 }
@@ -837,22 +859,25 @@ namespace EngineCore
         void UiItemBase::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsSceneProxyReady)
             {
-                if (const auto &canvasSp = GetParentCanvas().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &canvasSp = GetParentCanvas().lock())
                     {
-                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                        if (uiSceneProxy)
-                        {
-                            SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, sceneRenderer, canvasSp, uiSceneProxy]()
-                                                                                                {
-                                uiSceneProxy->SetIsVisible(mIsVisible);
-                                uiSceneProxy->SetZOrder(mZOrder);
-                                uiSceneProxy->SetTransform(mNormalizedTranslation, mNormalizedScale); });
-                        }
+                        SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), isVisible = mIsVisible, zOrder = mZOrder, normTranslation = mNormalizedTranslation, normScale = mNormalizedScale]() {
+                            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                            {
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                                if (uiSceneProxy)
+                                {
+                                    uiSceneProxy->SetIsVisible(isVisible);
+                                    uiSceneProxy->SetZOrder(zOrder);
+                                    uiSceneProxy->SetTransform(normTranslation, normScale);
+                                } 
+                            } 
+                        });
                     }
                 }
             }

@@ -166,27 +166,31 @@ namespace EngineCore
         void UiRectangle::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnRenderThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsSceneProxyReady)
             {
-                if (const auto &canvasSp = GetParentCanvas().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &canvasSp = GetParentCanvas().lock())
                     {
-                        const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(GetUId(), canvasSp->GetUId());
-                        if (uiSceneProxy)
+                        if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [=]()
+
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId(), color = mColor, opacity = mOpacity]()
                                                                                                 {
-                                const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
-                                rectangleSceneProxy->SetColor(mColor);
-                                rectangleSceneProxy->SetOpacity(mOpacity); });
-                        }
-                        else
-                        {
-                            mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                                if (uiSceneProxy)
+                                {
+                                    const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
+                                    rectangleSceneProxy->SetColor(color);
+                                    rectangleSceneProxy->SetOpacity(opacity);
+                                } });
                         }
                     }
                 }
+            }
+            else
+            {
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
             }
         }
 

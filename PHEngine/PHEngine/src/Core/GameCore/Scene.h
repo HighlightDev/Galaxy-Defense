@@ -19,6 +19,7 @@
 #include <type_traits>
 #include <glm/vec3.hpp>
 #include <optional>
+#include <unordered_map>
 
 using namespace Thread;
 using namespace Event;
@@ -64,7 +65,7 @@ namespace EngineCore
 
       std::vector<EngineObject *> mEngineObjects;
 
-      std::vector<std::shared_ptr<EngineToLuaReplicatorBase>> mLuaReplicators;
+      std::unordered_map<int32_t, std::shared_ptr<EngineToLuaReplicatorBase>> mLuaReplicators;
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
