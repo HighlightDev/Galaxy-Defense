@@ -41,6 +41,8 @@ namespace EngineCore
 
       private:
          void SendPauseGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/> &data);
+
+         void SendExitGameThreadEvent(const std::tuple<int32_t/*enqueue policy*/>& data);
       };
    }
 }

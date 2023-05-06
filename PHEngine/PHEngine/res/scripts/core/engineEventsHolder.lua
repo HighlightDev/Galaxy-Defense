@@ -6,10 +6,15 @@ EngineEventsHolder = {
     }
 }
 
-function EngineEventsHolder:sendPauseGameThreadEvent(host,  enqueueJobPolicy, isPause)
+function EngineEventsHolder:sendPauseGameThreadEvent(host, enqueueJobPolicy, isPause)
     assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
     assert(isPause ~= nil)
-    return _SendPauseGameThreadEvent(host, enqueueJobPolicy, isPause)
+    _SendPauseGameThreadEvent(host, enqueueJobPolicy, isPause)
+end
+
+function EngineEventsHolder:sendExitGameThreadEvent(host, enqueueJobPolicy)
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    _SendExitGameThreadEvent(host, enqueueJobPolicy)
 end
 
 return EngineEventsHolder

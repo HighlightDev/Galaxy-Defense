@@ -58,8 +58,8 @@ namespace Game
 
     void UiController::Initialize()
     {
-        mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", mSceneWp, mOverlayManager));
-        mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", mSceneWp, mOverlayManager));
+        // mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", mSceneWp, mOverlayManager));
+        // mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", mSceneWp, mOverlayManager));
         mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", mSceneWp, mOverlayManager));
 
         if (const auto &sceneSp = mSceneWp.lock())

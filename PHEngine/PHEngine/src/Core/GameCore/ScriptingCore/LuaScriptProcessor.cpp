@@ -42,9 +42,9 @@ namespace EngineCore
 
         std::shared_ptr<LuaProxy> LuaScriptProcessor::GetLuaProxy(const size_t luaProxyId) const
         {
-            for (const auto &luaProxy : mLuaProxies)
+            for (const auto luaProxy : mLuaProxies)
             {
-                if (luaProxy->GetLuaProxyId() == luaProxyId)
+                if (luaProxy && (luaProxy->GetLuaProxyId() == luaProxyId))
                 {
                     return luaProxy;
                 }
