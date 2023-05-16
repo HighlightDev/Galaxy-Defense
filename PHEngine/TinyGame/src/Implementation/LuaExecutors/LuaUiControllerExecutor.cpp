@@ -11,7 +11,8 @@ namespace Game
        : LuaScriptExecutorBase(scriptName),
          mLuaCommonUiCallbacks(std::make_unique<LuaCommonUiFunctions>(this)),
          mLuaCommonEngineFunctions(std::make_unique<LuaCommonEngineFunctions>(this)),
-         mLuaEngineEventsFunctions(std::make_unique<LuaEngineEventsFunctions>(this))
+         mLuaEngineEventsFunctions(std::make_unique<LuaEngineEventsFunctions>(this)),
+         mLuaGameEventsFunctions(std::make_unique<LuaGameEventsFunctions>(this))
    {
    }
 
@@ -26,6 +27,7 @@ namespace Game
       mLuaCommonUiCallbacks->OnScriptStarted(mLuaInstance);
       mLuaCommonEngineFunctions->OnScriptStarted(mLuaInstance);
       mLuaEngineEventsFunctions->OnScriptStarted(mLuaInstance);
+      mLuaGameEventsFunctions->OnScriptStarted(mLuaInstance);
    }
 
    void LuaUiControllerExecutor::StopScript()
@@ -35,6 +37,7 @@ namespace Game
       mLuaCommonUiCallbacks->OnScriptStopped(mLuaInstance);
       mLuaCommonEngineFunctions->OnScriptStopped(mLuaInstance);
       mLuaEngineEventsFunctions->OnScriptStarted(mLuaInstance);
+      mLuaGameEventsFunctions->OnScriptStarted(mLuaInstance);
    }
 
    void LuaUiControllerExecutor::RegisterCallbacks()
@@ -42,13 +45,16 @@ namespace Game
       mLuaCommonUiCallbacks->SetScene(GetScene());
       mLuaCommonEngineFunctions->SetScene(GetScene());
       mLuaEngineEventsFunctions->SetScene(GetScene());
+      mLuaGameEventsFunctions->SetScene(GetScene());
 
       mLuaCommonUiCallbacks->SetLuaScriptProcessor(GetLuaScriptProcessor());
       mLuaCommonEngineFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
       mLuaEngineEventsFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
+      mLuaGameEventsFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
 
       mLuaCommonUiCallbacks->RegisterCallbacks(mLuaInstance);
       mLuaCommonEngineFunctions->RegisterCallbacks(mLuaInstance);
       mLuaEngineEventsFunctions->RegisterCallbacks(mLuaInstance);
+      mLuaGameEventsFunctions->RegisterCallbacks(mLuaInstance);
    }
 }

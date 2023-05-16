@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 namespace EngineCore
 {
@@ -28,6 +29,10 @@ namespace EngineCore
         {
             std::vector<std::shared_ptr<IUiOverlay>> mOverlays;
 
+            std::vector<std::shared_ptr<IUiOverlay>> mBackgroundOverlays;
+
+            std::unordered_set<std::string> mActiveBackgroundOverlays;
+
             std::shared_ptr<IUiOverlay> mCurrentOpenedOverlay;
 
             std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -41,13 +46,23 @@ namespace EngineCore
 
             void RegisterOverlay(std::shared_ptr<IUiOverlay> overlay);
 
+            void RegisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay);
+
             void UnregisterOverlay(std::shared_ptr<IUiOverlay> overlay);
+
+            void UnregisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay);
 
             std::shared_ptr<IUiOverlay> GetOverlayByName(const std::string &name);
 
+            std::shared_ptr<IUiOverlay> GetBackgroundOverlayByName(const std::string &name);
+
             void OpenOverlay(const std::string &overlayName);
 
+            void OpenBackgroundOverlay(const std::string& overlayName);
+
             void CloseCurrentOverlay();
+
+            void CloseBackgroundOverlay(const std::string& overlayName);
 
             bool CurrentOverlayOpened() const;
 
@@ -63,6 +78,8 @@ namespace EngineCore
 
         private:
             std::shared_ptr<IUiOverlay> FindOverlay(const std::string &overlayName) const;
+
+            std::shared_ptr<IUiOverlay> FindBackgroundOverlay(const std::string &overlayName) const;
 
             void SyncLuaThreadData();
         };

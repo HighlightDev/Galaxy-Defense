@@ -19,6 +19,7 @@
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
 #include "Implementation/SpaceSceneCamera.h"
+#include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -191,6 +192,7 @@ namespace Game
             if (const auto &sceneSp = mScene.lock())
             {
                 ShootBullet(mPlayerShip->GetRootComponent()->GetTranslation());
+                LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerStatusType::INCOMING_DAMAGE_RECEIVED);
             }
         }
     }

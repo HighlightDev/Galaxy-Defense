@@ -30,6 +30,13 @@ namespace EngineCore
             mOverlays.emplace_back(overlay);
         }
 
+        void OverlayManager::RegisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)
+        {
+            const auto &foundOverlay = FindBackgroundOverlay(overlay->GetOverlayName());
+            assert(!foundOverlay);
+            mBackgroundOverlays.emplace_back(overlay);
+        }
+
         void OverlayManager::UnregisterOverlay(std::shared_ptr<IUiOverlay> overlay)
         {
             const auto &foundOverlay = FindOverlay(overlay->GetOverlayName());
@@ -39,12 +46,21 @@ namespace EngineCore
             mOverlays.erase(remove_it);
         }
 
+        void OverlayManager::UnregisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)
+        {
+            const auto &foundOverlay = FindBackgroundOverlay(overlay->GetOverlayName());
+            assert(foundOverlay);
+            auto remove_it = std::remove_if(mBackgroundOverlays.begin(), mBackgroundOverlays.end(), [&](const auto &myOverlay)
+                                            { return overlay->GetOverlayName() == myOverlay->GetOverlayName(); });
+            mBackgroundOverlays.erase(remove_it);
+        }
+
         std::shared_ptr<LuaProxy> OverlayManager::ReplicateLuaProxy()
         {
             return std::make_shared<OverlayManagerLuaProxy>(std::static_pointer_cast<OverlayManager>(shared_from_this()));
         }
 
-        void OverlayManager::SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr)
+        void OverlayManager::SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr)
         {
         }
 
@@ -69,6 +85,30 @@ namespace EngineCore
             mCurrentOpenedOverlay = foundOverlay;
             mCurrentOpenedOverlay->OpenOverlay();
             SyncLuaThreadData();
+        }
+
+        void OverlayManager::OpenBackgroundOverlay(const std::string &overlayName)
+        {
+            const auto &foundOverlay = FindBackgroundOverlay(overlayName);
+            assert(foundOverlay);
+            if (!mActiveBackgroundOverlays.count(overlayName))
+            {
+                mActiveBackgroundOverlays.emplace(overlayName);
+                foundOverlay->OpenOverlay();
+                SyncLuaThreadData();
+            }
+        }
+
+        void OverlayManager::CloseBackgroundOverlay(const std::string &overlayName)
+        {
+            if (mActiveBackgroundOverlays.count(overlayName))
+            {
+                const auto &foundOverlay = FindBackgroundOverlay(overlayName);
+                assert(foundOverlay);
+                mActiveBackgroundOverlays.erase(overlayName);
+                foundOverlay->CloseOverlay();
+                SyncLuaThreadData();
+            }
         }
 
         void OverlayManager::CloseCurrentOverlay()
@@ -118,7 +158,7 @@ namespace EngineCore
                 const auto &overlayManagerLuaProxy = std::static_pointer_cast<OverlayManagerLuaProxy>(ReplicateLuaProxy());
                 overlayManagerLuaProxy->SetSceneWp(sceneSp);
                 overlayManagerLuaProxy->SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
-                if (const auto& luaProcessorSp = mLuaScriptProcessorWp.lock())
+                if (const auto &luaProcessorSp = mLuaScriptProcessorWp.lock())
                 {
                     luaProcessorSp->SetOverlayManagerLuaProxy(overlayManagerLuaProxy);
                 }
@@ -137,6 +177,13 @@ namespace EngineCore
             return findIt != mOverlays.end() ? *findIt : nullptr;
         }
 
+        std::shared_ptr<IUiOverlay> OverlayManager::FindBackgroundOverlay(const std::string &overlayName) const
+        {
+            const auto findIt = std::find_if(mBackgroundOverlays.cbegin(), mBackgroundOverlays.cend(), [&](const auto &overlay)
+                                             { return overlay->GetOverlayName() == overlayName; });
+            return findIt != mBackgroundOverlays.end() ? *findIt : nullptr;
+        }
+
         void OverlayManager::SyncLuaThreadData()
         {
             if (const auto &sceneSp = mSceneWp.lock())
@@ -146,10 +193,9 @@ namespace EngineCore
                     if (const auto &overlayManagerLuaProxy = luaProcessorSp->GetOverlayManagerLuaProxy())
                     {
                         static constexpr auto functionId = Hash64_CT("OverlayManager::SyncLuaThreadData");
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [overlayManagerLuaProxy, overlayName = GetCurrentOpenedOverlayName()]()
-                        {
-                             overlayManagerLuaProxy->SetCurrentOverlay(overlayName); 
-                        });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [overlayManagerLuaProxy, overlayName = GetCurrentOpenedOverlayName(), overlayNames = mActiveBackgroundOverlays]()
+                                                                                         { overlayManagerLuaProxy->SetCurrentOverlay(overlayName);
+                                                                                            overlayManagerLuaProxy->SetActiveBackgroundOverlays(overlayNames); });
                     }
                 }
             }

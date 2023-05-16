@@ -32,7 +32,7 @@ function CreateTestLevel(host)
 		,grass.png
 		,arrow_right_1.png
 		,nimbus_mono.png
-		,combat_life1.png
+		,scaled_down_heart.png
 		,perlin_noise.png
 		,nightRight.jpg
 		,nightLeft.jpg

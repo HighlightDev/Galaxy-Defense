@@ -30,11 +30,15 @@ local UiItem = require("core/uiItem")
 local UiRectangle = require("core/uiRectangle")
 local UiLabel = require("core/uiLabel")
 local UiToggleButton = require("core/uiToggleButton")
+local UiImage = require("core/uiImage")
 
 GlobalContext = {
 }
 
 UiOverlays = {
+}
+
+UiBackgroundOverlays = {
 }
 
 local pressButtonCooldown = 0.0
@@ -49,10 +53,12 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                         EngineEventsHolder:sendPauseGameThreadEvent(host,
                             EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
                         UiOverlayManager:closeCurrentOverlay(host)
+                        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
                     else
                         EngineEventsHolder:sendPauseGameThreadEvent(host,
                             EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
+                        UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
                     end
                 end
             end
@@ -63,6 +69,139 @@ end
 local s_buttonColor = 0x403649
 local s_hoveredButtonColor = 0x201b24
 
+local testAvailableHearts = 5
+
+local function createPlayerHUDOverlay(host)
+    local windowWidth = _GetWindowWidth(host)
+    local windowHeight = _GetWindowHeight(host)
+
+    local playerHUDOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local playerHUDOverlay = UiOverlay:createBackgroundOverlay(host, "PlayerHUDOverlay", playerHUDOverlayCanvas)
+
+    local rootContainerWidth = windowWidth / 3.0;
+    local rootContainerHeight = windowHeight / 4.0;
+    local heartWidth = rootContainerWidth / 10.0
+    local heartInterval = heartWidth * 0.5
+
+    local rootContainer = UiItem:new(host)
+    playerHUDOverlay:addWidget(rootContainer)
+
+    local lifeImage1 = UiImage:new(host)
+    playerHUDOverlay:addWidget(lifeImage1)
+
+    local lifeImage2 = UiImage:new(host)
+    playerHUDOverlay:addWidget(lifeImage2)
+
+    local lifeImage3 = UiImage:new(host)
+    playerHUDOverlay:addWidget(lifeImage3)
+
+    local lifeImage4 = UiImage:new(host)
+    playerHUDOverlay:addWidget(lifeImage4)
+
+    local lifeImage5 = UiImage:new(host)
+    playerHUDOverlay:addWidget(lifeImage5)
+
+    playerHUDOverlay.testDamage = function()
+        testAvailableHearts = testAvailableHearts - 1
+        if testAvailableHearts <= 0 then
+            testAvailableHearts = 5
+        end
+
+        if testAvailableHearts == 1 then
+            lifeImage1:setOpacity(1.0)
+            lifeImage2:setOpacity(0.5)
+            lifeImage3:setOpacity(0.5)
+            lifeImage4:setOpacity(0.5)
+            lifeImage5:setOpacity(0.5)
+        elseif testAvailableHearts == 2 then
+            lifeImage1:setOpacity(1.0)
+            lifeImage2:setOpacity(1.0)
+            lifeImage3:setOpacity(0.5)
+            lifeImage4:setOpacity(0.5)
+            lifeImage5:setOpacity(0.5)
+        elseif testAvailableHearts == 3 then
+            lifeImage1:setOpacity(1.0)
+            lifeImage2:setOpacity(1.0)
+            lifeImage3:setOpacity(1.0)
+            lifeImage4:setOpacity(0.5)
+            lifeImage5:setOpacity(0.5)
+        elseif testAvailableHearts == 4 then
+            lifeImage1:setOpacity(1.0)
+            lifeImage2:setOpacity(1.0)
+            lifeImage3:setOpacity(1.0)
+            lifeImage4:setOpacity(1.0)
+            lifeImage5:setOpacity(0.5)
+        elseif testAvailableHearts == 5 then
+            lifeImage1:setOpacity(1.0)
+            lifeImage2:setOpacity(1.0)
+            lifeImage3:setOpacity(1.0)
+            lifeImage4:setOpacity(1.0)
+            lifeImage5:setOpacity(1.0)
+        end
+    end
+
+    playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
+        rootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
+        rootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            playerHUDOverlayCanvas.widgetName, 50)
+        rootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            playerHUDOverlayCanvas.widgetName, 50)
+        rootContainer:setWidth(rootContainerWidth)
+        rootContainer:setHeight(rootContainerHeight)
+
+        lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage1:setTextureSource("scaled_down_heart.png");
+        lifeImage1:setZOrder(2);
+        lifeImage1:setRotationDegrees(180)
+        lifeImage1:setHeight(heartWidth);
+        lifeImage1:setWidth(heartWidth);
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, rootContainer.widgetName);
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+
+        lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage2:setTextureSource("scaled_down_heart.png");
+        lifeImage2:setZOrder(2);
+        lifeImage2:setRotationDegrees(180)
+        lifeImage2:setHeight(heartWidth);
+        lifeImage2:setWidth(heartWidth);
+        lifeImage2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage1.widgetName,
+            heartInterval);
+        lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+
+        lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage3:setTextureSource("scaled_down_heart.png");
+        lifeImage3:setZOrder(2);
+        lifeImage3:setRotationDegrees(180)
+        lifeImage3:setHeight(heartWidth);
+        lifeImage3:setWidth(heartWidth);
+        lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
+            heartInterval);
+        lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+
+        lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage4:setTextureSource("scaled_down_heart.png");
+        lifeImage4:setZOrder(2);
+        lifeImage4:setRotationDegrees(180)
+        lifeImage4:setHeight(heartWidth);
+        lifeImage4:setWidth(heartWidth);
+        lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
+            heartInterval);
+        lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+
+        lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage5:setTextureSource("scaled_down_heart.png");
+        lifeImage5:setZOrder(2);
+        lifeImage5:setRotationDegrees(180)
+        lifeImage5:setHeight(heartWidth);
+        lifeImage5:setWidth(heartWidth);
+        lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
+            heartInterval);
+        lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+    end)
+
+    return playerHUDOverlay
+end
+
 local function createPauseOverlay(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
@@ -71,7 +210,7 @@ local function createPauseOverlay(host)
     pauseMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)
     end)
-    local pauseMenuOverlay = UiOverlay:new(host, "PauseMenuOverlay", pauseMenuOverlayCanvas)
+    local pauseMenuOverlay = UiOverlay:createOverlay(host, "PauseMenuOverlay", pauseMenuOverlayCanvas)
 
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 15.0;
@@ -93,6 +232,7 @@ local function createPauseOverlay(host)
         EngineEventsHolder:sendPauseGameThreadEvent(host,
             EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
         UiOverlayManager:closeCurrentOverlay(host)
+        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
     end)
     continueButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
@@ -285,7 +425,7 @@ local function createPauseSettingsOverlay(host)
     pauseSettingsOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseSettingsOverlayCanvas.luaProxyId)
     end)
-    local pauseSettingsOverlay = UiOverlay:new(host, "PauseSettingsOverlay", pauseSettingsOverlayCanvas)
+    local pauseSettingsOverlay = UiOverlay:createOverlay(host, "PauseSettingsOverlay", pauseSettingsOverlayCanvas)
 
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 7.0;
@@ -434,6 +574,7 @@ end
 local function initialize(host)
     UiOverlays["PauseSettingsOverlay"] = createPauseSettingsOverlay(host)
     UiOverlays["PauseMenuOverlay"] = createPauseOverlay(host)
+    UiBackgroundOverlays["PlayerHUDOverlay"] = createPlayerHUDOverlay(host)
 end
 
 function System_OnStart(host)
@@ -441,8 +582,8 @@ function System_OnStart(host)
     engineReceiver.subscribeToMouseEvents = false
     engineReceiver:subscribeOnPressedKeyboardButton(onPressedKeyboardButtons)
     GlobalContext["inputReceiver"] = engineReceiver
-
     initialize(host)
+    UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
 end
 
 function System_OnUpdate(host, deltaTimeSec)
@@ -460,6 +601,14 @@ function System_OnUpdate(host, deltaTimeSec)
         value:update(host, deltaTimeSec)
     end
 
+    for _, value in pairs(UiBackgroundOverlays) do
+        value:updateFromReplicatorData(host)
+    end
+
+    for _, value in pairs(UiBackgroundOverlays) do
+        value:update(host, deltaTimeSec)
+    end
+
     for _, value in pairs(GlobalContext) do
         if value.canUpdate then
             value:update(host)
@@ -468,6 +617,18 @@ function System_OnUpdate(host, deltaTimeSec)
 
     for _, value in pairs(UiOverlays) do
         value:sendDataToReplicator(host)
+    end
+
+    for _, value in pairs(UiBackgroundOverlays) do
+        value:sendDataToReplicator(host)
+    end
+end
+
+function System_OnGameEventTriggered(host, eventName)
+    assert(eventName ~= nil and type(eventName) == "string")
+    if "PlayerStatusChanged" == eventName then
+        local playerHudOverlay = UiBackgroundOverlays["PlayerHUDOverlay"]
+        playerHudOverlay:testDamage()
     end
 end
 

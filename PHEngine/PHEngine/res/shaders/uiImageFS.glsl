@@ -6,9 +6,9 @@ in vec2 texCoords;
 
 uniform sampler2D image;
 uniform float opacity;
-uniform bool hili;
 
 void main(void)
 {
-	FragColor = hili ? vec4(1) : (opacity * texture(image, texCoords));
+	vec4 color = texture(image, texCoords);
+	FragColor = opacity * color;
 }

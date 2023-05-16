@@ -27,8 +27,8 @@ local json = require("core/3rdparty/json")
 UiOverlay = {
 }
 
-function UiOverlay:new(host, overlayName, overlayCanvas)
-    print("UiOverlay::ctor")
+function UiOverlay:createOverlay(host, overlayName, overlayCanvas)
+    print("UiOverlay::createOverlay")
     assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
 
     local uiOverlayJsonParameters = json.encode({ overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId })
@@ -39,6 +39,29 @@ function UiOverlay:new(host, overlayName, overlayCanvas)
         luaProxyId = luaProxyId,
         overlayName = overlayName,
         overlayCanvas = overlayCanvas,
+        isBackgroundOverlay = false,
+        widgets = {},
+        allWidgetLuaProxiesReady = false,
+        allWidgetLuaProxiesReadyCallback = nil
+    }
+
+    self.__index = self
+    return setmetatable(newObj, self)
+end
+
+function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
+    print("UiOverlay::createBackgroundOverlay")
+    assert(host ~= nil and overlayName ~= nil and overlayCanvas ~= nil)
+
+    local uiOverlayJsonParameters = json.encode({ overlayName = overlayName, canvasLuaProxyId = overlayCanvas.luaProxyId })
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY,
+        uiOverlayJsonParameters)
+
+    local newObj = {
+        luaProxyId = luaProxyId,
+        overlayName = overlayName,
+        overlayCanvas = overlayCanvas,
+        isBackgroundOverlay = true,
         widgets = {},
         allWidgetLuaProxiesReady = false,
         allWidgetLuaProxiesReadyCallback = nil

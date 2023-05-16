@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 
 namespace EngineCore
 {
@@ -23,20 +24,28 @@ namespace EngineCore
 
             std::string mCurrentOverlayName;
 
-        public:
-            explicit OverlayManagerLuaProxy(const std::shared_ptr<::EngineCore::GUI::OverlayManager>& owner);
+            std::unordered_set<std::string> mActiveBackgroundOverlays;
 
-            void SetCurrentOverlay(const std::string& currentOverlayName);
+        public:
+            explicit OverlayManagerLuaProxy(const std::shared_ptr<::EngineCore::GUI::OverlayManager> &owner);
+
+            void SetCurrentOverlay(const std::string &currentOverlayName);
+
+            void SetActiveBackgroundOverlays(const std::unordered_set<std::string> &backgroundOverlays);
 
             std::string GetCurrentOverlayName() const;
 
             void OpenOverlay(const std::string &overlayName);
 
-            void OnLuaThreadDataUpdated(const std::string& jsonParameters) override;
+            void OpenBackgroundOverlay(const std::string &overlayName);
+
+            void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
 
             std::string GetGameThreadData() override;
 
             void CloseCurrentOverlay();
+
+            void CloseBackgroundOverlay(const std::string& overlayName);
         };
     }
 }

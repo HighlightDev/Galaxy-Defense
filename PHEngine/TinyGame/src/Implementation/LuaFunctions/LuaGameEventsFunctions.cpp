@@ -1,0 +1,55 @@
+#include "LuaGameEventsFunctions.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
+#include "Core/GameCore/ScriptingCore/LuaBindingHelper.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/CommonCore/StringHash.h"
+#include "Core/CommonCore/ThreadHelper.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/Scene.h"
+#include "Implementation/StatusTypes.h"
+
+using namespace EngineCore;
+
+namespace Game
+{
+   LuaGameEventsFunctions::LuaGameEventsFunctions(LuaScriptExecutorBase *ownerPtr)
+       : mOwnerPtr(ownerPtr)
+   {
+      LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(this);
+   }
+
+   LuaGameEventsFunctions::~LuaGameEventsFunctions()
+   {
+      LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(this);
+   }
+
+   void LuaGameEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
+   {
+      mSceneWp = sceneWp;
+   }
+
+   void LuaGameEventsFunctions::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor)
+   {
+      mLuaScriptProcessor = scriptProcessor;
+   }
+
+   void LuaGameEventsFunctions::OnScriptStarted(const LuaWrapper &luaWrapper)
+   {
+   }
+
+   void LuaGameEventsFunctions::OnScriptStopped(const LuaWrapper &luaWrapper)
+   {
+   }
+
+   void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
+   {
+   }
+
+   void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
+   {
+      if (eMainPlayerStatusType::INCOMING_DAMAGE_RECEIVED == std::get<0>(data))
+      {
+         LuaFunctionInvoker<void(void *, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"));
+      }
+   }
+}

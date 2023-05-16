@@ -44,6 +44,12 @@ namespace EngineCore
             return mFunctors.at(functionHash);
         }
 
+        const LuaWrapper &LuaScriptExecutorBase::GetLuaInstance() const
+        {
+            assert(mLuaInstance.IsLuaScriptOpened() && mLuaInstance.GetState());
+            return mLuaInstance;
+        }
+
         void LuaScriptExecutorBase::SetScene(const std::weak_ptr<Scene> &scene)
         {
             mSceneWP = scene;

@@ -6,7 +6,8 @@ CommonUiWidgetCreator = {
         UI_RECTANGLE = 3,
         UI_IMAGE = 4,
         UI_LABEL = 5,
-        UI_TOGGLE_BUTTON = 6
+        UI_TOGGLE_BUTTON = 6,
+        UI_BACKGROUND_OVERLAY = 7
     }
 }
 
@@ -25,6 +26,8 @@ local function getTypeToString(commonUiWidgetType)
         return "UI_LABEL"
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON then
         return "UI_TOGGLE_BUTTON"
+    elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY then
+        return "UI_BACKGROUND_OVERLAY"
     else
         assert(false, "Wrong type of widget type.")
     end

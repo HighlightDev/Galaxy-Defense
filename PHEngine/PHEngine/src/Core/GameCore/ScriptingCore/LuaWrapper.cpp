@@ -7,6 +7,7 @@
 #include "Core/CommonCore/Assertion.h"
 
 #include <algorithm>
+#include <iostream>
 
 using namespace TinyLogger;
 using namespace IO;
@@ -34,6 +35,7 @@ namespace EngineCore
          {
             const auto &message = GetErrorMessageAt(-1);
             LogInfo(message);
+            std::cout << "ERROR: Lua script execution failed: " << message << std::endl;
             return false;
          }
 
@@ -58,6 +60,11 @@ namespace EngineCore
       lua_State *LuaWrapper::GetState() const
       {
          return mState;
+      }
+
+      bool LuaWrapper::IsLuaScriptOpened() const
+      {
+         return mIsLuaScriptOpened;
       }
    }
 }

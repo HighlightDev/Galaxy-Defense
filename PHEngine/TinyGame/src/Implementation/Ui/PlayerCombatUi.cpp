@@ -72,7 +72,7 @@ namespace Game
 
             const auto &lifeImage = std::make_shared<UiImage>();
             lifeImage->SetParents(mCanvas, rootContainer);
-            lifeImage->SetTextureSrc("combat_life1.png");
+            lifeImage->SetTextureSrc("scaled_down_heart.png");
             lifeImage->SetRotationDegrees(180.0f);
             lifeImage->SetZOrder(2);
             lifeImage->SetHeight(rootContainerHeight / 2);

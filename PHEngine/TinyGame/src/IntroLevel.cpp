@@ -9,6 +9,7 @@
 #include "Core/GameCore/Tweener/BindingAttachmentBuilder.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
+#include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
@@ -28,6 +29,7 @@
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
+#include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
@@ -51,7 +53,8 @@ namespace Game
        : Level(threadMgr),
          mSceneController(std::make_shared<SceneController>(mScene))
    {
-      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent>();
+      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 
    IntroLevel::~IntroLevel()

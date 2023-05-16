@@ -45,6 +45,8 @@ namespace EngineCore
 
             const std::any &GetFunctorAny(const uint64_t functionHash) const;
 
+            const LuaWrapper& GetLuaInstance() const;
+
             // todo: should not be used, istead LuaScriptProcessor should be used
             void SetScene(const std::weak_ptr<Scene> &scene);
 

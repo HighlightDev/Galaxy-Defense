@@ -12,7 +12,8 @@ namespace EngineCore
             UI_RECTANGLE = 3,
             UI_IMAGE = 4,
             UI_LABEL = 5,
-            UI_TOGGLE_BUTTON = 6
+            UI_TOGGLE_BUTTON = 6,
+            UI_BACKGROUND_OVERLAY = 7
         };
     }
 } // namespace EngineCore

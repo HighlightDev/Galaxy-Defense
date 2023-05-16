@@ -1,6 +1,7 @@
 #include "CommonUiWidgetFactoryCreator.h"
 #include "UiCanvasReplicatorFactory.h"
 #include "UiOverlayReplicatorFactory.h"
+#include "UiBackgroundOverlayReplicatorFactory.h"
 #include "UiItemReplicatorFactory.h"
 #include "UiRectangleReplicatorFactory.h"
 #include "UiImageReplicatorFactory.h"
@@ -30,6 +31,8 @@ namespace EngineCore
                 return std::make_unique<UiLabelReplicatorFactory>();
             case eCommonUiWidgetType::UI_TOGGLE_BUTTON:
                 return std::make_unique<UiToggleButtonReplicatorFactory>();
+            case eCommonUiWidgetType::UI_BACKGROUND_OVERLAY:
+                return std::make_unique<UiBackgroundOverlayReplicatorFactory>();
 
             default:
                 assert(false);

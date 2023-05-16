@@ -6,6 +6,7 @@ set(
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
 	src/Implementation/GameObjectsCollisionType.h
+	src/Implementation/StatusTypes.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
@@ -17,6 +18,7 @@ set(
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/Events/SphereContactCollisionEvent.h
 	src/Implementation/Events/RayCollisionEvent.h
+	src/Implementation/Events/MainPlayerStatusChangedEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
 	src/Implementation/Factories/IMissileFactory.h
@@ -55,6 +57,7 @@ set(
 	src/Implementation/Ui/PlayerCombatUi.h
 	src/Implementation/Pools/ElectroRayChainActorPool.h
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
+	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
 )
 
 set(
@@ -72,6 +75,7 @@ set(
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Events/SphereContactCollisionEvent.cpp
 	src/Implementation/Events/RayCollisionEvent.cpp
+	src/Implementation/Events/MainPlayerStatusChangedEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/BombMissileFactory.cpp
 	src/Implementation/Factories/FreezingMissileFactory.cpp
@@ -105,6 +109,7 @@ set(
 	src/Implementation/Ui/PlayerCombatUi.cpp
 	src/Implementation/Pools/ElectroRayChainActorPool.cpp
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
+	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
     main.cpp
 )
 

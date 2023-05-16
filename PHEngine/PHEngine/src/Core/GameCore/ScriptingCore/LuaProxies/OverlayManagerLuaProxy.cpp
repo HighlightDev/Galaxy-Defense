@@ -12,7 +12,8 @@ namespace EngineCore
     {
         OverlayManagerLuaProxy::OverlayManagerLuaProxy(const std::shared_ptr<OverlayManager> &owner)
             : LuaProxy(),
-              mCurrentOverlayName()
+              mCurrentOverlayName(),
+              mActiveBackgroundOverlays()
         {
             mLuaProxyId = CreateUniqueLuaProxyId();
             SetReplicatorId(owner->GetReplicatorId());
@@ -22,6 +23,11 @@ namespace EngineCore
         void OverlayManagerLuaProxy::SetCurrentOverlay(const std::string &currentOverlayName)
         {
             mCurrentOverlayName = currentOverlayName;
+        }
+
+        void OverlayManagerLuaProxy::SetActiveBackgroundOverlays(const std::unordered_set<std::string> &backgroundOverlays)
+        {
+            mActiveBackgroundOverlays = backgroundOverlays;
         }
 
         std::string OverlayManagerLuaProxy::GetCurrentOverlayName() const
@@ -35,13 +41,29 @@ namespace EngineCore
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]()
+                                                                                  {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
                     assert(overlayManager);
-                    overlayManager->OpenOverlay(overlayName);
-                });
+                    overlayManager->OpenOverlay(overlayName); });
+            }
+        }
+
+        void OverlayManagerLuaProxy::OpenBackgroundOverlay(const std::string &overlayName)
+        {
+            static constexpr auto functionId = Hash64_CT("OverlayManagerLuaProxy::OpenBackgroundOverlay");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]()
+                                                                                  {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
+                    assert(overlayManager);
+                    overlayManager->OpenBackgroundOverlay(overlayName); });
             }
         }
 
@@ -51,17 +73,33 @@ namespace EngineCore
             if (const auto sceneSp = mSceneWp.lock())
             {
                 const auto replicatorId = GetReplicatorId();
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId]()
+                                                                                  {
                     const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
                     assert(replicator);
                     const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
                     assert(overlayManager);
-                    overlayManager->CloseCurrentOverlay(); 
-                });
+                    overlayManager->CloseCurrentOverlay(); });
             }
         }
 
-        void OverlayManagerLuaProxy::OnLuaThreadDataUpdated(const std::string& jsonParameters)
+        void OverlayManagerLuaProxy::CloseBackgroundOverlay(const std::string &overlayName)
+        {
+            static constexpr auto functionId = Hash64_CT("OverlayManagerLuaProxy::CloseBackgroundOverlay");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, overlayName]()
+                                                                                  {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & overlayManager = std::static_pointer_cast<OverlayManager>(replicator);
+                    assert(overlayManager);
+                    overlayManager->CloseBackgroundOverlay(overlayName); });
+            }
+        }
+
+        void OverlayManagerLuaProxy::OnLuaThreadDataUpdated(const std::string &jsonParameters)
         {
         }
 

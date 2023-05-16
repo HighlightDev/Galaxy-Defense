@@ -48,7 +48,9 @@ namespace EngineCore
       {
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetCurrentOverlayName"), std::string(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetCurrentOverlayName, this, std::placeholders::_1), "_GetCurrentOverlayName");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OpenOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OpenOverlay, this, std::placeholders::_1), "_OpenOverlay");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OpenBackgroundOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OpenBackgroundOverlay, this, std::placeholders::_1), "_OpenBackgroundOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseCurrentOverlay"), void()>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseCurrentOverlay, this, std::placeholders::_1), "_CloseCurrentOverlay");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CloseBackgroundOverlay"), void(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CloseBackgroundOverlay, this, std::placeholders::_1), "_CloseBackgroundOverlay");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::CreateCommonUiWidget"), int32_t(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::CreateCommonUiWidget, this, std::placeholders::_1), "_CreateCommonUiWidget");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::IsLuaProxyReady"), bool(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::IsLuaProxyReady, this, std::placeholders::_1), "_IsLuaProxyReady");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::OnCommonUiWidgetDataUpdated, this, std::placeholders::_1), "_OnCommonUiWidgetDataUpdated");
@@ -84,11 +86,31 @@ namespace EngineCore
          }
       }
 
+      void LuaCommonUiFunctions::OpenBackgroundOverlay(const std::tuple<std::string> &overlayName)
+      {
+         const auto &overlayToOpen = std::get<0>(overlayName);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            luaProcessorSp->GetOverlayManagerLuaProxy()->OpenBackgroundOverlay(overlayToOpen);
+         }
+      }
+
       void LuaCommonUiFunctions::CloseCurrentOverlay(const std::tuple<> &emptyData)
       {
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {
             luaProcessorSp->GetOverlayManagerLuaProxy()->CloseCurrentOverlay();
+         }
+      }
+
+      void LuaCommonUiFunctions::CloseBackgroundOverlay(const std::tuple<std::string> &overlayName)
+      {
+         const auto &overlayToClose = std::get<0>(overlayName);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            luaProcessorSp->GetOverlayManagerLuaProxy()->CloseBackgroundOverlay(overlayToClose);
          }
       }
 
@@ -218,7 +240,7 @@ namespace EngineCore
          }
       }
 
-      void LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t/*lua proxy id*/>& data)
+      void LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t /*lua proxy id*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
@@ -229,7 +251,7 @@ namespace EngineCore
          }
       }
 
-      void LuaCommonUiFunctions::EnableMouseInputReceiverBase(const std::tuple<int32_t/*lua proxy id*/>& data)
+      void LuaCommonUiFunctions::EnableMouseInputReceiverBase(const std::tuple<int32_t /*lua proxy id*/> &data)
       {
          const auto luaProxyId = std::get<0>(data);
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())

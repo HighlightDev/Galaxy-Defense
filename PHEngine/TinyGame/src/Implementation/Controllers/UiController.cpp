@@ -6,9 +6,6 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Implementation/Ui/PauseMenuUi.h"
-#include "Implementation/Ui/PauseSettingsMenuUi.h"
-#include "Implementation/Ui/PlayerCombatUi.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/InterThreadCommunicationMgr.h"
@@ -53,15 +50,10 @@ namespace Game
     {
         Initialize();
         mOverlayManager->Initialize();
-        mOverlayManager->OpenOverlay("PlayerCombatHUD");
     }
 
     void UiController::Initialize()
     {
-        // mOverlayManager->RegisterOverlay(std::make_shared<PauseMenuUi>("PauseMenu", mSceneWp, mOverlayManager));
-        // mOverlayManager->RegisterOverlay(std::make_shared<PauseSettingsMenuUi>("PauseSettingsMenu", mSceneWp, mOverlayManager));
-        mOverlayManager->RegisterOverlay(std::make_shared<PlayerCombatUi>("PlayerCombatHUD", mSceneWp, mOverlayManager));
-
         if (const auto &sceneSp = mSceneWp.lock())
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())

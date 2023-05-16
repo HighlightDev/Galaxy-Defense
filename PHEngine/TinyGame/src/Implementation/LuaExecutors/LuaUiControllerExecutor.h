@@ -6,6 +6,7 @@
 #include "Core/GameCore/ScriptingCore/LuaFunctions/LuaCommonEngineFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaFunctions/LuaEngineEventsFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaScriptExecutorBase.h"
+#include "Implementation/LuaFunctions/LuaGameEventsFunctions.h"
 
 using namespace EngineCore::Scripts;
 
@@ -22,6 +23,7 @@ namespace Game
       std::unique_ptr<LuaCommonUiFunctions> mLuaCommonUiCallbacks;
       std::unique_ptr<LuaCommonEngineFunctions> mLuaCommonEngineFunctions;
       std::unique_ptr<LuaEngineEventsFunctions> mLuaEngineEventsFunctions;
+      std::unique_ptr<LuaGameEventsFunctions> mLuaGameEventsFunctions;
 
    public:
       LuaUiControllerExecutor(const std::string &scriptName);
