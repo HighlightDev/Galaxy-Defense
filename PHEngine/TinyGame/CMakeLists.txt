@@ -7,6 +7,7 @@ set(
 	src/Implementation/GameObjectsType.h
 	src/Implementation/GameObjectsCollisionType.h
 	src/Implementation/StatusTypes.h
+	src/Implementation/MissileType.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
@@ -58,6 +59,7 @@ set(
 	src/Implementation/Pools/ElectroRayChainActorPool.h
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
+	src/Implementation/DataProviders/PlayerDataProvider.h
 )
 
 set(
@@ -110,6 +112,7 @@ set(
 	src/Implementation/Pools/ElectroRayChainActorPool.cpp
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
+	src/Implementation/DataProviders/PlayerDataProvider.cpp
     main.cpp
 )
 

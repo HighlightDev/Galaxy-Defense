@@ -20,6 +20,8 @@
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
+#include "Implementation/MissileType.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -192,8 +194,14 @@ namespace Game
             if (const auto &sceneSp = mScene.lock())
             {
                 ShootBullet(mPlayerShip->GetRootComponent()->GetTranslation());
-                LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerStatusType::INCOMING_DAMAGE_RECEIVED);
+                // todo: use player data provider instead
+                LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerStatusType::LIFE_POINTS_CHANGED);
             }
+        }
+        else if (eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE == playerAction || eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE == playerAction)
+        {
+            const auto missileType = eMissileType::BOMB; // temp
+            PlayerDataProvider::GetInstance()->SetSelectedMissileType(missileType);
         }
     }
 
@@ -344,7 +352,7 @@ namespace Game
                     {
                         const auto &ownerSpaceObjectActor = GetSpaceObjectOwnerActorById(collidedActorId);
                         const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(std::make_pair(gameObjectType, ownerSpaceObjectActor),
-                                                                                                      std::make_pair(srcActorGameObjectType, srcCollisionActor));
+                                                                                                       std::make_pair(srcActorGameObjectType, srcCollisionActor));
 
                         electroRayChainModifier->Initialize(mElectroRayChainActorPool);
                         ownerSpaceObjectActor->AddModifier(electroRayChainModifier);

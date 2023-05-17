@@ -85,7 +85,10 @@ namespace Game
          if (mouseBindings.IsMouseScrollEventDirty())
          {
             const auto scrollDirection = mouseBindings.FlushMouseScrollEvent();
-            m_camera->Zoom(scrollDirection, 4.0f);
+            MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                            eMouseScrollDirection::ZoomIn == scrollDirection ? eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE
+                                                                                                             : eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE);
+            // m_camera->Zoom(scrollDirection, 4.0f);
          }
 
          if (KeyState::PRESSED == mouseBindings.GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))

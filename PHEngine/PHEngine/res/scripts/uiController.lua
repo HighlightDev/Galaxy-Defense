@@ -31,6 +31,7 @@ local UiRectangle = require("core/uiRectangle")
 local UiLabel = require("core/uiLabel")
 local UiToggleButton = require("core/uiToggleButton")
 local UiImage = require("core/uiImage")
+local json = require("core/3rdparty/json")
 
 GlobalContext = {
 }
@@ -78,13 +79,25 @@ local function createPlayerHUDOverlay(host)
     local playerHUDOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
     local playerHUDOverlay = UiOverlay:createBackgroundOverlay(host, "PlayerHUDOverlay", playerHUDOverlayCanvas)
 
-    local rootContainerWidth = windowWidth / 3.0;
-    local rootContainerHeight = windowHeight / 4.0;
-    local heartWidth = rootContainerWidth / 10.0
+    local lifeRootContainerWidth = windowWidth / 3.0;
+    local lifeRootContainerHeight = windowHeight / 4.0;
+    local weaponRootContainerWidth = windowWidth / 5.0
+    local heartWidth = lifeRootContainerWidth / 10.0
     local heartInterval = heartWidth * 0.5
+    local weaponWidth = lifeRootContainerHeight / 4.0
+    local weaponBackgroundWidth = weaponWidth * 2.0
 
-    local rootContainer = UiItem:new(host)
-    playerHUDOverlay:addWidget(rootContainer)
+    local lifeRootContainer = UiItem:new(host)
+    playerHUDOverlay:addWidget(lifeRootContainer)
+
+    local weaponRootContainer = UiItem:new(host)
+    playerHUDOverlay:addWidget(weaponRootContainer)
+
+    local weaponBackgroundImage = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponBackgroundImage)
+
+    local weaponImage = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponImage)
 
     local lifeImage1 = UiImage:new(host)
     playerHUDOverlay:addWidget(lifeImage1)
@@ -140,25 +153,65 @@ local function createPlayerHUDOverlay(host)
         end
     end
 
-    playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
-        rootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
-        rootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            playerHUDOverlayCanvas.widgetName, 50)
-        rootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            playerHUDOverlayCanvas.widgetName, 50)
-        rootContainer:setWidth(rootContainerWidth)
-        rootContainer:setHeight(rootContainerHeight)
+    playerHUDOverlay.testCurrentActiveWeaponIndex = 0
+    playerHUDOverlay.testChangeActiveWeapon = function ()
+        playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex + 1
+        playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex % 2
+        weaponImage:setTextureSource(playerHUDOverlay.testCurrentActiveWeaponIndex == 0 and "weapon_missile.png" or "weapon_missile_2.png")
+    end
 
-        lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+    playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
+        lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
+        lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            playerHUDOverlayCanvas.widgetName, 50)
+        lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            playerHUDOverlayCanvas.widgetName, 50)
+        lifeRootContainer:setWidth(lifeRootContainerWidth)
+        lifeRootContainer:setHeight(lifeRootContainerHeight)
+
+        weaponRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
+        weaponRootContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            playerHUDOverlayCanvas.widgetName, 50)
+        weaponRootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            playerHUDOverlayCanvas.widgetName, 30)
+        weaponRootContainer:setWidth(weaponRootContainerWidth)
+        weaponRootContainer:setHeight(lifeRootContainerHeight)
+
+        weaponBackgroundImage:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponBackgroundImage:setTextureSource("background_shield.png");
+        weaponBackgroundImage:setZOrder(2);
+        weaponBackgroundImage:setRotationDegrees(180)
+        weaponBackgroundImage:setHeight(weaponBackgroundWidth);
+        weaponBackgroundImage:setWidth(weaponBackgroundWidth * 0.8);
+        weaponBackgroundImage:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            weaponRootContainer.widgetName);
+        weaponBackgroundImage:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName);
+
+        weaponImage:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundImage.widgetName)
+        weaponImage:setTextureSource("weapon_missile.png");
+        weaponImage:setZOrder(3);
+        weaponImage:setRotationDegrees(180)
+        weaponImage:setHeight(weaponWidth);
+        weaponImage:setWidth(weaponWidth);
+        weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            weaponBackgroundImage.widgetName);
+        weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            weaponBackgroundImage.widgetName);
+        weaponImage:setHorizontalCenterOffset(-5)
+        weaponImage:setVerticalCenterOffset(5)
+
+        lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage1:setTextureSource("scaled_down_heart.png");
         lifeImage1:setZOrder(2);
         lifeImage1:setRotationDegrees(180)
         lifeImage1:setHeight(heartWidth);
         lifeImage1:setWidth(heartWidth);
-        lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, rootContainer.widgetName);
-        lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, lifeRootContainer.widgetName);
+        lifeImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
+            .widgetName);
 
-        lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage2:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage2:setTextureSource("scaled_down_heart.png");
         lifeImage2:setZOrder(2);
         lifeImage2:setRotationDegrees(180)
@@ -166,9 +219,10 @@ local function createPlayerHUDOverlay(host)
         lifeImage2:setWidth(heartWidth);
         lifeImage2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage1.widgetName,
             heartInterval);
-        lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+        lifeImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
+            .widgetName);
 
-        lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage3:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage3:setTextureSource("scaled_down_heart.png");
         lifeImage3:setZOrder(2);
         lifeImage3:setRotationDegrees(180)
@@ -176,9 +230,10 @@ local function createPlayerHUDOverlay(host)
         lifeImage3:setWidth(heartWidth);
         lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
             heartInterval);
-        lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+        lifeImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
+            .widgetName);
 
-        lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage4:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage4:setTextureSource("scaled_down_heart.png");
         lifeImage4:setZOrder(2);
         lifeImage4:setRotationDegrees(180)
@@ -186,9 +241,10 @@ local function createPlayerHUDOverlay(host)
         lifeImage4:setWidth(heartWidth);
         lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
             heartInterval);
-        lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+        lifeImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
+            .widgetName);
 
-        lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, rootContainer.widgetName);
+        lifeImage5:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage5:setTextureSource("scaled_down_heart.png");
         lifeImage5:setZOrder(2);
         lifeImage5:setRotationDegrees(180)
@@ -196,7 +252,8 @@ local function createPlayerHUDOverlay(host)
         lifeImage5:setWidth(heartWidth);
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
             heartInterval);
-        lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, rootContainer.widgetName);
+        lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
+            .widgetName);
     end)
 
     return playerHUDOverlay
@@ -624,11 +681,29 @@ function System_OnUpdate(host, deltaTimeSec)
     end
 end
 
-function System_OnGameEventTriggered(host, eventName)
+PlayerStatusType = {
+    NONE = 0,
+    LIFE_POINTS_CHANGED = 1,
+    ACTIVE_WEAPON_CHANGED = 2,
+    MISSILES_COUNT_CHANGED = 3,
+    AVAILABLE_MISSILES_CHANGED = 4
+}
+
+function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
     if "PlayerStatusChanged" == eventName then
-        local playerHudOverlay = UiBackgroundOverlays["PlayerHUDOverlay"]
-        playerHudOverlay:testDamage()
+        assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+        local parsedJson = json.decode(jsonArgs)
+        if parsedJson["player_status_type"] ~= nil then
+            local statusType = tonumber(parsedJson["player_status_type"])
+            if statusType == PlayerStatusType.LIFE_POINTS_CHANGED then
+                local playerHudOverlay = UiBackgroundOverlays["PlayerHUDOverlay"]
+                playerHudOverlay:testDamage()
+            elseif statusType == PlayerStatusType.ACTIVE_WEAPON_CHANGED then
+                local playerHudOverlay = UiBackgroundOverlays["PlayerHUDOverlay"]
+                playerHudOverlay:testChangeActiveWeapon()
+            end
+        end
     end
 end
 

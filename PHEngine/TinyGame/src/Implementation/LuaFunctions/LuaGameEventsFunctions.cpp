@@ -8,6 +8,8 @@
 #include "Core/GameCore/Scene.h"
 #include "Implementation/StatusTypes.h"
 
+#include <json/json.hpp>
+
 using namespace EngineCore;
 
 namespace Game
@@ -47,9 +49,9 @@ namespace Game
 
    void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
    {
-      if (eMainPlayerStatusType::INCOMING_DAMAGE_RECEIVED == std::get<0>(data))
-      {
-         LuaFunctionInvoker<void(void *, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"));
-      }
+      nlohmann::json jsonObj;
+      jsonObj["player_status_type"] = static_cast<int32_t>(std::get<0>(data));
+      const auto& eventParams = jsonObj.dump();
+      LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"), eventParams);
    }
 }

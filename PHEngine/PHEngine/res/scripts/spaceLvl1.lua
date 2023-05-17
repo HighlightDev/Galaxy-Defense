@@ -33,6 +33,9 @@ function CreateTestLevel(host)
 		,arrow_right_1.png
 		,nimbus_mono.png
 		,scaled_down_heart.png
+		,background_shield.png
+		,weapon_missile.png
+		,weapon_missile_2.png
 		,perlin_noise.png
 		,nightRight.jpg
 		,nightLeft.jpg
