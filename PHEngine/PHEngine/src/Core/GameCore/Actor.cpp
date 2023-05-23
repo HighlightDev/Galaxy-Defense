@@ -16,11 +16,11 @@ namespace EngineCore
        : EngineObject(gameObjectName),
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
-         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true,
+         mIsVisible(std::make_shared<EngineObjectProperty<bool>>(true,
                                                              "p_isVisible",
                                                              [=](const bool &visibility)
                                                              { SetIsVisible(visibility); })),
-         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true,
+         mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(true,
                                                              "p_isEnabled",
                                                              [=](const bool &isEnabled)
                                                              { SetIsEnabled(isEnabled); })),

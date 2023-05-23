@@ -15,13 +15,13 @@ namespace EngineCore
                                   const glm::vec3 &rotation = glm::vec3(0.0f),
                                   const glm::vec3 &scale = glm::vec3(0.0f))
        : Component(gameObjectName),
-         m_TransformScale(std::make_shared<EngineGOProperty<glm::vec3>>(scale, "p_scale", [=](const glm::vec3 &scale)
+         m_TransformScale(std::make_shared<EngineObjectProperty<glm::vec3>>(scale, "p_scale", [=](const glm::vec3 &scale)
                                                                         { SyncScale(scale); })),
          bTransformationDirty(true),
          mTransform(std::make_shared<Transform>(translation,
                                                 glm::quat(glm::vec3(DEG_TO_RAD(rotation.x), DEG_TO_RAD(rotation.y), DEG_TO_RAD(rotation.z))),
                                                 scale)),
-         m_additionalRotationEuler(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(0.0f), "b_rotator",
+         m_additionalRotationEuler(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(0.0f), "b_rotator",
                                                                                  [=](const glm::vec3 &rotator)
                                                                                  { SetIsTransformationDirty(true); })),
          m_relativeMatrix(1)

@@ -866,7 +866,7 @@ namespace EngineCore
                     if (const auto &canvasSp = GetParentCanvas().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), isVisible = mIsVisible, zOrder = mZOrder, normTranslation = mNormalizedTranslation, normScale = mNormalizedScale]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), isVisible = mIsVisible, zOrder = mZOrder, normTranslation = mNormalizedTranslation, normScale = mNormalizedScale, width = mWidth, height = mHeight]() {
                             if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                             {
                                 const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
@@ -875,6 +875,7 @@ namespace EngineCore
                                     uiSceneProxy->SetIsVisible(isVisible);
                                     uiSceneProxy->SetZOrder(zOrder);
                                     uiSceneProxy->SetTransform(normTranslation, normScale);
+                                    uiSceneProxy->SetWidthHeightPixels(glm::ivec2(static_cast<int32_t>(width), static_cast<int32_t>(height)));
                                 } 
                             } 
                         });

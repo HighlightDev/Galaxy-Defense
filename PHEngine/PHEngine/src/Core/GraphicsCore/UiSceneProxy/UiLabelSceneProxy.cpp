@@ -95,7 +95,7 @@ namespace Graphics
                     mUiLabelShader->SetPosition(glm::vec2(mNormalizedTranslation.x, 1.0f - (mNormalizedTranslation.y + textHeightScreenSpace)));
                     mFontTexture->BindTexture(0);
                     mUiLabelShader->SetFontAtlasSlot(0);
-                    mUiLabelShader->SetOpacity(mOpacity);
+                    mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);
                     mUiLabelShader->SetColor(mTextColor);
                     renderDataSp->GetTextMesh()->GetBuffer()->RenderVAO(mTextFieldProxy->GetVertexStart(), mTextFieldProxy->GetVerticesCount(), GL_TRIANGLES);
                     mUiLabelShader->StopShader();

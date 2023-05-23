@@ -27,7 +27,7 @@ namespace EngineCore
          mEngineObjects(),
          mLuaReplicators(),
          m_interThreadMgr(interThreadMgr),
-         mGameThreadDeltaSec(std::make_shared<EngineGOProperty<float>>(0.0f, "GT_DeltaSec")),
+         mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec")),
          mDeferredResourceCreators(),
          mActors(),
          mMainCamera(),

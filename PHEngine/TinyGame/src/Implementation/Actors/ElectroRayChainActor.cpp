@@ -22,7 +22,7 @@ namespace Game
           mStartLineSpaceship(),
           mEndLineSpaceship(),
           mChainingAnimationTimeDuration(0.5f),
-          mOpacity(std::make_shared<EngineGOProperty<float>>(1.0f, "p_opacity"))
+          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
     {
         AddEngineProperty(mOpacity);
     }

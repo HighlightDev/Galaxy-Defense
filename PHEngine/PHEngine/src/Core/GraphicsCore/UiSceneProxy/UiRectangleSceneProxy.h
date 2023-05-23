@@ -27,6 +27,8 @@ namespace Graphics
 
             float mOpacity;
 
+            float mBorderRadius;
+
         public:
             UiRectangleSceneProxy(const ::EngineCore::GUI::UiRectangle* uiRectangle);
 
@@ -37,6 +39,8 @@ namespace Graphics
             void SetColor(const glm::vec3& color);
 
             void SetOpacity(const float opacity);
+
+            void SetBorderRadius(const float borderRadiusPx);
 
             void CleanUp() override;
 

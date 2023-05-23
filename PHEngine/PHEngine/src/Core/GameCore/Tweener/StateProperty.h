@@ -21,7 +21,7 @@ namespace EngineCore
    {
       std::weak_ptr<PropertyBinding> Binding;
 
-      virtual eBindingType GetStatePropertyType() const = 0;
+      virtual eEnginePropertyBindingType GetStatePropertyType() const = 0;
 
       BaseStateProperty(std::weak_ptr<PropertyBinding> propertyBinding)
           : Binding(propertyBinding)
@@ -29,18 +29,18 @@ namespace EngineCore
       }
    };
 
-   template <eBindingType bindingType>
+   template <eEnginePropertyBindingType bindingType>
    struct StateProperty;
 
    template <>
-   struct StateProperty<eBindingType::Animation>
+   struct StateProperty<eEnginePropertyBindingType::Animation>
        : public BaseStateProperty
    {
       std::string AnimationName;
 
-      eBindingType GetStatePropertyType() const override
+      eEnginePropertyBindingType GetStatePropertyType() const override
       {
-         return eBindingType::Animation;
+         return eEnginePropertyBindingType::Animation;
       }
 
       StateProperty(const std::string &animationName, const std::shared_ptr<AnimationPropertyBinding> &animationPropertyBinding)
@@ -51,14 +51,14 @@ namespace EngineCore
    };
 
    template <>
-   struct StateProperty<eBindingType::FloatScalar>
+   struct StateProperty<eEnginePropertyBindingType::FloatScalar>
        : public BaseStateProperty
    {
       float Value;
 
-      eBindingType GetStatePropertyType() const override
+      eEnginePropertyBindingType GetStatePropertyType() const override
       {
-         return eBindingType::FloatScalar;
+         return eEnginePropertyBindingType::FloatScalar;
       }
 
       StateProperty(const float value, const std::shared_ptr<FloatPropertyBinding> &floatPropertyBinding)
@@ -69,15 +69,15 @@ namespace EngineCore
    };
 
    template <>
-   struct StateProperty<eBindingType::EulerAnglesRotation>
+   struct StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>
        : public BaseStateProperty
    {
       glm::vec3 Value;
       glm::quat QuatValue;
 
-      eBindingType GetStatePropertyType() const override
+      eEnginePropertyBindingType GetStatePropertyType() const override
       {
-         return eBindingType::EulerAnglesRotation;
+         return eEnginePropertyBindingType::EulerAnglesRotation;
       }
 
       StateProperty(const glm::vec3 &value, const std::shared_ptr<EulerAnglesRotationPropertyBinding> &rotationPropertyBinding)
@@ -107,14 +107,14 @@ namespace EngineCore
    };
 
    template <>
-   struct StateProperty<eBindingType::Boolean>
+   struct StateProperty<eEnginePropertyBindingType::Boolean>
        : public BaseStateProperty
    {
       bool Value;
 
-      eBindingType GetStatePropertyType() const override
+      eEnginePropertyBindingType GetStatePropertyType() const override
       {
-         return eBindingType::Boolean;
+         return eEnginePropertyBindingType::Boolean;
       }
 
       StateProperty(const bool value, const std::shared_ptr<BooleanPropertyBinding> &booleanPropertyBinding)
@@ -125,14 +125,14 @@ namespace EngineCore
    };
 
    template <>
-   struct StateProperty<eBindingType::Vec3>
+   struct StateProperty<eEnginePropertyBindingType::Vec3>
        : public BaseStateProperty
    {
       glm::vec3 Value;
 
-      eBindingType GetStatePropertyType() const override
+      eEnginePropertyBindingType GetStatePropertyType() const override
       {
-         return eBindingType::Vec3;
+         return eEnginePropertyBindingType::Vec3;
       }
 
       StateProperty(const glm::vec3 &value, const std::shared_ptr<Vec3PropertyBinding> &vec3PropertyBinding)

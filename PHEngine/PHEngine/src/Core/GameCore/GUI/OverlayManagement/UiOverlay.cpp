@@ -6,6 +6,7 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/LuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiOverlayLuaProxy.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
 
 using namespace EngineCore;
 
@@ -28,6 +29,16 @@ namespace EngineCore
         {
             assert(!mCanvas);
             mCanvas = canvas;
+            // todo: for now
+            auto animator = mCanvas->CreateAndGetAnimator();
+            animator->AddAnimation("FadeIn", AnimationData(eAnimationInterpolationFunctionType::LINEAR, 0.5f, "Opacity", 0.0f, 1.0f));
+            animator->AddAnimation("FadeOut", AnimationData(eAnimationInterpolationFunctionType::LINEAR, 0.5f, "Opacity", 1.0f, 0.0f));
+            animator->SubscribeOnAnimationFinished([this](const std::string& animationName) {
+                if ("FadeOut" == animationName)
+                {
+                    mCanvas->SetIsVisible(false);
+                }
+            });
         }
 
         std::string UiOverlay::GetOverlayName() const
@@ -38,19 +49,14 @@ namespace EngineCore
         void UiOverlay::OpenOverlay()
         {
             assert(mCanvas);
-            if (!mCanvas->IsVisible())
-            {
-                mCanvas->SetIsVisible(true);
-            }
+            mCanvas->SetIsVisible(true);
+            mCanvas->CreateAndGetAnimator()->StartAnimation("FadeIn");
         }
 
         void UiOverlay::CloseOverlay()
         {
             assert(mCanvas);
-            if (mCanvas->IsVisible())
-            {
-                mCanvas->SetIsVisible(false);
-            }
+            mCanvas->CreateAndGetAnimator()->StartAnimation("FadeOut");
         }
 
         std::shared_ptr<::EngineCore::Scripts::LuaProxy> UiOverlay::ReplicateLuaProxy()

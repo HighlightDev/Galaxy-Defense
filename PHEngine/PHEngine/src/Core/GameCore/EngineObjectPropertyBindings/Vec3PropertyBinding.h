@@ -14,7 +14,7 @@ namespace EngineCore
        : public PropertyBinding
    {
    private:
-      std::shared_ptr<EngineGOProperty<glm::vec3>> mGoProperty;
+      std::shared_ptr<EngineObjectProperty<glm::vec3>> mGoProperty;
 
    public:
       Vec3PropertyBinding(const std::string &bindingName)
@@ -22,7 +22,7 @@ namespace EngineCore
       {
       }
 
-      void SetEngineObjectProperty(const std::shared_ptr<EngineGOProperty<glm::vec3>> &engineGoProperty)
+      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<glm::vec3>> &engineGoProperty)
       {
          assert(engineGoProperty);
          mGoProperty = engineGoProperty;
@@ -41,9 +41,9 @@ namespace EngineCore
          return mGoProperty->GetValue();
       }
 
-      eBindingType GetBindingType() const override
+      eEnginePropertyBindingType GetBindingType() const override
       {
-         return eBindingType::Vec3;
+         return eEnginePropertyBindingType::Vec3;
       }
    };
 }

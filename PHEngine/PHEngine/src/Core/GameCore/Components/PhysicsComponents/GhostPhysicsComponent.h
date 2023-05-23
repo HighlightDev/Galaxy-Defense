@@ -15,7 +15,7 @@ namespace EnginePhysics
        : public PhysicsComponent
    {
    protected:
-      std::shared_ptr<EngineGOProperty<glm::vec3>> m_HitBoxScale;
+      std::shared_ptr<EngineObjectProperty<glm::vec3>> m_HitBoxScale;
 
    public:
       GhostPhysicsComponent(const PhysicsComponentData &data);

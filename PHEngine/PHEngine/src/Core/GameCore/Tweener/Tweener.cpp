@@ -28,27 +28,27 @@ namespace EngineCore
    {
    }
 
-   std::shared_ptr<ITweenController> GetPropertyTweenerController(const eBindingType propertyType)
+   std::shared_ptr<ITweenController> GetPropertyTweenerController(const eEnginePropertyBindingType propertyType)
    {
       std::shared_ptr<ITweenController> propertyController;
 
-      if (eBindingType::Animation == propertyType)
+      if (eEnginePropertyBindingType::Animation == propertyType)
       {
          propertyController = std::make_shared<AnimationTweenController>();
       }
-      else if (eBindingType::FloatScalar == propertyType)
+      else if (eEnginePropertyBindingType::FloatScalar == propertyType)
       {
          propertyController = std::make_shared<FloatTweenController>();
       }
-      else if (eBindingType::EulerAnglesRotation == propertyType)
+      else if (eEnginePropertyBindingType::EulerAnglesRotation == propertyType)
       {
          propertyController = std::make_shared<EulerAnglesRotationTweenController>();
       }
-      else if (eBindingType::Boolean == propertyType)
+      else if (eEnginePropertyBindingType::Boolean == propertyType)
       {
          propertyController = std::make_shared<BooleanTweenController>();
       }
-      else if (eBindingType::Vec3 == propertyType)
+      else if (eEnginePropertyBindingType::Vec3 == propertyType)
       {
          propertyController = std::make_shared<Vec3TweenController>();
       }

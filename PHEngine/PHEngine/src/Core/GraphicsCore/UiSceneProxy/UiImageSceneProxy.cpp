@@ -39,7 +39,7 @@ namespace Graphics
                 mTexture->BindTexture(0);
                 mUiImageShader->SetImageTexture(0);
             }
-            mUiImageShader->SetOpacity(mOpacity);
+            mUiImageShader->SetOpacity(mOpacity * mOverlayOpacity);
             mUiImageShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
             mUiImageShader->SetIsFlipped(mIsFlipped);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);

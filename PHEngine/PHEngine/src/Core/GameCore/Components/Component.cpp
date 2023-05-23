@@ -9,7 +9,7 @@ namespace EngineCore
    Component::Component(const std::string &gameObjectName)
        : EngineObject(gameObjectName),
          m_owner(),
-         mIsEnabled(std::make_shared<EngineGOProperty<bool>>(true, "p_isEnabled", [=](const bool &isEnabled)
+         mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(true, "p_isEnabled", [=](const bool &isEnabled)
                                                              { SetIsEnabled(isEnabled); })),
          mIsPostLevelInitialized(false),
          m_sceneWP()

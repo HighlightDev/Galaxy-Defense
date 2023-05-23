@@ -3,16 +3,9 @@
 #include <string>
 #include <memory>
 
-namespace EngineCore {
+#include "Core/GameCore/EnginePropertyType.h"
 
-   enum class eBindingType
-   {
-      FloatScalar,
-      EulerAnglesRotation,
-      Animation,
-      Boolean,
-      Vec3
-   };
+namespace EngineCore {
 
    struct PropertyBinding
    {
@@ -33,7 +26,7 @@ namespace EngineCore {
       {
       }
 
-      virtual eBindingType GetBindingType() const = 0;
+      virtual eEnginePropertyBindingType GetBindingType() const = 0;
 
       bool IsPropertyConnected() const
       {

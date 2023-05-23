@@ -29,8 +29,9 @@ namespace Game
           bLineOriginStartMovement(false),
           bElectroLineCollided(false),
           mCollidedSpaceship(),
-          mOpacity(std::make_shared<EngineGOProperty<float>>(1.0f, "p_opacity"))
+          mOpacity(std::make_shared<EngineObjectProperty<float>>(1.0f, "p_opacity"))
     {
+        mMissileType = eMissileType::ELECTRO_RAY;
         AddEngineProperty(mOpacity);
         Initialize();
     }
@@ -94,6 +95,7 @@ namespace Game
         {
             mElectroLineEnd = collidedSpaceShipSp->GetRootComponent()->GetTranslation();
             electroLineDirection = glm::normalize(mElectroLineEnd - mElectroLineBegin);
+            // todo
             /*if (mElectroLineOriginStartMovementDelayTimer.IsRunning())
             {
                 mElectroLineOriginStartMovementDelayTimer.StopTimer();

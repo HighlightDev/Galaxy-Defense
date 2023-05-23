@@ -41,7 +41,7 @@ namespace Game
 
         std::shared_ptr<Tweener> mFadeoutTweener;
 
-        std::shared_ptr<EngineGOProperty<float>> mOpacity;
+        std::shared_ptr<EngineObjectProperty<float>> mOpacity;
 
     public:
         ElectroRayChainActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);

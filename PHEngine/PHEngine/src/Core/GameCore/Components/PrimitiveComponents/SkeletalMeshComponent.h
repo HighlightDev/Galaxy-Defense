@@ -40,20 +40,20 @@ namespace EngineCore
       std::string LuaScriptName;
 
       /* src is the main animation time counter*/
-      std::shared_ptr<EngineGOProperty<float>> SrcAnimationTime;
+      std::shared_ptr<EngineObjectProperty<float>> SrcAnimationTime;
 
       /* dst time is used when blending of animations is being calculated*/
-      std::shared_ptr<EngineGOProperty<float>> DstAnimationTime;
+      std::shared_ptr<EngineObjectProperty<float>> DstAnimationTime;
 
       /* src is the main animation name*/
-      std::shared_ptr<EngineGOProperty<std::string>> SrcAnimationName;
+      std::shared_ptr<EngineObjectProperty<std::string>> SrcAnimationName;
 
       /* dst animation name is used when blending of animations is being occurred*/
-      std::shared_ptr<EngineGOProperty<std::string>> DstAnimationName;
+      std::shared_ptr<EngineObjectProperty<std::string>> DstAnimationName;
 
-      std::shared_ptr<EngineGOProperty<bool>> bTransitionEnabled;
+      std::shared_ptr<EngineObjectProperty<bool>> bTransitionEnabled;
 
-      std::shared_ptr<EngineGOProperty<float>> TransitionValue;
+      std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
 
    public:
       SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData);

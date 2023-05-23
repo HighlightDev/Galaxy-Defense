@@ -13,7 +13,7 @@ namespace EnginePhysics
 {
    GhostPhysicsComponent::GhostPhysicsComponent(const PhysicsComponentData &data)
        : PhysicsComponent(data),
-         m_HitBoxScale(std::make_shared<EngineGOProperty<glm::vec3>>(glm::vec3(1.0f),
+         m_HitBoxScale(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(1.0f),
                                                                              "p_hitBoxScale",
                                                                              [this](const glm::vec3 &value)
                                                                              { SyncHitBoxScale(value); }))

@@ -11,7 +11,7 @@ namespace Game
     {
         std::unordered_map<eMissileType, size_t> mAvailableMissiles;
 
-        std::atomic<eMissileType> mSelectedMissileType{eMissileType::NONE};
+        std::atomic<eMissileType> mSelectedMissileType{eMissileType::BOMB};
 
     public:
         static PlayerDataProvider *GetInstance();

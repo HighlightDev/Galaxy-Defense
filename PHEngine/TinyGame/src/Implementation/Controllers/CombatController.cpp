@@ -23,6 +23,8 @@
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/MissileType.h"
 
+#include <array>
+
 using namespace Graphics;
 using namespace EnginePhysics;
 using namespace EngineCore;
@@ -200,8 +202,19 @@ namespace Game
         }
         else if (eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE == playerAction || eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE == playerAction)
         {
-            const auto missileType = eMissileType::BOMB; // temp
-            PlayerDataProvider::GetInstance()->SetSelectedMissileType(missileType);
+            static std::array<eMissileType, 4> missiles = {eMissileType::BOMB, eMissileType::FREEZING, eMissileType::ELECTRO_RAY, eMissileType::BLACK_HOLE};
+            const auto &playerDataProvider = PlayerDataProvider::GetInstance();
+            const auto selectedMissileType = playerDataProvider->GetSelectedMissileType();
+            const auto foundMissileTypeIt = std::find(missiles.cbegin(), missiles.cend(), selectedMissileType);
+            assert(foundMissileTypeIt != missiles.cend());
+            const auto selectedMissileTypeIndex = std::distance(missiles.cbegin(), foundMissileTypeIt);
+            const auto newMissileType = eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE == playerAction
+                                            ? (missiles.size() - 1) == selectedMissileTypeIndex ? missiles.at(0) : missiles.at(selectedMissileTypeIndex + 1)
+                                        : eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE == playerAction
+                                            ? 0 == selectedMissileTypeIndex ? missiles.at(missiles.size() - 1) : missiles.at(selectedMissileTypeIndex - 1)
+                                            : eMissileType::NONE;
+            assert(newMissileType != eMissileType::NONE);
+            playerDataProvider->SetSelectedMissileType(newMissileType);
         }
     }
 
@@ -504,7 +517,7 @@ namespace Game
 
     void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
     {
-        static constexpr auto freezingMissileCount = 0, bombMissileCount = 0, blackHoleMissileCount = 0, electroRayCount = 1;
+        static constexpr auto freezingMissileCount = 1, bombMissileCount = 1, blackHoleMissileCount = 1, electroRayCount = 1;
 
         ElectroRayFactory electroRayFactory;
         for (size_t i = 0; i < electroRayCount; ++i)
@@ -569,8 +582,9 @@ namespace Game
 
     void CombatController::ShootBullet(const glm::vec3 &bulletStartPosition)
     {
-        auto idleBulletIt = std::find_if(mMissilesPool.begin(), mMissilesPool.end(), [](const auto &missile)
-                                         { return eMissileActivityState::IDLE == missile->GetMissileActivityState(); });
+        const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
+        auto idleBulletIt = std::find_if(mMissilesPool.begin(), mMissilesPool.end(), [selectedMissileType](const auto &missile)
+                                         { return (eMissileActivityState::IDLE == missile->GetMissileActivityState() && selectedMissileType == missile->GetMissileType()); });
 
         if (idleBulletIt == mMissilesPool.end())
         {

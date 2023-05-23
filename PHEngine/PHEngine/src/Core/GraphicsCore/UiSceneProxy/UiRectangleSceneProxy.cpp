@@ -17,7 +17,8 @@ namespace Graphics
         UiRectangleSceneProxy::UiRectangleSceneProxy(const UiRectangle *uiRectangle)
             : UiSceneProxyBase(uiRectangle),
               mColor(uiRectangle->GetColor()),
-              mOpacity(uiRectangle->GetOpacity())
+              mOpacity(uiRectangle->GetOpacity()),
+              mBorderRadius(uiRectangle->GetBorderRadius())
         {
         }
 
@@ -38,7 +39,9 @@ namespace Graphics
             mUiRectangleShader->ExecuteShader();
             mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
             mUiRectangleShader->SetColor(mColor);
-            mUiRectangleShader->SetOpacity(mOpacity);
+            mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
+            mUiRectangleShader->SetBorderRadius(mBorderRadius);
+            mUiRectangleShader->SetWidthHeightPixels(glm::vec2(static_cast<float>(mWidthHightPixels.x), static_cast<float>(mWidthHightPixels.y)));
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             mUiRectangleShader->StopShader();
         }
@@ -51,6 +54,11 @@ namespace Graphics
         void UiRectangleSceneProxy::SetOpacity(const float opacity)
         {
             mOpacity = opacity;
+        }
+
+        void UiRectangleSceneProxy::SetBorderRadius(const float borderRadiusPx)
+        {
+            mBorderRadius = borderRadiusPx;
         }
 
         void UiRectangleSceneProxy::CleanUp()

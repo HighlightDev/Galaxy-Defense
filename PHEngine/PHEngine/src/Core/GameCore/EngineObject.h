@@ -16,7 +16,7 @@ namespace EngineCore
 
       uint32_t mObjectId;
 
-      std::unordered_map<std::string, std::shared_ptr<EngineGOPropertyBase>> mEngineProperties;
+      std::unordered_map<std::string, std::shared_ptr<EngineObjectPropertyBase>> mEngineProperties;
 
       std::string EngineObjectName;
 
@@ -26,9 +26,9 @@ namespace EngineCore
 
       uint32_t GetObjectId() const;
 
-      const std::shared_ptr<EngineGOPropertyBase>& GetEnginePropertyByName(const std::string& key) const;
+      const std::shared_ptr<EngineObjectPropertyBase>& GetEnginePropertyByName(const std::string& key) const;
 
-      void AddEngineProperty(const std::shared_ptr<EngineGOPropertyBase>& goPtr);
+      void AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase>& goPtr);
 
       std::string GetEngineObjectName() const;
 

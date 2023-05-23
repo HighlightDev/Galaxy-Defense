@@ -18,7 +18,7 @@ namespace EngineCore
                         rotation,
                         scale),
          mBoundingBox(BoundingBox3D()),
-         mIsVisible(std::make_shared<EngineGOProperty<bool>>(true, "p_isVisible"))
+         mIsVisible(std::make_shared<EngineObjectProperty<bool>>(true, "p_isVisible"))
    {
       /******  HOOKS ****/
       AddEngineProperty(mIsVisible);

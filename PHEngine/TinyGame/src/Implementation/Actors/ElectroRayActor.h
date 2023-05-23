@@ -40,7 +40,7 @@ namespace Game
         std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;
         bool bElectroLineCollided;
         
-        std::shared_ptr<EngineGOProperty<float>> mOpacity;
+        std::shared_ptr<EngineObjectProperty<float>> mOpacity;
         
     public:
         ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);

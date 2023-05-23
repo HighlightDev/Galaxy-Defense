@@ -19,12 +19,12 @@ namespace EngineCore
       return mObjectId;
    }
 
-   void EngineObject::AddEngineProperty(const std::shared_ptr<EngineGOPropertyBase>& goPtr) {
+   void EngineObject::AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase>& goPtr) {
       assert((!mEngineProperties.count(goPtr->Key)));
       mEngineProperties[goPtr->Key] = goPtr;
    }
 
-   const std::shared_ptr<EngineGOPropertyBase>& EngineObject::GetEnginePropertyByName(const std::string& key) const
+   const std::shared_ptr<EngineObjectPropertyBase>& EngineObject::GetEnginePropertyByName(const std::string& key) const
    {
       assert((mEngineProperties.count(key)));
       return mEngineProperties.at(key);

@@ -25,7 +25,7 @@ namespace EngineCore
 
             BoundingBox3D mBoundingBox;
 
-            std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
+            std::shared_ptr<EngineObjectProperty<bool>> mIsVisible;
 
             int32_t mSortOrderValue{0};
 

@@ -69,7 +69,7 @@ namespace EngineCore
 
       InterThreadCommunicationMgr &m_interThreadMgr;
 
-      std::shared_ptr<EngineGOProperty<float>> mGameThreadDeltaSec;
+      std::shared_ptr<EngineObjectProperty<float>> mGameThreadDeltaSec;
 
       std::unordered_map<std::string, IDeferredResourceCreator *> mDeferredResourceCreators;
 

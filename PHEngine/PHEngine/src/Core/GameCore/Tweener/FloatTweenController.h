@@ -9,7 +9,7 @@ namespace EngineCore
       public ITweenController
    {
       using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eBindingType::FloatScalar>;
+      using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::FloatScalar>;
 
    public:
       FloatTweenController();

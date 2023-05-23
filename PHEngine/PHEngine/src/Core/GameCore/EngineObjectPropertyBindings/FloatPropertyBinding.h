@@ -13,7 +13,7 @@ namespace EngineCore {
    {
    private:
       
-      std::shared_ptr<EngineGOProperty<float>> mGoProperty;
+      std::shared_ptr<EngineObjectProperty<float>> mGoProperty;
 
    public:
 
@@ -23,7 +23,7 @@ namespace EngineCore {
       {
       }
 
-      void SetEngineObjectProperty(const std::shared_ptr<EngineGOProperty<float>> gameObjectProperty)
+      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<float>> gameObjectProperty)
       {
          assert(gameObjectProperty);
          mGoProperty = gameObjectProperty;
@@ -40,9 +40,9 @@ namespace EngineCore {
          return mGoProperty->GetValue();
       }
 
-      eBindingType GetBindingType() const override
+      eEnginePropertyBindingType GetBindingType() const override
       {
-         return eBindingType::FloatScalar;
+         return eEnginePropertyBindingType::FloatScalar;
       }
    };
 }

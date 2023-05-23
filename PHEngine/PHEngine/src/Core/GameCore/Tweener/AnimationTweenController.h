@@ -15,7 +15,7 @@ namespace EngineCore
       : public ITweenController
    {
       using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eBindingType::Animation>;
+      using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::Animation>;
 
    public:
 

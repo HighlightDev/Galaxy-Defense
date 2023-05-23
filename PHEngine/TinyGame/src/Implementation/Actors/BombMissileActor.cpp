@@ -9,6 +9,7 @@ namespace Game
     BombMissileActor::BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent)
         : MissileActor(gameObjectName, rootComponent)
     {
+        mMissileType = eMissileType::BOMB;
     }
 
     void BombMissileActor::TriggerSpawn(const glm::vec3 &position)

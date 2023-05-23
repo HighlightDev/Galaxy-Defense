@@ -19,7 +19,7 @@ namespace EngineCore {
 
    void ITweenController::OnTransitionUpdate(const float deltaTime, const float transitionParameter) { }
 
-   eBindingType ITweenController::GetControllerPropertyType() const
+   eEnginePropertyBindingType ITweenController::GetControllerPropertyType() const
    {
       auto srcProp = TranstionProperties[(int)StateType::SourceState];
       assert(srcProp != nullptr);

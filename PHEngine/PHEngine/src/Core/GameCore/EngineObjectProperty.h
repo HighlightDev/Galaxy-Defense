@@ -3,61 +3,95 @@
 #include <string>
 #include <functional>
 #include <memory>
+#include <glm/vec3.hpp>
+#include <type_traits>
 
-struct EngineGOPropertyBase
+#include "EnginePropertyType.h"
+namespace
+{
+   template <typename T>
+   struct ConvertTypeToEnginePropertyType
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::Undefined;
+   };
+
+   template <>
+   struct ConvertTypeToEnginePropertyType<float>
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::Float;
+   };
+
+   template <>
+   struct ConvertTypeToEnginePropertyType<bool>
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::Boolean;
+   };
+
+   template <>
+   struct ConvertTypeToEnginePropertyType<glm::vec3>
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::Vec3;
+   };
+}
+
+struct EngineObjectPropertyBase
 {
    std::string Key;
 
-public:
+protected:
+   eEnginePropertyType mEnginePropertyType{eEnginePropertyType::Undefined};
 
-   EngineGOPropertyBase(const std::string& key)
-      : Key(key)
+public:
+   EngineObjectPropertyBase(const std::string &key)
+       : Key(key)
    {
+   }
+
+   eEnginePropertyType GetPropertyType() const
+   {
+      return mEnginePropertyType;
    }
 };
 
 template <typename Type>
-struct EngineGOProperty : public EngineGOPropertyBase
+struct EngineObjectProperty : public EngineObjectPropertyBase
 {
-  
-   using Action_t = std::function<void(const Type&)>;
+
+   using Action_t = std::function<void(const Type &)>;
 
 protected:
-
    std::unique_ptr<Action_t> Action;
 
    std::shared_ptr<Type> ValuePtr;
 
 public:
-
    template <typename ValueType, typename FunctionType>
-   EngineGOProperty(const ValueType& value,
-      const std::string& key,
-      FunctionType action)
-      : EngineGOPropertyBase(key)
-      , ValuePtr(std::make_shared<Type>(value))
-      , Action(std::make_unique<Action_t>(action))
+   EngineObjectProperty(const ValueType &value,
+                        const std::string &key,
+                        FunctionType action)
+       : EngineObjectPropertyBase(key), ValuePtr(std::make_shared<Type>(value)), Action(std::make_unique<Action_t>(action))
    {
+      mEnginePropertyType = ConvertTypeToEnginePropertyType<typename std::decay<Type>::type>::value;
    }
 
    template <typename ValueType>
-   EngineGOProperty(const ValueType& value,
-      const std::string& key)
-      : EngineGOPropertyBase(key)
-      , ValuePtr(std::make_shared<Type>(value))
-      , Action()
+   EngineObjectProperty(const ValueType &value,
+                        const std::string &key)
+       : EngineObjectPropertyBase(key), ValuePtr(std::make_shared<Type>(value)), Action()
    {
    }
 
-   std::shared_ptr<Type> GetValuePtr() {
+   std::shared_ptr<Type> GetValuePtr()
+   {
       return ValuePtr;
    }
 
-   Type GetValue() const {
+   Type GetValue() const
+   {
       return *ValuePtr;
    }
 
-   void SetValue(const Type& value, const bool triggerAction = true)
+   void SetValue(const Type &value, const bool triggerAction = true)
    {
       *ValuePtr = value;
 
@@ -67,7 +101,7 @@ public:
       }
    }
 
-   EngineGOProperty<Type>& operator=(const Type& value) 
+   EngineObjectProperty<Type> &operator=(const Type &value)
    {
       SetValue(value);
       return *this;
@@ -78,7 +112,12 @@ public:
       return *ValuePtr;
    }
 
-   operator Type&()
+   operator Type &()
+   {
+      return *ValuePtr;
+   }
+
+   operator const Type &() const
    {
       return *ValuePtr;
    }

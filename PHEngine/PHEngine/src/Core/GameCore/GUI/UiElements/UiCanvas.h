@@ -6,6 +6,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 
 #include <unordered_set>
 #include <memory>
@@ -29,6 +30,8 @@ namespace EngineCore
     }
 }
 
+class EngineObjectPropertyBase;
+
 namespace EngineCore
 {
     class Scene;
@@ -37,7 +40,8 @@ namespace EngineCore
     {
         class UiCanvas : public EngineToLuaReplicatorBase,
                          public IUiTransformable,
-                         public ITickable
+                         public ITickable,
+                         public IAnimatable
         {
         private:
             static size_t s_UId;
@@ -69,6 +73,12 @@ namespace EngineCore
             std::vector<std::weak_ptr<UiItemBase>> mDescendingByZOrderHierarchyChildren;
 
             bool mIsCreatedFromLua{false};
+
+            std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
+
+            std::unordered_map<std::string, std::shared_ptr<::EngineObjectPropertyBase>> mProperties;
+
+            std::shared_ptr<Animator> mAnimator;
 
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
@@ -131,6 +141,10 @@ namespace EngineCore
             void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
             void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
 
+            std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string& propName) const override;
+
+            std::shared_ptr<Animator> CreateAndGetAnimator() override;
+
         protected:
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 
@@ -154,6 +168,8 @@ namespace EngineCore
             void UpdateAnchorTransform();
 
             void UpdateDependentChildrenAnchorTransform();
+
+            void UpdateOpacity();
         };
     }
 }

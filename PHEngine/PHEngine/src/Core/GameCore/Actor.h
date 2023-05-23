@@ -33,13 +33,13 @@ namespace EngineCore
       std::shared_ptr<PhysicsComponent> m_physicsComponent;
 
       // Makes all primitive components visible or not
-      std::shared_ptr<EngineGOProperty<bool>> mIsVisible;
+      std::shared_ptr<EngineObjectProperty<bool>> mIsVisible;
 
       /* If Actor is disabled
        - turn off all calculations for him and physics simulation
        also it won't be visible
        */
-      std::shared_ptr<EngineGOProperty<bool>> mIsEnabled;
+      std::shared_ptr<EngineObjectProperty<bool>> mIsEnabled;
 
       std::vector<std::shared_ptr<Actor>> m_children;
 

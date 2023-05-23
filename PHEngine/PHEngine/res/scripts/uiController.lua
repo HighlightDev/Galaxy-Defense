@@ -69,6 +69,7 @@ end
 
 local s_buttonColor = 0x403649
 local s_hoveredButtonColor = 0x201b24
+local s_radius = 6
 
 local testAvailableHearts = 5
 
@@ -81,11 +82,15 @@ local function createPlayerHUDOverlay(host)
 
     local lifeRootContainerWidth = windowWidth / 3.0;
     local lifeRootContainerHeight = windowHeight / 4.0;
-    local weaponRootContainerWidth = windowWidth / 5.0
+    local weaponRootContainerWidth = windowWidth / 3.0;
     local heartWidth = lifeRootContainerWidth / 10.0
     local heartInterval = heartWidth * 0.5
-    local weaponWidth = lifeRootContainerHeight / 4.0
-    local weaponBackgroundWidth = weaponWidth * 2.0
+    local weaponCount = 4.0
+    local weaponWidth = weaponRootContainerWidth / weaponCount
+    local weaponRootContainerHeight = weaponWidth + 10
+    local weaponInterval = weaponWidth / 8.0
+    weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
+    local weaponTopBottomMargin = (weaponRootContainerHeight - weaponWidth) * 0.5
 
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
@@ -93,11 +98,20 @@ local function createPlayerHUDOverlay(host)
     local weaponRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(weaponRootContainer)
 
-    local weaponBackgroundImage = UiImage:new(host)
-    playerHUDOverlay:addWidget(weaponBackgroundImage)
+    local focusRectangle = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(focusRectangle)
 
-    local weaponImage = UiImage:new(host)
-    playerHUDOverlay:addWidget(weaponImage)
+    local weaponImage1 = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponImage1)
+
+    local weaponImage2 = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponImage2)
+
+    local weaponImage3 = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponImage3)
+
+    local weaponImage4 = UiImage:new(host)
+    playerHUDOverlay:addWidget(weaponImage4)
 
     local lifeImage1 = UiImage:new(host)
     playerHUDOverlay:addWidget(lifeImage1)
@@ -154,10 +168,11 @@ local function createPlayerHUDOverlay(host)
     end
 
     playerHUDOverlay.testCurrentActiveWeaponIndex = 0
-    playerHUDOverlay.testChangeActiveWeapon = function ()
+    playerHUDOverlay.testChangeActiveWeapon = function()
         playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex + 1
-        playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex % 2
-        weaponImage:setTextureSource(playerHUDOverlay.testCurrentActiveWeaponIndex == 0 and "weapon_missile.png" or "weapon_missile_2.png")
+        playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex % 4
+        focusRectangle:setHorizontalCenterOffset(playerHUDOverlay.testCurrentActiveWeaponIndex *
+        (weaponWidth + weaponInterval))
     end
 
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -177,29 +192,60 @@ local function createPlayerHUDOverlay(host)
         weaponRootContainer:setWidth(weaponRootContainerWidth)
         weaponRootContainer:setHeight(lifeRootContainerHeight)
 
-        weaponBackgroundImage:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
-        weaponBackgroundImage:setTextureSource("background_shield.png");
-        weaponBackgroundImage:setZOrder(2);
-        weaponBackgroundImage:setRotationDegrees(180)
-        weaponBackgroundImage:setHeight(weaponBackgroundWidth);
-        weaponBackgroundImage:setWidth(weaponBackgroundWidth * 0.8);
-        weaponBackgroundImage:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            weaponRootContainer.widgetName);
-        weaponBackgroundImage:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            weaponRootContainer.widgetName);
+        weaponImage1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponImage1:setTextureSource("weapon_missile.png");
+        weaponImage1:setZOrder(4);
+        weaponImage1:setRotationDegrees(180)
+        weaponImage1:setHeight(weaponWidth);
+        weaponImage1:setWidth(weaponWidth);
+        weaponImage1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            weaponRootContainer.widgetName, weaponInterval);
+        weaponImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin);
 
-        weaponImage:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundImage.widgetName)
-        weaponImage:setTextureSource("weapon_missile.png");
-        weaponImage:setZOrder(3);
-        weaponImage:setRotationDegrees(180)
-        weaponImage:setHeight(weaponWidth);
-        weaponImage:setWidth(weaponWidth);
-        weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            weaponBackgroundImage.widgetName);
-        weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            weaponBackgroundImage.widgetName);
-        weaponImage:setHorizontalCenterOffset(-5)
-        weaponImage:setVerticalCenterOffset(5)
+        weaponImage2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponImage2:setTextureSource("weapon_missile.png");
+        weaponImage2:setZOrder(4);
+        weaponImage2:setRotationDegrees(180)
+        weaponImage2:setHeight(weaponWidth);
+        weaponImage2:setWidth(weaponWidth);
+        weaponImage2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponImage1.widgetName, weaponInterval);
+        weaponImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin);
+
+        weaponImage3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponImage3:setTextureSource("weapon_missile.png");
+        weaponImage3:setZOrder(4);
+        weaponImage3:setRotationDegrees(180)
+        weaponImage3:setHeight(weaponWidth);
+        weaponImage3:setWidth(weaponWidth);
+        weaponImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponImage2.widgetName, weaponInterval);
+        weaponImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin);
+
+        weaponImage4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponImage4:setTextureSource("weapon_missile.png");
+        weaponImage4:setZOrder(4);
+        weaponImage4:setRotationDegrees(180)
+        weaponImage4:setHeight(weaponWidth);
+        weaponImage4:setWidth(weaponWidth);
+        weaponImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponImage3.widgetName, weaponInterval);
+        weaponImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin);
+
+        focusRectangle:setParent(host, playerHUDOverlayCanvas.widgetName, weaponImage1.widgetName)
+        focusRectangle:setZOrder(3);
+        focusRectangle:setHeight(weaponWidth + 20);
+        focusRectangle:setWidth(weaponWidth + 20);
+        focusRectangle:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            weaponImage1.widgetName);
+        focusRectangle:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            weaponImage1.widgetName);
+        focusRectangle:setColorHexValue(0xFFFFFF)
+        focusRectangle:setBorderRadius(50)
 
         lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage1:setTextureSource("scaled_down_heart.png");
@@ -361,6 +407,7 @@ local function createPauseOverlay(host)
             pauseMenuOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(0x6C5B7B)
         backgroundRect:setZOrder(1)
+        backgroundRect:setBorderRadius(s_radius)
 
         continueButton:setParent(host, pauseMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
         continueButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
@@ -373,6 +420,7 @@ local function createPauseOverlay(host)
         continueButton:setColorHexValue(s_buttonColor)
         continueButton:setZOrder(2)
         continueButton:enableMouseInputReceiverBase(host)
+        continueButton:setBorderRadius(s_radius)
 
         continueButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, continueButton.widgetName)
         continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -400,6 +448,7 @@ local function createPauseOverlay(host)
         settingsButton:setColorHexValue(s_buttonColor)
         settingsButton:setZOrder(2)
         settingsButton:enableMouseInputReceiverBase(host)
+        settingsButton:setBorderRadius(s_radius)
 
         settingsButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -427,6 +476,7 @@ local function createPauseOverlay(host)
         exitToMainMenuButton:setColorHexValue(s_buttonColor)
         exitToMainMenuButton:setZOrder(2)
         exitToMainMenuButton:enableMouseInputReceiverBase(host)
+        exitToMainMenuButton:setBorderRadius(s_radius)
 
         exitToMainMenuButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, exitToMainMenuButton.widgetName)
         exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -454,6 +504,7 @@ local function createPauseOverlay(host)
         exitGameButton:setColorHexValue(s_buttonColor)
         exitGameButton:setZOrder(2)
         exitGameButton:enableMouseInputReceiverBase(host)
+        exitGameButton:setBorderRadius(s_radius)
 
         exitGameMenuButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, exitGameButton.widgetName)
         exitGameMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -549,6 +600,7 @@ local function createPauseSettingsOverlay(host)
             pauseSettingsOverlayCanvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(0x6C5B7B)
         backgroundRect:setZOrder(1)
+        backgroundRect:setBorderRadius(s_radius)
 
         soundToggleButton:setParent(host, pauseSettingsOverlayCanvas.widgetName, backgroundRect.widgetName)
         soundToggleButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -585,6 +637,7 @@ local function createPauseSettingsOverlay(host)
         applyButton:setColorHexValue(s_buttonColor)
         applyButton:setZOrder(2)
         applyButton:enableMouseInputReceiverBase(host)
+        applyButton:setBorderRadius(s_radius)
 
         applyButtonLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, applyButton.widgetName)
         applyButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, applyButton.widgetName, 0)
@@ -609,6 +662,7 @@ local function createPauseSettingsOverlay(host)
         cancelButton:setColorHexValue(s_buttonColor)
         cancelButton:setZOrder(2)
         cancelButton:enableMouseInputReceiverBase(host)
+        cancelButton:setBorderRadius(s_radius)
 
         cancelButtonLabel:setParent(host, pauseSettingsOverlayCanvas.widgetName, cancelButton.widgetName)
         cancelButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, cancelButton.widgetName,

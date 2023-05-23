@@ -16,7 +16,8 @@ namespace EngineCore
         UiRectangleLuaProxy::UiRectangleLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiRectangle> &ownerRectangle)
             : UiItemBaseLuaProxy(ownerRectangle),
               mColor(ownerRectangle->GetColor()),
-              mOpacity(ownerRectangle->GetOpacity())
+              mOpacity(ownerRectangle->GetOpacity()),
+              mBorderRadius(static_cast<float>(ownerRectangle->GetBorderRadius()))
         {
         }
 
@@ -44,6 +45,7 @@ namespace EngineCore
             std::vector<float> colorVec = {mColor.r, mColor.g, mColor.b};
             jsonObj["color"] = colorVec;
             jsonObj["opacity"] = mOpacity;
+            jsonObj["border_radius"] = mBorderRadius; 
             return jsonObj.dump();
         }
 
@@ -64,5 +66,14 @@ namespace EngineCore
                 mIsLuaDataDirty = true;
             }
         }
+
+         void UiRectangleLuaProxy::SetBorderRadius_FromGrameThread(const float borderRadius)
+         {
+            if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius))
+            {
+                mBorderRadius = borderRadius;
+                mIsLuaDataDirty = true;
+            }
+         }
     }
 }

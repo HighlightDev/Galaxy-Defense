@@ -41,7 +41,9 @@ namespace Graphics
             // Render background
             mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
             mUiRectangleShader->SetColor(mToggleOffColor);
-            mUiRectangleShader->SetOpacity(mOpacity);
+            mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
+            mUiRectangleShader->SetWidthHeightPixels(mWidthHightPixels);
+            mUiRectangleShader->SetBorderRadius(0.0f);
             ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
 
             if (mIsStateOn)

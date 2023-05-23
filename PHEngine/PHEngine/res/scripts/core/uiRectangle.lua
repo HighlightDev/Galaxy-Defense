@@ -45,6 +45,10 @@ function UiRectangle:new(host)
         opacity = {
             value = 1.0,
             dirty = false
+        },
+        border_radius = {
+            value = 0.0,
+            dirty = false
         }
     }
 
@@ -72,6 +76,9 @@ function UiRectangle:updateFromReplicatorData(host)
             end
             if parsedJson["opacity"] ~= nil then
                 self.rectangleProperties.opacity.value = parsedJson["opacity"]
+            end
+            if parsedJson["border_radius"] ~= nil then
+                self.rectangleProperties.border_radius.value = parsedJson["border_radius"]
             end
         end
     end
@@ -126,6 +133,14 @@ function UiRectangle:setOpacity(opacity)
     if self.rectangleProperties.opacity.value ~= opacity then
         self.rectangleProperties.opacity.value = opacity
         self.rectangleProperties.opacity.dirty = true
+    end
+end
+
+function UiRectangle:setBorderRadius(borderRadius)
+    assert(borderRadius ~= nil and type(borderRadius) == "number")
+    if self.rectangleProperties.border_radius.value ~= borderRadius then
+        self.rectangleProperties.border_radius.value = borderRadius
+        self.rectangleProperties.border_radius.dirty = true
     end
 end
 

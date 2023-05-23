@@ -29,12 +29,12 @@ namespace EngineCore
          update_data_reset_time(0.1f),
          mTimeIncreaseMultiply(1.0f),
          LuaScriptName(meshComponentData.m_luaScriptPath),
-         SrcAnimationTime(std::make_shared<EngineGOProperty<float>>(0.0f, "SrcAnimTime")),
-         DstAnimationTime(std::make_shared<EngineGOProperty<float>>(0.0f, "DstAnimTime")),
-         SrcAnimationName(std::make_shared<EngineGOProperty<std::string>>("", "SrcAnimName")),
-         DstAnimationName(std::make_shared<EngineGOProperty<std::string>>("", "DstAnimName")),
-         TransitionValue(std::make_shared<EngineGOProperty<float>>(0.0f, "AnimTransitionValue")),
-         bTransitionEnabled(std::make_shared<EngineGOProperty<bool>>(false, "bAnimTransitionEnabled"))
+         SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime")),
+         DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime")),
+         SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName")),
+         DstAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "DstAnimName")),
+         TransitionValue(std::make_shared<EngineObjectProperty<float>>(0.0f, "AnimTransitionValue")),
+         bTransitionEnabled(std::make_shared<EngineObjectProperty<bool>>(false, "bAnimTransitionEnabled"))
    {
       /* Meta table */
       AddEngineProperty(SrcAnimationTime);

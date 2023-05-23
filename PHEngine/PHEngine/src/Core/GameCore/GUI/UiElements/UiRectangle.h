@@ -31,6 +31,8 @@ namespace EngineCore
 
             float mOpacity;
 
+            float mBorderRadius;
+
         public:
             UiRectangle();
 
@@ -45,6 +47,10 @@ namespace EngineCore
             void SetOpacity(const float opacity);
 
             float GetOpacity() const;
+
+            void SetBorderRadius(const float radiusPx);
+
+            float GetBorderRadius() const;
 
             glm::vec3 GetColor() const;
 

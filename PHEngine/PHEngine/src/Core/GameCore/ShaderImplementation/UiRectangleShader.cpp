@@ -19,6 +19,8 @@ namespace EngineCore
          u_translation = GetUniform("translation", shaderProgramId);
          u_scale = GetUniform("scale", shaderProgramId);
          u_opacity = GetUniform("opacity", shaderProgramId);
+         u_widthHeightPx = GetUniform("widthAndHeight", shaderProgramId);
+         u_borderRadius = GetUniform("borderRadius", shaderProgramId);
       }
 
       void UiRectangleShader::SetColor(const glm::vec3 &color)
@@ -35,6 +37,16 @@ namespace EngineCore
       {
          u_translation.LoadUniform(normalizedTranslation);
          u_scale.LoadUniform(normalizedScale);
+      }
+
+      void UiRectangleShader::SetBorderRadius(const float borderRadiusPx)
+      {
+         u_borderRadius.LoadUniform(borderRadiusPx);
+      }
+
+      void UiRectangleShader::SetWidthHeightPixels(const glm::vec2 &widthHeightPixels)
+      {
+         u_widthHeightPx.LoadUniform(widthHeightPixels);
       }
 
       void UiRectangleShader::SetShaderPredefine()

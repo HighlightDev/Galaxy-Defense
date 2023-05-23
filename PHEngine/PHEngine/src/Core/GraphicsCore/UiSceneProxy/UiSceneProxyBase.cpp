@@ -8,13 +8,14 @@ namespace Graphics
 {
     namespace Proxy
     {
-        UiSceneProxyBase::UiSceneProxyBase(const UiItemBase* uiItemBase)
+        UiSceneProxyBase::UiSceneProxyBase(const UiItemBase *uiItemBase)
             : mUiItemUId(uiItemBase->GetUId()),
               mIsVisible(false),
               mZOrder(uiItemBase->GetZOrder()),
               mParentCanvasProxy(),
               mNormalizedTranslation(uiItemBase->GetNormalizedTranslation()),
-              mNormalizedScale(uiItemBase->GetNormalizedScale())
+              mNormalizedScale(uiItemBase->GetNormalizedScale()),
+              mWidthHightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
         {
         }
 
@@ -52,10 +53,25 @@ namespace Graphics
             return mZOrder;
         }
 
-        void UiSceneProxyBase::SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale)
+        void UiSceneProxyBase::SetTransform(const glm::vec2 &normalizedTranslation, const glm::vec2 &normalizedScale)
         {
             mNormalizedTranslation = normalizedTranslation;
             mNormalizedScale = normalizedScale;
+        }
+
+        void UiSceneProxyBase::SetWidthHeightPixels(const glm::ivec2 &widthHeight)
+        {
+            mWidthHightPixels = widthHeight;
+        }
+
+        void UiSceneProxyBase::SetOverlayOpacity(const float overlayOpacity)
+        {
+            mOverlayOpacity = overlayOpacity;
+        }
+
+        float UiSceneProxyBase::GetOverlayOpacity() const
+        {
+            return mOverlayOpacity;
         }
 
         void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy)

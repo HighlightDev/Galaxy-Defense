@@ -21,6 +21,8 @@ namespace EngineCore
          Uniform u_opacity;
          Uniform u_translation;
          Uniform u_scale;
+         Uniform u_widthHeightPx;
+         Uniform u_borderRadius;
 
       public:
 
@@ -31,6 +33,10 @@ namespace EngineCore
          void SetOpacity(const float opacity);
 
          void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
+
+         void SetBorderRadius(const float borderRadiusPx);
+
+         void SetWidthHeightPixels(const glm::vec2& widthHeightPixels);
 
       protected:
 

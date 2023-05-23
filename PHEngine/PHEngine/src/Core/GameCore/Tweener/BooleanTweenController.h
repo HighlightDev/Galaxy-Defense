@@ -10,7 +10,7 @@ namespace EngineCore
       public ITweenController
    {
       using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eBindingType::Boolean>;
+      using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::Boolean>;
 
    public:
       BooleanTweenController();

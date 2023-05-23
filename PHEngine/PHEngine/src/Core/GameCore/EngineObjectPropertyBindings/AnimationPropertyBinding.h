@@ -11,14 +11,14 @@ namespace EngineCore
        : public PropertyBinding
    {
    private:
-      std::shared_ptr<EngineGOProperty<std::string>> SrcName;
-      std::shared_ptr<EngineGOProperty<std::string>> DstName;
+      std::shared_ptr<EngineObjectProperty<std::string>> SrcName;
+      std::shared_ptr<EngineObjectProperty<std::string>> DstName;
 
-      std::shared_ptr<EngineGOProperty<float>> SrcTime;
-      std::shared_ptr<EngineGOProperty<float>> DstTime;
+      std::shared_ptr<EngineObjectProperty<float>> SrcTime;
+      std::shared_ptr<EngineObjectProperty<float>> DstTime;
 
-      std::shared_ptr<EngineGOProperty<bool>> bTranstitionEnabled;
-      std::shared_ptr<EngineGOProperty<float>> TransitionValue;
+      std::shared_ptr<EngineObjectProperty<bool>> bTranstitionEnabled;
+      std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
 
    public:
       AnimationPropertyBinding(const std::string &bindingName)
@@ -105,12 +105,12 @@ namespace EngineCore
          return TransitionValue->GetValue();
       }
 
-      void SetBindingProperties(const std::shared_ptr<EngineGOProperty<std::string>> &srcName,
-                                const std::shared_ptr<EngineGOProperty<std::string>> &dstName,
-                                const std::shared_ptr<EngineGOProperty<float>> &srcTime,
-                                const std::shared_ptr<EngineGOProperty<float>> &dstTime,
-                                const std::shared_ptr<EngineGOProperty<bool>> &isTransitionEnabled,
-                                const std::shared_ptr<EngineGOProperty<float>> &transitionValue)
+      void SetBindingProperties(const std::shared_ptr<EngineObjectProperty<std::string>> &srcName,
+                                const std::shared_ptr<EngineObjectProperty<std::string>> &dstName,
+                                const std::shared_ptr<EngineObjectProperty<float>> &srcTime,
+                                const std::shared_ptr<EngineObjectProperty<float>> &dstTime,
+                                const std::shared_ptr<EngineObjectProperty<bool>> &isTransitionEnabled,
+                                const std::shared_ptr<EngineObjectProperty<float>> &transitionValue)
       {
          SrcName = srcName;
          DstName = dstName;
@@ -122,9 +122,9 @@ namespace EngineCore
          bPropertyConnected = true;
       }
 
-      eBindingType GetBindingType() const override
+      eEnginePropertyBindingType GetBindingType() const override
       {
-         return eBindingType::Animation;
+         return eEnginePropertyBindingType::Animation;
       }
    };
 }

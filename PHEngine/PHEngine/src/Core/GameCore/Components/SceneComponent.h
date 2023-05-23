@@ -14,14 +14,14 @@ namespace EngineCore
    {
       using Base = Component;
 
-      std::shared_ptr<EngineGOProperty<glm::vec3>> m_TransformScale; // This property is used only for bindings. For all other purposes use transform instead
+      std::shared_ptr<EngineObjectProperty<glm::vec3>> m_TransformScale; // This property is used only for bindings. For all other purposes use transform instead
 
    protected:
       bool bTransformationDirty;
 
       std::shared_ptr<Transform> mTransform;
 
-      std::shared_ptr<EngineGOProperty<glm::vec3>> m_additionalRotationEuler;
+      std::shared_ptr<EngineObjectProperty<glm::vec3>> m_additionalRotationEuler;
 
       glm::mat4 m_relativeMatrix;
 

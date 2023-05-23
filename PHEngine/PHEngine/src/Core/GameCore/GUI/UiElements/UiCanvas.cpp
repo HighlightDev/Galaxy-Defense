@@ -5,6 +5,8 @@
 #include "Core/GameCore/ScriptingCore/LuaProxies/UiCanvasLuaProxy.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/EngineObjectProperty.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 
 #include <algorithm>
 #include <json/json.hpp>
@@ -32,9 +34,13 @@ namespace EngineCore
               mIsVisible(true),
               mIsTransformDirty(true),
               mInputSystem(),
-              mDescendingByZOrderHierarchyChildren()
+              mDescendingByZOrderHierarchyChildren(),
+              mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [=](const float opacity)
+                                                                             { UpdateOpacity(); }))
         {
             LogInfo("UiCanvas::ctor => ", mUId);
+
+            mProperties.emplace("Opacity", mOpacityProperty);
         }
 
         void UiCanvas::InitializeInputSystem()
@@ -122,6 +128,25 @@ namespace EngineCore
         std::weak_ptr<IUiTransformable> UiCanvas::GetParent() const
         {
             return std::weak_ptr<IUiTransformable>();
+        }
+
+        std::shared_ptr<EngineObjectPropertyBase> UiCanvas::GetPropertyByName(const std::string &propName) const
+        {
+            if (mProperties.count(propName))
+            {
+                return mProperties.at(propName);
+            }
+
+            return nullptr;
+        }
+
+        std::shared_ptr<Animator> UiCanvas::CreateAndGetAnimator()
+        {
+            if (!mAnimator)
+            {
+                mAnimator = std::make_shared<Animator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
+            }
+            return mAnimator;
         }
 
         bool UiCanvas::IsVisible() const
@@ -264,6 +289,11 @@ namespace EngineCore
             if (mInputSystem && mIsVisible)
             {
                 mInputSystem->UnpausableTick(deltaTime);
+            }
+
+            if (mAnimator)
+            {
+                mAnimator->UnpausableTick(deltaTime);
             }
         }
 
@@ -490,6 +520,22 @@ namespace EngineCore
                 {
                     mIsVisible = isVisible;
                     mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                }
+            }
+        }
+
+        void UiCanvas::UpdateOpacity()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacity");
+            if (const auto &sceneSp = mScene.lock())
+            {
+                if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                {
+                    if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
+                    {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy, opacity = mOpacityProperty->GetValue()]()
+                                                                                            { canvasProxy->SetOverlayOpacity(opacity); });
+                    }
                 }
             }
         }

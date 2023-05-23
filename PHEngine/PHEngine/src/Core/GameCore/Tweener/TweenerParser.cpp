@@ -316,32 +316,32 @@ namespace EngineCore
 
       if ("animation" == property.Type)
       {
-         result = std::make_unique<StateProperty<eBindingType::Animation>>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Animation>>(property.Value, std::static_pointer_cast<AnimationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("scalar_float" == property.Type)
       {
          const float value = std::stof(property.Value);
-         result = std::make_unique<StateProperty<eBindingType::FloatScalar>>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
+         result = std::make_unique<StateProperty<eEnginePropertyBindingType::FloatScalar>>(value, std::static_pointer_cast<FloatPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("euler_angles_rotation" == property.Type)
       {
          const auto &values = Split(property.Value, ';');
          const glm::vec3 eulerAngles = ExtractVec3FromStrings(values);
-         result = std::make_unique<StateProperty<eBindingType::EulerAnglesRotation>>(eulerAngles,
+         result = std::make_unique<StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>>(eulerAngles,
                                                                                      std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("boolean" == property.Type)
       {
          const std::string &value = ToLower(property.Value);
          const bool booleanValue = "true" == value;
-         result = std::make_unique<StateProperty<eBindingType::Boolean>>(booleanValue,
+         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Boolean>>(booleanValue,
                                                                          std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("vec3" == property.Type)
       {
          const auto &values = Split(property.Value, ';');
          const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
-         result = std::make_unique<StateProperty<eBindingType::Vec3>>(vec3Value,
+         result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(vec3Value,
                                                                       std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
       }
 

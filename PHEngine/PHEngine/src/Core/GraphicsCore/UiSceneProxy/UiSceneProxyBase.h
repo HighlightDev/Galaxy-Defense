@@ -33,6 +33,10 @@ namespace Graphics
 
             glm::vec2 mNormalizedTranslation, mNormalizedScale;
 
+            glm::ivec2 mWidthHightPixels;
+
+            float mOverlayOpacity{1.0f};
+
         public:
             UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
@@ -52,7 +56,13 @@ namespace Graphics
 
             void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
+            void SetWidthHeightPixels(const glm::ivec2& widthHeight);
+
             void SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy);
+
+            void SetOverlayOpacity(const float overlayOpacity);
+
+            float GetOverlayOpacity() const;
 
             virtual void OnSceneProxyRegistered() = 0;
 

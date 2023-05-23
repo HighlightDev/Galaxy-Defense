@@ -9,7 +9,7 @@ namespace EngineCore
       public ITweenController
    {
       using Base = ITweenController;
-      using TweenStateProperty_t = StateProperty<eBindingType::Vec3>;
+      using TweenStateProperty_t = StateProperty<eEnginePropertyBindingType::Vec3>;
       
 
    public:

@@ -2,6 +2,7 @@
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/Common/FontHandler.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 #include <algorithm>
 
@@ -17,7 +18,8 @@ namespace Graphics
               mIsVisible(false),
               mAbsoluteOrigin(canvas->GetAbsoluteOrigin()),
               mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight())),
-              mFontHandlerWp()
+              mFontHandlerWp(),
+              mOverlayOpacity(1.0f)
         {
         }
 
@@ -40,12 +42,13 @@ namespace Graphics
 
         void UiCanvasSceneProxy::Render()
         {
-            if (mIsVisible)
+            if (mIsVisible && !EngineMath::FloatsNearEqual(mOverlayOpacity, 0.0f))
             {
                 for (const auto &proxy : mUiProxies)
                 {
                     if (proxy->IsVisible())
                     {
+                        proxy->SetOverlayOpacity(mOverlayOpacity);
                         proxy->Render();
                     }
                 }
@@ -83,6 +86,16 @@ namespace Graphics
         void UiCanvasSceneProxy::SetWidthHeight(const glm::ivec2 &widthHeight)
         {
             mWidthHeight = widthHeight;
+        }
+
+        void UiCanvasSceneProxy::SetOverlayOpacity(const float opacity)
+        {
+            mOverlayOpacity = opacity;
+        }
+
+        float UiCanvasSceneProxy::GetOverlayOpacity() const
+        {
+            return mOverlayOpacity;
         }
 
         glm::ivec2 UiCanvasSceneProxy::GetAbsoluteOrigin() const

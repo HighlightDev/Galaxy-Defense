@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Implementation/MissileType.h"
 
 #include <functional>
 #include <unordered_map>
@@ -27,6 +28,8 @@ namespace Game
     protected:
         eMissileActivityState mActivityState{eMissileActivityState::IDLE};
 
+        eMissileType mMissileType{eMissileType::NONE};
+
     public:
         MissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
@@ -43,5 +46,7 @@ namespace Game
         virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() = 0;
 
         eMissileActivityState GetMissileActivityState() const;
+
+        eMissileType GetMissileType() const;
     };
 }

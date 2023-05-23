@@ -34,6 +34,6 @@ namespace EngineCore
 
       virtual void InitWithPropsInstant(const std::shared_ptr<BaseStateProperty>& dstStateProperty);
 
-      enum eBindingType GetControllerPropertyType() const;
+      enum eEnginePropertyBindingType GetControllerPropertyType() const;
    };
 }

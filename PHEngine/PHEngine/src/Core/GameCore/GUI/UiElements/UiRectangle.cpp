@@ -22,7 +22,8 @@ namespace EngineCore
         UiRectangle::UiRectangle()
             : UiItemBase(),
               mColor(glm::vec3(1.0f)),
-              mOpacity(1.0f)
+              mOpacity(1.0f),
+              mBorderRadius(0.0f)
         {
         }
 
@@ -107,6 +108,21 @@ namespace EngineCore
             return mColor;
         }
 
+        void UiRectangle::SetBorderRadius(const float radiusPx)
+        {
+            if (!EngineMath::FloatsNearEqual(radiusPx, mBorderRadius))
+            {
+                mBorderRadius = radiusPx;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+            }
+        }
+
+        float UiRectangle::GetBorderRadius() const
+        {
+            return mBorderRadius;
+        }
+
         std::shared_ptr<UiSceneProxyBase> UiRectangle::CreateUiSceneProxy() const
         {
             return std::make_shared<UiRectangleSceneProxy>(this);
@@ -161,6 +177,15 @@ namespace EngineCore
                     SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 }
             }
+            if (jsonObj.contains("border_radius"))
+            {
+                const auto borderRadius = jsonObj["border_radius"].get<float>();
+                if (!EngineMath::FloatsNearEqual(mBorderRadius, borderRadius))
+                {
+                    mBorderRadius = borderRadius;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
         }
 
         void UiRectangle::SyncDataOnRenderThread()
@@ -175,7 +200,7 @@ namespace EngineCore
                         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
 
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId(), color = mColor, opacity = mOpacity]()
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canvasUId = canvasSp->GetUId(), color = mColor, opacity = mOpacity, borderRadius = mBorderRadius]()
                                                                                                 {
                                 const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
                                 if (uiSceneProxy)
@@ -183,6 +208,7 @@ namespace EngineCore
                                     const auto& rectangleSceneProxy = std::static_pointer_cast<UiRectangleSceneProxy>(uiSceneProxy);
                                     rectangleSceneProxy->SetColor(color);
                                     rectangleSceneProxy->SetOpacity(opacity);
+                                    rectangleSceneProxy->SetBorderRadius(borderRadius);
                                 } });
                         }
                     }
@@ -204,10 +230,11 @@ namespace EngineCore
                     if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy, opacity = mOpacity, color = mColor]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy, opacity = mOpacity, color = mColor, borderRadius = mBorderRadius]()
                                                                                          {
                             rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
-                            rectangleLuaProxy->SetColor_FromGameThread(color); });
+                            rectangleLuaProxy->SetColor_FromGameThread(color);
+                            rectangleLuaProxy->SetBorderRadius_FromGrameThread(borderRadius); });
                     }
                 }
             }

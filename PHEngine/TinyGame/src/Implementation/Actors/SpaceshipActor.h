@@ -40,8 +40,8 @@ namespace Game
 
         float mDamageEffectDuration;
 
-        std::shared_ptr<EngineGOProperty<float>> mDamageTimeProperty;
-        std::shared_ptr<EngineGOProperty<float>> mFreezingEffectProperty;
+        std::shared_ptr<EngineObjectProperty<float>> mDamageTimeProperty;
+        std::shared_ptr<EngineObjectProperty<float>> mFreezingEffectProperty;
 
         float mDamageTextShowDuration;
 

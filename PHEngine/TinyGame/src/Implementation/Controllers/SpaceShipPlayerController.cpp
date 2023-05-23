@@ -39,7 +39,7 @@ namespace Game
 
       const auto maxBoundPrimitiveComponentIt = std::max_element(primitiveComponents.begin(),
                                                                  primitiveComponents.end(),
-                                                                 [&](const auto &leftPrimitiveComp, const auto &rightPrimitiveComp)
+                                                                 [](const auto &leftPrimitiveComp, const auto &rightPrimitiveComp)
                                                                  {
                                                                     const auto &leftHalfExtent = leftPrimitiveComp->GetTransformedBoundingBox().GetHalfExtent();
                                                                     const auto &rightHalfExtent = rightPrimitiveComp->GetTransformedBoundingBox().GetHalfExtent();

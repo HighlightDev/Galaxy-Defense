@@ -13,6 +13,7 @@ namespace Game
           mCombatActivePhaseActor(),
           mExplosionSecondPhaseActor()
     {
+        mMissileType = eMissileType::BLACK_HOLE;
     }
 
     void BlackHoleMissileActor::AttachTweener(std::shared_ptr<Tweener> tweener)

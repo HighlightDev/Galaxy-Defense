@@ -24,6 +24,8 @@ namespace EngineCore
 
             float mOpacity;
 
+            float mBorderRadius;
+
         public:
             explicit UiRectangleLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiRectangle> &ownerUiItem);
 
@@ -34,6 +36,8 @@ namespace EngineCore
             void SetColor_FromGameThread(const glm::vec3& color);
 
             void SetOpacity_FromGameThread(const float opacity);
+
+            void SetBorderRadius_FromGrameThread(const float borderRadius);
         };
     }
 }

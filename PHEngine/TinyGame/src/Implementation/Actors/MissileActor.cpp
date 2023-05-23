@@ -20,4 +20,9 @@ namespace Game
     {
         return EngineMath::TestPointInAABB(boundingBox.GetMin(), boundingBox.GetMax(), GetRootComponent()->GetTranslation());
     }
+
+    eMissileType MissileActor::GetMissileType() const
+    {
+        return mMissileType;
+    }
 }

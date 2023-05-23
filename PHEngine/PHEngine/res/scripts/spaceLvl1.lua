@@ -27,22 +27,15 @@ local Vec3 = require("core/vec3")
 function CreateTestLevel(host)
 
 	_LazyLoadResourcesAsync(host,
-		[[fern.png
-		,path.png
-		,grass.png
-		,arrow_right_1.png
+		[[arrow_right_1.png
 		,nimbus_mono.png
 		,scaled_down_heart.png
 		,background_shield.png
 		,weapon_missile.png
 		,weapon_missile_2.png
+		,weapon_missile_3.png
 		,perlin_noise.png
-		,nightRight.jpg
 		,nightLeft.jpg
-		,nightTop.jpg
-		,nightBottom.jpg
-		,nightBack.jpg
-		,nightFront.jpg
 		,spaceship_albedo.jpg
 		,spaceship_normal.jpg
 		,spaceship_roughness.jpg
@@ -67,8 +60,6 @@ function CreateTestLevel(host)
 		,asteroid.fbx
 		,explosion1.ogg
 		,piano-loop2.wav
-		,SciFiPanels1_albedo.jpg
-		,SciFiPanels1_height.jpg
 		,planet_1.png
 		,planet_2.png
 		,planet_3.png
@@ -115,26 +106,11 @@ function CreateTestLevel(host)
 		local c_dirLight = _CreateComponent(host, "DirectionalLightComponent", d_dirLight)
 		_AttachComponentToActor(host, "MainLightActor", c_dirLight)
 	end
-
+	
 	local a_skybox = _CreateActor(host, "SkyboxActor",
 		0, 0, 0,
 		0, 0, 0,
 		1, 1, 1)
-
-	if a_skybox ~= nil and false then
-		local m_skybox = _CreateMaterial(host, "SpaceSkyboxMaterial.m")
-		_SetTextureToMaterial(host, m_skybox,
-			"nightRight.jpg,nightLeft.jpg,nightTop.jpg,nightBottom.jpg,nightBack.jpg,nightFront.jpg",
-			"spaceTexture"
-		)
-
-		local d_skybox = _CreateSkyboxComponentData(host, "SpaceSkyboxComponent",
-			440, 440, 440,
-			m_skybox)
-
-		local c_skybox = _CreateComponent(host, "SkyboxComponent", d_skybox)
-		_AttachComponentToActor(host, "SkyboxActor", c_skybox)
-	end
 
 	local a_spaceship = _CreateActor(host, "SpaceshipActor",
 		0, 0, 0,

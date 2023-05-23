@@ -35,6 +35,8 @@ namespace Graphics
 
             std::weak_ptr<::EngineCore::FontHandler> mFontHandlerWp;
 
+            float mOverlayOpacity;
+
         public:
             UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas *canvas);
 
@@ -57,6 +59,10 @@ namespace Graphics
             void SetAbsoluteOrigin(const glm::ivec2 &position);
 
             void SetWidthHeight(const glm::ivec2 &widthHeight);
+
+            void SetOverlayOpacity(const float opacity);
+
+            float GetOverlayOpacity() const;
 
             glm::ivec2 GetAbsoluteOrigin() const;
 
