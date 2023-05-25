@@ -37,12 +37,14 @@ namespace EngineCore
 
             std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
+            bool mPendingAnimationFinishesToOpenOverlay{false};
+
         public:
             OverlayManager(const std::weak_ptr<Scene> &scene);
 
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
 
             void RegisterOverlay(std::shared_ptr<IUiOverlay> overlay);
 
@@ -58,11 +60,11 @@ namespace EngineCore
 
             void OpenOverlay(const std::string &overlayName);
 
-            void OpenBackgroundOverlay(const std::string& overlayName);
+            void OpenBackgroundOverlay(const std::string &overlayName);
 
             void CloseCurrentOverlay();
 
-            void CloseBackgroundOverlay(const std::string& overlayName);
+            void CloseBackgroundOverlay(const std::string &overlayName);
 
             bool CurrentOverlayOpened() const;
 

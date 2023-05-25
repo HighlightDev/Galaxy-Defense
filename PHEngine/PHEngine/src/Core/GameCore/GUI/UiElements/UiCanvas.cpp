@@ -36,7 +36,7 @@ namespace EngineCore
               mInputSystem(),
               mDescendingByZOrderHierarchyChildren(),
               mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [=](const float opacity)
-                                                                             { UpdateOpacity(); }))
+                                                                             { UpdateOpacityProperty(); }))
         {
             LogInfo("UiCanvas::ctor => ", mUId);
 
@@ -140,13 +140,26 @@ namespace EngineCore
             return nullptr;
         }
 
-        std::shared_ptr<Animator> UiCanvas::CreateAndGetAnimator()
+        std::shared_ptr<Animator> UiCanvas::GetAnimator() const
+        {
+            return mAnimator;
+        }
+
+        void UiCanvas::CreateAnimator()
         {
             if (!mAnimator)
             {
                 mAnimator = std::make_shared<Animator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
             }
-            return mAnimator;
+        }
+
+        void UiCanvas::AddAnimation(const std::string &animationName, const AnimationData &animationData)
+        {
+            if (!mAnimator)
+            {
+                CreateAnimator();
+            }
+            mAnimator->AddAnimation(animationName, animationData);
         }
 
         bool UiCanvas::IsVisible() const
@@ -524,9 +537,9 @@ namespace EngineCore
             }
         }
 
-        void UiCanvas::UpdateOpacity()
+        void UiCanvas::UpdateOpacityProperty()
         {
-            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacity");
+            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacityProperty");
             if (const auto &sceneSp = mScene.lock())
             {
                 if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())

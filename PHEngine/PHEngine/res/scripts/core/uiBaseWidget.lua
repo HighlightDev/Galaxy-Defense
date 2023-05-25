@@ -1,4 +1,13 @@
 UiBaseWidget = {
+    EnginePropertyType = {
+        Undefined = 0,
+        Float = 1,
+        Vec3 = 2,
+        Boolean = 3
+    },
+    AnimationInterpolationFunctionType = {
+        LINEAR = 0
+    }
 }
 
 function UiBaseWidget:new()

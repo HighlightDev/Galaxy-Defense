@@ -37,7 +37,7 @@ namespace Graphics
         void UiRectangleSceneProxy::Render()
         {
             mUiRectangleShader->ExecuteShader();
-            mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
+            mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale * mScale);
             mUiRectangleShader->SetColor(mColor);
             mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
             mUiRectangleShader->SetBorderRadius(mBorderRadius);

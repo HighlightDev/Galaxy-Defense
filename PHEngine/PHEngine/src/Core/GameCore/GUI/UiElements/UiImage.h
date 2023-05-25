@@ -23,9 +23,10 @@ using namespace Graphics::Texture;
 
 namespace EngineCore
 {
-    class UiCanvas;
     namespace GUI
     {
+        class UiCanvas;
+
         class UiImage : public UiItemBase
         {
             std::string mTextureSrc;

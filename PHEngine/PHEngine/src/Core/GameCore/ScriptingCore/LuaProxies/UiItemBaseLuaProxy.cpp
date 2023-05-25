@@ -1,5 +1,6 @@
 #include "UiItemBaseLuaProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
@@ -169,6 +170,7 @@ namespace EngineCore
          jsonObj["horizontalCenterOffset"] = mHorizontalCenterOffset;
          jsonObj["verticalCenterOffset"] = mVerticalCenterOffset;
          jsonObj["anchors"] = anchorConvertedData;
+         jsonObj["supportsAnimation"] = IsAnimationSupported();
 
          mIsLuaDataDirty = false;
          return jsonObj.dump();
@@ -189,6 +191,45 @@ namespace EngineCore
       bool UiItemBaseLuaProxy::IsVisible() const
       {
          return mIsVisible;
+      }
+
+      bool UiItemBaseLuaProxy::IsAnimationSupported() const
+      {
+         return false;
+      }
+
+      void UiItemBaseLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)
+      {
+         static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::AddAnimation");
+         if (const auto sceneSp = mSceneWp.lock())
+         {
+            const auto replicatorId = GetReplicatorId();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationData]()
+                                                                              {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
+                    assert(uiItemBase);
+                    uiItemBase->AddAnimation(animationName, animationData); });
+         }
+      }
+
+      void UiItemBaseLuaProxy::StartAnimation(const std::string &animationName)
+      {
+         static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::StartAnimation");
+         if (const auto sceneSp = mSceneWp.lock())
+         {
+            const auto replicatorId = GetReplicatorId();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName]()
+                                                                              {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
+                    assert(uiItemBase);
+                    const auto& animator = uiItemBase->GetAnimator();
+                    assert(animator && animator->HasAnimation(animationName));
+                    animator->StartAnimation(animationName); });
+         }
       }
 
       bool UiItemBaseLuaProxy::IsMouseInputDataDirty() const

@@ -7,6 +7,7 @@
 #include "Core/GameCore/GUI/UiInputSystem/UiInputSystem.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
 
 #include <unordered_set>
 #include <memory>
@@ -95,7 +96,7 @@ namespace EngineCore
 
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
 
-            void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
+            void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
 
             size_t GetUId() const override;
             const glm::ivec2 &GetAbsoluteOrigin() const override;
@@ -141,9 +142,13 @@ namespace EngineCore
             void OnMousePressed(const glm::ivec2 &mouseCursorPosition);
             void OnMouseClicked(const glm::ivec2 &mouseCursorPosition);
 
-            std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string& propName) const override;
+            std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string &propName) const override;
 
-            std::shared_ptr<Animator> CreateAndGetAnimator() override;
+            std::shared_ptr<Animator> GetAnimator() const override;
+
+            void CreateAnimator() override;
+
+            void AddAnimation(const std::string& animationName, const AnimationData& animationData) override;
 
         protected:
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
@@ -169,7 +174,7 @@ namespace EngineCore
 
             void UpdateDependentChildrenAnchorTransform();
 
-            void UpdateOpacity();
+            void UpdateOpacityProperty();
         };
     }
 }

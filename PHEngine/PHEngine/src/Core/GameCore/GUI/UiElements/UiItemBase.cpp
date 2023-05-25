@@ -8,6 +8,9 @@
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/Animator.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <json/json.hpp>
@@ -44,8 +47,11 @@ namespace EngineCore
               mIsVisible(true),
               mIsTransformDirty(false),
               mIsPropertiesShouldBeUpdatedOnRenderThread(false),
-              mIsPropertiesShouldBeUpdatedOnLuaThread(false)
+              mIsPropertiesShouldBeUpdatedOnLuaThread(false),
+              mScaleProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Scale", [this](const float newScaleValue)
+                                                                           { UpdateScaleProperty(); }))
         {
+            mProperties.emplace("Scale", mScaleProperty);
         }
 
         void UiItemBase::SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
@@ -657,6 +663,11 @@ namespace EngineCore
             {
                 child->UnpausableTick(deltaTime);
             }
+
+            if (mAnimator)
+            {
+                mAnimator->UnpausableTick(deltaTime);
+            }
         }
 
         void UiItemBase::Tick(const float deltaTime)
@@ -866,7 +877,8 @@ namespace EngineCore
                     if (const auto &canvasSp = GetParentCanvas().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnRenderThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), isVisible = mIsVisible, zOrder = mZOrder, normTranslation = mNormalizedTranslation, normScale = mNormalizedScale, width = mWidth, height = mHeight]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), isVisible = mIsVisible, zOrder = mZOrder, normTranslation = mNormalizedTranslation, normScale = mNormalizedScale, width = mWidth, height = mHeight]()
+                                                                                            {
                             if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                             {
                                 const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
@@ -877,8 +889,7 @@ namespace EngineCore
                                     uiSceneProxy->SetTransform(normTranslation, normScale);
                                     uiSceneProxy->SetWidthHeightPixels(glm::ivec2(static_cast<int32_t>(width), static_cast<int32_t>(height)));
                                 } 
-                            } 
-                        });
+                            } });
                     }
                 }
             }
@@ -908,6 +919,62 @@ namespace EngineCore
                     }
                 }
             }
+        }
+
+        void UiItemBase::UpdateScaleProperty()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateScaleProperty");
+            if (mIsSceneProxyReady)
+            {
+                if (const auto &sceneSp = GetScene().lock())
+                {
+                    if (const auto &canvasSp = GetParentCanvas().lock())
+                    {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), scale = mScaleProperty->GetValue()]()
+                                                                                            {
+                            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                            {
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                                if (uiSceneProxy)
+                                {
+                                    uiSceneProxy->SetScale(scale);
+                                } 
+                            } });
+                    }
+                }
+            }
+        }
+
+        std::shared_ptr<EngineObjectPropertyBase> UiItemBase::GetPropertyByName(const std::string &propName) const
+        {
+            if (mProperties.count(propName))
+            {
+                return mProperties.at(propName);
+            }
+
+            return nullptr;
+        }
+
+        std::shared_ptr<Animator> UiItemBase::GetAnimator() const
+        {
+            return mAnimator;
+        }
+
+        void UiItemBase::CreateAnimator()
+        {
+            if (!mAnimator)
+            {
+                mAnimator = std::make_shared<Animator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
+            }
+        }
+
+        void UiItemBase::AddAnimation(const std::string &animationName, const AnimationData &animationData)
+        {
+            if (!mAnimator)
+            {
+                CreateAnimator();
+            }
+            mAnimator->AddAnimation(animationName, animationData);
         }
     }
 }

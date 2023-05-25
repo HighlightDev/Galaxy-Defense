@@ -49,6 +49,14 @@ namespace Game
 
         std::string GetOverlayName() const override;
 
+        std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override { return mPauseSettingsMenuCanvas; }
+
+        void SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback) override {}
+
+        bool HasFadeInAnimation() const override { return false; }
+
+        bool HasFadeOutAnimation() const override { return false; }
+
         private:
 
         void OnApplyButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);

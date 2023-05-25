@@ -36,9 +36,9 @@ namespace EngineCore
                 mAnimationController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
                 if (mAnimationController->IsAnimationFinished())
                 {
-                    if (mOnAnimationFinishedCallback)
+                    for (const auto &animationFinishedCallback : mOnAnimationFinishedCallbacks)
                     {
-                        mOnAnimationFinishedCallback(mActiveAnimationName);
+                        animationFinishedCallback(mActiveAnimationName);
                     }
                     mAnimationController->Reset();
                     mActiveAnimationName = "";
@@ -62,7 +62,7 @@ namespace EngineCore
 
         void Animator::SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback)
         {
-            mOnAnimationFinishedCallback = callback;
+            mOnAnimationFinishedCallbacks.emplace_back(callback);
         }
 
         void Animator::StartAnimation(const std::string &newAnimationName)
@@ -73,9 +73,9 @@ namespace EngineCore
                 assert(mAnimations.count(mActiveAnimationName));
                 assert(mAnimationController);
                 mAnimationController->ForceFinishAnimation(mAnimations.at(mActiveAnimationName), mAnimatable);
-                if (mOnAnimationFinishedCallback)
+                for (const auto &animationFinishedCallback : mOnAnimationFinishedCallbacks)
                 {
-                    mOnAnimationFinishedCallback(mActiveAnimationName);
+                    animationFinishedCallback(mActiveAnimationName);
                 }
                 mAnimationController->Reset();
                 mActiveAnimationName = "";
@@ -94,6 +94,11 @@ namespace EngineCore
                 assert(mAnimationController);
             }
             mAnimationController->InitWithSrcValues(mAnimations.at(mActiveAnimationName), mAnimatable);
+        }
+
+        bool Animator::HasAnimation(const std::string &animationName) const
+        {
+            return mAnimations.count(animationName) > 0;
         }
     }
 }

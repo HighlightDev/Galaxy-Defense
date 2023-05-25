@@ -28,6 +28,13 @@ namespace EngineCore
             const auto &foundOverlay = FindOverlay(overlay->GetOverlayName());
             assert(!foundOverlay);
             mOverlays.emplace_back(overlay);
+            overlay->SubscribeOnAnimationFinished([this](const std::string &overlayName)
+                                                  {
+                if (mPendingAnimationFinishesToOpenOverlay && overlayName == "FadeOut") {
+                    mPendingAnimationFinishesToOpenOverlay = false;
+                    assert(mCurrentOpenedOverlay);
+                    mCurrentOpenedOverlay->OpenOverlay();
+                } });
         }
 
         void OverlayManager::RegisterBackgroundOverlay(std::shared_ptr<IUiOverlay> overlay)
@@ -80,10 +87,17 @@ namespace EngineCore
             assert(foundOverlay);
             if (mCurrentOpenedOverlay)
             {
+                if (mCurrentOpenedOverlay->HasFadeOutAnimation())
+                {
+                    mPendingAnimationFinishesToOpenOverlay = true;
+                }
                 mCurrentOpenedOverlay->CloseOverlay();
             }
             mCurrentOpenedOverlay = foundOverlay;
-            mCurrentOpenedOverlay->OpenOverlay();
+            if (!mPendingAnimationFinishesToOpenOverlay)
+            {
+                mCurrentOpenedOverlay->OpenOverlay();
+            }
             SyncLuaThreadData();
         }
 

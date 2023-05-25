@@ -1,21 +1,21 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
-	local slash = package.config:sub(1,1)
-	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
-	local pattern = ""
-	if slash == "/" then
-		pattern = "(.*/)"
-	elseif slash == "\\" then
-		pattern = "(.*\\)"
-	end
-	local str = debug.getinfo(2, "S").source:sub(2)
-	local pathToCurrentScript = str:match(pattern)
-	if pathToCurrentScript ~= nil then
-		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
-		unixLikePath = unixLikePath:gsub("//", "/")
-		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
-	end
+    local slash = package.config:sub(1, 1)
+    assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+    local pattern = ""
+    if slash == "/" then
+        pattern = "(.*/)"
+    elseif slash == "\\" then
+        pattern = "(.*\\)"
+    end
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match(pattern)
+    if pathToCurrentScript ~= nil then
+        local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+        unixLikePath = unixLikePath:gsub("//", "/")
+        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+    end
 end
 
 setup()
@@ -83,6 +83,42 @@ function UiCanvas:setIsVisible(isVisible)
         self.properties.visible.value = isVisible
         self.properties.visible.dirty = true
     end
+end
+
+function UiCanvas:addFadeInAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
+                                     animatedPropertyType, propertySrcValue, propertyDstValue)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
+        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
+        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+    local animationJsonData = json.encode({
+        animatedPropertyType = animatedPropertyType,
+        animationFunctionType = animationFunctionType,
+        animationDuration = animationDuration,
+        animatedPropertyName = animatedPropertyName,
+        srcValue = propertySrcValue,
+        dstValue = propertyDstValue
+    })
+    _AddCanvasFadeAnimation(host, self.luaProxyId, 0, animationJsonData)
+end
+
+function UiCanvas:addFadeOutAnimation(host, animationFunctionType, animationDuration, animatedPropertyName,
+                                      animatedPropertyType, propertySrcValue, propertyDstValue)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(animationFunctionType ~= nil and type(animationFunctionType) == "number" and animationDuration ~= nil and
+        type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
+        animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+    assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+    local animationJsonData = json.encode({
+        animatedPropertyType = animatedPropertyType,
+        animationFunctionType = animationFunctionType,
+        animationDuration = animationDuration,
+        animatedPropertyName = animatedPropertyName,
+        srcValue = propertySrcValue,
+        dstValue = propertyDstValue
+    })
+    _AddCanvasFadeAnimation(host, self.luaProxyId, 1, animationJsonData)
 end
 
 function UiCanvas:update(host, deltaTime)

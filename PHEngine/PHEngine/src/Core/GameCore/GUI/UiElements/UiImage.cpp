@@ -227,7 +227,8 @@ namespace EngineCore
                     {
                         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canasUId = canvasSp->GetUId(), textureSp = mTexture, opacity = mOpacity, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]() {
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canasUId = canvasSp->GetUId(), textureSp = mTexture, opacity = mOpacity, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
+                                                                                                {
                                 const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canasUId);
                                 if (uiSceneProxy)
                                 {
@@ -236,8 +237,7 @@ namespace EngineCore
                                     imageSceneProxy->SetOpacity(opacity);
                                     imageSceneProxy->SetRotationDegrees(rotationDegrees);
                                     imageSceneProxy->SetIsFlipped(isFlipped); 
-                                } 
-                            });
+                                } });
                         }
                     }
                 }

@@ -7,6 +7,7 @@
 #include <string>
 #include <memory>
 #include <functional>
+#include <vector>
 
 namespace EngineCore
 {
@@ -27,7 +28,7 @@ namespace EngineCore
 
             float mAnimationTimePassed{0.0f};
 
-            std::function<void(std::string)> mOnAnimationFinishedCallback;
+            std::vector<std::function<void(std::string)>> mOnAnimationFinishedCallbacks;
 
             std::unique_ptr<::EngineCore::GUI::IAnimationController> mAnimationController;
 
@@ -47,6 +48,8 @@ namespace EngineCore
             void SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback);
 
             void StartAnimation(const std::string& newAnimationName);
+
+            bool HasAnimation(const std::string& animationName) const;
         };
     }
 }

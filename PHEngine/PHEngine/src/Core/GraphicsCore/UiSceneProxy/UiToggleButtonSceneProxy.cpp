@@ -39,7 +39,7 @@ namespace Graphics
         {
             mUiRectangleShader->ExecuteShader();
             // Render background
-            mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
+            mUiRectangleShader->SetTransform(mNormalizedTranslation, mNormalizedScale * mScale);
             mUiRectangleShader->SetColor(mToggleOffColor);
             mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
             mUiRectangleShader->SetWidthHeightPixels(mWidthHightPixels);

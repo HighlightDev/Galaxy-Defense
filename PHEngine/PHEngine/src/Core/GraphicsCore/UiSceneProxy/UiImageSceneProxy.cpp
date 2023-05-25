@@ -33,7 +33,7 @@ namespace Graphics
         void UiImageSceneProxy::Render()
         {
             mUiImageShader->ExecuteShader();
-            mUiImageShader->SetTransform(mNormalizedTranslation, mNormalizedScale);
+            mUiImageShader->SetTransform(mNormalizedTranslation, mNormalizedScale * mScale);
             if (mTexture)
             {
                 mTexture->BindTexture(0);

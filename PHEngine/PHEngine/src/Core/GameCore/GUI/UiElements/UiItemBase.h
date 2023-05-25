@@ -7,6 +7,8 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/GUI/UiInputSystem/IUiMouseInputReceivable.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
+#include "Core/GameCore/EngineObjectProperty.h"
 
 #include <memory>
 #include <vector>
@@ -21,11 +23,13 @@ namespace EngineCore
     namespace GUI
     {
         class UiCanvas;
+        class Animator;
 
         class UiItemBase
             : public EngineToLuaReplicatorBase,
               public IUiTransformable,
-              public ITickable
+              public ITickable,
+              public IAnimatable
         {
             size_t mUId;
 
@@ -75,12 +79,18 @@ namespace EngineCore
 
             std::shared_ptr<IUiMouseInputReceivable> mMouseInputReceiver;
 
+            std::unordered_map<std::string, std::shared_ptr<::EngineObjectPropertyBase>> mProperties;
+
+            std::shared_ptr<::EngineCore::GUI::Animator> mAnimator;
+
+            std::shared_ptr<EngineObjectProperty<float>> mScaleProperty;
+
         public:
             UiItemBase();
 
             void SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
-            void SetParents(const std::string& uiCanvasName, const std::string& uiWidgetParentName);
+            void SetParents(const std::string &uiCanvasName, const std::string &uiWidgetParentName);
 
             void SetIsSceneProxyReady(const bool isSceneProxyReady);
 
@@ -156,6 +166,14 @@ namespace EngineCore
             void Tick(const float deltaTime) override;
             void UnpausableTick(const float deltaTime) override;
 
+            std::shared_ptr<::EngineObjectPropertyBase> GetPropertyByName(const std::string &propName) const override;
+
+            std::shared_ptr<::EngineCore::GUI::Animator> GetAnimator() const override;
+
+            void CreateAnimator() override;
+
+            void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
+
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
@@ -184,6 +202,8 @@ namespace EngineCore
             void SyncDataOnLuaThread();
 
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
+
+            void UpdateScaleProperty();
         };
     }
 }

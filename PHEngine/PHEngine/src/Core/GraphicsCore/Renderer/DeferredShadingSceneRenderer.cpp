@@ -1201,7 +1201,7 @@ namespace Graphics
             assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
             primitiveSceneProxy->PostConstructorInitialize();
             PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
-            SetProxiesAreDirty(true); 
+            SetProxiesAreDirty(true);
          });
       }
 

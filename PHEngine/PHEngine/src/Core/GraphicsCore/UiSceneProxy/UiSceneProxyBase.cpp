@@ -74,6 +74,16 @@ namespace Graphics
             return mOverlayOpacity;
         }
 
+        void UiSceneProxyBase::SetScale(const float scale)
+        {
+            mScale = scale;
+        }
+
+        float UiSceneProxyBase::GetScale() const
+        {
+            return mScale;
+        }
+
         void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy)
         {
             mParentCanvasProxy = parentCanvasProxy;

@@ -4,6 +4,7 @@
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorType.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/UiAnchorData.h"
 #include "Core/GameCore/ScriptingCore/Common/LuaMouseInputState.h"
+#include "Core/GameCore/ScriptingCore/LuaProxies/IAnimatableLuaProxy.h"
 
 #include <string>
 #include <unordered_map>
@@ -14,6 +15,7 @@ namespace EngineCore
     namespace GUI
     {
         class UiItemBase;
+        class AnimationData;
     }
 }
 
@@ -24,7 +26,8 @@ namespace EngineCore
     namespace Scripts
     {
         class UiItemBaseLuaProxy
-            : public LuaProxy
+            : public LuaProxy,
+              public IAnimatableLuaProxy
         {
             std::string mUiItemName;
 
@@ -91,6 +94,12 @@ namespace EngineCore
             void EnableMouseInputReceiverBase();
 
             bool IsMouseInputDataDirty() const;
+
+            bool IsAnimationSupported() const override;
+
+            void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData& animationData) override;
+
+            void StartAnimation(const std::string& animationName) override;
         };
     }
 }

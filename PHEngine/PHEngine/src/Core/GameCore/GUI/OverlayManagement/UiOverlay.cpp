@@ -29,16 +29,13 @@ namespace EngineCore
         {
             assert(!mCanvas);
             mCanvas = canvas;
-            // todo: for now
-            auto animator = mCanvas->CreateAndGetAnimator();
-            animator->AddAnimation("FadeIn", AnimationData(eAnimationInterpolationFunctionType::LINEAR, 0.5f, "Opacity", 0.0f, 1.0f));
-            animator->AddAnimation("FadeOut", AnimationData(eAnimationInterpolationFunctionType::LINEAR, 0.5f, "Opacity", 1.0f, 0.0f));
-            animator->SubscribeOnAnimationFinished([this](const std::string& animationName) {
+            mCanvas->CreateAnimator();
+            mCanvas->GetAnimator()->SubscribeOnAnimationFinished([this](const std::string &animationName)
+                                                                 { 
                 if ("FadeOut" == animationName)
                 {
                     mCanvas->SetIsVisible(false);
-                }
-            });
+                } });
         }
 
         std::string UiOverlay::GetOverlayName() const
@@ -50,13 +47,25 @@ namespace EngineCore
         {
             assert(mCanvas);
             mCanvas->SetIsVisible(true);
-            mCanvas->CreateAndGetAnimator()->StartAnimation("FadeIn");
+            const auto &animator = mCanvas->GetAnimator();
+            if (animator->HasAnimation("FadeIn"))
+            {
+                animator->StartAnimation("FadeIn");
+            }
         }
 
         void UiOverlay::CloseOverlay()
         {
             assert(mCanvas);
-            mCanvas->CreateAndGetAnimator()->StartAnimation("FadeOut");
+            const auto &animator = mCanvas->GetAnimator();
+            if (animator->HasAnimation("FadeOut"))
+            {
+                animator->StartAnimation("FadeOut");
+            }
+            else
+            {
+                mCanvas->SetIsVisible(false);
+            }
         }
 
         std::shared_ptr<::EngineCore::Scripts::LuaProxy> UiOverlay::ReplicateLuaProxy()
@@ -70,11 +79,6 @@ namespace EngineCore
 
         void UiOverlay::Initialize()
         {
-        }
-
-        std::shared_ptr<UiCanvas> UiOverlay::GetCanvas() const
-        {
-            return mCanvas;
         }
 
         void UiOverlay::Tick(const float deltaTime)
@@ -91,6 +95,32 @@ namespace EngineCore
             {
                 mCanvas->UnpausableTick(deltaTime);
             }
+        }
+
+        std::shared_ptr<UiCanvas> UiOverlay::GetCanvas() const
+        {
+            return mCanvas;
+        }
+
+        void UiOverlay::SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback)
+        {
+            assert(mCanvas);
+            const auto &animator = mCanvas->GetAnimator();
+            animator->SubscribeOnAnimationFinished(callback);
+        }
+
+        bool UiOverlay::HasFadeInAnimation() const
+        {
+            assert(mCanvas);
+            const auto &animator = mCanvas->GetAnimator();
+            return animator->HasAnimation("FadeIn");
+        }
+
+        bool UiOverlay::HasFadeOutAnimation() const
+        {
+            assert(mCanvas);
+            const auto &animator = mCanvas->GetAnimator();
+            return animator->HasAnimation("FadeOut");
         }
     }
 }

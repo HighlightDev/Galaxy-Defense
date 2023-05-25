@@ -51,11 +51,17 @@ namespace EngineCore
 
             void SetOverlayCanvas(const std::shared_ptr<UiCanvas> &canvas);
 
-            std::shared_ptr<UiCanvas> GetCanvas() const;
-
             void Tick(const float deltaTime) override;
 
             void UnpausableTick(const float deltaTime) override;
+
+            std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override;
+
+            void SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback) override;
+
+            bool HasFadeInAnimation() const override;
+
+            bool HasFadeOutAnimation() const override;
         };
     }
 }

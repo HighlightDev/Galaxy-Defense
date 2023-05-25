@@ -172,7 +172,20 @@ local function createPlayerHUDOverlay(host)
         playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex + 1
         playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex % 4
         focusRectangle:setHorizontalCenterOffset(playerHUDOverlay.testCurrentActiveWeaponIndex *
-        (weaponWidth + weaponInterval))
+            (weaponWidth + weaponInterval))
+        if playerHUDOverlay.testCurrentActiveWeaponIndex == 1 then
+            weaponImage1:startAnimation(host, "FocusOut")
+            weaponImage2:startAnimation(host, "FocusIn")
+        elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 2 then
+            weaponImage2:startAnimation(host, "FocusOut")
+            weaponImage3:startAnimation(host, "FocusIn")
+        elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 3 then
+            weaponImage3:startAnimation(host, "FocusOut")
+            weaponImage4:startAnimation(host, "FocusIn")
+        elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 0 then
+            weaponImage4:startAnimation(host, "FocusOut")
+            weaponImage1:startAnimation(host, "FocusIn")
+        end
     end
 
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -203,6 +216,12 @@ local function createPlayerHUDOverlay(host)
         weaponImage1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
 
+        weaponImage1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+        weaponImage1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+        weaponImage1:startAnimation(host, "FocusIn")
+
         weaponImage2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponImage2:setTextureSource("weapon_missile.png");
         weaponImage2:setZOrder(4);
@@ -213,6 +232,11 @@ local function createPlayerHUDOverlay(host)
             weaponImage1.widgetName, weaponInterval);
         weaponImage2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
+
+        weaponImage2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+        weaponImage2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
 
         weaponImage3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponImage3:setTextureSource("weapon_missile.png");
@@ -225,6 +249,11 @@ local function createPlayerHUDOverlay(host)
         weaponImage3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
 
+        weaponImage3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+        weaponImage3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+
         weaponImage4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponImage4:setTextureSource("weapon_missile.png");
         weaponImage4:setZOrder(4);
@@ -235,6 +264,11 @@ local function createPlayerHUDOverlay(host)
             weaponImage3.widgetName, weaponInterval);
         weaponImage4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
+
+        weaponImage4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
+        weaponImage4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.5, "Scale",
+            UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
 
         focusRectangle:setParent(host, playerHUDOverlayCanvas.widgetName, weaponImage1.widgetName)
         focusRectangle:setZOrder(3);
@@ -312,6 +346,12 @@ local function createPauseOverlay(host)
     local pauseMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
     pauseMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)
+        pauseMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+            0.3, "Opacity",
+            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+        pauseMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+            0.3, "Opacity",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local pauseMenuOverlay = UiOverlay:createOverlay(host, "PauseMenuOverlay", pauseMenuOverlayCanvas)
 
@@ -532,6 +572,12 @@ local function createPauseSettingsOverlay(host)
     local pauseSettingsOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
     pauseSettingsOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseSettingsOverlayCanvas.luaProxyId)
+        pauseSettingsOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+            0.3, "Opacity",
+            UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
+        pauseSettingsOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+            0.3, "Opacity",
+            UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
     local pauseSettingsOverlay = UiOverlay:createOverlay(host, "PauseSettingsOverlay", pauseSettingsOverlayCanvas)
 

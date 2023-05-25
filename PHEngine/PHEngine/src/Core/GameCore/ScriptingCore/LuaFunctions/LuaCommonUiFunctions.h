@@ -44,7 +44,7 @@ namespace EngineCore
 
          void OpenOverlay(const std::tuple<std::string> &overlayName);
 
-         void OpenBackgroundOverlay(const std::tuple<std::string> &overlayName);         
+         void OpenBackgroundOverlay(const std::tuple<std::string> &overlayName);
 
          void CloseCurrentOverlay(const std::tuple<> &emptyData);
 
@@ -52,23 +52,29 @@ namespace EngineCore
 
          int32_t CreateCommonUiWidget(const std::tuple<int32_t, std::string> &data);
 
-         bool IsLuaProxyReady(const std::tuple<int32_t>& data);
+         bool IsLuaProxyReady(const std::tuple<int32_t> &data);
 
-         std::string GetUiWidgetName(const std::tuple<int32_t>& data);
+         std::string GetUiWidgetName(const std::tuple<int32_t> &data);
 
-         void OnCommonUiWidgetDataUpdated(const std::tuple<int32_t/*lua proxy id*/, std::string/*json data*/>& data);
+         void OnCommonUiWidgetDataUpdated(const std::tuple<int32_t /*lua proxy id*/, std::string /*json data*/> &data);
 
-         std::string GetGameThreadData(const std::tuple<int32_t/*lua proxy id*/>& data);
+         std::string GetGameThreadData(const std::tuple<int32_t /*lua proxy id*/> &data);
 
-         std::string GetMouseInputData(const std::tuple<int32_t/*lua proxy id*/>& data);
+         std::string GetMouseInputData(const std::tuple<int32_t /*lua proxy id*/> &data);
 
-         void InitializeCanvasInputSystem(const std::tuple<int32_t/*lua proxy id*/>& data);
+         void InitializeCanvasInputSystem(const std::tuple<int32_t /*lua proxy id*/> &data);
 
-         void EnableMouseInputReceiverBase(const std::tuple<int32_t/*lua proxy id*/>& data);
+         void AddCanvasFadeAnimation(const std::tuple<int32_t /*lua proxy id*/, int32_t /*0 - fadeIn, 1 - fadeOut*/, std::string /*animation json data*/> &data);
 
-         void EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t/*lua proxy id*/>& data);
+         void EnableMouseInputReceiverBase(const std::tuple<int32_t /*lua proxy id*/> &data);
 
-         void SetUiWidgetParent(const std::tuple<int32_t/*lua proxy id*/, std::string/*canvas name*/, std::string/*parent name*/>& data);
+         void EnableToggleButtonMouseInputReceiver(const std::tuple<int32_t /*lua proxy id*/> &data);
+
+         void SetUiWidgetParent(const std::tuple<int32_t /*lua proxy id*/, std::string /*canvas name*/, std::string /*parent name*/> &data);
+
+         void AddUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation json data*/> &data);
+
+         void StartUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/>& data);
       };
    }
 }

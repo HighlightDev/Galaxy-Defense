@@ -46,6 +46,14 @@ namespace Game
 
         bool IsVisible() const;
 
+        std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override { return mPauseMenuCanvas; }
+
+        void SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback) override {}
+
+        bool HasFadeInAnimation() const override { return false; }
+
+        bool HasFadeOutAnimation() const override { return false; }
+
     private:
         void OnContinueButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
 

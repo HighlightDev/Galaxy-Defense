@@ -37,6 +37,8 @@ namespace Graphics
 
             float mOverlayOpacity{1.0f};
 
+            float mScale{1.0f};
+
         public:
             UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
@@ -63,6 +65,10 @@ namespace Graphics
             void SetOverlayOpacity(const float overlayOpacity);
 
             float GetOverlayOpacity() const;
+
+            void SetScale(const float scale);
+
+            float GetScale() const;
 
             virtual void OnSceneProxyRegistered() = 0;
 
