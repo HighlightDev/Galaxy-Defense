@@ -39,7 +39,7 @@ namespace Graphics
       const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
       assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
       const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
-      mBlurPassCount = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).blurPassCount;
+      mBlurPassCount = bloomQuality.blurPassCount;
    }
 
    void BloomPostFxPass::ExecutePostFx(const std::shared_ptr<ITexture> &sceneColorTexture, const std::shared_ptr<FramebufferBundle> &previousStepFramebuffer)
