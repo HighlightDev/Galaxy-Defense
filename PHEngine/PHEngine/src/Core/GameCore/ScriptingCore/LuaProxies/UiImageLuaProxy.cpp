@@ -84,10 +84,5 @@ namespace EngineCore
                 mIsLuaDataDirty = true;
             }
         }
-
-        bool UiImageLuaProxy::IsAnimationSupported() const
-        {
-            return true;
-        }
     }
 }

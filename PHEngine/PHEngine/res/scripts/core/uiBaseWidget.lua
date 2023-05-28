@@ -3,7 +3,8 @@ UiBaseWidget = {
         Undefined = 0,
         Float = 1,
         Vec3 = 2,
-        Boolean = 3
+        Boolean = 3,
+		Integer = 4
     },
     AnimationInterpolationFunctionType = {
         LINEAR = 0

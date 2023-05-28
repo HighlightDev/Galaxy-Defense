@@ -43,8 +43,6 @@ namespace EngineCore
             void SetRotationDegrees_FromGameThread(const float rotationDegrees);
 
             void SetIsFlipped_FromGameThread(const bool isFlipped);
-
-            bool IsAnimationSupported() const override;
         };
     }
 }

@@ -16,5 +16,11 @@ namespace EngineCore
             : UiItemBaseLuaProxy(ownerUiItem)
         {
         }
+
+
+        bool UiItemLuaProxy::IsAnimationSupported() const
+        {
+           return false;
+        }
     }
 }

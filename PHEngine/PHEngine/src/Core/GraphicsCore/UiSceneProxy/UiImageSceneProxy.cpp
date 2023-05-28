@@ -33,7 +33,8 @@ namespace Graphics
         void UiImageSceneProxy::Render()
         {
             mUiImageShader->ExecuteShader();
-            mUiImageShader->SetTransform(mNormalizedTranslation, mNormalizedScale * mScale);
+            const glm::vec2 centeredOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
+            mUiImageShader->SetTransform(mNormalizedTranslation + centeredOffset, mNormalizedScale * glm::vec2(mScale));
             if (mTexture)
             {
                 mTexture->BindTexture(0);

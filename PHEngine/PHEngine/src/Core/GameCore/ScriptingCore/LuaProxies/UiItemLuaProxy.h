@@ -19,6 +19,8 @@ namespace EngineCore
         {
         public:
             explicit UiItemLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiItem> &ownerUiItem);
+
+            bool IsAnimationSupported() const override;
         };
     }
 }

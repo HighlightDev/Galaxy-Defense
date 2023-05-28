@@ -195,7 +195,7 @@ namespace EngineCore
 
       bool UiItemBaseLuaProxy::IsAnimationSupported() const
       {
-         return false;
+         return true;
       }
 
       void UiItemBaseLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)

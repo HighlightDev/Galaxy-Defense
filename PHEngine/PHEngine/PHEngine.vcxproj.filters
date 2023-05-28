@@ -2621,6 +2621,39 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\Common\LuaMouseInputState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\AnimationControllerFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\FloatAnimationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IAnimationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationInterpolationFunctionType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\Animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\IAnimatable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\IAnimatableLuaProxy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiBackgroundOverlayReplicatorFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\EnginePropertyType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IntegerAnimationController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp">
@@ -3539,6 +3572,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\Pool\RuntimeGeneratedMeshPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\AnimationControllerFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\FloatAnimationController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\Animator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiBackgroundOverlayReplicatorFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IntegerAnimationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -26,7 +26,13 @@ namespace EngineMath
 
    float LerpFloat(const float x, const float x1, const float x2, const float y1, const float y2)
    {
-      return (((y2 - y1) / (x2 - x1)) * (x - x1)) + y1;
+      return ((y2 - y1) / (x2 - x1)) * (x - x1) + y1;
+   }
+
+   int32_t LerpInt(const float x, const float x1, const float x2, const int32_t y1, const int32_t y2)
+   {
+      const int32_t y_diff = (y2 - y1);
+      return static_cast<int32_t>(std::round(((static_cast<float>(y_diff) / (x2 - x1)) * (x - x1)))) + y1;
    }
 
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2)

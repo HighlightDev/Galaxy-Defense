@@ -31,7 +31,7 @@ namespace EngineCore
     }
 }
 
-class EngineObjectPropertyBase;
+struct EngineObjectPropertyBase;
 
 namespace EngineCore
 {

@@ -366,6 +366,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\FullscreenBillboardComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedLineComponent.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\RuntimeGeneratedMeshPoolParameters.h" />
+    <ClInclude Include="src\Core\GameCore\EnginePropertyType.h" />
     <ClInclude Include="src\Core\GameCore\Event\ExitGameThreadEvent.h" />
     <ClInclude Include="src\Core\GameCore\Event\LuaThreadEventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Event\PauseGameThreadEvent.h" />
@@ -384,6 +385,14 @@
     <ClInclude Include="src\Core\GameCore\GUI\Common\UniqueFontTextIdGenerator.h" />
     <ClInclude Include="src\Core\GameCore\GUI\Common\Word.h" />
     <ClInclude Include="src\Core\GameCore\GUI\HudText\HudTextField.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\AnimationControllerFactory.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\FloatAnimationController.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IAnimationController.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IntegerAnimationController.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationData.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationInterpolationFunctionType.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\Animator.h" />
+    <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\IAnimatable.h" />
     <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\IUiOverlay.h" />
     <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\OverlayManager.h" />
     <ClInclude Include="src\Core\GameCore\GUI\OverlayManagement\UiOverlay.h" />
@@ -417,6 +426,7 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaFunctions\LuaEngineEventsFunctions.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaHelper.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\EngineInputLuaProxy.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\IAnimatableLuaProxy.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\LuaProxy.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\OverlayManagerLuaProxy.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\LuaProxies\UiCanvasLuaProxy.h" />
@@ -435,6 +445,7 @@
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetFactoryCreator.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetType.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\IReplicatorFactory.h" />
+    <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiBackgroundOverlayReplicatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiCanvasReplicatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiImageReplicatorFactory.h" />
     <ClInclude Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiItemReplicatorFactory.h" />
@@ -1087,6 +1098,11 @@
     <ClCompile Include="src\Core\GameCore\GUI\Common\UniqueFontTextIdGenerator.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\Common\Word.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\HudText\HudTextField.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\AnimationControllerFactory.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\FloatAnimationController.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationControllers\IntegerAnimationController.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\AnimationData.cpp" />
+    <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\GuiAnimation\Animator.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\OverlayManager.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\OverlayManagement\UiOverlay.cpp" />
     <ClCompile Include="src\Core\GameCore\GUI\UiElements\Transform2D\BoundingBox2D.cpp" />
@@ -1127,6 +1143,7 @@
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptExecutors\LuaScriptExecutorBase.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\LuaScriptProcessor.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\CommonUiWidgetFactoryCreator.cpp" />
+    <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiBackgroundOverlayReplicatorFactory.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiCanvasReplicatorFactory.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiImageReplicatorFactory.cpp" />
     <ClCompile Include="src\Core\GameCore\ScriptingCore\ReplicatorFactories\UiItemReplicatorFactory.cpp" />

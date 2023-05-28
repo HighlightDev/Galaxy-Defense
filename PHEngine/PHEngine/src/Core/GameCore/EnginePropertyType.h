@@ -15,5 +15,6 @@ enum class eEnginePropertyType
     Undefined,
     Float,
     Vec3,
-    Boolean
+    Boolean,
+    Integer
 };

@@ -32,6 +32,12 @@ namespace
    {
       static constexpr eEnginePropertyType value = eEnginePropertyType::Vec3;
    };
+
+   template <>
+   struct ConvertTypeToEnginePropertyType<int32_t>
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::Integer;
+   };
 }
 
 struct EngineObjectPropertyBase

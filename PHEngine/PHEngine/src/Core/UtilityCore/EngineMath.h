@@ -40,6 +40,8 @@ namespace EngineMath
 
    float LerpFloat(const float x, const float x1, const float x2, const float y1, const float y2);
 
+   int32_t LerpInt(const float x, const float x1, const float x2, const int32_t y1, const int32_t y2);
+
    glm::vec3 LerpVec3(const float t, const float t1, const float t2, const glm::vec3 &position1, const glm::vec3 &position2);
 
    glm::vec4 LerpVec4(const float t, const float t1, const float t2, const glm::vec4 &position1, const glm::vec4 &position2);

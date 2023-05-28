@@ -18,7 +18,7 @@ namespace EngineCore
 
         class Animator : public ITickable
         {
-            std::unordered_map<std::string, AnimationData> mAnimations;
+            std::unordered_map<std::string, std::vector<AnimationData>> mAnimations;
 
             std::string mActiveAnimationName;
 
@@ -30,7 +30,7 @@ namespace EngineCore
 
             std::vector<std::function<void(std::string)>> mOnAnimationFinishedCallbacks;
 
-            std::unique_ptr<::EngineCore::GUI::IAnimationController> mAnimationController;
+            std::unordered_map<std::string, std::shared_ptr<::EngineCore::GUI::IAnimationController>> mAnimationControllers;
 
         public:
             explicit Animator(const std::shared_ptr<::EngineCore::GUI::IAnimatable> &animatable);
@@ -50,6 +50,10 @@ namespace EngineCore
             void StartAnimation(const std::string& newAnimationName);
 
             bool HasAnimation(const std::string& animationName) const;
+
+        private:
+
+           void CreateAnimationControllersForAnimation(const std::string& animationName);
         };
     }
 }

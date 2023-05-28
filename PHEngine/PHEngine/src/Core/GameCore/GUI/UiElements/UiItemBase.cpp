@@ -49,9 +49,17 @@ namespace EngineCore
               mIsPropertiesShouldBeUpdatedOnRenderThread(false),
               mIsPropertiesShouldBeUpdatedOnLuaThread(false),
               mScaleProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Scale", [this](const float newScaleValue)
-                                                                           { UpdateScaleProperty(); }))
+                                                                           { UpdateScaleProperty(); })),
+           mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) {
+               SetVerticalCenterOffset(verticalCenterOffset);
+            })),
+           mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) {
+               SetHorizontalCenterOffset(horizontalCenterOffset);
+            }))
         {
-            mProperties.emplace("Scale", mScaleProperty);
+           mProperties.emplace("Scale", mScaleProperty);
+           mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
+           mProperties.emplace("HorizontalCenterOffset", mHorizontalCenterOffsetProperty);
         }
 
         void UiItemBase::SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)

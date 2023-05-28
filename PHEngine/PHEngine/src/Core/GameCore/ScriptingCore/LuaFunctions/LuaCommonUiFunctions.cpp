@@ -270,6 +270,11 @@ namespace EngineCore
             srcData = animationDataJsonObj["srcValue"].get<float>();
             dstData = animationDataJsonObj["dstValue"].get<float>();
          }
+         else if (eEnginePropertyType::Integer == propType)
+         {
+            srcData = animationDataJsonObj["srcValue"].get<int32_t>();
+            dstData = animationDataJsonObj["dstValue"].get<int32_t>();
+         }
          else
          {
             assert(false); // Not supported yet
@@ -306,6 +311,11 @@ namespace EngineCore
          {
             srcData = animationDataJsonObj["srcValue"].get<float>();
             dstData = animationDataJsonObj["dstValue"].get<float>();
+         }
+         else if (eEnginePropertyType::Integer == propType)
+         {
+            srcData = animationDataJsonObj["srcValue"].get<int32_t>();
+            dstData = animationDataJsonObj["dstValue"].get<int32_t>();
          }
          else
          {

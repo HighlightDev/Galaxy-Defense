@@ -31,16 +31,21 @@ namespace EngineCore
                 mAnimationTimePassed += deltaTime;
                 assert(!mActiveAnimationName.empty());
                 assert(mAnimations.count(mActiveAnimationName));
-                assert(mAnimationController);
-                const auto &animationData = mAnimations.at(mActiveAnimationName);
-                mAnimationController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
-                if (mAnimationController->IsAnimationFinished())
+                bool isAnimationFinished = false;
+                for (const auto& animationData : mAnimations.at(mActiveAnimationName))
+                {
+                   assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                   const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+                   propertyController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
+                   isAnimationFinished = propertyController->IsAnimationFinished();
+                }
+                if (isAnimationFinished)
                 {
                     for (const auto &animationFinishedCallback : mOnAnimationFinishedCallbacks)
                     {
                         animationFinishedCallback(mActiveAnimationName);
                     }
-                    mAnimationController->Reset();
+                    mAnimationControllers.clear();
                     mActiveAnimationName = "";
                     mAnimationTimePassed = 0.0f;
                     mAnimationInProgress = false;
@@ -50,8 +55,14 @@ namespace EngineCore
 
         void Animator::AddAnimation(const std::string &animationName, const AnimationData &animationData)
         {
-            assert(!mAnimations.count(animationName));
-            mAnimations.emplace(animationName, animationData);
+           if (mAnimations.count(animationName))
+           {
+              mAnimations.at(animationName).emplace_back(animationData);
+           }
+           else 
+           {
+              mAnimations.emplace(animationName, std::vector<AnimationData>({ animationData }));
+           }
         }
 
         void Animator::RemoveAnimation(const std::string &animationName)
@@ -71,34 +82,49 @@ namespace EngineCore
             {
                 assert(!mActiveAnimationName.empty());
                 assert(mAnimations.count(mActiveAnimationName));
-                assert(mAnimationController);
-                mAnimationController->ForceFinishAnimation(mAnimations.at(mActiveAnimationName), mAnimatable);
+                for (const auto& animationData : mAnimations.at(mActiveAnimationName))
+                {
+                   assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                   const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+                   propertyController->ForceFinishAnimation(animationData, mAnimatable);
+                }
                 for (const auto &animationFinishedCallback : mOnAnimationFinishedCallbacks)
                 {
                     animationFinishedCallback(mActiveAnimationName);
                 }
-                mAnimationController->Reset();
+                mAnimationControllers.clear();
                 mActiveAnimationName = "";
             }
 
             assert(mAnimations.count(newAnimationName));
-            const auto &property = mAnimatable->GetPropertyByName(mAnimations.at(newAnimationName).GetPropertyName());
-            assert(property);
-            const auto propertyType = property->GetPropertyType();
             mActiveAnimationName = newAnimationName;
             mAnimationTimePassed = 0.0f;
             mAnimationInProgress = true;
-            if (!mAnimationController || (mAnimationController && propertyType != mAnimationController->GetPropertyType()))
+            CreateAnimationControllersForAnimation(newAnimationName);
+            for (const auto& animationData : mAnimations.at(mActiveAnimationName))
             {
-                mAnimationController = AnimationControllerFactory::CreateAnimationController(propertyType);
-                assert(mAnimationController);
+               assert(mAnimationControllers.count(animationData.GetPropertyName()));
+               const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+               propertyController->InitWithSrcValues(animationData, mAnimatable);
             }
-            mAnimationController->InitWithSrcValues(mAnimations.at(mActiveAnimationName), mAnimatable);
         }
 
         bool Animator::HasAnimation(const std::string &animationName) const
         {
             return mAnimations.count(animationName) > 0;
+        }
+
+        void Animator::CreateAnimationControllersForAnimation(const std::string& animationName)
+        {
+           for (const auto& animationData : mAnimations.at(animationName))
+           {
+              const auto &property = mAnimatable->GetPropertyByName(animationData.GetPropertyName());
+              assert(property);
+              const auto propertyType = property->GetPropertyType();
+              const std::shared_ptr<IAnimationController> propertyController = AnimationControllerFactory::CreateAnimationController(propertyType);
+              assert(propertyController);
+              mAnimationControllers.emplace(animationData.GetPropertyName(), propertyController);
+           }
         }
     }
 }

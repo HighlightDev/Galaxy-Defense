@@ -156,6 +156,15 @@
     <ClCompile Include="src\Implementation\Modifiers\ModifiersHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Implementation\DataProviders\PlayerDataProvider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Implementation\Events\MainPlayerStatusChangedEvent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Implementation\LuaFunctions\LuaGameEventsFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameLevelFactory.h">
@@ -321,6 +330,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\Modifiers\ModifiersHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\MissileType.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\StatusTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\DataProviders\PlayerDataProvider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\Events\MainPlayerStatusChangedEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Implementation\LuaFunctions\LuaGameEventsFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

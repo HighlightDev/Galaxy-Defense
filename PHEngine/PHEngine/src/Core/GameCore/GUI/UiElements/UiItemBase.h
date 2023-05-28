@@ -85,6 +85,10 @@ namespace EngineCore
 
             std::shared_ptr<EngineObjectProperty<float>> mScaleProperty;
 
+            std::shared_ptr<EngineObjectProperty<int32_t>> mVerticalCenterOffsetProperty;
+
+            std::shared_ptr<EngineObjectProperty<int32_t>> mHorizontalCenterOffsetProperty;
+
         public:
             UiItemBase();
 
