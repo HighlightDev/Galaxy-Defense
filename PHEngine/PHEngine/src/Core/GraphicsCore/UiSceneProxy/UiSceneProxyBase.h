@@ -39,6 +39,8 @@ namespace Graphics
 
             float mScale{1.0f};
 
+            glm::vec2 mCenterOffset;
+
         public:
             UiSceneProxyBase(const ::EngineCore::GUI::UiItemBase* uiItemBase);
 
@@ -69,6 +71,10 @@ namespace Graphics
             void SetScale(const float scale);
 
             float GetScale() const;
+
+            void SetCenterOffset(const glm::vec2& offset);
+
+            glm::vec2 GetCenterOffset() const;
 
             virtual void OnSceneProxyRegistered() = 0;
 

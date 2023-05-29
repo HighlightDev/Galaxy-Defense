@@ -50,16 +50,14 @@ namespace EngineCore
               mIsPropertiesShouldBeUpdatedOnLuaThread(false),
               mScaleProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Scale", [this](const float newScaleValue)
                                                                            { UpdateScaleProperty(); })),
-           mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset) {
-               SetVerticalCenterOffset(verticalCenterOffset);
-            })),
-           mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset) {
-               SetHorizontalCenterOffset(horizontalCenterOffset);
-            }))
+              mVerticalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "VerticalCenterOffset", [this](const int32_t verticalCenterOffset)
+                                                                                            { UpdateCenterOffsetProperties(); })),
+              mHorizontalCenterOffsetProperty(std::make_shared<EngineObjectProperty<int32_t>>(0, "HorizontalCenterOffset", [this](const int32_t horizontalCenterOffset)
+                                                                                              { UpdateCenterOffsetProperties(); }))
         {
-           mProperties.emplace("Scale", mScaleProperty);
-           mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
-           mProperties.emplace("HorizontalCenterOffset", mHorizontalCenterOffsetProperty);
+            mProperties.emplace("Scale", mScaleProperty);
+            mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
+            mProperties.emplace("HorizontalCenterOffset", mHorizontalCenterOffsetProperty);
         }
 
         void UiItemBase::SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
@@ -946,6 +944,43 @@ namespace EngineCore
                                 if (uiSceneProxy)
                                 {
                                     uiSceneProxy->SetScale(scale);
+                                } 
+                            } });
+                    }
+                }
+            }
+        }
+
+        void UiItemBase::UpdateCenterOffsetProperties()
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateCenterOffsetProperties");
+            if (mIsSceneProxyReady)
+            {
+                glm::vec2 normalizedCenterOffset;
+                if (const auto &rootParentSp = GetRootParent().lock())
+                {
+                    const auto rootWidth = rootParentSp->GetWidth();
+                    const auto rootHeight = rootParentSp->GetHeight();
+                    const auto rootOrigin = rootParentSp->GetAbsoluteOrigin();
+                    assert(rootWidth != 0 && rootHeight != 0);
+                    const int32_t verticalCenterOffset = mVerticalCenterOffsetProperty->GetValue(), horizontalCenterOffset = mHorizontalCenterOffsetProperty->GetValue();
+                    normalizedCenterOffset = glm::vec2((static_cast<float>(horizontalCenterOffset) / static_cast<float>(rootWidth)) - (static_cast<float>(rootOrigin.x) / static_cast<float>(rootWidth)),
+                                                       (static_cast<float>(verticalCenterOffset) / static_cast<float>(rootHeight)) - (static_cast<float>(rootOrigin.y) / static_cast<float>(rootHeight)));
+                }
+
+                if (const auto &sceneSp = GetScene().lock())
+                {
+                    if (const auto &canvasSp = GetParentCanvas().lock())
+                    {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneSp, myUId = GetUId(), canvasUId = canvasSp->GetUId(), normalizedCenterOffset]()
+                                                                                            {
+                            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                            {
+                                const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canvasUId);
+                                if (uiSceneProxy)
+                                {
+                                    
+                                    uiSceneProxy->SetCenterOffset(normalizedCenterOffset);
                                 } 
                             } });
                     }

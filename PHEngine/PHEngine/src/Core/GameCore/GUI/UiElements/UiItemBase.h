@@ -208,6 +208,8 @@ namespace EngineCore
             void SetAbsoluteOrigin(const glm::ivec2 &transform) override;
 
             void UpdateScaleProperty();
+
+            void UpdateCenterOffsetProperties();
         };
     }
 }

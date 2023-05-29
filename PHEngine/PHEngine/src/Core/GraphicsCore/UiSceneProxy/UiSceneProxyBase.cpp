@@ -15,7 +15,8 @@ namespace Graphics
               mParentCanvasProxy(),
               mNormalizedTranslation(uiItemBase->GetNormalizedTranslation()),
               mNormalizedScale(uiItemBase->GetNormalizedScale()),
-              mWidthHightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight())))
+              mWidthHightPixels(glm::ivec2(static_cast<int32_t>(uiItemBase->GetWidth()), static_cast<int32_t>(uiItemBase->GetHeight()))),
+              mCenterOffset(glm::vec2(0.0f, 0.0f))
         {
         }
 
@@ -82,6 +83,16 @@ namespace Graphics
         float UiSceneProxyBase::GetScale() const
         {
             return mScale;
+        }
+
+        void UiSceneProxyBase::SetCenterOffset(const glm::vec2 &offset)
+        {
+            mCenterOffset = offset;
+        }
+
+        glm::vec2 UiSceneProxyBase::GetCenterOffset() const
+        {
+            return mCenterOffset;
         }
 
         void UiSceneProxyBase::SetCanvasSceneProxy(const std::weak_ptr<UiCanvasSceneProxy> &parentCanvasProxy)

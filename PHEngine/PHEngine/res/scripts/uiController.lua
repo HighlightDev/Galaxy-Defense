@@ -91,7 +91,7 @@ local function createPlayerHUDOverlay(host)
     local weaponInterval = weaponWidth / 8.0
     weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
     local weaponTopBottomMargin = (weaponRootContainerHeight - weaponWidth) * 0.5
-	local weaponImageSize = weaponWidth * 0.75
+    local weaponImageSize = weaponWidth * 0.75
 
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
@@ -99,20 +99,17 @@ local function createPlayerHUDOverlay(host)
     local weaponRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(weaponRootContainer)
 
-    --local focusRectangle = UiRectangle:new(host)
-    --playerHUDOverlay:addWidget(focusRectangle)
+    local weaponBackgroundTile1 = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(weaponBackgroundTile1)
 
-	local weaponBackgroundTile1 = UiRectangle:new(host)
-	playerHUDOverlay:addWidget(weaponBackgroundTile1)
+    local weaponBackgroundTile2 = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(weaponBackgroundTile2)
 
-	local weaponBackgroundTile2 = UiRectangle:new(host)
-	playerHUDOverlay:addWidget(weaponBackgroundTile2)
+    local weaponBackgroundTile3 = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(weaponBackgroundTile3)
 
-	local weaponBackgroundTile3 = UiRectangle:new(host)
-	playerHUDOverlay:addWidget(weaponBackgroundTile3)
-
-	local weaponBackgroundTile4 = UiRectangle:new(host)
-	playerHUDOverlay:addWidget(weaponBackgroundTile4)
+    local weaponBackgroundTile4 = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(weaponBackgroundTile4)
 
     local weaponImage1 = UiImage:new(host)
     playerHUDOverlay:addWidget(weaponImage1)
@@ -184,27 +181,25 @@ local function createPlayerHUDOverlay(host)
     playerHUDOverlay.testChangeActiveWeapon = function()
         playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex + 1
         playerHUDOverlay.testCurrentActiveWeaponIndex = playerHUDOverlay.testCurrentActiveWeaponIndex % 4
-        --[[focusRectangle:setHorizontalCenterOffset(playerHUDOverlay.testCurrentActiveWeaponIndex *
-            (weaponWidth + weaponInterval))]]
         if playerHUDOverlay.testCurrentActiveWeaponIndex == 1 then
             weaponImage1:startAnimation(host, "FocusOut")
             weaponImage2:startAnimation(host, "FocusIn")
-			weaponBackgroundTile1:startAnimation(host, "FocusOut")
+            weaponBackgroundTile1:startAnimation(host, "FocusOut")
             weaponBackgroundTile2:startAnimation(host, "FocusIn")
         elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 2 then
             weaponImage2:startAnimation(host, "FocusOut")
             weaponImage3:startAnimation(host, "FocusIn")
-			weaponBackgroundTile2:startAnimation(host, "FocusOut")
+            weaponBackgroundTile2:startAnimation(host, "FocusOut")
             weaponBackgroundTile3:startAnimation(host, "FocusIn")
         elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 3 then
             weaponImage3:startAnimation(host, "FocusOut")
             weaponImage4:startAnimation(host, "FocusIn")
-			weaponBackgroundTile3:startAnimation(host, "FocusOut")
+            weaponBackgroundTile3:startAnimation(host, "FocusOut")
             weaponBackgroundTile4:startAnimation(host, "FocusIn")
         elseif playerHUDOverlay.testCurrentActiveWeaponIndex == 0 then
             weaponImage4:startAnimation(host, "FocusOut")
             weaponImage1:startAnimation(host, "FocusIn")
-			weaponBackgroundTile4:startAnimation(host, "FocusOut")
+            weaponBackgroundTile4:startAnimation(host, "FocusOut")
             weaponBackgroundTile1:startAnimation(host, "FocusIn")
         end
     end
@@ -226,7 +221,7 @@ local function createPlayerHUDOverlay(host)
         weaponRootContainer:setWidth(weaponRootContainerWidth)
         weaponRootContainer:setHeight(lifeRootContainerHeight)
 
-		weaponBackgroundTile1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponBackgroundTile1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile1:setZOrder(3);
         weaponBackgroundTile1:setHeight(weaponWidth);
         weaponBackgroundTile1:setWidth(weaponWidth);
@@ -236,13 +231,17 @@ local function createPlayerHUDOverlay(host)
             weaponRootContainer.widgetName, weaponTopBottomMargin);
         weaponBackgroundTile1:setColorHexValue(0xFFFFFF)
         weaponBackgroundTile1:setBorderRadius(8)
-		weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponBackgroundTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-		weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 0, 60)
-        weaponBackgroundTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
@@ -259,11 +258,17 @@ local function createPlayerHUDOverlay(host)
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponImage1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+        weaponImage1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+        weaponImage1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage1:startAnimation(host, "FocusIn")
-		weaponBackgroundTile1:startAnimation(host, "FocusIn")
+        weaponBackgroundTile1:startAnimation(host, "FocusIn")
 
-		weaponBackgroundTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponBackgroundTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile2:setZOrder(3);
         weaponBackgroundTile2:setHeight(weaponWidth);
         weaponBackgroundTile2:setWidth(weaponWidth);
@@ -273,13 +278,17 @@ local function createPlayerHUDOverlay(host)
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponBackgroundTile2:setColorHexValue(0xFFFFFF)
         weaponBackgroundTile2:setBorderRadius(8)
-		weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponBackgroundTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-		weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 0, 60)
-        weaponBackgroundTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile2.widgetName)
@@ -296,8 +305,14 @@ local function createPlayerHUDOverlay(host)
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponImage2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+        weaponImage2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+        weaponImage2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
-		weaponBackgroundTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponBackgroundTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile3:setZOrder(3);
         weaponBackgroundTile3:setHeight(weaponWidth);
         weaponBackgroundTile3:setWidth(weaponWidth);
@@ -307,13 +322,17 @@ local function createPlayerHUDOverlay(host)
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponBackgroundTile3:setColorHexValue(0xFFFFFF)
         weaponBackgroundTile3:setBorderRadius(8)
-		weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponBackgroundTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-		weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 0, 60)
-        weaponBackgroundTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile3.widgetName)
@@ -330,8 +349,14 @@ local function createPlayerHUDOverlay(host)
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponImage3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
+        weaponImage3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+        weaponImage3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
-		weaponBackgroundTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
+        weaponBackgroundTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile4:setZOrder(3);
         weaponBackgroundTile4:setHeight(weaponWidth);
         weaponBackgroundTile4:setWidth(weaponWidth);
@@ -341,13 +366,17 @@ local function createPlayerHUDOverlay(host)
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponBackgroundTile4:setColorHexValue(0xFFFFFF)
         weaponBackgroundTile4:setBorderRadius(8)
-		weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
-        weaponBackgroundTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
+        weaponBackgroundTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-		weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 0, 60)
-        weaponBackgroundTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "VerticalCenterOffset",
+        weaponBackgroundTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
             UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile4.widgetName)
@@ -360,22 +389,17 @@ local function createPlayerHUDOverlay(host)
             weaponBackgroundTile4.widgetName);
         weaponImage4:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
             weaponBackgroundTile4.widgetName);
+        weaponImage4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+        weaponImage4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
+            "VerticalCenterOffset",
+            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
 
         weaponImage4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponImage4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
-
-        --[[focusRectangle:setParent(host, playerHUDOverlayCanvas.widgetName, weaponImage1.widgetName)
-        focusRectangle:setZOrder(3);
-        focusRectangle:setHeight(weaponWidth + 20);
-        focusRectangle:setWidth(weaponWidth + 20);
-        focusRectangle:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            weaponImage1.widgetName);
-        focusRectangle:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            weaponImage1.widgetName);
-        focusRectangle:setColorHexValue(0xFFFFFF)
-        focusRectangle:setBorderRadius(50)]]
 
         lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage1:setTextureSource("scaled_down_heart.png");

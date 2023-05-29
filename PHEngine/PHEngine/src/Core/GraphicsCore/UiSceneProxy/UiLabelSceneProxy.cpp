@@ -92,7 +92,7 @@ namespace Graphics
                     const auto &renderDataSp = fontHandlerSp->GetFontBatcher(mFontName);
                     mUiLabelShader->ExecuteShader();
                     const auto textHeightScreenSpace = mTextFieldProxy->GetCreatedMeshTextHeight();
-                    mUiLabelShader->SetPosition(glm::vec2(mNormalizedTranslation.x, 1.0f - (mNormalizedTranslation.y + textHeightScreenSpace)));
+                    mUiLabelShader->SetPosition(glm::vec2(mNormalizedTranslation.x + mCenterOffset.x, 1.0f - (mNormalizedTranslation.y + mCenterOffset.y + textHeightScreenSpace)));
                     mFontTexture->BindTexture(0);
                     mUiLabelShader->SetFontAtlasSlot(0);
                     mUiLabelShader->SetOpacity(mOpacity * mOverlayOpacity);

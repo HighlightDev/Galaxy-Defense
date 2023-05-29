@@ -39,8 +39,8 @@ namespace Graphics
         {
             mUiRectangleShader->ExecuteShader();
             // Render background
-            const glm::vec2 centeredOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-            mUiRectangleShader->SetTransform(mNormalizedTranslation + centeredOffset, mNormalizedScale * glm::vec2(mScale));
+            const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
+            mUiRectangleShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
             mUiRectangleShader->SetColor(mToggleOffColor);
             mUiRectangleShader->SetOpacity(mOpacity * mOverlayOpacity);
             mUiRectangleShader->SetWidthHeightPixels(mWidthHightPixels);
@@ -52,7 +52,7 @@ namespace Graphics
                 // Render foreground
                 static constexpr float normalizedToggleOnRectangleSize = 0.7f;
                 static const glm::vec2 toggleOnRectangleCenteredOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * normalizedToggleOnRectangleSize * mScale)) * 0.5f);
-                mUiRectangleShader->SetTransform(mNormalizedTranslation + toggleOnRectangleCenteredOffset, mNormalizedScale * glm::vec2(normalizedToggleOnRectangleSize * mScale));
+                mUiRectangleShader->SetTransform(mNormalizedTranslation + mCenterOffset + toggleOnRectangleCenteredOffset, mNormalizedScale * glm::vec2(normalizedToggleOnRectangleSize * mScale));
                 mUiRectangleShader->SetColor(mToggleOnColor);
                 ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
             }
