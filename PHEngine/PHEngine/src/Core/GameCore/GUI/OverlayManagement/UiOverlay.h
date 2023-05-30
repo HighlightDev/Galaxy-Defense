@@ -57,7 +57,7 @@ namespace EngineCore
 
             std::shared_ptr<::EngineCore::GUI::UiCanvas> GetCanvas() const override;
 
-            void SubscribeOnAnimationFinished(const std::function<void(std::string)>& callback) override;
+            void SubscribeOnAnimationFinished(const std::function<void(std::string)> &callback) override;
 
             bool HasFadeInAnimation() const override;
 

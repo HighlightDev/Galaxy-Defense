@@ -40,7 +40,7 @@ namespace EngineCore
                     if (const auto &parentCanvasSp = mParentCanvas.lock())
                     {
                         const auto thisSceneProxy = CreateUiSceneProxy();
-                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(std::static_pointer_cast<UiRectangle>(shared_from_this()), thisSceneProxy, parentCanvasSp->GetUId());
                     }
                 }
             }
@@ -223,18 +223,21 @@ namespace EngineCore
         void UiRectangle::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnLuaThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsLuaProxyReady)
             {
-                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [rectangleLuaProxy, opacity = mOpacity, color = mColor, borderRadius = mBorderRadius]()
-                                                                                         {
-                            rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
-                            rectangleLuaProxy->SetColor_FromGameThread(color);
-                            rectangleLuaProxy->SetBorderRadius_FromGrameThread(borderRadius); });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, color = mColor, borderRadius = mBorderRadius]() {
+                            if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                            {
+                                rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
+                                rectangleLuaProxy->SetColor_FromGameThread(color);
+                                rectangleLuaProxy->SetBorderRadius_FromGrameThread(borderRadius); 
+                            }
+                        });
                     }
                 }
             }

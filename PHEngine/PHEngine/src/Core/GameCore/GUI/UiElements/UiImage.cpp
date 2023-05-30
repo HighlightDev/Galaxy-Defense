@@ -48,7 +48,7 @@ namespace EngineCore
                     if (const auto &parentCanvasSp = mParentCanvas.lock())
                     {
                         const auto thisSceneProxy = CreateUiSceneProxy();
-                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(std::static_pointer_cast<UiImage>(shared_from_this()), thisSceneProxy, parentCanvasSp->GetUId());
                     }
                 }
             }
@@ -251,19 +251,22 @@ namespace EngineCore
         void UiImage::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnLuaThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsLuaProxyReady)
             {
-                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &imageLuaProxy = std::static_pointer_cast<UiImageLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [imageLuaProxy, opacity = mOpacity, textureSrc = mTextureSrc, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, textureSrc = mTextureSrc, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
                                                                                          {
+                        if (const auto &imageLuaProxy = std::static_pointer_cast<UiImageLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                        {
                             imageLuaProxy->SetOpacity_FromGameThread(opacity);
                             imageLuaProxy->SetTextureSource_FromGameThread(textureSrc);
                             imageLuaProxy->SetRotationDegrees_FromGameThread(rotationDegrees);
-                            imageLuaProxy->SetIsFlipped_FromGameThread(isFlipped); });
+                            imageLuaProxy->SetIsFlipped_FromGameThread(isFlipped); 
+                        } });
                     }
                 }
             }

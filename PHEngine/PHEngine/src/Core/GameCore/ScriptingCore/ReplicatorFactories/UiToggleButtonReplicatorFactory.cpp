@@ -33,14 +33,7 @@ namespace EngineCore
                     createdUiToggleButton->SetLuaProxyId(uiToggleButtonLuaProxyId);
                     createdUiToggleButton->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiToggleButton);
-                    const auto& uiToggleButtonLuaProxy = createdUiToggleButton->ReplicateLuaProxy();
-                    uiToggleButtonLuaProxy->SetSceneWp(sceneSp);
-                    uiToggleButtonLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
-
-                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->AddLuaProxy(uiToggleButtonLuaProxy);
-                    }
+                    createdUiToggleButton->SetPendingToCreateLuaProxy();
                 });
             }
             else

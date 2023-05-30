@@ -95,8 +95,6 @@ namespace EngineCore
 
             bool IsMouseInputDataDirty() const;
 
-            bool IsAnimationSupported() const override;
-
             void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData& animationData) override;
 
             void StartAnimation(const std::string& animationName) override;

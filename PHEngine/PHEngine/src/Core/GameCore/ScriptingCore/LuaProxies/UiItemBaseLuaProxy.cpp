@@ -170,7 +170,6 @@ namespace EngineCore
          jsonObj["horizontalCenterOffset"] = mHorizontalCenterOffset;
          jsonObj["verticalCenterOffset"] = mVerticalCenterOffset;
          jsonObj["anchors"] = anchorConvertedData;
-         jsonObj["supportsAnimation"] = IsAnimationSupported();
 
          mIsLuaDataDirty = false;
          return jsonObj.dump();
@@ -191,11 +190,6 @@ namespace EngineCore
       bool UiItemBaseLuaProxy::IsVisible() const
       {
          return mIsVisible;
-      }
-
-      bool UiItemBaseLuaProxy::IsAnimationSupported() const
-      {
-         return true;
       }
 
       void UiItemBaseLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)

@@ -107,10 +107,6 @@ function UiItemBase:new()
                 }
             },
             dirty = false
-        },
-        supportsAnimation = {
-            value = false,
-            dirty = false
         }
     }
 
@@ -181,9 +177,6 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
                 }
             end
         end
-    end
-    if parsedJsonData["supportsAnimation"] ~= nil then
-        self.properties.supportsAnimation.value = parsedJsonData["supportsAnimation"]
     end
 end
 
@@ -311,7 +304,6 @@ end
 function UiItemBase:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                  animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
-    assert(self.properties.supportsAnimation.value ~= nil and self.properties.supportsAnimation.value == true)
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
         type(animationFunctionType) == "number" and animationDuration ~= nil and
         type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
@@ -332,7 +324,6 @@ end
 
 function UiItemBase:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
-    assert(self.properties.supportsAnimation.value ~= nil and self.properties.supportsAnimation.value == true)
     assert(animationName ~= nil and type(animationName) == "string")
 
     _StartUiItemAnimation(host, self.luaProxyId, animationName)

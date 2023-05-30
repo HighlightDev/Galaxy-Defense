@@ -383,6 +383,18 @@ namespace EngineCore
       mDebugUiController->UnpausableTick(deltaTime);
 #endif
 
+      if (mLuaReplicatorsDirty)
+      {
+         for (const auto& [id, replicator] : mLuaReplicators)
+         {
+            if (replicator->GetIsPendingToCreateLuaProxy())
+            {
+               replicator->InitLuaProxy(shared_from_this());
+            }
+         }
+         mLuaReplicatorsDirty = false;
+      }
+
       mUiHandler->UnpausableTick(deltaTime);
    }
 
@@ -517,6 +529,7 @@ namespace EngineCore
       const auto replicatorId = replicator->GetReplicatorId();
       assert(!mLuaReplicators.count(replicatorId));
       mLuaReplicators.emplace(std::make_pair(replicatorId, replicator));
+      mLuaReplicatorsDirty = true;
 
       return true;
    }
@@ -527,6 +540,7 @@ namespace EngineCore
       if (mLuaReplicators.count(replicatorId))
       {
          mLuaReplicators.erase(replicatorId);
+         mLuaReplicatorsDirty = true;
          return true;
       }
 

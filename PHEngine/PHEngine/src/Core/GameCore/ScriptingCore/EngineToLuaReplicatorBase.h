@@ -5,6 +5,11 @@
 
 namespace EngineCore
 {
+    class Scene;
+}
+
+namespace EngineCore
+{
     namespace Scripts
     {
         class LuaProxy;
@@ -21,6 +26,8 @@ namespace EngineCore
 
         protected:
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> mLuaScriptProcessorWp;
+
+            bool mIsPendingToAddLuaProxy{false};
 
         public:
             EngineToLuaReplicatorBase();
@@ -40,6 +47,12 @@ namespace EngineCore
             void SetLuaScriptProcessor(const std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> &luaScriptProcessor);
 
             std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessorWp() const;
+
+            void SetPendingToCreateLuaProxy();
+
+            bool GetIsPendingToCreateLuaProxy() const;
+
+            virtual void InitLuaProxy(const std::shared_ptr<::EngineCore::Scene>& sceneSp);
         };
     }
 }

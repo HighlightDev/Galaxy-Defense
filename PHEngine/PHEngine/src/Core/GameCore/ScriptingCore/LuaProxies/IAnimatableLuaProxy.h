@@ -15,8 +15,6 @@ namespace EngineCore
         class IAnimatableLuaProxy
         {
             public:
-            virtual bool IsAnimationSupported() const = 0;
-
             virtual void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData& animationData) = 0;
 
             virtual void StartAnimation(const std::string& animationName) = 0;

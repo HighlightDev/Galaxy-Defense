@@ -45,7 +45,7 @@ namespace EngineCore
                     if (const auto &parentCanvasSp = mParentCanvas.lock())
                     {
                         const auto thisSceneProxy = CreateUiSceneProxy();
-                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(thisSceneProxy, parentCanvasSp->GetUId());
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(std::static_pointer_cast<UiLabel>(shared_from_this()), thisSceneProxy, parentCanvasSp->GetUId());
                     }
                 }
             }
@@ -296,21 +296,24 @@ namespace EngineCore
         void UiLabel::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnLuaThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsLuaProxyReady)
             {
-                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &labelLuaProxy = std::static_pointer_cast<UiLabelLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [labelLuaProxy, opacity = mOpacity, text = mText, textColor = mTextColor, textLineWidth = mTextLineWidth, fontSize = mFontSize, textHorizontalAlignment = mTextHorizontalAlignment]()
-                                                                                         {
-                            labelLuaProxy->SetOpacity_FromGameThread(opacity);
-                            labelLuaProxy->SetText_FromGameThread(text);
-                            labelLuaProxy->SetTextColor_FromGameThread(textColor);
-                            labelLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
-                            labelLuaProxy->SetFontSize_FromGameThread(fontSize);
-                            labelLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment); });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, text = mText, textColor = mTextColor, textLineWidth = mTextLineWidth, fontSize = mFontSize, textHorizontalAlignment = mTextHorizontalAlignment]() {
+                            if (const auto &labelLuaProxy = std::static_pointer_cast<UiLabelLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                            {
+                                labelLuaProxy->SetOpacity_FromGameThread(opacity);
+                                labelLuaProxy->SetText_FromGameThread(text);
+                                labelLuaProxy->SetTextColor_FromGameThread(textColor);
+                                labelLuaProxy->SetTextLineWidth_FromGameThread(textLineWidth);
+                                labelLuaProxy->SetFontSize_FromGameThread(fontSize);
+                                labelLuaProxy->SetTextHorizontalAlignment(textHorizontalAlignment);
+                            } 
+                        });
                     }
                 }
             }

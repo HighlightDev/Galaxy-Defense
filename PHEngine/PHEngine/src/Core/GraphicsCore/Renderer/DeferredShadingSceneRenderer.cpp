@@ -1278,7 +1278,7 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
+      void DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
       {
          LogInfo("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
@@ -1287,10 +1287,11 @@ namespace Graphics
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
             RegisterUiSceneProxy(uiSceneProxy, canvasUId); 
+            uiItem->SetIsSceneProxyReady(true);
          });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
+      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
       {
          LogInfo("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
@@ -1298,7 +1299,8 @@ namespace Graphics
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
-            UnregisterUiSceneProxy(uiSceneProxy, canvasUId); 
+            UnregisterUiSceneProxy(uiSceneProxy, canvasUId);
+            uiItem->SetIsSceneProxyReady(false);
          });
       }
 
@@ -1451,18 +1453,6 @@ namespace Graphics
          sceneProxy->SetCanvasSceneProxy((*canvasIt));
          (*canvasIt)->AddUiSceneProxy(sceneProxy);
          sceneProxy->OnSceneProxyRegistered();
-
-         if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())
-         {
-            static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiSceneProxy");
-            m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, sceneProxy->GetUiItemUId(), functionId, [sceneSp, canvasUId, uiItemUId = sceneProxy->GetUiItemUId()]() { 
-               const auto canvasOwnerSp = sceneSp->GetUiHandler()->GetCanvasByUId(canvasUId);
-               assert(canvasOwnerSp);
-               const auto uiItem = std::dynamic_pointer_cast<UiItemBase>(canvasOwnerSp->TryFindHierarchyChildByUId(uiItemUId));
-               assert(uiItem);
-               uiItem->SetIsSceneProxyReady(true);
-            });
-         }
       }
 
       void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)

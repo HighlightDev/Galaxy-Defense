@@ -44,16 +44,9 @@ namespace EngineCore
                     uiOverlay->SetOverlayCanvas(uiCanvas);
                     uiOverlay->SetLuaProxyId(overlayLuaProxyId);
                     uiOverlay->SetLuaScriptProcessor(luaScriptProcessorWp);
-                    sceneSp->RegisterEngineToLuaReplicator(uiOverlay);
-                    const auto& uiOverlayLuaProxy = uiOverlay->ReplicateLuaProxy();
-                    uiOverlayLuaProxy->SetSceneWp(sceneSp);
-                    uiOverlayLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
                     overlayManager->RegisterOverlay(uiOverlay);
-
-                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->AddLuaProxy(uiOverlayLuaProxy);
-                    }
+                    sceneSp->RegisterEngineToLuaReplicator(uiOverlay);
+                    uiOverlay->SetPendingToCreateLuaProxy();
                 });
             }
             else

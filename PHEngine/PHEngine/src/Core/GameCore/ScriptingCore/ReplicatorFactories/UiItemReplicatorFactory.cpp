@@ -32,14 +32,7 @@ namespace EngineCore
                     createdUiItem->SetLuaProxyId(uiItemLuaProxyId);
                     createdUiItem->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiItem);
-                    const auto& uiItemLuaProxy = createdUiItem->ReplicateLuaProxy();
-                    uiItemLuaProxy->SetSceneWp(sceneSp);
-                    uiItemLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
-
-                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->AddLuaProxy(uiItemLuaProxy);
-                    }
+                    createdUiItem->SetPendingToCreateLuaProxy();
                 });
             }
             else

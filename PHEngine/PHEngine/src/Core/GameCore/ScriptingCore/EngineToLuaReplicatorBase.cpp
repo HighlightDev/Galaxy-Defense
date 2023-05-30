@@ -1,6 +1,10 @@
 #include "EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/StringHash.h"
+#include "Core/GameCore/Scene.h"
+
+using namespace EngineCore;
 
 namespace EngineCore
 {
@@ -38,6 +42,30 @@ namespace EngineCore
         std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> EngineToLuaReplicatorBase::GetLuaScriptProcessorWp() const
         {
             return mLuaScriptProcessorWp;
+        }
+
+        void EngineToLuaReplicatorBase::SetPendingToCreateLuaProxy()
+        {
+            mIsPendingToAddLuaProxy = true;
+        }
+
+        bool EngineToLuaReplicatorBase::GetIsPendingToCreateLuaProxy() const
+        {
+            return mIsPendingToAddLuaProxy;
+        }
+
+        void EngineToLuaReplicatorBase::InitLuaProxy(const std::shared_ptr<Scene> &sceneSp)
+        {
+            static constexpr uint64_t functionId = Hash64_CT("EngineToLuaReplicatorBase::InitLuaProxy");
+            if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+            {
+                mIsPendingToAddLuaProxy = false;
+                const auto &luaProxy = ReplicateLuaProxy();
+                luaProxy->SetSceneWp(sceneSp);
+                luaProxy->SetLuaScriptProcessor(luaScriptProcessorSp);
+                luaScriptProcessorSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::PUSH_ANYWAY, GetReplicatorId(), functionId, [this, luaScriptProcessorSp, luaProxy]
+                                                                                              { luaScriptProcessorSp->AddLuaProxy(luaProxy); });
+            }
         }
     }
 }

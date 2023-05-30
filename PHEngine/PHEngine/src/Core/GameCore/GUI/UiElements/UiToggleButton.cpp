@@ -38,7 +38,7 @@ namespace EngineCore
                 {
                     if (const auto &parentCanvasSp = mParentCanvas.lock())
                     {
-                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(CreateUiSceneProxy(), parentCanvasSp->GetUId());
+                        sceneRendererSp->RegisterUiSceneProxy_OnRenderThread(std::static_pointer_cast<UiToggleButton>(shared_from_this()), CreateUiSceneProxy(), parentCanvasSp->GetUId());
                     }
                 }
             }
@@ -218,19 +218,22 @@ namespace EngineCore
         void UiToggleButton::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiToggleButton::SyncDataOnLuaThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsLuaProxyReady)
             {
-                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &toggleButtonLuaProxy = std::static_pointer_cast<UiToggleButtonLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [toggleButtonLuaProxy, opacity = mOpacity, toggleOnColor = mToggleOnColor, toggleOffColor = mToggleOffColor, isStateOn = mIsStateOn]()
-                                                                                         {
-                            toggleButtonLuaProxy->SetOpacity_FromGameThread(opacity);
-                            toggleButtonLuaProxy->SetToggleOnColor_FromGameThread(toggleOnColor);
-                            toggleButtonLuaProxy->SetToggleOffColor_FromGameThread(toggleOffColor);
-                            toggleButtonLuaProxy->SetIsStateOn_FromGameThread(isStateOn); });
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, toggleOnColor = mToggleOnColor, toggleOffColor = mToggleOffColor, isStateOn = mIsStateOn]() {
+                            if (const auto &toggleButtonLuaProxy = std::static_pointer_cast<UiToggleButtonLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                            {
+                                toggleButtonLuaProxy->SetOpacity_FromGameThread(opacity);
+                                toggleButtonLuaProxy->SetToggleOnColor_FromGameThread(toggleOnColor);
+                                toggleButtonLuaProxy->SetToggleOffColor_FromGameThread(toggleOffColor);
+                                toggleButtonLuaProxy->SetIsStateOn_FromGameThread(isStateOn); 
+                            } 
+                        });
                     }
                 }
             }

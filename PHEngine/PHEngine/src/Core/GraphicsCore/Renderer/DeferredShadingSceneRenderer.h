@@ -49,6 +49,14 @@ using namespace EngineCore::ShaderImpl;
 using namespace EnginePhysics;
 using namespace Event;
 
+namespace EngineCore
+{
+   namespace GUI
+   {
+      class UiItemBase;
+   }
+}
+
 namespace Graphics
 {
    namespace Renderer
@@ -200,9 +208,9 @@ namespace Graphics
 
          void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
-         void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+         void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
 
-         void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+         void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
 
          void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 

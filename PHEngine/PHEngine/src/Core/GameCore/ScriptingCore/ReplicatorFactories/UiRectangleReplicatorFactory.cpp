@@ -32,14 +32,7 @@ namespace EngineCore
                     createdUiRectangle->SetLuaProxyId(uiRectangleLuaProxyId);
                     createdUiRectangle->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiRectangle);
-                    const auto& uiRectangleLuaProxy = createdUiRectangle->ReplicateLuaProxy();
-                    uiRectangleLuaProxy->SetSceneWp(sceneSp);
-                    uiRectangleLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
-
-                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->AddLuaProxy(uiRectangleLuaProxy);
-                    }
+                    createdUiRectangle->SetPendingToCreateLuaProxy();
                 });
             }
             else

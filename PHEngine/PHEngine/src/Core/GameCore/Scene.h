@@ -67,6 +67,8 @@ namespace EngineCore
 
       std::unordered_map<int32_t, std::shared_ptr<EngineToLuaReplicatorBase>> mLuaReplicators;
 
+      bool mLuaReplicatorsDirty{false};
+
       InterThreadCommunicationMgr &m_interThreadMgr;
 
       std::shared_ptr<EngineObjectProperty<float>> mGameThreadDeltaSec;

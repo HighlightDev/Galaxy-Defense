@@ -69,6 +69,8 @@ namespace EngineCore
 
             bool mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
 
+            bool mIsLuaProxyReady{false}; // only when this value is true - data could be updated on lua thread
+
             bool mIsVisible;
 
             bool mIsTransformDirty;
@@ -97,6 +99,8 @@ namespace EngineCore
             void SetParents(const std::string &uiCanvasName, const std::string &uiWidgetParentName);
 
             void SetIsSceneProxyReady(const bool isSceneProxyReady);
+
+            void SetIsLuaProxyReady(const bool isLuaProxyReady);
 
             virtual void OnRegistered() = 0;
 
@@ -177,6 +181,8 @@ namespace EngineCore
             void CreateAnimator() override;
 
             void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
+
+            void InitLuaProxy(const std::shared_ptr<Scene>& sceneSp) override;
 
         protected:
             void SetIsTransformDirty(const bool isDirty);

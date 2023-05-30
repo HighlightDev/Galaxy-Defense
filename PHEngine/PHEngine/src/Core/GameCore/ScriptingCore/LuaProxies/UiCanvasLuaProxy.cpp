@@ -36,11 +36,6 @@ namespace EngineCore
             }
         }
 
-        bool UiCanvasLuaProxy::IsAnimationSupported() const
-        {
-            return true;
-        }
-
         void UiCanvasLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)
         {
             static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddAnimation");

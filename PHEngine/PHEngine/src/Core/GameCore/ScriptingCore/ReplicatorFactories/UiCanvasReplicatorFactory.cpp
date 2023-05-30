@@ -35,17 +35,11 @@ namespace EngineCore
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
                     const auto& createdUiCanvas = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height));
+                    sceneSp->RegisterEngineToLuaReplicator(createdUiCanvas);
                     createdUiCanvas->SetIsVisible(false);
                     createdUiCanvas->SetLuaProxyId(canvasLuaProxyId);
                     createdUiCanvas->SetLuaScriptProcessor(luaScriptProcessorWp);
-                    sceneSp->RegisterEngineToLuaReplicator(createdUiCanvas);
-                    const auto& canvasLuaProxy = createdUiCanvas->ReplicateLuaProxy();
-                    canvasLuaProxy->SetSceneWp(sceneSp);
-                    canvasLuaProxy->SetLuaScriptProcessor(luaScriptProcessorWp);
-                    if (const auto& luaProcessorSp = luaScriptProcessorWp.lock())
-                    {
-                        luaProcessorSp->AddLuaProxy(canvasLuaProxy);
-                    }
+                    createdUiCanvas->SetPendingToCreateLuaProxy();                    
                 });
             }
             else

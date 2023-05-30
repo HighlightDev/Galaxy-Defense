@@ -100,6 +100,12 @@ namespace EngineCore
             mIsSceneProxyReady = isSceneProxyReady;
         }
 
+        void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
+        {
+            LogInfo("UiItemBase::SetIsLuaProxyReady => name: ", mName, ", readiness value: ", isLuaProxyReady);
+            mIsLuaProxyReady = isLuaProxyReady;
+        }
+
         std::weak_ptr<Scene> UiItemBase::GetScene() const
         {
             if (const auto &parentSp = mParent.lock())
@@ -904,15 +910,17 @@ namespace EngineCore
         void UiItemBase::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
-            if (const auto &sceneSp = GetScene().lock())
+            if (mIsLuaProxyReady)
             {
-                if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
+                if (const auto &sceneSp = GetScene().lock())
                 {
-                    if (const auto &uiItemBaseLuaProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
+                    if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [uiItemBaseLuaProxy, visible = mIsVisible, zorder = mZOrder, width = mWidth, height = mHeight, horizontalOffset = mHorizontalCenterOffset, verticalOffset = mVerticalCenterOffset, anchorsMap = mAnchors]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), visible = mIsVisible, zorder = mZOrder, width = mWidth, height = mHeight, horizontalOffset = mHorizontalCenterOffset, verticalOffset = mVerticalCenterOffset, anchorsMap = mAnchors]()
                                                                                          {
+                        if (const auto &uiItemBaseLuaProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                        {
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);
@@ -921,10 +929,29 @@ namespace EngineCore
                             uiItemBaseLuaProxy->SetVerticalCenterOffset_FromGameThread(verticalOffset);
                             for (const auto& anchor : anchorsMap) {
                                 uiItemBaseLuaProxy->SetAnchor_FromGameThread(anchor.first, anchor.second);
-                            } });
+                            }
+                        } });
                     }
                 }
             }
+        }
+
+        void UiItemBase::InitLuaProxy(const std::shared_ptr<Scene> &sceneSp)
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiItemBase::InitLuaProxy");
+            assert(sceneSp);
+            mIsPendingToAddLuaProxy = false;
+            const auto &luaProxy = ReplicateLuaProxy();
+            luaProxy->SetSceneWp(sceneSp);
+            luaProxy->SetLuaScriptProcessor(GetLuaScriptProcessorWp());
+
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::PUSH_ANYWAY, GetUId(), functionId, [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy]
+                                                                             {
+                    if (const auto &luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                    luaProcessorSp->AddLuaProxy(luaProxy);
+                    SetIsLuaProxyReady(true);
+                    } });
         }
 
         void UiItemBase::UpdateScaleProperty()
