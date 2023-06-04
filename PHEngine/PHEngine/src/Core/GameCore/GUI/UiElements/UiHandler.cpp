@@ -34,7 +34,7 @@ namespace EngineCore
             const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
             if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
-                sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(canvasSceneProxy);
+                sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(newCanvas, canvasSceneProxy);
             }
             mUiCanvases.emplace_back(newCanvas)->SetScene(mOwner);
             return newCanvas;

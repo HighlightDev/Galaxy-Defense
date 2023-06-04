@@ -42,7 +42,6 @@
 
 #include <utility>
 
-// using namespace Debug;
 using namespace Thread;
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
@@ -51,9 +50,15 @@ using namespace Event;
 
 namespace EngineCore
 {
+   class PrimitiveComponent;
+   class LightComponent;
+   class PlanarReflectionComponent;
+   class ACamera;
+
    namespace GUI
    {
       class UiItemBase;
+      class UiCanvas;
    }
 }
 
@@ -161,27 +166,27 @@ namespace Graphics
 
          void MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy);
 
-         bool UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex,
+         void UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex,
                                                             const uint64_t creatorObjectId,
                                                             const uint64_t functionId,
                                                             const bool bEnabled);
 
-         bool UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
+         void UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
                                                                 const uint64_t creatorObjectId,
                                                                 const uint64_t functionId,
                                                                 const bool visibility);
 
-         bool UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
+         void UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
                                                                     const uint64_t creatorObjectId,
                                                                     const uint64_t functionId,
                                                                     const int32_t sortOrderValue);
 
-         bool UpdatePrimitiveComponentTransform_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+         void UpdatePrimitiveComponentTransform_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
                                                                const uint64_t functionId,
                                                                const glm::mat4 &newRelativeMatrix,
                                                                const BoundingBox3D &newTransformedBoundingBox);
 
-         bool UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+         void UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
                                                            const uint64_t creatorObjectId,
                                                            const uint64_t functionId,
                                                            const glm::mat4 &newRelativeMatrix);
@@ -194,17 +199,17 @@ namespace Graphics
 
          void LightSceneProxiesUpdated_OnRenderThread();
 
-         void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
+         void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::ACamera>& camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
 
-         void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
+         void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PrimitiveComponent>& primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
 
-         void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightSceneProxy> &lightSceneProxy);
+         void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::LightComponent>& lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy);
 
          void RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
 
          void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField);
 
-         void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+         void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
          void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
@@ -216,7 +221,7 @@ namespace Graphics
 
          void MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
 
-         void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &proxy);
+         void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PlanarReflectionComponent>& planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy);
 
          void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy, const size_t cameraSceneProxyId);
 

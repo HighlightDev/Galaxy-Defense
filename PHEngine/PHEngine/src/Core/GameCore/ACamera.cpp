@@ -37,51 +37,61 @@ namespace EngineCore
    {
    }
 
+   void ACamera::SetCameraProxyId(const size_t proxyId)
+   {
+      mCameraProxyId = proxyId;
+   }
+
+   size_t ACamera::GetCameraProxyId() const
+   {
+      return mCameraProxyId;
+   }
+
+   void ACamera::SetIsCameraProxyReady(const bool isReady)
+   {
+      bIsCameraProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+   }
+
+   bool ACamera::IsCameraProxyReady() const
+   {
+      return bIsCameraProxyReady.load(std::memory_order::memory_order_seq_cst);
+   }
+
    void ACamera::SetRotation(const int32_t deltaX, const int32_t deltaY)
    {
       UpdateRotationMatrix(-deltaX, -deltaY);
    }
 
-   bool ACamera::UpdateCameraProxyData()
+   void ACamera::UpdateCameraProxyData()
    {
-      auto updateSuccessfull = false;
       if (auto sceneSp = mScene.lock())
       {
          if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
             static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraProxyData");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
+               [cameraPtr = this,
+                  eyeVector = GetEyeVector(),
+                  viewMatrix = GetViewMatrix(),
+                  eyeForwardVector = GetEyeSpaceForwardVector(),
+                  eyeRightVector = GetEyeSpaceRightVector(),
+                  eyeUpVector = GetLocalSpaceUpVector(),
+                  cameraProxyId = mCameraProxyId,
+                  sceneRendererSp
+                  ]() {
+               const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId);
+               assert(sceneViewSp);
+               const auto& cameraProxy = sceneViewSp->GetCameraProxy();
+               cameraProxy->UpdateEyeVector(eyeVector);
+               cameraProxy->UpdateViewMatrix(viewMatrix);
+               cameraProxy->SetForwardVector(eyeForwardVector);
+               cameraProxy->SetRightVector(eyeRightVector);
+               cameraProxy->SetUpVector(eyeUpVector);
 
-            const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(SceneProxyId);
-            if (sceneViewSp)
-            {
-               updateSuccessfull = true;
-               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
-                  [cameraPtr = this,
-                   eyeVector = GetEyeVector(),
-                   viewMatrix = GetViewMatrix(),
-                   eyeForwardVector = GetEyeSpaceForwardVector(),
-                   eyeRightVector = GetEyeSpaceRightVector(),
-                   eyeUpVector = GetLocalSpaceUpVector(),
-                   sceneViewSp,
-                   sceneRendererSp
-                   ]() {
-                  const auto& cameraProxy = sceneViewSp->GetCameraProxy();
-                  cameraProxy->UpdateEyeVector(eyeVector);
-                  cameraProxy->UpdateViewMatrix(viewMatrix);
-                  cameraProxy->SetForwardVector(eyeForwardVector);
-                  cameraProxy->SetRightVector(eyeRightVector);
-                  cameraProxy->SetUpVector(eyeUpVector);
-
-                  cameraPtr->OnCameraSceneProxyDataUpdated(); 
-               });
-            }
-            else
-            {
-               LogInfo("ACamera::UpdateCameraProxyData => Error! Current proxy index doesn't exist on RT. Proxy index = ", SceneProxyId);
-            }
+               cameraPtr->OnCameraSceneProxyDataUpdated(); 
+            });
          }
       }
-      return updateSuccessfull;
    }
 
    void ACamera::OnCameraSceneProxyDataUpdated()
@@ -106,16 +116,19 @@ namespace EngineCore
          mPlanarReflectionComponent->Tick(DeltaTime);
       }
 
-      if (bTransformationDirty)
+      if (bTransformationDirty && bIsCameraProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
-         bTransformationDirty = !UpdateCameraProxyData();
+         bTransformationDirty = false;
+         UpdateCameraProxyData();
       }
    }
 
    void ACamera::PostLevelInit()
    {
       if (mPlanarReflectionComponent)
+      {
          mPlanarReflectionComponent->PostLevelInit();
+      }
    }
 
    void ACamera::UpdateRotationMatrix(int32_t deltaX, int32_t deltaY)
@@ -242,7 +255,7 @@ namespace EngineCore
 
       if (auto sceneSp = mScene.lock())
       {
-         clippedSpacePosition = sceneSp->GetConvertedToClippedSpacePosition(SceneProxyId, worldPosition);
+         clippedSpacePosition = sceneSp->GetConvertedToClippedSpacePosition(mCameraProxyId, worldPosition);
       }
 
       return clippedSpacePosition;
@@ -254,7 +267,7 @@ namespace EngineCore
 
       if (auto sceneSp = mScene.lock())
       {
-         result = sceneSp->GetCameraFrustum(SceneProxyId);
+         result = sceneSp->GetCameraFrustum(mCameraProxyId);
       }
 
       return result;

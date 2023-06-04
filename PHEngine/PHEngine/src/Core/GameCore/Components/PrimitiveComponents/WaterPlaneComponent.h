@@ -41,7 +41,7 @@ namespace EngineCore
 
       eComponentType GetComponentType() const override;
 
-      void UnpausableTick(const float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
       inline const WaterPlaneRenderData &GetRenderData() const
       {

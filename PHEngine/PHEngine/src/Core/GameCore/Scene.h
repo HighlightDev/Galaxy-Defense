@@ -117,9 +117,9 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override;
 
-      void RegisterCamera(std::shared_ptr<ACamera> camera);
+      void RegisterCamera(const std::shared_ptr<ACamera>& camera);
 
-      void RegisterMainCamera(std::shared_ptr<ACamera> camera);
+      void RegisterMainCamera(const std::shared_ptr<ACamera>& camera);
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 

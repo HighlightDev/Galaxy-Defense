@@ -101,7 +101,7 @@ namespace EngineCore
         mParticlesRawDataHandler.SetRotationSizeActiveDataChunkSize(particleRotationSizeByteOffset);
         mParticlesRawDataHandler.SetColorActiveDataChunkSize(particleColorByteOffset);
 
-        if (activeParticlesCount || mPrevActiveParticles > 0)
+        if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (activeParticlesCount || mPrevActiveParticles > 0))
         {
             SyncDataWithRenderThread(activeParticlesCount);
             mPrevActiveParticles = activeParticlesCount;
@@ -155,22 +155,23 @@ namespace EngineCore
             m_relativeMatrix *= glm::translate(glm::mat4(1), mTransform->Translation + ownerTranslation);
             m_relativeMatrix *= glm::scale(glm::mat4(1), mTransform->Scale + ownerScale);
 
-            // Update primitives proxy transform
-            static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
-
-            if (const auto &sceneSP = m_sceneWP.lock())
+            if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
-                if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                // Update primitives proxy transform
+                static const uint64_t functionId = Hash("ParticleSystemComponent:UpdatePrimitiveComponentTransform_GameThread");
+                if (const auto &sceneSP = m_sceneWP.lock())
                 {
-                    const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId,
-                                                                                                             GetObjectId(),
-                                                                                                             functionId,
-                                                                                                             m_relativeMatrix,
-                                                                                                             GetTransformedBoundingBox());
-
-                    SetIsTransformationDirty(!updateSuccessfull);
+                    if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    {
+                        sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(mSceneProxyId,
+                                                                                          GetObjectId(),
+                                                                                          functionId,
+                                                                                          m_relativeMatrix,
+                                                                                          GetTransformedBoundingBox());
+                    }
                 }
             }
+            SetIsTransformationDirty(bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst));
         }
     }
 
@@ -197,10 +198,9 @@ namespace EngineCore
                                                                                     functionId,
                                                                                     [=]() mutable
                                                                                     {
-                                                                                        const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId);
-                                                                                        assert(primitiveProxySp);
                                                                                         const auto &proxyPtr =
-                                                                                            std::static_pointer_cast<ParticleSystemSceneProxy>(primitiveProxySp);
+                                                                                            std::static_pointer_cast<ParticleSystemSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(mSceneProxyId));
+                                                                                        assert(proxyPtr);
 
                                                                                         if (activeParticlesCount > 0)
                                                                                         {

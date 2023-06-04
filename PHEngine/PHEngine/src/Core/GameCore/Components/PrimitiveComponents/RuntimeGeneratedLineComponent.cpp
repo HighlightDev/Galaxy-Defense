@@ -49,9 +49,9 @@ namespace EngineCore
 
    void RuntimeGeneratedLineComponent::UnpausableTick(const float deltaTime)
    {
-       StaticMeshComponent::UnpausableTick(deltaTime);
+      StaticMeshComponent::UnpausableTick(deltaTime);
 
-       if (mIsRenderDataDirty)
+      if (mIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          SyncRenderData();
       }
@@ -111,15 +111,13 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, lineBeginWorldSpacePosition = mLineBeginWorldSpacePosition, lineEndWorldSpacePosition = mLineEndWorldSpacePosition, lineWidth = mLineWidth]() {
+            if (const auto &lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
             {
-               mIsRenderDataDirty = false;
-               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                              {
-                  lineProxySp->SetLineBeginWorldSpacePosition(mLineBeginWorldSpacePosition);
-                  lineProxySp->SetLineEndWorldSpacePosition(mLineEndWorldSpacePosition);
-                  lineProxySp->SetLineWidth(mLineWidth); });
-            }
+               lineProxySp->SetLineBeginWorldSpacePosition(lineBeginWorldSpacePosition);
+               lineProxySp->SetLineEndWorldSpacePosition(lineEndWorldSpacePosition);
+               lineProxySp->SetLineWidth(lineWidth);
+            } });
          }
       }
    }

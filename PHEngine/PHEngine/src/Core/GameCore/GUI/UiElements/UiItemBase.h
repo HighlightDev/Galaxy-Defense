@@ -14,6 +14,7 @@
 #include <vector>
 #include <unordered_map>
 #include <glm/mat4x4.hpp>
+#include <atomic>
 
 using namespace EngineCore::Scripts;
 
@@ -67,9 +68,9 @@ namespace EngineCore
 
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 
-            bool mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
+            std::atomic<bool> mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
 
-            bool mIsLuaProxyReady{false}; // only when this value is true - data could be updated on lua thread
+            std::atomic<bool> mIsLuaProxyReady{false}; // only when this value is true - data could be updated on lua thread
 
             bool mIsVisible;
 

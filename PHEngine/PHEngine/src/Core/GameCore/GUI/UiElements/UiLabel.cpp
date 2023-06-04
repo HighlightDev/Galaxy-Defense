@@ -261,7 +261,7 @@ namespace EngineCore
         void UiLabel::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnRenderThread");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -296,7 +296,7 @@ namespace EngineCore
         void UiLabel::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiLabel::SyncDataOnLuaThread");
-            if (mIsLuaProxyReady)
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {

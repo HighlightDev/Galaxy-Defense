@@ -97,13 +97,13 @@ namespace EngineCore
         void UiItemBase::SetIsSceneProxyReady(const bool isSceneProxyReady)
         {
             LogInfo("UiItemBase::SetIsSceneProxyReady => name: ", mName, ", readiness value: ", isSceneProxyReady);
-            mIsSceneProxyReady = isSceneProxyReady;
+            mIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::memory_order_seq_cst);
         }
 
         void UiItemBase::SetIsLuaProxyReady(const bool isLuaProxyReady)
         {
             LogInfo("UiItemBase::SetIsLuaProxyReady => name: ", mName, ", readiness value: ", isLuaProxyReady);
-            mIsLuaProxyReady = isLuaProxyReady;
+            mIsLuaProxyReady.store(isLuaProxyReady, std::memory_order::memory_order_seq_cst);
         }
 
         std::weak_ptr<Scene> UiItemBase::GetScene() const
@@ -882,7 +882,7 @@ namespace EngineCore
         void UiItemBase::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnRenderThread");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -910,7 +910,7 @@ namespace EngineCore
         void UiItemBase::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::SyncDataOnLuaThread");
-            if (mIsLuaProxyReady)
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -957,7 +957,7 @@ namespace EngineCore
         void UiItemBase::UpdateScaleProperty()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateScaleProperty");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -981,7 +981,7 @@ namespace EngineCore
         void UiItemBase::UpdateCenterOffsetProperties()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiItemBase::UpdateCenterOffsetProperties");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 glm::vec2 normalizedCenterOffset;
                 if (const auto &rootParentSp = GetRootParent().lock())

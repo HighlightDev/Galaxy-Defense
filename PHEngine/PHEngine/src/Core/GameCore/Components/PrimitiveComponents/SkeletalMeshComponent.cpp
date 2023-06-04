@@ -99,16 +99,6 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void SkeletalMeshComponent::UnpausableTick(const float deltaTime)
-   {
-      PrimitiveComponent::UnpausableTick(deltaTime);
-
-      if (bIsRenderDataDirty)
-      {
-         SyncDataWithRenderThread();
-      }
-   }
-
    void SkeletalMeshComponent::Tick(const float deltaTime)
    {
       SrcAnimationTime->SetValue(SrcAnimationTime->GetValue() + (deltaTime * mTimeIncreaseMultiply));
@@ -116,9 +106,10 @@ namespace EngineCore
       const bool bUpdateData = mUpdateDataResetTimeCounter >= update_data_reset_time;
       mUpdateDataResetTimeCounter = fmod(mUpdateDataResetTimeCounter, update_data_reset_time);
 
-      if (bUpdateData)
+      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst) && (bUpdateData || bIsRenderDataDirty))
       {
          SyncDataWithRenderThread();
+         bIsRenderDataDirty = false;
       }
    }
 
@@ -137,19 +128,17 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
-            {
-               bIsRenderDataDirty = false;
-               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
-                                              {
-                              const auto& proxyPtr = std::static_pointer_cast<SkeletalMeshSceneProxy>(primitiveProxySp); 
-                                    proxyPtr->UpdateAnimationData(bTransitionEnabled->GetValue(),
-                                    TransitionValue->GetValue(),
-                                    SrcAnimationTime->GetValue(),
-                                    DstAnimationTime->GetValue(),
-                                    SrcAnimationName->GetValue(),
-                                    DstAnimationName->GetValue()); });
-            }
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, isTransition = bTransitionEnabled->GetValue(), transitionValue = TransitionValue->GetValue(), srcAnimationTime = SrcAnimationTime->GetValue(), dstAnimationTime = DstAnimationTime->GetValue(), srcAnimation = SrcAnimationName->GetValue(), dstAnimation = DstAnimationName->GetValue()]()
+                                                                                {
+               if (const auto &primitiveProxySp = std::static_pointer_cast<SkeletalMeshSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
+               {
+                  primitiveProxySp->UpdateAnimationData(isTransition,
+                                                transitionValue,
+                                                srcAnimationTime,
+                                                dstAnimationTime,
+                                                srcAnimation,
+                                                dstAnimation);
+               } });
          }
       }
    }
@@ -158,5 +147,4 @@ namespace EngineCore
    {
       return std::make_shared<SkeletalMeshSceneProxy>(this);
    }
-
 }

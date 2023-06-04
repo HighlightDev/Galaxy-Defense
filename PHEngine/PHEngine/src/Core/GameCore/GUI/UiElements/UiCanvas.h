@@ -11,6 +11,7 @@
 
 #include <unordered_set>
 #include <memory>
+#include <atomic>
 
 using namespace Graphics;
 using namespace EngineCore::Scripts;
@@ -65,6 +66,10 @@ namespace EngineCore
 
             bool mIsPropertiesShouldBeUpdatedOnLuaThread{false};
 
+            std::atomic<bool> mIsSceneProxyReady{false}; // only when this value is true - data could be updated on render thread
+
+            std::atomic<bool> mIsLuaProxyReady{false};
+
             std::unique_ptr<UiInputSystem> mInputSystem;
 
             bool mWasHoveredLastFrame{false};
@@ -89,6 +94,16 @@ namespace EngineCore
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
+
+            void SetIsSceneProxyReady(const bool isReady);
+
+            bool GetIsSceneProxyReady() const;
+
+            void SetIsLuaProxyReady(const bool isReady);
+
+            bool GetIsLuaProxyReady() const;
+
+            void InitLuaProxy(const std::shared_ptr<::EngineCore::Scene> &sceneSp) override;
 
             void InitializeInputSystem();
 

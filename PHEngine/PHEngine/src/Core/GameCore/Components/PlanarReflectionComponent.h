@@ -34,12 +34,18 @@ namespace EngineCore
 
       std::shared_ptr<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>> mPlanarReflectionDeferredController;
 
+      std::atomic<bool> bIsSceneProxyReady{false};
+
       bool bIsRenderDataDirty{false};
 
    public:
       PlanarReflectionComponent(const PlanarReflectionComponentData &data);
 
       ~PlanarReflectionComponent() override;
+
+      void SetIsSceneProxyReady(const bool isReady);
+
+      bool IsSceneProxyReady() const;
 
       std::shared_ptr<PlanarReflectionProxy> CreatePlanarReflectionProxy();
 

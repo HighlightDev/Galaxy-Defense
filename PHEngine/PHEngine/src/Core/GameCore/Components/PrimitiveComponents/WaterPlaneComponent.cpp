@@ -30,13 +30,14 @@ namespace EngineCore
       return PRIMITIVE_COMPONENT;
    }
 
-   void WaterPlaneComponent::UnpausableTick(const float deltaTime)
+   void WaterPlaneComponent::Tick(const float deltaTime)
    {
-      PrimitiveComponent::UnpausableTick(deltaTime);
+      PrimitiveComponent::Tick(deltaTime);
 
-      if (bIsRenderDataDirty)
+      if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          SyncRenderData();
+         bIsRenderDataDirty = false;
       }
    }
 
@@ -102,26 +103,21 @@ namespace EngineCore
 
    void WaterPlaneComponent::SyncRenderData()
    {
-      if (bIsRenderDataDirty)
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneSp = m_sceneWP.lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-               if (const auto &primitiveProxySp = sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId))
-               {
-                  bIsRenderDataDirty = false;
-                  static const uint64_t functionId = Hash("WaterPlaneComponent::SyncRenderData");
+            static const uint64_t functionId = Hash("WaterPlaneComponent::SyncRenderData");
 
-                  sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, functionId, GetObjectId(), [=]() {
-                     WaterPlaneSceneProxy* proxyPtr = static_cast<WaterPlaneSceneProxy*>(primitiveProxySp.get());
-                     proxyPtr->SetFarClipPlane(m_farClipPlane); 
-                     proxyPtr->SetNearClipPlane(m_nearClipPlane);
-                     proxyPtr->SetTransparencyDepth(m_transparencyDepth);
-                     proxyPtr->SetWaveStrength(m_waveStrength); 
-                  });
-               }
-            }
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, functionId, GetObjectId(), [sceneRenderer, sceneProxyId = mSceneProxyId, farClipPlane = m_farClipPlane, nearClipPlane = m_nearClipPlane, transparencyDepth = m_transparencyDepth, waveStrength = m_waveStrength]()
+                                                                                {
+            if (const auto &primitiveProxySp = std::static_pointer_cast<WaterPlaneSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
+            {
+               primitiveProxySp->SetFarClipPlane(farClipPlane); 
+               primitiveProxySp->SetNearClipPlane(nearClipPlane);
+               primitiveProxySp->SetTransparencyDepth(transparencyDepth);
+               primitiveProxySp->SetWaveStrength(waveStrength);
+            } });
          }
       }
    }

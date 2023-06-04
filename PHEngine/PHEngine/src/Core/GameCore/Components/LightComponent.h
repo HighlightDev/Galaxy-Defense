@@ -6,6 +6,7 @@
 
 #include <glm/vec3.hpp>
 #include <memory>
+#include <atomic>
 
 using namespace Graphics::Proxy;
 using namespace Graphics::Data;
@@ -23,9 +24,22 @@ namespace EngineCore
 
       std::shared_ptr<LightRenderData> mLightRenderData;
 
+      std::atomic<bool> bIsSceneProxyReady{false};
+
+      size_t mLightSceneProxyId{0};
    public:
 
-      size_t LightSceneProxyId = 0;
+      LightComponent(const LightComponentData& data);
+
+      virtual ~LightComponent();
+
+      void SetIsSceneProxyReady(const bool isSceneProxyReady);
+
+      bool IsSceneProxyReady() const;
+
+      void SetLightSceneProxyId(const size_t lightSceneProxyId);
+
+      size_t GetLightSceneProxyId() const;
 
       eComponentType GetComponentType() const override;
 
@@ -33,11 +47,8 @@ namespace EngineCore
 
       virtual std::shared_ptr<LightSceneProxy> CreateSceneProxy() const = 0;
 
-      LightComponent(const LightComponentData& data);
-
       LightRenderData& GetLightRenderData();
 
-      virtual ~LightComponent();
    };
 
 }

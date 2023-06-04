@@ -118,7 +118,7 @@ namespace EngineCore
          {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
                                            {
-               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(mLightSceneProxyId);
                ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {

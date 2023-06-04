@@ -90,9 +90,10 @@ namespace EngineCore
    {
       Base::Tick(deltaTime);
 
-      if (bIsRenderDataDirty)
+      if (bIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          SyncRenderData();
+         bIsRenderDataDirty = false;
       }
    }
 
@@ -109,7 +110,11 @@ namespace EngineCore
          {
             mPlayerTranslationOffset = playerTranslationOffset->Translation;
             bIsRenderDataDirty = true;
-            SyncRenderData();
+            if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+               SyncRenderData();
+               bIsRenderDataDirty = false;
+            }
          }
       }
    }
@@ -121,26 +126,22 @@ namespace EngineCore
 
    void DirectionalLightComponent::SyncRenderData()
    {
-      if (bIsRenderDataDirty)
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneSp = m_sceneWP.lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-               static const uint64_t functionId = Hash("DirectionalLightComponent::SetPlayerPositionOffset");
-
-               sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=](){
-               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(LightSceneProxyId);
+            static const uint64_t functionId = Hash("DirectionalLightComponent::SetPlayerPositionOffset");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, lightSceneProxyId = mLightSceneProxyId, playerTranslationOffset = mPlayerTranslationOffset]()
+                                                                                {
+               const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyId);
                assert(lightProxySp);                                       
                ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {
-                  shadowInfo->SetPlayerPositionOffset(mPlayerTranslationOffset);
+                  shadowInfo->SetPlayerPositionOffset(playerTranslationOffset);
                   lightProxySp->SetIsTransformationDirty(true);
                   shadowInfo->SetIsShadowMapDirty(true);
-                  bIsRenderDataDirty = false;
                } });
-            }
          }
       }
    }

@@ -98,7 +98,7 @@ namespace EngineCore
       mDebugUiController->PostPlayLevelFinished();
    }
 
-   void Scene::RegisterMainCamera(std::shared_ptr<ACamera> camera)
+   void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)
    {
       LogInfo("Scene::RegisterMainCamera => name = ", camera->GetCameraName());
 
@@ -107,18 +107,18 @@ namespace EngineCore
       RegisterCamera(camera);
    }
 
-   void Scene::RegisterCamera(std::shared_ptr<ACamera> camera)
+   void Scene::RegisterCamera(const std::shared_ptr<ACamera>& camera)
    {
       LogInfo("Scene::RegisterCamera => name = ", camera->GetCameraName());
 
       mActiveCameras.emplace_back(camera);
       RegisterEngineObject(camera.get());
       auto cameraProxyPtr = camera->CreateSceneProxy();
-      camera->SceneProxyId = cameraProxyPtr->GetSceneProxyId();
+      camera->SetCameraProxyId(cameraProxyPtr->GetSceneProxyId());
 
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
-         sceneRendererSp->CameraSceneProxyAdded_OnRenderThread(cameraProxyPtr);
+         sceneRendererSp->CameraSceneProxyAdded_OnRenderThread(camera, cameraProxyPtr);
       }
    }
 
@@ -406,7 +406,7 @@ namespace EngineCore
       if ((type & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
       {
          auto componentPtr = std::static_pointer_cast<PrimitiveComponent>(component);
-         const size_t removeProxyIndex = componentPtr->SceneProxyId;
+         const size_t removeProxyIndex = componentPtr->GetSceneProxyId();
 
          // delete light proxy from render thread
          if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
@@ -417,7 +417,7 @@ namespace EngineCore
       else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
       {
          auto componentPtr = std::static_pointer_cast<LightComponent>(component);
-         const size_t removeProxyIndex = componentPtr->LightSceneProxyId;
+         const size_t removeProxyIndex = componentPtr->GetLightSceneProxyId();
 
          // delete light proxy from render thread
          if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
@@ -445,49 +445,48 @@ namespace EngineCore
       RemoveEngineObject(component.get());
    }
 
-   void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &component)
+   void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &componentSp)
    {
-      LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", component->GetEngineObjectName());
+      LogInfo("Scene::RegisterComponentSceneProxy => componentName = ", componentSp->GetEngineObjectName());
 
-      const eComponentType type = component->GetComponentType();
+      const eComponentType type = componentSp->GetComponentType();
       if ((type & eComponentType::SCENE_COMPONENT) == eComponentType::SCENE_COMPONENT)
       {
-         SceneComponent *sceneComponentPtr = static_cast<SceneComponent *>(component.get());
          if ((type & eComponentType::PRIMITIVE_COMPONENT) == eComponentType::PRIMITIVE_COMPONENT)
          {
-            PrimitiveComponent *componentPtr = static_cast<PrimitiveComponent *>(sceneComponentPtr);
-            auto sceneProxySp = componentPtr->CreateSceneProxy();
+            const auto primitiveComponentSp = std::static_pointer_cast<PrimitiveComponent>(componentSp);
+            const auto sceneProxySp = primitiveComponentSp->CreateSceneProxy();
             sceneProxySp->SetDeferredShadingSceneRenderer(m_interThreadMgr.GetSceneRendererWP());
-            componentPtr->SceneProxyId = sceneProxySp->GetSceneProxyId();
-            sceneProxySp->SetBindedGameObjectId(componentPtr->GetObjectId());
+            primitiveComponentSp->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
+            sceneProxySp->SetBindedGameObjectId(primitiveComponentSp->GetObjectId());
             if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
             {
-               sceneRendererSp->PrimitiveSceneProxyAdded_OnRenderThread(sceneProxySp);
+               sceneRendererSp->PrimitiveSceneProxyAdded_OnRenderThread(primitiveComponentSp, sceneProxySp);
             }
-            LogInfo("Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =", componentPtr->SceneProxyId);
+            LogInfo("Scene::RegisterComponentSceneProxy => primitive proxy added, sceneProxyId =", primitiveComponentSp->GetSceneProxyId());
          }
          else if ((type & eComponentType::LIGHT_COMPONENT) == eComponentType::LIGHT_COMPONENT)
          {
-            LightComponent *componentPtr = static_cast<LightComponent *>(sceneComponentPtr);
-            auto sceneProxySp = componentPtr->CreateSceneProxy();
-            componentPtr->LightSceneProxyId = sceneProxySp->GetSceneProxyId();
+            const auto lightComponentSp = std::static_pointer_cast<LightComponent>(componentSp);
+            const auto sceneProxySp = lightComponentSp->CreateSceneProxy();
+            lightComponentSp->SetLightSceneProxyId(sceneProxySp->GetSceneProxyId());
             if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
             {
-               sceneRendererSp->LightSceneProxyAdded_OnRenderThread(sceneProxySp);
+               sceneRendererSp->LightSceneProxyAdded_OnRenderThread(lightComponentSp, sceneProxySp);
             }
-            LogInfo("Scene::RegisterComponentSceneProxy => ligth proxy added, sceneProxyId =", componentPtr->LightSceneProxyId);
+            LogInfo("Scene::RegisterComponentSceneProxy => ligth proxy added, sceneProxyId =", lightComponentSp->GetLightSceneProxyId());
          }
          else if ((type & eComponentType::PLANAR_REFLECTION_COMPONENT) == eComponentType::PLANAR_REFLECTION_COMPONENT)
          {
-            PlanarReflectionComponent *componentPtr = static_cast<PlanarReflectionComponent *>(sceneComponentPtr);
-            auto sceneProxySp = componentPtr->CreatePlanarReflectionProxy();
-            componentPtr->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
+            const auto planarComponentSp = std::static_pointer_cast<PlanarReflectionComponent>(componentSp);
+            const auto sceneProxySp = planarComponentSp->CreatePlanarReflectionProxy();
+            planarComponentSp->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
             if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
             {
-               sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, componentPtr->GetOwnerCamera()->SceneProxyId);
-               sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(sceneProxySp);
+               sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, planarComponentSp->GetOwnerCamera()->GetCameraProxyId());
+               sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(planarComponentSp, sceneProxySp);
             }
-            LogInfo("Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =", componentPtr->GetSceneProxyId());
+            LogInfo("Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =", planarComponentSp->GetSceneProxyId());
          }
       }
    }

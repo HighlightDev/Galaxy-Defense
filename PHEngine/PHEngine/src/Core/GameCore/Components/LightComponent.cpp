@@ -17,6 +17,26 @@ namespace EngineCore
    {
    }
 
+   void LightComponent::SetIsSceneProxyReady(const bool isSceneProxyReady)
+   {
+      bIsSceneProxyReady.store(isSceneProxyReady, std::memory_order::memory_order_seq_cst);
+   }
+
+   bool LightComponent::IsSceneProxyReady() const
+   {
+      return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+   }
+
+   void LightComponent::SetLightSceneProxyId(const size_t lightSceneProxyId)
+   {
+      mLightSceneProxyId = lightSceneProxyId;
+   }
+
+   size_t LightComponent::GetLightSceneProxyId() const
+   {
+      return mLightSceneProxyId;
+   }
+
    eComponentType LightComponent::GetComponentType() const
    {
       return LIGHT_COMPONENT;
@@ -28,13 +48,20 @@ namespace EngineCore
       // Update light proxy transform
       static const uint64_t functionId = Hash("LightComponent::UpdateLightComponentTransform_GameThread");
 
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
-         if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+         SetIsTransformationDirty(false);
+         if (const auto &sceneSP = m_sceneWP.lock())
          {
-            const auto updateSuccessfull = sceneRendererSp->UpdateLightComponentTransform_OnRenderThread(LightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
-            SetIsTransformationDirty(!updateSuccessfull);
+            if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+            {
+               sceneRendererSp->UpdateLightComponentTransform_OnRenderThread(mLightSceneProxyId, GetObjectId(), functionId, m_relativeMatrix);
+            }
          }
+      }
+      else
+      {
+         SetIsTransformationDirty(true);
       }
    }
 

@@ -219,7 +219,7 @@ namespace EngineCore
         void UiImage::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnRenderThread");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -251,7 +251,7 @@ namespace EngineCore
         void UiImage::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiImage::SyncDataOnLuaThread");
-            if (mIsLuaProxyReady)
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {

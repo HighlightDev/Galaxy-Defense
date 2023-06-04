@@ -64,6 +64,44 @@ namespace EngineCore
             return std::make_shared<UiCanvasLuaProxy>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
         }
 
+        void UiCanvas::SetIsSceneProxyReady(const bool isReady)
+        {
+            mIsSceneProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+        }
+
+        bool UiCanvas::GetIsSceneProxyReady() const
+        {
+            return mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+        }
+
+        void UiCanvas::SetIsLuaProxyReady(const bool isReady)
+        {
+            mIsLuaProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+        }
+
+        bool UiCanvas::GetIsLuaProxyReady() const
+        {
+            return mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst);
+        }
+
+        void UiCanvas::InitLuaProxy(const std::shared_ptr<Scene> &sceneSp)
+        {
+            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::InitLuaProxy");
+            assert(sceneSp);
+            mIsPendingToAddLuaProxy = false;
+            const auto &luaProxy = ReplicateLuaProxy();
+            luaProxy->SetSceneWp(sceneSp);
+            luaProxy->SetLuaScriptProcessor(GetLuaScriptProcessorWp());
+
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::PUSH_ANYWAY, GetUId(), functionId, [this, luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxy]
+                                                                             {
+                    if (const auto &luaProcessorSp = luaScriptProcessorWp.lock())
+                    {
+                    luaProcessorSp->AddLuaProxy(luaProxy);
+                    SetIsLuaProxyReady(true);
+                    } });
+        }
+
         void UiCanvas::SetScene(const std::weak_ptr<Scene> &sceneWp)
         {
             mScene = sceneWp;
@@ -284,14 +322,16 @@ namespace EngineCore
                 mIsTransformDirty = false;
             }
 
-            if (mIsPropertiesShouldBeUpdatedOnRenderThread)
+            if (mIsPropertiesShouldBeUpdatedOnRenderThread && mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 SyncDataOnRenderThread();
+                mIsPropertiesShouldBeUpdatedOnRenderThread = false;
             }
 
-            if (mIsPropertiesShouldBeUpdatedOnLuaThread)
+            if (mIsPropertiesShouldBeUpdatedOnLuaThread && mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 SyncDataOnLuaThread();
+                mIsPropertiesShouldBeUpdatedOnLuaThread = false;
             }
 
             for (const auto &child : mChildren)
@@ -397,15 +437,14 @@ namespace EngineCore
             {
                 if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
-                    if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
-                    {
-                        mIsPropertiesShouldBeUpdatedOnRenderThread = false;
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy]()
-                                                                                            {
-                            canvasProxy->SetIsVisible(mIsVisible);
-                            canvasProxy->SetAbsoluteOrigin(mAbsoluteOrigin);
-                            canvasProxy->SetWidthHeight(mWidthHeight); });
-                    }
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, uid = GetUId(), isVisible = mIsVisible, absoluteOrigin = mAbsoluteOrigin, widthHeight = mWidthHeight]()
+                                                                                        {
+                        if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(uid))
+                        {
+                            canvasProxy->SetIsVisible(isVisible);
+                            canvasProxy->SetAbsoluteOrigin(absoluteOrigin);
+                            canvasProxy->SetWidthHeight(widthHeight); 
+                        } });
                 }
             }
         }
@@ -417,12 +456,12 @@ namespace EngineCore
             {
                 if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                 {
-                    if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(GetLuaProxyId())))
-                    {
-                        mIsPropertiesShouldBeUpdatedOnLuaThread = false;
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [this, canvasProxy]()
-                                                                                         { canvasProxy->SetIsVisible_FromGameThread(mIsVisible); });
-                    }
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), isVisible = mIsVisible]()
+                                                                                     {
+                        if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
+                        {
+                            canvasProxy->SetIsVisible_FromGameThread(isVisible); 
+                        } });
                 }
             }
         }

@@ -7,6 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 #include <optional>
+#include <atomic>
 
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GameCore/ITickable.h"
@@ -46,7 +47,11 @@ namespace EngineCore
 
       bool bTransformationDirty = false;
 
+      std::atomic<bool> bIsCameraProxyReady{false};
+
    protected:
+
+      size_t mCameraProxyId{0};
 
       std::weak_ptr<Scene> mScene;
 
@@ -74,13 +79,17 @@ namespace EngineCore
 
    public:
 
-      size_t SceneProxyId = 0;
-
-   public:
-
       ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
 
       virtual ~ACamera();
+
+      void SetCameraProxyId(const size_t proxyId);
+
+      size_t GetCameraProxyId() const;
+
+      void SetIsCameraProxyReady(const bool isReady);
+
+      bool IsCameraProxyReady() const;
 
       void Tick(const float DeltaTime) override;
 
@@ -156,7 +165,7 @@ namespace EngineCore
 
    private:
 
-      bool UpdateCameraProxyData();
+      void UpdateCameraProxyData();
    };
 
 }

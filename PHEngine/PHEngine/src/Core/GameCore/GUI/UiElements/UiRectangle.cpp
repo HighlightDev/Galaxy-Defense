@@ -191,7 +191,7 @@ namespace EngineCore
         void UiRectangle::SyncDataOnRenderThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnRenderThread");
-            if (mIsSceneProxyReady)
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {
@@ -223,7 +223,7 @@ namespace EngineCore
         void UiRectangle::SyncDataOnLuaThread()
         {
             static constexpr uint64_t functionId = Hash64_CT("UiRectangle::SyncDataOnLuaThread");
-            if (mIsLuaProxyReady)
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
                 if (const auto &sceneSp = GetScene().lock())
                 {

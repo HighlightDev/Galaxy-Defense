@@ -29,14 +29,24 @@ namespace EngineCore
    {
    }
 
+   void PrimitiveComponent::SetSceneProxyId(const size_t proxyId)
+   {
+      mSceneProxyId = proxyId;
+   }
+
+   size_t PrimitiveComponent::GetSceneProxyId() const
+   {
+      return mSceneProxyId;
+   }
+
    eComponentType PrimitiveComponent::GetComponentType() const
    {
       return PRIMITIVE_COMPONENT;
    }
 
-   void PrimitiveComponent::UnpausableTick(const float deltaTime)
+   void PrimitiveComponent::Tick(const float deltaTime)
    {
-      SceneComponent::UnpausableTick(deltaTime);
+      SceneComponent::Tick(deltaTime);
 
       if (bIsEnabledStateDirty ||
           bIsVisibleStateDirty ||
@@ -50,17 +60,20 @@ namespace EngineCore
    {
       Base::UpdateRelativeMatrix(parentRelativeMatrix);
 
-      // Update primitives proxy transform
-      static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
-
-      if (const auto &sceneSp = m_sceneWP.lock())
+      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
-         if(const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+         // Update primitives proxy transform
+         static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentTransform_GameThread");
+
+         if (const auto &sceneSp = m_sceneWP.lock())
          {
-            const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(SceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
-            SetIsTransformationDirty(!updateSuccessfull);
+            if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+            {
+               sceneRendererSp->UpdatePrimitiveComponentTransform_OnRenderThread(mSceneProxyId, GetObjectId(), functionId, m_relativeMatrix, GetTransformedBoundingBox());
+            }
          }
       }
+      SetIsTransformationDirty(!bIsSceneProxyReady);
    }
 
    void PrimitiveComponent::SetIsEnabled(const bool bEnabled)
@@ -108,6 +121,16 @@ namespace EngineCore
       return mSortOrderValue;
    }
 
+   void PrimitiveComponent::SetIsSceneProxyReady(const bool isReady)
+   {
+      bIsSceneProxyReady.store(isReady, std::memory_order::memory_order_seq_cst);
+   }
+
+   bool PrimitiveComponent::IsSceneProxyReady() const
+   {
+      return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
+   }
+
    BoundingBox3D PrimitiveComponent::GetTransformedBoundingBox() const
    {
       return BoundingBoxBuilder::GetTransformedBoundingBox(mBoundingBox, m_relativeMatrix);
@@ -120,29 +143,32 @@ namespace EngineCore
 
    void PrimitiveComponent::SyncRenderData()
    {
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
-         if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+         if (const auto &sceneSP = m_sceneWP.lock())
          {
-            if (bIsEnabledStateDirty)
+            if (const auto &sceneRendererSp = sceneSP->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {
-               static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
-               const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentEnable_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsEnabled->GetValue());
-               bIsEnabledStateDirty = !updateSuccessfull;
-            }
+               if (bIsEnabledStateDirty)
+               {
+                  static const uint64_t functionId = Hash("PrimitiveComponent:UpdatePrimitiveComponentEnable_GameThread");
+                  sceneRendererSp->UpdatePrimitiveComponentEnable_OnRenderThread(mSceneProxyId, GetObjectId(), functionId, mIsEnabled->GetValue());
+                  bIsEnabledStateDirty = false;
+               }
 
-            if (bIsVisibleStateDirty)
-            {
-               static const uint64_t functionId = Hash("PrimitiveComponent::UpdatePrimitiveComponentVisibility_OnRenderThread()");
-               const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentVisibility_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mIsVisible->GetValue());
-               bIsVisibleStateDirty = !updateSuccessfull;
-            }
+               if (bIsVisibleStateDirty)
+               {
+                  static const uint64_t functionId = Hash("PrimitiveComponent::UpdatePrimitiveComponentVisibility_OnRenderThread()");
+                  sceneRendererSp->UpdatePrimitiveComponentVisibility_OnRenderThread(mSceneProxyId, GetObjectId(), functionId, mIsVisible->GetValue());
+                  bIsVisibleStateDirty = false;
+               }
 
-            if (bIsSortOrderStateDirty)
-            {
-               static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdatePrimitiveComponentSortOrderValue_OnRenderThread()");
-               const auto updateSuccessfull = sceneRendererSp->UpdatePrimitiveComponentSortOrderValue_OnRenderThread(SceneProxyId, GetObjectId(), functionId, mSortOrderValue);
-               bIsSortOrderStateDirty = !updateSuccessfull;
+               if (bIsSortOrderStateDirty)
+               {
+                  static constexpr uint64_t functionId = Hash64_CT("PrimitiveComponent::UpdatePrimitiveComponentSortOrderValue_OnRenderThread()");
+                  sceneRendererSp->UpdatePrimitiveComponentSortOrderValue_OnRenderThread(mSceneProxyId, GetObjectId(), functionId, mSortOrderValue);
+                  bIsSortOrderStateDirty = false;
+               }
             }
          }
       }

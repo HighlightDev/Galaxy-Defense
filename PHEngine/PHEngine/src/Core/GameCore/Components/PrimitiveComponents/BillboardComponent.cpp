@@ -31,9 +31,10 @@ namespace EngineCore
    {
       PrimitiveComponent::UnpausableTick(deltaTime);
 
-      if (bIsExtentDataDirty)
+      if (bIsExtentDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          SyncRenderData();
+         bIsExtentDataDirty = false;
       }
    }
 
@@ -53,7 +54,6 @@ namespace EngineCore
       {
          mBillboardExtent = extent;
          bIsExtentDataDirty = true;
-         SyncRenderData();
       }
    }
 
@@ -97,20 +97,17 @@ namespace EngineCore
 
    void BillboardComponent::SyncRenderData()
    {
-      if (bIsExtentDataDirty)
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         if (const auto &sceneSp = m_sceneWP.lock())
+         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
-            {
-               if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(SceneProxyId)))
+            static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, billboardExtent = mBillboardExtent]()
+                                                                                {
+               if (const auto &billboardProxySp = std::static_pointer_cast<BillboardSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
                {
-                  bIsExtentDataDirty = false;
-                  static const uint64_t functionId = Hash("BillboardComponent:SetBillboardExtent");
-                  sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                                 { billboardProxySp->SetBillboardExtent(mBillboardExtent); });
-               }
-            }
+                  billboardProxySp->SetBillboardExtent(billboardExtent);
+               } });
          }
       }
    }

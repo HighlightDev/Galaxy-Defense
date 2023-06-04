@@ -9,6 +9,7 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 #include <memory>
+#include <atomic>
 
 using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
@@ -25,17 +26,17 @@ namespace EngineCore
 
             BoundingBox3D mBoundingBox;
 
+            size_t mSceneProxyId{0};
+
             std::shared_ptr<EngineObjectProperty<bool>> mIsVisible;
 
             int32_t mSortOrderValue{0};
 
+            std::atomic<bool> bIsSceneProxyReady{false};
             bool bIsEnabledStateDirty{false};
             bool bIsVisibleStateDirty{false};
             bool bIsSortOrderStateDirty{false};
-
       public:
-            size_t SceneProxyId = 0;
-
             PrimitiveComponent(const std::string &gameObjectName,
                                const glm::vec3 &translation,
                                const glm::vec3 &rotation,
@@ -43,9 +44,17 @@ namespace EngineCore
 
             ~PrimitiveComponent() override;
 
+            void SetSceneProxyId(const size_t proxyId);
+
+            size_t GetSceneProxyId() const;
+
+            void SetIsSceneProxyReady(const bool isReady);
+
+            bool IsSceneProxyReady() const;
+
             virtual void SetIsVisible(bool isVisible);
 
-            void UnpausableTick(const float deltaTime) override;
+            void Tick(const float deltaTime) override;
 
             bool IsVisible() const;
 

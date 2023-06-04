@@ -20,6 +20,9 @@
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
+#include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/GameCore/Components/LightComponent.h"
+#include "Core/GameCore/Components/PlanarReflectionComponent.h"
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
@@ -1011,119 +1014,60 @@ namespace Graphics
          });
       }
 
-      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
       {
-         bool updateSuccess = false;
-         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveSp)
-         {
-            updateSuccess = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, bEnabled]() {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, bEnabled]() {
+               const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+               assert(primitiveSp);
                primitiveSp->SetEnabled(bEnabled);
             });
-         }
-         else
-         {
-            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-
-         return updateSuccess;
       }
 
-      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
                                                                                            const uint64_t creatorObjectId,
                                                                                            const uint64_t functionId,
                                                                                            const bool visibility)
       {
-         bool updateSuccess = false;
-         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveSp)
-         {
-            updateSuccess = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, visibility]() {
-               primitiveSp->SetVisibility(visibility); 
-            });
-         }
-         else
-         {
-            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-
-         return updateSuccess;
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, visibility]() {
+            const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            assert(primitiveSp);
+            primitiveSp->SetVisibility(visibility); 
+         });
       }
 
-      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
                                                                                                const uint64_t creatorObjectId,
                                                                                                const uint64_t functionId,
                                                                                                const int32_t sortOrderValue)
       {
-         bool updateSuccess = false;
-         const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveSp)
-         {
-            updateSuccess = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveSp, sortOrderValue]() {
-               primitiveSp->SetSortOrderValue(sortOrderValue); 
-            });
-         }
-         else
-         {
-            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread => "
-                    "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                    primitiveSceneProxyIndex);
-         }
-
-         return updateSuccess;
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, sortOrderValue, primitiveSceneProxyIndex]() {
+            const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            assert(primitiveSp);
+            primitiveSp->SetSortOrderValue(sortOrderValue); 
+         });
       }
 
-      bool DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
                                                                                           const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
       {
-         auto updateSuccess = false;
-         const auto &primitiveProxySp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-         if (primitiveProxySp)
-         {
-            updateSuccess = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [primitiveProxySp, newRelativeMatrix, newTransformedBoundingBox]() {
-               primitiveProxySp->SetTransformationMatrix(newRelativeMatrix);
-               primitiveProxySp->SetTransformedBoundingBox(newTransformedBoundingBox); 
-            });
-         }
-         else
-         {
-            LogInfo("DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread => "
-                     "Error !Current proxy index doesn't exist on RT. Proxy index = ",
-                     primitiveSceneProxyIndex);
-         }
-         return updateSuccess;
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, newRelativeMatrix, newTransformedBoundingBox]() {
+            const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            assert(primitiveSp);
+            primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+            primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox); 
+         });
       }
 
-      bool DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+      void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
                                                                                       const uint64_t creatorObjectId,
                                                                                       const uint64_t functionId,
                                                                                       const glm::mat4 &newRelativeMatrix)
       {
-         auto updateSuccess = false;
-         const auto &lightProxySp = GetLightProxyByProxyId(lightSceneProxyIndex);
-         if (lightProxySp)
-         {
-            updateSuccess = true;
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [newRelativeMatrix, lightProxySp]() {
-               lightProxySp->SetTransformationMatrix(newRelativeMatrix);
-            });
-         }
-         else
-         {
-            LogInfo("DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread => "
-                     "Error! Current proxy index doesn't exist on RT. Proxy index = ",
-                     lightSceneProxyIndex);
-         }
-
-         return updateSuccess;
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, newRelativeMatrix, lightSceneProxyIndex]() {
+            const auto &lightProxySp = GetLightProxyByProxyId(lightSceneProxyIndex);
+            assert(lightProxySp);
+            lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+         });
       }
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex)
@@ -1182,38 +1126,41 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
+      void DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<ACamera>& camera, const std::shared_ptr<CameraSceneProxy>& cameraSceneProxy)
       {
          static constexpr uint64_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, cameraSceneProxy]() {
-            SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, PrimitiveProxiesVector)); 
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, camera, cameraSceneProxy]() {
+            SceneViewsVector.emplace_back(std::make_shared<SceneView>(cameraSceneProxy, PrimitiveProxiesVector));
+            camera->SetIsCameraProxyReady(true);
          });
       }
 
-      void DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveSceneProxy>& primitiveSceneProxy)
+      void DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveComponent>& primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy>& primitiveSceneProxy)
       {
          static constexpr uint64_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveSceneProxy]() {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveComponent, primitiveSceneProxy]() {
             assert(!GetPrimitiveProxyByProxyId(primitiveSceneProxy->GetSceneProxyId()));
             primitiveSceneProxy->PostConstructorInitialize();
             PrimitiveProxiesVector.emplace_back(primitiveSceneProxy);
             SetProxiesAreDirty(true);
+            primitiveComponent->SetIsSceneProxyReady(true);
          });
       }
 
-      void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightSceneProxy>& lightSceneProxy)
+      void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent>& lightComponent, const std::shared_ptr<LightSceneProxy>& lightSceneProxy)
       {
          static constexpr uint64_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxy]() {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightComponent, lightSceneProxy]() {
             assert(!GetLightProxyByProxyId(lightSceneProxy->GetSceneProxyId()));
             LightProxiesVector.emplace_back(lightSceneProxy);
             SetLightProxiesAreDirty(true);
+            lightComponent->SetIsSceneProxyReady(true);
          });
       }
 
@@ -1254,15 +1201,16 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+      void DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
       {
          LogInfo("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
 
          static constexpr uint64_t creatorObjectId = 0;
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvasProxy]() {
-            RegisterUiCanvasProxy(uiCanvasProxy); 
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvas, uiCanvasProxy]() {
+            RegisterUiCanvasProxy(uiCanvasProxy);
+            uiCanvas->SetIsSceneProxyReady(true);
          });
       }
 
@@ -1353,14 +1301,15 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &proxy)
+      void DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<PlanarReflectionComponent>& planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy)
       {
             static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PlanarReflectionSceneProxyAdded");
-            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, proxy->GetSceneProxyId(), functionId, [proxy, this]() {
+            m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, proxy->GetSceneProxyId(), functionId, [proxy, planarReflectionComponent, this]() {
                const auto& reflectionProxySp = GetPlanarReflectionProxyByProxyId(proxy->GetSceneProxyId());
                assert(!reflectionProxySp);
                PlanarReflectionProxiesVector.emplace_back(proxy);
-               SetPlanarReflectionProxiesAreDirty(true); 
+               SetPlanarReflectionProxiesAreDirty(true);
+               planarReflectionComponent->SetIsSceneProxyReady(true);
             });
       }
 
