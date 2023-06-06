@@ -44,5 +44,8 @@ namespace Game
       void RegisterCallbacks(const LuaWrapper &luaWrapper) override;
 
       void ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data) override;
+
+   private:
+      int32_t GetSelectedMissileType(const std::tuple<> &data);
    };
 }

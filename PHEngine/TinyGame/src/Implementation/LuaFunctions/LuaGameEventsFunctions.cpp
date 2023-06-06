@@ -7,6 +7,8 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
 #include "Implementation/StatusTypes.h"
+#include "Implementation/MissileType.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 
 #include <json/json.hpp>
 
@@ -45,6 +47,7 @@ namespace Game
 
    void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
    {
+       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetSelectedMissileType"), int32_t(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1), "_GetSelectedMissileType");
    }
 
    void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
@@ -53,5 +56,10 @@ namespace Game
       jsonObj["player_status_type"] = static_cast<int32_t>(std::get<0>(data));
       const auto& eventParams = jsonObj.dump();
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"), eventParams);
+   }
+
+   int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<>& data)
+   {
+      return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetSelectedMissileType());
    }
 }

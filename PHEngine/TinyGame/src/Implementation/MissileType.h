@@ -7,7 +7,7 @@ namespace Game
         NONE,
         BOMB,
         FREEZING,
-        BLACK_HOLE,
-        ELECTRO_RAY
+        ELECTRO_RAY,
+        BLACK_HOLE
     };
 }
