@@ -47,5 +47,7 @@ namespace Game
 
    private:
       int32_t GetSelectedMissileType(const std::tuple<> &data);
+
+      std::string GetAllMissilesData(const std::tuple<>& data);
    };
 }

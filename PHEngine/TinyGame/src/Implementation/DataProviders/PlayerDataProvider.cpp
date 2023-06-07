@@ -3,6 +3,8 @@
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/StatusTypes.h"
 
+#include <algorithm>
+
 using namespace Event;
 
 namespace Game
@@ -25,12 +27,34 @@ namespace Game
         LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::ACTIVE_WEAPON_CHANGED);
     }
 
-    void PlayerDataProvider::SetMissilesCount(const eMissileType missileType, const size_t missilesCount)
+    void PlayerDataProvider::SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount)
     {
         assert(mAvailableMissiles.count(missileType));
-        mAvailableMissiles[missileType] = missilesCount;
-        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
-        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+        if (mAvailableMissiles.at(missileType) != missilesCount)
+        {
+            mAvailableMissiles[missileType] = missilesCount;
+            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+        }
+    }
+
+    void PlayerDataProvider::SetMissilesCount(const std::unordered_map<eMissileType, size_t> &missilesMap)
+    {
+        bool bDataUpdated = false;
+        for (const auto [missileType, actualCount] : mAvailableMissiles)
+        {
+            const auto newCount = missilesMap.at(missileType);
+            if (newCount != actualCount)
+            {
+                mAvailableMissiles[missileType] = newCount;
+                bDataUpdated = true;
+            }
+        }
+        if (bDataUpdated)
+        {
+            MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+            LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::MISSILES_COUNT_CHANGED);
+        }
     }
 
     size_t PlayerDataProvider::GetMissilesCount(const eMissileType missileType) const
@@ -42,5 +66,18 @@ namespace Game
     bool PlayerDataProvider::IsMissileAvailable(const eMissileType missileType) const
     {
         return mAvailableMissiles.count(missileType) > 0;
+    }
+
+    void PlayerDataProvider::SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t> &availableMissileTypes)
+    {
+        mAvailableMissiles = availableMissileTypes;
+    }
+
+    std::vector<eMissileType> PlayerDataProvider::GetAvailableMissileTypes() const
+    {
+        std::vector<eMissileType> result;
+        std::transform(mAvailableMissiles.cbegin(), mAvailableMissiles.cend(), std::back_inserter(result), [](const auto &availableMissilePair)
+                       { return availableMissilePair.first; });
+        return result;
     }
 }

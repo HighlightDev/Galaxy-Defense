@@ -24,6 +24,7 @@
 #include "Implementation/MissileType.h"
 
 #include <array>
+#include <unordered_map>
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -386,8 +387,8 @@ namespace Game
 
     void CombatController::Tick(const float deltaTime)
     {
-        // Test bullets if they are still inside level bounds
         FlushToPoolUsedBullets();
+        UpdateMissilesData();
 
         if (bIsCoolDownInProgress)
         {
@@ -566,6 +567,25 @@ namespace Game
 
             mMissilesPool.emplace_back(a_missile);
         }
+        
+        std::unordered_map<eMissileType, size_t> availabeMissileTypes;
+        if (bombMissileCount)
+        {
+            availabeMissileTypes.emplace(eMissileType::BOMB, bombMissileCount);
+        }
+        if (freezingMissileCount)
+        {
+            availabeMissileTypes.emplace(eMissileType::FREEZING, freezingMissileCount);
+        }
+        if (electroRayCount)
+        {
+            availabeMissileTypes.emplace(eMissileType::ELECTRO_RAY, electroRayCount);
+        }
+        if (blackHoleMissileCount)
+        {
+            availabeMissileTypes.emplace(eMissileType::BLACK_HOLE, blackHoleMissileCount);
+        }
+        PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
     }
 
     void CombatController::CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp)
@@ -607,6 +627,24 @@ namespace Game
                 }
             }
         }
+    }
+
+    void CombatController::UpdateMissilesData()
+    {
+        std::unordered_map<eMissileType, size_t> missiles; 
+        const auto& availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
+        for (const auto& avlMissileType : availableMissileTypes)
+        {
+            missiles[avlMissileType] = 0;
+        }
+        for (auto &missile : mMissilesPool)
+        {
+            if (eMissileActivityState::IDLE == missile->GetMissileActivityState())
+            {
+                missiles[missile->GetMissileType()] = missiles.at(missile->GetMissileType()) + 1;
+            }
+        }
+        PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
     }
 
     std::shared_ptr<MissileActor> CombatController::GetMissileOwnerActorById(const uint64_t actorId) const

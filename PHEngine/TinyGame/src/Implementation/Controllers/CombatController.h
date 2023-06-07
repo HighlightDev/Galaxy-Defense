@@ -108,6 +108,8 @@ namespace Game
 
         void FlushToPoolUsedBullets();
 
+        void UpdateMissilesData();
+
         std::shared_ptr<MissileActor> GetMissileOwnerActorById(const uint64_t actorId) const;
 
         std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const uint64_t actorId) const;

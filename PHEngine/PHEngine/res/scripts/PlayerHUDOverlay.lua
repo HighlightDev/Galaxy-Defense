@@ -70,7 +70,8 @@ MissileWidgetsMap = {
 
 PlayerHUDOverlay = {
     testAvailableHearts = 5,
-    prevSelectedMissileType = MissileType.NONE
+    prevSelectedMissileType = MissileType.NONE,
+    weaponBackgroundTileColor = 0xdb9427
 }
 
 local function invertTable(table)
@@ -81,15 +82,23 @@ local function invertTable(table)
     return s
 end
 
+InvertedMissileTable = invertTable(MissileType)
+
 local function getSelectedMissileType(host)
     return tonumber(_GetSelectedMissileType(host))
+end
+
+local function getMissileTypeNameByValue(missileTypeValue)
+    assert(missileTypeValue ~= nil and type(missileTypeValue) == "number")
+    local name = InvertedMissileTable[missileTypeValue]
+    assert(name ~= nil)
+    return name
 end
 
 local function startAnimationForMissileWidget(host, missileType, animationName)
     assert(host ~= nil and type(host) == "userdata" and missileType ~= nil and animationName ~= nil and
         type(animationName) == "string")
-    local missileNamesMap = invertTable(MissileType)
-    local currentMissileName = missileNamesMap[missileType]
+    local currentMissileName = InvertedMissileTable[missileType]
     if currentMissileName ~= nil then
         if MissileWidgetsMap[tostring(currentMissileName)] ~= nil then
             print("PlayerHUDOverlay:startAnimationForMissileWidget => animationName: " ..
@@ -234,12 +243,27 @@ function PlayerHUDOverlay:new(host)
         end
     end
 
-    playerHUDOverlay.onWeaponChanged = function()
+    playerHUDOverlay.onCurrentMissileChanged = function()
         local currentMissileType = getSelectedMissileType(host)
         if PlayerHUDOverlay.prevSelectedMissileType ~= currentMissileType then
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusOut")
             PlayerHUDOverlay.prevSelectedMissileType = currentMissileType
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusIn")
+        end
+    end
+
+    playerHUDOverlay.onMissilesDataChanged = function()
+        local missileDataJsonStr = _GetAllMissilesData(host)
+        local parsedDataJson = json.decode(missileDataJsonStr)
+        if parsedDataJson["all_missiles_data"] ~= nil then
+            local missilesDataTable = parsedDataJson["all_missiles_data"]
+            for _, value in pairs(missilesDataTable) do
+                local missileTypeName = getMissileTypeNameByValue(tonumber(value[1]))
+                local missilesCount = tonumber(value[2])
+                local activeWidgetsTable = MissileWidgetsMap[missileTypeName]
+                activeWidgetsTable.label:setText(tostring(missilesCount))
+                print("onMissilesDataChanged => missileName: " .. missileTypeName .. ", count missiles: " .. tostring(missilesCount))
+            end
         end
     end
 
@@ -268,7 +292,7 @@ function PlayerHUDOverlay:new(host)
             weaponRootContainer.widgetName, weaponInterval);
         weaponBackgroundTile1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
-        weaponBackgroundTile1:setColorHexValue(0xFFFFFF)
+        weaponBackgroundTile1:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         weaponBackgroundTile1:setBorderRadius(8)
         weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale",
@@ -312,7 +336,6 @@ function PlayerHUDOverlay:new(host)
         weaponTile1Label:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponBackgroundTile1.widgetName, 6)
         weaponTile1Label:setVerticalCenterOffset(-8)
-        weaponTile1Label:setText("10")
         weaponTile1Label:setHeight(weaponImageSize / 15)
         weaponTile1Label:setTextColorHexValue(0x000000)
         weaponTile1Label:setFontSize(10.0)
@@ -333,7 +356,7 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile1.widgetName, weaponInterval);
         weaponBackgroundTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponBackgroundTile2:setColorHexValue(0xFFFFFF)
+        weaponBackgroundTile2:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         weaponBackgroundTile2:setBorderRadius(8)
         weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale",
@@ -377,7 +400,6 @@ function PlayerHUDOverlay:new(host)
         weaponTile2Label:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponBackgroundTile2.widgetName, 6)
         weaponTile2Label:setVerticalCenterOffset(-8)
-        weaponTile2Label:setText("10")
         weaponTile2Label:setHeight(weaponImageSize / 15)
         weaponTile2Label:setTextColorHexValue(0x000000)
         weaponTile2Label:setFontSize(10.0)
@@ -398,7 +420,7 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile2.widgetName, weaponInterval);
         weaponBackgroundTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponBackgroundTile3:setColorHexValue(0xFFFFFF)
+        weaponBackgroundTile3:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         weaponBackgroundTile3:setBorderRadius(8)
         weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale",
@@ -442,7 +464,6 @@ function PlayerHUDOverlay:new(host)
         weaponTile3Label:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponBackgroundTile3.widgetName, 6)
         weaponTile3Label:setVerticalCenterOffset(-8)
-        weaponTile3Label:setText("10")
         weaponTile3Label:setHeight(weaponImageSize / 15)
         weaponTile3Label:setTextColorHexValue(0x000000)
         weaponTile3Label:setFontSize(10.0)
@@ -463,7 +484,7 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile3.widgetName, weaponInterval);
         weaponBackgroundTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponBackgroundTile4:setColorHexValue(0xFFFFFF)
+        weaponBackgroundTile4:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         weaponBackgroundTile4:setBorderRadius(8)
         weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale",
@@ -508,7 +529,6 @@ function PlayerHUDOverlay:new(host)
         weaponTile4Label:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponBackgroundTile4.widgetName, 6)
         weaponTile4Label:setVerticalCenterOffset(-8)
-        weaponTile4Label:setText("10")
         weaponTile4Label:setHeight(weaponImageSize / 15)
         weaponTile4Label:setTextColorHexValue(0x000000)
         weaponTile4Label:setFontSize(10.0)
@@ -575,7 +595,8 @@ function PlayerHUDOverlay:new(host)
         lifeImage5:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, lifeRootContainer
             .widgetName);
 
-        playerHUDOverlay:onWeaponChanged() -- initialize current weapon widget
+        playerHUDOverlay:onMissilesDataChanged()   -- initialize all data missiles widgets
+        playerHUDOverlay:onCurrentMissileChanged() -- initialize current missile widget
     end)
 
     playerHUDOverlay.onGameEventTriggered = function(eventName, jsonArgs)
@@ -585,9 +606,12 @@ function PlayerHUDOverlay:new(host)
             if parsedJson["player_status_type"] ~= nil then
                 local statusType = tonumber(parsedJson["player_status_type"])
                 if statusType == PlayerStatusType.LIFE_POINTS_CHANGED then
-                    playerHUDOverlay:testDamage()
+                    playerHUDOverlay.testDamage()
                 elseif statusType == PlayerStatusType.ACTIVE_WEAPON_CHANGED then
-                    playerHUDOverlay:onWeaponChanged()
+                    playerHUDOverlay.onCurrentMissileChanged()
+                elseif statusType == PlayerStatusType.MISSILES_COUNT_CHANGED then
+                    print("onGameEventTriggered => MISSILES_COUNT_CHANGED");
+                    playerHUDOverlay.onMissilesDataChanged()
                 end
             end
         end
