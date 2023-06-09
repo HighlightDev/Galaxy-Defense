@@ -21,6 +21,7 @@
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 
 using namespace TinyLogger;
 using namespace IO;
@@ -30,15 +31,59 @@ using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-   Engine::Engine(InterThreadCommunicationMgr &interThreadMgr)
-       : m_interThreadMgr(interThreadMgr),
+   Engine::Engine()
+       : m_interThreadMgr(),
          mInputManager(std::make_shared<InputManager>()),
+         m_scene(std::make_shared<Scene>(m_interThreadMgr)),
+         m_luaScriptProcessor(std::make_shared<LuaScriptProcessor>(m_interThreadMgr)),
          mActiveAudioOutputDevice(SoundDevice::GetInstance()),
          mRenderThreadDeltaTimeSeconds(),
          mGameThreadDeltaTimeSeconds()
    {
+      Initialize();
+
       PauseGameThreadEvent::GetInstance()->AddListener(this);
       ExitGameThreadEvent::GetInstance()->AddListener(this);
+   }
+
+   Engine::~Engine()
+   {
+      PauseGameThreadEvent::GetInstance()->RemoveListener(this);
+      ExitGameThreadEvent::GetInstance()->RemoveListener(this);
+   }
+
+   void Engine::Initialize()
+   {
+      GameThreadEventDispatcher::GetInstance()
+          ->RegisterEventsByType<CameraTransformChangedEvent,
+                                 PlayerMovedEvent,
+                                 PhysicsComponentUpdatedEvent,
+                                 KeyboardButtonDownEvent,
+                                 KinematicBodyMovedEvent,
+                                 TextureAtlasGeneratedEvent,
+                                 MouseMovedEvent,
+                                 MouseScrollEvent,
+                                 MouseButtonDownEvent,
+                                 PhysicsCollisionEvent,
+                                 TextRegisterEvent,
+                                 TextDataChangedEvent,
+                                 PauseGameThreadEvent,
+                                 ExitGameThreadEvent>();
+
+      LuaThreadEventDispatcher::GetInstance()
+          ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,
+                                 LuaThreadMouseMovedEvent,
+                                 LuaThreadMouseScrollEvent,
+                                 LuaThreadMouseButtonDownEvent>();
+
+      EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
+
+      m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
+      m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
+      m_interThreadMgr.SetSceneWP(m_scene);
+      m_interThreadMgr.SetLuaScriptProcessorWP(m_luaScriptProcessor);
+      m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
+      m_luaThread = std::thread(std::bind(&Engine::LuaThreadPulse, this));
 
 #if DEBUG
       m_echoTimer.SetIntervalMs(2000);
@@ -48,12 +93,6 @@ namespace EngineCore
                               { LogInfo("EchoTimer::Timeout => Time passed: 2 seconds"); });
       m_echoTimer.StartTimer();
 #endif
-   }
-
-   Engine::~Engine()
-   {
-      PauseGameThreadEvent::GetInstance()->RemoveListener(this);
-      ExitGameThreadEvent::GetInstance()->RemoveListener(this);
    }
 
    void Engine::CleanUp()
@@ -83,6 +122,11 @@ namespace EngineCore
       return mInputManager;
    }
 
+   InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
+   {
+      return m_interThreadMgr;
+   }
+
    void Engine::StopGameThreadExecution()
    {
       bGameThreadExecution.store(false);
@@ -95,73 +139,53 @@ namespace EngineCore
 
    void Engine::PlayLevel(std::shared_ptr<Level> level)
    {
-      m_level = level;
+      if (m_level != level)
+      {
+         bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
+         // UnloadLevel(m_level);
+         m_level = level;
+         m_level->SetScene(m_scene);
+      }
 
       PreLevelInit();
-      m_sceneRenderer = std::make_shared<DeferredShadingSceneRenderer>(m_interThreadMgr);
-      m_interThreadMgr.SetSceneRendererWP(m_sceneRenderer);
-      m_interThreadMgr.SetSceneWP(m_level->GetSceneWP());
-      m_luaScriptProcessor = std::make_shared<LuaScriptProcessor>(m_interThreadMgr);
-      m_interThreadMgr.SetLuaScriptProcessorWP(m_luaScriptProcessor);
-
-      m_level->InitLevel();
-
+      OnLevelInit();
       PostPhysicsInitialize();
       PostLevelInit();
       PostPlayLevelFinished();
 
-      m_gameThread = std::thread(std::bind(&Engine::GameThreadPulse, this));
-      m_luaThread = std::thread(std::bind(&Engine::LuaThreadPulse, this));
-   }
-
-   InterThreadCommunicationMgr &Engine::GetThreadCommunicationManager()
-   {
-      return m_interThreadMgr;
+      bLevelIsLoading.store(false, std::memory_order::memory_order_seq_cst);
    }
 
    void Engine::PreLevelInit()
    {
-      GameThreadEventDispatcher::GetInstance()
-          ->RegisterEventsByType<CameraTransformChangedEvent,
-                                 PlayerMovedEvent,
-                                 PhysicsComponentUpdatedEvent,
-                                 KeyboardButtonDownEvent,
-                                 KinematicBodyMovedEvent,
-                                 TextureAtlasGeneratedEvent,
-                                 MouseMovedEvent,
-                                 MouseScrollEvent,
-                                 MouseButtonDownEvent,
-                                 PhysicsCollisionEvent,
-                                 TextRegisterEvent,
-                                 TextDataChangedEvent,
-                                 PauseGameThreadEvent,
-                                 ExitGameThreadEvent>();
-
-      LuaThreadEventDispatcher::GetInstance()
-          ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,
-                                 LuaThreadMouseMovedEvent,
-                                 LuaThreadMouseScrollEvent,
-                                 LuaThreadMouseButtonDownEvent>();
-
-      EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
-
       m_level->PreLevelInit();
+   }
+
+   void Engine::OnLevelInit()
+   {
+      m_scene->OnLevelInit();
+      m_level->InitLevel();
    }
 
    void Engine::PostLevelInit()
    {
       m_level->PostLevelInit();
+      m_scene->PostLevelInit();
+      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
+      ResourceMap::GetInstance()->CleanUp();
       m_sceneRenderer->PostLevelInit();
    }
 
    void Engine::PostPhysicsInitialize()
    {
       m_level->PostPhysicsInitialize();
+      m_scene->PostPhysicsInitialize();
    }
 
    void Engine::PostPlayLevelFinished()
    {
       m_level->PostPlayLevelFinished();
+      m_scene->PostPlayLevelFinished();
    }
 
    size_t rtCounter = 0;
@@ -190,15 +214,17 @@ namespace EngineCore
       while (bLuaThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
          const auto ltStartTimePoint = EngineTime::GetNowTime();
-         ProcessLuaThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
-         m_interThreadMgr.SpinLuaThreadJob();
+         if (!bLevelIsLoading.load())
+         {
+            ProcessLuaThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
+            m_interThreadMgr.SpinLuaThreadJob();
+            m_luaScriptProcessor->Tick(mLuaThreadDeltaTimeSeconds);
 
-         m_luaScriptProcessor->Tick(mLuaThreadDeltaTimeSeconds);
-
-         ProcessLuaThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
+            ProcessLuaThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
+         }
          std::this_thread::sleep_for(20ms);
          mLuaThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
-                EngineTime::GetPassedDuration(ltStartTimePoint));
+             EngineTime::GetPassedDuration(ltStartTimePoint));
       }
    }
 
@@ -208,10 +234,10 @@ namespace EngineCore
 
       while (bGameThreadExecution.load(std::memory_order::memory_order_seq_cst))
       {
-         /* GAME THREAD*/
-         {
-            const auto gtStartTimePoint = EngineTime::GetNowTime();
+         const auto gtStartTimePoint = EngineTime::GetNowTime();
 
+         if (!bLevelIsLoading.load())
+         {
             /* Events: pre execution */
             ProcessGameThreadEvents(Event::eExecutionOrder::PRE_EXECUTION);
 
@@ -221,10 +247,11 @@ namespace EngineCore
             if (!bPauseGameThreadExecution.load())
             {
                GameThreadTimersHolder::GetInstance()->Tick(mGameThreadDeltaTimeSeconds);
-               m_level->Tick(mGameThreadDeltaTimeSeconds);
+               m_scene->Tick(mGameThreadDeltaTimeSeconds);
             }
 
-            m_level->UnpausableTick(mGameThreadDeltaTimeSeconds);
+            GameThreadTimersHolder::GetInstance()->UnpausableTick(mGameThreadDeltaTimeSeconds);
+            m_scene->UnpausableTick(mGameThreadDeltaTimeSeconds);
 
             /* Events: post execution */
             ProcessGameThreadEvents(Event::eExecutionOrder::POST_EXECUTION);
@@ -239,10 +266,9 @@ namespace EngineCore
             sumGtFramesTime += mGameThreadDeltaTimeSeconds;
             ++gtCounter;
 #endif
-
-            mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
-                EngineTime::GetPassedDuration(gtStartTimePoint));
          }
+         mGameThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
+             EngineTime::GetPassedDuration(gtStartTimePoint));
       }
    }
 
@@ -258,26 +284,23 @@ namespace EngineCore
 
    void Engine::RenderThreadPulse()
    {
-      /* RENDER THREAD */
-      {
-         const auto rtStartTimePoint = EngineTime::GetNowTime();
+      const auto rtStartTimePoint = EngineTime::GetNowTime();
 #ifdef DEBUG
-         if (rtCounter == 100)
-         {
-            rtCounter = 0;
-            const float fps = 100.0f / sumRtFramesTime;
-            m_level->SetRenderThreadFPSTextValue(fps);
-            sumRtFramesTime = 0.0f;
-         }
-         sumRtFramesTime += mRenderThreadDeltaTimeSeconds;
-         ++rtCounter;
-#endif
-         m_interThreadMgr.SpinRenderThreadJobs();
-         m_sceneRenderer->RenderScene_RenderThread();
-
-         mRenderThreadDeltaTimeSeconds =
-             (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(rtStartTimePoint));
+      if (rtCounter == 100)
+      {
+         rtCounter = 0;
+         const float fps = 100.0f / sumRtFramesTime;
+         m_level->SetRenderThreadFPSTextValue(fps);
+         sumRtFramesTime = 0.0f;
       }
+      sumRtFramesTime += mRenderThreadDeltaTimeSeconds;
+      ++rtCounter;
+#endif
+      m_interThreadMgr.SpinRenderThreadJobs();
+      m_sceneRenderer->RenderScene_RenderThread();
+
+      mRenderThreadDeltaTimeSeconds =
+          (float)EngineTime::GetSecondsFromDuration(EngineTime::GetPassedDuration(rtStartTimePoint));
    }
 
    void Engine::TickWindow()
@@ -303,6 +326,11 @@ namespace EngineCore
    bool Engine::IsExitGameState() const
    {
       return bExitGame;
+   }
+
+   std::shared_ptr<Scene> Engine::GetSceneSp() const
+   {
+      return m_scene;
    }
 
 #if DEBUG

@@ -22,33 +22,37 @@ using namespace TinyLogger;
 namespace IO
 {
 
-   ResourceMap *ResourceMap::mInstance = nullptr;
-
    ResourceMap::ResourceMap()
        : mTextureLoader(),
          mMeshLoader(),
          mAudioLoader(),
          ReadyToReadResources(),
-         mAsyncDataProxy(new AsyncDataProxy())
+         mAsyncDataProxy(std::make_unique<AsyncDataProxy>())
    {
    }
 
-   ResourceMap::~ResourceMap()
+   ResourceMap *ResourceMap::GetInstance()
+   {
+      static ResourceMap instance; 
+      return &instance;
+   }
+
+   void ResourceMap::CleanUp()
    {
       const bool bResourceWasntLoaded = std::any_of(ReadyToReadResources.begin(), ReadyToReadResources.end(), [this](const auto &resourcePair)
                                                     { return !mAsyncDataProxy->ResourcesMap.count(resourcePair.first); });
 
       assert(!bResourceWasntLoaded);
 
-      for (auto &pair : ReadyToReadResources)
+      for (auto &[resourceName, resource] : ReadyToReadResources)
       {
-         Resource *res = pair.second;
-         res->Clear();
-         delete res;
+         resource->Clear();
+         delete resource;
       }
+   }
 
-      delete mAsyncDataProxy;
-      mAsyncDataProxy = nullptr;
+   ResourceMap::~ResourceMap()
+   {
    }
 
    bool ResourceMap::TryGetResource(Resource *&outResource, const std::string &key)
@@ -65,7 +69,6 @@ namespace IO
 
    void ResourceMap::AllocateAsync(const std::string &key)
    {
-
       if (mAsyncDataProxy->ResourcesMap.count(key) > 0 || ReadyToReadResources.count(key) > 0)
       {
          LogInfo("ResourceMap::AllocateAsync => WARN! ResourceMap::AllocateAsync invoked for existing key! key = ", key);

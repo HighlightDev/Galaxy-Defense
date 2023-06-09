@@ -71,7 +71,8 @@ MissileWidgetsMap = {
 PlayerHUDOverlay = {
     testAvailableHearts = 5,
     prevSelectedMissileType = MissileType.NONE,
-    weaponBackgroundTileColor = 0xdb9427
+    weaponBackgroundTileColor = 0xdb9427,
+    missilesCountLabelColor = 0xFFFFFF,
 }
 
 local function invertTable(table)
@@ -101,8 +102,6 @@ local function startAnimationForMissileWidget(host, missileType, animationName)
     local currentMissileName = InvertedMissileTable[missileType]
     if currentMissileName ~= nil then
         if MissileWidgetsMap[tostring(currentMissileName)] ~= nil then
-            print("PlayerHUDOverlay:startAnimationForMissileWidget => animationName: " ..
-                tostring(animationName) .. ", currentMissileName: " .. tostring(currentMissileName))
             local activeWidgetsTable = MissileWidgetsMap[tostring(currentMissileName)]
             activeWidgetsTable.image:startAnimation(host, animationName)
             activeWidgetsTable.tile:startAnimation(host, animationName)
@@ -270,15 +269,15 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
         lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            playerHUDOverlayCanvas.widgetName, 50)
+            playerHUDOverlayCanvas.widgetName, 30)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            playerHUDOverlayCanvas.widgetName, 50)
+            playerHUDOverlayCanvas.widgetName, 30)
         lifeRootContainer:setWidth(lifeRootContainerWidth)
         lifeRootContainer:setHeight(lifeRootContainerHeight)
 
         weaponRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         weaponRootContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            playerHUDOverlayCanvas.widgetName, 50)
+            playerHUDOverlayCanvas.widgetName, 30)
         weaponRootContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             playerHUDOverlayCanvas.widgetName, 30)
         weaponRootContainer:setWidth(weaponRootContainerWidth)
@@ -302,10 +301,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponBackgroundTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponBackgroundTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponImage1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile1.widgetName)
         weaponImage1:setTextureSource("weapon_missile.png");
@@ -323,10 +322,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponImage1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponImage1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponTile1Label:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile1.widgetName)
         weaponTile1Label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -337,16 +336,16 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile1.widgetName, 6)
         weaponTile1Label:setVerticalCenterOffset(-8)
         weaponTile1Label:setHeight(weaponImageSize / 15)
-        weaponTile1Label:setTextColorHexValue(0x000000)
+        weaponTile1Label:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
         weaponTile1Label:setFontSize(10.0)
         weaponTile1Label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         weaponTile1Label:setZOrder(4)
         weaponTile1Label:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 50)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 30)
         weaponTile1Label:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 50, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 30, 0)
 
         weaponBackgroundTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile2:setZOrder(3);
@@ -366,10 +365,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponBackgroundTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponBackgroundTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponImage2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile2.widgetName)
         weaponImage2:setTextureSource("weapon_missile.png");
@@ -387,10 +386,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponImage2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponImage2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponTile2Label:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile2.widgetName)
         weaponTile2Label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -401,16 +400,16 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile2.widgetName, 6)
         weaponTile2Label:setVerticalCenterOffset(-8)
         weaponTile2Label:setHeight(weaponImageSize / 15)
-        weaponTile2Label:setTextColorHexValue(0x000000)
+        weaponTile2Label:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
         weaponTile2Label:setFontSize(10.0)
         weaponTile2Label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         weaponTile2Label:setZOrder(4)
         weaponTile2Label:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 50)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 30)
         weaponTile2Label:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 50, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 30, 0)
 
         weaponBackgroundTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile3:setZOrder(3);
@@ -430,10 +429,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponBackgroundTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponBackgroundTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponImage3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile3.widgetName)
         weaponImage3:setTextureSource("weapon_missile.png");
@@ -451,10 +450,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponImage3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponImage3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponTile3Label:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile3.widgetName)
         weaponTile3Label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -465,16 +464,16 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile3.widgetName, 6)
         weaponTile3Label:setVerticalCenterOffset(-8)
         weaponTile3Label:setHeight(weaponImageSize / 15)
-        weaponTile3Label:setTextColorHexValue(0x000000)
+        weaponTile3Label:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
         weaponTile3Label:setFontSize(10.0)
         weaponTile3Label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         weaponTile3Label:setZOrder(4)
         weaponTile3Label:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 50)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 30)
         weaponTile3Label:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 50, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 30, 0)
 
         weaponBackgroundTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponBackgroundTile4:setZOrder(3);
@@ -494,10 +493,10 @@ function PlayerHUDOverlay:new(host)
             UiBaseWidget.EnginePropertyType.Float, 1.25, 1.0)
         weaponBackgroundTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponBackgroundTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponImage4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponBackgroundTile4.widgetName)
         weaponImage4:setTextureSource("weapon_missile.png");
@@ -511,10 +510,10 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile4.widgetName);
         weaponImage4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 60)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 40)
         weaponImage4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 60, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
         weaponImage4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2, "Scale",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
@@ -530,16 +529,16 @@ function PlayerHUDOverlay:new(host)
             weaponBackgroundTile4.widgetName, 6)
         weaponTile4Label:setVerticalCenterOffset(-8)
         weaponTile4Label:setHeight(weaponImageSize / 15)
-        weaponTile4Label:setTextColorHexValue(0x000000)
+        weaponTile4Label:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
         weaponTile4Label:setFontSize(10.0)
         weaponTile4Label:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
         weaponTile4Label:setZOrder(4)
         weaponTile4Label:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 0, 50)
+            UiBaseWidget.EnginePropertyType.Integer, 0, 30)
         weaponTile4Label:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset",
-            UiBaseWidget.EnginePropertyType.Integer, 50, 0)
+            UiBaseWidget.EnginePropertyType.Integer, 30, 0)
 
         lifeImage1:setParent(host, playerHUDOverlayCanvas.widgetName, lifeRootContainer.widgetName);
         lifeImage1:setTextureSource("scaled_down_heart.png");

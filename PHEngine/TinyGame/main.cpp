@@ -191,12 +191,9 @@ int32_t main(int32_t argc, char **argv)
   }
 
   {
-    InterThreadCommunicationMgr threadManager;
-    Engine engine(threadManager);
+    Engine engine;
     engineInputManager = engine.GetInputManager();
-    const auto &level = GameLevelFactory::GetInstance()->CreateLevel(
-        "test level", threadManager);
-
+    const auto &level = GameLevelFactory::GetInstance()->CreateLevel("test level");
     engine.PlayLevel(level);
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window) && !engine.IsExitGameState())

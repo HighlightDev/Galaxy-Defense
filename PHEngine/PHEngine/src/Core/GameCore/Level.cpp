@@ -13,6 +13,7 @@
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/CommonCore/Assertion.h"
 
 #include <glm/vec3.hpp>
 #include <cereal/archives/xml.hpp>
@@ -24,9 +25,8 @@ using namespace EngineUtility;
 namespace EngineCore
 {
 
-   Level::Level(InterThreadCommunicationMgr &interThreadMgr)
-       : mScene(std::make_shared<Scene>(interThreadMgr)),
-         mDebugDummyActor(),
+   Level::Level()
+       : mDebugDummyActor(),
          mRtTextField(),
          mGtTextField()
    {
@@ -34,6 +34,12 @@ namespace EngineCore
 
    Level::~Level()
    {
+   }
+
+   void Level::SetScene(const std::shared_ptr<Scene> &scene)
+   {
+      assert(scene);
+      mSceneWp = scene;
    }
 
    void Level::PreLevelInit()
@@ -44,75 +50,59 @@ namespace EngineCore
    void Level::PostLevelInit()
    {
       LogInfo("Level::PostLevelInit");
-      mScene->PostLevelInit();
-
-      ResourceMap::DeleteInstance();
-      TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
    void Level::PostPlayLevelFinished()
    {
       LogInfo("Level::PostPlayLevelFinished");
-      mScene->PostPlayLevelFinished();
    }
 
    void Level::PostPhysicsInitialize()
    {
       LogInfo("Level::PostPhysicsInitialize");
-
-      mScene->PostPhysicsInitialize();
    }
 
    void Level::InitLevel()
    {
       LogInfo("Level::InitLevel");
 
-      mScene->OnLevelInit();
-
 #ifdef DEBUG
-      mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
-                                                 std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
-                                                                                  glm::vec3(),
-                                                                                  glm::vec3(),
-                                                                                  glm::vec3(1.0f)));
-      const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
-      const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(mScene->CreateComponent_GameThread(uiComponentCreator,
-                                                                                                           ComponentData("c_uiComponent_DebugDummyActor")));
-      mDebugDummyActor->AddComponent(c_uiComponent);
-      mScene->AddActor(mDebugDummyActor);
-
-      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-      mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
-      mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
-
-      if (const auto &rtTextSp = mRtTextField.lock())
+      if (const auto& sceneSp = mSceneWp.lock())
       {
-         rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
-         rtTextSp->SetVisibility(true);
-      }
+         mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
+                                                    std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
+                                                                                     glm::vec3(),
+                                                                                     glm::vec3(),
+                                                                                     glm::vec3(1.0f)));
+         const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
+         const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(sceneSp->CreateComponent_GameThread(uiComponentCreator,
+                                                                                                               ComponentData("c_uiComponent_DebugDummyActor")));
+         mDebugDummyActor->AddComponent(c_uiComponent);
+         sceneSp->AddActor(mDebugDummyActor);
 
-      if (const auto &gtTextSp = mGtTextField.lock())
-      {
-         gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
-         gtTextSp->SetVisibility(true);
+         const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
+         const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
+         mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
+         mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
+
+         if (const auto &rtTextSp = mRtTextField.lock())
+         {
+            rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
+            rtTextSp->SetVisibility(true);
+         }
+
+         if (const auto &gtTextSp = mGtTextField.lock())
+         {
+            gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
+            gtTextSp->SetVisibility(true);
+         }
       }
 #endif
    }
 
-   void Level::Tick(const float deltaTime)
-   {
-      mScene->Tick(deltaTime);
-   }
-
-   void Level::UnpausableTick(const float deltaTime)
-   {
-      mScene->UnpausableTick(deltaTime);
-   }
-
    std::weak_ptr<Scene> Level::GetSceneWP() const
    {
-      return mScene;
+      return mSceneWp;
    }
 
    void Level::SerializeLevel(const std::string &pathToFolder)
@@ -122,21 +112,28 @@ namespace EngineCore
 
       SerializeDataContainer container;
 
-      CollectAllocatedResourcesForSerialization(container);
-
-      for (auto &actor : mScene->GetActors())
+      if (const auto &sceneSp = mSceneWp.lock())
       {
-         actor->CollectDataForSerialization(container);
+         CollectAllocatedResourcesForSerialization(container);
+
+         for (auto &actor : sceneSp->GetActors())
+         {
+            actor->CollectDataForSerialization(container);
+         }
+
+         for (auto &camera : sceneSp->GetActiveCameras())
+         {
+            camera->CollectDataForSerialization(container);
+         }
+
+         for (auto &actorController : sceneSp->GetActorControllers())
+         {
+            actorController->CollectDataForSerialization(container);
+         }
       }
-
-      for (auto &camera : mScene->GetActiveCameras())
+      else
       {
-         camera->CollectDataForSerialization(container);
-      }
-
-      for (auto &actorController : mScene->GetActorControllers())
-      {
-         actorController->CollectDataForSerialization(container);
+         LogInfo("Level::SerializeLevel => Error. Scene was destroyed");
       }
 
       oarchive(container);
@@ -183,77 +180,84 @@ namespace EngineCore
 
       ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
-      for (const auto &cameraData : container.Cameras)
+      if (const auto &sceneSp = mSceneWp.lock())
       {
-         bool outIsMainSceneCamera = false;
-         auto camera = SerializeHelper::CreateCameraFromSerializedData(mScene, cameraData, outIsMainSceneCamera);
-
-         if (outIsMainSceneCamera)
+         for (const auto &cameraData : container.Cameras)
          {
-            mScene->RegisterMainCamera(camera);
-         }
-         else
-         {
-            mScene->RegisterCamera(camera);
-         }
+            bool outIsMainSceneCamera = false;
+            auto camera = SerializeHelper::CreateCameraFromSerializedData(sceneSp, cameraData, outIsMainSceneCamera);
 
-         // Deserialize planar reflection component
-         if (camera && cameraData->mPlanarReflectionComponentData)
-         {
-            SerializeHelper::CreateComponentFromSerializedData(mScene, cameraData->mPlanarReflectionComponentData);
-         }
-      }
-
-      for (const auto &actorData : container.Actors)
-      {
-         std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
-
-         LogInfo("Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
-
-         for (const auto &componentData : actorData.ComponentsData)
-         {
-            const auto &component = SerializeHelper::CreateComponentFromSerializedData(mScene, componentData);
-
-            LogInfo("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetEngineObjectName());
-
-            if (component)
+            if (outIsMainSceneCamera)
             {
-               actor->AddComponent(component);
+               sceneSp->RegisterMainCamera(camera);
+            }
+            else
+            {
+               sceneSp->RegisterCamera(camera);
+            }
+
+            // Deserialize planar reflection component
+            if (camera && cameraData->mPlanarReflectionComponentData)
+            {
+               SerializeHelper::CreateComponentFromSerializedData(sceneSp, cameraData->mPlanarReflectionComponentData);
             }
          }
 
-         mScene->AddActor(actor);
-      }
-
-      for (const auto &actorControllerData : container.ActorControllerData)
-      {
-         const auto &bindedActor = mScene->GetActorByName(actorControllerData->BindedActorName);
-         mScene->AddActorController(std::make_shared<HumanoidPlayerController>(mScene->GetMainCamera(), bindedActor));
-      }
-
-      // deserialize tweener
-      for (const auto &actorData : container.Actors)
-      {
-         if (actorData.TweenerData)
+         for (const auto &actorData : container.Actors)
          {
-            auto data = actorData.TweenerData;
+            std::shared_ptr<Actor> actor = SerializeHelper::CreateActorFromSerializedData(actorData);
 
-            std::shared_ptr<Tweener> actorTweener = SerializeHelper::CreateTweenerFromSerializedData(data);
+            LogInfo("Level::InstantiateLevelFromSerializedContainer => Actor name: ", actor->GetName());
 
-            for (const auto &bindingData : data->Bindings)
+            for (const auto &componentData : actorData.ComponentsData)
             {
-               auto gameObject = mScene->GetEngineObjectByName(bindingData.EngineObjectName);
-               const auto &binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
-               BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.EngineObjectPropertyName);
+               const auto &component = SerializeHelper::CreateComponentFromSerializedData(sceneSp, componentData);
+
+               LogInfo("Level::InstantiateLevelFromSerializedContainer => Component name: ", component->GetEngineObjectName());
+
+               if (component)
+               {
+                  actor->AddComponent(component);
+               }
             }
 
-            auto actorIt = std::find_if(mScene->GetActors().begin(), mScene->GetActors().end(), [&](const std::shared_ptr<Actor> actor)
-                                        { return actor->GetEngineObjectName() == actorData.ActorName; });
-
-            assert(actorIt != mScene->GetActors().end());
-
-            (*actorIt)->AttachTweener(actorTweener);
+            sceneSp->AddActor(actor);
          }
+
+         for (const auto &actorControllerData : container.ActorControllerData)
+         {
+            const auto &bindedActor = sceneSp->GetActorByName(actorControllerData->BindedActorName);
+            sceneSp->AddActorController(std::make_shared<HumanoidPlayerController>(sceneSp->GetMainCamera(), bindedActor));
+         }
+
+         // deserialize tweener
+         for (const auto &actorData : container.Actors)
+         {
+            if (actorData.TweenerData)
+            {
+               auto data = actorData.TweenerData;
+
+               std::shared_ptr<Tweener> actorTweener = SerializeHelper::CreateTweenerFromSerializedData(data);
+
+               for (const auto &bindingData : data->Bindings)
+               {
+                  auto gameObject = sceneSp->GetEngineObjectByName(bindingData.EngineObjectName);
+                  const auto &binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
+                  BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.EngineObjectPropertyName);
+               }
+
+               auto actorIt = std::find_if(sceneSp->GetActors().begin(), sceneSp->GetActors().end(), [&](const std::shared_ptr<Actor> actor)
+                                           { return actor->GetEngineObjectName() == actorData.ActorName; });
+
+               assert(actorIt != sceneSp->GetActors().end());
+
+               (*actorIt)->AttachTweener(actorTweener);
+            }
+         }
+      }
+      else
+      {
+         LogInfo("Level::InstantiateLevelFromSerializedContainer => Error. Scene was destroyed");
       }
 
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();

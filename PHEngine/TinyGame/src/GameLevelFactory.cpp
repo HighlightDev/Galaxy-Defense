@@ -1,24 +1,19 @@
 #include "GameLevelFactory.h"
 
-#include "Core/InterThreadCommunicationMgr.h"
 #include "IntroLevel.h"
 
 namespace Game
 {
-
-   GameLevelFactory* GameLevelFactory::mLevelFactoryInstance = nullptr;
-
-   std::shared_ptr<Level> GameLevelFactory::CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const
+   std::shared_ptr<Level> GameLevelFactory::CreateLevel(const std::string& levelName) const
    {
-      return std::make_shared<IntroLevel>(threadMgr);
+      return std::make_shared<IntroLevel>();
    }
 
    GameLevelFactory* GameLevelFactory::GetInstance() 
    {
-      if (!mLevelFactoryInstance)
-         mLevelFactoryInstance = new GameLevelFactory();
+      static GameLevelFactory instance;
 
-      return mLevelFactoryInstance;
+      return &instance;
    }
 
 }

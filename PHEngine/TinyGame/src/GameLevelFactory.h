@@ -10,13 +10,10 @@ namespace Game
    class GameLevelFactory
       : public LevelFactory
    {
-
-      static GameLevelFactory* mLevelFactoryInstance;
-
    public:
       GameLevelFactory() = default;
 
-      std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const override;
+      std::shared_ptr<Level> CreateLevel(const std::string& levelName) const override;
 
       static GameLevelFactory* GetInstance();
    };

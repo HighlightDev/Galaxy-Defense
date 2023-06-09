@@ -3,7 +3,6 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ITickable.h"
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
-#include "Core/InterThreadCommunicationMgr.h"
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 using namespace Thread;
@@ -11,7 +10,6 @@ using namespace Thread;
 namespace EngineCore
 {
    class Level
-       : public ITickable
    {
 #ifdef DEBUG
       std::shared_ptr<Actor> mDebugDummyActor;
@@ -20,12 +18,14 @@ namespace EngineCore
 #endif
 
    protected:
-      std::shared_ptr<Scene> mScene;
+      std::weak_ptr<Scene> mSceneWp;
 
    public:
-      Level(InterThreadCommunicationMgr &interThreadMgr);
+      Level();
 
       virtual ~Level();
+
+      void SetScene(const std::shared_ptr<Scene>& scene);
 
       void PostPhysicsInitialize();
 
@@ -38,10 +38,6 @@ namespace EngineCore
       virtual void PostLevelInit();
 
       virtual void PostPlayLevelFinished();
-
-      void Tick(const float deltaTime) override final;
-
-      void UnpausableTick(const float deltaTime) override final;
 
       void SerializeLevel(const std::string &pathToFolder);
 

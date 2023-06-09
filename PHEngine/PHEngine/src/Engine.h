@@ -33,14 +33,14 @@ namespace EngineCore
         : public Event::PauseGameThreadEvent,
           public Event::ExitGameThreadEvent
     {
-        InterThreadCommunicationMgr &m_interThreadMgr;
+        InterThreadCommunicationMgr m_interThreadMgr;
 
         std::shared_ptr<InputManager> mInputManager;
 
         std::shared_ptr<Level> m_level;
 
+        std::shared_ptr<Scene> m_scene;
         std::shared_ptr<DeferredShadingSceneRenderer> m_sceneRenderer;
-
         std::shared_ptr<::EngineCore::Scripts::LuaScriptProcessor> m_luaScriptProcessor;
 
         std::atomic_bool bGameThreadExecution{true};
@@ -60,6 +60,8 @@ namespace EngineCore
 
         std::atomic_bool bPauseGameThreadExecution{false};
 
+        std::atomic_bool bLevelIsLoading{true};
+
         bool bExitGame{false};
 
 #if DEBUG
@@ -67,13 +69,15 @@ namespace EngineCore
 #endif
 
     public:
-        Engine(InterThreadCommunicationMgr &interThreadMgr);
+        Engine();
 
         ~Engine();
 
-        void PlayLevel(std::shared_ptr<Level> level);
-
         void PreLevelInit();
+
+        void OnLevelInit();
+
+        void PlayLevel(std::shared_ptr<Level> level);
 
         void PostLevelInit();
 
@@ -109,6 +113,8 @@ namespace EngineCore
 
         bool IsExitGameState() const;
 
+        std::shared_ptr<Scene> GetSceneSp() const;
+
 #if DEBUG
 
         void RecompileAllShaders();
@@ -118,6 +124,8 @@ namespace EngineCore
         void CleanUp();
 
     private:
+        void Initialize();
+
         void StopGameThreadExecution();
 
         void StopLuaThreadExecution();

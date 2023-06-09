@@ -15,7 +15,7 @@ namespace Game
       std::shared_ptr<SceneController> mSceneController;
 
    public:
-      IntroLevel(InterThreadCommunicationMgr &threadMgr);
+      IntroLevel();
 
       ~IntroLevel() override;
 

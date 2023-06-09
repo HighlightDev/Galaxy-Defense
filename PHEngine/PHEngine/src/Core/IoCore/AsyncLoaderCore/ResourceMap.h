@@ -1,58 +1,47 @@
 #pragma once
 
-#include <map>
 #include "ResourceLoader.h"
 
-namespace IO {
+#include <map>
+#include <memory>
 
-   struct ResourceMap {
+namespace IO
+{
+   class AsyncDataProxy;
+
+   struct ResourceMap
+   {
 
    private:
-
       TextureResourceLoader mTextureLoader;
 
       MeshResourceLoader mMeshLoader;
 
       AudioResourceLoader mAudioLoader;
 
-      std::map<std::string, Resource*> ReadyToReadResources;
-
-      static ResourceMap* mInstance;
+      std::map<std::string, Resource *> ReadyToReadResources;
 
    public:
-
-      class AsyncDataProxy* mAsyncDataProxy;
+      std::unique_ptr<AsyncDataProxy> mAsyncDataProxy;
 
       ~ResourceMap();
 
-      void AllocateAsync(const std::string& key);
+      void AllocateAsync(const std::string &key);
 
-      void AllocateSync(const std::string& key);
+      void AllocateSync(const std::string &key);
 
       void WaitUntilResourcesLoad();
 
-      bool TryGetResource(Resource*& outResource, const std::string& key);
+      bool TryGetResource(Resource *&outResource, const std::string &key);
 
-      void SaveToPool(const std::string& key);
+      void SaveToPool(const std::string &key);
 
-      static ResourceMap* GetInstance()
-      {
-         if (!mInstance)
-            mInstance = new ResourceMap();
+      static ResourceMap *GetInstance();
 
-         return mInstance;
-      }
-
-      static void DeleteInstance()
-      {
-         delete mInstance;
-         mInstance = nullptr;
-      }
+      void CleanUp();
 
    private:
-
       ResourceMap();
-
    };
 
 }

@@ -49,9 +49,8 @@ using namespace Graphics;
 namespace Game
 {
 
-   IntroLevel::IntroLevel(InterThreadCommunicationMgr &threadMgr)
-       : Level(threadMgr),
-         mSceneController(std::make_shared<SceneController>(mScene))
+   IntroLevel::IntroLevel()
+       : Level()
    {
       Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
@@ -63,12 +62,14 @@ namespace Game
 
    void IntroLevel::RunLuaBuildLevelScript()
    {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
       static constexpr const char *lvlName
           // = "createTestLevel.lua";
           = "spaceLvl1.lua";
       LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
-      mLuaLevelBuilder.SetScene(mScene);
-      mLuaLevelBuilder.SetLuaScriptProcessor(mScene->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
+      mLuaLevelBuilder.SetScene(sceneSp);
+      mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();
       mLuaLevelBuilder.RunScript();
       mLuaLevelBuilder.StopScript();
@@ -76,60 +77,65 @@ namespace Game
 
    void IntroLevel::PreLevelInit()
    {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      mSceneController = std::make_shared<SceneController>(sceneSp);
       Base::PreLevelInit();
       mSceneController->OnPreLevelInit();
    }
 
    void IntroLevel::CreateScene()
    {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
       const auto displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
       const auto displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
       auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
                                                             eCameraType::MAIN_FIRST_PERSON_CAMERA,
-                                                            mScene,
+                                                            sceneSp,
                                                             ViewPortInfo(0, 0, displayWidth, displayHeight),
                                                             38.88f,
                                                             -2.72f,
                                                             glm::vec3(5.0f, 45.0f, -40.0f));
-      mScene->RegisterMainCamera(spaceCamera);
+      sceneSp->RegisterMainCamera(spaceCamera);
 
-      const auto &a_skybox = mScene->GetActorByName("SkyboxActor");
+      const auto &a_skybox = sceneSp->GetActorByName("SkyboxActor");
       assert(a_skybox);
 
       MaterialParser materialParser;
       const auto &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
       const auto screenResolution = glm::vec2((float)displayWidth, (float)displayHeight);
 
-      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, mScene.get(), "GT_DeltaSec", "gt_timeSec");
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp.get(), "GT_DeltaSec", "gt_timeSec");
       MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "resolution", screenResolution);
 
       auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
       BillboardComponentData backgroundBillboardComponentData("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
-      const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(mScene->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
+      const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
 
-      const auto &a_spaceship = mScene->GetActorByName("SpaceshipActor");
+      const auto &a_spaceship = sceneSp->GetActorByName("SpaceshipActor");
       assert(a_spaceship);
 
       ComponentData d_input = ComponentData("SpaceshipInputComponent");
       const auto &inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
-      const auto &c_input = mScene->CreateComponent_GameThread(inputComponentCreator, d_input);
+      const auto &c_input = sceneSp->CreateComponent_GameThread(inputComponentCreator, d_input);
       a_spaceship->AddComponent(c_input);
 
       MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
       const auto &movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
-      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(mScene->CreateComponent_GameThread(movementComponentCreator, d_movement));
+      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(sceneSp->CreateComponent_GameThread(movementComponentCreator, d_movement));
 
       c_movement->SetReferenceSpeed(40.0f);
       c_movement->SetCurrentSpeedToReferenceValue();
       a_spaceship->AddComponent(c_movement);
 
-      const auto &mainCamera = mScene->GetMainCamera();
+      const auto &mainCamera = sceneSp->GetMainCamera();
       assert(mainCamera);
       const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
-      mScene->AddActorController(spaceShipController);
+      sceneSp->AddActorController(spaceShipController);
 
       if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
       {
@@ -145,16 +151,16 @@ namespace Game
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
-      mScene->AddExternalTickableObject(mSceneController);
+      sceneSp->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
-      /*const auto groundActor = mScene->GetActorByName("Ground");
-      const auto pointLightComponents = mScene->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
+      /*const auto groundActor = sceneSp->GetActorByName("Ground");
+      const auto pointLightComponents = sceneSp->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();
 
       const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),
                                                       FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
-      const auto cubemapRendererComponent = mScene->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
+      const auto cubemapRendererComponent = sceneSp->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
 
       mSceneController->OnLevelInit();
@@ -183,5 +189,4 @@ namespace Game
 #endif
       CreateScene();
    }
-#undef GET_REL_PATH_TO_FILE
 }

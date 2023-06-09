@@ -3,8 +3,6 @@
 #include <memory>
 #include <string>
 
-#include "Core/InterThreadCommunicationMgr.h"
-
 namespace EngineCore
 {
 
@@ -16,7 +14,7 @@ namespace EngineCore
 
       LevelFactory() = default;
 
-      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName, Thread::InterThreadCommunicationMgr& threadMgr) const = 0;
+      virtual std::shared_ptr<Level> CreateLevel(const std::string& levelName) const = 0;
    };
 
 }
