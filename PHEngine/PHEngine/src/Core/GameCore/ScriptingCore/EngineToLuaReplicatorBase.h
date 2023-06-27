@@ -21,7 +21,6 @@ namespace EngineCore
             static int32_t s_replicatorId;
 
             int32_t mReplicatorId;
-
             int32_t mLuaProxyId;
 
         protected:
@@ -53,6 +52,8 @@ namespace EngineCore
             bool GetIsPendingToCreateLuaProxy() const;
 
             virtual void InitLuaProxy(const std::shared_ptr<::EngineCore::Scene>& sceneSp);
+
+            virtual void CleanUp() = 0;
         };
     }
 }

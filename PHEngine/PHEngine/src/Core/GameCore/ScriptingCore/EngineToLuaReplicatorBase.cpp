@@ -30,7 +30,6 @@ namespace EngineCore
 
         int32_t EngineToLuaReplicatorBase::GetLuaProxyId() const
         {
-            assert(mLuaProxyId != -1);
             return mLuaProxyId;
         }
 

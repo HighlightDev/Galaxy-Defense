@@ -50,7 +50,7 @@ namespace Game
 {
 
    IntroLevel::IntroLevel()
-       : Level()
+       : Level("FirstLevel")
    {
       Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
@@ -151,7 +151,6 @@ namespace Game
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
 
-      sceneSp->AddExternalTickableObject(mSceneController);
       mSceneController->SetPlayerActorController(spaceShipController);
 
       /*const auto groundActor = sceneSp->GetActorByName("Ground");
@@ -181,12 +180,36 @@ namespace Game
    void IntroLevel::InitLevel()
    {
       Base::InitLevel();
-      // ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 #if 0
       DeserializeLevel("test_serialize.xml");
 #else
       RunLuaBuildLevelScript();
 #endif
       CreateScene();
+   }
+
+   void IntroLevel::UnloadLevel()
+   {
+      if (mSceneController)
+      {
+         mSceneController->CleanUp();
+         mSceneController.reset();
+      }
+   }
+
+   void IntroLevel::Tick(const float deltaTime)
+   {
+      if (mSceneController)
+      {
+         mSceneController->Tick(deltaTime);
+      }
+   }
+
+   void IntroLevel::UnpausableTick(const float deltaTime)
+   {
+      if (mSceneController)
+      {
+         mSceneController->UnpausableTick(deltaTime);
+      }
    }
 }

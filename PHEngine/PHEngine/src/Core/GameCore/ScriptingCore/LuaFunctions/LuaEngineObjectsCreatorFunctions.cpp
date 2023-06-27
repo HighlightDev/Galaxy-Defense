@@ -188,7 +188,14 @@ namespace EngineCore
                 std::get<4>(cameraData),
                 bIsMainSceneCamera);
 
-            scene->RegisterCamera(firstPersonCamera);
+            if (bIsMainSceneCamera)
+            {
+               scene->RegisterMainCamera(firstPersonCamera);
+            }
+            else
+            {
+               scene->RegisterCamera(firstPersonCamera);
+            }
          }
       }
 

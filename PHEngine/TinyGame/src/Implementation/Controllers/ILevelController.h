@@ -12,5 +12,7 @@ namespace Game
         virtual void OnPostLevelInit() = 0;
 
         virtual void PostPlayLevelFinished() = 0;
+
+        virtual void CleanUp() = 0;
     };
 }

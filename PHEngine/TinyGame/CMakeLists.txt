@@ -1,7 +1,8 @@
 set(
 	HEADERS
-	src/GameLevelFactory.h
-	src/IntroLevel.h
+	src/Implementation/Levels/GameLevelFactory.h
+	src/Implementation/Levels/IntroLevel.h
+	src/Implementation/Levels/MainMenuLevel.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
@@ -13,6 +14,7 @@ set(
 	src/Implementation/Controllers/SpaceShipPlayerController.h
 	src/Implementation/Controllers/CombatController.h
 	src/Implementation/Controllers/UiController.h
+	src/Implementation/Controllers/MainMenuLevelUiController.h
 	src/Implementation/Controllers/SceneController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
@@ -64,12 +66,14 @@ set(
 
 set(
 	SOURCES
-	src/GameLevelFactory.cpp
-	src/IntroLevel.cpp
+	src/Implementation/Levels/GameLevelFactory.cpp
+	src/Implementation/Levels/IntroLevel.cpp
+	src/Implementation/Levels/MainMenuLevel.cpp
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/Controllers/UiController.cpp
+	src/Implementation/Controllers/MainMenuLevelUiController.cpp
 	src/Implementation/AiBrain.cpp
 	src/Implementation/Controllers/SceneController.cpp
 	src/Implementation/Controllers/AiActorController.cpp

@@ -73,5 +73,17 @@ namespace EngineCore
 
             return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
         }
+
+        void UiHandler::CleanUp()
+        {
+            LogInfo("UiHandler::CleanUp => canvases count: ", mUiCanvases.size());
+
+            for (const auto& canvas: mUiCanvases)
+            {
+                canvas->CleanUp();
+            }
+
+            mUiCanvases.clear();
+        }
     }
 }

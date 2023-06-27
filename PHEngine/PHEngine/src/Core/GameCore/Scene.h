@@ -15,6 +15,7 @@
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/DebugCore/DebugUiController.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
+#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -87,12 +88,13 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
-      std::vector<std::shared_ptr<ITickable>> mExternalTickableObjects;
-
       TextHandler mTextHandler;
 
 #ifdef DEBUG
       std::unique_ptr<DebugUiController> mDebugUiController;
+      std::shared_ptr<Actor> mDebugDummyActor;
+      std::weak_ptr<HudTextField> mRtTextField;
+      std::weak_ptr<HudTextField> mGtTextField;
 #endif
 
       std::shared_ptr<UiHandler> mUiHandler;
@@ -117,9 +119,9 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override;
 
-      void RegisterCamera(const std::shared_ptr<ACamera>& camera);
+      void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 
-      void RegisterMainCamera(const std::shared_ptr<ACamera>& camera);
+      void RegisterMainCamera(const std::shared_ptr<ACamera> &camera);
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 
@@ -129,7 +131,7 @@ namespace EngineCore
 
       bool RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator);
 
-      bool RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator);
+      bool UnregisterEngineToLuaReplicator(const int32_t replicatorId);
 
       std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorById(const int32_t id) const;
 
@@ -171,8 +173,6 @@ namespace EngineCore
 
       bool RemoveEngineObject(EngineObject *const gameObjectPtr);
 
-      void AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject);
-
       void RemoveComponent(std::shared_ptr<Component> component);
 
       bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
@@ -182,6 +182,16 @@ namespace EngineCore
       glm::vec4 GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition);
 
       std::optional<CameraFrustum> GetCameraFrustum(const size_t cameraProxyId);
+
+      void UnloadScene();
+
+#ifdef DEBUG
+
+      void SetRenderThreadFPSTextValue(const float fps);
+
+      void SetGameThreadFPSTextValue(const float fps);
+
+#endif
 
    private:
       void RegisterComponentSceneProxy(const std::shared_ptr<Component> &component);

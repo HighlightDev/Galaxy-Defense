@@ -84,6 +84,8 @@ namespace Game
 
         void UnpausableTick(const float deltaTime) override{};
 
+        void CleanUp() override;
+
         void SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController);
 
     protected:

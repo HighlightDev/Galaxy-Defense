@@ -32,6 +32,8 @@ namespace EngineCore
             std::shared_ptr<UiCanvas> GetCanvasByName(const std::string& canvasName) const;
 
             std::shared_ptr<UiCanvas> GetCanvasByUId(const uint32_t canvasId) const;
+
+            void CleanUp();
         };
     }
 }

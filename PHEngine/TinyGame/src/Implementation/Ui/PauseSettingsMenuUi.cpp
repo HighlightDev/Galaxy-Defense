@@ -239,4 +239,9 @@ namespace Game
             LogInfo("PauseSettingsMenuUi::OnSoundButtonToggled => toggleButtonState:", toggleButtonState);
         }
     }
+
+    void PauseSettingsMenuUi::CleanUp()
+    {
+
+    }
 }

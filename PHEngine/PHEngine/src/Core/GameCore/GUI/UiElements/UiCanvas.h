@@ -165,6 +165,8 @@ namespace EngineCore
 
             void AddAnimation(const std::string& animationName, const AnimationData& animationData) override;
 
+            void CleanUp() override;
+
         protected:
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 
@@ -190,6 +192,12 @@ namespace EngineCore
             void UpdateDependentChildrenAnchorTransform();
 
             void UpdateOpacityProperty();
+
+            void RemoveSceneProxy();
+
+            void RemoveFromReplicators();
+
+            void RemoveLuaProxy();
         };
     }
 }

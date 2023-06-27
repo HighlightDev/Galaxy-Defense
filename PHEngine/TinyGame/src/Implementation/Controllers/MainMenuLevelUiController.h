@@ -17,8 +17,8 @@ using namespace EngineCore::GUI;
 
 namespace Game
 {
-    class UiController : public ITickable,
-                         public ILevelController
+    class MainMenuLevelUiController : public ITickable,
+                                      public ILevelController
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -29,7 +29,7 @@ namespace Game
         size_t mExecutorId;
 
     public:
-        UiController(const std::weak_ptr<::EngineCore::Scene> &scene);
+        MainMenuLevelUiController(const std::weak_ptr<::EngineCore::Scene> &scene);
 
         void Tick(const float deltaTime) override;
 

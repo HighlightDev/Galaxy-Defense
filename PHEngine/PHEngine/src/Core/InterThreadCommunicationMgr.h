@@ -95,6 +95,10 @@ namespace Thread
 
       TasksSwapChain mRenderThreadSwapChain;
 
+      std::atomic_bool mIsAllowedPushGameThreadJobs{true};
+
+      std::atomic_bool mIsAllowedPushLuaThreadJobs{true};
+
    public:
       InterThreadCommunicationMgr();
 
@@ -114,6 +118,14 @@ namespace Thread
 
       void SpinLuaThreadJob();
 
+      void ClearGameThreadJobs();
+
+      void ClearLuaThreadJobs();
+
+      void SetIsAllowedPushGameThreadJobs(const bool isAllowed);
+
+      void SetIsAllowedPushLuaThreadJobs(const bool isAllowed);
+
       void SetSceneRendererWP(std::weak_ptr<Graphics::Renderer::DeferredShadingSceneRenderer> sceneRenderer);
 
       void SetSceneWP(std::weak_ptr<EngineCore::Scene> scene);
@@ -127,11 +139,6 @@ namespace Thread
       std::weak_ptr<::EngineCore::Scripts::LuaScriptProcessor> GetLuaScriptProcessor() const;
 
    private:
-      void EmplaceGameThreadJob(const eEnqueueJobPolicy, Job &&job);
-
-      void EmplaceRenderThreadJob(const eEnqueueJobPolicy, Job &&job);
-
-      void EmplaceLuaThreadJob(const eEnqueueJobPolicy, Job &&job);
 
       void ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job);
 

@@ -29,84 +29,75 @@ local UiOverlay = require("core/uiOverlay")
 local UiRectangle = require("core/uiRectangle")
 local UiLabel = require("core/uiLabel")
 
-PauseOverlay = {
+MainMenuOverlay_1 = {
     buttonColor = 0x403649,
     hoveredButtonColor = 0x201b24,
     buttonRadius = 6
 }
 
-function PauseOverlay:new(host)
+function MainMenuOverlay_1:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local pauseMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
-    pauseMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
-        _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)
-        pauseMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+    local mainMenuOverlay_1Canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    mainMenuOverlay_1Canvas:subscribeOnLuaProxyReady(function(host)
+        _InitializeCanvasInputSystem(host, mainMenuOverlay_1Canvas.luaProxyId)
+        mainMenuOverlay_1Canvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
             0.3, "Opacity",
             UiBaseWidget.EnginePropertyType.Float, 0.0, 1.0)
-        pauseMenuOverlayCanvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+        mainMenuOverlay_1Canvas:addFadeOutAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
             0.3, "Opacity",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
-    local pauseMenuOverlay = UiOverlay:createOverlay(host, "PauseMenuOverlay", pauseMenuOverlayCanvas)
+    local mainMenuOverlay_1 = UiOverlay:createOverlay(host, "MainMenuOverlay_1", mainMenuOverlay_1Canvas)
 
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 15.0;
 
     local backgroundRect = UiRectangle:new(host)
-    pauseMenuOverlay:addWidget(backgroundRect)
+    mainMenuOverlay_1:addWidget(backgroundRect)
 
-    local pauseMenuHeight = (windowHeight - (menuVerticalMargin * 2.0))
+    local mainMenuOverlayHeight = (windowHeight - (menuVerticalMargin * 2.0))
     local buttonsCount = 4;
     local buttonsMarginCount = buttonsCount + 1;
-    local buttonHeight = (pauseMenuHeight / buttonsCount)
+    local buttonHeight = (mainMenuOverlayHeight / buttonsCount)
     local buttonVerticalMarginHeight = buttonHeight / 4.0;
     local totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
-    buttonHeight = (pauseMenuHeight - totalButtonMarginHeight) / buttonsCount;
+    buttonHeight = (mainMenuOverlayHeight - totalButtonMarginHeight) / buttonsCount;
 
     local continueButton = UiRectangle:new(host)
-    pauseMenuOverlay:addWidget(continueButton)
-    continueButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendPauseGameThreadEvent(host,
-            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
-        UiOverlayManager:closeCurrentOverlay(host)
-        UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
-    end)
+    mainMenuOverlay_1:addWidget(continueButton)
     continueButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            continueButton:setColorHexValue(PauseOverlay.hoveredButtonColor)
+            continueButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            continueButton:setColorHexValue(PauseOverlay.buttonColor)
+            continueButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
 
     local continueButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseMenuOverlay:addWidget(continueButtonLabel)
+    mainMenuOverlay_1:addWidget(continueButtonLabel)
 
     local settingsButton = UiRectangle:new(host)
-    pauseMenuOverlay:addWidget(settingsButton)
-    settingsButton:setOnMouseInputClickedCallback(function()
-        UiOverlayManager:openOverlay(host, "PauseSettingsOverlay")
-    end)
+    mainMenuOverlay_1:addWidget(settingsButton)
     settingsButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            settingsButton:setColorHexValue(PauseOverlay.hoveredButtonColor)
+            settingsButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            settingsButton:setColorHexValue(PauseOverlay.buttonColor)
+            settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
 
     local settingsButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseMenuOverlay:addWidget(settingsButtonLabel)
+    mainMenuOverlay_1:addWidget(settingsButtonLabel)
 
     local exitToMainMenuButton = UiRectangle:new(host)
-    pauseMenuOverlay:addWidget(exitToMainMenuButton)
+    mainMenuOverlay_1:addWidget(exitToMainMenuButton)
     exitToMainMenuButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitToMainMenuButton:setColorHexValue(PauseOverlay.hoveredButtonColor)
+            exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            exitToMainMenuButton:setColorHexValue(PauseOverlay.buttonColor)
+            exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
     exitToMainMenuButton:setOnMouseInputClickedCallback(function()
@@ -114,41 +105,41 @@ function PauseOverlay:new(host)
     end)
 
     local exitToMainMenuButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseMenuOverlay:addWidget(exitToMainMenuButtonLabel)
+    mainMenuOverlay_1:addWidget(exitToMainMenuButtonLabel)
 
     local exitGameButton = UiRectangle:new(host)
-    pauseMenuOverlay:addWidget(exitGameButton)
+    mainMenuOverlay_1:addWidget(exitGameButton)
     exitGameButton:setOnMouseInputClickedCallback(function()
         EngineEventsHolder:sendExitGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
     exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitGameButton:setColorHexValue(PauseOverlay.hoveredButtonColor)
+            exitGameButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            exitGameButton:setColorHexValue(PauseOverlay.buttonColor)
+            exitGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
 
     local exitGameMenuButtonLabel = UiLabel:new(host, "nimbus_mono")
-    pauseMenuOverlay:addWidget(exitGameMenuButtonLabel)
+    mainMenuOverlay_1:addWidget(exitGameMenuButtonLabel)
 
-    pauseMenuOverlay:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
-        print("pauseMenuOverlay:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
+    mainMenuOverlay_1:subscribeOnAllWidgetLuaProxiesReady(function(host, sender)
+        print("mainMenuOverlay_1:OnAllWidgetLuaProxiesReady => name: " .. tostring(sender.overlayName))
 
-        backgroundRect:setParent(host, pauseMenuOverlayCanvas.widgetName, pauseMenuOverlayCanvas.widgetName)
+        backgroundRect:setParent(host, mainMenuOverlay_1Canvas.widgetName, mainMenuOverlay_1Canvas.widgetName)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            pauseMenuOverlayCanvas.widgetName, menuHorizontalMargin)
+            mainMenuOverlay_1Canvas.widgetName, menuHorizontalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            pauseMenuOverlayCanvas.widgetName, menuHorizontalMargin)
+            mainMenuOverlay_1Canvas.widgetName, menuHorizontalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            pauseMenuOverlayCanvas.widgetName, menuVerticalMargin)
+            mainMenuOverlay_1Canvas.widgetName, menuVerticalMargin)
         backgroundRect:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-            pauseMenuOverlayCanvas.widgetName, menuVerticalMargin)
+            mainMenuOverlay_1Canvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(0x6C5B7B)
         backgroundRect:setZOrder(1)
-        backgroundRect:setBorderRadius(PauseOverlay.buttonRadius)
+        backgroundRect:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        continueButton:setParent(host, pauseMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
+        continueButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         continueButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         continueButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
@@ -156,12 +147,12 @@ function PauseOverlay:new(host)
         continueButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
             buttonVerticalMarginHeight)
         continueButton:setHeight(buttonHeight)
-        continueButton:setColorHexValue(PauseOverlay.buttonColor)
+        continueButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         continueButton:setZOrder(2)
         continueButton:enableMouseInputReceiverBase(host)
-        continueButton:setBorderRadius(PauseOverlay.buttonRadius)
+        continueButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        continueButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, continueButton.widgetName)
+        continueButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, continueButton.widgetName)
         continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             continueButton.widgetName)
         continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -176,7 +167,7 @@ function PauseOverlay:new(host)
         continueButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         continueButtonLabel:setZOrder(3)
 
-        settingsButton:setParent(host, pauseMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
+        settingsButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
@@ -184,12 +175,12 @@ function PauseOverlay:new(host)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, continueButton.widgetName,
             buttonVerticalMarginHeight)
         settingsButton:setHeight(buttonHeight)
-        settingsButton:setColorHexValue(PauseOverlay.buttonColor)
+        settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         settingsButton:setZOrder(2)
         settingsButton:enableMouseInputReceiverBase(host)
-        settingsButton:setBorderRadius(PauseOverlay.buttonRadius)
+        settingsButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        settingsButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, settingsButton.widgetName)
+        settingsButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -204,7 +195,7 @@ function PauseOverlay:new(host)
         settingsButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         settingsButtonLabel:setZOrder(3)
 
-        exitToMainMenuButton:setParent(host, pauseMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
+        exitToMainMenuButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             backgroundRect.widgetName, 20)
         exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -212,12 +203,12 @@ function PauseOverlay:new(host)
         exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             settingsButton.widgetName, buttonVerticalMarginHeight)
         exitToMainMenuButton:setHeight(buttonHeight)
-        exitToMainMenuButton:setColorHexValue(PauseOverlay.buttonColor)
+        exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         exitToMainMenuButton:setZOrder(2)
         exitToMainMenuButton:enableMouseInputReceiverBase(host)
-        exitToMainMenuButton:setBorderRadius(PauseOverlay.buttonRadius)
+        exitToMainMenuButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        exitToMainMenuButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, exitToMainMenuButton.widgetName)
+        exitToMainMenuButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, exitToMainMenuButton.widgetName)
         exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             exitToMainMenuButton.widgetName)
         exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -232,7 +223,7 @@ function PauseOverlay:new(host)
         exitToMainMenuButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         exitToMainMenuButtonLabel:setZOrder(3)
 
-        exitGameButton:setParent(host, pauseMenuOverlayCanvas.widgetName, backgroundRect.widgetName)
+        exitGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
@@ -240,12 +231,12 @@ function PauseOverlay:new(host)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             exitToMainMenuButton.widgetName, buttonVerticalMarginHeight)
         exitGameButton:setHeight(buttonHeight)
-        exitGameButton:setColorHexValue(PauseOverlay.buttonColor)
+        exitGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         exitGameButton:setZOrder(2)
         exitGameButton:enableMouseInputReceiverBase(host)
-        exitGameButton:setBorderRadius(PauseOverlay.buttonRadius)
+        exitGameButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        exitGameMenuButtonLabel:setParent(host, pauseMenuOverlayCanvas.widgetName, exitGameButton.widgetName)
+        exitGameMenuButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, exitGameButton.widgetName)
         exitGameMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             exitGameButton.widgetName)
         exitGameMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
@@ -261,9 +252,9 @@ function PauseOverlay:new(host)
         exitGameMenuButtonLabel:setZOrder(3)
     end)
 
-    pauseMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
+    mainMenuOverlay_1.onGameEventTriggered = function(eventName, jsonArgs) end
 
-    return pauseMenuOverlay;
+    return mainMenuOverlay_1;
 end
 
-return PauseOverlay
+return MainMenuOverlay_1

@@ -101,4 +101,9 @@ namespace Game
     {
         return mCanvas ? mCanvas->IsVisible() : false;
     }
+
+    void PlayerCombatUi::CleanUp()
+    {
+        
+    }
 }

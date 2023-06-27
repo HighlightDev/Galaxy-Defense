@@ -27,6 +27,7 @@ namespace Event
 
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<size_t>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string>>;
 
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;

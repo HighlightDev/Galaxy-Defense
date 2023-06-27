@@ -53,5 +53,7 @@ namespace Game
         bool HasFadeInAnimation() const override { return false; }
 
         bool HasFadeOutAnimation() const override { return false; }
+
+        void CleanUp() override;
     };
 }

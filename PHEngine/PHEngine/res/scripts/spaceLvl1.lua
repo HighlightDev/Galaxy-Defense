@@ -68,14 +68,6 @@ function CreateTestLevel(host)
 		,planet_6.png
 		]])
 
-	--_CreateThirdPersonCamera(host, "MainCamera",
-	--0, 0, _GetWindowWidth(host), _GetWindowHeight(host),
-	--50.0,
-	--20.0,
-	--20.0,
-	--0, 5, 0,
-	--1) -- is main camera on scene
-
 	local translation = Vec3:new(0, 0, 0)
 	local rotation = Vec3:new(0, 0, 0)
 	local scale = Vec3:new(1, 1, 1)

@@ -78,6 +78,8 @@ namespace EngineCore
 
             std::weak_ptr<::EngineCore::Scene> GetSceneWp() const;
 
+            void CleanUp() override;
+
         private:
             std::shared_ptr<IUiOverlay> FindOverlay(const std::string &overlayName) const;
 

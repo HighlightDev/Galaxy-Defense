@@ -10,6 +10,8 @@
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
+#include <iostream>
+
 using namespace EnginePhysics;
 using namespace EngineCore;
 using namespace EngineUtility;
@@ -32,6 +34,7 @@ namespace Game
 
     SceneController::~SceneController()
     {
+        std::cout << "SceneController::dctor";
     }
 
     void SceneController::OnPreLevelInit()
@@ -99,5 +102,11 @@ namespace Game
     {
         mCombatController->UnpausableTick(deltaTime);
         mUiController->UnpausableTick(deltaTime);
+    }
+
+    void SceneController::CleanUp()
+    {
+        mUiController->CleanUp();
+        mCombatController->CleanUp();
     }
 }

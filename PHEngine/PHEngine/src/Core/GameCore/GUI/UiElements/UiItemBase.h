@@ -185,6 +185,8 @@ namespace EngineCore
 
             void InitLuaProxy(const std::shared_ptr<Scene>& sceneSp) override;
 
+            void CleanUp() override;
+
         protected:
             void SetIsTransformDirty(const bool isDirty);
 
@@ -217,6 +219,12 @@ namespace EngineCore
             void UpdateScaleProperty();
 
             void UpdateCenterOffsetProperties();
+
+            void RemoveSceneProxy();
+
+            void RemoveFromReplicators();
+
+            void RemoveLuaProxy();
         };
     }
 }

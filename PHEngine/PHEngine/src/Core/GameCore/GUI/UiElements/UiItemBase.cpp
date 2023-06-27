@@ -1046,5 +1046,66 @@ namespace EngineCore
             }
             mAnimator->AddAnimation(animationName, animationData);
         }
+
+        void UiItemBase::CleanUp()
+        {
+            RemoveSceneProxy();
+            RemoveFromReplicators();
+            RemoveLuaProxy();
+            for (const auto& child: mChildren)
+            {
+                child->CleanUp();
+            }
+            mChildren.clear();
+        }
+
+        void UiItemBase::RemoveSceneProxy()
+        {
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+                static constexpr uint64_t functionId = Hash64_CT("UiItemBase::RemoveSceneProxy");
+                if (const auto &sceneSp = GetScene().lock())
+                {
+                    if (const auto &canvasSp = GetParentCanvas().lock())
+                    {
+                        if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                        {
+                            sceneRendererSp->UnregisterUiSceneProxy_OnRenderThread(GetUId(), canvasSp->GetUId());
+                            SetIsSceneProxyReady(false);
+                        }
+                    }
+                }
+            }
+        }
+
+        void UiItemBase::RemoveFromReplicators()
+        {
+            if (const auto &sceneSp = GetScene().lock())
+            {
+                sceneSp->UnregisterEngineToLuaReplicator(GetReplicatorId());
+            }
+        }
+
+        void UiItemBase::RemoveLuaProxy()
+        {
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+                if (const auto &sceneSp = GetScene().lock())
+                {
+                    static constexpr uint64_t functionId = Hash64_CT("UiItemBase::RemoveLuaProxy");
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                                                    GetUId(),
+                                                                                    functionId,
+                    [luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxyId = GetLuaProxyId()] {
+                        if (const auto &luaProcessorSp = luaScriptProcessorWp.lock())
+                        {
+                            luaProcessorSp->RemoveLuaProxy(luaProxyId);
+                        }
+                    });
+                    SetIsLuaProxyReady(false);
+                }
+            }
+        }
+
     }
 }

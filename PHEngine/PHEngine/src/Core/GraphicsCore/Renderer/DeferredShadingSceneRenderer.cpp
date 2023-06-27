@@ -1214,15 +1214,14 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy)
+      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId)
       {
-         LogInfo("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
+         LogInfo("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread => UId = ", canvasUiId);
 
-         static constexpr uint64_t creatorObjectId = 0;
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::UnregisterUiCanvasProxy_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
-            UnregisterUiCanvasProxy(uiCanvasProxy); 
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, canvasUiId, functionId, [this, canvasUiId]() {
+            UnregisterUiCanvasProxy(canvasUiId);
          });
       }
 
@@ -1239,16 +1238,15 @@ namespace Graphics
          });
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<UiItemBase>& uiItem, const std::shared_ptr<UiSceneProxyBase>& uiSceneProxy, const size_t canvasUId)
+      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId)
       {
-         LogInfo("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
+         LogInfo("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread => UId = ", uiItemUId, " canvasUId = ", canvasUId);
 
          static constexpr uint64_t creatorObjectId = 0;
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::UnregisterUiSceneProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]() {
-            UnregisterUiSceneProxy(uiSceneProxy, canvasUId);
-            uiItem->SetIsSceneProxyReady(false);
+            UnregisterUiSceneProxy(uiItemUId, canvasUId);
          });
       }
 
@@ -1386,11 +1384,10 @@ namespace Graphics
          canvasSceneProxy->SetFontHandler(mFontHandler);
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy)
+      void DeferredShadingSceneRenderer::UnregisterUiCanvasProxy(const size_t canvasUiId)
       {
-         assert(canvasSceneProxy);
-         mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [&](const auto &canvasProxy)
-                                               { return canvasSceneProxy->GetUiItemUId() == canvasProxy->GetUiItemUId(); }));
+         mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [canvasUiId](const auto &canvasProxy)
+                                               { return canvasUiId == canvasProxy->GetUiItemUId(); }));
       }
 
       void DeferredShadingSceneRenderer::RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
@@ -1404,13 +1401,12 @@ namespace Graphics
          sceneProxy->OnSceneProxyRegistered();
       }
 
-      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId)
+      void DeferredShadingSceneRenderer::UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId)
       {
-         assert(sceneProxy);
          auto canvasIt = std::find_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [=](const auto &canvasProxy)
                                       { return canvasUId == canvasProxy->GetUiItemUId(); });
          assert(canvasIt != mUiCanvasProxies.end());
-         (*canvasIt)->RemoveUiSceneProxy(sceneProxy);
+         (*canvasIt)->RemoveUiSceneProxy(uiItemUId);
       }
 
 #if DEBUG

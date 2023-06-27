@@ -3,19 +3,22 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Level.h"
-#include "Core/GameCore/LevelFactory.h"
+#include "Core/GameCore/ILevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/CommonCore/TimeHelper.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
+#include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/CommonCore/Timer.h"
 
 #include <thread>
 #include <chrono>
 #include <atomic>
+#include <string>
 
 using namespace EngineCore;
 using namespace Graphics::Renderer;
+using namespace Event;
 
 namespace EngineCore
 {
@@ -30,12 +33,15 @@ namespace EngineCore
     class SoundDevice;
 
     class Engine
-        : public Event::PauseGameThreadEvent,
-          public Event::ExitGameThreadEvent
+        : public PauseGameThreadEvent,
+          public ExitGameThreadEvent,
+          public LoadLevelEvent
     {
         InterThreadCommunicationMgr m_interThreadMgr;
 
         std::shared_ptr<InputManager> mInputManager;
+
+        std::shared_ptr<ILevelFactory> m_levelFactory; 
 
         std::shared_ptr<Level> m_level;
 
@@ -73,11 +79,13 @@ namespace EngineCore
 
         ~Engine();
 
+        void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);
+
         void PreLevelInit();
 
         void OnLevelInit();
 
-        void PlayLevel(std::shared_ptr<Level> level);
+        void PlayLevel(const std::string& levelName);
 
         void PostLevelInit();
 
@@ -85,13 +93,15 @@ namespace EngineCore
 
         void PostPlayLevelFinished();
 
-        void ProcessGameThreadEvents(Event::eExecutionOrder order);
+        void ProcessGameThreadEvents(const eExecutionOrder order);
 
-        void ProcessLuaThreadEvents(Event::eExecutionOrder order);
+        void ProcessLuaThreadEvents(const eExecutionOrder order);
 
         void ProcessEvent(const PauseGameThreadEvent::EventData_t &data) override;
 
         void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
+
+        void ProcessEvent(const LoadLevelEvent::EventData_t &data) override;
 
         void GameThreadPulse();
 
@@ -129,5 +139,7 @@ namespace EngineCore
         void StopGameThreadExecution();
 
         void StopLuaThreadExecution();
+
+        void UnloadCurrentLevel();
     };
 }

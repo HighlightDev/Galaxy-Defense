@@ -214,5 +214,14 @@ namespace EngineCore
                 }
             }
         }
+
+        void OverlayManager::CleanUp()
+        {
+            for (const auto &overlay : mOverlays)
+            {
+                overlay->CleanUp();
+            }
+            mOverlays.clear();
+        }
     }
 }

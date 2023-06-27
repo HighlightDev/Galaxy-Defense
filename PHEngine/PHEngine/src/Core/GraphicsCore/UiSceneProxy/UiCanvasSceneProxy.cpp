@@ -28,10 +28,10 @@ namespace Graphics
             mUiProxies.emplace_back(uiProxy);
         }
 
-        void UiCanvasSceneProxy::RemoveUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy)
+        void UiCanvasSceneProxy::RemoveUiSceneProxy(const size_t uiItemUId)
         {
-            mUiProxies.erase(std::remove_if(mUiProxies.begin(), mUiProxies.end(), [&](const auto &proxy)
-                                            { return uiProxy->GetUiItemUId() == proxy->GetUiItemUId(); }));
+            mUiProxies.erase(std::remove_if(mUiProxies.begin(), mUiProxies.end(), [uiItemUId](const auto &proxy)
+                                            { return uiItemUId == proxy->GetUiItemUId(); }));
         }
 
         void UiCanvasSceneProxy::SortProxiesByZOrder()

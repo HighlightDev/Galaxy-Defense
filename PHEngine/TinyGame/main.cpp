@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <TinyLogger/LogInterface.h>
 
-#include "src/GameLevelFactory.h"
+#include "src/Implementation/Levels/GameLevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/ResourceManagerCore/Policy/MeshAllocationPolicy.h"
@@ -18,8 +18,6 @@ using namespace IO;
 using namespace TinyLogger;
 
 bool bShaderRecompile = false;
-bool bSerializeLevel = false;
-bool bDeserializeLevel = false;
 
 bool bShowCursor = true;
 bool bMouseButtonPressed = false;
@@ -105,15 +103,6 @@ void key_pressed_callback(GLFWwindow *window, int32_t key, int32_t scancode,
     {
       bShaderRecompile = true;
     }
-    else if (key == 'M' || key == 'm')
-    {
-      bSerializeLevel = true;
-    }
-
-    else if (key == 'N' || key == 'n')
-    {
-      bDeserializeLevel = true;
-    }
 
     const eKeyboardKeys resultKey = s_modifierKeysMap.count(key) ? s_modifierKeysMap.at(key) : (eKeyboardKeys)key;
     engineInputManager->TriggerOnKeyboardKeyDown(resultKey);
@@ -193,8 +182,8 @@ int32_t main(int32_t argc, char **argv)
   {
     Engine engine;
     engineInputManager = engine.GetInputManager();
-    const auto &level = GameLevelFactory::GetInstance()->CreateLevel("test level");
-    engine.PlayLevel(level);
+    engine.SetLevelFactory(std::make_shared<GameLevelFactory>());
+    engine.PlayLevel("MainMenuLevel");
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window) && !engine.IsExitGameState())
     {
@@ -217,17 +206,6 @@ int32_t main(int32_t argc, char **argv)
       }
 
 #endif
-      if (bSerializeLevel)
-      {
-        level->SerializeLevel("test_serialize.xml");
-        bSerializeLevel = false;
-      }
-
-      if (bDeserializeLevel)
-      {
-        level->DeserializeLevel("test_serialize.xml");
-        bDeserializeLevel = false;
-      }
     }
 
     engine.CleanUp();

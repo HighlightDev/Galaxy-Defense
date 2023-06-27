@@ -722,4 +722,9 @@ namespace Game
 
         return eGameObjectsCollisionType::UNDEFINED;
     }
+
+    void CombatController::CleanUp()
+    {
+        
+    }
 }

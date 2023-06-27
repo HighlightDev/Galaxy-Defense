@@ -116,27 +116,6 @@ namespace Graphics
          std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
          std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
 
-      private:
-         void PrepareSceneProxiesForRender();
-
-         void GroupLightsByShadowMap();
-
-         void DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy);
-
-         void DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
-
-         void ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
-
-         void DepthPass(const std::shared_ptr<SceneView> &sceneView);
-
-         void PlanarReflectionPass();
-
-         void HudTextPass();
-
-         void GuiPass(const std::shared_ptr<SceneView> &sceneView);
-
-         void RegisterFonts();
-
       public:
          DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
 
@@ -199,29 +178,29 @@ namespace Graphics
 
          void LightSceneProxiesUpdated_OnRenderThread();
 
-         void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::ACamera>& camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
+         void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
 
-         void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PrimitiveComponent>& primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
+         void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
 
-         void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::LightComponent>& lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy);
+         void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy);
 
          void RegisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const bool subscribeOnTextScreenSpaceSizeUpdate);
 
          void UnregisterText_OnRenderThread(const std::shared_ptr<HudTextField> &textField);
 
-         void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiCanvas>& uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+         void RegisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &uiCanvas, const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
 
-         void UnregisterUiCanvasProxy_OnRenderThread(const std::shared_ptr<UiCanvasSceneProxy> &uiCanvasProxy);
+         void UnregisterUiCanvasProxy_OnRenderThread(const size_t canvasUiId);
 
          void RegisterUiSceneProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
 
-         void UnregisterUiSceneProxy_OnRenderThread(const std::shared_ptr<::EngineCore::GUI::UiItemBase> &uiItem, const std::shared_ptr<UiSceneProxyBase> &uiSceneProxy, const size_t canvasUId);
+         void UnregisterUiSceneProxy_OnRenderThread(const size_t uiItemUId, const size_t canvasUId);
 
          void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 
          void MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
 
-         void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PlanarReflectionComponent>& planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy);
+         void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PlanarReflectionComponent> &planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy);
 
          void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy, const size_t cameraSceneProxyId);
 
@@ -237,14 +216,6 @@ namespace Graphics
 
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
-         void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
-
-         void UnregisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
-
-         void RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
-
-         void UnregisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
-
          InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
 #if DEBUG
@@ -257,6 +228,34 @@ namespace Graphics
 
       private:
          void Initialize();
+
+         void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
+
+         void UnregisterUiCanvasProxy(const size_t canvasUiId);
+
+         void RegisterUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &sceneProxy, const size_t canvasUId);
+
+         void UnregisterUiSceneProxy(const size_t uiItemUId, const size_t canvasUId);
+
+         void PrepareSceneProxiesForRender();
+
+         void GroupLightsByShadowMap();
+
+         void DeferredLightPass_RenderThread(const std::shared_ptr<CameraSceneProxy> &cameraProxy);
+
+         void DeferredBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
+
+         void ForwardBasePass_RenderThread(const std::shared_ptr<SceneView> &sceneView);
+
+         void DepthPass(const std::shared_ptr<SceneView> &sceneView);
+
+         void PlanarReflectionPass();
+
+         void HudTextPass();
+
+         void GuiPass(const std::shared_ptr<SceneView> &sceneView);
+
+         void RegisterFonts();
       };
 
    }

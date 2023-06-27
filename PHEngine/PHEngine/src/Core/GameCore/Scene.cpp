@@ -13,6 +13,11 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiSceneProxyBase.h"
 #include "Core/GameCore/GUI/Common/TextFieldProxyType.h"
+#include "Core/GameCore/Components/SceneComponent.h"
+#include "Core/GameCore/Components/UiComponents/UiComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
@@ -35,7 +40,6 @@ namespace EngineCore
          mActorControllers(),
          mMaterials(),
          mDynamicMaterials(),
-         mExternalTickableObjects(),
          mTextHandler(),
 #ifdef DEBUG
          mDebugUiController(std::make_unique<DebugUiController>()),
@@ -52,6 +56,35 @@ namespace EngineCore
    void Scene::OnLevelInit()
    {
       LogInfo("Scene::OnLevelInit");
+#ifdef DEBUG
+      mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
+                                                 std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
+                                                                                  glm::vec3(),
+                                                                                  glm::vec3(),
+                                                                                  glm::vec3(1.0f)));
+      const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
+      const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(CreateComponent_GameThread(uiComponentCreator,
+                                                                                                   ComponentData("c_uiComponent_DebugDummyActor")));
+      mDebugDummyActor->AddComponent(c_uiComponent);
+      AddActor(mDebugDummyActor);
+
+      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
+      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
+      mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
+      mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
+
+      if (const auto &rtTextSp = mRtTextField.lock())
+      {
+         rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
+         rtTextSp->SetVisibility(true);
+      }
+
+      if (const auto &gtTextSp = mGtTextField.lock())
+      {
+         gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
+         gtTextSp->SetVisibility(true);
+      }
+#endif
    }
 
    void Scene::PostLevelInit()
@@ -98,7 +131,7 @@ namespace EngineCore
       mDebugUiController->PostPlayLevelFinished();
    }
 
-   void Scene::RegisterMainCamera(const std::shared_ptr<ACamera>& camera)
+   void Scene::RegisterMainCamera(const std::shared_ptr<ACamera> &camera)
    {
       LogInfo("Scene::RegisterMainCamera => name = ", camera->GetCameraName());
 
@@ -107,7 +140,7 @@ namespace EngineCore
       RegisterCamera(camera);
    }
 
-   void Scene::RegisterCamera(const std::shared_ptr<ACamera>& camera)
+   void Scene::RegisterCamera(const std::shared_ptr<ACamera> &camera)
    {
       LogInfo("Scene::RegisterCamera => name = ", camera->GetCameraName());
 
@@ -227,11 +260,6 @@ namespace EngineCore
       }
    }
 
-   void Scene::AddExternalTickableObject(const std::shared_ptr<ITickable> &externalTickableObject)
-   {
-      mExternalTickableObjects.emplace_back(externalTickableObject);
-   }
-
    EngineObject *Scene::GetEngineObjectByName(const std::string &name) const
    {
       EngineObject *go = nullptr;
@@ -331,11 +359,6 @@ namespace EngineCore
          }
       }
 
-      for (auto &externalTickable : mExternalTickableObjects)
-      {
-         externalTickable->Tick(delta);
-      }
-
 #if DEBUG
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
@@ -374,18 +397,13 @@ namespace EngineCore
          dynamicMaterial->UnpausableTick(deltaTime);
       }
 
-      for (auto &externalTickable : mExternalTickableObjects)
-      {
-         externalTickable->UnpausableTick(deltaTime);
-      }
-
 #if DEBUG
       mDebugUiController->UnpausableTick(deltaTime);
 #endif
 
       if (mLuaReplicatorsDirty)
       {
-         for (const auto& [id, replicator] : mLuaReplicators)
+         for (const auto &[id, replicator] : mLuaReplicators)
          {
             if (replicator->GetIsPendingToCreateLuaProxy())
             {
@@ -526,20 +544,21 @@ namespace EngineCore
    bool Scene::RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
    {
       const auto replicatorId = replicator->GetReplicatorId();
-      assert(!mLuaReplicators.count(replicatorId));
-      mLuaReplicators.emplace(std::make_pair(replicatorId, replicator));
-      mLuaReplicatorsDirty = true;
+      if (!mLuaReplicators.count(replicatorId))
+      {
+         mLuaReplicators.emplace(std::make_pair(replicatorId, replicator));
+         mLuaReplicatorsDirty = true;
+         return true;
+      }
 
-      return true;
+      return false;
    }
 
-   bool Scene::RemoveEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator)
+   bool Scene::UnregisterEngineToLuaReplicator(const int32_t replicatorId)
    {
-      const auto replicatorId = replicator->GetReplicatorId();
       if (mLuaReplicators.count(replicatorId))
       {
          mLuaReplicators.erase(replicatorId);
-         mLuaReplicatorsDirty = true;
          return true;
       }
 
@@ -649,6 +668,39 @@ namespace EngineCore
 
       return result;
    }
+
+   void Scene::UnloadScene()
+   {
+      mUiHandler->CleanUp(); // Unload Ui
+
+      // Unload main scene objects
+      for (const auto &actor : mActors)
+      {
+         actor->CleanUp();
+      }
+   }
+
+#ifdef DEBUG
+
+   void Scene::SetRenderThreadFPSTextValue(const float fps)
+   {
+      if (const auto &rtTextSp = mRtTextField.lock())
+      {
+         const auto value = std::to_string(fps);
+         rtTextSp->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
+      }
+   }
+
+   void Scene::SetGameThreadFPSTextValue(const float fps)
+   {
+      if (const auto &gtTextSp = mGtTextField.lock())
+      {
+         const auto value = std::to_string(fps);
+         gtTextSp->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
+      }
+   }
+
+#endif
 
    Scene::~Scene()
    {

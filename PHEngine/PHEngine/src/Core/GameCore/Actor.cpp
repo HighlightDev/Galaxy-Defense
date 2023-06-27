@@ -62,6 +62,14 @@ namespace EngineCore
    {
    }
 
+   void Actor::CleanUp()
+   {
+      for (const auto& component : m_allComponents)
+      {
+         component->CleanUp();
+      }
+   }
+
    void Actor::OnLevelInit()
    {
    }

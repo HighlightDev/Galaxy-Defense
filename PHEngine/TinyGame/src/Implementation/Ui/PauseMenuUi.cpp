@@ -272,4 +272,9 @@ namespace Game
             rectangleSp->SetColor(s_buttonColor);
         }
     }
+
+    void PauseMenuUi::CleanUp()
+    {
+
+    }
 }

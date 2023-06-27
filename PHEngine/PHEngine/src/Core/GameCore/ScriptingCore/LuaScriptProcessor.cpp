@@ -1,7 +1,5 @@
 #include "LuaScriptProcessor.h"
 #include "LuaScriptExecutors/LuaScriptExecutorBase.h"
-#include "Core/GameCore/Components/InputComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/LoggerExtension.h"
 
@@ -33,6 +31,22 @@ namespace EngineCore
             luaExecutor->SetLuaScriptProcessor(shared_from_this());
             luaExecutor->SetScene(m_interThreadMgr.GetSceneWP());
             luaExecutor->RegisterCallbacks();
+        }
+
+        void LuaScriptProcessor::UnregisterLuaScriptExecutor(const size_t uid)
+        {
+            assert(std::any_of(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [uid](const auto &scriptExecutor)
+                               { return scriptExecutor->GetUId() == uid; }));
+
+            mLuaScriptExecutors.erase(std::remove_if(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [uid](const auto &scriptExecutor)
+                                                     { return scriptExecutor->GetUId() == uid; }));
+        }
+
+        std::shared_ptr<LuaScriptExecutorBase> LuaScriptProcessor::GetLuaScriptExecutor(const size_t uid) const
+        {
+            const auto foundIt = std::find_if(mLuaScriptExecutors.begin(), mLuaScriptExecutors.end(), [uid](const auto &scriptExecutor)
+                                              { return scriptExecutor->GetUId() == uid; });
+            return foundIt != mLuaScriptExecutors.end() ? *foundIt : nullptr;
         }
 
         std::shared_ptr<EngineInputLuaProxy> LuaScriptProcessor::GetEngineInputLuaProxy() const
@@ -73,6 +87,13 @@ namespace EngineCore
         {
             assert(!GetLuaProxy(luaProxy->GetLuaProxyId()));
             mLuaProxies.emplace_back(luaProxy);
+        }
+
+        void LuaScriptProcessor::RemoveLuaProxy(const int32_t luaProxyId)
+        {
+            mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto& luaProxySp) {
+                return luaProxySp->GetLuaProxyId() == luaProxyId;
+            }));
         }
 
         void LuaScriptProcessor::Initialize()

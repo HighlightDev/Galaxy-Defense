@@ -29,6 +29,8 @@ namespace EngineCore
             virtual bool HasFadeInAnimation() const = 0;
 
             virtual bool HasFadeOutAnimation() const = 0;
+
+            virtual void CleanUp() = 0;
         };
     }
 }

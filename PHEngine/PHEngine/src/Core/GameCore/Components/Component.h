@@ -35,6 +35,8 @@ namespace EngineCore
 
 		virtual ~Component();
 
+      virtual void CleanUp();
+
       virtual eComponentType GetComponentType() const;
 
 		virtual void SetOwner(const std::weak_ptr<Actor>& ownerActor);

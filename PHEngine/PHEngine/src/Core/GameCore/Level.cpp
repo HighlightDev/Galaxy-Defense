@@ -8,11 +8,6 @@
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
-#include "Core/UtilityCore/StringExtendedFunctions.h"
-#include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Core/CommonCore/Assertion.h"
 
 #include <glm/vec3.hpp>
@@ -25,15 +20,18 @@ using namespace EngineUtility;
 namespace EngineCore
 {
 
-   Level::Level()
-       : mDebugDummyActor(),
-         mRtTextField(),
-         mGtTextField()
+   Level::Level(const std::string &levelName)
+       : mLevelName(levelName)
    {
    }
 
    Level::~Level()
    {
+   }
+
+   std::string Level::GetLevelName() const
+   {
+      return mLevelName;
    }
 
    void Level::SetScene(const std::shared_ptr<Scene> &scene)
@@ -65,39 +63,6 @@ namespace EngineCore
    void Level::InitLevel()
    {
       LogInfo("Level::InitLevel");
-
-#ifdef DEBUG
-      if (const auto& sceneSp = mSceneWp.lock())
-      {
-         mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
-                                                    std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
-                                                                                     glm::vec3(),
-                                                                                     glm::vec3(),
-                                                                                     glm::vec3(1.0f)));
-         const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
-         const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(sceneSp->CreateComponent_GameThread(uiComponentCreator,
-                                                                                                               ComponentData("c_uiComponent_DebugDummyActor")));
-         mDebugDummyActor->AddComponent(c_uiComponent);
-         sceneSp->AddActor(mDebugDummyActor);
-
-         const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-         const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-         mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
-         mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
-
-         if (const auto &rtTextSp = mRtTextField.lock())
-         {
-            rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
-            rtTextSp->SetVisibility(true);
-         }
-
-         if (const auto &gtTextSp = mGtTextField.lock())
-         {
-            gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
-            gtTextSp->SetVisibility(true);
-         }
-      }
-#endif
    }
 
    std::weak_ptr<Scene> Level::GetSceneWP() const
@@ -177,8 +142,6 @@ namespace EngineCore
       {
          ResourceMap::GetInstance()->AllocateAsync(resName);
       }
-
-      ResourceMap::GetInstance()->WaitUntilResourcesLoad();
 
       if (const auto &sceneSp = mSceneWp.lock())
       {
@@ -263,25 +226,11 @@ namespace EngineCore
       TextureAtlasFactory::GetInstance()->AllocateAtlasSpace();
    }
 
-#ifdef DEBUG
-
-   void Level::SetRenderThreadFPSTextValue(const float fps)
+   void Level::Tick(const float deltaTime)
    {
-      if (const auto &rtTextSp = mRtTextField.lock())
-      {
-         const auto value = std::to_string(fps);
-         rtTextSp->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
-      }
    }
 
-   void Level::SetGameThreadFPSTextValue(const float fps)
+   void Level::UnpausableTick(const float deltaTime)
    {
-      if (const auto &gtTextSp = mGtTextField.lock())
-      {
-         const auto value = std::to_string(fps);
-         gtTextSp->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
-      }
    }
-
-#endif
 }

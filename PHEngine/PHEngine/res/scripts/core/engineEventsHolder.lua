@@ -17,4 +17,10 @@ function EngineEventsHolder:sendExitGameThreadEvent(host, enqueueJobPolicy)
     _SendExitGameThreadEvent(host, enqueueJobPolicy)
 end
 
+function EngineEventsHolder:sendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    assert(levelName ~= nil and type(levelName) == "string")
+    _SendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
+end
+
 return EngineEventsHolder

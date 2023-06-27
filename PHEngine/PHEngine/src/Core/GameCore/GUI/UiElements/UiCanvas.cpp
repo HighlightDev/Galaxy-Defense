@@ -578,16 +578,77 @@ namespace EngineCore
 
         void UiCanvas::UpdateOpacityProperty()
         {
-            static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacityProperty");
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+                static constexpr uint64_t functionId = Hash64_CT("UiCanvas::UpdateOpacityProperty");
+                if (const auto &sceneSp = mScene.lock())
+                {
+                    if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRendererSp, uid = GetUId(), opacity = mOpacityProperty->GetValue()]()
+                                                                                            {
+                            if (const auto &canvasProxy = sceneRendererSp->GetCanvasSceneProxyByProxyId(uid))
+                            {
+                                canvasProxy->SetOverlayOpacity(opacity); 
+                            } });
+                    }
+                }
+            }
+        }
+
+        void UiCanvas::CleanUp()
+        {
+            RemoveSceneProxy();
+            RemoveFromReplicators();
+            RemoveLuaProxy();
+            for (const auto& child : mChildren)
+            {
+                child->CleanUp();
+            }
+            mChildren.clear();
+        }
+
+        void UiCanvas::RemoveSceneProxy()
+        {
+            if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+                static constexpr uint64_t functionId = Hash64_CT("UiCanvas::RemoveSceneProxy");
+                if (const auto &sceneSp = mScene.lock())
+                {
+                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    {
+                        sceneRenderer->UnregisterUiCanvasProxy_OnRenderThread(GetUId());
+                        SetIsSceneProxyReady(false);
+                    }
+                }
+            }
+        }
+
+        void UiCanvas::RemoveFromReplicators()
+        {
             if (const auto &sceneSp = mScene.lock())
             {
-                if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                sceneSp->UnregisterEngineToLuaReplicator(GetReplicatorId());
+            }
+        }
+
+        void UiCanvas::RemoveLuaProxy()
+        {
+            if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
+            {
+                if (const auto &sceneSp = mScene.lock())
                 {
-                    if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(GetUId()))
-                    {
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [this, canvasProxy, opacity = mOpacityProperty->GetValue()]()
-                                                                                            { canvasProxy->SetOverlayOpacity(opacity); });
-                    }
+                    static constexpr uint64_t functionId = Hash64_CT("UiCanvas::RemoveLuaProxy");
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
+                                                                                    GetUId(),
+                                                                                    functionId,
+                    [luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxyId = GetLuaProxyId()] {
+                        if (const auto &luaProcessorSp = luaScriptProcessorWp.lock())
+                        {
+                            luaProcessorSp->RemoveLuaProxy(luaProxyId);
+                        }
+                    });
+                    SetIsLuaProxyReady(false);
                 }
             }
         }

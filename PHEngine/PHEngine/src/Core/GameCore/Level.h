@@ -2,28 +2,27 @@
 
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GameCore/Components/UiComponents/UiComponent.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
+
+#include <string>
 
 using namespace Thread;
 
 namespace EngineCore
 {
    class Level
+   : public ITickable 
    {
-#ifdef DEBUG
-      std::shared_ptr<Actor> mDebugDummyActor;
-      std::weak_ptr<HudTextField> mRtTextField;
-      std::weak_ptr<HudTextField> mGtTextField;
-#endif
-
    protected:
       std::weak_ptr<Scene> mSceneWp;
 
+      std::string mLevelName;
+
    public:
-      Level();
+      Level(const std::string& levelName);
 
       virtual ~Level();
+
+      std::string GetLevelName() const;
 
       void SetScene(const std::shared_ptr<Scene>& scene);
 
@@ -43,13 +42,11 @@ namespace EngineCore
 
       void DeserializeLevel(const std::string &pathToFile);
 
-#ifdef DEBUG
+      virtual void UnloadLevel() = 0;
 
-      void SetRenderThreadFPSTextValue(const float fps);
+      void Tick(const float deltaTime) override;
 
-      void SetGameThreadFPSTextValue(const float fps);
-
-#endif
+      void UnpausableTick(const float deltaTime) override;
 
    private:
       void InstantiateLevelFromSerializedContainer(struct SerializeDataContainer &container);

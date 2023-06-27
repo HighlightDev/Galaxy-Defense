@@ -29,6 +29,12 @@ namespace Game
 
       void RunLuaBuildLevelScript();
 
+      void UnloadLevel() override;
+
+      void Tick(const float deltaTime) override;
+
+      void UnpausableTick(const float deltaTime) override;
+
    private:
       void CreateScene();
    };

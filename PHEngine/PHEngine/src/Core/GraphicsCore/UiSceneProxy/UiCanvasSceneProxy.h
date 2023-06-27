@@ -42,7 +42,7 @@ namespace Graphics
 
             void AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy);
 
-            void RemoveUiSceneProxy(const std::shared_ptr<UiSceneProxyBase> &uiProxy);
+            void RemoveUiSceneProxy(const size_t uiItemUId);
 
             void SortProxiesByZOrder();
 

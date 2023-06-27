@@ -54,6 +54,8 @@ namespace Game
 
         bool HasFadeOutAnimation() const override { return false; }
 
+        void CleanUp() override;
+
     private:
         void OnContinueButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
 

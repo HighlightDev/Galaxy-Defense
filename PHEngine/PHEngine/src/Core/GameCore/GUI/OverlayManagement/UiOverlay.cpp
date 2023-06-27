@@ -30,12 +30,12 @@ namespace EngineCore
             assert(!mCanvas);
             mCanvas = canvas;
             mCanvas->CreateAnimator();
-            mCanvas->GetAnimator()->SubscribeOnAnimationFinished([this](const std::string &animationName)
-                                                                 { 
+            mCanvas->GetAnimator()->SubscribeOnAnimationFinished([this](const std::string &animationName) { 
                 if ("FadeOut" == animationName)
                 {
                     mCanvas->SetIsVisible(false);
-                } });
+                }
+            });
         }
 
         std::string UiOverlay::GetOverlayName() const
@@ -121,6 +121,22 @@ namespace EngineCore
             assert(mCanvas);
             const auto &animator = mCanvas->GetAnimator();
             return animator->HasAnimation("FadeOut");
+        }
+
+        void UiOverlay::CleanUp()
+        {
+            if (-1 != GetLuaProxyId())
+            {
+                if (const auto &luaScriptProcessorSp = mLuaScriptProcessorWp.lock())
+                {
+                    luaScriptProcessorSp->RemoveLuaProxy(GetLuaProxyId());
+                }
+
+                if (const auto& sceneSp = mSceneWp.lock())
+                {
+                    assert(sceneSp->UnregisterEngineToLuaReplicator(GetReplicatorId()));
+                }
+            }
         }
     }
 }

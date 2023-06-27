@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\GameLevelFactory.cpp">
+    <ClCompile Include="src\Implementation\Levels\GameLevelFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\IntroLevel.cpp">
+    <ClCompile Include="src\Implementation\Levels\IntroLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -167,10 +167,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\GameLevelFactory.h">
+    <ClInclude Include="src\Implementation\Levels\GameLevelFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\IntroLevel.h">
+    <ClInclude Include="src\Implementation\IntroLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\AiBrain.h">

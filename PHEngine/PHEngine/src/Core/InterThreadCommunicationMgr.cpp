@@ -37,7 +37,7 @@ namespace Thread
       mScene = scene;
    }
 
-   void InterThreadCommunicationMgr::SetLuaScriptProcessorWP(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor)
+   void InterThreadCommunicationMgr::SetLuaScriptProcessorWP(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor)
    {
       mLuaScriptProcessor = scriptProcessor;
    }
@@ -59,32 +59,17 @@ namespace Thread
 
    void InterThreadCommunicationMgr::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback)
    {
-      EmplaceRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
+      ProcessPushRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
    }
 
    void InterThreadCommunicationMgr::ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback)
    {
-      EmplaceGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
+      ProcessPushGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
    void InterThreadCommunicationMgr::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback)
    {
-      EmplaceLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
-   }
-
-   void InterThreadCommunicationMgr::EmplaceGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
-   {
-      ProcessPushGameThreadJob(policy, std::move(job));
-   }
-
-   void InterThreadCommunicationMgr::EmplaceRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
-   {
-      ProcessPushRenderThreadJob(policy, std::move(job));
-   }
-
-   void InterThreadCommunicationMgr::EmplaceLuaThreadJob(const eEnqueueJobPolicy policy, Job &&job)
-   {
-      ProcessPushLuaThreadJob(policy, std::move(job));
+      ProcessPushLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
    }
 
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
@@ -95,14 +80,20 @@ namespace Thread
 
    void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
-      std::lock_guard<std::mutex> lock(m_gameThreadMutex);
-      ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
+      if (mIsAllowedPushGameThreadJobs.load(std::memory_order::memory_order_seq_cst))
+      {
+         std::lock_guard<std::mutex> lock(m_gameThreadMutex);
+         ProcessPushJob(policy, std::move(job), m_gameThreadJobs);
+      }
    }
 
    void InterThreadCommunicationMgr::ProcessPushLuaThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
-      std::lock_guard<std::mutex> lock(m_luaThreadMutex);
-      ProcessPushJob(policy, std::move(job), m_luaThreadJobs);
+      if (mIsAllowedPushLuaThreadJobs.load(std::memory_order::memory_order_seq_cst))
+      {
+         std::lock_guard<std::mutex> lock(m_luaThreadMutex);
+         ProcessPushJob(policy, std::move(job), m_luaThreadJobs);
+      }
    }
 
    void InterThreadCommunicationMgr::ProcessPushJob(const eEnqueueJobPolicy policy, Job &&job, std::deque<Job> &jobs)
@@ -199,5 +190,27 @@ namespace Thread
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
       mRenderThreadSwapChain.ReadChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
       mRenderThreadSwapChain.WriteChainType = mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
+   }
+
+   void InterThreadCommunicationMgr::ClearGameThreadJobs()
+   {
+      std::lock_guard<std::mutex> lock(m_gameThreadMutex);
+      m_gameThreadJobs.clear();
+   }
+
+   void InterThreadCommunicationMgr::ClearLuaThreadJobs()
+   {
+      std::lock_guard<std::mutex> lock(m_luaThreadMutex);
+      m_luaThreadJobs.clear();
+   }
+
+   void InterThreadCommunicationMgr::SetIsAllowedPushGameThreadJobs(const bool isAllowed)
+   {
+      mIsAllowedPushGameThreadJobs.store(isAllowed, std::memory_order::memory_order_seq_cst);
+   }
+
+   void InterThreadCommunicationMgr::SetIsAllowedPushLuaThreadJobs(const bool isAllowed)
+   {
+      mIsAllowedPushLuaThreadJobs.store(isAllowed, std::memory_order::memory_order_seq_cst);
    }
 }

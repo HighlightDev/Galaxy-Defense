@@ -163,7 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="src\GameLevelFactory.cpp" />
+    <ClCompile Include="src\Implementation\Levels\GameLevelFactory.cpp" />
     <ClCompile Include="src\Implementation\Actors\AsteroidActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\BackgroundSpaceObjectActor.cpp" />
     <ClCompile Include="src\Implementation\Actors\BlackHoleMissileActor.cpp" />
@@ -211,7 +211,7 @@
     <ClCompile Include="src\Implementation\Ui\PauseMenuUi.cpp" />
     <ClCompile Include="src\Implementation\Ui\PauseSettingsMenuUi.cpp" />
     <ClCompile Include="src\Implementation\Ui\PlayerCombatUi.cpp" />
-    <ClCompile Include="src\IntroLevel.cpp" />
+    <ClCompile Include="src\Implementation\Levels\IntroLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameLevelFactory.h" />
@@ -273,7 +273,7 @@
     <ClInclude Include="src\Implementation\Ui\PauseMenuUi.h" />
     <ClInclude Include="src\Implementation\Ui\PauseSettingsMenuUi.h" />
     <ClInclude Include="src\Implementation\Ui\PlayerCombatUi.h" />
-    <ClInclude Include="src\IntroLevel.h" />
+    <ClInclude Include="src\Implementation\Levels\IntroLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />

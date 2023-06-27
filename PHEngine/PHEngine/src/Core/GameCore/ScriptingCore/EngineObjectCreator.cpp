@@ -93,8 +93,8 @@ namespace EngineCore
                                                                          const glm::vec3 &thirdPersonTargetOffset,
                                                                          const bool bIsMainSceneCamera)
    {
-      const eCameraType thirdPersonCameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
-      return std::make_shared<ThirdPersonCamera>(cameraName, thirdPersonCameraType, scene, viewPort,
+      const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
+      return std::make_shared<ThirdPersonCamera>(cameraName, cameraType, scene, viewPort,
                                                  initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
    }
 
@@ -103,8 +103,8 @@ namespace EngineCore
                                                                          const float initPitchDeg, const float initYawDeg,
                                                                          const glm::vec3 &cameraPosition, const bool bIsMainSceneCamera)
    {
-      const eCameraType thirdPersonCameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
-      return std::make_shared<FirstPersonCamera>(cameraName, thirdPersonCameraType, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
+      const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
+      return std::make_shared<FirstPersonCamera>(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
    }
 
    std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string &componentType, ComponentData *componentData,

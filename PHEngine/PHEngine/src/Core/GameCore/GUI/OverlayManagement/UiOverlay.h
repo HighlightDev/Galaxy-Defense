@@ -62,6 +62,8 @@ namespace EngineCore
             bool HasFadeInAnimation() const override;
 
             bool HasFadeOutAnimation() const override;
+
+            void CleanUp() override;
         };
     }
 }

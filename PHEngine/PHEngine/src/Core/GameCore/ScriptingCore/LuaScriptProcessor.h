@@ -13,11 +13,6 @@ using namespace Thread;
 
 namespace EngineCore
 {
-    class InputComponent;
-}
-
-namespace EngineCore
-{
     namespace Scripts
     {
         class LuaScriptExecutorBase;
@@ -46,6 +41,10 @@ namespace EngineCore
 
             void RegisterLuaScriptExecutor(const std::shared_ptr<LuaScriptExecutorBase> &luaExecutor);
 
+            void UnregisterLuaScriptExecutor(const size_t uid);
+
+            std::shared_ptr<LuaScriptExecutorBase> GetLuaScriptExecutor(const size_t uid) const;
+
             std::shared_ptr<EngineInputLuaProxy> GetEngineInputLuaProxy() const;
 
             std::shared_ptr<OverlayManagerLuaProxy> GetOverlayManagerLuaProxy() const;
@@ -55,6 +54,8 @@ namespace EngineCore
             std::shared_ptr<LuaProxy> GetLuaProxy(const size_t luaProxyId) const;
 
             void AddLuaProxy(const std::shared_ptr<LuaProxy> &luaProxy);
+
+            void RemoveLuaProxy(const int32_t luaProxyId);
 
             InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
         };

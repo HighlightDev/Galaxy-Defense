@@ -14,9 +14,8 @@ namespace EnginePhysics
          mCollisionConfiguration(nullptr),
          mDispatcher(nullptr),
          mSolver(nullptr),
-         mWorld(nullptr)
+         mWorld(nullptr),
 #if DEBUG
-         ,
          mDebugRenderer(new BulletDebugRenderer())
 #endif
    {
