@@ -15,7 +15,6 @@
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/DebugCore/DebugUiController.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
-#include "Core/GameCore/GUI/HudText/HudTextField.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -92,9 +91,6 @@ namespace EngineCore
 
 #ifdef DEBUG
       std::unique_ptr<DebugUiController> mDebugUiController;
-      std::shared_ptr<Actor> mDebugDummyActor;
-      std::weak_ptr<HudTextField> mRtTextField;
-      std::weak_ptr<HudTextField> mGtTextField;
 #endif
 
       std::shared_ptr<UiHandler> mUiHandler;
@@ -122,6 +118,12 @@ namespace EngineCore
       void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 
       void RegisterMainCamera(const std::shared_ptr<ACamera> &camera);
+
+      void UnregisterCamera(const uint32_t objectId);
+
+      void UnregisterMainCamera();
+
+      void UnregisterAllCameras();
 
       std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
 
@@ -169,9 +171,9 @@ namespace EngineCore
 
       void RemoveActor(std::shared_ptr<Actor> actor);
 
-      bool RegisterEngineObject(EngineObject *const gameObjectPtr);
+      void RegisterEngineObject(EngineObject *const gameObjectPtr);
 
-      bool RemoveEngineObject(EngineObject *const gameObjectPtr);
+      void RemoveEngineObject(const uint32_t objectId);
 
       void RemoveComponent(std::shared_ptr<Component> component);
 
@@ -191,6 +193,7 @@ namespace EngineCore
 
       void SetGameThreadFPSTextValue(const float fps);
 
+      void SetLuaThreadFPSTextValue(const float fps);
 #endif
 
    private:

@@ -84,14 +84,14 @@ namespace EngineCore
 
     class FontHandler
     {
-        std::unordered_map<std::string, std::shared_ptr<FontBatcher>> mFontBatcher;
+        std::unordered_map<std::string, std::shared_ptr<FontBatcher>> mFontBatcherMap;
 
     public:
         FontHandler();
 
         void RegisterFont(const FontParams &fontParams);
 
-        const std::shared_ptr<FontBatcher> &GetFontBatcher(const std::string &fontName) const;
+        std::shared_ptr<FontBatcher> GetFontBatcher(const std::string &fontName) const;
 
         const std::unordered_map<std::string, std::shared_ptr<FontBatcher>> &GetFontBatcher() const;
 

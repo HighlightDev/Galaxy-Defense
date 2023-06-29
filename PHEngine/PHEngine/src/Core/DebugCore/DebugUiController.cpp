@@ -2,6 +2,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
 #include "Core/GameCore/GUI/UiElements/UiRectangle.h"
+#include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
@@ -48,21 +49,64 @@ namespace EngineCore
                 const auto windowWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
                 const auto windowHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
                 const auto imageMargin = 50;
-                const auto imageHeight = (windowHeight / 2) - (2 * imageMargin);
+                const auto imageHeight = (windowHeight / 2) - (4 * imageMargin);
 
                 const auto &uiHandler = sceneSp->GetUiHandler();
-                mCanvas = uiHandler->CreateCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));
+                mCanvas = uiHandler->CreateDebugCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));
                 mCanvas->InitializeInputSystem();
                 mCanvas->SetIsVisible(false);
 
                 const auto &rectangleBackground = std::make_shared<UiRectangle>();
                 rectangleBackground->SetParents(mCanvas, mCanvas);
-                rectangleBackground->SetColor(glm::vec4(0.94f, 0.968f, 0.709f, 1.0f));
+                rectangleBackground->SetColor(0xA5ABBE);
                 rectangleBackground->SetWidth(imageHeight + (imageMargin * 2));
                 rectangleBackground->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, mCanvas->GetName());
                 rectangleBackground->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
                 rectangleBackground->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
                 rectangleBackground->SetZOrder(1);
+                rectangleBackground->SetOpacity(0.3f);
+
+                const auto &renderThreadFrameRateLabel = std::make_shared<UiLabel>("nimbus_mono");
+                mRenderFpsLabel = renderThreadFrameRateLabel;
+                renderThreadFrameRateLabel->SetParents(mCanvas, rectangleBackground);
+                renderThreadFrameRateLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
+                renderThreadFrameRateLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
+                renderThreadFrameRateLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());
+                renderThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
+                renderThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
+                renderThreadFrameRateLabel->SetHeight(20);
+                renderThreadFrameRateLabel->SetTextColor(0xD68E97);
+                renderThreadFrameRateLabel->SetFontSize(9.0f);
+                renderThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+                renderThreadFrameRateLabel->SetZOrder(2);
+
+                const auto &gameThreadFrameRateLabel = std::make_shared<UiLabel>("nimbus_mono");
+                mGameFpsLabel = gameThreadFrameRateLabel;
+                gameThreadFrameRateLabel->SetParents(mCanvas, rectangleBackground);
+                gameThreadFrameRateLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
+                gameThreadFrameRateLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
+                gameThreadFrameRateLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, renderThreadFrameRateLabel->GetName());
+                gameThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
+                gameThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
+                gameThreadFrameRateLabel->SetHeight(20);
+                gameThreadFrameRateLabel->SetTextColor(0xD68E97);
+                gameThreadFrameRateLabel->SetFontSize(9.0f);
+                gameThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+                gameThreadFrameRateLabel->SetZOrder(2);
+
+                const auto &luaThreadFrameRateLabel = std::make_shared<UiLabel>("nimbus_mono");
+                mLuaFpsLabel = luaThreadFrameRateLabel;
+                luaThreadFrameRateLabel->SetParents(mCanvas, rectangleBackground);
+                luaThreadFrameRateLabel->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
+                luaThreadFrameRateLabel->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
+                luaThreadFrameRateLabel->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, gameThreadFrameRateLabel->GetName());
+                luaThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
+                luaThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
+                luaThreadFrameRateLabel->SetHeight(20);
+                luaThreadFrameRateLabel->SetTextColor(0xD68E97);
+                luaThreadFrameRateLabel->SetFontSize(9.0f);
+                luaThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
+                luaThreadFrameRateLabel->SetZOrder(2);
 
                 const auto &image = std::make_shared<UiImage>();
                 image->SetParents(mCanvas, rectangleBackground);
@@ -72,7 +116,7 @@ namespace EngineCore
                 image->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());
                 image->SetAnchor(eUiAnchor::RIGHT, eUiAnchor::RIGHT, rectangleBackground->GetName());
                 image->SetAnchorMargin(eUiAnchor::LEFT, imageMargin);
-                image->SetAnchorMargin(eUiAnchor::TOP, imageMargin);
+                image->SetAnchorMargin(eUiAnchor::TOP, imageMargin * 3);
                 image->SetAnchorMargin(eUiAnchor::RIGHT, imageMargin);
                 image->SetOpacity(1);
                 image->SetZOrder(2);
@@ -94,9 +138,9 @@ namespace EngineCore
                 nextPoolsArrowImage->SetParents(mCanvas, rectangleBackground);
                 nextPoolsArrowImage->SetHeight(imageHeight / 2);
                 nextPoolsArrowImage->SetWidth(imageHeight / 2);
-                nextPoolsArrowImage->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, rectangleBackground->GetName());
-                nextPoolsArrowImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::RIGHT, rectangleBackground->GetName());
-                nextPoolsArrowImage->SetAnchorMargin(eUiAnchor::TOP, 35);
+                nextPoolsArrowImage->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, rectangleBackground->GetName());
+                nextPoolsArrowImage->SetAnchor(eUiAnchor::LEFT, eUiAnchor::LEFT, rectangleBackground->GetName());
+                nextPoolsArrowImage->SetAnchorMargin(eUiAnchor::BOTTOM, 35);
                 nextPoolsArrowImage->SetAnchorMargin(eUiAnchor::LEFT, 35);
                 nextPoolsArrowImage->SetOpacity(1);
                 nextPoolsArrowImage->SetZOrder(2);
@@ -156,7 +200,7 @@ namespace EngineCore
             return activePool->GetTextureAt(mTextureIndex++);
         }
 
-        void DebugUiController::OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition)
+        void DebugUiController::OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition)
         {
             mTextureIndex = 0;
             if ((++mPoolIndex) >= mPools.size())
@@ -167,6 +211,30 @@ namespace EngineCore
             for (const auto &image : mImages)
             {
                 image->SetTexture(GetNextTexture());
+            }
+        }
+
+        void DebugUiController::SetRenderFpsText(const std::string &fpsText)
+        {
+            if (mRenderFpsLabel)
+            {
+                mRenderFpsLabel->SetText("Render FPS: " + fpsText);
+            }
+        }
+
+        void DebugUiController::SetGameFpsText(const std::string &fpsText)
+        {
+            if (mGameFpsLabel)
+            {
+                mGameFpsLabel->SetText("Game FPS: " + fpsText);
+            }
+        }
+
+        void DebugUiController::SetLuaFpsText(const std::string &fpsText)
+        {
+            if (mLuaFpsLabel)
+            {
+                mLuaFpsLabel->SetText("Lua FPS: " + fpsText);
             }
         }
     }

@@ -101,7 +101,7 @@ function MainMenuOverlay_1:new(host)
         end
     end)
     exitToMainMenuButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "MainMenuLevel")
+        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "FirstLevel")
     end)
 
     local exitToMainMenuButtonLabel = UiLabel:new(host, "nimbus_mono")

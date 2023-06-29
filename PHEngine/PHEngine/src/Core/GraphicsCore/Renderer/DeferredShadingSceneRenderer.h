@@ -180,6 +180,8 @@ namespace Graphics
 
          void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
 
+         void RemoveCameraSceneProxy_OnRenderThread(const size_t cameraSceneProxyId);
+
          void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
 
          void LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy);

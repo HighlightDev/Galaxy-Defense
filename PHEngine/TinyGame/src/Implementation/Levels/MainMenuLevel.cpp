@@ -109,6 +109,7 @@ namespace Game
    void MainMenuLevel::UnloadLevel()
    {
       mUiController->CleanUp();
+      mUiController.reset();
    }
 
    void MainMenuLevel::Tick(const float deltaTime)

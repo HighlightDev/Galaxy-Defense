@@ -256,23 +256,23 @@ namespace EngineCore
     }
 
     FontHandler::FontHandler()
-        : mFontBatcher()
+        : mFontBatcherMap()
     {
     }
 
     void FontHandler::RegisterFont(const FontParams &fontParams)
     {
-        assert(mFontBatcher.count(fontParams.FontName) == 0);
+        assert(mFontBatcherMap.count(fontParams.FontName) == 0);
 
         const auto &fontMesh = FontMeshPool::GetInstance()->GetOrAllocateResource(fontParams);
         const auto &fontTextureAtlas = TexturePool::GetInstance()->GetOrAllocateResource(fontParams.FontTextureAtlas);
         const auto &fontDescriptorFile = std::make_shared<FontMetaFile>(FolderManager::GetInstance()->GetFontsPath() + fontParams.FontDescriptorFile,
                                                                         DisplayDeviceDataProvider::GetInstance()->GetWidthToHeightRatio());
-        mFontBatcher.emplace(fontParams.FontName, std::make_shared<FontBatcher>(fontMesh, fontTextureAtlas, fontDescriptorFile));
+        mFontBatcherMap.emplace(fontParams.FontName, std::make_shared<FontBatcher>(fontMesh, fontTextureAtlas, fontDescriptorFile));
 
         const size_t maxFontCharactersCount = EngineConfigHolder::GetInstance()->GetEngineConfig().MaxFontCharactersCount;
         static constexpr size_t verticesPerCharacter = 6;
-        const auto &fontBatcher = mFontBatcher.at(fontParams.FontName);
+        const auto &fontBatcher = mFontBatcherMap.at(fontParams.FontName);
 
         auto *const positionVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::POSITION);
         auto *const textureCoordinatesVBO = fontMesh->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
@@ -291,75 +291,74 @@ namespace EngineCore
             textureCoordinatesVBO->GetElementByteSize();
     }
 
-    const std::shared_ptr<FontBatcher> &FontHandler::GetFontBatcher(const std::string &fontName) const
+    std::shared_ptr<FontBatcher> FontHandler::GetFontBatcher(const std::string &fontName) const
     {
-        assert(mFontBatcher.count(fontName));
-        return mFontBatcher.at(fontName);
+        return mFontBatcherMap.count(fontName) ? mFontBatcherMap.at(fontName) : nullptr;
     }
 
     const std::unordered_map<std::string, std::shared_ptr<FontBatcher>> &FontHandler::GetFontBatcher() const
     {
-        return mFontBatcher;
+        return mFontBatcherMap;
     }
 
     void FontHandler::RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy)
     {
-        assert(mFontBatcher.count(textFieldProxy->GetFontName()));
-        mFontBatcher.at(textFieldProxy->GetFontName())->RegisterText(textFieldProxy);
+        assert(mFontBatcherMap.count(textFieldProxy->GetFontName()));
+        mFontBatcherMap.at(textFieldProxy->GetFontName())->RegisterText(textFieldProxy);
     }
 
     void FontHandler::UnregisterText(const std::string &fontName, const int32_t textFieldProxyId)
     {
-        assert(mFontBatcher.count(fontName));
-        mFontBatcher.at(fontName)->UnregisterText(textFieldProxyId);
+        assert(mFontBatcherMap.count(fontName));
+        mFontBatcherMap.at(fontName)->UnregisterText(textFieldProxyId);
     }
 
     void FontHandler::TextPositionChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec2 &position)
     {
-        assert(mFontBatcher.count(fontName));
-        mFontBatcher.at(fontName)->TextPositionChanged(textFieldProxyId, position);
+        assert(mFontBatcherMap.count(fontName));
+        mFontBatcherMap.at(fontName)->TextPositionChanged(textFieldProxyId, position);
     }
 
     void FontHandler::TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible)
     {
-        assert(mFontBatcher.count(fontName));
-        mFontBatcher.at(fontName)->TextVisibilityChanged(textFieldProxyId, bIsVisible);
+        assert(mFontBatcherMap.count(fontName));
+        mFontBatcherMap.at(fontName)->TextVisibilityChanged(textFieldProxyId, bIsVisible);
     }
 
     void FontHandler::TextColorChanged(const std::string &fontName, const int32_t textFieldProxyId, const glm::vec3 &color)
     {
-        assert(mFontBatcher.count(fontName));
-        mFontBatcher.at(fontName)->TextColorChanged(textFieldProxyId, color);
+        assert(mFontBatcherMap.count(fontName));
+        mFontBatcherMap.at(fontName)->TextColorChanged(textFieldProxyId, color);
     }
 
     void FontHandler::TextChanged(const std::string &fontName, const int32_t textFieldProxyId, const std::string &text)
     {
-        assert(mFontBatcher.count(fontName));
-        mFontBatcher.at(fontName)->TextChanged(textFieldProxyId, text);
+        assert(mFontBatcherMap.count(fontName));
+        mFontBatcherMap.at(fontName)->TextChanged(textFieldProxyId, text);
     }
 
     float FontHandler::GetTextWidth(const std::string &fontName, const int32_t textFieldProxyId) const
     {
-        assert(mFontBatcher.count(fontName));
-        return mFontBatcher.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidth();
+        assert(mFontBatcherMap.count(fontName));
+        return mFontBatcherMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextWidth();
     }
 
     float FontHandler::GetTextHeight(const std::string &fontName, const int32_t textFieldProxyId) const
     {
-        assert(mFontBatcher.count(fontName));
-        return mFontBatcher.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeight();
+        assert(mFontBatcherMap.count(fontName));
+        return mFontBatcherMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetCreatedMeshTextHeight();
     }
 
     bool FontHandler::IsTextSubscribedOnSizeChangeUpdate(const std::string &fontName, const int32_t textFieldProxyId) const
     {
-        assert(mFontBatcher.count(fontName));
-        return mFontBatcher.at(fontName)->GetTextFieldById(textFieldProxyId)->GetIsSubscribedOnTextScreenSpaceSizeUpdate();
+        assert(mFontBatcherMap.count(fontName));
+        return mFontBatcherMap.at(fontName)->GetTextFieldById(textFieldProxyId)->GetIsSubscribedOnTextScreenSpaceSizeUpdate();
     }
 
     glm::vec2 FontHandler::GetTextScreenSpaceSize(const std::string &fontName, const int32_t textFieldProxyId) const
     {
-        assert(mFontBatcher.count(fontName));
-        const auto &textFiledSp = mFontBatcher.at(fontName)->GetTextFieldById(textFieldProxyId);
+        assert(mFontBatcherMap.count(fontName));
+        const auto &textFiledSp = mFontBatcherMap.at(fontName)->GetTextFieldById(textFieldProxyId);
         return glm::vec2(textFiledSp->GetCreatedMeshTextWidth(), textFiledSp->GetCreatedMeshTextHeight());
     }
 }

@@ -56,35 +56,6 @@ namespace EngineCore
    void Scene::OnLevelInit()
    {
       LogInfo("Scene::OnLevelInit");
-#ifdef DEBUG
-      mDebugDummyActor = std::make_shared<Actor>("Level Debug Dummy Actor",
-                                                 std::make_shared<SceneComponent>("c_DebugDummyActor_rootComponent",
-                                                                                  glm::vec3(),
-                                                                                  glm::vec3(),
-                                                                                  glm::vec3(1.0f)));
-      const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
-      const auto &c_uiComponent = std::static_pointer_cast<UiComponent>(CreateComponent_GameThread(uiComponentCreator,
-                                                                                                   ComponentData("c_uiComponent_DebugDummyActor")));
-      mDebugDummyActor->AddComponent(c_uiComponent);
-      AddActor(mDebugDummyActor);
-
-      const size_t rtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.8, 0.0, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-      const size_t gtFpsTextId = c_uiComponent->CreateEmptyTextField("nimbus_mono", 10, glm::vec3(0.0, 0.8, 0.0), false, 0.3f, 1, eTextHorizontalAlignmentType::LEFT);
-      mRtTextField = c_uiComponent->GetTextFieldById(rtFpsTextId);
-      mGtTextField = c_uiComponent->GetTextFieldById(gtFpsTextId);
-
-      if (const auto &rtTextSp = mRtTextField.lock())
-      {
-         rtTextSp->SetPosition(glm::vec2(0.0f, 0.00f));
-         rtTextSp->SetVisibility(true);
-      }
-
-      if (const auto &gtTextSp = mGtTextField.lock())
-      {
-         gtTextSp->SetPosition(glm::vec2(0.0f, 0.05f));
-         gtTextSp->SetVisibility(true);
-      }
-#endif
    }
 
    void Scene::PostLevelInit()
@@ -144,6 +115,9 @@ namespace EngineCore
    {
       LogInfo("Scene::RegisterCamera => name = ", camera->GetCameraName());
 
+      assert(!std::any_of(mActiveCameras.cbegin(), mActiveCameras.cend(), [cameraObjectId = camera->GetObjectId()](const auto &camera)
+                          { return camera->GetObjectId() == cameraObjectId; }));
+
       mActiveCameras.emplace_back(camera);
       RegisterEngineObject(camera.get());
       auto cameraProxyPtr = camera->CreateSceneProxy();
@@ -152,6 +126,43 @@ namespace EngineCore
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          sceneRendererSp->CameraSceneProxyAdded_OnRenderThread(camera, cameraProxyPtr);
+      }
+   }
+
+   void Scene::UnregisterCamera(const uint32_t objectId)
+   {
+      LogInfo("Scene::UnregisterCamera => objectId = ", objectId);
+      auto foundCameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [objectId](const auto &camera)
+                                        { return camera->GetObjectId() == objectId; });
+      assert(foundCameraIt != mActiveCameras.end());
+      const auto &cameraSp = *foundCameraIt;
+      RemoveEngineObject(cameraSp->GetObjectId());
+
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         sceneRendererSp->RemoveCameraSceneProxy_OnRenderThread(cameraSp->GetCameraProxyId());
+         cameraSp->SetIsCameraProxyReady(false);
+      }
+      mActiveCameras.erase(foundCameraIt);
+   }
+
+   void Scene::UnregisterMainCamera()
+   {
+      UnregisterCamera(mMainCamera->GetObjectId());
+      mMainCamera.reset();
+   }
+
+   void Scene::UnregisterAllCameras()
+   {
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         for (const auto &cameraSp : mActiveCameras)
+         {
+            RemoveEngineObject(cameraSp->GetObjectId());
+            sceneRendererSp->RemoveCameraSceneProxy_OnRenderThread(cameraSp->GetCameraProxyId());
+            cameraSp->SetIsCameraProxyReady(false);
+         }
+         mActiveCameras.clear();
       }
    }
 
@@ -460,7 +471,7 @@ namespace EngineCore
          }
       }
 
-      RemoveEngineObject(component.get());
+      RemoveEngineObject(component->GetObjectId());
    }
 
    void Scene::RegisterComponentSceneProxy(const std::shared_ptr<Component> &componentSp)
@@ -583,34 +594,23 @@ namespace EngineCore
       return (it != mLuaReplicators.cend()) ? it->second : nullptr;
    }
 
-   bool Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
+   void Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
    {
       const auto objectId = gameObjectPtr->GetObjectId();
       auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto *gameObject)
                              { return gameObject->GetObjectId() == objectId; });
 
-      assert(it == mEngineObjects.end());
-
-      // Add game object
+      assert(it == mEngineObjects.cend());
       mEngineObjects.emplace_back(gameObjectPtr);
-
-      return true;
    }
 
-   bool Scene::RemoveEngineObject(EngineObject *const gameObjectPtr)
+   void Scene::RemoveEngineObject(const uint32_t objectId)
    {
-      const std::string &goName = gameObjectPtr->GetEngineObjectName();
-
-      auto it = std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
-                               { return gameObject->GetEngineObjectName() == goName; });
-
-      if (it != mEngineObjects.end())
-      {
-         mEngineObjects.erase(it, mEngineObjects.end());
-         return true;
-      }
-
-      return false;
+      auto it = std::find_if(mEngineObjects.cbegin(), mEngineObjects.cend(), [objectId](const auto *gameObject)
+                             { return gameObject->GetObjectId() == objectId; });
+      assert(it != mEngineObjects.cend());
+      mEngineObjects.erase(std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto *gameObject)
+                                          { return gameObject->GetObjectId() == objectId; }));
    }
 
    glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition)
@@ -673,6 +673,9 @@ namespace EngineCore
    {
       mUiHandler->CleanUp(); // Unload Ui
 
+      UnregisterMainCamera();
+      UnregisterAllCameras();
+
       // Unload main scene objects
       for (const auto &actor : mActors)
       {
@@ -684,19 +687,28 @@ namespace EngineCore
 
    void Scene::SetRenderThreadFPSTextValue(const float fps)
    {
-      if (const auto &rtTextSp = mRtTextField.lock())
+      if (mDebugUiController)
       {
          const auto value = std::to_string(fps);
-         rtTextSp->SetText("RT: " + value.substr(0, IndexOf(value, ".") + 2));
+         mDebugUiController->SetRenderFpsText(value.substr(0, IndexOf(value, ".") + 2));
       }
    }
 
    void Scene::SetGameThreadFPSTextValue(const float fps)
    {
-      if (const auto &gtTextSp = mGtTextField.lock())
+      if (mDebugUiController)
       {
          const auto value = std::to_string(fps);
-         gtTextSp->SetText("GT: " + value.substr(0, IndexOf(value, ".") + 2));
+         mDebugUiController->SetGameFpsText(value.substr(0, IndexOf(value, ".") + 2));
+      }
+   }
+
+   void Scene::SetLuaThreadFPSTextValue(const float fps)
+   {
+      if (mDebugUiController)
+      {
+         const auto value = std::to_string(fps);
+         mDebugUiController->SetLuaFpsText(value.substr(0, IndexOf(value, ".") + 2));
       }
    }
 

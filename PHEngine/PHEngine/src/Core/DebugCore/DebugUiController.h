@@ -5,6 +5,7 @@
 
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
+#include "Core/GameCore/GUI/UiElements/UiLabel.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/ITextureObtainable.h"
@@ -38,6 +39,10 @@ namespace EngineCore
 
             std::vector<std::shared_ptr<ITextureObtainable>> mPools;
 
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mRenderFpsLabel;
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mGameFpsLabel;
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaFpsLabel;
+
         public:
             DebugUiController();
 
@@ -48,6 +53,12 @@ namespace EngineCore
             void UnpausableTick(const float deltaTime) override;
 
             void PostPlayLevelFinished();
+
+            void SetRenderFpsText(const std::string& fpsText);
+
+            void SetGameFpsText(const std::string& fpsText);
+
+            void SetLuaFpsText(const std::string& fpsText);
 
         private:
             void Init();

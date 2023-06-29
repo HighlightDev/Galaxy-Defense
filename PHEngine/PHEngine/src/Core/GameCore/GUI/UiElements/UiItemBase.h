@@ -220,8 +220,6 @@ namespace EngineCore
 
             void UpdateCenterOffsetProperties();
 
-            void RemoveSceneProxy();
-
             void RemoveFromReplicators();
 
             void RemoveLuaProxy();

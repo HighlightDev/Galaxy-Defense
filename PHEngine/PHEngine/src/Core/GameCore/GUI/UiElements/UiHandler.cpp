@@ -16,6 +16,10 @@ namespace EngineCore
         UiHandler::UiHandler()
             : mOwner(),
               mUiCanvases()
+#ifdef DEBUG
+              ,
+              mDebugUiCanvas()
+#endif
         {
             LogInfo("UiHandler::ctor");
         }
@@ -24,6 +28,26 @@ namespace EngineCore
         {
             mOwner = owner;
         }
+
+#ifdef DEBUG
+        std::shared_ptr<UiCanvas> UiHandler::CreateDebugCanvas(const ViewPortInfo &canvasScreenSize)
+        {
+            if (!mDebugUiCanvas)
+            {
+                const auto &ownerSp = mOwner.lock();
+                assert(ownerSp);
+                mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
+                LogInfo("UiHandler::CreateDebugCanvas => uid = ", mDebugUiCanvas->GetUId());
+                const auto &canvasSceneProxy = mDebugUiCanvas->CreateUiCanvasSceneProxy();
+                if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                {
+                    sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(mDebugUiCanvas, canvasSceneProxy);
+                }
+                mDebugUiCanvas->SetScene(mOwner);
+            }
+            return mDebugUiCanvas;
+        }
+#endif
 
         std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize)
         {
@@ -46,6 +70,12 @@ namespace EngineCore
             {
                 canvas->Tick(deltaTime);
             }
+#ifdef DEBUG
+            if (mDebugUiCanvas)
+            {
+                mDebugUiCanvas->Tick(deltaTime);
+            }
+#endif
         }
 
         void UiHandler::UnpausableTick(const float deltaTime)
@@ -54,22 +84,26 @@ namespace EngineCore
             {
                 canvas->UnpausableTick(deltaTime);
             }
+#ifdef DEBUG
+            if (mDebugUiCanvas)
+            {
+                mDebugUiCanvas->UnpausableTick(deltaTime);
+            }
+#endif
         }
 
-        std::shared_ptr<UiCanvas> UiHandler::GetCanvasByName(const std::string& canvasName) const
+        std::shared_ptr<UiCanvas> UiHandler::GetCanvasByName(const std::string &canvasName) const
         {
-            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasName](const auto& canvas) {
-                return canvasName == canvas->GetName();
-            });
+            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasName](const auto &canvas)
+                                                    { return canvasName == canvas->GetName(); });
 
             return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
         }
 
         std::shared_ptr<UiCanvas> UiHandler::GetCanvasByUId(const uint32_t canvasId) const
         {
-            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasId](const auto& canvas) {
-                return canvasId == canvas->GetUId();
-            });
+            const auto foundResultIt = std::find_if(mUiCanvases.cbegin(), mUiCanvases.cend(), [canvasId](const auto &canvas)
+                                                    { return canvasId == canvas->GetUId(); });
 
             return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
         }
@@ -78,7 +112,7 @@ namespace EngineCore
         {
             LogInfo("UiHandler::CleanUp => canvases count: ", mUiCanvases.size());
 
-            for (const auto& canvas: mUiCanvases)
+            for (const auto &canvas : mUiCanvases)
             {
                 canvas->CleanUp();
             }

@@ -42,8 +42,5 @@ function System_OnStart(host)
     initialize(host)
 end
 
-function System_OnUpdate(host, deltaTime)
-end
-
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)
 HasOnUpdate = (_G["System_OnUpdate"] ~= nil and 1 or 0)

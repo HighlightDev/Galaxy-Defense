@@ -150,6 +150,7 @@ namespace EngineCore
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(false);
       m_interThreadMgr.ClearGameThreadJobs();
       m_interThreadMgr.ClearLuaThreadJobs();
+      std::this_thread::sleep_for(100ms); // wait until the lua thread or game thread can still run
       m_level->UnloadLevel();
       m_scene->UnloadScene();
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
@@ -158,6 +159,7 @@ namespace EngineCore
 
    void Engine::PlayLevel(const std::string &levelName)
    {
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
       assert(m_levelFactory);
       const auto newLevel = m_levelFactory->CreateLevel(levelName);
       assert(newLevel);
@@ -216,9 +218,11 @@ namespace EngineCore
 
    size_t rtCounter = 0;
    size_t gtCounter = 0;
+   size_t luaThreadCounter = 0;
 
    float sumRtFramesTime = 0.0f;
    float sumGtFramesTime = 0.0f;
+   float sumLuaThreadFramesTime = 0.0f;
 
    void Engine::ProcessEvent(const PauseGameThreadEvent::EventData_t &data)
    {
@@ -235,7 +239,9 @@ namespace EngineCore
    void Engine::ProcessEvent(const LoadLevelEvent::EventData_t &data)
    {
       const auto lvlName = std::get<0>(data);
-      PlayLevel(lvlName);
+      static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelEvent");
+      m_interThreadMgr.ExecuteOnRenderThread(Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, lvlName]()
+                                             { PlayLevel(lvlName); });
    }
 
    void Engine::LuaThreadPulse()
@@ -257,6 +263,18 @@ namespace EngineCore
          std::this_thread::sleep_for(20ms);
          mLuaThreadDeltaTimeSeconds = (float)EngineTime::GetSecondsFromDuration(
              EngineTime::GetPassedDuration(ltStartTimePoint));
+
+#ifdef DEBUG
+         if (luaThreadCounter == 100)
+         {
+            luaThreadCounter = 0;
+            const float fps = 100.0f / (float)sumLuaThreadFramesTime;
+            m_scene->SetLuaThreadFPSTextValue(fps);
+            sumLuaThreadFramesTime = 0.0f;
+         }
+         sumLuaThreadFramesTime += mLuaThreadDeltaTimeSeconds;
+         ++luaThreadCounter;
+#endif
       }
    }
 

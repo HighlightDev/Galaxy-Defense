@@ -601,7 +601,7 @@ namespace EngineCore
             RemoveSceneProxy();
             RemoveFromReplicators();
             RemoveLuaProxy();
-            for (const auto& child : mChildren)
+            for (const auto &child : mChildren)
             {
                 child->CleanUp();
             }
@@ -612,12 +612,18 @@ namespace EngineCore
         {
             if (mIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
-                static constexpr uint64_t functionId = Hash64_CT("UiCanvas::RemoveSceneProxy");
                 if (const auto &sceneSp = mScene.lock())
                 {
-                    if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+                    if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                     {
-                        sceneRenderer->UnregisterUiCanvasProxy_OnRenderThread(GetUId());
+                        // Clear all children scene proxies, because all of them relate to current canvas
+                        for (const auto &uiItemChild : mChildren)
+                        {
+                            sceneRendererSp->UnregisterUiSceneProxy_OnRenderThread(uiItemChild->GetUId(), GetUId());
+                            uiItemChild->SetIsSceneProxyReady(false);
+                        }
+
+                        sceneRendererSp->UnregisterUiCanvasProxy_OnRenderThread(GetUId());
                         SetIsSceneProxyReady(false);
                     }
                 }
@@ -636,20 +642,11 @@ namespace EngineCore
         {
             if (mIsLuaProxyReady.load(std::memory_order::memory_order_seq_cst))
             {
-                if (const auto &sceneSp = mScene.lock())
+                if (const auto &luaProcessorSp = GetLuaScriptProcessorWp().lock())
                 {
-                    static constexpr uint64_t functionId = Hash64_CT("UiCanvas::RemoveLuaProxy");
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
-                                                                                    GetUId(),
-                                                                                    functionId,
-                    [luaScriptProcessorWp = GetLuaScriptProcessorWp(), luaProxyId = GetLuaProxyId()] {
-                        if (const auto &luaProcessorSp = luaScriptProcessorWp.lock())
-                        {
-                            luaProcessorSp->RemoveLuaProxy(luaProxyId);
-                        }
-                    });
-                    SetIsLuaProxyReady(false);
+                    luaProcessorSp->RemoveLuaProxy(GetLuaProxyId());
                 }
+                SetIsLuaProxyReady(false);
             }
         }
     }
