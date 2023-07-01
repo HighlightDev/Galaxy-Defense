@@ -1123,6 +1123,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy)
       {
+         LogInfo("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread => camera proxyId: ", cameraSceneProxy->GetSceneProxyId());
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::CameraSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, cameraSceneProxy->GetSceneProxyId(), functionId, [this, camera, cameraSceneProxy]()
@@ -1133,6 +1134,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const size_t cameraSceneProxyId)
       {
+         LogInfo("DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread => camera proxyId: ", cameraSceneProxyId);
          assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
          assert(std::any_of(SceneViewsVector.cbegin(), SceneViewsVector.cend(), [cameraSceneProxyId](const auto &sceneViewSp)
                             { return sceneViewSp->GetCameraProxy()->GetSceneProxyId() == cameraSceneProxyId; }));

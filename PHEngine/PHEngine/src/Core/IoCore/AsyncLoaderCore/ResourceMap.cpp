@@ -9,7 +9,6 @@
 #include "Core/ResourceManagerCore/Pool/SoundBufferPool.h"
 #include "Core/GameCore/LoggerExtension.h"
 
-#include <TinyLogger/LogInterface.h>
 #include <functional>
 #include <algorithm>
 
@@ -49,6 +48,9 @@ namespace IO
          resource->Clear();
          delete resource;
       }
+
+      ReadyToReadResources.clear();
+      mAsyncDataProxy->ResourcesMap.clear();
    }
 
    ResourceMap::~ResourceMap()

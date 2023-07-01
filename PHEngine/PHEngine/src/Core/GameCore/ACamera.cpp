@@ -70,26 +70,28 @@ namespace EngineCore
          {
             static constexpr uint64_t functionId = Hash64_CT("ACamera::UpdateCameraProxyData");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
-               [cameraPtr = this,
-                  eyeVector = GetEyeVector(),
-                  viewMatrix = GetViewMatrix(),
-                  eyeForwardVector = GetEyeSpaceForwardVector(),
-                  eyeRightVector = GetEyeSpaceRightVector(),
-                  eyeUpVector = GetLocalSpaceUpVector(),
-                  cameraProxyId = mCameraProxyId,
-                  sceneRendererSp
-                  ]() {
-               const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId);
-               assert(sceneViewSp);
-               const auto& cameraProxy = sceneViewSp->GetCameraProxy();
-               cameraProxy->UpdateEyeVector(eyeVector);
-               cameraProxy->UpdateViewMatrix(viewMatrix);
-               cameraProxy->SetForwardVector(eyeForwardVector);
-               cameraProxy->SetRightVector(eyeRightVector);
-               cameraProxy->SetUpVector(eyeUpVector);
+                                                                                [cameraPtr = this,
+                                                                                 eyeVector = GetEyeVector(),
+                                                                                 viewMatrix = GetViewMatrix(),
+                                                                                 eyeForwardVector = GetEyeSpaceForwardVector(),
+                                                                                 eyeRightVector = GetEyeSpaceRightVector(),
+                                                                                 eyeUpVector = GetLocalSpaceUpVector(),
+                                                                                 cameraProxyId = mCameraProxyId,
+                                                                                 sceneRendererSp]()
+                                                                                {
+                                                                                   if (const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId))
+                                                                                   {
+                                                                                      assert(sceneViewSp);
+                                                                                      const auto &cameraProxy = sceneViewSp->GetCameraProxy();
+                                                                                      cameraProxy->UpdateEyeVector(eyeVector);
+                                                                                      cameraProxy->UpdateViewMatrix(viewMatrix);
+                                                                                      cameraProxy->SetForwardVector(eyeForwardVector);
+                                                                                      cameraProxy->SetRightVector(eyeRightVector);
+                                                                                      cameraProxy->SetUpVector(eyeUpVector);
 
-               cameraPtr->OnCameraSceneProxyDataUpdated(); 
-            });
+                                                                                      cameraPtr->OnCameraSceneProxyDataUpdated();
+                                                                                   }
+                                                                                });
          }
       }
    }

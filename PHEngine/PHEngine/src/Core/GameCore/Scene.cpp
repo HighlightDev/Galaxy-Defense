@@ -113,14 +113,13 @@ namespace EngineCore
 
    void Scene::RegisterCamera(const std::shared_ptr<ACamera> &camera)
    {
-      LogInfo("Scene::RegisterCamera => name = ", camera->GetCameraName());
-
       assert(!std::any_of(mActiveCameras.cbegin(), mActiveCameras.cend(), [cameraObjectId = camera->GetObjectId()](const auto &camera)
                           { return camera->GetObjectId() == cameraObjectId; }));
 
       mActiveCameras.emplace_back(camera);
       RegisterEngineObject(camera.get());
-      auto cameraProxyPtr = camera->CreateSceneProxy();
+      const auto cameraProxyPtr = camera->CreateSceneProxy();
+      LogInfo("Scene::RegisterCamera => id = ", camera->GetObjectId(), ", cameraSceneProxyId: ", cameraProxyPtr->GetSceneProxyId());
       camera->SetCameraProxyId(cameraProxyPtr->GetSceneProxyId());
 
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
@@ -131,7 +130,7 @@ namespace EngineCore
 
    void Scene::UnregisterCamera(const uint32_t objectId)
    {
-      LogInfo("Scene::UnregisterCamera => objectId = ", objectId);
+      LogInfo("Scene::UnregisterCamera => id = ", objectId);
       auto foundCameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [objectId](const auto &camera)
                                         { return camera->GetObjectId() == objectId; });
       assert(foundCameraIt != mActiveCameras.end());

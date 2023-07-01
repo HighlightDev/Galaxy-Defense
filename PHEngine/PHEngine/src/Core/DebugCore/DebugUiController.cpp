@@ -35,7 +35,10 @@ namespace EngineCore
 
         void DebugUiController::PostPlayLevelFinished()
         {
-            Init();
+            if (!mCanvas)
+            {
+                Init();
+            }
         }
 
         void DebugUiController::Init()
@@ -64,7 +67,7 @@ namespace EngineCore
                 rectangleBackground->SetAnchor(eUiAnchor::TOP, eUiAnchor::TOP, mCanvas->GetName());
                 rectangleBackground->SetAnchor(eUiAnchor::BOTTOM, eUiAnchor::BOTTOM, mCanvas->GetName());
                 rectangleBackground->SetZOrder(1);
-                rectangleBackground->SetOpacity(0.3f);
+                rectangleBackground->SetOpacity(0.0f);
 
                 const auto &renderThreadFrameRateLabel = std::make_shared<UiLabel>("nimbus_mono");
                 mRenderFpsLabel = renderThreadFrameRateLabel;
@@ -75,7 +78,7 @@ namespace EngineCore
                 renderThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
                 renderThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
                 renderThreadFrameRateLabel->SetHeight(20);
-                renderThreadFrameRateLabel->SetTextColor(0xD68E97);
+                renderThreadFrameRateLabel->SetTextColor(0xFF0000);
                 renderThreadFrameRateLabel->SetFontSize(9.0f);
                 renderThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
                 renderThreadFrameRateLabel->SetZOrder(2);
@@ -89,7 +92,7 @@ namespace EngineCore
                 gameThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
                 gameThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
                 gameThreadFrameRateLabel->SetHeight(20);
-                gameThreadFrameRateLabel->SetTextColor(0xD68E97);
+                gameThreadFrameRateLabel->SetTextColor(0xFF0000);
                 gameThreadFrameRateLabel->SetFontSize(9.0f);
                 gameThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
                 gameThreadFrameRateLabel->SetZOrder(2);
@@ -103,7 +106,7 @@ namespace EngineCore
                 luaThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::LEFT, 20);
                 luaThreadFrameRateLabel->SetAnchorMargin(eUiAnchor::TOP, 30);
                 luaThreadFrameRateLabel->SetHeight(20);
-                luaThreadFrameRateLabel->SetTextColor(0xD68E97);
+                luaThreadFrameRateLabel->SetTextColor(0xFF0000);
                 luaThreadFrameRateLabel->SetFontSize(9.0f);
                 luaThreadFrameRateLabel->SetTextHorizontalAlignment(eTextHorizontalAlignmentType::LEFT);
                 luaThreadFrameRateLabel->SetZOrder(2);

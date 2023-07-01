@@ -150,7 +150,7 @@ namespace EngineCore
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(false);
       m_interThreadMgr.ClearGameThreadJobs();
       m_interThreadMgr.ClearLuaThreadJobs();
-      std::this_thread::sleep_for(100ms); // wait until the lua thread or game thread can still run
+      std::this_thread::sleep_for(1000ms); // wait until the lua thread or game thread can still run
       m_level->UnloadLevel();
       m_scene->UnloadScene();
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
