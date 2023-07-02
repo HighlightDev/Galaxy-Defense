@@ -2,8 +2,6 @@
 #include "StateProperty.h"
 #include "Core/CommonCore/Assertion.h"
 
-#include <iostream>
-
 namespace EngineCore {
 
    ITweenController::ITweenController()

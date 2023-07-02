@@ -7,13 +7,14 @@
 #include "Core/GameCore/Tweener/Vec3TweenController.h"
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 #include "Core/GameCore/Actor.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <algorithm>
 
 namespace EngineCore
 {
 
-   Tweener::Tweener(const std::string &relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
+   Tweener::Tweener(const std::string &relPathFSM, const std::string &tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
        : mMyAllStates(std::move(allStates)),
          mRelPathTweener(relPathFSM),
          mTweenerName(tweenerInnerName),
@@ -163,9 +164,8 @@ namespace EngineCore
    {
       const auto parentSp = GetParentActorWp().lock();
       assert(parentSp);
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [parentName = parentSp->GetName()](const SerializeDataActor &actorData) {
-         return actorData.ActorName == parentName; 
-      });
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [parentName = parentSp->GetName()](const SerializeDataActor &actorData)
+                             { return actorData.ActorName == parentName; });
       assert(it != dataContainer.Actors.end());
 
       std::shared_ptr<SerializeDataTweener> tweenerData = std::make_shared<SerializeDataTweener>();
@@ -184,12 +184,12 @@ namespace EngineCore
       it->TweenerData = tweenerData;
    }
 
-   void Tweener::SubscribeOnStateChange(ITweenStateChangeNotifyable *observer)
+   void Tweener::SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable> &observer)
    {
       mStateChangedObservers.emplace_back(observer);
    }
 
-   void Tweener::SetParentActor(const std::shared_ptr<Actor>& parent)
+   void Tweener::SetParentActor(const std::shared_ptr<Actor> &parent)
    {
       mParentWp = parent;
    }
@@ -215,16 +215,23 @@ namespace EngineCore
       if (bIsStateChangedDirty)
       {
          bIsStateChangedDirty = false;
-         for (const auto &observer : mStateChangedObservers)
+         for (const auto &observerWp : mStateChangedObservers)
          {
-            observer->OnTweenStateChanged(mChangedStateName);
+            if (const auto &observerSp = observerWp.lock())
+            {
+               observerSp->OnTweenStateChanged(mChangedStateName);
+            }
          }
       }
    }
 
    void Tweener::CleanUp()
    {
-      // todo:
+      LogInfo("Tweener::CleanUp => name: ", mTweenerName);
+      mMyAllStates.clear();
+      mPropertyBindings.clear();
+      CurrentActiveTransitionControllers.clear();
+      mStateChangedObservers.clear();
    }
 
    std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string &name) const
@@ -299,7 +306,7 @@ namespace EngineCore
       return mRelPathTweener;
    }
 
-   const std::string& Tweener::GetTweenerName() const
+   const std::string &Tweener::GetTweenerName() const
    {
       return mTweenerName;
    }

@@ -64,6 +64,7 @@ namespace EngineCore
 
    void Actor::CleanUp()
    {
+      LogInfo("Actor::CleanUp => id: ", GetObjectId(), ", name: ", GetName());
       for (const auto& tweener : mTweeners)
       {
          tweener->CleanUp();

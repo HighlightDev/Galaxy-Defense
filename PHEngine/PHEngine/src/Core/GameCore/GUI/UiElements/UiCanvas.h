@@ -86,6 +86,8 @@ namespace EngineCore
 
             std::shared_ptr<Animator> mAnimator;
 
+            size_t mCanvasZOrder{0}; // order of rendering canvases
+
         protected:
             std::vector<std::shared_ptr<UiItemBase>> mChildren;
 

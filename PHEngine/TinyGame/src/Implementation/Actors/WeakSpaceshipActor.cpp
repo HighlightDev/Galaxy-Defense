@@ -25,7 +25,7 @@ namespace Game
 
     void WeakSpaceshipActor::InitTweenerSubscriptions()
     {
-        mWeakSpaceshipTweener->SubscribeOnStateChange(this);
+        mWeakSpaceshipTweener->SubscribeOnStateChange(std::dynamic_pointer_cast<WeakSpaceshipActor>(shared_from_this()));
     }
 
     void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage)

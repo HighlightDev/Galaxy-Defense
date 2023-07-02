@@ -16,7 +16,8 @@ namespace EngineCore
         UiCanvasLuaProxy::UiCanvasLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &ownerCanvas)
             : LuaProxy(),
               mCanvasName(ownerCanvas->GetName()),
-              mIsVisible(ownerCanvas->IsVisible())
+              mIsVisible(ownerCanvas->IsVisible()),
+              mCanvasZOrder(ownerCanvas->GetZOrder())
         {
             mLuaProxyId = ownerCanvas->GetLuaProxyId();
             SetReplicatorId(ownerCanvas->GetReplicatorId());
@@ -36,6 +37,20 @@ namespace EngineCore
             }
         }
 
+        void UiCanvasLuaProxy::SetCanvasZOrder_FromGameThread(const size_t zOrder)
+        {
+            if (mCanvasZOrder != zOrder)
+            {
+                mCanvasZOrder = zOrder;
+                mIsLuaDataDirty = true;
+            }
+        }
+
+        size_t UiCanvasLuaProxy::GetCanvasZOrder() const
+        {
+            return mCanvasZOrder;
+        }
+
         void UiCanvasLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)
         {
             static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddAnimation");
@@ -52,7 +67,7 @@ namespace EngineCore
             }
         }
 
-        void UiCanvasLuaProxy::StartAnimation(const std::string& animationName)
+        void UiCanvasLuaProxy::StartAnimation(const std::string &animationName)
         {
             // not implemented
         }
@@ -77,6 +92,7 @@ namespace EngineCore
         {
             nlohmann::json jsonObj;
             jsonObj["visible"] = mIsVisible;
+            jsonObj["canvas_z_order"] = mCanvasZOrder;
 
             mIsLuaDataDirty = false;
             return jsonObj.dump();

@@ -28,7 +28,7 @@ namespace Game
 
     void BlackHoleMissileActor::InitTweenerSubscriptions()
     {
-        mBlackMissileTweener->SubscribeOnStateChange(this);
+        mBlackMissileTweener->SubscribeOnStateChange(std::dynamic_pointer_cast<BlackHoleMissileActor>(shared_from_this()));
     }
 
     void BlackHoleMissileActor::AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor)

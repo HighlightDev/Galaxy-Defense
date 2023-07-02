@@ -167,7 +167,7 @@ namespace Game
 
     void ElectroRayChainActor::InitTweenerSubscriptions()
     {
-        mFadeoutTweener->SubscribeOnStateChange(this);
+        mFadeoutTweener->SubscribeOnStateChange(std::dynamic_pointer_cast<ElectroRayChainActor>(shared_from_this()));
     }
 
     void ElectroRayChainActor::TriggerLifecycle_OnFadeOutStarted()

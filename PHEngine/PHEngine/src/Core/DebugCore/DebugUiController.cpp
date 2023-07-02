@@ -58,6 +58,7 @@ namespace EngineCore
                 mCanvas = uiHandler->CreateDebugCanvas(ViewPortInfo(0, 0, windowWidth, windowHeight));
                 mCanvas->InitializeInputSystem();
                 mCanvas->SetIsVisible(false);
+                mCanvas->SetZOrder(100000); // This canvas has to be the last in the render queue
 
                 const auto &rectangleBackground = std::make_shared<UiRectangle>();
                 rectangleBackground->SetParents(mCanvas, mCanvas);

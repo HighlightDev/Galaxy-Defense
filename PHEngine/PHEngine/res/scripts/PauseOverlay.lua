@@ -41,6 +41,7 @@ function PauseOverlay:new(host)
 
     local pauseMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
     pauseMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
+        pauseMenuOverlayCanvas:setCanvasZOrder(100)
         _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)
         pauseMenuOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
             0.3, "Opacity",

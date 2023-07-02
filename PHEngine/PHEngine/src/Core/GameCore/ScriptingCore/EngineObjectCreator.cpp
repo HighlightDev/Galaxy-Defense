@@ -45,6 +45,9 @@ using namespace EngineUtility;
 
 namespace EngineCore
 {
+   EngineObjectCreator::EngineObjectCreator(const std::shared_ptr<Scene> &scene) : mSceneWp(scene)
+   {
+   }
 
    ComponentData *EngineObjectCreator::CreateSpotlightComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
                                                                     const glm::vec3 &rotation,
@@ -293,5 +296,17 @@ namespace EngineCore
                                                                            const ViewPortInfo &fboViewPortInfo)
    {
       return new PlanarReflectionComponentData(gameObjectName, translation, rotation, scale, ownerCamera, fboViewPortInfo);
+   }
+
+   // Actor will be created and added to the scene
+   uint64_t EngineObjectCreator::CreateActor(const std::string &actorName, const glm::vec3 &rootTranslation, const glm::vec3 &rootEulerRotation, const glm::vec3 &rootScale)
+   {
+      const auto &sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      {
+         const auto& actor = std::make_shared<Actor>(actorName, std::make_shared<SceneComponent>(actorName + "_root", rootTranslation, rootEulerRotation, rootScale));
+         sceneSp->AddActor(actor);
+         return actor->GetObjectId();
+      }
    }
 }

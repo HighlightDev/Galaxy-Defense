@@ -38,6 +38,10 @@ function UiCanvas:new(host, originX, originY, width, height)
         visible = {
             value = false,
             dirty = false
+        },
+        canvas_z_order = {
+            value = 0,
+            dirty = false
         }
     }
 
@@ -52,14 +56,17 @@ function UiCanvas:new(host, originX, originY, width, height)
 end
 
 function UiCanvas:updateFromReplicatorData(host)
-    self:checkLuaProxyReady(host)
     local replicatorJsonData = _GetGameThreadData(host, self.luaProxyId)
     if replicatorJsonData ~= "" then
         local parsedJson = json.decode(replicatorJsonData)
         if parsedJson["visible"] ~= nil then
             self.properties.visible.value = parsedJson["visible"]
         end
+        if parsedJson["canvas_z_order"] ~= nil then
+            self.properties.canvas_z_order.value = parsedJson["canvas_z_order"];
+        end
     end
+    self:checkLuaProxyReady(host)
 end
 
 function UiCanvas:sendDataToReplicator(host)
@@ -82,6 +89,13 @@ function UiCanvas:setIsVisible(isVisible)
     if self.properties.visible.value ~= isVisible then
         self.properties.visible.value = isVisible
         self.properties.visible.dirty = true
+    end
+end
+
+function UiCanvas:setCanvasZOrder(zOrder)
+    if self.properties.canvas_z_order.value ~= zOrder then
+        self.properties.canvas_z_order.value = zOrder
+        self.properties.canvas_z_order.dirty = true
     end
 end
 

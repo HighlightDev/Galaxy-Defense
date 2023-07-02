@@ -19,7 +19,8 @@ namespace Graphics
               mAbsoluteOrigin(canvas->GetAbsoluteOrigin()),
               mWidthHeight(glm::ivec2(canvas->GetWidth(), canvas->GetHeight())),
               mFontHandlerWp(),
-              mOverlayOpacity(1.0f)
+              mOverlayOpacity(1.0f),
+              mCanvasZOrder(canvas->GetZOrder())
         {
         }
 
@@ -63,6 +64,16 @@ namespace Graphics
         size_t UiCanvasSceneProxy::GetUiItemUId() const
         {
             return mUiItemUId;
+        }
+
+        void UiCanvasSceneProxy::SetCanvasZOrder(const size_t zOrder)
+        {
+            mCanvasZOrder = zOrder;
+        }
+
+        size_t UiCanvasSceneProxy::GetCanvasZOrder() const
+        {
+            return mCanvasZOrder;
         }
 
         void UiCanvasSceneProxy::SetIsVisible(const bool isVisible)
@@ -110,12 +121,12 @@ namespace Graphics
 
         std::shared_ptr<UiSceneProxyBase> UiCanvasSceneProxy::GetSceneProxyById(const size_t uid) const
         {
-           for (const auto proxy : mUiProxies)
-           {
-              if (uid == proxy->GetUiItemUId())
-                 return proxy;
-           }
-           return nullptr;
+            for (const auto proxy : mUiProxies)
+            {
+                if (uid == proxy->GetUiItemUId())
+                    return proxy;
+            }
+            return nullptr;
         }
 
         void UiCanvasSceneProxy::SetFontHandler(const std::weak_ptr<::EngineCore::FontHandler> &fontHandlerWp)

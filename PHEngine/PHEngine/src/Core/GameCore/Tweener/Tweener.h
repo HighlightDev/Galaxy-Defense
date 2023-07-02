@@ -45,7 +45,7 @@ namespace EngineCore
 
       bool bIsStateChangedDirty;
       std::string mChangedStateName;
-      std::vector<ITweenStateChangeNotifyable*> mStateChangedObservers; 
+      std::vector<std::weak_ptr<ITweenStateChangeNotifyable>> mStateChangedObservers; 
    public:
 
       Tweener(const std::string& relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
@@ -60,7 +60,7 @@ namespace EngineCore
 
       void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
 
-      void SubscribeOnStateChange(ITweenStateChangeNotifyable* observer);
+      void SubscribeOnStateChange(const std::shared_ptr<ITweenStateChangeNotifyable>& observer);
 
       std::shared_ptr<State> GetCurrentState() const;
 

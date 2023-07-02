@@ -710,6 +710,11 @@ namespace Graphics
          RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
+         
+         std::sort(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [](const auto& left, const auto& right) {
+            return left->GetCanvasZOrder() < right->GetCanvasZOrder(); 
+         });
+
          for (const auto &canvas : mUiCanvasProxies)
          {
             const auto &canvasOrigin = canvas->GetAbsoluteOrigin();

@@ -26,12 +26,18 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            size_t mCanvasZOrder;
+
         public:
             explicit UiCanvasLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &ownerCanvas);
 
             std::string GetCanvasName() const;
 
             void SetIsVisible_FromGameThread(const bool isVisible);
+
+            void SetCanvasZOrder_FromGameThread(const size_t zOrder);
+
+            size_t GetCanvasZOrder() const;
 
             void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
 
@@ -41,9 +47,9 @@ namespace EngineCore
 
             void InitializeInputSystem();
 
-            void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
+            void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
 
-            void StartAnimation(const std::string& animationName) override;
+            void StartAnimation(const std::string &animationName) override;
         };
     }
 }

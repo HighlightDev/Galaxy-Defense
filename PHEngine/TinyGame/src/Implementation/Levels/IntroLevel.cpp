@@ -1,6 +1,5 @@
 #include "IntroLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
-#include "Core/GameCore/ScriptingCore/EngineObjectCreator.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"

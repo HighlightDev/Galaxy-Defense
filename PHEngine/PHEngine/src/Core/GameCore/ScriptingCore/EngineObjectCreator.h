@@ -11,6 +11,7 @@
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GameCore/Scene.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
@@ -21,7 +22,11 @@ namespace EngineCore
 
    class EngineObjectCreator
    {
+      std::weak_ptr<Scene> mSceneWp;
+
    public:
+      explicit EngineObjectCreator(const std::shared_ptr<Scene>& scene);
+
       static std::shared_ptr<Actor> CreateActorByString(const std::string &gameObjectName, std::shared_ptr<SceneComponent> rootComponent);
 
       static std::shared_ptr<ACamera> CreateThirdPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene,
@@ -80,6 +85,10 @@ namespace EngineCore
                                                           const float mass);
       static PhysicsDescriptor *CreateDynamicCharacterController(PhysicsWorld *physWorld, float capsuleRadius, float capsuleHeight,
                                                                  float mass, float stepHeight);
+
+
+      // Actor will be created and added to the scene
+      uint64_t CreateActor(const std::string& actorName, const glm::vec3& rootTranslation, const glm::vec3& rootEulerRotation, const glm::vec3& rootScale);
    };
 
 }

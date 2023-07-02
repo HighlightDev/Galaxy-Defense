@@ -37,6 +37,8 @@ namespace Graphics
 
             float mOverlayOpacity;
 
+            size_t mCanvasZOrder;
+
         public:
             UiCanvasSceneProxy(const ::EngineCore::GUI::UiCanvas *canvas);
 
@@ -63,6 +65,10 @@ namespace Graphics
             void SetOverlayOpacity(const float opacity);
 
             float GetOverlayOpacity() const;
+
+            void SetCanvasZOrder(const size_t zOrder);
+
+            size_t GetCanvasZOrder() const;
 
             glm::ivec2 GetAbsoluteOrigin() const;
 

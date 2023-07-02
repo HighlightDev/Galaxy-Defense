@@ -231,6 +231,11 @@ namespace EngineCore
 
         void UiCanvas::SetZOrder(const size_t z_order)
         {
+            if (mCanvasZOrder != z_order)
+            {
+                mCanvasZOrder = z_order;
+                mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+            }
         }
 
         void UiCanvas::SetWidth(const size_t width)
@@ -437,13 +442,14 @@ namespace EngineCore
             {
                 if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, uid = GetUId(), isVisible = mIsVisible, absoluteOrigin = mAbsoluteOrigin, widthHeight = mWidthHeight]()
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, uid = GetUId(), isVisible = mIsVisible, absoluteOrigin = mAbsoluteOrigin, widthHeight = mWidthHeight, canvasZOrder = mCanvasZOrder]()
                                                                                         {
                         if (const auto &canvasProxy = sceneRenderer->GetCanvasSceneProxyByProxyId(uid))
                         {
                             canvasProxy->SetIsVisible(isVisible);
                             canvasProxy->SetAbsoluteOrigin(absoluteOrigin);
-                            canvasProxy->SetWidthHeight(widthHeight); 
+                            canvasProxy->SetWidthHeight(widthHeight);
+                            canvasProxy->SetCanvasZOrder(canvasZOrder);
                         } });
                 }
             }
@@ -456,11 +462,12 @@ namespace EngineCore
             {
                 if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                 {
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), isVisible = mIsVisible]()
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), isVisible = mIsVisible, canvasZOrder = mCanvasZOrder]()
                                                                                      {
                         if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                         {
-                            canvasProxy->SetIsVisible_FromGameThread(isVisible); 
+                            canvasProxy->SetIsVisible_FromGameThread(isVisible);
+                            canvasProxy->SetCanvasZOrder_FromGameThread(canvasZOrder);
                         } });
                 }
             }
@@ -567,10 +574,18 @@ namespace EngineCore
             if (jsonObj.contains("visible"))
             {
                 const auto isVisible = jsonObj["visible"].get<bool>();
-                // todo: maybe something better
                 if (mIsVisible != isVisible)
                 {
                     mIsVisible = isVisible;
+                    mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                }
+            }
+            if (jsonObj.contains("canvas_z_order"))
+            {
+                const auto zOrder = jsonObj["canvas_z_order"].get<size_t>();
+                if (mCanvasZOrder != zOrder)
+                {
+                    mCanvasZOrder = zOrder;
                     mIsPropertiesShouldBeUpdatedOnRenderThread = true;
                 }
             }
