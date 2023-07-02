@@ -261,7 +261,6 @@ function PlayerHUDOverlay:new(host)
                 local missilesCount = tonumber(value[2])
                 local activeWidgetsTable = MissileWidgetsMap[missileTypeName]
                 activeWidgetsTable.label:setText(tostring(missilesCount))
-                print("onMissilesDataChanged => missileName: " .. missileTypeName .. ", count missiles: " .. tostring(missilesCount))
             end
         end
     end
@@ -609,7 +608,6 @@ function PlayerHUDOverlay:new(host)
                 elseif statusType == PlayerStatusType.ACTIVE_WEAPON_CHANGED then
                     playerHUDOverlay.onCurrentMissileChanged()
                 elseif statusType == PlayerStatusType.MISSILES_COUNT_CHANGED then
-                    print("onGameEventTriggered => MISSILES_COUNT_CHANGED");
                     playerHUDOverlay.onMissilesDataChanged()
                 end
             end

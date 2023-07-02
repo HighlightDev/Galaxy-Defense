@@ -94,45 +94,50 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::Initialize()
       {
-         const auto &folderManager = FolderManager::GetInstance();
+         InitializeCoreShaders();
+#ifdef DEBUG
+         bRenderDebugPhysicsData = EngineConfigHolder::GetInstance()->GetEngineConfig().RenderDebugPhysicsData;
+#endif
+      }
+
+      void DeferredShadingSceneRenderer::InitializeCoreShaders()
+      {
+         const auto shadersPathStr = FolderManager::GetInstance()->GetShadersPath();
 
          const ShaderParams depthCollectShaderParams("DepthCollectShader",
-                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectVS.glsl",
-                                                     FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectFS.glsl");
-
+                                                     shadersPathStr + "composite_shaders" + SLASH + "depthCollectVS.glsl",
+                                                     shadersPathStr + "composite_shaders" + SLASH + "depthCollectFS.glsl");
          const ShaderParams plDepthCollectShaderParams("PointLightDepthCollectShader",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightVS.glsl",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
-                                                       FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
+                                                       shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightVS.glsl",
+                                                       shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightFS.glsl",
+                                                       shadersPathStr + "composite_shaders" + SLASH + "depthCollectPointLightGS.glsl");
+         const CompositeShaderParams staticMeshParams("StaticMeshVertexFactory", depthCollectShaderParams);
+         const CompositeShaderParams skeletalMeshParams("SkeletalMeshVertexFactory<4>", depthCollectShaderParams);
+         const CompositeShaderParams staticMeshCompositeParams("StaticMeshVertexFactory", plDepthCollectShaderParams);
+         const CompositeShaderParams skeletalMeshCompositeParams("SkeletalMeshVertexFactory<4>", plDepthCollectShaderParams);
+         const ShaderParams deferredLightShaderParams(
+             "DeferredLight Shader", shadersPathStr + "deferredLightPassVS.glsl", shadersPathStr + "deferredLightPassFS.glsl");
+         const ShaderParams fontRenderingShaderParams(
+             "FontRendering Shader", shadersPathStr + "fontVS.glsl", shadersPathStr + "fontFS.glsl");
 
-         CompositeShaderParams staticMeshParams(
-             "StaticMeshVertexFactory_DepthCollectShader", depthCollectShaderParams);
-         CompositeShaderParams skeletalMeshParams(
-             "SkeletalMeshVertexFactory<4>_DepthCollectShader", depthCollectShaderParams);
-
-         CompositeShaderParams staticMeshCompositeParams(
-             "StaticMeshVertexFactory_PointLightDepthCollectShader", plDepthCollectShaderParams);
-         CompositeShaderParams skeletalMeshCompositeParams(
-             "SkeletalMeshVertexFactory<4>_PointLightDepthCollectShader", plDepthCollectShaderParams);
-
-         mDepthCollectShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);
-         mDepthCollectShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>>(skeletalMeshParams);
-
-         mDepthCollectPointLightShaderSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>>(skeletalMeshCompositeParams);
-         mDepthCollectPointLightShaderNonSkeletal = Resources::CompositeShaderPool::GetInstance()->template GetOrAllocateResource<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>>(staticMeshCompositeParams);
-
-         ShaderParams deferredLightShaderParams(
-             "DeferredLight Shader", folderManager->GetShadersPath() + "deferredLightPassVS.glsl", folderManager->GetShadersPath() + "deferredLightPassFS.glsl");
-         m_deferredLightShader = ShaderPool::GetInstance()->template GetOrAllocateResource<DeferredLightShader>(deferredLightShaderParams);
-
-         ShaderParams fontRenderingShaderParams(
-             "FontRendering Shader", folderManager->GetShadersPath() + "fontVS.glsl", folderManager->GetShadersPath() + "fontFS.glsl");
-         m_fontShader = ShaderPool::GetInstance()->template GetOrAllocateResource<FontRenderingShader>(fontRenderingShaderParams);
+         mDepthCollectShaderNonSkeletal = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, DepthCollectShader>>(staticMeshParams);
+         mDepthCollectShaderSkeletal = std::make_shared<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, DepthCollectShader>>(skeletalMeshParams);
+         mDepthCollectPointLightShaderSkeletal = std::make_shared<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>>(skeletalMeshCompositeParams);
+         mDepthCollectPointLightShaderNonSkeletal = std::make_shared<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>>(staticMeshCompositeParams);
+         m_deferredLightShader = std::make_shared<DeferredLightShader>(deferredLightShaderParams);
+         m_fontShader = std::make_shared<FontRenderingShader>(fontRenderingShaderParams);
       }
 
       DeferredShadingSceneRenderer::~DeferredShadingSceneRenderer()
       {
          LogInfo("DeferredShadingSceneRenderer::dctor");
+
+         mDepthCollectShaderNonSkeletal->CleanUp();
+         mDepthCollectShaderSkeletal->CleanUp();
+         mDepthCollectPointLightShaderSkeletal->CleanUp();
+         mDepthCollectPointLightShaderNonSkeletal->CleanUp();
+         m_deferredLightShader->CleanUp();
+         m_fontShader->CleanUp();
       }
 
       void DeferredShadingSceneRenderer::PostLevelInit()
@@ -862,7 +867,10 @@ namespace Graphics
                }
 
 #if DEBUG
-               // DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+               if (bRenderDebugPhysicsData)
+               {
+                  DebugRenderPhysics(sceneView->GetCameraProxy()->GetViewMatrix(), cameraProxy->GetProjectionMatrix());
+               }
 #endif
             }
          }
@@ -1408,6 +1416,8 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
+         RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
+         renderState.BindRenderState();
          // todo: delete this crap and use buffers =\
 
          const auto &physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();

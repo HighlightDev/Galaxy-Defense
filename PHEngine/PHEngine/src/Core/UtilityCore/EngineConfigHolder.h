@@ -9,36 +9,37 @@ namespace EngineUtility
 {
     struct EngineConfig
     {
-        size_t MaxSkeletBones = 0;
+        size_t MaxSkeletBones{0};
 
-        size_t MaxDirLightCount = 0;
-        size_t MaxDirLightShadowMapCount = 0;
-        size_t MaxPointLightCount = 0;
-        size_t MaxPointLightShadowMapCount = 0;
-        size_t MaxSpotlightCount = 0;
-        size_t MaxSpotlightShadowMapCount = 0;
+        size_t MaxDirLightCount{0};
+        size_t MaxDirLightShadowMapCount{0};
+        size_t MaxPointLightCount{0};
+        size_t MaxPointLightShadowMapCount{0};
+        size_t MaxSpotlightCount{0};
+        size_t MaxSpotlightShadowMapCount{0};
 
-        size_t DirLightPCFSamplesCount = 0;
-        size_t PointLightPCFSamplesCount = 0;
-        size_t SpotlightPCFSamplesCount = 0;
+        size_t DirLightPCFSamplesCount{0};
+        size_t PointLightPCFSamplesCount{0};
+        size_t SpotlightPCFSamplesCount{0};
 
-        float ShadowOrthoProjectionHalfExtent = 0.0f;
-        float ShadowMapBiasDirLight = 0.0f;
-        float ShadowMapBiasPointLight = 0.0f;
-        float ShadowMapBiasSpotlight = 0.0f;
+        float ShadowOrthoProjectionHalfExtent{0.0f};
+        float ShadowMapBiasDirLight{0.0f};
+        float ShadowMapBiasPointLight{0.0f};
+        float ShadowMapBiasSpotlight{0.0f};
 
-        bool IsHdrEnabled = false;
-        float HdrExposureValue = 1.0f;
+        bool IsHdrEnabled{false};
+        float HdrExposureValue{1.0f};
 
-        bool IsBloomEnabled = false;
-        std::string BloomQualityName = "";
+        bool IsBloomEnabled{false};
+        std::string BloomQualityName{""};
 
-        size_t MaxFontCharactersCount = 0;
+        size_t MaxFontCharactersCount{0};
 
-        std::vector<std::string> FontsVector = std::vector<std::string>();
+        std::vector<std::string> FontsVector;
 
 #ifdef DEBUG
-        bool EnableAmbientMusic = true;
+        bool EnableAmbientMusic{true};
+        bool RenderDebugPhysicsData{false};
 #endif
     };
 

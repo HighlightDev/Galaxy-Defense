@@ -11,98 +11,139 @@ namespace EngineCore
        : public PropertyBinding
    {
    private:
-      std::shared_ptr<EngineObjectProperty<std::string>> SrcName;
-      std::shared_ptr<EngineObjectProperty<std::string>> DstName;
+      std::weak_ptr<EngineObjectProperty<std::string>> SrcNameWp;
+      std::weak_ptr<EngineObjectProperty<std::string>> DstNameWp;
 
-      std::shared_ptr<EngineObjectProperty<float>> SrcTime;
-      std::shared_ptr<EngineObjectProperty<float>> DstTime;
+      std::weak_ptr<EngineObjectProperty<float>> SrcTimeWp;
+      std::weak_ptr<EngineObjectProperty<float>> DstTimeWp;
 
-      std::shared_ptr<EngineObjectProperty<bool>> bTranstitionEnabled;
-      std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
+      std::weak_ptr<EngineObjectProperty<bool>> bTranstitionEnabledWp;
+      std::weak_ptr<EngineObjectProperty<float>> TransitionValueWp;
 
    public:
       AnimationPropertyBinding(const std::string &bindingName)
           : PropertyBinding(bindingName),
-            SrcName(),
-            DstName(),
-            SrcTime(),
-            DstTime(),
-            bTranstitionEnabled(),
-            TransitionValue()
+            SrcNameWp(),
+            DstNameWp(),
+            SrcTimeWp(),
+            DstTimeWp(),
+            bTranstitionEnabledWp(),
+            TransitionValueWp()
       {
       }
 
       void SetSrcName(const std::string &name)
       {
          assert(bPropertyConnected);
-         SrcName->SetValue(name);
+         if (const auto &propertySp = SrcNameWp.lock())
+         {
+            propertySp->SetValue(name);
+         }
       }
 
       void SetDstName(const std::string &name) const
       {
          assert(bPropertyConnected);
-         DstName->SetValue(name);
+         if (const auto &propertySp = DstNameWp.lock())
+         {
+            propertySp->SetValue(name);
+         }
       }
 
       void SetSrcTime(const float value)
       {
          assert(bPropertyConnected);
-         SrcTime->SetValue(value);
+         if (const auto &propertySp = SrcTimeWp.lock())
+         {
+            propertySp->SetValue(value);
+         }
       }
 
       void SetDstTime(const float value)
       {
          assert(bPropertyConnected);
-         DstTime->SetValue(value);
+         if (const auto &propertySp = DstTimeWp.lock())
+         {
+            propertySp->SetValue(value);
+         }
       }
 
       void SetIsTransitionEnabled(bool bEnabled)
       {
          assert(bPropertyConnected);
-         bTranstitionEnabled->SetValue(bEnabled);
+         if (const auto &propertySp = bTranstitionEnabledWp.lock())
+         {
+            propertySp->SetValue(bEnabled);
+         }
       }
 
       void SetTransitionValue(float transitionValue)
       {
          assert(bPropertyConnected);
-         TransitionValue->SetValue(transitionValue);
+         if (const auto &propertySp = TransitionValueWp.lock())
+         {
+            propertySp->SetValue(transitionValue);
+         }
       }
 
       std::string GetSrcName() const
       {
          assert(bPropertyConnected);
-         return SrcName->GetValue();
+         if (const auto &propertySp = SrcNameWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return "";
       }
 
       std::string GetDstName() const
       {
          assert(bPropertyConnected);
-         return DstName->GetValue();
+         if (const auto &propertySp = DstNameWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return "";
       }
 
       float GetSrcTime() const
       {
          assert(bPropertyConnected);
-
-         return SrcTime->GetValue();
+         if (const auto &propertySp = SrcTimeWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return 0.0f;
       }
 
       float GetDstTime() const
       {
          assert(bPropertyConnected);
-         return DstTime->GetValue();
+         if (const auto &propertySp = DstTimeWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return 0.0f;
       }
 
       bool GetIsTransitionEnabled() const
       {
          assert(bPropertyConnected);
-         return bTranstitionEnabled->GetValue();
+         if (const auto &propertySp = bTranstitionEnabledWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return 0.0f;
       }
 
       float GetTransitionValue() const
       {
          assert(bPropertyConnected);
-         return TransitionValue->GetValue();
+         if (const auto &propertySp = TransitionValueWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return 0.0f;
       }
 
       void SetBindingProperties(const std::shared_ptr<EngineObjectProperty<std::string>> &srcName,
@@ -112,12 +153,12 @@ namespace EngineCore
                                 const std::shared_ptr<EngineObjectProperty<bool>> &isTransitionEnabled,
                                 const std::shared_ptr<EngineObjectProperty<float>> &transitionValue)
       {
-         SrcName = srcName;
-         DstName = dstName;
-         SrcTime = srcTime;
-         DstTime = dstTime;
-         bTranstitionEnabled = isTransitionEnabled;
-         TransitionValue = transitionValue;
+         SrcNameWp = srcName;
+         DstNameWp = dstName;
+         SrcTimeWp = srcTime;
+         DstTimeWp = dstTime;
+         bTranstitionEnabledWp = isTransitionEnabled;
+         TransitionValueWp = transitionValue;
 
          bPropertyConnected = true;
       }

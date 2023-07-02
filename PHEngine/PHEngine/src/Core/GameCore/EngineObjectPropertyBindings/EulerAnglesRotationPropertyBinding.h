@@ -14,31 +14,39 @@ namespace EngineCore
        : public PropertyBinding
    {
    private:
-      std::shared_ptr<EngineObjectProperty<glm::vec3>> mGoProperty;
+      std::weak_ptr<EngineObjectProperty<glm::vec3>> mGoPropertyWp;
 
    public:
       EulerAnglesRotationPropertyBinding(const std::string &bindingName)
-          : PropertyBinding(bindingName), mGoProperty()
+          : PropertyBinding(bindingName),
+            mGoPropertyWp()
       {
       }
 
       void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<glm::vec3>> &engineGoProperty)
       {
          assert(engineGoProperty);
-         mGoProperty = engineGoProperty;
+         mGoPropertyWp = engineGoProperty;
          bPropertyConnected = true;
       }
 
       void SetValue(const glm::vec3 &value)
       {
          assert(bPropertyConnected);
-         mGoProperty->SetValue(value);
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            propertySp->SetValue(value);
+         }
       }
 
       glm::vec3 GetValue() const
       {
          assert(bPropertyConnected);
-         return mGoProperty->GetValue();
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return glm::vec3();
       }
 
       eEnginePropertyBindingType GetBindingType() const override

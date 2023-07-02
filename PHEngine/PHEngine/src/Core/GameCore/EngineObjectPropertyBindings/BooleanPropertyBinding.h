@@ -6,38 +6,45 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 
-namespace EngineCore {
+namespace EngineCore
+{
 
    struct BooleanPropertyBinding
-      : public PropertyBinding
+       : public PropertyBinding
    {
    private:
-      
-      std::shared_ptr<EngineObjectProperty<bool>> mGoProperty;
+      std::weak_ptr<EngineObjectProperty<bool>> mGoPropertyWp;
 
    public:
-
-      BooleanPropertyBinding(const std::string& bindingName)
-         : PropertyBinding(bindingName)
-         , mGoProperty()
+      BooleanPropertyBinding(const std::string &bindingName)
+          : PropertyBinding(bindingName), mGoPropertyWp()
       {
       }
 
-      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<bool>>& gameObjectProperty)
+      void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<bool>> &gameObjectProperty)
       {
          assert(gameObjectProperty);
-         mGoProperty = gameObjectProperty;
+         mGoPropertyWp = gameObjectProperty;
          bPropertyConnected = true;
       }
 
-      void SetValue(const bool value) {
+      void SetValue(const bool value)
+      {
          assert(bPropertyConnected);
-         mGoProperty->SetValue(value);
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            propertySp->SetValue(value);
+         }
       }
 
-      bool GetValue() const {
+      bool GetValue() const
+      {
          assert(bPropertyConnected);
-         return mGoProperty->GetValue();
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return false;
       }
 
       eEnginePropertyBindingType GetBindingType() const override

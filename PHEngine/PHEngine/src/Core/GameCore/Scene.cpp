@@ -670,12 +670,19 @@ namespace EngineCore
 
    void Scene::UnloadScene()
    {
-      mUiHandler->CleanUp(); // Unload Ui
-
+      UnloadUi();
       UnregisterMainCamera();
       UnregisterAllCameras();
+      UnloadActors();
+   }
 
-      // Unload main scene objects
+   void Scene::UnloadUi()
+   {
+      mUiHandler->CleanUp();
+   }
+
+   void Scene::UnloadActors()
+   {
       for (const auto &actor : mActors)
       {
          actor->CleanUp();

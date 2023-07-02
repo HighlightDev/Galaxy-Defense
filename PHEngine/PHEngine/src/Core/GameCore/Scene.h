@@ -198,6 +198,10 @@ namespace EngineCore
 
    private:
       void RegisterComponentSceneProxy(const std::shared_ptr<Component> &component);
+
+      void UnloadUi();
+
+      void UnloadActors();
    };
 
 }

@@ -64,6 +64,11 @@ namespace EngineCore
 
    void Actor::CleanUp()
    {
+      for (const auto& tweener : mTweeners)
+      {
+         tweener->CleanUp();
+      }
+
       for (const auto& component : m_allComponents)
       {
          component->CleanUp();
@@ -497,7 +502,7 @@ namespace EngineCore
       auto it = std::find_if(mTweeners.begin(), mTweeners.end(), [=](const auto &tweener)
                              { return tweener->GetTweenerName() == newTweener->GetTweenerName(); });
       assert(it == mTweeners.end());
-      newTweener->SetParentActor(this);
+      newTweener->SetParentActor(shared_from_this());
       mTweeners.emplace_back(newTweener);
    }
 

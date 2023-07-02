@@ -76,6 +76,7 @@ namespace EngineUtility
             std::make_pair("bloom_quality",                         std::function([=](const std::string &valueStr) { mEngineConfig.BloomQualityName                 = valueStr; })),
 #ifdef DEBUG
             std::make_pair("debug_enable_ambient_music",            std::function([=](const std::string &valueStr) { mEngineConfig.EnableAmbientMusic               = parseBool(valueStr); })),
+            std::make_pair("render_debug_physics_data",             std::function([=](const std::string &valueStr) { mEngineConfig.RenderDebugPhysicsData           = parseBool(valueStr); })),
 #endif
             std::make_pair("fonts",                                 std::function([=](const std::string &valueStr) { mEngineConfig.FontsVector                      = parseStringVector(valueStr); }))
         };

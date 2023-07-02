@@ -20,7 +20,7 @@ namespace Graphics
          CompositeShaderParams(const std::string &shaderName, const ShaderParams &shaderParams)
              : mShaderParams(shaderParams),
                mShaderName(shaderName),
-               HASH(EngineCore::Hash(shaderName))
+               HASH(EngineCore::Hash(shaderName + "_" + shaderParams.ShaderName))
          {
          }
 

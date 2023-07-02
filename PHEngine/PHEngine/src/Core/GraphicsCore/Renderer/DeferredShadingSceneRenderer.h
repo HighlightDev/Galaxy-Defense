@@ -91,6 +91,7 @@ namespace Graphics
          bool bPlanarReflectionProxiesDirty;
 
 #if DEBUG
+         bool bRenderDebugPhysicsData{false};
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
@@ -230,6 +231,8 @@ namespace Graphics
 
       private:
          void Initialize();
+
+         void InitializeCoreShaders();
 
          void RegisterUiCanvasProxy(const std::shared_ptr<UiCanvasSceneProxy> &canvasSceneProxy);
 

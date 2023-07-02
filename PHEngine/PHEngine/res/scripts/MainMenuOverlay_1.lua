@@ -65,18 +65,34 @@ function MainMenuOverlay_1:new(host)
     local totalButtonMarginHeight = buttonsMarginCount * buttonVerticalMarginHeight;
     buttonHeight = (mainMenuOverlayHeight - totalButtonMarginHeight) / buttonsCount;
 
-    local continueButton = UiRectangle:new(host)
-    mainMenuOverlay_1:addWidget(continueButton)
-    continueButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    local newGameButton = UiRectangle:new(host)
+    mainMenuOverlay_1:addWidget(newGameButton)
+    newGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            continueButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            newGameButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            continueButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            newGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        end
+    end)
+    newGameButton:setOnMouseInputClickedCallback(function ()
+        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "FirstLevel")
+    end)
+
+    local newGameButtonLabel = UiLabel:new(host, "nimbus_mono")
+    mainMenuOverlay_1:addWidget(newGameButtonLabel)
+
+    local selectLvlButton = UiRectangle:new(host)
+    mainMenuOverlay_1:addWidget(selectLvlButton)
+    selectLvlButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
+            selectLvlButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+        else
+            selectLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
 
-    local continueButtonLabel = UiLabel:new(host, "nimbus_mono")
-    mainMenuOverlay_1:addWidget(continueButtonLabel)
+    local selectLvlButtonLabel = UiLabel:new(host, "nimbus_mono")
+    mainMenuOverlay_1:addWidget(selectLvlButtonLabel)
 
     local settingsButton = UiRectangle:new(host)
     mainMenuOverlay_1:addWidget(settingsButton)
@@ -90,22 +106,6 @@ function MainMenuOverlay_1:new(host)
 
     local settingsButtonLabel = UiLabel:new(host, "nimbus_mono")
     mainMenuOverlay_1:addWidget(settingsButtonLabel)
-
-    local exitToMainMenuButton = UiRectangle:new(host)
-    mainMenuOverlay_1:addWidget(exitToMainMenuButton)
-    exitToMainMenuButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
-        if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
-        else
-            exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
-        end
-    end)
-    exitToMainMenuButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "FirstLevel")
-    end)
-
-    local exitToMainMenuButtonLabel = UiLabel:new(host, "nimbus_mono")
-    mainMenuOverlay_1:addWidget(exitToMainMenuButtonLabel)
 
     local exitGameButton = UiRectangle:new(host)
     mainMenuOverlay_1:addWidget(exitGameButton)
@@ -139,41 +139,69 @@ function MainMenuOverlay_1:new(host)
         backgroundRect:setZOrder(1)
         backgroundRect:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        continueButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
-        continueButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+        newGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        newGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
-        continueButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+        newGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
             20)
-        continueButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
+        newGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
             buttonVerticalMarginHeight)
-        continueButton:setHeight(buttonHeight)
-        continueButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
-        continueButton:setZOrder(2)
-        continueButton:enableMouseInputReceiverBase(host)
-        continueButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        newGameButton:setHeight(buttonHeight)
+        newGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        newGameButton:setZOrder(2)
+        newGameButton:enableMouseInputReceiverBase(host)
+        newGameButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        continueButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, continueButton.widgetName)
-        continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            continueButton.widgetName)
-        continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            continueButton.widgetName)
-        continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, continueButton
+        newGameButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, newGameButton.widgetName)
+        newGameButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            newGameButton.widgetName)
+        newGameButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            newGameButton.widgetName)
+        newGameButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, newGameButton
             .widgetName)
-        continueButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            continueButton.widgetName)
-        continueButtonLabel:setText("Continue")
-        continueButtonLabel:setTextColorHexValue(0xFFFFFF)
-        continueButtonLabel:setFontSize(20.0)
-        continueButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        continueButtonLabel:setZOrder(3)
+        newGameButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            newGameButton.widgetName)
+        newGameButtonLabel:setText("New Game")
+        newGameButtonLabel:setTextColorHexValue(0xFFFFFF)
+        newGameButtonLabel:setFontSize(20.0)
+        newGameButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        newGameButtonLabel:setZOrder(3)
+
+        selectLvlButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+            20)
+        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+            20)
+        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
+            buttonVerticalMarginHeight)
+        selectLvlButton:setHeight(buttonHeight)
+        selectLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        selectLvlButton:setZOrder(2)
+        selectLvlButton:enableMouseInputReceiverBase(host)
+        selectLvlButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+
+        selectLvlButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, selectLvlButton.widgetName)
+        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            selectLvlButton.widgetName)
+        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            selectLvlButton.widgetName)
+        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, selectLvlButton
+            .widgetName)
+        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            selectLvlButton.widgetName)
+        selectLvlButtonLabel:setText("Select level")
+        selectLvlButtonLabel:setTextColorHexValue(0xFFFFFF)
+        selectLvlButtonLabel:setFontSize(20.0)
+        selectLvlButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        selectLvlButtonLabel:setZOrder(3)
 
         settingsButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
-        settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
-            20)
-        settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
-            20)
-        settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, continueButton.widgetName,
-            buttonVerticalMarginHeight)
+        settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            backgroundRect.widgetName, 20)
+        settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            backgroundRect.widgetName, 20)
+        settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
+            selectLvlButton.widgetName, buttonVerticalMarginHeight)
         settingsButton:setHeight(buttonHeight)
         settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         settingsButton:setZOrder(2)
@@ -185,8 +213,8 @@ function MainMenuOverlay_1:new(host)
             settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
             settingsButton.widgetName)
-        settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, settingsButton
-            .widgetName)
+        settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+            settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             settingsButton.widgetName)
         settingsButtonLabel:setText("Settings")
@@ -195,41 +223,13 @@ function MainMenuOverlay_1:new(host)
         settingsButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         settingsButtonLabel:setZOrder(3)
 
-        exitToMainMenuButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
-        exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            backgroundRect.widgetName, 20)
-        exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            backgroundRect.widgetName, 20)
-        exitToMainMenuButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            settingsButton.widgetName, buttonVerticalMarginHeight)
-        exitToMainMenuButton:setHeight(buttonHeight)
-        exitToMainMenuButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
-        exitToMainMenuButton:setZOrder(2)
-        exitToMainMenuButton:enableMouseInputReceiverBase(host)
-        exitToMainMenuButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
-
-        exitToMainMenuButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, exitToMainMenuButton.widgetName)
-        exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            exitToMainMenuButton.widgetName)
-        exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            exitToMainMenuButton.widgetName)
-        exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
-            exitToMainMenuButton.widgetName)
-        exitToMainMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            exitToMainMenuButton.widgetName)
-        exitToMainMenuButtonLabel:setText("Exit to main menu")
-        exitToMainMenuButtonLabel:setTextColorHexValue(0xFFFFFF)
-        exitToMainMenuButtonLabel:setFontSize(20.0)
-        exitToMainMenuButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        exitToMainMenuButtonLabel:setZOrder(3)
-
         exitGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
             20)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            exitToMainMenuButton.widgetName, buttonVerticalMarginHeight)
+            settingsButton.widgetName, buttonVerticalMarginHeight)
         exitGameButton:setHeight(buttonHeight)
         exitGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         exitGameButton:setZOrder(2)

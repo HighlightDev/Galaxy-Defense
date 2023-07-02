@@ -6,38 +6,45 @@
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 
-namespace EngineCore {
+namespace EngineCore
+{
 
    struct FloatPropertyBinding
-      : public PropertyBinding
+       : public PropertyBinding
    {
    private:
-      
-      std::shared_ptr<EngineObjectProperty<float>> mGoProperty;
+      std::weak_ptr<EngineObjectProperty<float>> mGoPropertyWp;
 
    public:
-
-      FloatPropertyBinding(const std::string& bindingName)
-         : PropertyBinding(bindingName)
-         , mGoProperty()
+      FloatPropertyBinding(const std::string &bindingName)
+          : PropertyBinding(bindingName), mGoPropertyWp()
       {
       }
 
       void SetEngineObjectProperty(const std::shared_ptr<EngineObjectProperty<float>> gameObjectProperty)
       {
          assert(gameObjectProperty);
-         mGoProperty = gameObjectProperty;
+         mGoPropertyWp = gameObjectProperty;
          bPropertyConnected = true;
       }
 
-      void SetValue(float value) {
+      void SetValue(float value)
+      {
          assert(bPropertyConnected);
-         mGoProperty->SetValue(value);
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            propertySp->SetValue(value);
+         }
       }
 
-      float GetValue() const {
+      float GetValue() const
+      {
          assert(bPropertyConnected);
-         return mGoProperty->GetValue();
+         if (const auto &propertySp = mGoPropertyWp.lock())
+         {
+            return propertySp->GetValue();
+         }
+         return 0.0f;
       }
 
       eEnginePropertyBindingType GetBindingType() const override

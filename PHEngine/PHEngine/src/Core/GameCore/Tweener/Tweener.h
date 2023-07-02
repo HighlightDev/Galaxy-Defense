@@ -8,16 +8,19 @@
 #include "Core/GameCore/Tweener/ITweenStateChangeNotifyable.h"
 
 #include <unordered_map>
+#include <optional>
 
 namespace EngineCore
 {
+   class Actor;
+
    class Tweener 
       : public ITickable
       , public ISerializable
    {
       std::vector<std::shared_ptr<State>> mMyAllStates;
 
-      class Actor* mParent = nullptr;
+      std::weak_ptr<Actor> mParentWp;
 
       std::string mTweenerName;
       
@@ -28,7 +31,7 @@ namespace EngineCore
 
       std::shared_ptr<State> mCurrentStateNode;
 
-      const StateTransition* mCurrentActiveStateTransition = nullptr;
+      std::optional<StateTransition> mCurrentActiveStateTransition{std::nullopt};
 
       std::unordered_map<std::string/*name of binding property*/, std::shared_ptr<PropertyBinding>> mPropertyBindings;
 
@@ -75,11 +78,13 @@ namespace EngineCore
 
       void InitRootState();
 
-      void SetParentActor(class Actor* parent);
+      void SetParentActor(const std::shared_ptr<Actor>& parent);
 
-      class Actor* GetParentActor() const;
+      std::weak_ptr<Actor> GetParentActorWp() const;
 
       void NotifyStateChangedObservers();
+
+      void CleanUp();
 
    private:
 

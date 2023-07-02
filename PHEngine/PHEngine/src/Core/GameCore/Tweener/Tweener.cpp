@@ -77,7 +77,7 @@ namespace EngineCore
 
    void Tweener::DoTranstionInstantly(const std::string &dstStateName)
    {
-      if (mCurrentActiveStateTransition)
+      if (mCurrentActiveStateTransition.has_value())
       {
          for (std::shared_ptr<ITweenController> &controllerSp : CurrentActiveTransitionControllers)
          {
@@ -119,7 +119,7 @@ namespace EngineCore
       {
          assert(spFrom->GetStateName() == mCurrentStateNode->GetStateName());
 
-         mCurrentActiveStateTransition = &transition;
+         mCurrentActiveStateTransition = transition;
          mTransitionTime = 0.0f;
          mTransitionParameter = 0.0f;
          mTransitionDuration = transition.TransitionDuration;
@@ -161,8 +161,11 @@ namespace EngineCore
 
    void Tweener::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [=](const SerializeDataActor &actorData)
-                             { return actorData.ActorName == GetParentActor()->GetName(); });
+      const auto parentSp = GetParentActorWp().lock();
+      assert(parentSp);
+      auto it = std::find_if(dataContainer.Actors.begin(), dataContainer.Actors.end(), [parentName = parentSp->GetName()](const SerializeDataActor &actorData) {
+         return actorData.ActorName == parentName; 
+      });
       assert(it != dataContainer.Actors.end());
 
       std::shared_ptr<SerializeDataTweener> tweenerData = std::make_shared<SerializeDataTweener>();
@@ -186,14 +189,14 @@ namespace EngineCore
       mStateChangedObservers.emplace_back(observer);
    }
 
-   void Tweener::SetParentActor(Actor *parent)
+   void Tweener::SetParentActor(const std::shared_ptr<Actor>& parent)
    {
-      mParent = parent;
+      mParentWp = parent;
    }
 
-   Actor *Tweener::GetParentActor() const
+   std::weak_ptr<Actor> Tweener::GetParentActorWp() const
    {
-      return mParent;
+      return mParentWp;
    }
 
    void Tweener::SetTransitionValuesFinished(std::shared_ptr<State> newCurrentState)
@@ -201,7 +204,7 @@ namespace EngineCore
       mTransitionParameter = 1.0f;
       mTransitionTime = 0.0f;
       mCurrentStateNode = newCurrentState;
-      mCurrentActiveStateTransition = nullptr;
+      mCurrentActiveStateTransition = std::nullopt;
       bTransitionEnabled = false;
       mChangedStateName = newCurrentState->GetStateName();
       bIsStateChangedDirty = true;
@@ -219,6 +222,11 @@ namespace EngineCore
       }
    }
 
+   void Tweener::CleanUp()
+   {
+      // todo:
+   }
+
    std::shared_ptr<PropertyBinding> Tweener::GetPropertyBindingByName(const std::string &name) const
    {
       assert(mPropertyBindings.count(name));
@@ -234,7 +242,7 @@ namespace EngineCore
    void Tweener::Tick(const float deltaTime)
    {
       // process current transition
-      if (bTransitionEnabled && mCurrentActiveStateTransition)
+      if (bTransitionEnabled && mCurrentActiveStateTransition.has_value())
       {
          if (auto spDestination = mCurrentActiveStateTransition->StateDestination.lock())
          {
