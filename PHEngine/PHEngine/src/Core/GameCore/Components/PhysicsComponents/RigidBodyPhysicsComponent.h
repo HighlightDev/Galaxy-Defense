@@ -16,7 +16,7 @@ namespace EnginePhysics {
 
    public:
 
-      RigidBodyPhysicsComponent(const PhysicsComponentData& data);
+      RigidBodyPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data);
 
       ~RigidBodyPhysicsComponent() override;
 

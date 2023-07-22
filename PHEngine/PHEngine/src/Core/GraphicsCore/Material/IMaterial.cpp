@@ -7,11 +7,8 @@
 namespace Graphics
 {
 
-   IMaterial::IMaterial(const std::string& materialName, const std::string& materialShaderName)
-      : MaterialProxyId(0)
-      , MaterialName(materialName)
-      , MaterialShaderName(materialShaderName)
-      , MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
+   IMaterial::IMaterial(const std::string &materialName, const std::string &materialShaderName)
+       : MaterialProxyId(-1), MaterialName(materialName), MaterialShaderName(materialShaderName), MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
    {
    }
 
@@ -19,30 +16,44 @@ namespace Graphics
    {
    }
 
-   std::shared_ptr<MaterialProperty> IMaterial::GetMaterialPropertyByName(const std::string& propertyName) const
+   std::shared_ptr<MaterialProperty> IMaterial::GetMaterialPropertyByName(const std::string &propertyName) const
    {
-      auto propertyIt = std::find_if(mProperties.begin(), mProperties.end(), [&](const auto& property) {return property->GetPropertyName() == propertyName; });
+      auto propertyIt = std::find_if(mProperties.begin(), mProperties.end(), [&](const auto &property)
+                                     { return property->GetPropertyName() == propertyName; });
       assert(propertyIt != mProperties.end());
 
       return *propertyIt;
    }
 
-   IMaterial::eMaterialType IMaterial::GetMaterialType() const {
+   IMaterial::eMaterialType IMaterial::GetMaterialType() const
+   {
       return IMaterial::eMaterialType::STATIC;
    }
 
-   void IMaterial::PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue) {
+   void IMaterial::PushMaterialProperty(std::shared_ptr<MaterialProperty> propertyValue)
+   {
       mProperties.emplace_back(std::move(propertyValue));
    }
 
-   const std::vector<std::shared_ptr<MaterialProperty>>& IMaterial::GetProperties() const
+   const std::vector<std::shared_ptr<MaterialProperty>> &IMaterial::GetProperties() const
    {
       return mProperties;
    }
 
+   std::weak_ptr<MaterialProxy> IMaterial::GetMaterialProxyWp() const
+   {
+      return mMaterialProxyWp;
+   }
+
    std::shared_ptr<MaterialProxy> IMaterial::CreateMaterialProxy() const
    {
-      return std::make_shared<MaterialProxy>(this);
+      const auto &result = std::make_shared<MaterialProxy>(this);
+      return result;
+   }
+
+   void IMaterial::SetMaterialProxyWp(const std::shared_ptr<MaterialProxy> &materialProxy)
+   {
+      mMaterialProxyWp = materialProxy;
    }
 
    void IMaterial::SetIsEnabled(const bool bIsEnabled)

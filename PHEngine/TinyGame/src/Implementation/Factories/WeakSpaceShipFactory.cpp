@@ -57,7 +57,8 @@ namespace Game
         scene->AddActor(a_enemySpaceship);
 
         MaterialParser materialParser;
-        const auto &spaceshipPbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
+        const std::shared_ptr<IMaterial> &spaceshipPbs_mat = materialParser.ParseMaterialDescriptor("SpaceshipPBS.m");
+        scene->RegisterMaterialInstance(spaceshipPbs_mat);
 
         const std::string albedoName = "spaceship_albedo.jpg";
         const std::string normalName = "spaceship_normal.jpg";
@@ -85,21 +86,21 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap", roughness_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "uvScale", uvScale);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship.get(), "p_damageEffect", "damageTime");
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship, "p_damageEffect", "damageTime");
 
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "albedo_ice", albedo_ice_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "normalMap_ice", normal_ice_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "roughnessMap_ice", roughness_ice_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, "metallicMap_ice", metallic_ice_tex);
-        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship.get(), "p_freezingEffect", "freezingBlendValue");
+        MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship, "p_freezingEffect", "freezingBlendValue");
 
-        const MeshComponentData d_mesh("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
+        const auto d_mesh = std::make_shared<MeshComponentData>("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
                                        rotation, scale, "", spaceshipPbs_mat);
         const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_enemySpaceship->AddComponent(c_mesh);
 
-        MovementComponentData d_movement("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+        const auto d_movement = std::make_shared<MovementComponentData>("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(10.0f);
@@ -108,15 +109,16 @@ namespace Game
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-        PhysicsComponentData physData("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
+        const auto physData = std::make_shared<PhysicsComponentData>("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
         const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);;
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
-        const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
+        const std::shared_ptr<IMaterial> &particles_mat = materialParser.ParseMaterialDescriptor("OpaqueParticleMaterial.m");
+        scene->RegisterMaterialInstance(particles_mat);
         MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
 
-        ParticleSystemComponentData d_particle("c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), 100);
+        const auto d_particle = std::make_shared<ParticleSystemComponentData>("c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), 100);
         const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
         const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
@@ -156,19 +158,19 @@ namespace Game
         scene->AddActorController(std::make_shared<AiSpaceshipActorController>(a_enemySpaceship));
 
         const auto &uiComponentCreator = std::make_shared<UiComponentCreator<UiComponent>>();
-        const auto &c_uiComponent = scene->CreateComponent_GameThread(uiComponentCreator, ComponentData("c_uiComponent_" + enemyShipIndexStr));
+        const auto &c_uiComponent = scene->CreateComponent_GameThread(uiComponentCreator, std::make_shared<ComponentData>("c_uiComponent_" + enemyShipIndexStr));
         a_enemySpaceship->AddComponent(c_uiComponent);
 
         auto tweenerParser = std::make_unique<TweenerParser>();
         const auto movementTweener = tweenerParser->ParseTweenerDescriptor("spaceshipMove.tween");
         const auto &rotator_binding = movementTweener->GetPropertyBindingByName("b_rotator");
-        BindingAttachmentBuilder::SetAttachment(rootComponent.get(), rotator_binding.get(), "b_rotator");
+        BindingAttachmentBuilder::SetAttachment(rootComponent, rotator_binding, "b_rotator");
         a_enemySpaceship->AttachTweener(movementTweener);
         
         tweenerParser = std::make_unique<TweenerParser>();
         const auto lifecycleTweener = tweenerParser->ParseTweenerDescriptor("weakSpaceshipLifecycle.tween");
         const auto& spaceship_enabled_binding = lifecycleTweener->GetPropertyBindingByName("b_isSpaceshipEnabled");
-        BindingAttachmentBuilder::SetAttachment(a_enemySpaceship.get(), spaceship_enabled_binding.get(), "p_isEnabled");
+        BindingAttachmentBuilder::SetAttachment(a_enemySpaceship, spaceship_enabled_binding, "p_isEnabled");
         a_enemySpaceship->AttachTweener(lifecycleTweener);
 
         return a_enemySpaceship;

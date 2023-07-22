@@ -28,14 +28,15 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
             std::shared_ptr<Skin> skin = nullptr;
 
-            const MeshComponentData &mData = static_cast<const MeshComponentData &>(data);
-            assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData.GetMeshComponentDataType());
+            const auto &mData = std::static_pointer_cast<MeshComponentData>(data);
+            assert(eMeshComponentDataType::STATIC_OR_SKELETAL_MESH == mData->GetMeshComponentDataType());
 
-            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
+            const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
+            assert(materialProxy);
 
             const ShaderParams shaderParams(
                 "DeferredNonSkeletalBase Shader",
@@ -61,7 +62,7 @@ namespace EngineCore
                     "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
-                                                                StaticMeshRenderData(mData.m_pathToMesh,
+                                                                StaticMeshRenderData(mData->m_pathToMesh,
                                                                                      staticMeshShader,
                                                                                      planarReflectionShader,
                                                                                      materialProxy, true));

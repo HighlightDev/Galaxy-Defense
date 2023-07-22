@@ -25,7 +25,7 @@ namespace EnginePhysics
       bool bIsTransformationDirty;
 
    public:
-      PhysicsComponent(const PhysicsComponentData &data);
+      PhysicsComponent(const std::shared_ptr<PhysicsComponentData> &data);
 
       ~PhysicsComponent() override;
 

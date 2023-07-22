@@ -7,8 +7,7 @@ namespace EngineCore
 {
    struct ComponentData;
 
-   class InputComponent :
-      public Component
+   class InputComponent : public Component
    {
 
       KeyboardBindings m_keyboardBindings;
@@ -16,8 +15,7 @@ namespace EngineCore
       MouseBindings m_mouseBindings;
 
    public:
-
-      InputComponent(const ComponentData& componentData);
+      InputComponent(const std::shared_ptr<ComponentData> &componentData);
 
       virtual ~InputComponent();
 
@@ -26,15 +24,15 @@ namespace EngineCore
       // Game thread tick
       void Tick(const float deltaTime) override;
 
-      void CollectDataForSerialization(SerializeDataContainer& dataContainer) override;
+      void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
       std::vector<eKeyActionType> GetReleasedKeyActions();
 
       std::vector<eKeyActionType> GetPressedKeyActions();
 
-      KeyboardBindings& GetKeyboardBindings();
+      KeyboardBindings &GetKeyboardBindings();
 
-      MouseBindings& GetMouseBindings();
+      MouseBindings &GetMouseBindings();
 
       void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
 

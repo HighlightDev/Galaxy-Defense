@@ -710,10 +710,9 @@ namespace Graphics
          RenderState<DepthState<false, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<true, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          glDepthMask(false);
-         
-         std::sort(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [](const auto& left, const auto& right) {
-            return left->GetCanvasZOrder() < right->GetCanvasZOrder(); 
-         });
+
+         std::sort(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [](const auto &left, const auto &right)
+                   { return left->GetCanvasZOrder() < right->GetCanvasZOrder(); });
 
          for (const auto &canvas : mUiCanvasProxies)
          {
@@ -911,7 +910,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<PrimitiveSceneProxy> DeferredShadingSceneRenderer::GetPrimitiveProxyByProxyId(const size_t proxyId) const
+      std::shared_ptr<PrimitiveSceneProxy> DeferredShadingSceneRenderer::GetPrimitiveProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<PrimitiveSceneProxy> result = nullptr;
 
@@ -1024,7 +1023,7 @@ namespace Graphics
             MaterialProxiesVector.emplace_back(materialProxy); });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentEnable_OnRenderThread(const int32_t primitiveSceneProxyIndex, const int32_t creatorObjectId, const uint64_t functionId, const bool bEnabled)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, bEnabled]()
                                                 {
@@ -1033,8 +1032,8 @@ namespace Graphics
                primitiveSp->SetEnabled(bEnabled); });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
-                                                                                           const uint64_t creatorObjectId,
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                                                           const int32_t creatorObjectId,
                                                                                            const uint64_t functionId,
                                                                                            const bool visibility)
       {
@@ -1045,8 +1044,8 @@ namespace Graphics
             primitiveSp->SetVisibility(visibility); });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
-                                                                                               const uint64_t creatorObjectId,
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                                                               const int32_t creatorObjectId,
                                                                                                const uint64_t functionId,
                                                                                                const int32_t sortOrderValue)
       {
@@ -1057,8 +1056,11 @@ namespace Graphics
             primitiveSp->SetSortOrderValue(sortOrderValue); });
       }
 
-      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
-                                                                                          const uint64_t functionId, const glm::mat4 &newRelativeMatrix, const BoundingBox3D &newTransformedBoundingBox)
+      void DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                                                          const int32_t creatorObjectId,
+                                                                                          const uint64_t functionId,
+                                                                                          const glm::mat4 &newRelativeMatrix,
+                                                                                          const BoundingBox3D &newTransformedBoundingBox)
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, newRelativeMatrix, newTransformedBoundingBox]()
                                                 {
@@ -1069,7 +1071,7 @@ namespace Graphics
       }
 
       void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
-                                                                                      const uint64_t creatorObjectId,
+                                                                                      const int32_t creatorObjectId,
                                                                                       const uint64_t functionId,
                                                                                       const glm::mat4 &newRelativeMatrix)
       {
@@ -1082,7 +1084,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex)
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveSceneProxyIndex]()
@@ -1100,7 +1102,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]()
@@ -1109,7 +1111,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread(const size_t lightSceneProxyIndex)
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxyIndex]()
@@ -1127,7 +1129,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, creatorObjectId, functionId, [this]()
@@ -1157,7 +1159,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy)
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveComponent, primitiveSceneProxy]()
@@ -1171,7 +1173,7 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread(const std::shared_ptr<LightComponent> &lightComponent, const std::shared_ptr<LightSceneProxy> &lightSceneProxy)
       {
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyAdded_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightComponent, lightSceneProxy]()
@@ -1186,7 +1188,7 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::RegisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::RegisterText_OnRenderThread");
 
          const auto textFieldProxy = TextFieldProxy::CreateTextFieldProxyInstance(
@@ -1210,7 +1212,7 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread => font name = ", textField->GetFontName(), " textFieldId = ", textField->GetTextFieldId());
 
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::UnregisterText_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, fontName = textField->GetFontName(), textFieldId = textField->GetTextFieldId()]()
@@ -1221,7 +1223,7 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread => UId = ", uiCanvasProxy->GetUiItemUId());
 
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiCanvasProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, uiCanvas, uiCanvasProxy]()
@@ -1241,7 +1243,7 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread => UId = ", uiSceneProxy->GetUiItemUId(), " canvasUId = ", canvasUId);
 
-         static constexpr uint64_t creatorObjectId = 0;
+         static constexpr int32_t creatorObjectId = 0;
          static constexpr uint64_t functionId = Hash64_CT("DeferredShadingSceneRenderer::RegisterUiSceneProxy_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [=]()
@@ -1357,7 +1359,7 @@ namespace Graphics
 
          if (mFontHandler->IsTextSubscribedOnSizeChangeUpdate(fontName, textFieldProxyId))
          {
-            static constexpr uint64_t creatorObjectId = 0;
+            static constexpr int32_t creatorObjectId = 0;
             static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::TextChanged");
 
             if (const auto &sceneSp = m_interThreadMgr.GetSceneWP().lock())

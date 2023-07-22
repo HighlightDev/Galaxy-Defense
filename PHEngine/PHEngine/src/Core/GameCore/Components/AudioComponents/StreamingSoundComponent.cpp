@@ -5,8 +5,8 @@
 
 namespace EngineCore
 {
-    StreamingSoundComponent::StreamingSoundComponent(const ComponentData &data)
-        : Component(data.EngineObjectName),
+    StreamingSoundComponent::StreamingSoundComponent(const std::shared_ptr<ComponentData> &data)
+        : Component(data->EngineObjectName),
           mStreamingSoundSource()
     {
     }

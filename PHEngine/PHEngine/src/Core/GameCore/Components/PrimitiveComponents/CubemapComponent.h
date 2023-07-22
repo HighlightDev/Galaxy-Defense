@@ -25,7 +25,7 @@ namespace EngineCore
 
    public:
 
-      CubemapComponent(const CubemapComponentData& data, const CubemapRenderData& renderData);
+      CubemapComponent(const std::shared_ptr<CubemapComponentData>& data, const CubemapRenderData& renderData);
 
       ~CubemapComponent() override;
 

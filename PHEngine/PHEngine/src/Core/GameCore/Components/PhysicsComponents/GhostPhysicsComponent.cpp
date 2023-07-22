@@ -11,7 +11,7 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   GhostPhysicsComponent::GhostPhysicsComponent(const PhysicsComponentData &data)
+   GhostPhysicsComponent::GhostPhysicsComponent(const std::shared_ptr<PhysicsComponentData> &data)
        : PhysicsComponent(data),
          m_HitBoxScale(std::make_shared<EngineObjectProperty<glm::vec3>>(glm::vec3(1.0f),
                                                                              "p_hitBoxScale",

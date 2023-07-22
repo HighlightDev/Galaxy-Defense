@@ -57,17 +57,17 @@ namespace Thread
       return mLuaScriptProcessor;
    }
 
-   void InterThreadCommunicationMgr::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback)
+   void InterThreadCommunicationMgr::ExecuteOnRenderThread(eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback)
    {
       ProcessPushRenderThreadJob(policy, Job(creatorObjectId, functionId, gameThreadJobCallback));
    }
 
-   void InterThreadCommunicationMgr::ExecuteOnGameThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback)
+   void InterThreadCommunicationMgr::ExecuteOnGameThread(eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback)
    {
       ProcessPushGameThreadJob(policy, Job(creatorObjectId, functionId, renderThreadJobCallback));
    }
 
-   void InterThreadCommunicationMgr::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback)
+   void InterThreadCommunicationMgr::ExecuteOnLuaThread(eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback)
    {
       ProcessPushLuaThreadJob(policy, Job(creatorObjectId, functionId, luaThreadJobCallback));
    }

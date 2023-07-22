@@ -206,7 +206,7 @@ namespace EngineCore
                {
                   auto gameObject = sceneSp->GetEngineObjectByName(bindingData.EngineObjectName);
                   const auto &binding = actorTweener->GetPropertyBindingByName(bindingData.BindingName);
-                  BindingAttachmentBuilder::SetAttachment(gameObject, binding.get(), bindingData.EngineObjectPropertyName);
+                  BindingAttachmentBuilder::SetAttachment(gameObject, binding, bindingData.EngineObjectPropertyName);
                }
 
                auto actorIt = std::find_if(sceneSp->GetActors().begin(), sceneSp->GetActors().end(), [&](const std::shared_ptr<Actor> actor)

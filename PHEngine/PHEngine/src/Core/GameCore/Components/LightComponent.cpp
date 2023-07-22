@@ -8,8 +8,8 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
-   LightComponent::LightComponent(const LightComponentData &data)
-       : SceneComponent(data.EngineObjectName, data.Translation, data.Rotation, data.Scale), mLightRenderData()
+   LightComponent::LightComponent(const std::shared_ptr<LightComponentData> &data)
+       : SceneComponent(data->EngineObjectName, data->Translation, data->Rotation, data->Scale), mLightRenderData()
    {
    }
 

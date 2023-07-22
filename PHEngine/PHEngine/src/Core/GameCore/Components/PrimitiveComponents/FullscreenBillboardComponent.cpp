@@ -8,7 +8,7 @@
 namespace EngineCore
 {
 
-   FullscreenBillboardComponent::FullscreenBillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData)
+   FullscreenBillboardComponent::FullscreenBillboardComponent(const std::shared_ptr<BillboardComponentData> &data, const BillboardRenderData &renderData)
        : BillboardComponent(data, renderData)
    {
    }

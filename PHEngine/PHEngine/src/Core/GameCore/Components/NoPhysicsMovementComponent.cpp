@@ -7,7 +7,7 @@
 namespace EngineCore
 {
 
-   NoPhysicsMovementComponent::NoPhysicsMovementComponent(const MovementComponentData &movementComponentData)
+   NoPhysicsMovementComponent::NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData)
        : MovementComponent(movementComponentData), m_actorRootComponent()
    {
       mCurrentSpeed = 0.01f;

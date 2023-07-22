@@ -20,7 +20,7 @@ namespace Game
     public:
         virtual eModifierType GetModifierType() const = 0;
 
-        virtual uint64_t CreatorObjectId() const = 0;
+        virtual int32_t CreatorObjectId() const = 0;
 
         virtual bool IsExpired() const = 0;
 

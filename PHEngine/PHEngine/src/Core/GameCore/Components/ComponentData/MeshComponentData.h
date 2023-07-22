@@ -22,7 +22,7 @@ namespace EngineCore
                         const glm::vec3 &rotation,
                         const glm::vec3 &scale,
                         const std::string &mLuaScriptRelPath,
-                        Graphics::IMaterial *material)
+                        const std::shared_ptr<Graphics::IMaterial> &material)
           : ComponentData(gameObjectName),
             m_pathToMesh(pathToMesh),
             m_translation(translation),
@@ -39,7 +39,7 @@ namespace EngineCore
       glm::vec3 m_scale;
       std::string m_luaScriptPath;
 
-      Graphics::IMaterial *m_material;
+      std::shared_ptr<Graphics::IMaterial> m_material;
 
       virtual ~MeshComponentData() {}
 
@@ -55,7 +55,7 @@ namespace EngineCore
                                         const glm::vec3 &rotation,
                                         const glm::vec3 &scale,
                                         const std::string &mLuaScriptRelPath,
-                                        Graphics::IMaterial *material)
+                                        const std::shared_ptr<Graphics::IMaterial> &material)
           : MeshComponentData(gameObjectName,
                               "",
                               translation,

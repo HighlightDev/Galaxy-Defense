@@ -19,22 +19,22 @@ namespace EngineCore
 
    struct BindingAttachmentBuilder
    {
-      static void SetAttachment(const EngineObject *gameObject, PropertyBinding *binding, const std::string &gameObjectPropertyName)
+      static void SetAttachment(const std::shared_ptr<EngineObject> &gameObjectSp, const std::shared_ptr<PropertyBinding> &bindingSp, const std::string &gameObjectPropertyName)
       {
-         binding->EngineObjectName = gameObject->GetEngineObjectName();
-         binding->EngineObjectPropertyName = gameObjectPropertyName;
+         bindingSp->EngineObjectName = gameObjectSp->GetEngineObjectName();
+         bindingSp->EngineObjectPropertyName = gameObjectPropertyName;
 
-         switch (binding->GetBindingType())
+         switch (bindingSp->GetBindingType())
          {
          case eEnginePropertyBindingType::Animation:
          {
-            const auto animationBinding = static_cast<AnimationPropertyBinding *>(binding);
-            auto propSrcTime = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("SrcAnimTime"));
-            auto propDstTime = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("DstAnimTime"));
-            auto propTransitionValue = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName("AnimTransitionValue"));
-            auto propIsTransition = CastBasePropertyToType<bool>(gameObject->GetEnginePropertyByName("bAnimTransitionEnabled"));
-            auto propSrcName = CastBasePropertyToType<std::string>(gameObject->GetEnginePropertyByName("SrcAnimName"));
-            auto propDstName = CastBasePropertyToType<std::string>(gameObject->GetEnginePropertyByName("DstAnimName"));
+            const auto animationBinding = std::static_pointer_cast<AnimationPropertyBinding>(bindingSp);
+            auto propSrcTime = CastBasePropertyToType<float>(gameObjectSp->GetEnginePropertyByName("SrcAnimTime").lock());
+            auto propDstTime = CastBasePropertyToType<float>(gameObjectSp->GetEnginePropertyByName("DstAnimTime").lock());
+            auto propTransitionValue = CastBasePropertyToType<float>(gameObjectSp->GetEnginePropertyByName("AnimTransitionValue").lock());
+            auto propIsTransition = CastBasePropertyToType<bool>(gameObjectSp->GetEnginePropertyByName("bAnimTransitionEnabled").lock());
+            auto propSrcName = CastBasePropertyToType<std::string>(gameObjectSp->GetEnginePropertyByName("SrcAnimName").lock());
+            auto propDstName = CastBasePropertyToType<std::string>(gameObjectSp->GetEnginePropertyByName("DstAnimName").lock());
 
             animationBinding->SetBindingProperties(propSrcName,
                                                    propDstName,
@@ -46,34 +46,34 @@ namespace EngineCore
          }
          case eEnginePropertyBindingType::FloatScalar:
          {
-            const auto floatBinding = static_cast<FloatPropertyBinding *>(binding);
-            auto gameObjectProperty = CastBasePropertyToType<float>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+            const auto floatBinding = std::static_pointer_cast<FloatPropertyBinding>(bindingSp);
+            auto gameObjectProperty = CastBasePropertyToType<float>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             floatBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eEnginePropertyBindingType::EulerAnglesRotation:
          {
-            const auto rotationBinding = static_cast<EulerAnglesRotationPropertyBinding *>(binding);
-            auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+            const auto rotationBinding = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindingSp);
+            auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             rotationBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eEnginePropertyBindingType::Boolean:
          {
-            const auto booleanBinding = static_cast<BooleanPropertyBinding*>(binding);
-            auto gameObjectProperty = CastBasePropertyToType<bool>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+            const auto booleanBinding = std::static_pointer_cast<BooleanPropertyBinding>(bindingSp);
+            auto gameObjectProperty = CastBasePropertyToType<bool>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             booleanBinding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          case eEnginePropertyBindingType::Vec3:
          {
-            const auto vec3Binding = static_cast<EulerAnglesRotationPropertyBinding *>(binding);
-            auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObject->GetEnginePropertyByName(gameObjectPropertyName));
+            const auto vec3Binding = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindingSp);
+            auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             vec3Binding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          default:
-            assert(false); // "unknown binding type."
+            assert(false); // "unknown bindingSp type."
             break;
          }
       }

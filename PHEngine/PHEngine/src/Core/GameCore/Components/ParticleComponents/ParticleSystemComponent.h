@@ -33,7 +33,7 @@ namespace EngineCore
         ParticleSystemRenderData mRenderData;
 
     public:
-        ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
+        ParticleSystemComponent(const std::shared_ptr<ParticleSystemComponentData> &meshComponentData,
                                 const ParticleSystemRenderData &renderData);
 
         ~ParticleSystemComponent() override;

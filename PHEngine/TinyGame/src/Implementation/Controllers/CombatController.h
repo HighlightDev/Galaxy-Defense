@@ -112,13 +112,13 @@ namespace Game
 
         void UpdateMissilesData();
 
-        std::shared_ptr<MissileActor> GetMissileOwnerActorById(const uint64_t actorId) const;
+        std::shared_ptr<MissileActor> GetMissileOwnerActorById(const int32_t actorId) const;
 
-        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const uint64_t actorId) const;
+        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
 
-        std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const uint64_t actorId) const;
+        std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const int32_t actorId) const;
 
-        eGameObjectsType GetGameObjectTypeByActorId(const uint64_t actorId) const;
+        eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
 
         eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 

@@ -17,16 +17,16 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<PlanarReflectionComponent, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-           const PlanarReflectionComponentData &mData =
-                static_cast<const PlanarReflectionComponentData &>(data);
+           const auto &mData =
+                std::static_pointer_cast<PlanarReflectionComponentData>(data);
 
-            assert(mData.m_ownerCamera);
+            assert(mData->m_ownerCamera);
 
             const auto &component = std::make_shared<ComponentInstantiationType>(mData);
 
-            mData.m_ownerCamera->SetPlanarReflectionComponent(component);
+            mData->m_ownerCamera->SetPlanarReflectionComponent(component);
             return component;
         }
     };

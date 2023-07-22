@@ -48,7 +48,6 @@ namespace EngineCore
    {
       LogInfo("Scene::ctor");
 
-      RegisterEngineObject(this);
       AddEngineProperty(mGameThreadDeltaSec);
       mPhysicsWorld->InitPhysicsWorld();
    }
@@ -56,6 +55,7 @@ namespace EngineCore
    void Scene::OnLevelInit()
    {
       LogInfo("Scene::OnLevelInit");
+      RegisterEngineObject(shared_from_this());
    }
 
    void Scene::PostLevelInit()
@@ -117,7 +117,7 @@ namespace EngineCore
                           { return camera->GetObjectId() == cameraObjectId; }));
 
       mActiveCameras.emplace_back(camera);
-      RegisterEngineObject(camera.get());
+      RegisterEngineObject(camera);
       const auto cameraProxyPtr = camera->CreateSceneProxy();
       LogInfo("Scene::RegisterCamera => id = ", camera->GetObjectId(), ", cameraSceneProxyId: ", cameraProxyPtr->GetSceneProxyId());
       camera->SetCameraProxyId(cameraProxyPtr->GetSceneProxyId());
@@ -128,7 +128,7 @@ namespace EngineCore
       }
    }
 
-   void Scene::UnregisterCamera(const uint32_t objectId)
+   void Scene::UnregisterCamera(const int32_t objectId)
    {
       LogInfo("Scene::UnregisterCamera => id = ", objectId);
       auto foundCameraIt = std::find_if(mActiveCameras.begin(), mActiveCameras.end(), [objectId](const auto &camera)
@@ -165,7 +165,7 @@ namespace EngineCore
       }
    }
 
-   std::shared_ptr<MaterialProxy> Scene::RegisterMaterialInstance(std::shared_ptr<IMaterial> material)
+   void Scene::RegisterMaterialInstance(const std::shared_ptr<IMaterial> &material)
    {
       LogInfo("Scene::RegisterMaterialInstance => name = ", material->MaterialName);
 
@@ -179,14 +179,20 @@ namespace EngineCore
       }
 
       const auto &materialProxy = material->CreateMaterialProxy();
+      material->SetMaterialProxyWp(materialProxy);
       material->MaterialProxyId = materialProxy->GetSceneProxyId();
 
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          sceneRendererSp->MaterialProxyAdded_OnRenderThread(materialProxy);
       }
+   }
 
-      return materialProxy;
+   std::shared_ptr<IMaterial> Scene::GetMaterialInstanceById(const int32_t materialProxyId) const
+   {
+      const auto foundIt = std::find_if(mMaterials.cbegin(), mMaterials.cend(), [materialProxyId](const auto &instance)
+                                        { return instance->MaterialProxyId == materialProxyId; });
+      return foundIt != mMaterials.cend() ? *foundIt : nullptr;
    }
 
    InterThreadCommunicationMgr &Scene::GetInterThreadCommunicationManager()
@@ -236,7 +242,7 @@ namespace EngineCore
       return *foundActor;
    }
 
-   std::shared_ptr<Actor> Scene::GetActorById(const uint64_t id) const
+   std::shared_ptr<Actor> Scene::GetActorById(const int32_t id) const
    {
       auto foundActor = std::find_if(mActors.begin(), mActors.end(), [&](const auto &actor)
                                      { return actor->GetObjectId() == id; });
@@ -253,63 +259,57 @@ namespace EngineCore
 
    void Scene::AddActor(std::shared_ptr<Actor> actor)
    {
-      const std::string &goName = actor->GetEngineObjectName();
-      RegisterEngineObject(actor.get());
+      RegisterEngineObject(actor);
       mActors.emplace_back(actor);
    }
 
    void Scene::RemoveActor(std::shared_ptr<Actor> actor)
    {
-      const std::string &goName = actor->GetEngineObjectName();
-      auto it = std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
-                               { return gameObject->GetEngineObjectName() == goName; });
+      auto removeIt = std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [goName = actor->GetEngineObjectName()](const auto &gameObjectWp)
+                                     { 
+                                 if (const auto& gameObjectSp = gameObjectWp.lock())
+                                 {
+                                    return gameObjectSp->GetEngineObjectName() == goName;
+                                 }
+                                 return false; });
 
-      if (it != mEngineObjects.end())
-      {
-         mEngineObjects.erase(it, mEngineObjects.end());
-      }
+      mEngineObjects.erase(removeIt);
    }
 
-   EngineObject *Scene::GetEngineObjectByName(const std::string &name) const
+   std::shared_ptr<EngineObject> Scene::GetEngineObjectByName(const std::string &name) const
    {
-      EngineObject *go = nullptr;
+      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [=](const auto &gameObjectWp)
+                             { 
+                              if (const auto& gameObjectSp = gameObjectWp.lock())
+                              {
+                                 return gameObjectSp->GetEngineObjectName() == name;
+                              }
+                              return false; });
 
-      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [&](const auto *gameObject)
-                             { return gameObject->GetEngineObjectName() == name; });
-
-      if (it != mEngineObjects.end())
-      {
-         go = *it;
-      }
-
-      return go;
+      return it != mEngineObjects.end() ? it->lock() : nullptr;
    }
 
-   EngineObject *Scene::GetEngineObjectById(const uint64_t id) const
+   std::shared_ptr<EngineObject> Scene::GetEngineObjectById(const int32_t id) const
    {
-      EngineObject *go = nullptr;
+      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [=](const auto &gameObjectWp)
+                             { 
+                              if (const auto& gameObjectSp = gameObjectWp.lock())
+                              {
+                                 return gameObjectSp->GetObjectId() == id;
+                              }
+                              return false; });
 
-      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [=](const auto *gameObject)
-                             { return gameObject->GetObjectId() == id; });
-
-      if (it != mEngineObjects.end())
-      {
-         go = *it;
-      }
-
-      return go;
+      return it != mEngineObjects.end() ? it->lock() : nullptr;
    }
 
-   IDeferredResourceCreator *Scene::GetDeferredResourceCreatorByName(const std::string &name) const
+   std::shared_ptr<IDeferredResourceCreator> Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
-      IDeferredResourceCreator *creatorInstance = nullptr;
-
       if (mDeferredResourceCreators.count(name))
       {
-         creatorInstance = mDeferredResourceCreators.at(name);
+         return mDeferredResourceCreators.at(name);
       }
 
-      return creatorInstance;
+      return nullptr;
    }
 
    const std::vector<std::shared_ptr<ActorController>> &Scene::GetActorControllers() const
@@ -520,17 +520,17 @@ namespace EngineCore
    }
 
    std::shared_ptr<Component> Scene::CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
-                                                                const ComponentData &componentData)
+                                                                const std::shared_ptr<ComponentData> &componentData)
    {
       const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
       component->SetScene(shared_from_this());
       RegisterComponentSceneProxy(component);
-      RegisterEngineObject(component.get());
+      RegisterEngineObject(component);
       component->OnPostInitialized();
       return component;
    }
 
-   bool Scene::RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName)
+   bool Scene::RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator> &creatorInstance, const std::string &gameObjectName)
    {
       // Add deferred resource creator instance
       assert(!mDeferredResourceCreators.count(gameObjectName));
@@ -593,23 +593,29 @@ namespace EngineCore
       return (it != mLuaReplicators.cend()) ? it->second : nullptr;
    }
 
-   void Scene::RegisterEngineObject(EngineObject *const gameObjectPtr)
+   void Scene::RegisterEngineObject(const std::shared_ptr<EngineObject> &gameObject)
    {
-      const auto objectId = gameObjectPtr->GetObjectId();
-      auto it = std::find_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto *gameObject)
-                             { return gameObject->GetObjectId() == objectId; });
+      const auto it = std::find_if(mEngineObjects.cbegin(), mEngineObjects.cend(), [objectId = gameObject->GetObjectId()](const auto &gameObjectWp)
+                                   {
+                              if (const auto& gameObjectSp = gameObjectWp.lock()) {
+                                 return gameObjectSp->GetObjectId() == objectId; 
+                              }
+                              return false; });
 
-      assert(it == mEngineObjects.cend());
-      mEngineObjects.emplace_back(gameObjectPtr);
+      if (it == mEngineObjects.cend())
+      {
+         mEngineObjects.emplace_back(gameObject);
+      }
    }
 
    void Scene::RemoveEngineObject(const uint32_t objectId)
    {
-      auto it = std::find_if(mEngineObjects.cbegin(), mEngineObjects.cend(), [objectId](const auto *gameObject)
-                             { return gameObject->GetObjectId() == objectId; });
-      assert(it != mEngineObjects.cend());
-      mEngineObjects.erase(std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto *gameObject)
-                                          { return gameObject->GetObjectId() == objectId; }));
+      mEngineObjects.erase(std::remove_if(mEngineObjects.begin(), mEngineObjects.end(), [objectId](const auto &gameObjectWp)
+                                          {
+                                             if (const auto& gameObjectSp = gameObjectWp.lock()) {
+                                                return gameObjectSp->GetObjectId() == objectId; 
+                                             }
+                                             return false; }));
    }
 
    glm::vec4 Scene::GetConvertedToClippedSpacePosition(const size_t cameraProxyId, const glm::vec4 &worldPosition)

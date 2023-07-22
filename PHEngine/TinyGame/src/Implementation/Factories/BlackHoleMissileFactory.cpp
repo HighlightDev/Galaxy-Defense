@@ -66,7 +66,8 @@ namespace Game
                                                                                                               glm::vec3(), glm::vec3(), glm::vec3(1)));
 
             MaterialParser materialParser;
-            const auto &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+            const std::shared_ptr<IMaterial> &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+            scene->RegisterMaterialInstance(pbs_mat);
 
             const std::string albedoName = "missile1_albedo.png";
             const std::string normalName = "solar_cells_normal_512.jpg";
@@ -85,20 +86,20 @@ namespace Game
             MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-            const MeshComponentData d_mesh("c_missileCombatActivePhaseMesh_" + missileIndexStr, "missile1_model.fbx", glm::vec3(0),
-                                           glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
+            const auto d_mesh = std::make_shared<MeshComponentData>("c_missileCombatActivePhaseMesh_" + missileIndexStr, "missile1_model.fbx", glm::vec3(0),
+                                                                    glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
             const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
             a_missileCombatActivePhase->AddComponent(c_mesh);
 
             GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
             scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-            PhysicsComponentData physData("c_missileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
+            const auto physData = std::make_shared<PhysicsComponentData>("c_missileCombatActivePhasePhysics_" + missileIndexStr, ghostController);
             const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
             const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
             a_missileCombatActivePhase->AddComponent(c_ghostPhysics);
 
-            MovementComponentData d_movement("c_missileCombatActivePhase_noPhysMoveComponent_" + missileIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+            const auto d_movement = std::make_shared<MovementComponentData>("c_missileCombatActivePhase_noPhysMoveComponent_" + missileIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
             c_movement->SetReferenceSpeed(80.0f);
@@ -117,7 +118,8 @@ namespace Game
 
             MaterialParser materialParser;
 
-            const auto &missile_mat = materialParser.ParseMaterialDescriptor("BlackHoleMissileMaterial.m");
+            const std::shared_ptr<IMaterial> &missile_mat = materialParser.ParseMaterialDescriptor("BlackHoleMissileMaterial.m");
+            scene->RegisterMaterialInstance(missile_mat);
 
             const std::string dudvTextureName = "water_dudv.jpg";
             const std::string albedoTextureName = "nightLeft.jpg";
@@ -125,20 +127,20 @@ namespace Game
             const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoTextureName);
 
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "mul_coef", 2.5f);
-            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene.get(), "GT_DeltaSec", "deltaTime");
+            MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, scene, "GT_DeltaSec", "deltaTime");
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "dudv", dudv_tex);
             MaterialPropertySetter::SetMaterialPropertyValue(missile_mat, "albedo", albedo_tex);
 
-            const MeshComponentData d_mesh("c_missileExplosionSecondPhase_meshComponent_" + missileIndexStr,
-                                           "sphere.obj",
-                                           glm::vec3(0),
-                                           glm::vec3(0), glm::vec3(5), "", missile_mat);
+            const auto d_mesh = std::make_shared<MeshComponentData>("c_missileExplosionSecondPhase_meshComponent_" + missileIndexStr,
+                                                                    "sphere.obj",
+                                                                    glm::vec3(0),
+                                                                    glm::vec3(0), glm::vec3(5), "", missile_mat);
             const auto &meshComponentCreator = std::make_shared<ForwardShadingStaticMeshComponentCreator<StaticMeshComponent>>();
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
             a_missileExplosionSecondPhase->AddComponent(c_mesh);
 
-            MovementComponentData d_movement("c_missileExplosionSecondPhase_noPhysMoveComponent_" + missileIndexStr,
-                                             glm::vec3(0.0f, 0.0f, -1.0f));
+            const auto d_movement = std::make_shared<MovementComponentData>("c_missileExplosionSecondPhase_noPhysMoveComponent_" + missileIndexStr,
+                                                                            glm::vec3(0.0f, 0.0f, -1.0f));
             const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
             const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
             c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
@@ -146,14 +148,15 @@ namespace Game
             c_movement->SetCurrentSpeedToReferenceValue();
             a_missileExplosionSecondPhase->AddComponent(c_movement);
 
-            const auto &particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");
+            const std::shared_ptr<IMaterial> &particles_mat = materialParser.ParseMaterialDescriptor("OpacityMaskParticleMaterial.m");
+            scene->RegisterMaterialInstance(particles_mat);
 
             const auto &opacityMask_tex = TexturePool::GetInstance()->GetOrAllocateResource("circle_mask1.png");
             MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacityMask", opacityMask_tex);
-            ParticleSystemComponentData d_particle("c_missileExplosionSecondPhase_particleSystemComponent_" + missileIndexStr,
-                                                   particles_mat,
-                                                   glm::vec3(0),
-                                                   100);
+            const auto d_particle = std::make_shared<ParticleSystemComponentData>("c_missileExplosionSecondPhase_particleSystemComponent_" + missileIndexStr,
+                                                                                  particles_mat,
+                                                                                  glm::vec3(0),
+                                                                                  100);
             const auto &particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
             const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
             auto emitter = std::make_shared<ParticleExplosionEmitter>();
@@ -189,21 +192,21 @@ namespace Game
 
             GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
             scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-            PhysicsComponentData physData("c_missileExplosionSecondPhase_PhysicsComponent_" + missileIndexStr, ghostController);
+            const auto physData = std::make_shared<PhysicsComponentData>("c_missileExplosionSecondPhase_PhysicsComponent_" + missileIndexStr, ghostController);
             const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
             const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
             a_missileExplosionSecondPhase->AddComponent(c_ghostPhysics);
 
             const auto &b_blackHoleHitBoxSize = missileTweener->GetPropertyBindingByName("b_blackHoleHitBoxSize");
-            BindingAttachmentBuilder::SetAttachment(c_ghostPhysics.get(), b_blackHoleHitBoxSize.get(), "p_hitBoxScale");
+            BindingAttachmentBuilder::SetAttachment(c_ghostPhysics, b_blackHoleHitBoxSize, "p_hitBoxScale");
         }
 
         a_missile->AddCombatActivePhaseActor(a_missileCombatActivePhase);
         a_missile->AddExplosionSecondPhaseActor(a_missileExplosionSecondPhase);
 
-        ComponentData d_audio("c_missileCombatActivePhaseSound_" + missileIndexStr);
         const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
-        const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
+        const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator,
+                                                                                                         std::make_shared<ComponentData>("c_missileCombatActivePhaseSound_" + missileIndexStr)));
         c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
         c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
@@ -214,9 +217,9 @@ namespace Game
         const auto &b_missileExplosionSecondPhaseActorIsEnabled = missileTweener->GetPropertyBindingByName("b_missileExplosionSecondPhaseActorIsEnabled");
         const auto &b_blackHoleSize = missileTweener->GetPropertyBindingByName("b_blackHoleSize");
 
-        BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase.get(), b_activePhaseActorIsEnabled.get(), "p_isEnabled");
-        BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase.get(), b_missileExplosionSecondPhaseActorIsEnabled.get(), "p_isEnabled");
-        BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase->GetRootComponent().get(), b_blackHoleSize.get(), "p_scale");
+        BindingAttachmentBuilder::SetAttachment(a_missileCombatActivePhase, b_activePhaseActorIsEnabled, "p_isEnabled");
+        BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase, b_missileExplosionSecondPhaseActorIsEnabled, "p_isEnabled");
+        BindingAttachmentBuilder::SetAttachment(a_missileExplosionSecondPhase->GetRootComponent(), b_blackHoleSize, "p_scale");
 
         return a_missile;
     }

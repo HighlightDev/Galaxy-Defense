@@ -27,7 +27,7 @@ namespace EngineCore
 
    public:
 
-      PlatformTraverseComponent(const PlatformTraverseComponentData& data);
+      PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData>& data);
 
       ~PlatformTraverseComponent() override;
 

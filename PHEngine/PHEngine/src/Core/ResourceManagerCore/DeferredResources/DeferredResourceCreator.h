@@ -2,10 +2,12 @@
 
 #include "DeferredResource.h"
 
-namespace Resources {
+namespace Resources
+{
 
-   struct IDeferredResourceCreator 
+   class IDeferredResourceCreator
    {
+   public:
       virtual std::shared_ptr<IDeferredResource> GetDeferredResource() = 0;
    };
 }

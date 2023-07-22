@@ -16,7 +16,7 @@ namespace Game
         return eModifierType::Gravity;
     }
 
-    uint64_t FreezingModifier::CreatorObjectId() const
+    int32_t FreezingModifier::CreatorObjectId() const
     {
         const auto &ownerSp = mOwnerWp.lock();
         assert(ownerSp);

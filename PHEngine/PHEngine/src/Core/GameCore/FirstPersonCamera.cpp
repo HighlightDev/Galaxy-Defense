@@ -26,7 +26,7 @@ namespace EngineCore
                  initYawDeg),
          m_firstPersonCameraPosition(camPos),
          m_cameraMoveSpeed(0.01f),
-         mInputComponent(std::make_unique<InputComponent>(ComponentData("FirstPersonCameraInputComponent")))
+         mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("FirstPersonCameraInputComponent")))
    {
       ACamera::UpdateRotationMatrix(0, 0);
    }

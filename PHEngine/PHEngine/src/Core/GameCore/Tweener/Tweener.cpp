@@ -13,9 +13,11 @@
 
 namespace EngineCore
 {
+   int32_t Tweener::s_id = 0;
 
    Tweener::Tweener(const std::string &relPathFSM, const std::string &tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates)
-       : mMyAllStates(std::move(allStates)),
+       : m_id(s_id++),
+         mMyAllStates(std::move(allStates)),
          mRelPathTweener(relPathFSM),
          mTweenerName(tweenerInnerName),
          mStateNodeInitRoot(rootNode),
@@ -25,8 +27,9 @@ namespace EngineCore
    {
    }
 
-   Tweener::~Tweener()
+   int32_t Tweener::GetId() const
    {
+      return m_id;
    }
 
    std::shared_ptr<ITweenController> GetPropertyTweenerController(const eEnginePropertyBindingType propertyType)

@@ -28,7 +28,7 @@ namespace EngineCore
 		using Base = PrimitiveComponent;
 
 	public:
-		SkyboxComponent(const SkyboxComponentData &data, const SkyboxRenderData &renderData);
+		SkyboxComponent(const std::shared_ptr<SkyboxComponentData> &data, const SkyboxRenderData &renderData);
 
 		~SkyboxComponent() override;
 

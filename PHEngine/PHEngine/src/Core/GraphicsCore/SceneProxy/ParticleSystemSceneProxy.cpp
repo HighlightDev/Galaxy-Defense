@@ -49,7 +49,7 @@ namespace Graphics
                                                  {
                                                      const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
                                                      assert(engineObject);
-                                                     const auto &primitiveComponent = static_cast<PrimitiveComponent *>(engineObject);
+                                                     const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
                                                      assert(primitiveComponent);
                                                      primitiveComponent->SetBoundingBox(boundingBox);
                                                  });

@@ -22,18 +22,18 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-            const CubemapComponentData &mData =
-                static_cast<const CubemapComponentData &>(data);
+            const auto &mData =
+                std::static_pointer_cast<CubemapComponentData>(data);
 
-            ShaderParams shaderParams("Cubemap Shader", mData.m_vsShaderPath,
-                                      mData.m_fsShaderPath);
+            ShaderParams shaderParams("Cubemap Shader", mData->m_vsShaderPath,
+                                      mData->m_fsShaderPath);
             ShaderPool::sharedValue_t shader =
                 ShaderPool::GetInstance()
                     ->template GetOrAllocateResource<CubemapShader>(shaderParams);
 
-            CubemapRenderData renderData(shader, mData.m_textureObtainer);
+            CubemapRenderData renderData(shader, mData->m_textureObtainer);
 
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }

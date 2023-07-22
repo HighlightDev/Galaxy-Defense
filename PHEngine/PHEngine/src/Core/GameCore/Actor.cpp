@@ -70,6 +70,8 @@ namespace EngineCore
          tweener->CleanUp();
       }
 
+      m_physicsComponent->CleanUp();
+
       for (const auto& component : m_allComponents)
       {
          component->CleanUp();
@@ -115,7 +117,7 @@ namespace EngineCore
       }
    }
 
-   bool Actor::HasEngineObjectIdInHierarchy(const uint64_t id) const
+   bool Actor::HasEngineObjectIdInHierarchy(const int32_t id) const
    {
       if (GetObjectId() == id)
          return true;
@@ -461,7 +463,7 @@ namespace EngineCore
       m_children.push_back(actor);
    }
 
-   std::shared_ptr<Actor> Actor::GetChildByObjectId(const uint64_t id) const
+   std::shared_ptr<Actor> Actor::GetChildByObjectId(const int32_t id) const
    {
       std::shared_ptr<Actor> resultChild;
 
@@ -516,6 +518,14 @@ namespace EngineCore
    {
       auto it = std::find_if(mTweeners.cbegin(), mTweeners.cend(), [&](const auto &tweener)
                              { return name == tweener->GetTweenerName(); });
+
+      return it != mTweeners.cend() ? *it : nullptr;
+   }
+
+   std::shared_ptr<Tweener> Actor::GetTweenerById(const int32_t id) const
+   {
+      auto it = std::find_if(mTweeners.cbegin(), mTweeners.cend(), [id](const auto &tweener)
+                             { return tweener->GetId() == id; });
 
       return it != mTweeners.cend() ? *it : nullptr;
    }

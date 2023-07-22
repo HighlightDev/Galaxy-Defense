@@ -45,268 +45,115 @@ using namespace EngineUtility;
 
 namespace EngineCore
 {
-   EngineObjectCreator::EngineObjectCreator(const std::shared_ptr<Scene> &scene) : mSceneWp(scene)
+   EngineObjectCreator::EngineObjectCreator()
    {
+      mDefaultComponentNames = {
+          "LightComponent",
+          "DirectionalLightComponent",
+          "SpotlightComponent",
+          "StaticMeshComponent",
+          "SkeletalMeshComponent",
+          "RigidBodyPhysicsComponent",
+          "CharacterPhysicsComponent",
+          "HumanoidPhysicsMovementComponent",
+          "PlatformTraverseComponent",
+          "SkyboxComponent",
+          "WaterPlaneComponent",
+          "PlanarReflectionComponent",
+          "InputComponent"};
    }
 
-   ComponentData *EngineObjectCreator::CreateSpotlightComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
-                                                                    const glm::vec3 &rotation,
-                                                                    const glm::vec3 &ambient, const glm::vec3 &diffuse,
-                                                                    const glm::vec3 &specular, const glm::vec3 &attenutation,
-                                                                    float radianceRadius, float cutoff, ProjectedShadowInfo *shadowInfo)
+   void EngineObjectCreator::SetScene(const std::weak_ptr<Scene> &scene)
    {
-      return new SpotlightComponentData(gameObjectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
+      mSceneWp = scene;
    }
 
-   ComponentData *EngineObjectCreator::CreatePointLightComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
-                                                                     const glm::vec3 &ambient,
-                                                                     const glm::vec3 &diffuse, const glm::vec3 &specular,
-                                                                     const glm::vec3 &attenutation, float radianceRadius,
-                                                                     ProjectedShadowInfo *shadowInfo)
+   void EngineObjectCreator::RegisterActorCreatorFactory(const std::string &factoryKey, const std::shared_ptr<IEngineActorCreatorFactory> &creatorFactoryInstance)
    {
-      return new PointLightComponentData(gameObjectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo);
+      assert(!mActorCreatorFactoriesMap.count(factoryKey));
+      mActorCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
    }
 
-   ComponentData *EngineObjectCreator::CreateDirLightComponentData(const std::string &gameObjectName, const glm::vec3 &rotation,
-                                                                   const glm::vec3 &direction, const glm::vec3 &ambient,
-                                                                   const glm::vec3 &diffuse, const glm::vec3 &specular,
-                                                                   ProjectedShadowInfo *shadowInfo)
+   void EngineObjectCreator::RegisterComponentCreatorFactory(const std::string &factoryKey, const std::shared_ptr<IEngineComponentCreatorFactory> &creatorFactoryInstance)
    {
-      return new DirectionalLightComponentData(gameObjectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
-   }
-
-   ComponentData *EngineObjectCreator::CreateMeshComponentData(const std::string &gameObjectName, const std::string &relativePathToMesh,
-                                                               const glm::vec3 &translation,
-                                                               const glm::vec3 &rotation, const glm::vec3 &scale,
-                                                               const std::string &luaPathToFile, IMaterial *material)
-   {
-      return new MeshComponentData(gameObjectName, relativePathToMesh, translation, rotation, scale, luaPathToFile, material);
-   }
-
-   std::shared_ptr<Actor> EngineObjectCreator::CreateActorByString(const std::string &gameObjectName,
-                                                                   std::shared_ptr<SceneComponent> rootComponent)
-   {
-      return std::make_shared<Actor>(gameObjectName, rootComponent);
-   }
-
-   std::shared_ptr<ACamera> EngineObjectCreator::CreateThirdPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene,
-                                                                         const ViewPortInfo &viewPort,
-                                                                         const float initPitchDeg, const float initYawDeg,
-                                                                         const float camDistanceToThirdPersonTarget,
-                                                                         const glm::vec3 &thirdPersonTargetOffset,
-                                                                         const bool bIsMainSceneCamera)
-   {
-      const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
-      return std::make_shared<ThirdPersonCamera>(cameraName, cameraType, scene, viewPort,
-                                                 initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
-   }
-
-   std::shared_ptr<ACamera> EngineObjectCreator::CreateFirstPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene,
-                                                                         const ViewPortInfo &viewPort,
-                                                                         const float initPitchDeg, const float initYawDeg,
-                                                                         const glm::vec3 &cameraPosition, const bool bIsMainSceneCamera)
-   {
-      const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
-      return std::make_shared<FirstPersonCamera>(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg, cameraPosition);
-   }
-
-   std::shared_ptr<Component> EngineObjectCreator::CreateComponentByString(const std::string &componentType, ComponentData *componentData,
-                                                                           std::shared_ptr<Scene> scene)
-   {
-      assert(componentData && scene);
-
-      std::shared_ptr<IComponentCreatable> creator;
-
-      if ("LightComponent" == componentType)
-      {
-         creator = std::make_shared<LightComponentCreator<PointLightComponent>>();
-      }
-      else if ("DirectionalLightComponent" == componentType)
-      {
-         creator = std::make_shared<LightComponentCreator<DirectionalLightComponent>>();
-      }
-      else if ("SpotlightComponent" == componentType)
-      {
-         creator = std::make_shared<LightComponentCreator<SpotlightComponent>>();
-      }
-      else if ("StaticMeshComponent" == componentType)
-      {
-         creator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
-      }
-      else if ("SkeletalMeshComponent" == componentType)
-      {
-         creator = std::make_shared<SkeletalMeshComponentCreator<SkeletalMeshComponent>>();
-      }
-      else if ("RigidBodyPhysicsComponent" == componentType)
-      {
-         creator = std::make_shared<PhysicsComponentCreator<RigidBodyPhysicsComponent>>();
-      }
-      else if ("CharacterPhysicsComponent" == componentType)
-      {
-         creator = std::make_shared<PhysicsComponentCreator<CharacterPhysicsComponent>>();
-      }
-      else if ("InputComponent" == componentType)
-      {
-         creator = std::make_shared<InputComponentCreator<InputComponent>>();
-      }
-      else if ("HumanoidPhysicsMovementComponent" == componentType)
-      {
-         creator = std::make_shared<MovementComponentCreator<HumanoidPhysicsMovementComponent>>();
-      }
-      else if ("PlatformTraverseComponent" == componentType)
-      {
-         creator = std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>();
-      }
-      else if ("SkyboxComponent" == componentType)
-      {
-         creator = std::make_shared<SkyboxComponentCreator<SkyboxComponent>>();
-      }
-      else if ("WaterPlaneComponent" == componentType)
-      {
-         creator = std::make_shared<WaterPlaneComponentCreator<WaterPlaneComponent>>();
-      }
-      else if ("PlanarReflectionComponent" == componentType)
-      {
-         creator = std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>();
-      }
-      else
-      {
-         assert(false);
-      }
-
-      return scene->CreateComponent_GameThread(creator, *componentData);
-   }
-
-   ProjectedShadowInfo *EngineObjectCreator::CreateProjectedShadowInfo(const std::string &lightType, const glm::ivec2 &shadowAtlasSize)
-   {
-      ProjectedShadowInfo *shadowProjInfo = nullptr;
-      if (lightType == "point_light")
-      {
-         auto pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(shadowAtlasSize);
-         shadowProjInfo = new ProjectedPointLightShadowInfo(pointLightTAR);
-      }
-      else if (lightType == "direct_light")
-      {
-         auto directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
-         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-         const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
-         shadowProjInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTAR, orthoHalfExtent);
-      }
-      else if (lightType == "spotlight")
-      {
-         auto spotlightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(shadowAtlasSize);
-         shadowProjInfo = new ProjectedSpotlightShadowInfo(spotlightTAR);
-      }
-      else
-      {
-         assert(false);
-      }
-      return shadowProjInfo;
-   }
-
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsBoxShape(const glm::vec3 &halfExtent)
-   {
-      return new PhyBoxShape(halfExtent);
-   }
-
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCapsuleShape(const double radius, const double height)
-   {
-      return new PhyCapsuleShape(radius, height);
-   }
-
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsPlaneShape(const glm::vec3 &normal, const double d)
-   {
-      return new PhyPlaneShape(normal, d);
-   }
-
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsSphereShape(const double radius)
-   {
-      return new PhySphereShape(radius);
-   }
-
-   PhysicsShapeBase *EngineObjectCreator::CreatePhysicsCompoundShape()
-   {
-      return new PhyCompoundShape();
-   }
-
-   void EngineObjectCreator::AddChildShapeToCompoundShape(PhysicsShapeBase *compoundShape, PhysicsShapeBase *childShape,
-                                                          const glm::vec3 &translation, const glm::vec3 &rotation)
-   {
-      PhyCompoundShape *mCompoundShape = static_cast<PhyCompoundShape *>(compoundShape);
-      assert(mCompoundShape);
-      NoScaleEulerRotationTransform childTransform = NoScaleEulerRotationTransform(translation, rotation);
-      mCompoundShape->AddChildShape(childTransform, childShape);
-   }
-
-   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape,
-                                                                     const std::string &bodyType, const float mass)
-   {
-      const ePhysicsBodyType physBodyType = "STATIC_BODY" == bodyType ? ePhysicsBodyType::STATIC : "KINEMATIC_BODY" == bodyType ? ePhysicsBodyType::KINEMATIC
-                                                                                                                                : ePhysicsBodyType::DYNAMIC;
-      return new RigidBodyController(physWorld, phyShape, physBodyType, mass);
-   }
-
-   PhysicsDescriptor *EngineObjectCreator::CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const ePhysicsBodyType &bodyType, const float mass)
-   {
-      return new RigidBodyController(physWorld, phyShape, bodyType, mass);
-   }
-
-   PhysicsDescriptor *EngineObjectCreator::CreateDynamicCharacterController(PhysicsWorld *physWorld, float capsuleRadius, float capsuleHeight,
-                                                                            float mass, float stepHeight)
-   {
-      return new DynamicCharacterController(physWorld, capsuleRadius, capsuleHeight, mass, stepHeight);
-   }
-
-   ComponentData *EngineObjectCreator::CreatePhysicsComponentData(const std::string &gameObjectName, PhysicsDescriptor *physDescriptor)
-   {
-      return new PhysicsComponentData(gameObjectName, physDescriptor);
-   }
-
-   ComponentData *EngineObjectCreator::CreateCharacterMovementComponentData(const std::string &gameObjectName,
-                                                                            const glm::vec3 &launchDirection, const std::string &cameraName)
-   {
-      return new HumanoidMovementComponentData(gameObjectName, launchDirection, cameraName);
-   }
-
-   ComponentData *EngineObjectCreator::CreatePlatformTraverseComponentData(const std::string &gameObjectName,
-                                                                           const std::string &scriptName)
-   {
-      return new PlatformTraverseComponentData(gameObjectName, scriptName);
-   }
-
-   ComponentData *EngineObjectCreator::CreateInputComponentData(const std::string &gameObjectName)
-   {
-      return new ComponentData(gameObjectName);
-   }
-
-   ComponentData *EngineObjectCreator::CreateSkyboxComponentData(const std::string &gameObjectName,
-                                                                 const glm::vec3 &scale, IMaterial *material)
-   {
-      return new SkyboxComponentData(gameObjectName, scale, material);
-   }
-
-   ComponentData *EngineObjectCreator::CreateWaterPlaneComponentData(const std::string &gameObjectName,
-                                                                     const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale, IMaterial *materialInstance)
-   {
-      return new WaterPlaneComponentData(gameObjectName, translation, rotation, scale, materialInstance);
-   }
-
-   ComponentData *EngineObjectCreator::CreatePlanarReflectionComponentData(const std::string &gameObjectName,
-                                                                           const glm::vec3 &translation, const glm::vec3 &rotation, const glm::vec3 &scale, ACamera *ownerCamera,
-                                                                           const ViewPortInfo &fboViewPortInfo)
-   {
-      return new PlanarReflectionComponentData(gameObjectName, translation, rotation, scale, ownerCamera, fboViewPortInfo);
+      assert(!mComponentCreatorFactoriesMap.count(factoryKey));
+      mComponentCreatorFactoriesMap[factoryKey] = creatorFactoryInstance;
    }
 
    // Actor will be created and added to the scene
-   uint64_t EngineObjectCreator::CreateActor(const std::string &actorName, const glm::vec3 &rootTranslation, const glm::vec3 &rootEulerRotation, const glm::vec3 &rootScale)
+   int32_t EngineObjectCreator::CreateActor(const std::string &actorType,
+                                            const std::string &actorName,
+                                            const glm::vec3 &rootTranslation,
+                                            const glm::vec3 &rootEulerRotation,
+                                            const glm::vec3 &rootScale,
+                                            const std::string &jsonParamStr) const
    {
-      const auto &sceneSp = mSceneWp.lock();
-      assert(sceneSp);
+      assert(mActorCreatorFactoriesMap.count(actorType));
+      return mActorCreatorFactoriesMap.at(actorType)->CreateActor(mSceneWp, actorName, rootTranslation, rootEulerRotation, rootScale, jsonParamStr);
+   }
+
+   void EngineObjectCreator::CreateComponent(const int32_t actorObjectId,
+                                             const std::string &componentType,
+                                             const std::string &componentDataJsonStr) const
+   {
+      std::string factoryName = "";
+      if (mDefaultComponentNames.count(componentType))
       {
-         const auto& actor = std::make_shared<Actor>(actorName, std::make_shared<SceneComponent>(actorName + "_root", rootTranslation, rootEulerRotation, rootScale));
-         sceneSp->AddActor(actor);
-         return actor->GetObjectId();
+         factoryName = "DefaultComponentCreatorFactory";
+      }
+      else
+      {
+         factoryName = componentType;
+      }
+      assert(mComponentCreatorFactoriesMap.count(factoryName));
+      mComponentCreatorFactoriesMap.at(factoryName)->CreateComponent(mSceneWp, actorObjectId, componentType, componentDataJsonStr);
+   }
+
+   void EngineObjectCreator::CreateThirdPersonCamera(const std::string &cameraName,
+                                                     const ViewPortInfo &viewPort,
+                                                     const float initPitchDeg,
+                                                     const float initYawDeg,
+                                                     const float camDistanceToThirdPersonTarget,
+                                                     const glm::vec3 &thirdPersonTargetOffset,
+                                                     const bool bIsMainSceneCamera)
+   {
+      if (const auto &sceneSp = mSceneWp.lock())
+      {
+         const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
+         const auto camera = std::make_shared<ThirdPersonCamera>(cameraName, cameraType, sceneSp, viewPort,
+                                                                 initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
+
+         if (bIsMainSceneCamera)
+         {
+            sceneSp->RegisterMainCamera(camera);
+         }
+         else
+         {
+            sceneSp->RegisterCamera(camera);
+         }
+      }
+   }
+
+   void EngineObjectCreator::CreateFirstPersonCamera(const std::string &cameraName,
+                                                     const ViewPortInfo &viewPort,
+                                                     const float initPitchDeg,
+                                                     const float initYawDeg,
+                                                     const glm::vec3 &cameraPosition,
+                                                     const bool bIsMainSceneCamera)
+   {
+      if (const auto &sceneSp = mSceneWp.lock())
+      {
+         const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
+         const auto camera = std::make_shared<FirstPersonCamera>(cameraName, cameraType, sceneSp, viewPort, initPitchDeg, initYawDeg, cameraPosition);
+
+         if (bIsMainSceneCamera)
+         {
+            sceneSp->RegisterMainCamera(camera);
+         }
+         else
+         {
+            sceneSp->RegisterCamera(camera);
+         }
       }
    }
 }

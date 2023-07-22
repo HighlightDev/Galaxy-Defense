@@ -15,9 +15,9 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-            const LightComponentData &mData = static_cast<const LightComponentData &>(data);
+            const auto &mData = std::static_pointer_cast<LightComponentData>(data);
             return std::make_shared<ComponentInstantiationType>(mData);
         }
     };

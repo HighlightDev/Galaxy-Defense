@@ -13,7 +13,7 @@ namespace EngineCore
       using Base = BillboardComponent;
 
    public:
-      FullscreenBillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData);
+      FullscreenBillboardComponent(const std::shared_ptr<BillboardComponentData> &data, const BillboardRenderData &renderData);
 
       ~FullscreenBillboardComponent() override;
 

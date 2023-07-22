@@ -71,6 +71,7 @@ function CreateTestLevel(host)
 
 	-- ****************************LIGHT***************************** --
 
+	-- OBSOLETE
 	local lightActor = _CreateActor(host, "MainLightActor", aTra.x,aTra.y,aTra.z, aRot.x,aRot.y,aRot.z,aSca.x, aSca.y, aSca.z)
 	
 	if lightActor ~= nil then
@@ -139,7 +140,7 @@ function CreateTestLevel(host)
 	end
 
 	-- ****************************BIG GROUND***************************** --
-	
+	-- OBSOLETE
 	local groundActor = _CreateActor(host, "Ground",
 	0, 0, 0,
 	0, 0, 0,
@@ -165,7 +166,7 @@ function CreateTestLevel(host)
 	end
 
 	-- ****************************SMALL GROUND***************************** --
-
+	-- OBSOLETE
 	local smallGroundActor = _CreateActor(host, "SmallGround",
 	0, 10, 0,
 	0, 0, 0,
@@ -194,6 +195,7 @@ function CreateTestLevel(host)
 	end
 
 	-- THIS IS A CODE SNIPPET FOR SPOTLIGHT TEST
+	-- OBSOLETE
 	local smallGroundActor1 = _CreateActor(host, "SmallGround1",
 	5, 8, 0,
 	0, 0, 90,
@@ -219,7 +221,7 @@ function CreateTestLevel(host)
 	end
 
 	-- ***************************HOUSE******************** --
-
+	-- OBSOLETE
 	local house = _CreateActor(host, "House", 
 	5, 15, 0,
 	0, 0, 0,
@@ -251,7 +253,7 @@ function CreateTestLevel(host)
 	end
 
 	-- ***************************TEST******************** --
-
+	-- OBSOLETE
 	local test = _CreateActor(host, "test", 
 	15, 5, 0,
 	0, 0, 0,
@@ -284,7 +286,7 @@ function CreateTestLevel(host)
 	end
 
 	-- ***************************SKYBOX******************** --
-
+	-- OBSOLETE
 	local skyboxActor = _CreateActor(host, "Skybox actor", 
 	0, 0, 0,
 	0, 0, 0,
@@ -306,6 +308,7 @@ function CreateTestLevel(host)
 	_AttachComponentToActor(host, "Skybox actor", skyboxComponent)
 
 	-- ***************************SKELET******************** --
+	-- OBSOLETE
 	local buddy = _CreateActor(host, "SkeletBuddy", 
 	10, 50, 10,
 	0, 0, 0,
@@ -345,6 +348,7 @@ function CreateTestLevel(host)
 	_AttachPlayerControllerToActor(host, buddy)
 
 	-- ****************************WATER***************************** --
+	-- OBSOLETE
 	local waterActor = _CreateActor(host, "WaterActor",
 	20, 2, 0,
 	0, 0, 0,

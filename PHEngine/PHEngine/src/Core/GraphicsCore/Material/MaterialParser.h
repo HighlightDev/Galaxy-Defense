@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/Material/MaterialNodeDecorator.h"
 
 #include <list>
+#include <memory>
 
 namespace Graphics
 {
@@ -17,13 +18,13 @@ namespace Graphics
 
    public: 
 
-      IMaterial* ParseMaterialDescriptor(const std::string& materialFileName);
+      std::shared_ptr<IMaterial> ParseMaterialDescriptor(const std::string& materialFileName);
 
    private:
 
-      IMaterial* ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
+      std::shared_ptr<IMaterial> ParseStaticMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
 
-      IMaterial* ParseDynamicMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
+      std::shared_ptr<IMaterial> ParseDynamicMaterial(const std::list<std::string>& materialSrc, const std::string& materialName, const std::string& materialShaderPath);
 
 
       XMLParserHelper::iterator_t ProcessDynamicProperty(const std::string& propertyType, std::shared_ptr<MaterialNode> node,

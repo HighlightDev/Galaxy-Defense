@@ -6,7 +6,7 @@
 namespace EngineCore
 {
 
-   uint32_t EngineObject::mTotalObjectIdCounter = 0;
+   int32_t EngineObject::mTotalObjectIdCounter = 0;
 
    EngineObject::EngineObject(const std::string& gameObjectName)
       : mObjectId(mTotalObjectIdCounter++)
@@ -14,7 +14,7 @@ namespace EngineCore
    {
    }
 
-   uint32_t EngineObject::GetObjectId() const
+   int32_t EngineObject::GetObjectId() const
    {
       return mObjectId;
    }
@@ -24,7 +24,7 @@ namespace EngineCore
       mEngineProperties[goPtr->Key] = goPtr;
    }
 
-   const std::shared_ptr<EngineObjectPropertyBase>& EngineObject::GetEnginePropertyByName(const std::string& key) const
+   const std::weak_ptr<EngineObjectPropertyBase>& EngineObject::GetEnginePropertyByName(const std::string& key) const
    {
       assert((mEngineProperties.count(key)));
       return mEngineProperties.at(key);

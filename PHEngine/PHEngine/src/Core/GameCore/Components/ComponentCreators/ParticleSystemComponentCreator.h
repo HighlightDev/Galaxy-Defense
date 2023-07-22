@@ -23,16 +23,16 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-            const ParticleSystemComponentData &mData = static_cast<const ParticleSystemComponentData &>(data);
+            const auto &mData = std::static_pointer_cast<ParticleSystemComponentData>(data);
 
             ParticlePoolParameters params;
-            params.mParticleComponentName = mData.EngineObjectName;
-            params.mParticleCount = mData.m_particlesCount;
+            params.mParticleComponentName = mData->EngineObjectName;
+            params.mParticleCount = mData->m_particlesCount;
 
-
-            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
+            const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
+            assert(materialProxy);
             ShaderParams particlesShaderParams(
                 "ParticleShader",
                 FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",

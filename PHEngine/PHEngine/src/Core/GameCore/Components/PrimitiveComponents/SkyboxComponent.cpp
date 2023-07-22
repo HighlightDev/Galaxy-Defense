@@ -12,11 +12,11 @@ namespace EngineCore
 {
    using namespace EngineUtility;
 
-   SkyboxComponent::SkyboxComponent(const SkyboxComponentData &data, const SkyboxRenderData &renderData)
-       : PrimitiveComponent(data.EngineObjectName,
+   SkyboxComponent::SkyboxComponent(const std::shared_ptr<SkyboxComponentData> &data, const SkyboxRenderData &renderData)
+       : PrimitiveComponent(data->EngineObjectName,
                             glm::vec3(),
                             glm::vec3(),
-                            data.m_scale),
+                            data->m_scale),
          m_rotateSpeed(2.0f),
          m_renderData(renderData)
    {

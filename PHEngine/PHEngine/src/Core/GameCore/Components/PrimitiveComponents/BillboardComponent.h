@@ -4,6 +4,7 @@
 #include "Core/GraphicsCore/RenderData/BillboardRenderData.h"
 
 #include <glm/mat4x4.hpp>
+#include <memory>
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
@@ -25,7 +26,7 @@ namespace EngineCore
       bool bIsExtentDataDirty{false};
 
    public:
-      BillboardComponent(const BillboardComponentData &data, const BillboardRenderData &renderData);
+      BillboardComponent(const std::shared_ptr<BillboardComponentData> &data, const BillboardRenderData &renderData);
 
       ~BillboardComponent() override;
 

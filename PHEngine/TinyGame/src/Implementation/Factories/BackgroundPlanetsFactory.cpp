@@ -58,18 +58,19 @@ namespace Game
         scene->AddActor(a_backgroundPlanet);
 
         MaterialParser materialParser;
-        const auto &billboard_material = materialParser.ParseMaterialDescriptor("PlanetsMaterial.m");
+        const std::shared_ptr<IMaterial> &billboard_material = materialParser.ParseMaterialDescriptor("PlanetsMaterial.m");
+        scene->RegisterMaterialInstance(billboard_material);
         const auto albedo_texture = TexturePool::GetInstance()->GetOrAllocateResource(imageName);
 
         MaterialPropertySetter::SetMaterialPropertyValue(billboard_material, "albedo", albedo_texture);
 
         auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<BillboardComponent>>();
-        BillboardComponentData data("c_billboard_" + backgroundPlanetIndexStr, billboardSize, glm::vec3(0.0f), glm::vec3(1.0f), billboard_material);
+        const auto data = std::make_shared<BillboardComponentData>("c_billboard_" + backgroundPlanetIndexStr, billboardSize, glm::vec3(0.0f), glm::vec3(1.0f), billboard_material);
         const auto &billboardComponent = std::static_pointer_cast<BillboardComponent>(scene->CreateComponent_GameThread(billboardComponentCreator, data));
         billboardComponent->SetSortOrderValue(-10000);
         a_backgroundPlanet->AddComponent(billboardComponent);
 
-        MovementComponentData d_movement("c_backgroundPlanet_no_phys_movement_" + backgroundPlanetIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+        const auto d_movement = std::make_shared<MovementComponentData>("c_backgroundPlanet_no_phys_movement_" + backgroundPlanetIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(8.5f);

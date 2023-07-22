@@ -647,7 +647,7 @@ namespace Game
         PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
     }
 
-    std::shared_ptr<MissileActor> CombatController::GetMissileOwnerActorById(const uint64_t actorId) const
+    std::shared_ptr<MissileActor> CombatController::GetMissileOwnerActorById(const int32_t actorId) const
     {
         const auto foundIt = std::find_if(mMissilesPool.cbegin(),
                                           mMissilesPool.cend(),
@@ -658,14 +658,14 @@ namespace Game
         return (*foundIt);
     }
 
-    std::shared_ptr<SpaceshipActor> CombatController::GetEnemyShipOwnerActorById(const uint64_t actorId) const
+    std::shared_ptr<SpaceshipActor> CombatController::GetEnemyShipOwnerActorById(const int32_t actorId) const
     {
         const auto foundIt = std::find_if(mEnemies.cbegin(), mEnemies.cend(), [actorId](const auto &enemyActor)
                                           { return enemyActor->HasEngineObjectIdInHierarchy(actorId); });
         return (*foundIt);
     }
 
-    std::shared_ptr<SpaceObjectActor> CombatController::GetSpaceObjectOwnerActorById(const uint64_t actorId) const
+    std::shared_ptr<SpaceObjectActor> CombatController::GetSpaceObjectOwnerActorById(const int32_t actorId) const
     {
         const auto foundIt = std::find_if(mSpaceObjectsPool.cbegin(),
                                           mSpaceObjectsPool.cend(),
@@ -676,7 +676,7 @@ namespace Game
         return (*foundIt);
     }
 
-    eGameObjectsType CombatController::GetGameObjectTypeByActorId(const uint64_t actorId) const
+    eGameObjectsType CombatController::GetGameObjectTypeByActorId(const int32_t actorId) const
     {
         eGameObjectsType result{eGameObjectsType::UNDEFINED};
 

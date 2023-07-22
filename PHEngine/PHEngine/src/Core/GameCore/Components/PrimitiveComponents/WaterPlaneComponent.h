@@ -34,7 +34,8 @@ namespace EngineCore
    public:
       using Base = PrimitiveComponent;
 
-      WaterPlaneComponent(const WaterPlaneComponentData &data, const WaterPlaneRenderData &renderData,
+      WaterPlaneComponent(const std::shared_ptr<WaterPlaneComponentData> &data,
+                          const WaterPlaneRenderData &renderData,
                           WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
 
       ~WaterPlaneComponent() override;

@@ -72,13 +72,13 @@ namespace Game
 
         void AddModifier(const std::shared_ptr<IModifiable> &modifier);
 
-        bool HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const;
+        bool HasModifier(const eModifierType modifierType, const int32_t creatorObjectId) const;
 
         bool HasModifier(const eModifierType modifierType) const;
 
         std::shared_ptr<IModifiable> GetModifier(const eModifierType modifierType) const;
 
-        void RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId);
+        void RemoveModifier(const eModifierType modifierType, const int32_t creatorObjectId);
 
         bool CheckIsAliveAfterDamage(const size_t dmg);
 

@@ -56,7 +56,7 @@ namespace EngineCore
       std::shared_ptr<EngineObjectProperty<float>> TransitionValue;
 
    public:
-      SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData);
+      SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const SkeletalMeshRenderData &renderData);
 
       ~SkeletalMeshComponent() override;
 

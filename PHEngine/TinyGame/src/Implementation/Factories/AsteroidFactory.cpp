@@ -52,7 +52,8 @@ namespace Game
         scene->AddActor(a_asteroid);
 
         MaterialParser materialParser;
-        const auto &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        const std::shared_ptr<IMaterial> &asteroidPbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        scene->RegisterMaterialInstance(asteroidPbs_mat);
 
         const std::string albedoName = "Asteroid_albedo.jpg";
         const std::string normalName = "Asteroid_normal.jpg";
@@ -71,13 +72,13 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(asteroidPbs_mat, "uvScale", uvScale);
 
-        const MeshComponentData d_mesh("c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0),
-                                       rotation, scale, "", asteroidPbs_mat);
+        const auto d_mesh = std::make_shared<MeshComponentData>("c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0),
+                                                                rotation, scale, "", asteroidPbs_mat);
         const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_asteroid->AddComponent(c_mesh);
 
-        MovementComponentData d_movement("c_asteroid_no_phys_movement_" + asteroidIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+        const auto d_movement = std::make_shared<MovementComponentData>("c_asteroid_no_phys_movement_" + asteroidIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(5.0f);
@@ -87,9 +88,8 @@ namespace Game
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-        PhysicsComponentData physData("c_asteroid_physics_" + asteroidIndexStr, ghostController);
-        const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+        const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, std::make_shared<PhysicsComponentData>("c_asteroid_physics_" + asteroidIndexStr, ghostController));
         a_asteroid->AddComponent(c_ghostPhysics);
 
         scene->AddActorController(std::make_shared<AiActorController>(a_asteroid));

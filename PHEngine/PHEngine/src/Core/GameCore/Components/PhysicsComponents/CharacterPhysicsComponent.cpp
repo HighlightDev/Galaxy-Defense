@@ -12,9 +12,9 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   CharacterPhysicsComponent::CharacterPhysicsComponent(const PhysicsComponentData& data)
+   CharacterPhysicsComponent::CharacterPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data)
       : PhysicsComponent(data)
-      , characterController(static_cast<DynamicCharacterController*>(data.mPhysicsDescriptor))
+      , characterController(static_cast<DynamicCharacterController*>(data->mPhysicsDescriptor))
    {
       assert(characterController);
    }

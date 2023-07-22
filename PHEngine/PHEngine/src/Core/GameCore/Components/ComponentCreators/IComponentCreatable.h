@@ -18,7 +18,7 @@ namespace EngineCore
     class IComponentCreatable
     {
     public:
-        virtual std::shared_ptr<Component> CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const = 0;
+        virtual std::shared_ptr<Component> CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const = 0;
     };
 
     class ComponentCreatorBase 

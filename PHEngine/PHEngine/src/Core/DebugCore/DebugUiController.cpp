@@ -22,7 +22,7 @@ namespace EngineCore
         DebugUiController::DebugUiController()
             : mSceneWp(),
               mCanvas(),
-              mInputComponent(std::make_unique<InputComponent>(ComponentData("DebugUiControllerInputComponent"))),
+              mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("DebugUiControllerInputComponent"))),
               mPressButtonCooldown(0.0f)
         {
             mInputComponent->SetIsReceivingMouseEvents(false);

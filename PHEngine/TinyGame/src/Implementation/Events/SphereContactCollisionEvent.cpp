@@ -4,5 +4,5 @@ using namespace Event;
 
 namespace Event
 {
-    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<uint64_t, std::vector<uint64_t>>>;
+    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>;
 }

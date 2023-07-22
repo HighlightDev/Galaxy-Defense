@@ -11,7 +11,7 @@ namespace EngineCore
    struct ParticleSystemComponentData : public ComponentData
    {
       ParticleSystemComponentData(const std::string &gameObjectName,
-                                  Graphics::IMaterial *materialInstance,
+                                  const std::shared_ptr<Graphics::IMaterial> &materialInstance,
                                   const glm::vec3 &translation,
                                   const size_t particlesCount)
           : ComponentData(gameObjectName),
@@ -23,7 +23,7 @@ namespace EngineCore
 
       glm::vec3 m_translation;
       size_t m_particlesCount;
-      Graphics::IMaterial *m_material;
+      std::shared_ptr<Graphics::IMaterial> m_material;
    };
 
 }

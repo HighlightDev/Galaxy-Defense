@@ -53,21 +53,19 @@ namespace EngineCore
 
       EngineObject *LuaCommonEngineFunctions::GetEngineObject(const std::tuple<std::string> &gameObjectName)
       {
-         EngineObject *gameObject = nullptr;
-
          if (const auto &sceneSP = mSceneWp.lock())
          {
-            gameObject = sceneSP->GetEngineObjectByName(std::get<0>(gameObjectName));
+            return sceneSP->GetEngineObjectByName(std::get<0>(gameObjectName)).get();
          }
 
-         return gameObject;
+         return nullptr;
       }
 
       float LuaCommonEngineFunctions::GetGOPropertyValFloat(const std::tuple<EngineObject *, std::string> &data)
       {
          EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
-         const auto &property = std::static_pointer_cast<EngineObjectProperty<float>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+         const auto &property = std::static_pointer_cast<EngineObjectProperty<float>>(gameObject->GetEnginePropertyByName(std::get<1>(data)).lock());
          assert(property);
          return property->GetValue();
       }
@@ -76,7 +74,7 @@ namespace EngineCore
       {
          EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
-         const auto &property = std::static_pointer_cast<EngineObjectProperty<int32_t>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+         const auto &property = std::static_pointer_cast<EngineObjectProperty<int32_t>>(gameObject->GetEnginePropertyByName(std::get<1>(data)).lock());
          assert(property);
          return property->GetValue();
       }
@@ -85,7 +83,7 @@ namespace EngineCore
       {
          EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
-         auto property = std::static_pointer_cast<EngineObjectProperty<glm::vec3>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+         auto property = std::static_pointer_cast<EngineObjectProperty<glm::vec3>>(gameObject->GetEnginePropertyByName(std::get<1>(data)).lock());
          assert(property);
          property->SetValue(std::get<2>(data));
       }
@@ -94,7 +92,7 @@ namespace EngineCore
       {
          EngineObject *gameObject = std::get<0>(data);
          assert(gameObject != nullptr);
-         auto property = std::static_pointer_cast<EngineObjectProperty<bool>>(gameObject->GetEnginePropertyByName(std::get<1>(data)));
+         auto property = std::static_pointer_cast<EngineObjectProperty<bool>>(gameObject->GetEnginePropertyByName(std::get<1>(data)).lock());
          assert(property);
          property->SetValue(static_cast<bool>(std::get<2>(data)));
       }

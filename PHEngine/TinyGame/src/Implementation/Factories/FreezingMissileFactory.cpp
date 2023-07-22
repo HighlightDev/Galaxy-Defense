@@ -47,7 +47,8 @@ namespace Game
         scene->AddActor(a_missile);
 
         MaterialParser materialParser;
-        const auto &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        const std::shared_ptr<IMaterial> &pbs_mat = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+        scene->RegisterMaterialInstance(pbs_mat);
 
         const std::string albedoName = "missile1_albedo.png";
         const std::string normalName = "solar_cells_normal_512.jpg";
@@ -66,13 +67,13 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "metallicMap", metallic_tex);
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
-        const MeshComponentData d_mesh("c_freezingMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0),
-                                       glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
+        const auto d_mesh = std::make_shared<MeshComponentData>("c_freezingMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0),
+                                                                glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
         const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missile->AddComponent(c_mesh);
 
-        MovementComponentData d_movement("c_freezingMissileNoPhysMove_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
+        const auto d_movement = std::make_shared<MovementComponentData>("c_freezingMissileNoPhysMove_" + shipBulletIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
         const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(100.0f);
@@ -80,18 +81,18 @@ namespace Game
         c_movement->SetDirection(glm::vec3(.0f, .0f, 1.0f));
         a_missile->AddComponent(c_movement);
 
-        ComponentData d_audio("c_freezingMissileSound_" + shipBulletIndexStr);
         const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
-        const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
+        const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator,
+                                                                                                         std::make_shared<ComponentData>("c_freezingMissileSound_" + shipBulletIndexStr)));
         c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
         c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
 
         GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
         scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-        PhysicsComponentData physData("c_freezingMissilePhysics_" + shipBulletIndexStr, ghostController);
         const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
-        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
+        const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator,
+                                                                       std::make_shared<PhysicsComponentData>("c_freezingMissilePhysics_" + shipBulletIndexStr, ghostController));
         a_missile->AddComponent(c_ghostPhysics);
 
         const auto &bulletActorController = std::make_shared<AiActorController>(a_missile);

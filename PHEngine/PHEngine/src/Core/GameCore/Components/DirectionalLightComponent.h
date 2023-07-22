@@ -27,7 +27,7 @@ namespace EngineCore
 
    public:
 
-      DirectionalLightComponent(const LightComponentData& lightComponentData);
+      DirectionalLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData);
 
       ~DirectionalLightComponent() override;
 

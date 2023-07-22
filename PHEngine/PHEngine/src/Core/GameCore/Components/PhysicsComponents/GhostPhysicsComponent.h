@@ -18,7 +18,7 @@ namespace EnginePhysics
       std::shared_ptr<EngineObjectProperty<glm::vec3>> m_HitBoxScale;
 
    public:
-      GhostPhysicsComponent(const PhysicsComponentData &data);
+      GhostPhysicsComponent(const std::shared_ptr<PhysicsComponentData> &data);
 
       ~GhostPhysicsComponent() override;
 

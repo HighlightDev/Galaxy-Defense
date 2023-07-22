@@ -14,7 +14,7 @@ using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
-   RuntimeGeneratedLineComponent::RuntimeGeneratedLineComponent(const MeshComponentData &meshComponentData,
+   RuntimeGeneratedLineComponent::RuntimeGeneratedLineComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
                                                                 const StaticMeshRenderData &renderData,
                                                                 const RuntimeGeneratedMeshPoolParameters &rtMeshParams)
        : StaticMeshComponent(meshComponentData, renderData),

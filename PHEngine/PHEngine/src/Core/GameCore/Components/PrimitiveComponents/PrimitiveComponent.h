@@ -26,7 +26,7 @@ namespace EngineCore
 
             BoundingBox3D mBoundingBox;
 
-            size_t mSceneProxyId{0};
+            int32_t mSceneProxyId{0};
 
             std::shared_ptr<EngineObjectProperty<bool>> mIsVisible;
 
@@ -44,9 +44,9 @@ namespace EngineCore
 
             ~PrimitiveComponent() override;
 
-            void SetSceneProxyId(const size_t proxyId);
+            void SetSceneProxyId(const int32_t proxyId);
 
-            size_t GetSceneProxyId() const;
+            int32_t GetSceneProxyId() const;
 
             void SetIsSceneProxyReady(const bool isReady);
 

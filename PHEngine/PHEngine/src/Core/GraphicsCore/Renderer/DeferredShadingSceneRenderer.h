@@ -127,7 +127,7 @@ namespace Graphics
          void RenderScene_RenderThread();
 
          std::shared_ptr<SceneView> GetSceneViewByProxyId(const size_t proxyId) const;
-         std::shared_ptr<PrimitiveSceneProxy> GetPrimitiveProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<PrimitiveSceneProxy> GetPrimitiveProxyByProxyId(const int32_t proxyId) const;
          std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const size_t proxyId) const;
          std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const size_t proxyId) const;
          std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const size_t proxyId) const;
@@ -146,28 +146,29 @@ namespace Graphics
 
          void MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy);
 
-         void UpdatePrimitiveComponentEnable_OnRenderThread(const size_t primitiveSceneProxyIndex,
-                                                            const uint64_t creatorObjectId,
+         void UpdatePrimitiveComponentEnable_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                            const int32_t creatorObjectId,
                                                             const uint64_t functionId,
                                                             const bool bEnabled);
 
-         void UpdatePrimitiveComponentVisibility_OnRenderThread(const size_t primitiveSceneProxyIndex,
-                                                                const uint64_t creatorObjectId,
+         void UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                                const int32_t creatorObjectId,
                                                                 const uint64_t functionId,
                                                                 const bool visibility);
 
-         void UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const size_t primitiveSceneProxyIndex,
-                                                                    const uint64_t creatorObjectId,
+         void UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                                    const int32_t creatorObjectId,
                                                                     const uint64_t functionId,
                                                                     const int32_t sortOrderValue);
 
-         void UpdatePrimitiveComponentTransform_OnRenderThread(const size_t primitiveSceneProxyIndex, const uint64_t creatorObjectId,
+         void UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
+                                                               const int32_t creatorObjectId,
                                                                const uint64_t functionId,
                                                                const glm::mat4 &newRelativeMatrix,
                                                                const BoundingBox3D &newTransformedBoundingBox);
 
          void UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
-                                                           const uint64_t creatorObjectId,
+                                                           const int32_t creatorObjectId,
                                                            const uint64_t functionId,
                                                            const glm::mat4 &newRelativeMatrix);
 

@@ -42,7 +42,7 @@ namespace Game
                     SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {spaceship->GetPhysicsComponent()});
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceship->GetRootComponent()->GetTranslation());
                     const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
-                    std::vector<uint64_t> descriptorActorIds;
+                    std::vector<int32_t> descriptorActorIds;
                     std::transform(collidedDescriptors.begin(), collidedDescriptors.end(), std::back_inserter(descriptorActorIds),
                                    [](const auto &collidedDescriptor)
                                    { return collidedDescriptor->GetOwnerActorEngineObjectId(); });
@@ -74,7 +74,7 @@ namespace Game
                     SphereCollisionTestWithFilterAdapter collisionTest(50.0f, {spaceObject->GetPhysicsComponent()});
                     collisionTest.SphereCollisionTest(sceneSp->GetPhysicsWorld(), spaceObject->GetRootComponent()->GetTranslation());
                     const auto &collidedDescriptors = collisionTest.GetCollisionHitPhysicsDescriptors();
-                    std::vector<uint64_t> descriptorActorIds;
+                    std::vector<int32_t> descriptorActorIds;
                     std::transform(collidedDescriptors.begin(), collidedDescriptors.end(), std::back_inserter(descriptorActorIds),
                                    [](const auto &collidedDescriptor)
                                    { return collidedDescriptor->GetOwnerActorEngineObjectId(); });

@@ -15,14 +15,14 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   DirectionalLightComponent::DirectionalLightComponent(const LightComponentData &lightComponentData)
+   DirectionalLightComponent::DirectionalLightComponent(const std::shared_ptr<LightComponentData> &lightComponentData)
        : LightComponent(lightComponentData)
    {
-      const auto &d_directionalLight = static_cast<const DirectionalLightComponentData &>(lightComponentData);
+      const auto &d_directionalLight = std::static_pointer_cast<DirectionalLightComponentData>(lightComponentData);
       assert(nullptr == mLightRenderData);
-      mLightRenderData = std::make_shared<DirectionalLightRenderData>(d_directionalLight.Direction, d_directionalLight.Ambient,
-                                                                      d_directionalLight.Diffuse, d_directionalLight.Specular,
-                                                                      d_directionalLight.ShadowInfo);
+      mLightRenderData = std::make_shared<DirectionalLightRenderData>(d_directionalLight->Direction, d_directionalLight->Ambient,
+                                                                      d_directionalLight->Diffuse, d_directionalLight->Specular,
+                                                                      d_directionalLight->ShadowInfo);
 
       if (mLightRenderData->ShadowInfo)
       {

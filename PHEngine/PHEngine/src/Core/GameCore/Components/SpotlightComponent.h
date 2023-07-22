@@ -17,7 +17,7 @@ namespace EngineCore
 
    public:
 
-      SpotlightComponent(const LightComponentData& data);
+      SpotlightComponent(const std::shared_ptr<LightComponentData>& data);
 
       ~SpotlightComponent() override;
 

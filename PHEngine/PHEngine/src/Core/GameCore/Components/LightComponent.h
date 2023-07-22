@@ -29,7 +29,7 @@ namespace EngineCore
       size_t mLightSceneProxyId{0};
    public:
 
-      LightComponent(const LightComponentData& data);
+      LightComponent(const std::shared_ptr<LightComponentData>& data);
 
       virtual ~LightComponent();
 

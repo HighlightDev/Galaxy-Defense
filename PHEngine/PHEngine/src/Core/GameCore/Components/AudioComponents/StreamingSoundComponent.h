@@ -18,7 +18,7 @@ namespace EngineCore
         std::shared_ptr<StreamingSoundSource> mStreamingSoundSource;
 
     public:
-        StreamingSoundComponent(const ComponentData &data);
+        StreamingSoundComponent(const std::shared_ptr<ComponentData> &data);
 
         ~StreamingSoundComponent() override;
 

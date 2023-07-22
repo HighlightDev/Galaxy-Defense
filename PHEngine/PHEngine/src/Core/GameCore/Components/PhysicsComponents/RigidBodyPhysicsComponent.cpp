@@ -11,7 +11,7 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   RigidBodyPhysicsComponent::RigidBodyPhysicsComponent(const PhysicsComponentData& data)
+   RigidBodyPhysicsComponent::RigidBodyPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data)
       : PhysicsComponent(data)
    {
    }

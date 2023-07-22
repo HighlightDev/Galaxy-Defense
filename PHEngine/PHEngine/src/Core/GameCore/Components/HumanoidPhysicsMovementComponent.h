@@ -28,7 +28,7 @@ namespace EngineCore
      std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
-      HumanoidPhysicsMovementComponent(const MovementComponentData& movementComponentData);
+      HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);
 
       ~HumanoidPhysicsMovementComponent() override;
 

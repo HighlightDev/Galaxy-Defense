@@ -22,15 +22,15 @@ namespace EnginePhysics
    class PhysicsDescriptor
    {
    protected:
-      static size_t mTotalIds;
+      static int32_t mTotalIds;
 
       const ePhysicsBodyType mBodyType;
 
-      size_t mCurrentId;
+      int32_t mCurrentId;
 
-      uint64_t mOwnerComponentEngineObjectId;
+      int32_t mOwnerComponentEngineObjectId;
 
-      uint64_t mOwnerActorEngineObjectId;
+      int32_t mOwnerActorEngineObjectId;
 
       class PhysicsWorld *mPhysicsWorld;
 
@@ -104,13 +104,13 @@ namespace EnginePhysics
 
       bool GetIsCollisionEnabled() const;
 
-      void SetOwnerComponentEngineObjectId(const uint64_t ownerComponentEngineObjectId);
+      void SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId);
 
-      uint64_t GetOwnerComponentEngineObjectId() const;
+      int32_t GetOwnerComponentEngineObjectId() const;
 
-      void SetOwnerActorEngineObjectId(const uint64_t ownerActorEngineObjectId);
+      void SetOwnerActorEngineObjectId(const int32_t ownerActorEngineObjectId);
 
-      uint64_t GetOwnerActorEngineObjectId() const;
+      int32_t GetOwnerActorEngineObjectId() const;
    };
 
 }

@@ -4,10 +4,10 @@ namespace EnginePhysics
 {
    enum class ePhysicsBodyType
    {
-      STATIC,    // deactivates when velocity is 0
-      DYNAMIC,   // never deactivates
-      KINEMATIC, // deactivates + cannot be applied linear velocity to body
-      GHOST
+      STATIC = 0,    // deactivates when velocity is 0
+      DYNAMIC = 1,   // never deactivates
+      KINEMATIC = 2, // deactivates + cannot be applied linear velocity to body
+      GHOST = 3
    };
 
    enum class ePhysicsDescriptorType

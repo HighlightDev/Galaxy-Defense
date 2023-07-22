@@ -14,7 +14,7 @@ namespace EnginePhysics {
 
    public:
 
-      CharacterPhysicsComponent(const PhysicsComponentData& data);
+      CharacterPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data);
 
       ~CharacterPhysicsComponent() override;
 

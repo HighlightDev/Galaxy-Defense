@@ -17,15 +17,15 @@ using namespace EngineCore;
 namespace Graphics
 {
 
-   DynamicMaterial *MaterialPropertySetter::TryCastToDynamicMaterial(IMaterial *materialIsntance)
+   std::shared_ptr<DynamicMaterial> MaterialPropertySetter::TryCastToDynamicMaterial(const std::shared_ptr<IMaterial> &materialInstance)
    {
-      if (materialIsntance->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
-         return static_cast<DynamicMaterial *>(materialIsntance);
+      if (materialInstance->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
+         return std::static_pointer_cast<DynamicMaterial>(materialInstance);
       else
          return nullptr;
    }
 
-   void MaterialPropertySetter::SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, ITexture *texture)
+   void MaterialPropertySetter::SetTextureValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<ITexture> &texture)
    {
       auto propertyType = materialProperty->GetPropertyType();
       assert(propertyType == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY);
@@ -34,16 +34,7 @@ namespace Graphics
       textureProperty->SetValue(texture);
    }
 
-   void MaterialPropertySetter::SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, std::shared_ptr<ITexture> texture)
-   {
-      auto propertyType = materialProperty->GetPropertyType();
-      assert(propertyType == MaterialProperty::eMaterialPropertyType::TEXTURE_PROPERTY);
-      auto textureProperty = std::static_pointer_cast<TextureMaterialProperty>(materialProperty);
-      assert(textureProperty);
-      textureProperty->SetValue(texture);
-   }
-
-   void MaterialPropertySetter::SetFloatValue(std::shared_ptr<MaterialProperty> materialProperty, const float value)
+   void MaterialPropertySetter::SetFloatValue(const std::shared_ptr<MaterialProperty> &materialProperty, const float value)
    {
       auto propertyType = materialProperty->GetPropertyType();
       assert(propertyType == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY);
@@ -52,7 +43,7 @@ namespace Graphics
       floatProperty->SetValue(value);
    }
 
-   void MaterialPropertySetter::SetIVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::ivec2 &value)
+   void MaterialPropertySetter::SetIVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::ivec2 &value)
    {
       auto propertyType = materialProperty->GetPropertyType();
       assert(propertyType == MaterialProperty::eMaterialPropertyType::IVEC2_PROPERTY);
@@ -61,7 +52,7 @@ namespace Graphics
       ivec2Property->SetValue(value);
    }
 
-   void MaterialPropertySetter::SetVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::vec2& value)
+   void MaterialPropertySetter::SetVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::vec2 &value)
    {
       auto propertyType = materialProperty->GetPropertyType();
       assert(propertyType == MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY);
@@ -70,7 +61,7 @@ namespace Graphics
       vec2Property->SetValue(value);
    }
 
-   void MaterialPropertySetter::SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator *deferredResourceCreator)
+   void MaterialPropertySetter::SetDeferredResourceValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<IDeferredResourceCreator> &deferredResourceCreator)
    {
       if (materialProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::DEFERRED_TEXTURE_PROPERTY)
       {
@@ -86,12 +77,12 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const std::string &propertyName, ITexture *texture)
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const std::shared_ptr<ITexture> &texture)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
          if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
             SetTextureValue(property, texture);
@@ -104,30 +95,12 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const std::string &propertyName, std::shared_ptr<ITexture> texture)
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, float value)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
-      {
-         if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
-            SetTextureValue(property, texture);
-         else
-            assert(false);
-      }
-      else
-      {
-         SetTextureValue(materialInstance->GetMaterialPropertyByName(propertyName), texture);
-      }
-   }
-
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const std::string &propertyName, float value)
-   {
-      assert(materialInstance);
-
-      // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
          if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
             SetFloatValue(property, value);
@@ -140,12 +113,12 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(class IMaterial *materialInstance, const std::string &propertyName, const glm::ivec2 &value)
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::ivec2 &value)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
          if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
             SetIVec2Value(property, value);
@@ -158,12 +131,12 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(class IMaterial *materialInstance, const std::string &propertyName, const glm::vec2 &value)
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::vec2 &value)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
          if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
             SetVec2Value(property, value);
@@ -176,12 +149,14 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const std::string &propertyName, IDeferredResourceCreator *deferredResourceCreator)
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance,
+                                                         const std::string &propertyName,
+                                                         const std::shared_ptr<IDeferredResourceCreator> &deferredResourceCreator)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
          if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(propertyName))
             SetDeferredResourceValue(property, deferredResourceCreator);
@@ -194,7 +169,7 @@ namespace Graphics
       }
    }
 
-   bool MaterialPropertySetter::IsPropertyBindingType(std::shared_ptr<MaterialProperty> property)
+   bool MaterialPropertySetter::IsPropertyBindingType(const std::shared_ptr<MaterialProperty> &property)
    {
       switch (property->GetPropertyType())
       {
@@ -205,20 +180,20 @@ namespace Graphics
       }
    }
 
-   void MaterialPropertySetter::SetMaterialPropertyValue(IMaterial *materialInstance, const EngineObject *gameObject,
+   void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::shared_ptr<EngineObject> &gameObjectSp,
                                                          const std::string &gamePropertyName, const std::string &bindingName)
    {
       assert(materialInstance);
 
       // first try to find material property among related to dynamic property
-      if (const DynamicMaterial *dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
+      if (const auto &dynamicMaterial = TryCastToDynamicMaterial(materialInstance))
       {
-         if (auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(bindingName))
+         if (const auto property = dynamicMaterial->TryGetAnyMaterialPropertyByName(bindingName))
          {
             if (IsPropertyBindingType(property))
             {
-               auto bindingProperty = std::static_pointer_cast<BindingMaterialProperty>(property);
-               BindingAttachmentBuilder::SetAttachment(gameObject, bindingProperty->GetMaterialBinding().get(), gamePropertyName);
+               const auto bindingProperty = std::static_pointer_cast<BindingMaterialProperty>(property);
+               BindingAttachmentBuilder::SetAttachment(gameObjectSp, bindingProperty->GetMaterialBinding(), gamePropertyName);
             }
             else
                assert(false);

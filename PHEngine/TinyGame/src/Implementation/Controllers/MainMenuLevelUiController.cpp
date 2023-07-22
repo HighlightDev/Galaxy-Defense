@@ -20,7 +20,7 @@ namespace Game
     MainMenuLevelUiController::MainMenuLevelUiController(const std::weak_ptr<Scene> &scene)
         : mSceneWp(scene),
           mOverlayManager(std::make_shared<OverlayManager>(mSceneWp)),
-          mInputComponent(std::make_shared<InputComponent>(ComponentData("MainMenuLevelUiController Input Component")))
+          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("MainMenuLevelUiController Input Component")))
     {
     }
 

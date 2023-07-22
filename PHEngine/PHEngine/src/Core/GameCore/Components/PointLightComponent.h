@@ -26,7 +26,7 @@ namespace EngineCore
 
    public:
 
-      PointLightComponent(const LightComponentData& lightComponentData);
+      PointLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData);
 
       ~PointLightComponent() override;
 

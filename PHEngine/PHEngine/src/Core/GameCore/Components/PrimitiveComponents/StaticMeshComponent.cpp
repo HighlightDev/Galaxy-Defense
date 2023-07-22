@@ -15,11 +15,11 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   StaticMeshComponent::StaticMeshComponent(const MeshComponentData &meshComponentData, const StaticMeshRenderData renderData)
-       : PrimitiveComponent(meshComponentData.EngineObjectName,
-                            meshComponentData.m_translation,
-                            meshComponentData.m_eulerRotationDegrees,
-                            meshComponentData.m_scale),
+   StaticMeshComponent::StaticMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const StaticMeshRenderData renderData)
+       : PrimitiveComponent(meshComponentData->EngineObjectName,
+                            meshComponentData->m_translation,
+                            meshComponentData->m_eulerRotationDegrees,
+                            meshComponentData->m_scale),
          m_renderData(renderData)
    {
    }

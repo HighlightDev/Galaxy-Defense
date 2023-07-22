@@ -13,14 +13,14 @@ using namespace EngineMath;
 namespace EngineCore
 {
 
-   PlanarReflectionComponent::PlanarReflectionComponent(const PlanarReflectionComponentData &data)
-       : SceneComponent(data.EngineObjectName,
-                        data.m_translation,
-                        data.m_eulerRotationDegrees,
-                        data.m_scale),
+   PlanarReflectionComponent::PlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponentData> &data)
+       : SceneComponent(data->EngineObjectName,
+                        data->m_translation,
+                        data->m_eulerRotationDegrees,
+                        data->m_scale),
          mReflectionPlane(),
-         mOwnerCamera(data.m_ownerCamera),
-         mRenderTargetViewPortInfo(data.m_fboViewPortInfo),
+         mOwnerCamera(data->m_ownerCamera),
+         mRenderTargetViewPortInfo(data->m_fboViewPortInfo),
          mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>())
    {
    }
@@ -61,9 +61,9 @@ namespace EngineCore
 
    void PlanarReflectionComponent::OnPostInitialized()
    {
-      if (const auto &sceneSP = m_sceneWP.lock())
+      if (const auto &sceneSp = m_sceneWP.lock())
       {
-         sceneSP->RegisterDeferredResourceCreator(this, GetEngineObjectName());
+         sceneSp->RegisterDeferredResourceCreator(shared_from_this(), GetEngineObjectName());
       }
    }
 

@@ -20,7 +20,7 @@ namespace EngineCore
         std::vector<std::shared_ptr<HudTextField>> mTextFields;
 
     public:
-        UiComponent(const ComponentData &data);
+        UiComponent(const std::shared_ptr<ComponentData> &data);
 
         ~UiComponent() override;
 

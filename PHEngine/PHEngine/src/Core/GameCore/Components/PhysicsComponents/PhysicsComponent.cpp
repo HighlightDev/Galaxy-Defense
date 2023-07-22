@@ -16,9 +16,9 @@ using namespace TinyLogger;
 
 namespace EnginePhysics
 {
-   PhysicsComponent::PhysicsComponent(const PhysicsComponentData &data)
-       : Component(data.EngineObjectName),
-         mDescriptor(data.mPhysicsDescriptor),
+   PhysicsComponent::PhysicsComponent(const std::shared_ptr<PhysicsComponentData> &data)
+       : Component(data->EngineObjectName),
+         mDescriptor(data->mPhysicsDescriptor),
          bIsTransformationDirty(true)
    {
       mDescriptor->SetOwnerComponentEngineObjectId(GetObjectId());

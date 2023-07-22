@@ -2,7 +2,7 @@
 
 namespace Graphics
 {
-   size_t SceneProxyBase::SceneProxyIdCounter = 0;
+   int32_t SceneProxyBase::SceneProxyIdCounter = 0;
 
    SceneProxyBase::SceneProxyBase(const bool isEnabled)
        : mSceneProxyId(SceneProxyIdCounter),
@@ -16,7 +16,7 @@ namespace Graphics
    {
    }
 
-   size_t SceneProxyBase::GetSceneProxyId() const
+   int32_t SceneProxyBase::GetSceneProxyId() const
    {
       return mSceneProxyId;
    }
@@ -31,12 +31,12 @@ namespace Graphics
       mIsEnabled = bEnabled;
    }
 
-   void SceneProxyBase::SetBindedGameObjectId(const size_t gameObjectId)
+   void SceneProxyBase::SetBindedGameObjectId(const int32_t gameObjectId)
    {
       mGameObjectId = gameObjectId;
    }
 
-   size_t SceneProxyBase::GetGameObjectId() const
+   int32_t SceneProxyBase::GetGameObjectId() const
    {
       return mGameObjectId;
    }

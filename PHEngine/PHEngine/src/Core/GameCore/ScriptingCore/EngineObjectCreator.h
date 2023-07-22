@@ -12,9 +12,12 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/Scene.h"
+#include "EngineObjectCreatorFactories/IEngineActorCreatorFactory.h"
+#include "EngineObjectCreatorFactories/IEngineComponentCreatorFactory.h"
 
 using namespace Graphics;
 using namespace EnginePhysics;
+using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
@@ -24,71 +27,48 @@ namespace EngineCore
    {
       std::weak_ptr<Scene> mSceneWp;
 
+      std::unordered_map<std::string, std::shared_ptr<IEngineActorCreatorFactory>> mActorCreatorFactoriesMap;
+
+      std::unordered_set<std::string> mDefaultComponentNames;
+
+      std::unordered_map<std::string, std::shared_ptr<IEngineComponentCreatorFactory>> mComponentCreatorFactoriesMap;
+
    public:
-      explicit EngineObjectCreator(const std::shared_ptr<Scene>& scene);
+      EngineObjectCreator();
 
-      static std::shared_ptr<Actor> CreateActorByString(const std::string &gameObjectName, std::shared_ptr<SceneComponent> rootComponent);
+      void SetScene(const std::weak_ptr<Scene> &scene);
 
-      static std::shared_ptr<ACamera> CreateThirdPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene,
-                                                              const ViewPortInfo &viewPort,
-                                                              const float initPitchDeg, const float initYawDeg,
-                                                              const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset, const bool bIsMainSceneCamera);
-      static std::shared_ptr<ACamera> CreateFirstPersonCamera(const std::string &cameraName, std::shared_ptr<Scene> scene,
-                                                              const ViewPortInfo &viewPort,
-                                                              const float initPitchDeg, const float initYawDeg, const glm::vec3 &cameraPosition, const bool bIsMainSceneCamera);
+      void RegisterActorCreatorFactory(const std::string &factoryKey, const std::shared_ptr<IEngineActorCreatorFactory> &creatorFactoryInstance);
 
-      static std::shared_ptr<Component> CreateComponentByString(const std::string &componentType, ComponentData *data,
-                                                                std::shared_ptr<Scene> scene);
+      void RegisterComponentCreatorFactory(const std::string &factoryKey, const std::shared_ptr<IEngineComponentCreatorFactory> &creatorFactoryInstance);
 
-      static ProjectedShadowInfo *CreateProjectedShadowInfo(const std::string &lightType, const glm::ivec2 &shadowAtlasSize);
-
-      static ComponentData *CreateSpotlightComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
-                                                         const glm::vec3 &rotation,
-                                                         const glm::vec3 &ambient, const glm::vec3 &diffuse, const glm::vec3 &specular,
-                                                         const glm::vec3 &attenutation, float radianceRadius, float cutoff, ProjectedShadowInfo *shadowInfo);
-      static ComponentData *CreatePointLightComponentData(const std::string &gameObjectName,
-                                                          const glm::vec3 &translation, const glm::vec3 &ambient,
-                                                          const glm::vec3 &diffuse, const glm::vec3 &specular, const glm::vec3 &attenutation,
-                                                          float radianceRadius, ProjectedShadowInfo *shadowInfo);
-      static ComponentData *CreateDirLightComponentData(const std::string &gameObjectName,
-                                                        const glm::vec3 &rotation,
-                                                        const glm::vec3 &direction,
-                                                        const glm::vec3 &ambient,
-                                                        const glm::vec3 &diffuse, const glm::vec3 &specular, ProjectedShadowInfo *shadowInfo);
-      static ComponentData *CreateMeshComponentData(const std::string &gameObjectName, const std::string &relativePathToMesh,
-                                                    const glm::vec3 &translation,
-                                                    const glm::vec3 &rotation, const glm::vec3 &scale, const std::string &luaPathToFile, IMaterial *material);
-      static ComponentData *CreatePhysicsComponentData(const std::string &gameObjectName, PhysicsDescriptor *physDescriptor);
-      static ComponentData *CreateCharacterMovementComponentData(const std::string &gameObjectName, const glm::vec3 &launchDirection,
-                                                                 const std::string &cameraName);
-      static ComponentData *CreatePlatformTraverseComponentData(const std::string &gameObjectName, const std::string &scriptName);
-      static ComponentData *CreateInputComponentData(const std::string &gameObjectName);
-      static ComponentData *CreateSkyboxComponentData(const std::string &gameObjectName, const glm::vec3 &scale, IMaterial *material);
-      static ComponentData *CreateWaterPlaneComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
-                                                          const glm::vec3 &rotation, const glm::vec3 &scale, IMaterial *materialInstance);
-
-      static ComponentData *CreatePlanarReflectionComponentData(const std::string &gameObjectName, const glm::vec3 &translation,
-                                                                const glm::vec3 &rotation, const glm::vec3 &scale, ACamera *ownerCamera,
-                                                                const ViewPortInfo &fboViewPortInfo);
-
-      static PhysicsShapeBase *CreatePhysicsBoxShape(const glm::vec3 &halfExtent);
-      static PhysicsShapeBase *CreatePhysicsCapsuleShape(const double radius, const double height);
-      static PhysicsShapeBase *CreatePhysicsPlaneShape(const glm::vec3 &normal, const double d);
-      static PhysicsShapeBase *CreatePhysicsSphereShape(const double radius);
-      static PhysicsShapeBase *CreatePhysicsCompoundShape();
-      static void AddChildShapeToCompoundShape(PhysicsShapeBase *compoundShape, PhysicsShapeBase *childShape, const glm::vec3 &translation,
-                                               const glm::vec3 &rotation);
-
-      static PhysicsDescriptor *CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const std::string &bodyType,
-                                                          const float mass);
-      static PhysicsDescriptor *CreateRigidBodyController(PhysicsWorld *physWorld, PhysicsShapeBase *phyShape, const ePhysicsBodyType &bodyType,
-                                                          const float mass);
-      static PhysicsDescriptor *CreateDynamicCharacterController(PhysicsWorld *physWorld, float capsuleRadius, float capsuleHeight,
-                                                                 float mass, float stepHeight);
-
-
+   public:
       // Actor will be created and added to the scene
-      uint64_t CreateActor(const std::string& actorName, const glm::vec3& rootTranslation, const glm::vec3& rootEulerRotation, const glm::vec3& rootScale);
+      int32_t CreateActor(const std::string &actorType,
+                           const std::string &actorName,
+                           const glm::vec3 &rootTranslation,
+                           const glm::vec3 &rootEulerRotation,
+                           const glm::vec3 &rootScale,
+                           const std::string &jsonArgsStr) const;
+
+      void CreateComponent(const int32_t actorObjectId,
+                           const std::string &componentType,
+                           const std::string &componentDataJsonStr) const;
+
+      void CreateThirdPersonCamera(const std::string &cameraName,
+                                   const ViewPortInfo &viewPort,
+                                   const float initPitchDeg,
+                                   const float initYawDeg,
+                                   const float camDistanceToThirdPersonTarget,
+                                   const glm::vec3 &thirdPersonTargetOffset,
+                                   const bool bIsMainSceneCamera);
+
+      void CreateFirstPersonCamera(const std::string &cameraName,
+                                   const ViewPortInfo &viewPort,
+                                   const float initPitchDeg,
+                                   const float initYawDeg,
+                                   const glm::vec3 &cameraPosition,
+                                   const bool bIsMainSceneCamera);
    };
 
 }

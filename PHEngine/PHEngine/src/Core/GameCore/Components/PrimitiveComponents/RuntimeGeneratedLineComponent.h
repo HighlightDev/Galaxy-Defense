@@ -32,7 +32,7 @@ namespace EngineCore
 		using Base = StaticMeshComponent;
 
 	public:
-		RuntimeGeneratedLineComponent(const MeshComponentData &meshComponentData,
+		RuntimeGeneratedLineComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
 									  const StaticMeshRenderData &renderData,
 									  const RuntimeGeneratedMeshPoolParameters &rtMeshParams);
 

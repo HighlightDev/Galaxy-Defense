@@ -11,14 +11,14 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   PointLightComponent::PointLightComponent(const LightComponentData& lightComponentData)
+   PointLightComponent::PointLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData)
       : LightComponent(lightComponentData)
    {
-      const auto &d_pointLight = static_cast<const PointLightComponentData &>(lightComponentData);
+      const auto &d_pointLight = std::static_pointer_cast<PointLightComponentData>(lightComponentData);
       assert(nullptr == mLightRenderData);
-      mLightRenderData = std::make_shared<PointLightRenderData>(d_pointLight.Attenuation, d_pointLight.RadianceRadius,
-                                                            d_pointLight.Ambient, d_pointLight.Diffuse,
-                                                            d_pointLight.Specular, d_pointLight.ShadowInfo);
+      mLightRenderData = std::make_shared<PointLightRenderData>(d_pointLight->Attenuation, d_pointLight->RadianceRadius,
+                                                            d_pointLight->Ambient, d_pointLight->Diffuse,
+                                                            d_pointLight->Specular, d_pointLight->ShadowInfo);
 
       if (mLightRenderData->ShadowInfo)
       {

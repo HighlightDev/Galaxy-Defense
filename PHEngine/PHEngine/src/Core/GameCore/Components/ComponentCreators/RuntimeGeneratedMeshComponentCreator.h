@@ -28,16 +28,17 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
             std::shared_ptr<Skin> skin;
 
-            const RuntimeGeneratedMeshComponentData &mData = static_cast<const RuntimeGeneratedMeshComponentData &>(data);
+            const auto &mData = std::static_pointer_cast<RuntimeGeneratedMeshComponentData>(data);
 
-            assert(eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData.GetMeshComponentDataType());
-            RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData.EngineObjectName, mData.mMaxVerticesCount);
+            assert(eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData->GetMeshComponentDataType());
+            RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData->EngineObjectName, mData->mMaxVerticesCount);
 
-            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
+            const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
+            assert(materialProxy);
 
             const ShaderParams shaderParams(
                 "RuntimeGeneratedMesh_BaseShader",

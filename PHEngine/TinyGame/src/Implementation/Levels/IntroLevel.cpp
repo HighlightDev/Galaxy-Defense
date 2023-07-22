@@ -103,14 +103,15 @@ namespace Game
       assert(a_skybox);
 
       MaterialParser materialParser;
-      const auto &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
+      const std::shared_ptr<IMaterial> &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
+      sceneSp->RegisterMaterialInstance(spaceStars_material);
       const auto screenResolution = glm::vec2((float)displayWidth, (float)displayHeight);
 
-      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp.get(), "GT_DeltaSec", "gt_timeSec");
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
       MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "resolution", screenResolution);
 
       auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
-      BillboardComponentData backgroundBillboardComponentData("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
+      const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
       const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
@@ -118,14 +119,13 @@ namespace Game
       const auto &a_spaceship = sceneSp->GetActorByName("SpaceshipActor");
       assert(a_spaceship);
 
-      ComponentData d_input = ComponentData("SpaceshipInputComponent");
       const auto &inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
-      const auto &c_input = sceneSp->CreateComponent_GameThread(inputComponentCreator, d_input);
+      const auto &c_input = sceneSp->CreateComponent_GameThread(inputComponentCreator, std::make_shared<ComponentData>("SpaceshipInputComponent"));
       a_spaceship->AddComponent(c_input);
 
-      MovementComponentData d_movement("NoPhysMoveComponentData", glm::vec3());
       const auto &movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
-      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(sceneSp->CreateComponent_GameThread(movementComponentCreator, d_movement));
+      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(sceneSp->CreateComponent_GameThread(movementComponentCreator,
+                                                                                                                        std::make_shared<MovementComponentData>("NoPhysMoveComponentData", glm::vec3())));
 
       c_movement->SetReferenceSpeed(40.0f);
       c_movement->SetCurrentSpeedToReferenceValue();
@@ -148,7 +148,7 @@ namespace Game
       const auto &rootComponent = a_spaceship->GetRootComponent();
 
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
-      BindingAttachmentBuilder::SetAttachment(rootComponent.get(), binding.get(), "b_rotator");
+      BindingAttachmentBuilder::SetAttachment(rootComponent, binding, "b_rotator");
 
       mSceneController->SetPlayerActorController(spaceShipController);
 

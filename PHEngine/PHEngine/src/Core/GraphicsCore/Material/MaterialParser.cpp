@@ -101,7 +101,7 @@ namespace Graphics
       return CreatePropertyByType(propertyType, propertyName);
    }
 
-   IMaterial *MaterialParser::ParseMaterialDescriptor(const std::string &materialFileName)
+   std::shared_ptr<IMaterial> MaterialParser::ParseMaterialDescriptor(const std::string &materialFileName)
    {
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
       FileFacade fileWorker(absolutePath);
@@ -137,7 +137,7 @@ namespace Graphics
          }
       }
 
-      IMaterial *parsedMaterial = nullptr;
+      std::shared_ptr<IMaterial> parsedMaterial;
 
       if ("dynamic" == materialType)
       {
@@ -155,9 +155,9 @@ namespace Graphics
       return parsedMaterial;
    }
 
-   IMaterial *MaterialParser::ParseStaticMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
+   std::shared_ptr<IMaterial> MaterialParser::ParseStaticMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
    {
-      IMaterial *material = new IMaterial(materialName, materialShaderPath);
+      const auto materialInstance = std::make_shared<IMaterial>(materialName, materialShaderPath);
 
       auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
       auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
@@ -166,10 +166,10 @@ namespace Graphics
       for (auto it = propertiesStartNode; it != propertiesEndNode; ++it)
       {
          std::shared_ptr<MaterialProperty> materialProperty = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode);
-         material->PushMaterialProperty(materialProperty);
+         materialInstance->PushMaterialProperty(materialProperty);
       }
 
-      return material;
+      return materialInstance;
    }
 
    XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string &propertyType, std::shared_ptr<MaterialNode> node,
@@ -297,9 +297,9 @@ namespace Graphics
       return dynamicMaterialPropery;
    }
 
-   IMaterial *MaterialParser::ParseDynamicMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
+   std::shared_ptr<IMaterial> MaterialParser::ParseDynamicMaterial(const std::list<std::string> &materialSrc, const std::string &materialName, const std::string &materialShaderPath)
    {
-      DynamicMaterial *material = new DynamicMaterial(materialName, materialShaderPath);
+      const auto materialInstance = std::make_shared<DynamicMaterial>(materialName, materialShaderPath);
 
       auto propertiesStartNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_START_NODE_NAME);
       auto propertiesEndNode = XMLParserHelper::GetItByNodeName(materialSrc, PROPERTIES_END_NODE_NAME);
@@ -312,16 +312,16 @@ namespace Graphics
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_START_NODE_NAME))
          {
             auto property = GetMaterialDynamicPropertyAndAdvanceIterator(it, propertiesEndNode);
-            material->PushDynamicProperty(property);
+            materialInstance->PushDynamicProperty(property);
          }
          else if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
          {
             auto property = GetMaterialPropertyAndAdvanceIterator(it, propertiesEndNode);
-            material->PushMaterialProperty(property);
+            materialInstance->PushMaterialProperty(property);
          }
       }
 
-      return material;
+      return materialInstance;
    }
 
 #undef GENERAL_START_NODE_NAME

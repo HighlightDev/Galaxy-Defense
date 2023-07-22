@@ -9,8 +9,8 @@ using namespace Resources;
 
 namespace EngineCore
 {
-    SoundComponent::SoundComponent(const ComponentData &data)
-        : Component(data.EngineObjectName),
+    SoundComponent::SoundComponent(const std::shared_ptr<ComponentData> &data)
+        : Component(data->EngineObjectName),
           mSoundBuffersMap(),
           mSoundSource(std::make_shared<SoundSource>())
     {

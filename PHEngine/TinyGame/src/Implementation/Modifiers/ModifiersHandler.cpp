@@ -53,7 +53,7 @@ namespace Game
         mModifiers.emplace_back(modifier);
     }
 
-    bool ModifiersHandler::HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const
+    bool ModifiersHandler::HasModifier(const eModifierType modifierType, const int32_t creatorObjectId) const
     {
         auto foundIt = std::find_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
                                     { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });
@@ -74,7 +74,7 @@ namespace Game
         return mModifiers.end() != foundIt ? *foundIt : nullptr;
     }
 
-    void ModifiersHandler::RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId)
+    void ModifiersHandler::RemoveModifier(const eModifierType modifierType, const int32_t creatorObjectId)
     {
         auto removeIt = std::remove_if(mModifiers.begin(), mModifiers.end(), [=](const auto &modifier)
                                        { return (modifierType == modifier->GetModifierType() && creatorObjectId == modifier->CreatorObjectId()); });

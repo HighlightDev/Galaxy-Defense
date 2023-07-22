@@ -7,12 +7,12 @@
 namespace EngineCore
 {
 
-   HumanoidPhysicsMovementComponent::HumanoidPhysicsMovementComponent(const MovementComponentData& movementComponentData)
+   HumanoidPhysicsMovementComponent::HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData)
        : MovementComponent(movementComponentData), CameraTransformChangedEvent(), mCameraName(""), m_playerPhysicsComponent()
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
-      const auto& charMoveCompData = static_cast<const HumanoidMovementComponentData&>(movementComponentData);
-      mCameraName = charMoveCompData.mCameraName;
+      const auto& charMoveCompData = std::static_pointer_cast<HumanoidMovementComponentData>(movementComponentData);
+      mCameraName = charMoveCompData->mCameraName;
    }
 
    void HumanoidPhysicsMovementComponent::PostLevelInit()

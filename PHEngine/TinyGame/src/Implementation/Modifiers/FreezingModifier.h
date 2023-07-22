@@ -23,7 +23,7 @@ namespace Game
 
         eModifierType GetModifierType() const override;
 
-        uint64_t CreatorObjectId() const override;
+        int32_t CreatorObjectId() const override;
 
         void Tick(const float deltaTime) override;
 

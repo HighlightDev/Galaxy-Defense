@@ -21,7 +21,7 @@ namespace EnginePhysics
    {
    }
 
-   size_t PhysicsDescriptor::mTotalIds = 0;
+   int32_t PhysicsDescriptor::mTotalIds = 0;
 
    PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld,
                                         PhysicsShapeBase *shape,
@@ -31,8 +31,8 @@ namespace EnginePhysics
        : mBodyType(bodyType),
          mPhysicsWorld(pPhysicsWorld),
          mCurrentId(PhysicsDescriptor::mTotalIds++),
-         mOwnerComponentEngineObjectId(std::numeric_limits<uint64_t>::max()),
-         mOwnerActorEngineObjectId(std::numeric_limits<uint64_t>::max()),
+         mOwnerComponentEngineObjectId(-1),
+         mOwnerActorEngineObjectId(-1),
          mShape(shape),
          mMotionState(new btDefaultMotionState()),
          mMass(mass),
@@ -173,24 +173,24 @@ namespace EnginePhysics
       return mIsCollisionEnabled;
    }
 
-   void PhysicsDescriptor::SetOwnerComponentEngineObjectId(const uint64_t ownerComponentEngineObjectId)
+   void PhysicsDescriptor::SetOwnerComponentEngineObjectId(const int32_t ownerComponentEngineObjectId)
    {
       LogInfo("PhysicsDescriptor::SetOwnerComponentEngineObjectId => my descriptor id=", mCurrentId, "owner id=", ownerComponentEngineObjectId);
       mOwnerComponentEngineObjectId = ownerComponentEngineObjectId;
    }
 
-   uint64_t PhysicsDescriptor::GetOwnerComponentEngineObjectId() const
+   int32_t PhysicsDescriptor::GetOwnerComponentEngineObjectId() const
    {
       return mOwnerComponentEngineObjectId;
    }
 
-   void PhysicsDescriptor::SetOwnerActorEngineObjectId(const uint64_t ownerActorEngineObjectId)
+   void PhysicsDescriptor::SetOwnerActorEngineObjectId(const int32_t ownerActorEngineObjectId)
    {
       LogInfo("PhysicsDescriptor::SetOwnerActorEngineObjectId => my descriptor id=", mCurrentId, "owner id=", ownerActorEngineObjectId);
       mOwnerActorEngineObjectId = ownerActorEngineObjectId;
    }
 
-   uint64_t PhysicsDescriptor::GetOwnerActorEngineObjectId() const
+   int32_t PhysicsDescriptor::GetOwnerActorEngineObjectId() const
    {
       return mOwnerActorEngineObjectId;
    }

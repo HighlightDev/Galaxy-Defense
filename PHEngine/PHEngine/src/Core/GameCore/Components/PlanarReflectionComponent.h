@@ -22,7 +22,8 @@ namespace EngineCore
 
    class PlanarReflectionComponent
        : public SceneComponent,
-         public IDeferredResourceCreator
+         public IDeferredResourceCreator,
+         std::enable_shared_from_this<IDeferredResourceCreator>
    {
       size_t mPlanarReflectionSceneProxyId = -1;
 
@@ -39,7 +40,7 @@ namespace EngineCore
       bool bIsRenderDataDirty{false};
 
    public:
-      PlanarReflectionComponent(const PlanarReflectionComponentData &data);
+      PlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponentData> &data);
 
       ~PlanarReflectionComponent() override;
 

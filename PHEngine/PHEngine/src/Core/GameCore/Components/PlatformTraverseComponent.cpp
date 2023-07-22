@@ -12,9 +12,9 @@ using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-   PlatformTraverseComponent::PlatformTraverseComponent(const PlatformTraverseComponentData &data)
-       : Component(data.EngineObjectName),
-         mScriptExecutor(std::make_shared<LuaPlatformTraverseScriptExecutor>(data.mScriptName, this)),
+   PlatformTraverseComponent::PlatformTraverseComponent(const std::shared_ptr<PlatformTraverseComponentData> &data)
+       : Component(data->EngineObjectName),
+         mScriptExecutor(std::make_shared<LuaPlatformTraverseScriptExecutor>(data->mScriptName, this)),
          mDestinationPoint("NO"),
          mTime(0.0f)
    {

@@ -14,7 +14,7 @@ namespace EngineCore
                              const float billboardExtent,
                              const glm::vec3 &translation,
                              const glm::vec3 &scale,
-                             Graphics::IMaterial *material)
+                             const std::shared_ptr<Graphics::IMaterial> &material)
           : ComponentData(gameObjectName),
             m_billboardExtent(billboardExtent),
             m_translation(translation),
@@ -27,7 +27,7 @@ namespace EngineCore
       glm::vec3 m_translation;
       glm::vec3 m_scale;
 
-      Graphics::IMaterial *m_material;
+      std::shared_ptr<Graphics::IMaterial> m_material;
    };
 
 }

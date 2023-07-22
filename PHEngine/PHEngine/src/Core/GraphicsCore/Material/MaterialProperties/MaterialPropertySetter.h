@@ -6,11 +6,13 @@
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "MaterialProperty.h"
 
-namespace Resources {
-   struct IDeferredResourceCreator;
+namespace Resources
+{
+   class IDeferredResourceCreator;
 }
 
-namespace EngineCore {
+namespace EngineCore
+{
    class EngineObject;
 }
 
@@ -18,34 +20,38 @@ namespace Graphics
 {
    using namespace Texture;
 
-   using Resources::IDeferredResourceCreator;
    using EngineCore::EngineObject;
+   using Resources::IDeferredResourceCreator;
+
+   class IMaterial;
+   class DynamicMaterial;
 
    struct MaterialPropertySetter
    {
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, ITexture* texture);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, std::shared_ptr<ITexture> texture);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const float value);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, IDeferredResourceCreator* deferredResourceCreator);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const class EngineObject* gameObject,const std::string& gamePropertyName, const std::string& bindingName);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const glm::ivec2& value);
-      static void SetMaterialPropertyValue(class IMaterial* materialInstance, const std::string& propertyName, const glm::vec2& value);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const std::shared_ptr<ITexture> &texture);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const float value);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const std::shared_ptr<IDeferredResourceCreator> &deferredResourceCreator);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance,
+                                           const std::shared_ptr<EngineObject> &gameObjectSp,
+                                           const std::string &gamePropertyName,
+                                           const std::string &bindingName);
+
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::ivec2 &value);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::vec2 &value);
 
    private:
-      static class DynamicMaterial* TryCastToDynamicMaterial(class IMaterial* materialIsntance);
+      static std::shared_ptr<DynamicMaterial> TryCastToDynamicMaterial(const std::shared_ptr<IMaterial> &materialIsntance);
 
-      static void SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, ITexture* texture);
-      static void SetTextureValue(std::shared_ptr<MaterialProperty> materialProperty, std::shared_ptr<ITexture> texture);
+      static void SetTextureValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<ITexture> &texture);
 
-      static void SetFloatValue(std::shared_ptr<MaterialProperty> materialProperty, const float value);
+      static void SetFloatValue(const std::shared_ptr<MaterialProperty> &materialProperty, const float value);
 
-      static void SetIVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::ivec2 &value);
+      static void SetIVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::ivec2 &value);
 
-      static void SetVec2Value(std::shared_ptr<MaterialProperty> materialProperty, const glm::vec2& value);
+      static void SetVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::vec2 &value);
 
-      static void SetDeferredResourceValue(std::shared_ptr<MaterialProperty> materialProperty, IDeferredResourceCreator* deferredResourceCreator);
+      static void SetDeferredResourceValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<IDeferredResourceCreator> &deferredResourceCreator);
 
-      static bool IsPropertyBindingType(std::shared_ptr<MaterialProperty> property);
+      static bool IsPropertyBindingType(const std::shared_ptr<MaterialProperty> &property);
    };
 }
-

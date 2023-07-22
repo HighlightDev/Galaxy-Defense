@@ -29,12 +29,12 @@ namespace EngineCore
    {
    }
 
-   void PrimitiveComponent::SetSceneProxyId(const size_t proxyId)
+   void PrimitiveComponent::SetSceneProxyId(const int32_t proxyId)
    {
       mSceneProxyId = proxyId;
    }
 
-   size_t PrimitiveComponent::GetSceneProxyId() const
+   int32_t PrimitiveComponent::GetSceneProxyId() const
    {
       return mSceneProxyId;
    }

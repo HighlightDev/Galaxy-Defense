@@ -7,11 +7,11 @@
 namespace EngineCore
 {
 
-   MovementComponent::MovementComponent(const MovementComponentData &movementComponentData)
-       : Component(movementComponentData.EngineObjectName),
+   MovementComponent::MovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData)
+       : Component(movementComponentData->EngineObjectName),
          mReferenceSpeed(1.0f),
          mCurrentSpeed(1.0f),
-         mDirection(movementComponentData.m_launchDirection)
+         mDirection(movementComponentData->m_launchDirection)
    {
    }
 

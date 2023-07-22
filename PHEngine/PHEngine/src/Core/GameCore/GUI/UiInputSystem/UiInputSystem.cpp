@@ -17,7 +17,7 @@ namespace EngineCore
         UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas> &owner)
             : mScreenHeight(0),
               mOwnerWp(owner),
-              mInputComponent(std::make_unique<InputComponent>(ComponentData(std::to_string(s_id++)))),
+              mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>(std::to_string(s_id++)))),
               mMouseKeyPressedPosition()
         {
             mScreenHeight = static_cast<size_t>(DisplayDeviceDataProvider::GetInstance()->GetWindowHeight());

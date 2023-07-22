@@ -34,7 +34,7 @@ namespace Game
         return eModifierType::ElectroChain;
     }
 
-    uint64_t ElectroRayChainModifier::CreatorObjectId() const
+    int32_t ElectroRayChainModifier::CreatorObjectId() const
     {
         const auto &chainDstSp = mChainDst.second.lock();
         assert(chainDstSp);

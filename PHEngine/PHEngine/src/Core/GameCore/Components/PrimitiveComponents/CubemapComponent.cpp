@@ -5,11 +5,11 @@
 namespace EngineCore
 {
 
-   CubemapComponent::CubemapComponent(const CubemapComponentData &data, const CubemapRenderData &renderData)
-       : PrimitiveComponent(data.EngineObjectName,
-                            data.m_translation,
-                            data.m_eulerRotationDegrees,
-                            data.m_scale),
+   CubemapComponent::CubemapComponent(const std::shared_ptr<CubemapComponentData> &data, const CubemapRenderData &renderData)
+       : PrimitiveComponent(data->EngineObjectName,
+                            data->m_translation,
+                            data->m_eulerRotationDegrees,
+                            data->m_scale),
          m_renderData(renderData)
    {
    }

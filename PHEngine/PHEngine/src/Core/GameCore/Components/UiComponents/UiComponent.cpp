@@ -6,8 +6,8 @@
 
 namespace EngineCore
 {
-    UiComponent::UiComponent(const ComponentData &data)
-        : Component(data.EngineObjectName),
+    UiComponent::UiComponent(const std::shared_ptr<ComponentData> &data)
+        : Component(data->EngineObjectName),
           mTextFields()
     {
     }

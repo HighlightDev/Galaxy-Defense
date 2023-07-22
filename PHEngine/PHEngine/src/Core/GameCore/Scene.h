@@ -63,7 +63,7 @@ namespace EngineCore
    private:
       EnginePhysics::PhysicsWorld *mPhysicsWorld;
 
-      std::vector<EngineObject *> mEngineObjects;
+      std::vector<std::weak_ptr<EngineObject>> mEngineObjects;
 
       std::unordered_map<int32_t, std::shared_ptr<EngineToLuaReplicatorBase>> mLuaReplicators;
 
@@ -73,7 +73,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineObjectProperty<float>> mGameThreadDeltaSec;
 
-      std::unordered_map<std::string, IDeferredResourceCreator *> mDeferredResourceCreators;
+      std::unordered_map<std::string, std::shared_ptr<IDeferredResourceCreator>> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
 
@@ -101,7 +101,7 @@ namespace EngineCore
       ~Scene();
 
       std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
-                                                            const ComponentData &componentData);
+                                                            const std::shared_ptr<ComponentData> &componentData);
 
       void OnLevelInit();
 
@@ -119,17 +119,19 @@ namespace EngineCore
 
       void RegisterMainCamera(const std::shared_ptr<ACamera> &camera);
 
-      void UnregisterCamera(const uint32_t objectId);
+      void UnregisterCamera(const int32_t objectId);
 
       void UnregisterMainCamera();
 
       void UnregisterAllCameras();
 
-      std::shared_ptr<MaterialProxy> RegisterMaterialInstance(std::shared_ptr<Graphics::IMaterial> material);
+      void RegisterMaterialInstance(const std::shared_ptr<Graphics::IMaterial>& material);
 
-      EngineObject *GetEngineObjectByName(const std::string &name) const;
+      std::shared_ptr<IMaterial> GetMaterialInstanceById(const int32_t materialProxyId) const;
 
-      EngineObject *GetEngineObjectById(const uint64_t id) const;
+      std::shared_ptr<EngineObject> GetEngineObjectByName(const std::string &name) const;
+
+      std::shared_ptr<EngineObject> GetEngineObjectById(const int32_t id) const;
 
       bool RegisterEngineToLuaReplicator(const std::shared_ptr<EngineToLuaReplicatorBase> &replicator);
 
@@ -139,7 +141,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorByLuaProxyId(const int32_t id) const;
 
-      IDeferredResourceCreator *GetDeferredResourceCreatorByName(const std::string &name) const;
+      std::shared_ptr<IDeferredResourceCreator> GetDeferredResourceCreatorByName(const std::string &name) const;
 
       const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
 
@@ -151,7 +153,7 @@ namespace EngineCore
 
       std::shared_ptr<Actor> GetActorByName(const std::string &name) const;
 
-      std::shared_ptr<Actor> GetActorById(const uint64_t id) const;
+      std::shared_ptr<Actor> GetActorById(const int32_t id) const;
 
       std::shared_ptr<Graphics::IMaterial> GetMaterialByProxyId(const size_t proxyId) const;
 
@@ -171,13 +173,13 @@ namespace EngineCore
 
       void RemoveActor(std::shared_ptr<Actor> actor);
 
-      void RegisterEngineObject(EngineObject *const gameObjectPtr);
+      void RegisterEngineObject(const std::shared_ptr<EngineObject> &gameObject);
 
       void RemoveEngineObject(const uint32_t objectId);
 
       void RemoveComponent(std::shared_ptr<Component> component);
 
-      bool RegisterDeferredResourceCreator(IDeferredResourceCreator *creatorInstance, const std::string &gameObjectName);
+      bool RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator>& creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 

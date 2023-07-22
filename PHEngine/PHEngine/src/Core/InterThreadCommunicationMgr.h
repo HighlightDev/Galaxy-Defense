@@ -104,11 +104,11 @@ namespace Thread
 
       ~InterThreadCommunicationMgr();
 
-      void ExecuteOnRenderThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback);
+      void ExecuteOnRenderThread(const eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> gameThreadJobCallback);
 
-      void ExecuteOnGameThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback);
+      void ExecuteOnGameThread(const eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> renderThreadJobCallback);
 
-      void ExecuteOnLuaThread(const eEnqueueJobPolicy policy, const uint64_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback);
+      void ExecuteOnLuaThread(const eEnqueueJobPolicy policy, const int32_t creatorObjectId, const uint64_t functionId, std::function<void(void)> luaThreadJobCallback);
 
       /* @ Should be executed only on game thread! */
       void SpinGameThreadJobs();

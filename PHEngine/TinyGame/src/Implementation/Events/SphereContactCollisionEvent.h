@@ -10,10 +10,10 @@
 namespace Event
 {
    class SphereContactCollisionEvent
-       : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<uint64_t/*srcCollisionObject*/, std::vector<uint64_t>>/*dstCollisionObjects*/>
+       : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t/*srcCollisionObject*/, std::vector<int32_t>>/*dstCollisionObjects*/>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<uint64_t, std::vector<uint64_t>>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<int32_t, std::vector<int32_t>>>::Event_t;
 
       std::string ToString() const override
       {

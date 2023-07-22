@@ -1,7 +1,7 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
-	local slash = package.config:sub(1,1)
+	local slash = package.config:sub(1, 1)
 	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
 	local pattern = ""
 	if slash == "/" then
@@ -23,9 +23,9 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local Vec3 = require("core/vec3")
+local Json = require("core/3rdparty/json")
 
 function CreateTestLevel(host)
-
 	_LazyLoadResourcesAsync(host,
 		[[arrow_right_1.png
 		,nimbus_mono.png
@@ -68,66 +68,58 @@ function CreateTestLevel(host)
 		,planet_6.png
 		]])
 
-	local translation = Vec3:new(0, 0, 0)
-	local rotation = Vec3:new(0, 0, 0)
-	local scale = Vec3:new(1, 1, 1)
-
-	local a_light = _CreateActor(host, "MainLightActor",
+	local a_lightId = _CreateActor(host, "Actor",
+		"MainLightActor",
 		0, 0, 0,
 		0, 0, 0,
-		1, 1, 1)
+		1, 1, 1,
+		"")
 
-	if a_light ~= nil then
-		local rotation = { x = 0, y = 0, z = 0 }
-		local direction = { x = -0.2, y = -0.5, z = 0 }
-		local ambient = { x = 0.2, y = 0.2, z = 0.2 }
-		local diffuse = { x = 0.68, y = 0.5, z = 0.5 }
-		local specular = { x = 0.4, y = 0.4, z = 0.4 }
+	_CreateAndAttachComponentToActor(host, a_lightId, "DirectionalLightComponent",
+		Json.encode(
+			{
+				gameObjectName = "MainLightComp",
+				rotation = { x = 0, y = 0, z = 0 },
+				direction = { x = -0.2, y = -0.5, z = 0 },
+				ambient = { r = 0.2, g = 0.2, b = 0.2 },
+				diffuse = { r = 0.68, g = 0.5, b = 0.5 },
+				specular = { r = 0.4, g = 0.4, b = 0.4 }
+			}
+		))
 
-		--local dirShadowInfo = _CreateLightProjectionShadowInfo(host, 512, "direct_light")
-
-		local d_dirLight = _CreateDirLightComponentData(host, "MainLightComp",
-			rotation.x, rotation.y, rotation.z,
-			direction.x, direction.y, direction.z,
-			ambient.x, ambient.y, ambient.z,
-			diffuse.x, diffuse.y, diffuse.z,
-			specular.x, specular.y, specular.z,
-			nil
-		)
-
-		local c_dirLight = _CreateComponent(host, "DirectionalLightComponent", d_dirLight)
-		_AttachComponentToActor(host, "MainLightActor", c_dirLight)
-	end
-	
-	local a_skybox = _CreateActor(host, "SkyboxActor",
+	_CreateActor(host, "Actor",
+		"SkyboxActor",
 		0, 0, 0,
 		0, 0, 0,
-		1, 1, 1)
+		1, 1, 1,
+		"")
 
-	local a_spaceship = _CreateActor(host, "SpaceshipActor",
+	local spaceship_a = _CreateActor(host, "Actor",
+		"SpaceshipActor",
 		0, 0, 0,
 		0, 0, 0,
-		1, 1, 1)
+		1, 1, 1,
+		"")
 
-	if a_spaceship ~= nil then
-		local mat = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-		_SetTextureToMaterial(host, mat, "spaceship_albedo.jpg", "albedo")
-		_SetTextureToMaterial(host, mat, "spaceship_normal.jpg", "normalMap")
-		_SetTextureToMaterial(host, mat, "spaceship_roughness.jpg", "roughnessMap")
-		_SetTextureToMaterial(host, mat, "spaceship_metallic.jpg", "metallicMap")
-		_SetFloatToMaterial(host, mat, 1.0, "uvScale")
+	local matProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, matProxyId, "spaceship_albedo.jpg", "albedo")
+	_SetTextureToMaterial(host, matProxyId, "spaceship_normal.jpg", "normalMap")
+	_SetTextureToMaterial(host, matProxyId, "spaceship_roughness.jpg", "roughnessMap")
+	_SetTextureToMaterial(host, matProxyId, "spaceship_metallic.jpg", "metallicMap")
+	_SetFloatToMaterial(host, matProxyId, 1.0, "uvScale")
 
-		local d_spaceship = _CreateMeshComponentData(host, "spaceshipMeshComponent", "spaceship.obj",
-			0, 0, 0,
-			0, 180, 0,
-			5, 5, 5,
-			"",
-			mat)
-
-		local c_spaceship = _CreateComponent(host, "StaticMeshComponent", d_spaceship)
-		_AttachComponentToActor(host, "SpaceshipActor", c_spaceship)
-	end
-
+	_CreateAndAttachComponentToActor(host, spaceship_a, "StaticMeshComponent",
+		Json.encode(
+			{
+				gameObjectName = "SpaceshipMeshComponent",
+				meshName = "spaceship.obj",
+				translation = { x = 0, y = 0, z = 0 },
+				rotation = { x = 0, y = 180, z = 0 },
+				scale = { x = 5, y = 5, z = 5 },
+				luaScriptName = "",
+				materialProxyId = matProxyId
+			}
+		))
 end
 
 function System_OnStart(host)

@@ -3,7 +3,7 @@
 namespace Thread
 {
 
-      Job::Job(const uint64_t creatorObjectId, const uint64_t functionId, callback_t callback)
+      Job::Job(const int32_t creatorObjectId, const uint64_t functionId, callback_t callback)
          : mCreatorObjectId(creatorObjectId)
          , mFunctionId(functionId)
          , mCallback(callback)
@@ -14,7 +14,7 @@ namespace Thread
       {
       }
 
-      uint64_t Job::GetCreatorObjectId() const
+      int32_t Job::GetCreatorObjectId() const
       {
          return mCreatorObjectId;
       }

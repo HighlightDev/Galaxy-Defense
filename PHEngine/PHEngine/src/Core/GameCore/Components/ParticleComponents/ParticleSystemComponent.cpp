@@ -22,17 +22,17 @@ using namespace TinyLogger;
 
 namespace EngineCore
 {
-    ParticleSystemComponent::ParticleSystemComponent(const ParticleSystemComponentData &meshComponentData,
+    ParticleSystemComponent::ParticleSystemComponent(const std::shared_ptr<ParticleSystemComponentData> &meshComponentData,
                                                      const ParticleSystemRenderData &renderData)
-        : PrimitiveComponent(meshComponentData.EngineObjectName,
-                             meshComponentData.m_translation,
+        : PrimitiveComponent(meshComponentData->EngineObjectName,
+                             meshComponentData->m_translation,
                              glm::vec3(),
                              glm::vec3(1.0f)),
           mParticlesPool(),
-          mParticlesRawDataHandler(meshComponentData.m_particlesCount),
+          mParticlesRawDataHandler(meshComponentData->m_particlesCount),
           mRenderData(renderData)
     {
-        mParticlesPool.resize(meshComponentData.m_particlesCount);
+        mParticlesPool.resize(meshComponentData->m_particlesCount);
         mSortOrderValue = std::numeric_limits<int32_t>::max(); // draw this primitive the last one
     }
 

@@ -16,19 +16,19 @@ using namespace EngineCore::Scripts;
 
 namespace EngineCore
 {
-   SkeletalMeshComponent::SkeletalMeshComponent(const MeshComponentData &meshComponentData, const SkeletalMeshRenderData &renderData)
-       : PrimitiveComponent(meshComponentData.EngineObjectName,
-                            meshComponentData.m_translation,
-                            meshComponentData.m_eulerRotationDegrees,
-                            meshComponentData.m_scale),
+   SkeletalMeshComponent::SkeletalMeshComponent(const std::shared_ptr<MeshComponentData> &meshComponentData, const SkeletalMeshRenderData &renderData)
+       : PrimitiveComponent(meshComponentData->EngineObjectName,
+                            meshComponentData->m_translation,
+                            meshComponentData->m_eulerRotationDegrees,
+                            meshComponentData->m_scale),
          m_renderData(renderData),
          mLuaScriptAbsPath(IO::FolderManager::GetInstance()->GetScriptPath() +
-                           meshComponentData.m_luaScriptPath),
+                           meshComponentData->m_luaScriptPath),
          mLuaInstance(std::make_unique<LuaWrapper>()),
          mUpdateDataResetTimeCounter(0.0f),
          update_data_reset_time(0.1f),
          mTimeIncreaseMultiply(1.0f),
-         LuaScriptName(meshComponentData.m_luaScriptPath),
+         LuaScriptName(meshComponentData->m_luaScriptPath),
          SrcAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "SrcAnimTime")),
          DstAnimationTime(std::make_shared<EngineObjectProperty<float>>(0.0f, "DstAnimTime")),
          SrcAnimationName(std::make_shared<EngineObjectProperty<std::string>>("", "SrcAnimName")),

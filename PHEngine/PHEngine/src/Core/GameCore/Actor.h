@@ -109,11 +109,11 @@ namespace EngineCore
 
       std::weak_ptr<Scene> GetSceneOwner() const;
 
-      bool HasEngineObjectIdInHierarchy(const uint64_t id) const;
+      bool HasEngineObjectIdInHierarchy(const int32_t id) const;
 
       void AddChild(std::shared_ptr<Actor> actor);
 
-      std::shared_ptr<Actor> GetChildByObjectId(const uint64_t id) const;
+      std::shared_ptr<Actor> GetChildByObjectId(const int32_t id) const;
 
       void RemoveChild(const std::shared_ptr<Actor> &actor);
 
@@ -122,6 +122,8 @@ namespace EngineCore
       const std::vector<std::shared_ptr<Tweener>> &GetTweeners() const;
 
       std::shared_ptr<Tweener> GetTweenerByName(const std::string &name) const;
+
+      std::shared_ptr<Tweener> GetTweenerById(const int32_t id) const;
 
       std::shared_ptr<EngineCore::SceneComponent> GetRootComponent() const;
 

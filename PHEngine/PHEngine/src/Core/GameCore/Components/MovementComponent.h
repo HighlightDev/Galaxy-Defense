@@ -21,7 +21,7 @@ namespace EngineCore
 
    public:
 
-      MovementComponent(const MovementComponentData& movementComponentData);
+      MovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);
 
       ~MovementComponent() override;
 

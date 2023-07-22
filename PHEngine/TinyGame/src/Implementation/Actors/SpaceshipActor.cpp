@@ -171,7 +171,7 @@ namespace Game
         mModifiersHandler->AddModifier(modifier);
     }
 
-    bool SpaceshipActor::HasModifier(const eModifierType modifierType, const uint64_t creatorObjectId) const
+    bool SpaceshipActor::HasModifier(const eModifierType modifierType, const int32_t creatorObjectId) const
     {
         return mModifiersHandler->HasModifier(modifierType, creatorObjectId);
     }
@@ -186,7 +186,7 @@ namespace Game
         return mModifiersHandler->GetModifier(modifierType);
     }
 
-    void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const uint64_t creatorObjectId)
+    void SpaceshipActor::RemoveModifier(const eModifierType modifierType, const int32_t creatorObjectId)
     {
         mModifiersHandler->RemoveModifier(modifierType, creatorObjectId);
     }

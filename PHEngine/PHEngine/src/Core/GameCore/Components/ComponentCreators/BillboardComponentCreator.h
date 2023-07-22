@@ -25,10 +25,11 @@ namespace EngineCore
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
-        CreateComponent(const std::shared_ptr<Scene> &spScene, const ComponentData &data) const override
+        CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-            const BillboardComponentData &mData = static_cast<const BillboardComponentData &>(data);
-            const auto &materialProxy = spScene->RegisterMaterialInstance(std::shared_ptr<IMaterial>(mData.m_material));
+            const auto mData = std::static_pointer_cast<BillboardComponentData>(data);
+            const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
+            assert(materialProxy);
 
             const ShaderParams shaderParams(
                 "Billboard Shader",

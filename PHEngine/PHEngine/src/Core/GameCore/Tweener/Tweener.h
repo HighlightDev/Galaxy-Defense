@@ -18,6 +18,10 @@ namespace EngineCore
       : public ITickable
       , public ISerializable
    {
+      static int32_t s_id;
+
+      int32_t m_id;
+
       std::vector<std::shared_ptr<State>> mMyAllStates;
 
       std::weak_ptr<Actor> mParentWp;
@@ -50,7 +54,7 @@ namespace EngineCore
 
       Tweener(const std::string& relPathFSM, const std::string& tweenerInnerName, std::shared_ptr<State> rootNode, std::vector<std::shared_ptr<State>> &&allStates);
 
-      ~Tweener();
+      int32_t GetId() const;      
 
       void ChangeState(const std::string& dstStateName);
 

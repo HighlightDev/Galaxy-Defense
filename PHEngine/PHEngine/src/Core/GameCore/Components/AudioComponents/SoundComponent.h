@@ -22,7 +22,7 @@ namespace EngineCore
         std::shared_ptr<SoundSource> mSoundSource;
 
     public:
-        SoundComponent(const ComponentData &data);
+        SoundComponent(const std::shared_ptr<ComponentData> &data);
 
         ~SoundComponent() override;
 

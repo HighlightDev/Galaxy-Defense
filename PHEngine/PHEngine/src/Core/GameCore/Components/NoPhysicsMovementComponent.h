@@ -13,7 +13,7 @@ namespace EngineCore
       std::shared_ptr<SceneComponent> m_actorRootComponent;
 
    public:
-      NoPhysicsMovementComponent(const MovementComponentData& movementComponentData);
+      NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);
 
       ~NoPhysicsMovementComponent() override;
 
