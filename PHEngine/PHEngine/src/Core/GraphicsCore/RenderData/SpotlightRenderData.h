@@ -8,14 +8,24 @@ namespace Graphics
    namespace Data
    {
       struct SpotlightRenderData
-         : public PointLightRenderData
+          : public PointLightRenderData
       {
          float Cutoff;
 
-         SpotlightRenderData(glm::vec3 attenuation, float radianceSqrRadius, float cutoff,
-            glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-            : PointLightRenderData(attenuation, radianceSqrRadius, ambient, diffuse, specular, shadowInfo)
-            , Cutoff(cutoff)
+         SpotlightRenderData(const glm::vec3& attenuation,
+                             const float radianceSqrRadius,
+                             const float cutoff,
+                             const glm::vec3& ambient,
+                             const glm::vec3& diffuse,
+                             const glm::vec3& specular,
+                             const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
+             : PointLightRenderData(attenuation,
+                                    radianceSqrRadius,
+                                    ambient,
+                                    diffuse,
+                                    specular,
+                                    shadowInfo),
+               Cutoff(cutoff)
          {
          }
       };

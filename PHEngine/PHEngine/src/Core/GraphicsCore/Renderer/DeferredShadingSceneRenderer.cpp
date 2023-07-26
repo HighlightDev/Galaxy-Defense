@@ -192,7 +192,7 @@ namespace Graphics
 
                      if (dirLightPtr->IsEnabled())
                      {
-                        ProjectedShadowInfo *const shadowInfo = dirLightPtr->GetProjectedDirShadowInfo();
+                        const auto &shadowInfo = dirLightPtr->GetProjectedDirShadowInfo();
                         if (shadowInfo && shadowInfo->IsShadowMapDirty())
                         {
                            shadowInfo->BindShadowFramebuffer(true, bNewDepthShadowAtlas);
@@ -461,7 +461,7 @@ namespace Graphics
          {
             if (dirLightProxy->IsEnabled())
             {
-               ProjectedDirectionalLightShadowInfo *shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
+               const auto shadowInfo = dirLightProxy->GetProjectedDirShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -479,7 +479,7 @@ namespace Graphics
          {
             if (pointLightProxy->IsEnabled())
             {
-               ProjectedPointLightShadowInfo *shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
+               const auto shadowInfo = pointLightProxy->GetProjectedPointShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);
@@ -496,7 +496,7 @@ namespace Graphics
          {
             if (spotLightProxy->IsEnabled())
             {
-               ProjectedSpotlightShadowInfo *shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
+               const auto shadowInfo = spotLightProxy->GetProjectedSpotLightShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->GetAtlasResource()->BindTexture(shadowMapSlot);

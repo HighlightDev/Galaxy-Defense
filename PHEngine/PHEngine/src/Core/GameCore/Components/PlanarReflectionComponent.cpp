@@ -19,7 +19,7 @@ namespace EngineCore
                         data->m_eulerRotationDegrees,
                         data->m_scale),
          mReflectionPlane(),
-         mOwnerCamera(data->m_ownerCamera),
+         mOwnerCameraWp(data->m_ownerCamera),
          mRenderTargetViewPortInfo(data->m_fboViewPortInfo),
          mPlanarReflectionDeferredController(std::make_shared<DeferredResourceController<std::shared_ptr<ITexture>, eDeferredResourceType::TEXTURE>>())
    {
@@ -82,8 +82,8 @@ namespace EngineCore
                                                                                    {
                   const auto& reflectionSp = sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId);
                   assert(reflectionSp);
-                  PlanarReflectionProxy* proxyPtr = static_cast<PlanarReflectionProxy*>(reflectionSp.get());
-                  auto resourceTexture = proxyPtr->GetPlanarReflectionTexture();
+                  const auto& proxySp = std::static_pointer_cast<PlanarReflectionProxy>(reflectionSp);
+                  auto resourceTexture = proxySp->GetPlanarReflectionTexture();
                   mPlanarReflectionDeferredController->GetDeferredResource(); // Just in case deferred resource wasn't initialized
                   mPlanarReflectionDeferredController->SetResource(resourceTexture); });
             }
@@ -110,9 +110,9 @@ namespace EngineCore
       }
    }
 
-   ACamera *PlanarReflectionComponent::GetOwnerCamera() const
+   std::weak_ptr<ACamera> PlanarReflectionComponent::GetOwnerCameraWp() const
    {
-      return mOwnerCamera;
+      return mOwnerCameraWp;
    }
 
    size_t PlanarReflectionComponent::GetSceneProxyId() const

@@ -176,18 +176,18 @@ namespace Graphics
       {
          if (atlas->GetType() == eTextureType::TEXTURE_2D)
          {
-            TextureAtlas2D* ptr = static_cast<TextureAtlas2D*>(atlas.get());
-            std::map<size_t, TextureAtlasCell>::const_iterator it = ptr->Cells.find(requestId);
+            const auto ptrSp = std::static_pointer_cast<TextureAtlas2D>(atlas);
+            std::map<size_t, TextureAtlasCell>::const_iterator it = ptrSp->Cells.find(requestId);
 
-            size_t cellsCount = ptr->Cells.size();
+            size_t cellsCount = ptrSp->Cells.size();
             
-            if (it != ptr->Cells.end())
+            if (it != ptrSp->Cells.end())
             {
                // if someone is using this texture atlas, just remove cell
                // if nobody is using, delete texture
                if (cellsCount > 1) 
                {
-                  ptr->Cells.erase(it);
+                  ptrSp->Cells.erase(it);
                }
                else 
                {
@@ -199,8 +199,8 @@ namespace Graphics
          }
          else if (atlas->GetType() == eTextureType::TEXTURE_CUBE)
          {
-            TextureAtlasCube* ptr = static_cast<TextureAtlasCube*>(atlas.get());
-            if (ptr->m_sizes.first == requestId)
+            const auto ptrSp = std::static_pointer_cast<TextureAtlasCube>(atlas);
+            if (ptrSp->m_sizes.first == requestId)
             {
                atlas->DeallocateMemory();
                m_textureAtlases.erase(std::remove(m_textureAtlases.begin(), m_textureAtlases.end(), atlas), m_textureAtlases.end());

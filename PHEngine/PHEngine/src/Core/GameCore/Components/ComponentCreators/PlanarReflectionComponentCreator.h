@@ -21,12 +21,13 @@ namespace EngineCore
         {
            const auto &mData =
                 std::static_pointer_cast<PlanarReflectionComponentData>(data);
-
-            assert(mData->m_ownerCamera);
+            
+            const auto& ownerCameraSp = mData->m_ownerCamera.lock();
+            assert(ownerCameraSp);
 
             const auto &component = std::make_shared<ComponentInstantiationType>(mData);
 
-            mData->m_ownerCamera->SetPlanarReflectionComponent(component);
+            ownerCameraSp->SetPlanarReflectionComponent(component);
             return component;
         }
     };

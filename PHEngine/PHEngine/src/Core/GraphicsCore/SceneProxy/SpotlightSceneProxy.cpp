@@ -10,9 +10,9 @@ namespace Graphics
    namespace Proxy
    {
 
-      SpotlightSceneProxy::SpotlightSceneProxy(const SpotlightComponent* component)
-         : PointLightSceneProxy(component)
-         , mCutoff(component->GetRenderData()->Cutoff)
+      SpotlightSceneProxy::SpotlightSceneProxy(const SpotlightComponent *component)
+          : PointLightSceneProxy(component),
+            mCutoff(component->GetRenderData()->Cutoff)
       {
       }
 
@@ -32,19 +32,19 @@ namespace Graphics
          }
       }
 
-      LightSceneProxyType SpotlightSceneProxy::GetLightProxyType() const {
-
+      LightSceneProxyType SpotlightSceneProxy::GetLightProxyType() const
+      {
          return LightSceneProxyType::SPOT_LIGHT;
       }
 
-      ProjectedSpotlightShadowInfo* SpotlightSceneProxy::GetProjectedSpotLightShadowInfo()
+      std::shared_ptr<ProjectedSpotlightShadowInfo> SpotlightSceneProxy::GetProjectedSpotLightShadowInfo()
       {
-         return static_cast<ProjectedSpotlightShadowInfo*>(GetShadowInfo());
+         return std::static_pointer_cast<ProjectedSpotlightShadowInfo>(GetShadowInfo());
       }
 
       glm::vec3 SpotlightSceneProxy::GetDirection() const
       {
-         static const glm::vec4 spotlightDefaultDirection{ 1.0f, 0.0f, 0.0f, 0.0f };
+         static const glm::vec4 spotlightDefaultDirection{1.0f, 0.0f, 0.0f, 0.0f};
          glm::vec3 result = m_relativeMatrix * spotlightDefaultDirection;
          return result;
       }
@@ -54,24 +54,23 @@ namespace Graphics
          return mCutoff;
       }
 
-      glm::vec3 SpotlightSceneProxy::GetTransformedDirectionVector(const glm::vec4& initialDirection) const
+      glm::vec3 SpotlightSceneProxy::GetTransformedDirectionVector(const glm::vec4 &initialDirection) const
       {
          return m_relativeMatrix * initialDirection;
       }
 
-      ProjectedShadowInfo* SpotlightSceneProxy::GetShadowInfo()
+      std::shared_ptr<ProjectedShadowInfo> SpotlightSceneProxy::GetShadowInfo()
       {
-         auto shadowInfo = static_cast<ProjectedSpotlightShadowInfo*>(m_shadowInfo);
+         const auto &shadowInfo = std::static_pointer_cast<ProjectedSpotlightShadowInfo>(m_shadowInfo);
          if (shadowInfo)
          {
             if (IsTransformationDirty())
             {
-
                glm::vec3 direction = GetDirection();
                direction = glm::normalize(direction);
-               const glm::vec3& origin = GetPosition();
+               const glm::vec3 &origin = GetPosition();
 
-               const glm::mat4& shadowViewMatrix = glm::lookAt(origin, origin + direction, -AXIS_UP);
+               const glm::mat4 &shadowViewMatrix = glm::lookAt(origin, origin + direction, -AXIS_UP);
                shadowInfo->SetShadowViewMatrix(shadowViewMatrix);
                SetIsTransformationDirty(false);
             }

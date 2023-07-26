@@ -35,7 +35,7 @@ namespace EngineCore {
 
       static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
 
-      static std::shared_ptr<SerializeDataPlanarReflectionComponent> GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent* component);
+      static std::shared_ptr<SerializeDataPlanarReflectionComponent> GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent>& component);
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 

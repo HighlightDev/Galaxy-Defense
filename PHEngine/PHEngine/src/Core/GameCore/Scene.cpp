@@ -511,7 +511,9 @@ namespace EngineCore
             planarComponentSp->SetSceneProxyId(sceneProxySp->GetSceneProxyId());
             if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
             {
-               sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, planarComponentSp->GetOwnerCamera()->GetCameraProxyId());
+               const auto ownerCameraSp = planarComponentSp->GetOwnerCameraWp().lock();
+               assert(ownerCameraSp);
+               sceneRendererSp->BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(sceneProxySp, ownerCameraSp->GetCameraProxyId());
                sceneRendererSp->PlanarReflectionSceneProxyAdded_OnRenderThread(planarComponentSp, sceneProxySp);
             }
             LogInfo("Scene::RegisterComponentSceneProxy => planar reflection proxy added, sceneProxyId =", planarComponentSp->GetSceneProxyId());

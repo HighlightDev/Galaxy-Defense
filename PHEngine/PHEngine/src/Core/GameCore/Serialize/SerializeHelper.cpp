@@ -74,7 +74,7 @@ namespace EngineCore
 
       if (camera->GetPlanarReflectionComponent())
       {
-         cameraData->mPlanarReflectionComponentData = GetSerializedDataPlanarReflectionComponent(camera->GetPlanarReflectionComponent().get());
+         cameraData->mPlanarReflectionComponentData = GetSerializedDataPlanarReflectionComponent(camera->GetPlanarReflectionComponent());
       }
 
       return cameraData;
@@ -249,14 +249,16 @@ namespace EngineCore
       return meshData;
    }
 
-   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const PlanarReflectionComponent *component)
+   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent>& component)
    {
       const auto &planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
       planarReflectionData->ComponentName = component->GetEngineObjectName();
       planarReflectionData->Translation = component->GetTranslation();
       planarReflectionData->EulerAnglesRotation = component->GetRotationDegrees();
       planarReflectionData->Scale = component->GetScale();
-      planarReflectionData->OwnerCameraName = component->GetOwnerCamera()->GetCameraName();
+      const auto& ownerCameraSp = component->GetOwnerCameraWp().lock();
+      assert(ownerCameraSp);
+      planarReflectionData->OwnerCameraName = ownerCameraSp->GetCameraName();
       const auto &viewPortInfo = component->GetRenderTargetViewPortInfo();
       planarReflectionData->ViewPortInfo = glm::vec4(viewPortInfo.OriginX, viewPortInfo.OriginY, viewPortInfo.Width, viewPortInfo.Height);
       return planarReflectionData;

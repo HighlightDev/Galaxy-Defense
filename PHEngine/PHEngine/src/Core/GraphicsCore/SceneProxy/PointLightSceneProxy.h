@@ -11,18 +11,15 @@ namespace Graphics
    namespace Proxy
    {
 
-      class PointLightSceneProxy :
-         public LightSceneProxy
+      class PointLightSceneProxy : public LightSceneProxy
       {
       protected:
-
          glm::vec3 m_attenuation;
 
          float m_radianceRadius;
 
       public:
-         
-         PointLightSceneProxy(const PointLightComponent* component);
+         PointLightSceneProxy(const PointLightComponent *component);
 
          ~PointLightSceneProxy() override;
 
@@ -36,12 +33,10 @@ namespace Graphics
 
          LightSceneProxyType GetLightProxyType() const override;
 
-         ProjectedPointLightShadowInfo* GetProjectedPointShadowInfo();
+         std::shared_ptr<ProjectedPointLightShadowInfo> GetProjectedPointShadowInfo();
 
-         ProjectedShadowInfo* GetShadowInfo() override;
-       
+         std::shared_ptr<ProjectedShadowInfo> GetShadowInfo() override;
       };
 
    }
 }
-

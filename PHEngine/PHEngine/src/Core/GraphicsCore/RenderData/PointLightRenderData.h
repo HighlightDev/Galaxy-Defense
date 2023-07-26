@@ -9,14 +9,21 @@ namespace Graphics
       struct PointLightRenderData
           : public LightRenderData
       {
-
          glm::vec3 Attenuation;
-
          float RadianceRadius;
 
-         PointLightRenderData(glm::vec3 attenuation, float radianceRadius,
-                              glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo *shadowInfo)
-             : LightRenderData(ambient, diffuse, specular, shadowInfo), Attenuation(attenuation), RadianceRadius(radianceRadius)
+         PointLightRenderData(const glm::vec3 &attenuation,
+                              const float radianceRadius,
+                              const glm::vec3 &ambient,
+                              const glm::vec3 &diffuse,
+                              const glm::vec3 &specular,
+                              const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
+             : LightRenderData(ambient,
+                               diffuse,
+                               specular,
+                               shadowInfo),
+               Attenuation(attenuation),
+               RadianceRadius(radianceRadius)
          {
          }
 

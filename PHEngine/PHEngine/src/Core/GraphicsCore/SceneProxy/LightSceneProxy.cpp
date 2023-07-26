@@ -10,7 +10,7 @@ namespace Graphics
                                        const glm::vec3 &ambientColor,
                                        const glm::vec3 &diffuseColor,
                                        const glm::vec3 &specularColor,
-                                       ProjectedShadowInfo *shadowInfo)
+                                       const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
           : SceneProxyBase(isEnabled),
             m_relativeMatrix(relativeMatrix),
             m_shadowInfo(shadowInfo),
@@ -22,7 +22,6 @@ namespace Graphics
 
       LightSceneProxy::~LightSceneProxy()
       {
-         delete m_shadowInfo;
       }
 
       void LightSceneProxy::PostLevelInit()
@@ -45,9 +44,8 @@ namespace Graphics
          bTransformationDirty = value;
       }
 
-      ProjectedShadowInfo *LightSceneProxy::GetShadowInfo()
+      std::shared_ptr<ProjectedShadowInfo> LightSceneProxy::GetShadowInfo()
       {
-
          return m_shadowInfo;
       }
 

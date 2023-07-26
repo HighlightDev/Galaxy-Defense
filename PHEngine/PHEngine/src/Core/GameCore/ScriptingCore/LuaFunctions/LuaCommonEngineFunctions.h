@@ -6,7 +6,6 @@
 #include <glm/vec3.hpp>
 
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/EngineObject.h"
 #include "ILuaFunctionable.h"
 
 using namespace EngineCore;
@@ -44,16 +43,6 @@ namespace EngineCore
          void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) override;
 
       private:
-         EngineObject *GetEngineObject(const std::tuple<std::string> &gameObjectName);
-
-         float GetGOPropertyValFloat(const std::tuple<EngineObject *, std::string> &data);
-
-         int32_t GetGOPropertyValInteger(const std::tuple<EngineObject *, std::string> &data);
-
-         void SetGOPropertyValVec3(const std::tuple<EngineObject *, std::string, glm::vec3> &data);
-
-         void SetGOPropertyValBool(const std::tuple<EngineObject *, std::string, int32_t> &data);
-
          /*Get Window height*/
          int32_t GetWindowHeight(const std::tuple<> &data);
 

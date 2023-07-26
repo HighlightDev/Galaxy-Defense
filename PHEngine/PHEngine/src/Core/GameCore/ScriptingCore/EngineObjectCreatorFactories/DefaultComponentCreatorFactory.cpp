@@ -101,12 +101,12 @@ namespace EngineCore
                 const auto specular = JsonParserHelper::FromJsonToVec3Color("specular", jsonObj);
                 const auto attenutation = JsonParserHelper::FromJsonToVec3("attenutation", jsonObj);
                 const auto radianceRadius = JsonParserHelper::FromJsonToFloat("radianceRadius", jsonObj);
-                ProjectedShadowInfo *shadowInfo = nullptr;
+                std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
                     const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
                     const auto &pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureCubeAtlasRequest(glm::ivec2(shadowAtlasSize));
-                    shadowInfo = new ProjectedPointLightShadowInfo(pointLightTAR);
+                    shadowInfo = std::make_shared<ProjectedPointLightShadowInfo>(pointLightTAR);
                 }
 
                 componentData = std::make_shared<PointLightComponentData>(objectName, translation, attenutation, radianceRadius, ambient, diffuse, specular, shadowInfo);
@@ -118,14 +118,14 @@ namespace EngineCore
                 const auto ambient = JsonParserHelper::FromJsonToVec3Color("ambient", jsonObj);
                 const auto diffuse = JsonParserHelper::FromJsonToVec3Color("diffuse", jsonObj);
                 const auto specular = JsonParserHelper::FromJsonToVec3Color("specular", jsonObj);
-                ProjectedShadowInfo *shadowInfo = nullptr;
+                std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
                     const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
                     const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
                     const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
                     const auto &directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
-                    shadowInfo = new ProjectedDirectionalLightShadowInfo(directionalLightTAR, orthoHalfExtent);
+                    shadowInfo = std::make_shared<ProjectedDirectionalLightShadowInfo>(directionalLightTAR, orthoHalfExtent);
                 }
 
                 componentData = std::make_shared<DirectionalLightComponentData>(objectName, rotation, direction, ambient, diffuse, specular, shadowInfo);
@@ -140,12 +140,12 @@ namespace EngineCore
                 const auto attenutation = JsonParserHelper::FromJsonToVec3("attenutation", jsonObj);
                 const auto radianceRadius = JsonParserHelper::FromJsonToFloat("radianceRadius", jsonObj);
                 const auto cutoff = JsonParserHelper::FromJsonToFloat("cutoff", jsonObj);
-                ProjectedShadowInfo *shadowInfo = nullptr;
+                std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
                     const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
                     const auto &pointLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
-                    shadowInfo = new ProjectedSpotlightShadowInfo(pointLightTAR);
+                    shadowInfo = std::make_shared<ProjectedSpotlightShadowInfo>(pointLightTAR);
                 }
 
                 componentData = std::make_shared<SpotlightComponentData>(objectName, translation, rotation, attenutation, radianceRadius, cutoff, ambient, diffuse, specular, shadowInfo);
@@ -158,7 +158,7 @@ namespace EngineCore
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto luaScriptRelPath = JsonParserHelper::FromJsonToString("luaScriptName", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto& material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
                 assert(material);
 
                 componentData = std::make_shared<MeshComponentData>(objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material);
@@ -240,7 +240,7 @@ namespace EngineCore
             {
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto& material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
                 assert(material);
 
                 componentData = std::make_shared<SkyboxComponentData>(objectName, scale, material);
@@ -251,7 +251,7 @@ namespace EngineCore
                 const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto& material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
                 assert(material);
                 componentData = std::make_shared<WaterPlaneComponentData>(objectName, translation, rotation, scale, material);
             }
@@ -271,7 +271,7 @@ namespace EngineCore
                                                                                 translation,
                                                                                 rotation,
                                                                                 scale,
-                                                                                ownerCameraSp.get(),
+                                                                                ownerCameraSp,
                                                                                 ::Graphics::ViewPortInfo(viewPortX, viewPortY, viewPortWidth, viewPortHeight));
             }
             else if ("InputComponent" == componentType)

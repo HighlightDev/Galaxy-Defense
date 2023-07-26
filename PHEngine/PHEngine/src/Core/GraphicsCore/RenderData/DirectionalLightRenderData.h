@@ -12,9 +12,16 @@ namespace Graphics
       {
          glm::vec3 Direction;
 
-         DirectionalLightRenderData(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse,
-                                    glm::vec3 specular, ProjectedShadowInfo *shadowInfo)
-             : LightRenderData(ambient, diffuse, specular, shadowInfo), Direction(direction)
+         DirectionalLightRenderData(const glm::vec3 &direction,
+                                    const glm::vec3 &ambient,
+                                    const glm::vec3 &diffuse,
+                                    const glm::vec3 &specular,
+                                    const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
+             : LightRenderData(ambient,
+                               diffuse,
+                               specular,
+                               shadowInfo),
+               Direction(direction)
          {
          }
       };

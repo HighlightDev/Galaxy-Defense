@@ -10,16 +10,15 @@ namespace Graphics
    namespace Proxy
    {
 
-      PointLightSceneProxy::PointLightSceneProxy(const PointLightComponent* component)
-         : LightSceneProxy(
-            component->IsEnabled(),
-            component->GetRelativeMatrix(),
-            component->GetRenderData()->Ambient,
-            component->GetRenderData()->Diffuse,
-            component->GetRenderData()->Specular,
-            component->GetRenderData()->ShadowInfo)
-         , m_attenuation(component->GetRenderData()->Attenuation)
-         , m_radianceRadius(component->GetRenderData()->RadianceRadius)
+      PointLightSceneProxy::PointLightSceneProxy(const PointLightComponent *component)
+          : LightSceneProxy(
+                component->IsEnabled(),
+                component->GetRelativeMatrix(),
+                component->GetRenderData()->Ambient,
+                component->GetRenderData()->Diffuse,
+                component->GetRenderData()->Specular,
+                component->GetRenderData()->ShadowInfo),
+            m_attenuation(component->GetRenderData()->Attenuation), m_radianceRadius(component->GetRenderData()->RadianceRadius)
       {
       }
 
@@ -47,14 +46,14 @@ namespace Graphics
          }
       }
 
-      LightSceneProxyType PointLightSceneProxy::GetLightProxyType() const {
-
+      LightSceneProxyType PointLightSceneProxy::GetLightProxyType() const
+      {
          return LightSceneProxyType::POINT_LIGHT;
       }
 
-      ProjectedPointLightShadowInfo* PointLightSceneProxy::GetProjectedPointShadowInfo()
+      std::shared_ptr<ProjectedPointLightShadowInfo> PointLightSceneProxy::GetProjectedPointShadowInfo()
       {
-         return static_cast<ProjectedPointLightShadowInfo*>(GetShadowInfo());
+         return std::static_pointer_cast<ProjectedPointLightShadowInfo>(GetShadowInfo());
       }
 
       glm::vec3 PointLightSceneProxy::GetPosition() const
@@ -63,19 +62,19 @@ namespace Graphics
          return result;
       }
 
-      glm::vec3 PointLightSceneProxy::GetAttenuation() const 
+      glm::vec3 PointLightSceneProxy::GetAttenuation() const
       {
          return m_attenuation;
       }
 
-      float PointLightSceneProxy::GetRadianceRadius() const 
+      float PointLightSceneProxy::GetRadianceRadius() const
       {
          return m_radianceRadius;
       }
 
-      ProjectedShadowInfo* PointLightSceneProxy::GetShadowInfo()
+      std::shared_ptr<ProjectedShadowInfo> PointLightSceneProxy::GetShadowInfo()
       {
-         auto shadowInfo = static_cast<ProjectedPointLightShadowInfo*>(m_shadowInfo);
+         const auto &shadowInfo = std::static_pointer_cast<ProjectedPointLightShadowInfo>(m_shadowInfo);
          if (shadowInfo)
          {
             if (IsTransformationDirty())

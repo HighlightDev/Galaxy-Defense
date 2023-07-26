@@ -11,14 +11,14 @@ using namespace Graphics;
 namespace EngineCore
 {
 
-   PointLightComponent::PointLightComponent(const std::shared_ptr<LightComponentData>& lightComponentData)
-      : LightComponent(lightComponentData)
+   PointLightComponent::PointLightComponent(const std::shared_ptr<LightComponentData> &lightComponentData)
+       : LightComponent(lightComponentData)
    {
       const auto &d_pointLight = std::static_pointer_cast<PointLightComponentData>(lightComponentData);
       assert(nullptr == mLightRenderData);
       mLightRenderData = std::make_shared<PointLightRenderData>(d_pointLight->Attenuation, d_pointLight->RadianceRadius,
-                                                            d_pointLight->Ambient, d_pointLight->Diffuse,
-                                                            d_pointLight->Specular, d_pointLight->ShadowInfo);
+                                                                d_pointLight->Ambient, d_pointLight->Diffuse,
+                                                                d_pointLight->Specular, d_pointLight->ShadowInfo);
 
       if (mLightRenderData->ShadowInfo)
       {
@@ -117,9 +117,9 @@ namespace EngineCore
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, GetObjectId(), functionId, [=]()
-                                           {
+                                                                                {
                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(mLightSceneProxyId);
-               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
+               const auto& shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->SetIsShadowMapDirty(true);

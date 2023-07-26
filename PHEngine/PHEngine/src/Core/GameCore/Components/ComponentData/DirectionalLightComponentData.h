@@ -5,17 +5,28 @@
 namespace EngineCore
 {
 
-	struct DirectionalLightComponentData : 
-      public LightComponentData
-	{
-
-      DirectionalLightComponentData(const std::string& gameObjectName, glm::vec3 rotation, glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular, ProjectedShadowInfo* shadowInfo)
-         : LightComponentData(gameObjectName, ambient, diffuse, specular, shadowInfo, glm::vec3(), rotation, glm::vec3(1))
-         , Direction(direction)
+      struct DirectionalLightComponentData : public LightComponentData
       {
-      }
 
-      glm::vec3 Direction;
-	};
+            DirectionalLightComponentData(const std::string &gameObjectName,
+                                          const glm::vec3 &rotation,
+                                          const glm::vec3 &direction,
+                                          const glm::vec3 &ambient,
+                                          const glm::vec3 &diffuse,
+                                          const glm::vec3 &specular,
+                                          const std::shared_ptr<ProjectedShadowInfo> &shadowInfo)
+                : LightComponentData(gameObjectName,
+                                     ambient,
+                                     diffuse,
+                                     specular,
+                                     shadowInfo,
+                                     glm::vec3(), rotation,
+                                     glm::vec3(1)),
+                  Direction(direction)
+            {
+            }
+
+            glm::vec3 Direction;
+      };
 
 }

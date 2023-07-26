@@ -29,7 +29,7 @@ namespace EngineCore
 
       glm::vec4 mReflectionPlane;
 
-      ACamera *mOwnerCamera;
+      std::weak_ptr<ACamera> mOwnerCameraWp;
 
       ::Graphics::ViewPortInfo mRenderTargetViewPortInfo;
 
@@ -58,7 +58,7 @@ namespace EngineCore
 
       ::Graphics::ViewPortInfo GetRenderTargetViewPortInfo() const;
 
-      ACamera *GetOwnerCamera() const;
+      std::weak_ptr<ACamera> GetOwnerCameraWp() const;
 
       size_t GetSceneProxyId() const;
 

@@ -24,7 +24,7 @@ namespace EngineCore
       void DeferredLightShader::AccessAllUniformLocations(uint32_t shaderProgramId)
       {
          Base::AccessAllUniformLocations(shaderProgramId);
-         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
 
          u_CameraWorldPosition = GetUniform("CameraWorldPosition", shaderProgramId);
 
@@ -75,8 +75,8 @@ namespace EngineCore
 
       void DeferredLightShader::SetShaderPredefine()
       {
-         const auto& cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-         
+         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+
          DefineConstant<int32_t>(FragmentShader, "MAX_DIR_LIGHT_COUNT", cfg.MaxDirLightCount);
          DefineConstant<int32_t>(FragmentShader, "MAX_POINT_LIGHT_COUNT", cfg.MaxPointLightCount);
          DefineConstant<int32_t>(FragmentShader, "MAX_SPOTLIGHT_COUNT", cfg.MaxSpotlightCount);
@@ -204,11 +204,11 @@ namespace EngineCore
          {
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::DIR_LIGHT)
             {
-               DirectionalLightSceneProxy *dirLProxyPtr = static_cast<DirectionalLightSceneProxy *>(lightProxy.get());
-               u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->AmbientColor);
-               u_DirLightDiffuseColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->DiffuseColor);
-               u_DirLightSpecularColor.LoadUniform(dirLightProxyIndex, dirLProxyPtr->SpecularColor);
-               u_DirLightDirection.LoadUniform(dirLightProxyIndex, dirLProxyPtr->GetDirection());
+               const auto &dirLProxySp = std::static_pointer_cast<DirectionalLightSceneProxy>(lightProxy);
+               u_DirLightAmbientColor.LoadUniform(dirLightProxyIndex, dirLProxySp->AmbientColor);
+               u_DirLightDiffuseColor.LoadUniform(dirLightProxyIndex, dirLProxySp->DiffuseColor);
+               u_DirLightSpecularColor.LoadUniform(dirLightProxyIndex, dirLProxySp->SpecularColor);
+               u_DirLightDirection.LoadUniform(dirLightProxyIndex, dirLProxySp->GetDirection());
 
                dirLightProxyIndex++;
             }
@@ -221,11 +221,11 @@ namespace EngineCore
          {
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::POINT_LIGHT)
             {
-               PointLightSceneProxy *pointLProxyPtr = static_cast<PointLightSceneProxy *>(lightProxy.get());
-               u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->DiffuseColor);
-               u_PointLightSpecularColor.LoadUniform(pointLightProxyIndex, pointLProxyPtr->SpecularColor);
-               u_PointLightPositionWorld.LoadUniform(pointLightProxyIndex, pointLProxyPtr->GetPosition());
-               u_PointLightAttenuation.LoadUniform(pointLightProxyIndex, pointLProxyPtr->GetAttenuation());
+               const auto &pointLProxySp = std::static_pointer_cast<PointLightSceneProxy>(lightProxy);
+               u_PointLightDiffuseColor.LoadUniform(pointLightProxyIndex, pointLProxySp->DiffuseColor);
+               u_PointLightSpecularColor.LoadUniform(pointLightProxyIndex, pointLProxySp->SpecularColor);
+               u_PointLightPositionWorld.LoadUniform(pointLightProxyIndex, pointLProxySp->GetPosition());
+               u_PointLightAttenuation.LoadUniform(pointLightProxyIndex, pointLProxySp->GetAttenuation());
 
                pointLightProxyIndex++;
             }
@@ -238,14 +238,14 @@ namespace EngineCore
          {
             if (lightProxy->GetLightProxyType() == LightSceneProxyType::SPOT_LIGHT)
             {
-               SpotlightSceneProxy *spotlightProxyPtr = static_cast<SpotlightSceneProxy *>(lightProxy.get());
-               u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->AmbientColor);
-               u_SpotlightDiffuseColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->DiffuseColor);
-               u_SpotlightSpecularColor.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->SpecularColor);
-               u_SpotlightPosition.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetPosition());
-               u_SpotlightDirection.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetDirection());
-               u_SpotlightCutoff.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetCutoff());
-               // todo: u_SpotlightAttenuation.LoadUniform(spotlightProxyIndex, spotlightProxyPtr->GetAttenuation());
+               const auto &spotlightProxySp = std::static_pointer_cast<SpotlightSceneProxy>(lightProxy);
+               u_SpotlightAmbientColor.LoadUniform(spotlightProxyIndex, spotlightProxySp->AmbientColor);
+               u_SpotlightDiffuseColor.LoadUniform(spotlightProxyIndex, spotlightProxySp->DiffuseColor);
+               u_SpotlightSpecularColor.LoadUniform(spotlightProxyIndex, spotlightProxySp->SpecularColor);
+               u_SpotlightPosition.LoadUniform(spotlightProxyIndex, spotlightProxySp->GetPosition());
+               u_SpotlightDirection.LoadUniform(spotlightProxyIndex, spotlightProxySp->GetDirection());
+               u_SpotlightCutoff.LoadUniform(spotlightProxyIndex, spotlightProxySp->GetCutoff());
+               // todo: u_SpotlightAttenuation.LoadUniform(spotlightProxyIndex, spotlightProxySp->GetAttenuation());
 
                spotlightProxyIndex++;
             }

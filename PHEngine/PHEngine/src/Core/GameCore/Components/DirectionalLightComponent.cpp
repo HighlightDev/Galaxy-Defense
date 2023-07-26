@@ -135,7 +135,7 @@ namespace EngineCore
                                                                                 {
                const auto& lightProxySp = sceneRenderer->GetLightProxyByProxyId(lightSceneProxyId);
                assert(lightProxySp);                                       
-               ProjectedShadowInfo* shadowInfo = lightProxySp->GetShadowInfo();
+               const auto shadowInfo = lightProxySp->GetShadowInfo();
                if (shadowInfo)
                {
                   shadowInfo->SetPlayerPositionOffset(playerTranslationOffset);

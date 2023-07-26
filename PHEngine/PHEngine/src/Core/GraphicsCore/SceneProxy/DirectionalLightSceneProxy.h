@@ -12,34 +12,27 @@ namespace Graphics
    namespace Proxy
    {
 
-      class DirectionalLightSceneProxy :
-         public LightSceneProxy
+      class DirectionalLightSceneProxy : public LightSceneProxy
       {
          glm::vec3 m_direction;
 
       public:
-         
-         glm::vec3 GetDirection() const
-         {
-            return m_relativeMatrix * glm::vec4(m_direction, 0.0f);
-         }  
+         glm::vec3 GetDirection() const;
 
-         DirectionalLightSceneProxy(const DirectionalLightComponent* component);
+         DirectionalLightSceneProxy(const DirectionalLightComponent *component);
 
          ~DirectionalLightSceneProxy() override;
 
          void PostLevelInit() override;
 
-         ProjectedDirectionalLightShadowInfo* GetProjectedDirShadowInfo();
+         std::shared_ptr<ProjectedDirectionalLightShadowInfo> GetProjectedDirShadowInfo();
 
          LightSceneProxyType GetLightProxyType() const override;
 
-         virtual ProjectedShadowInfo* GetShadowInfo();
+         std::shared_ptr<ProjectedShadowInfo> GetShadowInfo() override;
 
          BoundingBox3D GetShadowOrthographicProjectionBound() const;
-
       };
 
    }
 }
-

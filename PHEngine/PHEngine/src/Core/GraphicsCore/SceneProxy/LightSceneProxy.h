@@ -2,6 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <memory>
 
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
@@ -26,9 +27,9 @@ namespace Graphics
       protected:
          glm::mat4 m_relativeMatrix;
 
-         ProjectedShadowInfo *m_shadowInfo = nullptr;
+         std::shared_ptr<ProjectedShadowInfo> m_shadowInfo;
 
-         bool bTransformationDirty = true;
+         bool bTransformationDirty{true};
 
       public:
          glm::vec3 AmbientColor;
@@ -36,11 +37,11 @@ namespace Graphics
          glm::vec3 SpecularColor;
 
          LightSceneProxy(const bool isEnabled,
-                         const glm::mat4& relativeMatrix,
-                         const glm::vec3& ambientColor,
-                         const glm::vec3& diffuseColor,
-                         const glm::vec3& specularColor,
-                         ProjectedShadowInfo *shadowInfo = nullptr);
+                         const glm::mat4 &relativeMatrix,
+                         const glm::vec3 &ambientColor,
+                         const glm::vec3 &diffuseColor,
+                         const glm::vec3 &specularColor,
+                         const std::shared_ptr<ProjectedShadowInfo> &shadowInfo);
 
          virtual ~LightSceneProxy();
 
@@ -54,7 +55,7 @@ namespace Graphics
 
          void SetIsTransformationDirty(bool value);
 
-         virtual ProjectedShadowInfo *GetShadowInfo();
+         virtual std::shared_ptr<ProjectedShadowInfo> GetShadowInfo();
       };
 
    }

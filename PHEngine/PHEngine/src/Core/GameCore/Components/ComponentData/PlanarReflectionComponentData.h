@@ -7,6 +7,7 @@
 #include <string>
 #include <glm/vec3.hpp>
 #include <gl/glew.h>
+#include <memory>
 
 namespace EngineCore
 {
@@ -14,21 +15,25 @@ namespace EngineCore
 
    struct PlanarReflectionComponentData : public ComponentData
    {
-      PlanarReflectionComponentData(const std::string& gameObjectName, const glm::vec3& translation, const glm::vec3& rotation, const glm::vec3& scale, ACamera* ownerCamera,
-         const ::Graphics::ViewPortInfo& fboViewPortInfo)
-         : ComponentData(gameObjectName)
-         , m_translation(translation)
-         , m_eulerRotationDegrees(rotation)
-         , m_scale(scale)
-         , m_ownerCamera(ownerCamera)
-         , m_fboViewPortInfo(fboViewPortInfo)
+      PlanarReflectionComponentData(const std::string &gameObjectName,
+                                    const glm::vec3 &translation,
+                                    const glm::vec3 &rotation,
+                                    const glm::vec3 &scale,
+                                    const std::weak_ptr<ACamera> &ownerCameraWp,
+                                    const ::Graphics::ViewPortInfo &fboViewPortInfo)
+          : ComponentData(gameObjectName),
+            m_translation(translation),
+            m_eulerRotationDegrees(rotation),
+            m_scale(scale),
+            m_ownerCamera(ownerCameraWp),
+            m_fboViewPortInfo(fboViewPortInfo)
       {
       }
 
       glm::vec3 m_translation;
       glm::vec3 m_eulerRotationDegrees;
       glm::vec3 m_scale;
-      ACamera* m_ownerCamera;
+      std::weak_ptr<ACamera> m_ownerCamera;
       ::Graphics::ViewPortInfo m_fboViewPortInfo;
    };
 
