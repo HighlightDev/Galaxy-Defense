@@ -12,7 +12,7 @@
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 

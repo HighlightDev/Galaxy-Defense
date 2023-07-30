@@ -13,7 +13,7 @@
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -68,7 +68,7 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(pbs_mat, "uvScale", uvScale);
 
         const auto d_mesh = std::make_shared<MeshComponentData>("c_bombMissileMesh_" + shipBulletIndexStr, "missile1_model.fbx", glm::vec3(0),
-                                       glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
+                                                                glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
         const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_missile->AddComponent(c_mesh);
@@ -87,9 +87,8 @@ namespace Game
         c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
 
-        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
-        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
-        const auto physData = std::make_shared<PhysicsComponentData>("c_bombMissilePhysics_" + shipBulletIndexStr, ghostController);
+        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
+        const auto &physData = std::make_shared<PhysicsComponentData>("c_bombMissilePhysics_" + shipBulletIndexStr, ghostController);
         const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_missile->AddComponent(c_ghostPhysics);

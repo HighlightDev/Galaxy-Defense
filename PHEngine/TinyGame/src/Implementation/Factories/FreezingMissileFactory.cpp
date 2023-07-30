@@ -13,7 +13,7 @@
 #include "Core/GameCore/Components/PhysicsComponents/GhostPhysicsComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -88,8 +88,7 @@ namespace Game
         c_sound->GetSoundSource()->SetGain(0.2f);
         a_missile->AddComponent(c_sound);
 
-        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
-        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
         const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator,
                                                                        std::make_shared<PhysicsComponentData>("c_freezingMissilePhysics_" + shipBulletIndexStr, ghostController));

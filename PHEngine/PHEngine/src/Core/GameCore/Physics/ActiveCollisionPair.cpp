@@ -2,11 +2,16 @@
 
 namespace EnginePhysics
 {
-    ActiveCollisionPair::ActiveCollisionPair(const PhysicsDescriptor *collisionBody1, const PhysicsDescriptor *collisionBody2)
+    ActiveCollisionPair::ActiveCollisionPair(const std::shared_ptr<PhysicsDescriptor> &collisionBody1,
+                                             const std::shared_ptr<PhysicsDescriptor> &collisionBody2)
         : mFirstCollisionBody(collisionBody1),
           mSecondCollisionBody(collisionBody2),
           mFirstCollisionBodyId(collisionBody1->GetId()),
-          mSecondCollisionBodyId(collisionBody2->GetId())
+          mSecondCollisionBodyId(collisionBody2->GetId()),
+          mFirstCollisionBodyType(collisionBody1->GetPhysicsBodyType()),
+          mSecondCollisionBodyType(collisionBody2->GetPhysicsBodyType()),
+          mFirstCollisionBodyOwnerActorObjectId(collisionBody1->GetOwnerActorEngineObjectId()),
+          mSecondCollisionBodyOwnerActorObjectId(collisionBody2->GetOwnerActorEngineObjectId())
     {
     }
 
@@ -20,12 +25,32 @@ namespace EnginePhysics
         return mSecondCollisionBodyId;
     }
 
-    const PhysicsDescriptor *ActiveCollisionPair::GetFirstCollisionBody() const
+    ePhysicsBodyType ActiveCollisionPair::GetFirstCollisionBodyType() const
+    {
+        return mFirstCollisionBodyType;
+    }
+
+    ePhysicsBodyType ActiveCollisionPair::GetSecondCollisionBodyType() const
+    {
+        return mSecondCollisionBodyType;
+    }
+
+    int32_t ActiveCollisionPair::GetFirstCollisionBodyOwnerActorObjectId() const
+    {
+        return mFirstCollisionBodyOwnerActorObjectId;
+    }
+
+    int32_t ActiveCollisionPair::GetSecondCollisionBodyOwnerActorObjectId() const
+    {
+        return mSecondCollisionBodyOwnerActorObjectId;
+    }
+
+    std::weak_ptr<PhysicsDescriptor> ActiveCollisionPair::GetFirstCollisionBody() const
     {
         return mFirstCollisionBody;
     }
 
-    const PhysicsDescriptor *ActiveCollisionPair::GetSecondCollisionBody() const
+    std::weak_ptr<PhysicsDescriptor> ActiveCollisionPair::GetSecondCollisionBody() const
     {
         return mSecondCollisionBody;
     }
@@ -59,7 +84,8 @@ namespace EnginePhysics
     {
         mActiveCollisionLefitime += deltaTime;
 
-        if (mActiveCollisionLefitime >= mActiveCollisionTimeout)
+        if (mActiveCollisionLefitime >= mActiveCollisionTimeout ||
+            (mFirstCollisionBody.expired() || mSecondCollisionBody.expired()))
         {
             mIsCollisionExpired = true;
             mActiveCollisionLefitime = 0.0f;

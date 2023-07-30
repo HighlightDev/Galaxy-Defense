@@ -18,7 +18,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
@@ -70,10 +70,10 @@ namespace Game
         const std::string roughness_ice = "Ice_Cracked_roughness.jpg";
         const std::string metallic_ice = "Ice_Cracked_metallic.jpg";
 
-        const auto& albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedo_ice);
-        const auto& normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(normal_ice);
-        const auto& roughness_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughness_ice);
-        const auto& metallic_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallic_ice);
+        const auto &albedo_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedo_ice);
+        const auto &normal_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(normal_ice);
+        const auto &roughness_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughness_ice);
+        const auto &metallic_ice_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallic_ice);
 
         const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
         const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
@@ -95,22 +95,21 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(spaceshipPbs_mat, a_enemySpaceship, "p_freezingEffect", "freezingBlendValue");
 
         const auto d_mesh = std::make_shared<MeshComponentData>("MeshComponentData_" + enemyShipIndexStr, "spaceship.obj", glm::vec3(0),
-                                       rotation, scale, "", spaceshipPbs_mat);
-        const auto& meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+                                                                rotation, scale, "", spaceshipPbs_mat);
+        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_enemySpaceship->AddComponent(c_mesh);
 
         const auto d_movement = std::make_shared<MovementComponentData>("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
-        const auto& moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
+        const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
         const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(10.0f);
         c_movement->SetCurrentSpeedToReferenceValue();
         a_enemySpaceship->AddComponent(c_movement);
 
-        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(5.0f), 0.0f);
-        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(5.0f), 0.0f);
         const auto physData = std::make_shared<PhysicsComponentData>("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
-        const auto& physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
+        const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);
         a_enemySpaceship->AddComponent(c_ghostPhysics);
 
@@ -119,7 +118,7 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(particles_mat, "opacity", 1.0f);
 
         const auto d_particle = std::make_shared<ParticleSystemComponentData>("c_particleSystemComponent_" + enemyShipIndexStr, particles_mat, glm::vec3(0), 100);
-        const auto& particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
+        const auto &particleSystemComponentCreator = std::make_shared<ParticleSystemComponentCreator<ParticleSystemComponent>>();
         const auto &c_particleSystemComponent = std::static_pointer_cast<ParticleSystemComponent>(scene->CreateComponent_GameThread(particleSystemComponentCreator, d_particle));
         auto emitter = std::make_shared<ParticleExplosionEmitter>();
         emitter->SetOwner(c_particleSystemComponent);
@@ -166,10 +165,10 @@ namespace Game
         const auto &rotator_binding = movementTweener->GetPropertyBindingByName("b_rotator");
         BindingAttachmentBuilder::SetAttachment(rootComponent, rotator_binding, "b_rotator");
         a_enemySpaceship->AttachTweener(movementTweener);
-        
+
         tweenerParser = std::make_unique<TweenerParser>();
         const auto lifecycleTweener = tweenerParser->ParseTweenerDescriptor("weakSpaceshipLifecycle.tween");
-        const auto& spaceship_enabled_binding = lifecycleTweener->GetPropertyBindingByName("b_isSpaceshipEnabled");
+        const auto &spaceship_enabled_binding = lifecycleTweener->GetPropertyBindingByName("b_isSpaceshipEnabled");
         BindingAttachmentBuilder::SetAttachment(a_enemySpaceship, spaceship_enabled_binding, "p_isEnabled");
         a_enemySpaceship->AttachTweener(lifecycleTweener);
 

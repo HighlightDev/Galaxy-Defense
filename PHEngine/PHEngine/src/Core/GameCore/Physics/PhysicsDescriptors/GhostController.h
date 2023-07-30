@@ -25,7 +25,10 @@ namespace EnginePhysics
       static constexpr float sCollisionCooldownTimeout = 0.1f;
 
    public:
-      GhostController(class PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const float mass, const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
+      GhostController(class PhysicsWorld *pPhysicsWorld,
+                      const std::shared_ptr<CollisionShapeBase> &shape,
+                      const float mass,
+                      const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,
                       const int32_t collisionFilterMask = btBroadphaseProxy::AllFilter);
 
       ~GhostController() override;
@@ -42,15 +45,17 @@ namespace EnginePhysics
 
       ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 
-      std::vector<btCollisionObject*> GetCollisionObjects() const override;
+      std::vector<btCollisionObject *> GetCollisionObjects() const override;
 
    private:
       void ParseGhostContacts();
 
-      btScalar addSingleResult(btManifoldPoint &cp, const btCollisionObjectWrapper *colObj0,
-                                       int partId0, int index0,
-                                       const btCollisionObjectWrapper *colObj1,
-                                       int partId1,
-                                       int index1) override;
+      btScalar addSingleResult(btManifoldPoint &cp,
+                               const btCollisionObjectWrapper *colObj0,
+                               int partId0,
+                               int index0,
+                               const btCollisionObjectWrapper *colObj1,
+                               int partId1,
+                               int index1) override;
    };
 }

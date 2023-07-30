@@ -10,7 +10,7 @@ namespace EnginePhysics {
    class CharacterPhysicsComponent
       : public PhysicsComponent
    {
-      DynamicCharacterController* characterController;
+      std::shared_ptr<DynamicCharacterController> characterController;
 
    public:
 

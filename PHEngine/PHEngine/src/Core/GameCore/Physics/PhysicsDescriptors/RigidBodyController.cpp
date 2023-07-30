@@ -5,15 +5,26 @@
 
 namespace EnginePhysics
 {
-   RigidBodyController::RigidBodyController(PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const ePhysicsBodyType bodyType, const float mass, const MotionModifiers &motionModifier)
-       : PhysicsDescriptor(pPhysicsWorld, shape, bodyType, mass, motionModifier), mLastRayCastObjectResult(nullptr)
+   RigidBodyController::RigidBodyController(PhysicsWorld *pPhysicsWorld,
+                                            const std::shared_ptr<CollisionShapeBase> &shape,
+                                            const ePhysicsBodyType bodyType,
+                                            const float mass,
+                                            const MotionModifiers &motionModifier)
+       : PhysicsDescriptor(pPhysicsWorld,
+                           shape,
+                           bodyType,
+                           mass,
+                           motionModifier),
+         mLastRayCastObjectResultId(std::numeric_limits<uint32_t>::max())
    {
    }
 
    RigidBodyController::~RigidBodyController()
    {
       if (ePhysicsBodyType::DYNAMIC == mBodyType)
+      {
          Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+      }
    }
 
    ePhysicsDescriptorType RigidBodyController::GetPhysicsDescriptorType() const
@@ -21,7 +32,7 @@ namespace EnginePhysics
       return ePhysicsDescriptorType::RIGID_BODY_CONTROLLER;
    }
 
-   std::vector<btCollisionObject*> RigidBodyController::GetCollisionObjects() const
+   std::vector<btCollisionObject *> RigidBodyController::GetCollisionObjects() const
    {
       return {mRigidBody};
    }
@@ -77,8 +88,12 @@ namespace EnginePhysics
       {
          if (auto collidedUserPtr = ignoreMeRayCast.GetCollisionHitObject()->getUserPointer())
          {
-            mLastRayCastObjectResult = static_cast<PhysicsDescriptor *>(collidedUserPtr);
+            mLastRayCastObjectResultId = static_cast<PhysicsDescriptor *>(collidedUserPtr)->GetId();
          }
+      }
+      else
+      {
+         mLastRayCastObjectResultId = std::numeric_limits<uint32_t>::max();
       }
 
       return bResult;
@@ -86,17 +101,19 @@ namespace EnginePhysics
 
    void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
    {
-      PhysicsDescriptor *kinematicObjDesc = std::get<0>(data);
-      const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
-
-      if (DoRayCastDown())
+      if (const auto &kinematicObjDescSp = std::get<0>(data).lock())
       {
-         if (mLastRayCastObjectResult == kinematicObjDesc)
+         const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
+
+         if (DoRayCastDown())
          {
-            // Collision
-            auto &worldTransform = mRigidBody->getWorldTransform();
-            const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
-            worldTransform.setOrigin(offsetedTranslation);
+            if (mLastRayCastObjectResultId == kinematicObjDescSp->GetId())
+            {
+               // Collision
+               auto &worldTransform = mRigidBody->getWorldTransform();
+               const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
+               worldTransform.setOrigin(offsetedTranslation);
+            }
          }
       }
    }

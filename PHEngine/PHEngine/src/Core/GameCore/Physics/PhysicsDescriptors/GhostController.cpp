@@ -12,7 +12,8 @@ using namespace EngineCore;
 namespace EnginePhysics
 {
    GhostController::GhostController(
-       PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape,
+       PhysicsWorld *pPhysicsWorld,
+       const std::shared_ptr<CollisionShapeBase> &shape,
        const float mass,
        const int32_t collisionFilterGroup,
        const int32_t collisionFilterMask)
@@ -94,7 +95,7 @@ namespace EnginePhysics
       ParseGhostContacts();
    }
 
-   std::vector<btCollisionObject*> GhostController::GetCollisionObjects() const
+   std::vector<btCollisionObject *> GhostController::GetCollisionObjects() const
    {
       return {mGhostObject};
    }
@@ -106,12 +107,12 @@ namespace EnginePhysics
                                              int index1)
    {
       const auto &collidedObject = colObj1->getCollisionObject();
-      auto collidedObjDescriptor = reinterpret_cast<const PhysicsDescriptor *>(collidedObject->getUserPointer());
+      auto collidedObjDescriptor = reinterpret_cast<PhysicsDescriptor *>(collidedObject->getUserPointer());
       if (mGhostObject == collidedObject ||
           !collidedObjDescriptor->GetIsCollisionEnabled())
          return 1.0f;
 
-      mPhysicsWorld->RegisterActiveCollision(this, collidedObjDescriptor);
+      mPhysicsWorld->RegisterActiveCollision(shared_from_this(), collidedObjDescriptor->shared_from_this());
 
       return 0.0f;
    }

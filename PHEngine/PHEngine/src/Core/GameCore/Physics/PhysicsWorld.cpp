@@ -29,11 +29,6 @@ namespace EnginePhysics
       LogInfo("PhysicsWorld::dctor");
 
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(this);
-
-      for (size_t i = 0; i < mPhysicsDescriptors.size(); ++i)
-      {
-         RemovePhysDescriptorFromSimulation(mPhysicsDescriptors[i]);
-      }
       mPhysicsDescriptors.clear();
 
       delete mBroadphase;
@@ -69,20 +64,20 @@ namespace EnginePhysics
       return mWorld;
    }
 
-   void PhysicsWorld::AddPhysDescriptor(PhysicsDescriptor *inDescriptor)
+   void PhysicsWorld::AddPhysDescriptor(const std::shared_ptr<PhysicsDescriptor> &inDescriptor)
    {
       LogInfo("PhysicsWorld::AddPhysDescriptor => descriptor id = ", inDescriptor->GetId());
 
-      mPhysicsDescriptors.push_back(inDescriptor);
+      mPhysicsDescriptors.emplace_back(inDescriptor);
    }
 
-   void PhysicsWorld::RemovePhysDescriptorFromSimulation(PhysicsDescriptor *descriptor)
+   void PhysicsWorld::RemovePhysDescriptorFromSimulation(const std::shared_ptr<PhysicsDescriptor> &descriptor)
    {
       LogInfo("PhysicsWorld::RemovePhysDescriptorFromSimulation => descriptor id = ", descriptor->GetId());
-      // !!! ATTENTION !!!
-      // this is the only place,
-      // where descriptor could be deleted.
-      delete descriptor;
+      auto removedDescriptorIt = std::remove_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [id = descriptor->GetId()](const auto &physDesc)
+                                                { return physDesc->GetId() == id; });
+
+      mPhysicsDescriptors.erase(removedDescriptorIt);
    }
 
    void PhysicsWorld::Tick(const float deltaTime)
@@ -118,26 +113,23 @@ namespace EnginePhysics
          {
             PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                             ePhysicsCollisionStateType::COLLISION_UNREGISTER,
-                                                            activeCollision.GetFirstCollisionBody()->GetPhysicsBodyType(),
-                                                            activeCollision.GetFirstCollisionBody()->GetId(),
-                                                            activeCollision.GetFirstCollisionBody()->GetOwnerActorEngineObjectId(),
-                                                            activeCollision.GetSecondCollisionBody()->GetId(),
-                                                            activeCollision.GetSecondCollisionBody()->GetOwnerActorEngineObjectId());
+                                                            activeCollision.GetFirstCollisionBodyType(),
+                                                            activeCollision.GetFirstCollisionBodyId(),
+                                                            activeCollision.GetFirstCollisionBodyOwnerActorObjectId(),
+                                                            activeCollision.GetSecondCollisionBodyId(),
+                                                            activeCollision.GetSecondCollisionBodyOwnerActorObjectId());
          }
       }
 
       const auto removeIt = std::remove_if(mActiveCollisions.begin(), mActiveCollisions.end(), [](const auto &activeCollisionPair)
                                            { return activeCollisionPair.IsCollisionExpired(); });
-      if (removeIt != mActiveCollisions.end())
-      {
-         mActiveCollisions.erase(removeIt, mActiveCollisions.end());
-      }
+      mActiveCollisions.erase(removeIt, mActiveCollisions.end());
    }
 
-   PhysicsDescriptor *PhysicsWorld::GetPhysicsDescriptorById(const size_t descriptorId) const
+   std::shared_ptr<PhysicsDescriptor> PhysicsWorld::GetPhysicsDescriptorById(const size_t descriptorId) const
    {
-      PhysicsDescriptor *result = nullptr;
-      auto foundDescriptorIt = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [=](const auto &physDescriptor)
+      std::shared_ptr<PhysicsDescriptor> result;
+      auto foundDescriptorIt = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [descriptorId](const auto &physDescriptor)
                                             { return physDescriptor->GetId() == descriptorId; });
 
       if (foundDescriptorIt != mPhysicsDescriptors.end())
@@ -148,29 +140,36 @@ namespace EnginePhysics
       return result;
    }
 
-   void PhysicsWorld::RegisterActiveCollision(const PhysicsDescriptor *collisionBody1, const PhysicsDescriptor *collisionBody2)
+   void PhysicsWorld::RegisterActiveCollision(const std::shared_ptr<PhysicsDescriptor> &collisionBody1Sp, const std::shared_ptr<PhysicsDescriptor> &collisionBody2Sp)
    {
-      assert(collisionBody1->GetPhysicsBodyType() == collisionBody2->GetPhysicsBodyType());
-      auto activeCollisionIt = std::find_if(mActiveCollisions.begin(),
-                                            mActiveCollisions.end(),
-                                            [&](const auto &collisionPair)
-                                            { return ((collisionBody1->GetId() == collisionPair.GetFirstCollisionBodyId()) && (collisionBody2->GetId() == collisionPair.GetSecondCollisionBodyId())) ||
-                                                     ((collisionBody1->GetId() == collisionPair.GetSecondCollisionBodyId()) && (collisionBody2->GetId() == collisionPair.GetFirstCollisionBodyId())); });
+      if (collisionBody1Sp && collisionBody2Sp)
+      {
+         assert(collisionBody1Sp->GetPhysicsBodyType() == collisionBody2Sp->GetPhysicsBodyType());
+         auto activeCollisionIt = std::find_if(mActiveCollisions.begin(),
+                                               mActiveCollisions.end(),
+                                               [&](const auto &collisionPair)
+                                               { 
+                                                if (collisionPair.GetFirstCollisionBody().expired() || collisionPair.GetSecondCollisionBody().expired()) {
+                                                   return false;
+                                                }
+                                                return ((collisionBody1Sp->GetId() == collisionPair.GetFirstCollisionBodyId()) && (collisionBody2Sp->GetId() == collisionPair.GetSecondCollisionBodyId())) ||
+                                                        ((collisionBody1Sp->GetId() == collisionPair.GetSecondCollisionBodyId()) && (collisionBody2Sp->GetId() == collisionPair.GetFirstCollisionBodyId())); });
 
-      if (activeCollisionIt == mActiveCollisions.end())
-      {
-         mActiveCollisions.emplace_back(collisionBody1, collisionBody2);
-         PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
-                                                         ePhysicsCollisionStateType::COLLISION_REGISTERED,
-                                                         collisionBody1->GetPhysicsBodyType(),
-                                                         collisionBody1->GetId(),
-                                                         collisionBody1->GetOwnerActorEngineObjectId(),
-                                                         collisionBody2->GetId(),
-                                                         collisionBody2->GetOwnerActorEngineObjectId());
-      }
-      else
-      {
-         activeCollisionIt->ReloadActiveCollisionLifetime();
+         if (activeCollisionIt == mActiveCollisions.end())
+         {
+            mActiveCollisions.emplace_back(collisionBody1Sp, collisionBody2Sp);
+            PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+                                                            ePhysicsCollisionStateType::COLLISION_REGISTERED,
+                                                            collisionBody1Sp->GetPhysicsBodyType(),
+                                                            collisionBody1Sp->GetId(),
+                                                            collisionBody1Sp->GetOwnerActorEngineObjectId(),
+                                                            collisionBody2Sp->GetId(),
+                                                            collisionBody2Sp->GetOwnerActorEngineObjectId());
+         }
+         else
+         {
+            activeCollisionIt->ReloadActiveCollisionLifetime();
+         }
       }
    }
 
@@ -183,10 +182,15 @@ namespace EnginePhysics
 
    void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t &data)
    {
-      auto removedDescriptorIt = std::find_if(mPhysicsDescriptors.begin(), mPhysicsDescriptors.end(), [&](const PhysicsDescriptor *physDesc)
-                                              { return physDesc->GetId() == std::get<0>(data); });
+      if (mPhysicsDescriptors.size())
+      {
+         const auto removedDescriptorIt = std::find_if(mPhysicsDescriptors.cbegin(), mPhysicsDescriptors.cend(), [&](const auto &physDesc)
+                                                       { return physDesc->GetId() == std::get<0>(data); });
 
-      mPhysicsDescriptors.erase(removedDescriptorIt);
-      RemovePhysDescriptorFromSimulation(*removedDescriptorIt);
+         if (removedDescriptorIt != mPhysicsDescriptors.cend())
+         {
+            RemovePhysDescriptorFromSimulation(*removedDescriptorIt);
+         }
+      }
    }
 }

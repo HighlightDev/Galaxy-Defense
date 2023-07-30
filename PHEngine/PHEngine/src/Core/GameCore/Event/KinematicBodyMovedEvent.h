@@ -5,14 +5,16 @@
 #include "Core/GameCore/Components/Transform.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsDescriptor.h"
 
+#include <memory>
+
 namespace Event
 {
 
    class KinematicBodyMovedEvent
-      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>
+      : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>
    {
    public:
-      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EngineCore::EulerAnglesTransform>>::Event_t;
+      using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EngineCore::EulerAnglesTransform>>::Event_t;
 
       std::string ToString() const override {
          return "GameThreadKinematicBodyMovedEvent";

@@ -2,17 +2,17 @@
 
 #include <glm/vec3.hpp>
 
-#include "PhysicsShapeBase.h"
+#include "CollisionShapeBase.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 
 namespace EnginePhysics
 {
 
-   struct PhyBoxShape
-      : public PhysicsShapeBase
+   struct CollisionBoxShape
+      : public CollisionShapeBase
    {
-      PhyBoxShape(const glm::vec3& halfExtent)
-         : PhysicsShapeBase(new btBoxShape(btVector3(halfExtent.x, halfExtent.y, halfExtent.z)))
+      CollisionBoxShape(const glm::vec3& halfExtent)
+         : CollisionShapeBase(new btBoxShape(btVector3(halfExtent.x, halfExtent.y, halfExtent.z)))
       {
       }
 

@@ -1625,16 +1625,16 @@
     <ClInclude Include="src\Core\GameCore\Event\PhysicsComponentUpdatedEvent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyBoxShape.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionBoxShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyPlaneShape.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionPlaneShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyShapeBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhySphereShape.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionSphereShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.h">
@@ -1664,7 +1664,7 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCapsuleShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\IoCore\AsyncLoaderCore\ResourceMap.h">
@@ -2018,10 +2018,10 @@
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCompoundShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h">
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionShapeBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.h">
@@ -3151,7 +3151,7 @@
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp">
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCompoundShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\ScriptingCore\EngineObjectCreator.cpp">

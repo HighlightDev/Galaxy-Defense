@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Shapes/PhysicsShapeBase.h"
+#include "Shapes/CollisionShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
 
 #include <vector>
+#include <memory>
 #include <BulletPhys/btBulletDynamicsCommon.h>
 #include <BulletPhys/BulletCollision/CollisionDispatch/btCollisionObject.h>
 
@@ -20,6 +21,7 @@ namespace EnginePhysics
    };
 
    class PhysicsDescriptor
+       : public std::enable_shared_from_this<PhysicsDescriptor>
    {
    protected:
       static int32_t mTotalIds;
@@ -34,7 +36,7 @@ namespace EnginePhysics
 
       class PhysicsWorld *mPhysicsWorld;
 
-      PhysicsShapeBase *mShape;
+      std::shared_ptr<CollisionShapeBase> mShape;
 
       btMotionState *mMotionState;
 
@@ -58,7 +60,11 @@ namespace EnginePhysics
       bool mIsCollisionEnabled;
 
    public:
-      PhysicsDescriptor(class PhysicsWorld *pPhysicsWorld, PhysicsShapeBase *shape, const ePhysicsBodyType bodyType, const float mass = 0.0f, const MotionModifiers &motionModifier = MotionModifiers());
+      PhysicsDescriptor(class PhysicsWorld *pPhysicsWorld,
+                        const std::shared_ptr<CollisionShapeBase> &shape,
+                        const ePhysicsBodyType bodyType,
+                        const float mass = 0.0f,
+                        const MotionModifiers &motionModifier = MotionModifiers());
 
       virtual ~PhysicsDescriptor();
 
@@ -72,9 +78,9 @@ namespace EnginePhysics
 
       virtual ePhysicsDescriptorType GetPhysicsDescriptorType() const = 0;
 
-      virtual std::vector<btCollisionObject*> GetCollisionObjects() const;
+      virtual std::vector<btCollisionObject *> GetCollisionObjects() const;
 
-      PhysicsShapeBase *GetShape() const;
+      const std::shared_ptr<CollisionShapeBase> &GetShape() const;
 
       size_t GetId() const;
 

@@ -20,7 +20,7 @@ namespace EnginePhysics
        : public Component
    {
    protected:
-      PhysicsDescriptor *mDescriptor;
+      std::shared_ptr<PhysicsDescriptor> mDescriptor;
 
       bool bIsTransformationDirty;
 
@@ -37,7 +37,7 @@ namespace EnginePhysics
 
       void SetOwner(const std::weak_ptr<Actor> &ownerActor) override;
 
-      PhysicsDescriptor *GetDescriptor() const;
+      std::shared_ptr<PhysicsDescriptor> GetDescriptor() const;
 
       bool IsTransformDirty() const;
 

@@ -532,8 +532,8 @@
     <ClInclude Include="src\Core\GameCore\Physics\ActiveCollisionPair.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\GhostController.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsBodyType.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhysicsShapeBase.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCompoundShape.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\FontRenderingShader.h" />
     <ClInclude Include="src\Core\GameCore\ShaderImplementation\VertexFactoryImp\InstancedStaticMeshVertexFactory.h" />
@@ -672,13 +672,13 @@
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\DynamicCharacterController.h" />
     <ClInclude Include="src\Core\CommonCore\Assertion.h" />
     <ClInclude Include="src\Core\GameCore\Components\Transform.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCapsuleShape.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCapsuleShape.h" />
     <ClInclude Include="src\Core\GameCore\Components\PhysicsComponents\PhysicsComponent.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyBoxShape.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyPlaneShape.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionBoxShape.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionPlaneShape.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyShapeBase.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\PhysicsDescriptor.h" />
-    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhySphereShape.h" />
+    <ClInclude Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionSphereShape.h" />
     <ClInclude Include="src\Core\GameCore\Event\GameThreadEventDispatcher.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\Batch.h" />
     <ClInclude Include="src\Core\GameCore\Batcher\BatchJobMaster.h" />
@@ -1198,7 +1198,7 @@
     <ClCompile Include="src\Core\GameCore\Particles\ParticlesRawDataHandler.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\ActiveCollisionPair.cpp" />
     <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\GhostController.cpp" />
-    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\PhyCompoundShape.cpp" />
+    <ClCompile Include="src\Core\GameCore\Physics\PhysicsDescriptors\Shapes\CollisionCompoundShape.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\DepthCollectShader.cpp" />
     <ClCompile Include="src\Core\GameCore\ShaderImplementation\FontRenderingShader.cpp" />
     <ClCompile Include="src\Core\GameCore\TextHandler.cpp" />

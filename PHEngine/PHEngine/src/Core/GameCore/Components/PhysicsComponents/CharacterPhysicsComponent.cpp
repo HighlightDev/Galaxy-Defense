@@ -12,10 +12,10 @@ using namespace EngineMath;
 
 namespace EnginePhysics
 {
-   CharacterPhysicsComponent::CharacterPhysicsComponent(const std::shared_ptr<PhysicsComponentData>& data)
-      : PhysicsComponent(data)
-      , characterController(static_cast<DynamicCharacterController*>(data->mPhysicsDescriptor))
+   CharacterPhysicsComponent::CharacterPhysicsComponent(const std::shared_ptr<PhysicsComponentData> &data)
+       : PhysicsComponent(data)
    {
+      characterController = std::dynamic_pointer_cast<DynamicCharacterController>(data->mPhysicsDescriptor);
       assert(characterController);
    }
 
@@ -29,7 +29,7 @@ namespace EnginePhysics
 
       if (bIsTransformationDirty)
       {
-         if (const auto& spOwner = GetOwner().lock())
+         if (const auto &spOwner = GetOwner().lock())
          {
             spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
             Event::PhysicsComponentUpdatedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, spOwner->GetName());
@@ -37,9 +37,9 @@ namespace EnginePhysics
       }
    }
 
-   void CharacterPhysicsComponent::CollectDataForSerialization(SerializeDataContainer& dataContainer)
+   void CharacterPhysicsComponent::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      auto& actorData = GetSerializeDataActor(dataContainer);
+      auto &actorData = GetSerializeDataActor(dataContainer);
       std::shared_ptr<SerializeDataCharacterPhysicsComponent> charPhysCompData = std::make_shared<SerializeDataCharacterPhysicsComponent>();
       charPhysCompData->ComponentName = EngineObjectName;
       charPhysCompData->CapsuleHeight = characterController->GetCapsuleHeight();
@@ -50,7 +50,7 @@ namespace EnginePhysics
       actorData.ComponentsData.emplace_back(charPhysCompData);
    }
 
-   void CharacterPhysicsComponent::SetWalkVelocity(const glm::vec3& velocity)
+   void CharacterPhysicsComponent::SetWalkVelocity(const glm::vec3 &velocity)
    {
       characterController->Walk(velocity);
    }

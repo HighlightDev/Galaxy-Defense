@@ -40,7 +40,7 @@ namespace EnginePhysics
       mDescriptor->SetOwnerActorEngineObjectId(ownerActorSp->GetObjectId());
    }
 
-   PhysicsDescriptor *PhysicsComponent::GetDescriptor() const
+   std::shared_ptr<PhysicsDescriptor> PhysicsComponent::GetDescriptor() const
    {
       return mDescriptor;
    }

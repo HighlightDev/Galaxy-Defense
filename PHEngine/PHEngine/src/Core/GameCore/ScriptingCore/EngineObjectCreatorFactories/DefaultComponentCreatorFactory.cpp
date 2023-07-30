@@ -13,11 +13,11 @@
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyPlaneShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCapsuleShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionPlaneShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
@@ -165,39 +165,39 @@ namespace EngineCore
             }
             else if ("RigidBodyPhysicsComponent" == componentType || "CharacterPhysicsComponent" == componentType || "GhostPhysicsComponent" == componentType)
             {
-                PhysicsDescriptor *descriptor = nullptr;
-                PhysicsShapeBase *collisionShape = nullptr;
+                std::shared_ptr<PhysicsDescriptor> descriptor;
+                std::shared_ptr<CollisionShapeBase> collisionShape;
                 const auto collisionShapeStr = JsonParserHelper::FromJsonToString("collisionShape", jsonObj);
                 if ("box" == collisionShapeStr)
                 {
                     const auto halfExtent = JsonParserHelper::FromJsonToVec3("halfExtent", jsonObj);
-                    collisionShape = new PhyBoxShape(halfExtent);
+                    collisionShape = std::make_shared<CollisionBoxShape>(halfExtent);
                 }
                 else if ("capsule" == collisionShapeStr)
                 {
                     const auto radius = JsonParserHelper::FromJsonToFloat("radius", jsonObj);
                     const auto height = JsonParserHelper::FromJsonToFloat("height", jsonObj);
-                    collisionShape = new PhyCapsuleShape(radius, height);
+                    collisionShape = std::make_shared<CollisionCapsuleShape>(radius, height);
                 }
                 else if ("plane" == collisionShapeStr)
                 {
                     const auto normal = JsonParserHelper::FromJsonToVec3("normal", jsonObj);
                     const auto d = JsonParserHelper::FromJsonToFloat("d", jsonObj);
-                    collisionShape = new PhyPlaneShape(normal, d);
+                    collisionShape = std::make_shared<CollisionPlaneShape>(normal, d);
                 }
                 else if ("sphere" == collisionShapeStr)
                 {
                     const auto radius = JsonParserHelper::FromJsonToFloat("radius", jsonObj);
-                    collisionShape = new PhySphereShape(radius);
+                    collisionShape = std::make_shared<CollisionSphereShape>(radius);
                 }
                 else if ("compoundShape" == collisionShapeStr)
                 {
-                    collisionShape = new PhyCompoundShape();
+                    collisionShape = std::make_shared<CollisionCompoundShape>();
                     // todo:
-                    /*void EngineObjectCreator::AddChildShapeToCompoundShape(PhysicsShapeBase * compoundShape, PhysicsShapeBase * childShape,
+                    /*void EngineObjectCreator::AddChildShapeToCompoundShape(CollisionShapeBase * compoundShape, CollisionShapeBase * childShape,
                                                                            const glm::vec3 &translation, const glm::vec3 &rotation)
                     {
-                        PhyCompoundShape *mCompoundShape = static_cast<PhyCompoundShape *>(compoundShape);
+                        CollisionCompoundShape *mCompoundShape = static_cast<CollisionCompoundShape *>(compoundShape);
                         assert(mCompoundShape);
                         NoScaleEulerRotationTransform childTransform = NoScaleEulerRotationTransform(translation, rotation);
                         mCompoundShape->AddChildShape(childTransform, childShape);
@@ -208,7 +208,7 @@ namespace EngineCore
                 if ("RigidBodyPhysicsComponent" == componentType)
                 {
                     const auto physicsBodyType = static_cast<ePhysicsBodyType>(JsonParserHelper::FromJsonToInt("physicsBodyType", jsonObj));
-                    descriptor = new RigidBodyController(sceneSp->GetPhysicsWorld(), collisionShape, physicsBodyType, mass);
+                    descriptor = std::make_shared<RigidBodyController>(sceneSp->GetPhysicsWorld(), collisionShape, physicsBodyType, mass);
                 }
                 else if ("CharacterPhysicsComponent" == componentType)
                 {
@@ -216,11 +216,11 @@ namespace EngineCore
                     const auto capsuleHeight = JsonParserHelper::FromJsonToFloat("capsuleHeight", jsonObj);
 
                     const auto stepHeight = JsonParserHelper::FromJsonToFloat("stepHeight", jsonObj);
-                    descriptor = new DynamicCharacterController(sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
+                    descriptor = std::make_shared<DynamicCharacterController>(sceneSp->GetPhysicsWorld(), capsuleRadius, capsuleHeight, mass, stepHeight);
                 }
                 else if ("GhostPhysicsComponent" == componentType)
                 {
-                    descriptor = new GhostController(sceneSp->GetPhysicsWorld(), collisionShape, mass);
+                    descriptor = std::make_shared<GhostController>(sceneSp->GetPhysicsWorld(), collisionShape, mass);
                 }
 
                 componentData = std::make_shared<PhysicsComponentData>(objectName, descriptor);

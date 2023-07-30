@@ -7,7 +7,7 @@
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
 #include "Core/GraphicsCore/Shadow/ProjectedShadowInfo.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhysicsShapeBase.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionShapeBase.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/ACamera.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"

@@ -15,7 +15,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/ComponentData/PhysicsComponentData.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/GhostController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Particles/Emitters/ParticleExplosionEmitter.h"
 #include "Core/GameCore/Particles/Modules/Velocity/SimpleVelocityModule.h"
@@ -86,8 +86,7 @@ namespace Game
         c_movement->SetDirection(glm::vec3(1.0f, .0f, 0.0f));
         a_asteroid->AddComponent(c_movement);
 
-        GhostController *ghostController = new GhostController(scene->GetPhysicsWorld(), new PhySphereShape(3.0f), 0.0f);
-        scene->GetPhysicsWorld()->AddPhysDescriptor(ghostController);
+        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(3.0f), 0.0f);
         const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, std::make_shared<PhysicsComponentData>("c_asteroid_physics_" + asteroidIndexStr, ghostController));
         a_asteroid->AddComponent(c_ghostPhysics);

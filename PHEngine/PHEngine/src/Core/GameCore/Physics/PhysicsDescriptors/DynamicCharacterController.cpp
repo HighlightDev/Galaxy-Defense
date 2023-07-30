@@ -1,6 +1,6 @@
 #include "DynamicCharacterController.h"
 #include "Core/UtilityCore/GlmToBulletConverter.h"
-#include "Shapes/PhyCapsuleShape.h"
+#include "Shapes/CollisionCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsWorld.h"
 #include "Core/GameCore/Components/Transform.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/PhysicsBodyType.h"
@@ -12,7 +12,7 @@ namespace EnginePhysics
 {
    DynamicCharacterController::DynamicCharacterController(
        PhysicsWorld *pPhysicsWorld, float radius, float height, float mass, float stepHeight)
-       : PhysicsDescriptor(pPhysicsWorld, new PhyCapsuleShape(radius, height), ePhysicsBodyType::DYNAMIC, mass),
+       : PhysicsDescriptor(pPhysicsWorld, std::make_shared<CollisionCapsuleShape>(radius, height), ePhysicsBodyType::DYNAMIC, mass),
          mGhostObject(nullptr),
          mOnGround(false),
          mHittingWall(false),
@@ -136,7 +136,7 @@ namespace EnginePhysics
       return ePhysicsDescriptorType::DYNAMIC_CHARACTER_CONTROLLER;
    }
 
-   std::vector<btCollisionObject*> DynamicCharacterController::GetCollisionObjects() const
+   std::vector<btCollisionObject *> DynamicCharacterController::GetCollisionObjects() const
    {
       return {mRigidBody, mGhostObject};
    }
@@ -232,15 +232,17 @@ namespace EnginePhysics
 
    void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
    {
-      PhysicsDescriptor *kinematicObjDesc = std::get<0>(data);
-      const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
-
-      if (mLastRayCastObjectResult && kinematicObjDesc == mLastRayCastObjectResult)
+      if (const auto &kinematicObjDescSp = std::get<0>(data).lock())
       {
-         // Collision
-         auto &worldTransform = mRigidBody->getWorldTransform();
-         const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
-         worldTransform.setOrigin(offsetedTranslation);
+         const btVector3 &offsetTranslation = Converter::glmToBullet(std::get<1>(data).Translation);
+
+         if (mLastRayCastObjectResult && (mLastRayCastObjectResult->GetId() == kinematicObjDescSp->GetId()))
+         {
+            // Collision
+            auto &worldTransform = mRigidBody->getWorldTransform();
+            const auto &offsetedTranslation = worldTransform.getOrigin() + offsetTranslation;
+            worldTransform.setOrigin(offsetedTranslation);
+         }
       }
    }
 
@@ -329,12 +331,12 @@ namespace EnginePhysics
 
    float DynamicCharacterController::GetCapsuleHeight() const
    {
-      return static_cast<PhyCapsuleShape *>(GetShape())->GetHeight();
+      return std::static_pointer_cast<CollisionCapsuleShape>(GetShape())->GetHeight();
    }
 
    float DynamicCharacterController::GetCapsuleRadius() const
    {
-      return static_cast<PhyCapsuleShape *>(GetShape())->GetRadius();
+      return std::static_pointer_cast<CollisionCapsuleShape>(GetShape())->GetRadius();
    }
 
 }

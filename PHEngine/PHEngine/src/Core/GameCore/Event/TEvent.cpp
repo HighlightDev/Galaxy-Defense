@@ -22,7 +22,7 @@ namespace Event
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseScrollDirection>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
-   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EnginePhysics::PhysicsDescriptor*, EulerAnglesTransform>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EulerAnglesTransform>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>;
 
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>;

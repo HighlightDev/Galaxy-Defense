@@ -2,19 +2,21 @@
 
 #include "Core/GameCore/Serialize/SerializeData/SerializeData.h"
 
-
-namespace Graphics {
+namespace Graphics
+{
    class IMaterial;
 }
 
-namespace EnginePhysics {
+namespace EnginePhysics
+{
    class PhysicsComponent;
 }
 
-namespace EngineCore {
+namespace EngineCore
+{
 
-   using Graphics::IMaterial;
    using EnginePhysics::PhysicsComponent;
+   using Graphics::IMaterial;
 
    class Actor;
    class ACamera;
@@ -28,35 +30,33 @@ namespace EngineCore {
    class SerializeHelper
    {
    public:
-      
-      static std::shared_ptr<SerializeDataCamera> GetSerializedDataCamera(const ACamera* camera);
+      static std::shared_ptr<SerializeDataCamera> GetSerializedDataCamera(const ACamera *camera);
 
-      static std::shared_ptr<SerializeDataStaticMesh> GetSerializedDataStaticMesh(const StaticMeshComponent* component);
+      static std::shared_ptr<SerializeDataStaticMesh> GetSerializedDataStaticMesh(const StaticMeshComponent *component);
 
-      static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent* component);
+      static std::shared_ptr<SerializeDataSkeletalMesh> GetSerializedDataSkeletalMesh(const SkeletalMeshComponent *component);
 
-      static std::shared_ptr<SerializeDataPlanarReflectionComponent> GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent>& component);
+      static std::shared_ptr<SerializeDataPlanarReflectionComponent> GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent> &component);
 
       static SerializeDataMaterial GetSerializeDataMaterial(std::shared_ptr<IMaterial> materialInstance);
 
-      static std::shared_ptr<SerializeDataPhysicsComponent> GetSerializeDataPhysicsComponent(const PhysicsComponent* component);
+      static std::shared_ptr<SerializeDataPhysicsComponent> GetSerializeDataPhysicsComponent(const PhysicsComponent *component);
 
-      static std::shared_ptr<SerializeDataPhysicsShape> GetSerializePhysicsShapeData(PhysicsShapeBase* physicsShape);
+      static std::shared_ptr<SerializeDataPhysicsShape> GetSerializePhysicsShapeData(const std::shared_ptr<CollisionShapeBase> &physicsShape);
 
-      static std::shared_ptr<ACamera> CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool& outIsMainSceneCamera);
+      static std::shared_ptr<ACamera> CreateCameraFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataCamera> data, bool &outIsMainSceneCamera);
 
-      static std::shared_ptr<Actor> CreateActorFromSerializedData(const SerializeDataActor& data);
+      static std::shared_ptr<Actor> CreateActorFromSerializedData(const SerializeDataActor &data);
 
       static std::shared_ptr<Tweener> CreateTweenerFromSerializedData(std::shared_ptr<SerializeDataTweener> data);
 
       static std::shared_ptr<Component> CreateComponentFromSerializedData(std::shared_ptr<Scene> scene, std::shared_ptr<SerializeDataBase> data);
 
-      static PhysicsShapeBase* CreatePhysicsShape(SerializeDataPhysicsShape* serDataShape);
+      static std::shared_ptr<CollisionShapeBase> CreatePhysicsShape(const std::shared_ptr<SerializeDataPhysicsShape> &serDataShape);
 
-      static std::shared_ptr<IMaterial> CreateMaterialFromSerializedData(const SerializeDataMaterial& materialData);
+      static std::shared_ptr<IMaterial> CreateMaterialFromSerializedData(const SerializeDataMaterial &materialData);
 
-      static std::vector<std::string> GetSerializedAllocatedResources(const SerializeAllocatedResources& allocatedResources);
+      static std::vector<std::string> GetSerializedAllocatedResources(const SerializeAllocatedResources &allocatedResources);
    };
 
 }
-

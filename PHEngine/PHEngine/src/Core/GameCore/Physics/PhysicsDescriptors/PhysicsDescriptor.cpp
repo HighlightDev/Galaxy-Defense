@@ -12,19 +12,22 @@ using namespace EngineCore;
 namespace EnginePhysics
 {
    MotionModifiers::MotionModifiers()
-       : LinearFactor(btVector3(1.0f, 1.0f, 1.0f)), AngularFactor(btVector3(1.0f, 1.0f, 1.0f))
+       : LinearFactor(btVector3(1.0f, 1.0f, 1.0f)),
+         AngularFactor(btVector3(1.0f, 1.0f, 1.0f))
    {
    }
 
-   MotionModifiers::MotionModifiers(const btVector3 &linearFactor, const btVector3 &angularFactor)
-       : LinearFactor(linearFactor), AngularFactor(angularFactor)
+   MotionModifiers::MotionModifiers(const btVector3 &linearFactor,
+                                    const btVector3 &angularFactor)
+       : LinearFactor(linearFactor),
+         AngularFactor(angularFactor)
    {
    }
 
    int32_t PhysicsDescriptor::mTotalIds = 0;
 
    PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld,
-                                        PhysicsShapeBase *shape,
+                                        const std::shared_ptr<CollisionShapeBase> &shape,
                                         const ePhysicsBodyType bodyType,
                                         const float mass,
                                         const MotionModifiers &motionModifier)
@@ -63,7 +66,6 @@ namespace EnginePhysics
          delete mRigidBody;
       }
 
-      delete mShape;
       delete mMotionState;
    }
 
@@ -71,7 +73,7 @@ namespace EnginePhysics
    {
    }
 
-   std::vector<btCollisionObject*> PhysicsDescriptor::GetCollisionObjects() const
+   std::vector<btCollisionObject *> PhysicsDescriptor::GetCollisionObjects() const
    {
       return {mRigidBody};
    }
@@ -91,7 +93,7 @@ namespace EnginePhysics
       return mMotionModifier;
    }
 
-   PhysicsShapeBase *PhysicsDescriptor::GetShape() const
+   const std::shared_ptr<CollisionShapeBase> &PhysicsDescriptor::GetShape() const
    {
       return mShape;
    }

@@ -11,10 +11,10 @@
 #include "Core/GameCore/Components/PlanarReflectionComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhySphereShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCapsuleShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/PhyCompoundShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCapsuleShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
+#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Tweener/Tweener.h"
 #include "Core/GameCore/Tweener/TweenerParser.h"
@@ -80,7 +80,7 @@ namespace EngineCore
       return cameraData;
    }
 
-   std::shared_ptr<SerializeDataPhysicsShape> SerializeHelper::GetSerializePhysicsShapeData(PhysicsShapeBase *physicsShape)
+   std::shared_ptr<SerializeDataPhysicsShape> SerializeHelper::GetSerializePhysicsShapeData(const std::shared_ptr<CollisionShapeBase> &physicsShape)
    {
       std::shared_ptr<SerializeDataPhysicsShape> resultData;
 
@@ -88,21 +88,21 @@ namespace EngineCore
 
       if (SPHERE_SHAPE_PROXYTYPE == shapeType)
       {
-         PhySphereShape *sphere = static_cast<PhySphereShape *>(physicsShape);
+         const auto sphere = std::static_pointer_cast<CollisionSphereShape>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataSpherePhysicsShape>();
          shapeData->Radius = sphere->GetRadius();
          resultData = shapeData;
       }
       else if (BOX_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyBoxShape *box = static_cast<PhyBoxShape *>(physicsShape);
+         const auto box = std::static_pointer_cast<CollisionBoxShape>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataBoxPhysicsShape>();
          shapeData->HalfExtent = box->GetHalfExtent();
          resultData = shapeData;
       }
       else if (CAPSULE_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyCapsuleShape *capsule = static_cast<PhyCapsuleShape *>(physicsShape);
+         const auto capsule = std::static_pointer_cast<CollisionCapsuleShape>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataCapsulePhysicsShape>();
          shapeData->Height = capsule->GetHeight();
          shapeData->Radius = capsule->GetRadius();
@@ -110,7 +110,7 @@ namespace EngineCore
       }
       else if (COMPOUND_SHAPE_PROXYTYPE == shapeType)
       {
-         PhyCompoundShape *compoundShape = static_cast<PhyCompoundShape *>(physicsShape);
+         const auto compoundShape = std::static_pointer_cast<CollisionCompoundShape>(physicsShape);
          auto shapeData = std::make_shared<SerializeDataCompoundPhysicsShape>();
          auto childShapeMap = compoundShape->GetChildShapes();
 
@@ -144,7 +144,7 @@ namespace EngineCore
    {
       std::shared_ptr<SerializeDataPhysicsComponent> physCompData = std::make_shared<SerializeDataPhysicsComponent>();
 
-      PhysicsShapeBase *physShape = component->GetDescriptor()->GetShape();
+      const auto &physShape = component->GetDescriptor()->GetShape();
 
       std::shared_ptr<SerializeDataPhysicsShape> physicsShapeData = GetSerializePhysicsShapeData(physShape);
 
@@ -249,14 +249,14 @@ namespace EngineCore
       return meshData;
    }
 
-   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent>& component)
+   std::shared_ptr<SerializeDataPlanarReflectionComponent> SerializeHelper::GetSerializedDataPlanarReflectionComponent(const std::shared_ptr<PlanarReflectionComponent> &component)
    {
       const auto &planarReflectionData = std::make_shared<SerializeDataPlanarReflectionComponent>();
       planarReflectionData->ComponentName = component->GetEngineObjectName();
       planarReflectionData->Translation = component->GetTranslation();
       planarReflectionData->EulerAnglesRotation = component->GetRotationDegrees();
       planarReflectionData->Scale = component->GetScale();
-      const auto& ownerCameraSp = component->GetOwnerCameraWp().lock();
+      const auto &ownerCameraSp = component->GetOwnerCameraWp().lock();
       assert(ownerCameraSp);
       planarReflectionData->OwnerCameraName = ownerCameraSp->GetCameraName();
       const auto &viewPortInfo = component->GetRenderTargetViewPortInfo();
@@ -313,40 +313,40 @@ namespace EngineCore
       return result;
    }
 
-   PhysicsShapeBase *SerializeHelper::CreatePhysicsShape(SerializeDataPhysicsShape *serDataShape)
+   std::shared_ptr<CollisionShapeBase> SerializeHelper::CreatePhysicsShape(const std::shared_ptr<SerializeDataPhysicsShape> &serDataShape)
    {
-      PhysicsShapeBase *result = nullptr;
+      std::shared_ptr<CollisionShapeBase> result;
 
       switch (serDataShape->GetShapeProxyType())
       {
       case BOX_SHAPE_PROXYTYPE:
       {
-         auto shapeData = static_cast<SerializeDataBoxPhysicsShape *>(serDataShape);
-         result = new PhyBoxShape(shapeData->HalfExtent);
+         auto shapeData = std::static_pointer_cast<SerializeDataBoxPhysicsShape>(serDataShape);
+         result = std::make_shared<CollisionBoxShape>(shapeData->HalfExtent);
          break;
       }
       case CAPSULE_SHAPE_PROXYTYPE:
       {
-         auto shapeData = static_cast<SerializeDataCapsulePhysicsShape *>(serDataShape);
-         result = new PhyCapsuleShape(shapeData->Radius, shapeData->Height);
+         auto shapeData = std::static_pointer_cast<SerializeDataCapsulePhysicsShape>(serDataShape);
+         result = std::make_shared<CollisionCapsuleShape>(shapeData->Radius, shapeData->Height);
          break;
       }
       case SPHERE_SHAPE_PROXYTYPE:
       {
-         auto shapeData = static_cast<SerializeDataSpherePhysicsShape *>(serDataShape);
-         result = new PhySphereShape(shapeData->Radius);
+         auto shapeData = std::static_pointer_cast<SerializeDataSpherePhysicsShape>(serDataShape);
+         result = std::make_shared<CollisionSphereShape>(shapeData->Radius);
          break;
       }
       case COMPOUND_SHAPE_PROXYTYPE:
       {
-         auto shapeData = static_cast<SerializeDataCompoundPhysicsShape *>(serDataShape);
+         auto shapeData = std::static_pointer_cast<SerializeDataCompoundPhysicsShape>(serDataShape);
          const auto &childrenData = shapeData->ChildrenWithRotation;
 
-         auto compoundPhyShape = new PhyCompoundShape();
+         auto compoundPhyShape = std::make_shared<CollisionCompoundShape>();
 
          for (const auto &childData : childrenData)
          {
-            const auto childPhysicsShape = CreatePhysicsShape(childData.Child.get());
+            const auto childPhysicsShape = CreatePhysicsShape(childData.Child);
             compoundPhyShape->AddChildShape(NoScaleEulerRotationTransform(childData.ChildTransform.Translation, childData.ChildTransform.Rotation),
                                             childPhysicsShape);
          }
