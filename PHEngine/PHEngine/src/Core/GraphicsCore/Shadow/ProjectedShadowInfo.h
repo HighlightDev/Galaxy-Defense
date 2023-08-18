@@ -62,6 +62,8 @@ namespace Graphics
 
       TextureAtlasSpaceRequest GetTextureAtlasSpaceRequest() const;
 
+      void CleanUp();
+
    protected:
 
       void AllocateFramebuffer() const;

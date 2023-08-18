@@ -17,7 +17,6 @@ namespace Graphics
 
     ResolvedSceneFramebuffer::~ResolvedSceneFramebuffer()
     {
-        DestroyResolvedSceneFramebuffer();
     }
 
     void ResolvedSceneFramebuffer::SetTextures()

@@ -18,7 +18,8 @@ namespace Graphics
                 component->GetRenderData()->Diffuse,
                 component->GetRenderData()->Specular,
                 component->GetRenderData()->ShadowInfo),
-            m_attenuation(component->GetRenderData()->Attenuation), m_radianceRadius(component->GetRenderData()->RadianceRadius)
+            m_attenuation(component->GetRenderData()->Attenuation),
+            m_radianceRadius(component->GetRenderData()->RadianceRadius)
       {
       }
 

@@ -25,7 +25,7 @@ namespace EngineCore
          public IDeferredResourceCreator,
          public std::enable_shared_from_this<IDeferredResourceCreator>
    {
-      size_t mPlanarReflectionSceneProxyId = -1;
+      int32_t mPlanarReflectionSceneProxyId {-1};
 
       glm::vec4 mReflectionPlane;
 
@@ -60,11 +60,11 @@ namespace EngineCore
 
       std::weak_ptr<ACamera> GetOwnerCameraWp() const;
 
-      size_t GetSceneProxyId() const;
+      int32_t GetSceneProxyId() const;
 
       glm::vec4 GetReflectionPlane() const;
 
-      void SetSceneProxyId(const size_t sceneProxyId);
+      void SetSceneProxyId(const int32_t sceneProxyId);
 
       eComponentType GetComponentType() const override;
 

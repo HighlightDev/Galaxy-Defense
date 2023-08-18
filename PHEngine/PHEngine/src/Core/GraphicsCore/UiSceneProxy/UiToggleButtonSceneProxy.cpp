@@ -25,7 +25,6 @@ namespace Graphics
 
         UiToggleButtonSceneProxy::~UiToggleButtonSceneProxy()
         {
-            CleanUp();
         }
 
         void UiToggleButtonSceneProxy::OnSceneProxyRegistered()

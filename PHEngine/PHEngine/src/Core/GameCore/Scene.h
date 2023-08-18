@@ -73,7 +73,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineObjectProperty<float>> mGameThreadDeltaSec;
 
-      std::unordered_map<std::string, std::shared_ptr<IDeferredResourceCreator>> mDeferredResourceCreators;
+      std::unordered_map<std::string, std::weak_ptr<IDeferredResourceCreator>> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;
 
@@ -125,7 +125,7 @@ namespace EngineCore
 
       void UnregisterAllCameras();
 
-      void RegisterMaterialInstance(const std::shared_ptr<Graphics::IMaterial>& material);
+      void RegisterMaterialInstance(const std::shared_ptr<Graphics::IMaterial> &material);
 
       std::shared_ptr<IMaterial> GetMaterialInstanceById(const int32_t materialProxyId) const;
 
@@ -141,7 +141,7 @@ namespace EngineCore
 
       std::shared_ptr<EngineToLuaReplicatorBase> GetEngineToLuaReplicatorByLuaProxyId(const int32_t id) const;
 
-      std::shared_ptr<IDeferredResourceCreator> GetDeferredResourceCreatorByName(const std::string &name) const;
+      std::weak_ptr<IDeferredResourceCreator> GetDeferredResourceCreatorByName(const std::string &name) const;
 
       const std::vector<std::shared_ptr<ActorController>> &GetActorControllers() const;
 
@@ -179,7 +179,7 @@ namespace EngineCore
 
       void RemoveComponent(std::shared_ptr<Component> component);
 
-      bool RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator>& creatorInstance, const std::string &gameObjectName);
+      bool RegisterDeferredResourceCreator(const std::shared_ptr<IDeferredResourceCreator> &creatorInstance, const std::string &gameObjectName);
 
       bool RemoveDeferredResourceCreator(const std::string &gameObjectName);
 
@@ -204,6 +204,16 @@ namespace EngineCore
       void UnloadUi();
 
       void UnloadActors();
+
+      void UnloadPhysics();
+
+      void UnloadEngineObjects();
+
+      void UnloadLuaReplicators();
+
+      void UnloadDeferredResourceCreators();
+
+      void UnloadActorControllers();
    };
 
 }

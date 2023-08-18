@@ -33,11 +33,8 @@ namespace EngineCore
 
    DirectionalLightComponent::~DirectionalLightComponent()
    {
-      if (mLightRenderData->ShadowInfo)
-      {
-         PlayerMovedEvent::GetInstance()->RemoveListener(this);
-         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
-      }
+      PlayerMovedEvent::GetInstance()->RemoveListener(this);
+      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
    }
 
    std::shared_ptr<DirectionalLightRenderData> DirectionalLightComponent::GetRenderData() const

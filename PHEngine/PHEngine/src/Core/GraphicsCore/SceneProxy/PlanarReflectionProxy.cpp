@@ -20,6 +20,11 @@ namespace Graphics {
    {
    }
 
+   void PlanarReflectionProxy::CleanUp()
+   {
+      mPlanarReflectionFBO->CleanUp();
+   }
+
    void PlanarReflectionProxy::SetSceneViewWeakPtr(std::weak_ptr<SceneView> captureSceneView)
    {
       mCaptureSceneView = captureSceneView;

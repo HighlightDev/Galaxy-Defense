@@ -39,6 +39,8 @@ namespace EngineCore
 
             ~EngineInputLuaProxy() override;
 
+            void CleanUp();
+
             void ProcessEvent(const typename LuaThreadKeyboardButtonDownEvent::EventData_t &data) override;
 
             void ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data) override;

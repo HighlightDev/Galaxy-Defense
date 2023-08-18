@@ -40,4 +40,8 @@ namespace Graphics
    {
       return mGameObjectId;
    }
+
+   void SceneProxyBase::CleanUp()
+   {
+   }
 }

@@ -71,9 +71,7 @@ namespace Event
 
       void RemoveListener(Event_t *eventListener)
       {
-         auto it = std::find(m_listeners.begin(), m_listeners.end(), eventListener);
-         if (it != m_listeners.end())
-            m_listeners.erase(it);
+         m_listeners.erase(std::remove(m_listeners.begin(), m_listeners.end(), eventListener));
       }
 
    protected:

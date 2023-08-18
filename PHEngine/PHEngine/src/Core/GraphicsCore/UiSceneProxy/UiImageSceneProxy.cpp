@@ -27,7 +27,6 @@ namespace Graphics
 
         UiImageSceneProxy::~UiImageSceneProxy()
         {
-            CleanUp();
         }
 
         void UiImageSceneProxy::Render()

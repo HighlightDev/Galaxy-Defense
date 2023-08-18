@@ -35,7 +35,7 @@ namespace EngineCore
         public:
             explicit LuaScriptProcessor(InterThreadCommunicationMgr &interThreadMgr);
 
-            void Initialize();
+            void CleanUp();
 
             void Tick(const float deltaTime);
 
@@ -49,7 +49,7 @@ namespace EngineCore
 
             std::shared_ptr<OverlayManagerLuaProxy> GetOverlayManagerLuaProxy() const;
 
-            void SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy>& overlayManagerLuaProxy);
+            void SetOverlayManagerLuaProxy(const std::shared_ptr<OverlayManagerLuaProxy> &overlayManagerLuaProxy);
 
             std::shared_ptr<LuaProxy> GetLuaProxy(const size_t luaProxyId) const;
 
@@ -58,6 +58,9 @@ namespace EngineCore
             void RemoveLuaProxy(const int32_t luaProxyId);
 
             InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
+
+        private:
+            void Initialize();
         };
     }
 }

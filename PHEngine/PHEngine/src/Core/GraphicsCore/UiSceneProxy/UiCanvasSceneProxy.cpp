@@ -24,6 +24,15 @@ namespace Graphics
         {
         }
 
+        void UiCanvasSceneProxy::CleanUp()
+        {
+            for (const auto& uiProxy: mUiProxies)
+            {
+                uiProxy->CleanUp();
+            }
+            mUiProxies.clear();
+        }
+
         void UiCanvasSceneProxy::AddUiSceneProxy(std::shared_ptr<UiSceneProxyBase> uiProxy)
         {
             mUiProxies.emplace_back(uiProxy);

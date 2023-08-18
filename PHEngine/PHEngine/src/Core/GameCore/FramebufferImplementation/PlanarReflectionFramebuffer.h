@@ -4,12 +4,12 @@
 
 using namespace Graphics;
 
-namespace EngineCore {
+namespace EngineCore
+{
 
    namespace FramebufferImpl
    {
-      class PlanarReflectionFramebuffer :
-         public FramebufferBundle
+      class PlanarReflectionFramebuffer : public FramebufferBundle
       {
          ViewPortInfo mReflectionViewPortInfo;
 
@@ -20,8 +20,7 @@ namespace EngineCore {
          FramebufferObject mReflectionTextureSurface;
 
       public:
-
-         PlanarReflectionFramebuffer(const ViewPortInfo& reflectionViewPortInfo);
+         PlanarReflectionFramebuffer(const ViewPortInfo &reflectionViewPortInfo);
 
          ~PlanarReflectionFramebuffer() override;
 
@@ -31,17 +30,14 @@ namespace EngineCore {
 
          std::shared_ptr<ITexture> GetReflectionTexture() const;
 
-      protected:
+         void CleanUp() override;
 
+      protected:
          void SetTextures() override;
 
          void SetFramebuffers() override;
 
          void SetRenderbuffers() override;
-
-         void CleanUp() override;
-
       };
    }
 }
-

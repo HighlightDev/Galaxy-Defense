@@ -125,18 +125,6 @@ namespace EngineCore
 
         void UiOverlay::CleanUp()
         {
-            if (-1 != GetLuaProxyId())
-            {
-                if (const auto &luaScriptProcessorSp = mLuaScriptProcessorWp.lock())
-                {
-                    luaScriptProcessorSp->RemoveLuaProxy(GetLuaProxyId());
-                }
-
-                if (const auto& sceneSp = mSceneWp.lock())
-                {
-                    assert(sceneSp->UnregisterEngineToLuaReplicator(GetReplicatorId()));
-                }
-            }
         }
     }
 }

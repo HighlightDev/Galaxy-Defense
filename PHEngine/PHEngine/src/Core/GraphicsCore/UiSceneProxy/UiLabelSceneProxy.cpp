@@ -36,7 +36,6 @@ namespace Graphics
 
         UiLabelSceneProxy::~UiLabelSceneProxy()
         {
-            CleanUp();
         }
 
         void UiLabelSceneProxy::OnSceneProxyRegistered()

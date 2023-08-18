@@ -50,5 +50,7 @@ namespace EnginePhysics
       void SetWorldTranslation(const glm::vec3 &translation) const;
 
       void SetWorldRotator(const glm::quat &rotator) const;
+
+      void CleanUp() override;
    };
 }

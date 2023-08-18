@@ -10,7 +10,7 @@ namespace EngineCore
        : public MovementComponent
    {
 
-      std::shared_ptr<SceneComponent> m_actorRootComponent;
+      std::weak_ptr<SceneComponent> m_actorRootComponent;
 
    public:
       NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);

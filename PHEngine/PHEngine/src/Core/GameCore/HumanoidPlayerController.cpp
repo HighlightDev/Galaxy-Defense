@@ -23,10 +23,11 @@ namespace EngineCore
    {
       ActorController::InitActorController();
 
-      const auto &rootComponent = m_actor->GetBaseRootComponent();
+      const auto &actorSp = m_actorWp.lock();
+      const auto &rootComponent = actorSp->GetBaseRootComponent();
       assert(rootComponent);
 
-      m_inputComponent = m_actor->GetInputComponent();
+      m_inputComponent = actorSp->GetInputComponent();
       assert(m_inputComponent);
 
       PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
@@ -36,80 +37,88 @@ namespace EngineCore
    {
       const std::string &actorName = std::move(std::get<0>(data));
 
-      assert(m_actor);
-
-      if (m_actor->GetName() == actorName)
+      if (const auto &actorSp = m_actorWp.lock())
       {
-         if (auto rootComponent = m_actor->GetBaseRootComponent())
+         if (actorSp->GetName() == actorName)
          {
-            PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
+            if (auto rootComponent = actorSp->GetBaseRootComponent())
+            {
+               PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
+            }
          }
       }
    }
 
    void HumanoidPlayerController::Tick(float deltaTime)
    {
-      assert(m_actor);
-
-      if (!m_actor->IsEnabled())
-         return;
-
-      std::shared_ptr<SceneComponent> rootComponent = m_actor->GetBaseRootComponent();
-
-      if (m_actor->GetInputComponent())
+      if (const auto &actorSp = m_actorWp.lock())
       {
-         const auto &inputComponent = m_actor->GetInputComponent();
+         if (!actorSp->IsEnabled())
+            return;
 
-         auto &mouseBindings = inputComponent->GetMouseBindings();
-         if (mouseBindings.IsMouseMoveEventDirty())
+         const auto &rootComponent = actorSp->GetBaseRootComponent();
+
+         if (actorSp->GetInputComponent())
          {
-            const auto &mouseMoveQueue = mouseBindings.FlushMouseMoveEvent();
-            m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
-         }
+            const auto &inputComponent = actorSp->GetInputComponent();
 
-         const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
-         if (keyboardBindings.HasPressedKeys())
-         {
-            if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
+            auto &mouseBindings = inputComponent->GetMouseBindings();
+            if (mouseBindings.IsMouseMoveEventDirty())
             {
-               m_movementComponent->Move(deltaTime);
-            }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
-            {
-            }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
-            {
-            }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
-            {
+               const auto &mouseMoveQueue = mouseBindings.FlushMouseMoveEvent();
+               m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
             }
 
-            if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_JUMP))
+            const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
+            if (keyboardBindings.HasPressedKeys())
             {
-               m_movementComponent->Jump();
+               if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
+               {
+                  if (const auto &moveCompSp = m_movementComponentWp.lock())
+                  {
+                     moveCompSp->Move(deltaTime);
+                  }
+               }
+               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
+               {
+               }
+               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
+               {
+               }
+               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
+               {
+               }
+
+               if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_JUMP))
+               {
+                  if (const auto &moveCompSp = m_movementComponentWp.lock())
+                  {
+                     moveCompSp->Jump();
+                  }
+               }
             }
-         }
 
-         const std::vector<eKeyActionType> &currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
-         const std::vector<eKeyActionType> &currentFramePressedKeys = inputComponent->GetPressedKeyActions();
+            const std::vector<eKeyActionType> &currentFrameReleasedKeys = inputComponent->GetReleasedKeyActions();
+            const std::vector<eKeyActionType> &currentFramePressedKeys = inputComponent->GetPressedKeyActions();
 
-         // Buttons which have been released
-         if (currentFrameReleasedKeys.size())
-         {
-            auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
-            if (moveForwardIt != currentFrameReleasedKeys.end())
+            // Buttons which have been released
+            if (currentFrameReleasedKeys.size())
             {
-               m_actor->ChangeTweenerState("CharacterAnimation", "Idle");
+               auto moveForwardIt = std::find(currentFrameReleasedKeys.begin(), currentFrameReleasedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
+               if (moveForwardIt != currentFrameReleasedKeys.end())
+               {
+                  actorSp->ChangeTweenerState("CharacterAnimation", "Idle");
+               }
             }
-         }
 
-         // Buttons which have been pressed
-         if (currentFramePressedKeys.size())
-         {
-            auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
-            if (moveForwardIt != currentFramePressedKeys.end())
+            // Buttons which have been pressed
+            if (currentFramePressedKeys.size())
             {
-               m_actor->ChangeTweenerState("CharacterAnimation", "Walking");
+               auto moveForwardIt = std::find(currentFramePressedKeys.begin(), currentFramePressedKeys.end(), eKeyActionType::ACTION_MOVE_FORWARD);
+               if (moveForwardIt != currentFramePressedKeys.end())
+               {
+                  actorSp->ChangeTweenerState("CharacterAnimation", "Walking");
+               }
             }
          }
       }

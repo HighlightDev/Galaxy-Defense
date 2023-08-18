@@ -1049,8 +1049,6 @@ namespace EngineCore
 
         void UiItemBase::CleanUp()
         {
-            RemoveFromReplicators();
-            RemoveLuaProxy();
             for (const auto& child: mChildren)
             {
                 child->CleanUp();

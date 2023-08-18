@@ -9,7 +9,8 @@ using namespace Graphics::Renderer;
 namespace EngineCore
 {
    LightComponent::LightComponent(const std::shared_ptr<LightComponentData> &data)
-       : SceneComponent(data->EngineObjectName, data->Translation, data->Rotation, data->Scale), mLightRenderData()
+       : SceneComponent(data->EngineObjectName, data->Translation, data->Rotation, data->Scale),
+         mLightRenderData()
    {
    }
 
@@ -27,12 +28,12 @@ namespace EngineCore
       return bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst);
    }
 
-   void LightComponent::SetLightSceneProxyId(const size_t lightSceneProxyId)
+   void LightComponent::SetLightSceneProxyId(const int32_t lightSceneProxyId)
    {
       mLightSceneProxyId = lightSceneProxyId;
    }
 
-   size_t LightComponent::GetLightSceneProxyId() const
+   int32_t LightComponent::GetLightSceneProxyId() const
    {
       return mLightSceneProxyId;
    }

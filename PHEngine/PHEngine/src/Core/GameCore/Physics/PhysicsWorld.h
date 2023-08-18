@@ -55,6 +55,8 @@ namespace EnginePhysics
 
             void RegisterActiveCollision(const std::shared_ptr<PhysicsDescriptor> &collisionBody1, const std::shared_ptr<PhysicsDescriptor> &collisionBody2);
 
+            void UnloadExistingPhysicsSimulation();
+
 #if DEBUG
             const DebugPhysicsRenderData &GetDebugPhysicsRenderData() const;
 #endif

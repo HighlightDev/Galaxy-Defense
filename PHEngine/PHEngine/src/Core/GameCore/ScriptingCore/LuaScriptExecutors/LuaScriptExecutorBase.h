@@ -64,6 +64,8 @@ namespace EngineCore
 
             void OnUpdate(const float deltaTime);
 
+            void CleanUp() override;
+
         protected:
             void SetScript(const std::string &scriptName);
         };

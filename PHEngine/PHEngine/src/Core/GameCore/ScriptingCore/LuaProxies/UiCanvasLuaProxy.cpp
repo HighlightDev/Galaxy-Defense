@@ -23,6 +23,10 @@ namespace EngineCore
             SetReplicatorId(ownerCanvas->GetReplicatorId());
         }
 
+        void UiCanvasLuaProxy::CleanUp()
+        {
+        }
+
         std::string UiCanvasLuaProxy::GetCanvasName() const
         {
             return mCanvasName;

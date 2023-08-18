@@ -38,11 +38,7 @@ namespace EngineCore
 
    Actor::~Actor()
    {
-   }
-
-   std::weak_ptr<Actor> Actor::GetWeakFromThis()
-   {
-      return shared_from_this();
+      LogInfo("Actor::dctor => id: ", GetObjectId(), ", name: ", GetName());
    }
 
    void Actor::PostPhysicsInitialize()
@@ -69,13 +65,24 @@ namespace EngineCore
       {
          tweener->CleanUp();
       }
+      mTweeners.clear();
 
+      m_rootComponent->CleanUp();
       m_physicsComponent->CleanUp();
+      m_inputComponent->CleanUp();
+      m_movementComponent->CleanUp();
 
       for (const auto& component : m_allComponents)
       {
          component->CleanUp();
       }
+      m_allComponents.clear();
+
+      for (const auto& childActor : m_children)
+      {
+         childActor->CleanUp();
+      }
+      m_children.clear();
    }
 
    void Actor::OnLevelInit()
@@ -84,7 +91,7 @@ namespace EngineCore
 
    void Actor::PostLevelInit()
    {
-      m_rootComponent->SetOwner(GetWeakFromThis());
+      m_rootComponent->SetOwner(shared_from_this());
 
       for (const auto &tweener : mTweeners)
       {
@@ -378,7 +385,7 @@ namespace EngineCore
 
    void Actor::AddComponent(std::shared_ptr<EngineCore::Component> component)
    {
-      component->SetOwner(this->GetWeakFromThis());
+      component->SetOwner(shared_from_this());
 
       const uint64_t componentType = component->GetComponentType();
 
@@ -459,7 +466,7 @@ namespace EngineCore
 
    void Actor::AddChild(std::shared_ptr<Actor> actor)
    {
-      actor->SetParent(GetWeakFromThis());
+      actor->SetParent(shared_from_this());
       m_children.push_back(actor);
    }
 

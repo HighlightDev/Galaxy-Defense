@@ -31,6 +31,8 @@ namespace EngineCore
         public:
             explicit UiCanvasLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiCanvas> &ownerCanvas);
 
+            void CleanUp() override;
+
             std::string GetCanvasName() const;
 
             void SetIsVisible_FromGameThread(const bool isVisible);

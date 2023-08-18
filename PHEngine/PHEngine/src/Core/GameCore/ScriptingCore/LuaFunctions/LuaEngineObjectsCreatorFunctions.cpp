@@ -227,9 +227,11 @@ namespace EngineCore
 
          if (auto scene = mSceneWp.lock())
          {
-            const auto resourceCreator = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
-            assert(resourceCreator);
-            MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, resourceCreator);
+            const auto resourceCreatorWp = scene->GetDeferredResourceCreatorByName(resourceCreatorName);
+            if (const auto resourceCreatorSp = resourceCreatorWp.lock())
+            {
+               MaterialPropertySetter::SetMaterialPropertyValue(materialSp, propertyName, resourceCreatorSp);
+            }
          }
       }
 

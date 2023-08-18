@@ -25,7 +25,7 @@ namespace EngineCore
 
       bool bIsCameraRotationDirty = false;
 
-     std::shared_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
+     std::weak_ptr<CharacterPhysicsComponent> m_playerPhysicsComponent;
 
    public:
       HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);

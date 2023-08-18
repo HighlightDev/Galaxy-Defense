@@ -7,22 +7,26 @@
 namespace EngineCore
 {
 
-   HumanoidPhysicsMovementComponent::HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData)
-       : MovementComponent(movementComponentData), CameraTransformChangedEvent(), mCameraName(""), m_playerPhysicsComponent()
+   HumanoidPhysicsMovementComponent::HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData)
+       : MovementComponent(movementComponentData),
+         CameraTransformChangedEvent(),
+         mCameraName(""),
+         m_playerPhysicsComponent()
    {
       CameraTransformChangedEvent::GetInstance()->AddListener(this);
-      const auto& charMoveCompData = std::static_pointer_cast<HumanoidMovementComponentData>(movementComponentData);
+      const auto &charMoveCompData = std::static_pointer_cast<HumanoidMovementComponentData>(movementComponentData);
       mCameraName = charMoveCompData->mCameraName;
    }
 
    void HumanoidPhysicsMovementComponent::PostLevelInit()
    {
       MovementComponent::PostLevelInit();
-      
+
       if (const auto &spOwner = GetOwner().lock())
       {
-         m_playerPhysicsComponent = std::static_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());
-         assert(m_playerPhysicsComponent);
+         const auto &characterPhysicsComponent = std::dynamic_pointer_cast<CharacterPhysicsComponent>(spOwner->GetPhysicsComponent());
+         assert(characterPhysicsComponent);
+         m_playerPhysicsComponent = characterPhysicsComponent;
       }
    }
 
@@ -49,7 +53,7 @@ namespace EngineCore
       }
    }
 
-   void HumanoidPhysicsMovementComponent::Teleport(const glm::vec3& teleportPosition)
+   void HumanoidPhysicsMovementComponent::Teleport(const glm::vec3 &teleportPosition)
    {
    }
 
@@ -80,17 +84,26 @@ namespace EngineCore
 
    void HumanoidPhysicsMovementComponent::Move(const float deltaTime)
    {
-      m_playerPhysicsComponent->SetWalkVelocity(GetVelocity() * deltaTime);
+      if (const auto &playerPhysComponentSp = m_playerPhysicsComponent.lock())
+      {
+         playerPhysComponentSp->SetWalkVelocity(GetVelocity() * deltaTime);
+      }
    }
 
-   void HumanoidPhysicsMovementComponent::Move(const glm::vec3& direction, const float deltaTime)
+   void HumanoidPhysicsMovementComponent::Move(const glm::vec3 &direction, const float deltaTime)
    {
-      m_playerPhysicsComponent->SetWalkVelocity(direction * deltaTime * mCurrentSpeed);
+      if (const auto &playerPhysComponentSp = m_playerPhysicsComponent.lock())
+      {
+         playerPhysComponentSp->SetWalkVelocity(direction * deltaTime * mCurrentSpeed);
+      }
    }
 
    void HumanoidPhysicsMovementComponent::Jump()
    {
-      m_playerPhysicsComponent->SetJumpVelocity();
+      if (const auto &playerPhysComponentSp = m_playerPhysicsComponent.lock())
+      {
+         playerPhysComponentSp->SetJumpVelocity();
+      }
    }
 
    glm::vec3 HumanoidPhysicsMovementComponent::GetVelocity() const

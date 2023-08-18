@@ -92,14 +92,32 @@ namespace EngineCore
         void LuaScriptProcessor::RemoveLuaProxy(const int32_t luaProxyId)
         {
             assert(GetLuaProxy(luaProxyId));
-            mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto& luaProxySp) {
-                return luaProxySp->GetLuaProxyId() == luaProxyId;
-            }));
+            mLuaProxies.erase(std::remove_if(mLuaProxies.begin(), mLuaProxies.end(), [luaProxyId](const auto &luaProxySp)
+                                             { return luaProxySp->GetLuaProxyId() == luaProxyId; }));
         }
 
         void LuaScriptProcessor::Initialize()
         {
             mInputLuaProxy = std::make_shared<EngineInputLuaProxy>();
+        }
+
+        void LuaScriptProcessor::CleanUp()
+        {
+            mInputLuaProxy->CleanUp();
+            mOverlayManagerLuaProxy->CleanUp();
+            mOverlayManagerLuaProxy.reset();
+
+            for (const auto &luaScriptExecutor : mLuaScriptExecutors)
+            {
+                luaScriptExecutor->CleanUp();
+            }
+            mLuaScriptExecutors.clear();
+
+            for (const auto &luaProxy : mLuaProxies)
+            {
+                luaProxy->CleanUp();
+            }
+            mLuaProxies.clear();
         }
     }
 }

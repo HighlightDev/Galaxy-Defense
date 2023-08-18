@@ -27,6 +27,15 @@ namespace EngineCore
             LuaThreadMouseButtonDownEvent::GetInstance()->RemoveListener(this);
         }
 
+        void EngineInputLuaProxy::CleanUp()
+        {
+            mIsPressedKeyboardKeys = false;
+            mIsReleasedKeyboardKeys = false;
+
+            mPressedKeysOnCurrentTick.clear();
+            mReleasedKeysOnCurrentTick.clear();
+        }
+
         void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadKeyboardButtonDownEvent::EventData_t &data)
         {
             const auto &keyboardKeysState = std::get<0>(data);

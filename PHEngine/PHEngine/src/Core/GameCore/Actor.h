@@ -60,8 +60,6 @@ namespace EngineCore
 
       virtual ~Actor();
 
-      std::weak_ptr<Actor> GetWeakFromThis();
-
       // Tick is executed on game thread
       void Tick(const float deltaTime) override;
 

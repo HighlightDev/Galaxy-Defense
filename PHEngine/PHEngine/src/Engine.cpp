@@ -153,6 +153,8 @@ namespace EngineCore
       std::this_thread::sleep_for(1000ms); // wait until the lua thread or game thread can still run
       m_level->UnloadLevel();
       m_scene->UnloadScene();
+      m_luaScriptProcessor->CleanUp();
+      m_sceneRenderer->CleanUp();
       m_interThreadMgr.SetIsAllowedPushGameThreadJobs(true);
       m_interThreadMgr.SetIsAllowedPushLuaThreadJobs(true);
    }

@@ -33,6 +33,8 @@ namespace Graphics {
 
       int32_t GetGameObjectId() const;
 
+      virtual void CleanUp();
+
    };
 }
 

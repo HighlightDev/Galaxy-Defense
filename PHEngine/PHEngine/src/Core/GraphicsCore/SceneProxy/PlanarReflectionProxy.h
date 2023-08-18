@@ -33,6 +33,8 @@ namespace Graphics
 
       ~PlanarReflectionProxy();
 
+      void CleanUp() override;
+
       void SetSceneViewWeakPtr(std::weak_ptr<SceneView> captureSceneView);
 
       std::weak_ptr<SceneView> GetSceneViewWeakPtr() const;

@@ -29,6 +29,8 @@ namespace EngineCore
         public:
             explicit OverlayManagerLuaProxy(const std::shared_ptr<::EngineCore::GUI::OverlayManager> &owner);
 
+            void CleanUp() override;
+
             void SetCurrentOverlay(const std::string &currentOverlayName);
 
             void SetActiveBackgroundOverlays(const std::unordered_set<std::string> &backgroundOverlays);

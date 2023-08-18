@@ -1,8 +1,12 @@
 #include "UiComponent.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 
 #include <algorithm>
+
+using namespace Graphics::Renderer;
 
 namespace EngineCore
 {
@@ -14,8 +18,20 @@ namespace EngineCore
 
     UiComponent::~UiComponent()
     {
-        std::for_each(mTextFields.begin(), mTextFields.end(), [](const auto &textFieldSp)
-                      { textFieldSp->UnregisterText(); });
+    }
+
+    void UiComponent::CleanUp()
+    {
+        if (const auto &sceneSp = m_sceneWP.lock())
+        {
+            if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+            {
+                for (const auto &textFieldSp : mTextFields)
+                {
+                    sceneRendererSp->UnregisterText(textFieldSp->GetFontName(), textFieldSp->GetTextFieldId());
+                }
+            }
+        }
     }
 
     void UiComponent::Tick(const float deltaTime)

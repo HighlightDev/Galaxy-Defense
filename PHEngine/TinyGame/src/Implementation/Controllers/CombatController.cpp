@@ -381,7 +381,7 @@ namespace Game
         assert(mainPlayerActorController);
         mMainPlayerActorController = mainPlayerActorController;
         mMainPlayerActorController->SetLevelBounds(mLevelBounds);
-        mPlayerShip = mMainPlayerActorController->GetBindedActor();
+        mPlayerShip = mMainPlayerActorController->GetBindedActor().lock();
         assert(mPlayerShip);
     }
 

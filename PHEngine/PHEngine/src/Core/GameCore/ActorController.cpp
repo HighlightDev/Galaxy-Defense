@@ -2,8 +2,9 @@
 
 namespace EngineCore
 {
-   ActorController::ActorController(const std::shared_ptr<Actor>& actor)
-       : m_actor(actor), m_movementComponent()
+   ActorController::ActorController(const std::shared_ptr<Actor> &actor)
+       : m_actorWp(actor),
+         m_movementComponentWp()
    {
    }
 
@@ -11,25 +12,34 @@ namespace EngineCore
    {
    }
 
-   void ActorController::InitActorController()
+   void ActorController::CleanUp()
    {
-      assert(m_actor);
-      m_movementComponent = m_actor->GetMovementComponent();
-      assert(m_movementComponent);
    }
 
-   std::shared_ptr<Actor> ActorController::GetBindedActor() const
+   void ActorController::InitActorController()
    {
-      return m_actor;
+      const auto &actorSp = m_actorWp.lock();
+      assert(actorSp);
+      assert(actorSp->GetMovementComponent());
+      m_movementComponentWp = actorSp->GetMovementComponent();
+   }
+
+   std::weak_ptr<Actor> ActorController::GetBindedActor() const
+   {
+      return m_actorWp;
    }
 
    std::string ActorController::GetBindedActorName() const
    {
-      return m_actor->GetName();
+      if (const auto &actorSp = m_actorWp.lock())
+      {
+         return actorSp->GetName();
+      }
+      return "";
    }
 
    void ActorController::CollectDataForSerialization(SerializeDataContainer &dataContainer)
    {
-      dataContainer.ActorControllerData.emplace_back(std::make_shared<SerializeDataPlayerController>(m_actor->GetName()));
+      dataContainer.ActorControllerData.emplace_back(std::make_shared<SerializeDataPlayerController>(GetBindedActorName()));
    }
 }

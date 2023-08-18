@@ -56,6 +56,8 @@ namespace Graphics
          void SetIsTransformationDirty(bool value);
 
          virtual std::shared_ptr<ProjectedShadowInfo> GetShadowInfo();
+
+         void CleanUp() override;
       };
 
    }

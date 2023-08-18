@@ -3,24 +3,18 @@
 namespace Graphics
 {
 
-   ProjectedShadowInfo::ProjectedShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest)
-      : mShadowmapAtlasRequest(shadowmapAtlasRequest)
-      , m_shadowFramebuffer(nullptr)
-      , m_shadowBiasMatrix(
-         0.5f, 0, 0, 0,
-         0, 0.5f, 0, 0,
-         0, 0, 0.5f, 0,
-         0.5f, 0.5f, 0.5f, 1)
-      , mPlayerPositionOffset(0)
-      , bShadowmapDirty(true)
-      , mShadowmapHandler(nullptr)
+   ProjectedShadowInfo::ProjectedShadowInfo(const TextureAtlasSpaceRequest &shadowmapAtlasRequest)
+       : mShadowmapAtlasRequest(shadowmapAtlasRequest), m_shadowFramebuffer(nullptr), m_shadowBiasMatrix(
+                                                                                          0.5f, 0, 0, 0,
+                                                                                          0, 0.5f, 0, 0,
+                                                                                          0, 0, 0.5f, 0,
+                                                                                          0.5f, 0.5f, 0.5f, 1),
+         mPlayerPositionOffset(0), bShadowmapDirty(true), mShadowmapHandler(nullptr)
    {
    }
 
    ProjectedShadowInfo::~ProjectedShadowInfo()
    {
-      DeallocateFramebuffer();
-      TextureAtlasFactory::GetInstance()->DeallocateTextureAtlasByRequestId(mShadowmapAtlasRequest.MyRequestId);
    }
 
    void ProjectedShadowInfo::BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const
@@ -42,10 +36,17 @@ namespace Graphics
       m_shadowFramebuffer->CleanUp();
    }
 
-   std::shared_ptr<ITexture> ProjectedShadowInfo::GetAtlasResource() const {
+   void ProjectedShadowInfo::CleanUp()
+   {
+      DeallocateFramebuffer();
+      TextureAtlasFactory::GetInstance()->DeallocateTextureAtlasByRequestId(mShadowmapAtlasRequest.MyRequestId);
+   }
+
+   std::shared_ptr<ITexture> ProjectedShadowInfo::GetAtlasResource() const
+   {
 
       std::shared_ptr<ITexture> result;
-     
+
       if (mShadowmapHandler)
       {
          result = mShadowmapHandler->GetAtlasResource();
@@ -58,16 +59,18 @@ namespace Graphics
       return m_lightType;
    }
 
-   void ProjectedShadowInfo::SetIsShadowMapDirty(const bool bDirty) {
+   void ProjectedShadowInfo::SetIsShadowMapDirty(const bool bDirty)
+   {
       bShadowmapDirty = bDirty;
    }
 
-   void ProjectedShadowInfo::SetPlayerPositionOffset(const glm::vec3& offset)
+   void ProjectedShadowInfo::SetPlayerPositionOffset(const glm::vec3 &offset)
    {
       mPlayerPositionOffset = offset;
    }
 
-   glm::vec3 ProjectedShadowInfo::GetPlayerPositionOffset() const {
+   glm::vec3 ProjectedShadowInfo::GetPlayerPositionOffset() const
+   {
       return mPlayerPositionOffset;
    }
 

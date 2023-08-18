@@ -40,18 +40,21 @@ namespace EnginePhysics
 #endif
       delete mWorld;
    }
+   
+   void PhysicsWorld::UnloadExistingPhysicsSimulation()
+   {
+      LogInfo("PhysicsWorld::UnloadExistingPhysicsSimulation => descriptors count: ", mPhysicsDescriptors.size());
+      mActiveCollisions.clear();
+      mPhysicsDescriptors.clear();
+   }
 
    void PhysicsWorld::InitPhysicsWorld()
    {
       mBroadphase = new btDbvtBroadphase();
-
       mCollisionConfiguration = new btDefaultCollisionConfiguration();
       mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
-
       mSolver = new btSequentialImpulseConstraintSolver();
-
       mWorld = new btDiscreteDynamicsWorld(mDispatcher, mBroadphase, mSolver, mCollisionConfiguration);
-
       mWorld->setGravity(btVector3(btScalar(0.0f), btScalar(-9.8f), btScalar(0.0f)));
 
 #if DEBUG

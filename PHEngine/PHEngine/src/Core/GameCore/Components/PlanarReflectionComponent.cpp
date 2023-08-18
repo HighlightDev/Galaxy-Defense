@@ -115,7 +115,7 @@ namespace EngineCore
       return mOwnerCameraWp;
    }
 
-   size_t PlanarReflectionComponent::GetSceneProxyId() const
+   int32_t PlanarReflectionComponent::GetSceneProxyId() const
    {
       return mPlanarReflectionSceneProxyId;
    }
@@ -125,7 +125,7 @@ namespace EngineCore
       return mReflectionPlane;
    }
 
-   void PlanarReflectionComponent::SetSceneProxyId(const size_t sceneProxyId)
+   void PlanarReflectionComponent::SetSceneProxyId(const int32_t sceneProxyId)
    {
       mPlanarReflectionSceneProxyId = sceneProxyId;
    }
@@ -147,12 +147,12 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]() {
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [=]()
+                                                                                {
                const auto &reflectionSp = std::static_pointer_cast<PlanarReflectionProxy>(sceneRenderer->GetPlanarReflectionProxyByProxyId(mPlanarReflectionSceneProxyId));
                if (reflectionSp) {
                   reflectionSp->SetReflectionPlane(mReflectionPlane); 
-               }
-            });
+               } });
          }
       }
    }

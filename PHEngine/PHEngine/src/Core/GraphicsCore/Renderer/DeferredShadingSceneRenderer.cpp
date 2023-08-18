@@ -66,9 +66,19 @@ namespace Graphics
             bProxiesDirty(false),
             bLightProxiesDirty(false),
             bPlanarReflectionProxiesDirty(false),
+            mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(0, 0,
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
 #if DEBUG
             mDebugPhysicsRenderData(),
 #endif
+            SceneViewsVector(),
+            PrimitiveProxiesVector(),
+            LightProxiesVector(),
+            MaterialProxiesVector(),
+            PlanarReflectionProxiesVector(),
+            mUiCanvasProxies(),
+            mFontHandler(std::make_shared<FontHandler>()),
             mForwardRenderingProxiesVec(),
             mSkeletalProxiesVec(),
             mNonSkeletalProxiesVec(),
@@ -76,16 +86,7 @@ namespace Graphics
             mPointLightProxiesVec(),
             mSpotlightProxiesVec(),
             mPlanarReflectionProxiesVec(),
-            mGroupedByShadowAtlasLights(),
-            mFontHandler(std::make_shared<FontHandler>()),
-            mPostFxRenderer(std::make_unique<PostFxRenderer>(ViewPortInfo(0, 0,
-                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
-                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()))),
-            SceneViewsVector(),
-            PrimitiveProxiesVector(),
-            LightProxiesVector(),
-            MaterialProxiesVector(),
-            PlanarReflectionProxiesVector()
+            mGroupedByShadowAtlasLights()
       {
          LogInfo("DeferredShadingSceneRenderer::ctor");
 
@@ -132,12 +133,73 @@ namespace Graphics
       {
          LogInfo("DeferredShadingSceneRenderer::dctor");
 
-         mDepthCollectShaderNonSkeletal->CleanUp();
-         mDepthCollectShaderSkeletal->CleanUp();
-         mDepthCollectPointLightShaderSkeletal->CleanUp();
-         mDepthCollectPointLightShaderNonSkeletal->CleanUp();
-         m_deferredLightShader->CleanUp();
-         m_fontShader->CleanUp();
+         mDepthCollectShaderNonSkeletal->CleanUp(true);
+         mDepthCollectShaderSkeletal->CleanUp(true);
+         mDepthCollectPointLightShaderSkeletal->CleanUp(true);
+         mDepthCollectPointLightShaderNonSkeletal->CleanUp(true);
+         m_deferredLightShader->CleanUp(true);
+         m_fontShader->CleanUp(true);
+      }
+
+      void DeferredShadingSceneRenderer::CleanUp()
+      {
+         /*
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
+         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
+         */
+
+         SceneViewsVector.clear();
+
+#if DEBUG
+         for (const auto &canvasProxy : mUiCanvasProxies)
+         {
+            if (canvasProxy->GetUiItemUId() != mDebugUiCanvasId)
+            {
+               canvasProxy->CleanUp();
+            }
+         }
+
+         if (mDebugUiCanvasId != -1)
+         {
+            mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [debugUiCanvasId = mDebugUiCanvasId](const auto &canvasProxy)
+                                                  { return canvasProxy->GetUiItemUId() != debugUiCanvasId; }));
+         }
+         else
+         {
+            mUiCanvasProxies.clear();
+         }
+#else
+         for (const auto &canvasProxy : mUiCanvasProxies)
+         {
+            canvasProxy->CleanUp();
+         }
+         mUiCanvasProxies.clear();
+#endif
+
+         for (const auto& planarReflectionProxy : PlanarReflectionProxiesVector) 
+         {
+            planarReflectionProxy->CleanUp();
+         }
+         PlanarReflectionProxiesVector.clear();
+
+         for (const auto& lightSceneProxy : LightProxiesVector)
+         {
+            lightSceneProxy->CleanUp();
+         }
+         LightProxiesVector.clear();
+
+         mForwardRenderingProxiesVec.clear();
+         mSkeletalProxiesVec.clear();
+         mNonSkeletalProxiesVec.clear();
+         mDirLightProxiesVec.clear();
+         mPointLightProxiesVec.clear();
+         mSpotlightProxiesVec.clear();
+         mPlanarReflectionProxiesVec.clear();
+         mGroupedByShadowAtlasLights.clear();
+
+         bProxiesDirty = false;
+         bLightProxiesDirty = false;
+         bPlanarReflectionProxiesDirty = false;
       }
 
       void DeferredShadingSceneRenderer::PostLevelInit()
@@ -895,7 +957,7 @@ namespace Graphics
          bPlanarReflectionProxiesDirty = bDirty;
       }
 
-      std::shared_ptr<SceneView> DeferredShadingSceneRenderer::GetSceneViewByProxyId(const size_t proxyId) const
+      std::shared_ptr<SceneView> DeferredShadingSceneRenderer::GetSceneViewByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<SceneView> result = nullptr;
 
@@ -925,7 +987,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<LightSceneProxy> DeferredShadingSceneRenderer::GetLightProxyByProxyId(const size_t proxyId) const
+      std::shared_ptr<LightSceneProxy> DeferredShadingSceneRenderer::GetLightProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<LightSceneProxy> result = nullptr;
 
@@ -940,7 +1002,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<MaterialProxy> DeferredShadingSceneRenderer::GetMaterialProxyByProxyId(const size_t proxyId) const
+      std::shared_ptr<MaterialProxy> DeferredShadingSceneRenderer::GetMaterialProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<MaterialProxy> result = nullptr;
 
@@ -955,7 +1017,7 @@ namespace Graphics
          return result;
       }
 
-      std::shared_ptr<PlanarReflectionProxy> DeferredShadingSceneRenderer::GetPlanarReflectionProxyByProxyId(const size_t proxyId) const
+      std::shared_ptr<PlanarReflectionProxy> DeferredShadingSceneRenderer::GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const
       {
          std::shared_ptr<PlanarReflectionProxy> result = nullptr;
 
@@ -984,32 +1046,22 @@ namespace Graphics
          return canvasIt != mUiCanvasProxies.end() ? *canvasIt : nullptr;
       }
 
-      bool DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const size_t proxyId)
+      void DeferredShadingSceneRenderer::RemovePrimitiveProxyByProxyId(const int32_t proxyId)
       {
-         auto removeIt = std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto &primitiveProxy)
-                                        { return proxyId == primitiveProxy->GetSceneProxyId(); });
-
-         if (removeIt != PrimitiveProxiesVector.end())
-         {
-            PrimitiveProxiesVector.erase(removeIt);
-            return true;
-         }
-
-         return false;
+         PrimitiveProxiesVector.erase(std::remove_if(PrimitiveProxiesVector.begin(), PrimitiveProxiesVector.end(), [=](const auto &primitiveProxy)
+                                                     { return proxyId == primitiveProxy->GetSceneProxyId(); }));
       }
 
-      bool DeferredShadingSceneRenderer::RemoveLightProxyByProxyId(const size_t proxyId)
+      void DeferredShadingSceneRenderer::RemoveLightProxyByProxyId(const int32_t proxyId)
       {
-         auto removeIt = std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto &lightProxy)
-                                        { return proxyId == lightProxy->GetSceneProxyId(); });
+         LightProxiesVector.erase(std::remove_if(LightProxiesVector.begin(), LightProxiesVector.end(), [=](const auto &lightProxy)
+                                                 { return proxyId == lightProxy->GetSceneProxyId(); }));
+      }
 
-         if (removeIt != LightProxiesVector.end())
-         {
-            LightProxiesVector.erase(removeIt);
-            return true;
-         }
-
-         return false;
+      void DeferredShadingSceneRenderer::RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId)
+      {
+         PlanarReflectionProxiesVector.erase(std::remove_if(PlanarReflectionProxiesVector.begin(), PlanarReflectionProxiesVector.end(), [proxyId](const auto &planarReflectionProxy)
+                                                            { return planarReflectionProxy->GetSceneProxyId() == proxyId; }));
       }
 
       void DeferredShadingSceneRenderer::MaterialProxyAdded_OnRenderThread(const std::shared_ptr<MaterialProxy> &materialProxy)
@@ -1070,7 +1122,7 @@ namespace Graphics
             primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox); });
       }
 
-      void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+      void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
                                                                                       const int32_t creatorObjectId,
                                                                                       const uint64_t functionId,
                                                                                       const glm::mat4 &newRelativeMatrix)
@@ -1082,22 +1134,15 @@ namespace Graphics
             lightProxySp->SetTransformationMatrix(newRelativeMatrix); });
       }
 
-      void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex)
+      void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex)
       {
          static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread");
 
-         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, primitiveSceneProxyIndex]()
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, primitiveSceneProxyIndex, functionId, [this, primitiveSceneProxyIndex]()
                                                 {
-            if (RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex))
-            {
-               SetProxiesAreDirty(true);
-            }
-            else 
-            {
-               LogInfo("DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread => "
-                        "Error! Current proxy index doesn't exist on RT. Proxy index = ", primitiveSceneProxyIndex);
-            } });
+            RemovePrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            SetProxiesAreDirty(true); });
       }
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxiesUpdated_OnRenderThread()
@@ -1109,22 +1154,15 @@ namespace Graphics
                                                 { SetProxiesAreDirty(true); });
       }
 
-      void DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread(const size_t lightSceneProxyIndex)
+      void DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex)
       {
          static constexpr int32_t creatorObjectId = 0;
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread");
 
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, creatorObjectId, functionId, [this, lightSceneProxyIndex]()
                                                 {
-            if (RemoveLightProxyByProxyId(lightSceneProxyIndex))
-            {
-               SetLightProxiesAreDirty(true); 
-            }
-            else
-            {
-               LogInfo("DeferredShadingSceneRenderer::LightSceneProxyDeleted_OnRenderThread => "
-                     "Error! Current proxy index doesn't exist on RT. Proxy index = ", lightSceneProxyIndex);
-            } });
+            RemoveLightProxyByProxyId(lightSceneProxyIndex);
+            SetLightProxiesAreDirty(true); });
       }
 
       void DeferredShadingSceneRenderer::LightSceneProxiesUpdated_OnRenderThread()
@@ -1147,7 +1185,7 @@ namespace Graphics
             camera->SetIsCameraProxyReady(true); });
       }
 
-      void DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const size_t cameraSceneProxyId)
+      void DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId)
       {
          LogInfo("DeferredShadingSceneRenderer::RemoveCameraSceneProxy_OnRenderThread => camera proxyId: ", cameraSceneProxyId);
          assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
@@ -1287,7 +1325,7 @@ namespace Graphics
          }
       }
 
-      void DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
+      void DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread(const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties)
       {
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::MaterialPropertiesUpdated_OnRenderThread");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, materialProxyIndex, properties = std::move(properties)]() mutable
@@ -1317,7 +1355,7 @@ namespace Graphics
       }
 
       void DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy,
-                                                                                                  const size_t cameraSceneProxyId)
+                                                                                                  const int32_t cameraSceneProxyId)
       {
          static const uint64_t functionId = Hash("DeferredShadingSceneRenderer::BindPlanarReflectionSceneProxyToSceneView_OnRenderThread");
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::PUSH_ANYWAY, cameraSceneProxyId, functionId, [this, cameraSceneProxyId, planarReflectionProxy]()
@@ -1415,6 +1453,11 @@ namespace Graphics
       }
 
 #if DEBUG
+
+      void DeferredShadingSceneRenderer::SetDebugUiCanvasId(const int32_t debugCanvasProxyUId)
+      {
+         mDebugUiCanvasId = debugCanvasProxyUId;
+      }
 
       void DeferredShadingSceneRenderer::SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData)
       {

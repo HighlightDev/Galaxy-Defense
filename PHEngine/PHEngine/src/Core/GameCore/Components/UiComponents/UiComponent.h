@@ -28,6 +28,8 @@ namespace EngineCore
 
         void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
+        void CleanUp() override;
+
         eComponentType GetComponentType() const override;
 
         int32_t CreateTextField(const std::string &fontName,

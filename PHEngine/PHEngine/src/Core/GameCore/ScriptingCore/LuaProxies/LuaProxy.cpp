@@ -17,6 +17,10 @@ namespace EngineCore
         {
         }
 
+        void LuaProxy::CleanUp()
+        {
+        }
+
         bool LuaProxy::IsLuaDataDirty() const
         {
             return mIsLuaDataDirty;

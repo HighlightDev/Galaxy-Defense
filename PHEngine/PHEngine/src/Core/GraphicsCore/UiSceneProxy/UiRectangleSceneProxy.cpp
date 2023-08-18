@@ -24,7 +24,6 @@ namespace Graphics
 
         UiRectangleSceneProxy::~UiRectangleSceneProxy()
         {
-            CleanUp();
         }
 
         void UiRectangleSceneProxy::OnSceneProxyRegistered()

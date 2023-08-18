@@ -42,6 +42,7 @@ namespace EngineCore
                 if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
                     sceneRendererSp->RegisterUiCanvasProxy_OnRenderThread(mDebugUiCanvas, canvasSceneProxy);
+                    sceneRendererSp->SetDebugUiCanvasId(canvasSceneProxy->GetUiItemUId());
                 }
                 mDebugUiCanvas->SetScene(mOwner);
             }

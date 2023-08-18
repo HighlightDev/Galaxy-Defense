@@ -26,7 +26,7 @@ namespace EngineCore
 
       std::atomic<bool> bIsSceneProxyReady{false};
 
-      size_t mLightSceneProxyId{0};
+      int32_t mLightSceneProxyId{-1};
    public:
 
       LightComponent(const std::shared_ptr<LightComponentData>& data);
@@ -37,9 +37,9 @@ namespace EngineCore
 
       bool IsSceneProxyReady() const;
 
-      void SetLightSceneProxyId(const size_t lightSceneProxyId);
+      void SetLightSceneProxyId(const int32_t lightSceneProxyId);
 
-      size_t GetLightSceneProxyId() const;
+      int32_t GetLightSceneProxyId() const;
 
       eComponentType GetComponentType() const override;
 

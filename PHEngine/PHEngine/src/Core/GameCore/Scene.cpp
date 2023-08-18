@@ -153,16 +153,7 @@ namespace EngineCore
 
    void Scene::UnregisterAllCameras()
    {
-      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
-      {
-         for (const auto &cameraSp : mActiveCameras)
-         {
-            RemoveEngineObject(cameraSp->GetObjectId());
-            sceneRendererSp->RemoveCameraSceneProxy_OnRenderThread(cameraSp->GetCameraProxyId());
-            cameraSp->SetIsCameraProxyReady(false);
-         }
-         mActiveCameras.clear();
-      }
+      mActiveCameras.clear();
    }
 
    void Scene::RegisterMaterialInstance(const std::shared_ptr<IMaterial> &material)
@@ -302,14 +293,15 @@ namespace EngineCore
       return it != mEngineObjects.end() ? it->lock() : nullptr;
    }
 
-   std::shared_ptr<IDeferredResourceCreator> Scene::GetDeferredResourceCreatorByName(const std::string &name) const
+   std::weak_ptr<IDeferredResourceCreator> Scene::GetDeferredResourceCreatorByName(const std::string &name) const
    {
       if (mDeferredResourceCreators.count(name))
       {
          return mDeferredResourceCreators.at(name);
       }
 
-      return nullptr;
+      LogInfo("Scene::GetDeferredResourceCreatorByName => missing resource creator with such name: ", name);
+      return std::weak_ptr<IDeferredResourceCreator>();
    }
 
    const std::vector<std::shared_ptr<ActorController>> &Scene::GetActorControllers() const
@@ -676,12 +668,23 @@ namespace EngineCore
       return result;
    }
 
+   /*
+      std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
+
+      std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
+   */
+
    void Scene::UnloadScene()
    {
       UnloadUi();
       UnregisterMainCamera();
       UnregisterAllCameras();
+      UnloadPhysics();
       UnloadActors();
+      UnloadEngineObjects();
+      UnloadLuaReplicators();
+      UnloadDeferredResourceCreators();
+      UnloadActorControllers();
    }
 
    void Scene::UnloadUi()
@@ -695,6 +698,37 @@ namespace EngineCore
       {
          actor->CleanUp();
       }
+      mActors.clear();
+   }
+
+   void Scene::UnloadPhysics()
+   {
+      mPhysicsWorld->UnloadExistingPhysicsSimulation();
+   }
+
+   void Scene::UnloadEngineObjects()
+   {
+      mEngineObjects.clear();
+   }
+
+   void Scene::UnloadLuaReplicators()
+   {
+      mLuaReplicators.clear();
+      mLuaReplicatorsDirty = false;
+   }
+
+   void Scene::UnloadDeferredResourceCreators()
+   {
+      mDeferredResourceCreators.clear();
+   }
+
+   void Scene::UnloadActorControllers()
+   {
+      for (const auto &actorController : mActorControllers)
+      {
+         actorController->CleanUp();
+      }
+      mActorControllers.clear();
    }
 
 #ifdef DEBUG

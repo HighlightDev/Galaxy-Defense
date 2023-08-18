@@ -8,7 +8,8 @@ namespace EngineCore
 {
 
    NoPhysicsMovementComponent::NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData)
-       : MovementComponent(movementComponentData), m_actorRootComponent()
+       : MovementComponent(movementComponentData),
+         m_actorRootComponent()
    {
       mCurrentSpeed = 0.01f;
    }
@@ -19,8 +20,8 @@ namespace EngineCore
 
       if (const auto &spOwner = GetOwner().lock())
       {
+         assert(spOwner->GetRootComponent());
          m_actorRootComponent = spOwner->GetRootComponent();
-         assert(m_actorRootComponent);
       }
    }
 
@@ -44,14 +45,18 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::Move(const float deltaTime)
    {
-      assert(m_actorRootComponent);
-      m_actorRootComponent->AddTranslation(GetVelocity() * deltaTime);
+      if (const auto &actorRootComponentSp = m_actorRootComponent.lock())
+      {
+         actorRootComponentSp->AddTranslation(GetVelocity() * deltaTime);
+      }
    }
 
    void NoPhysicsMovementComponent::Move(const glm::vec3 &direction, const float deltaTime)
    {
-      assert(m_actorRootComponent);
-      m_actorRootComponent->AddTranslation(direction * deltaTime);
+      if (const auto &actorRootComponentSp = m_actorRootComponent.lock())
+      {
+         actorRootComponentSp->AddTranslation(direction * deltaTime);
+      }
    }
 
    void NoPhysicsMovementComponent::Jump()
@@ -60,8 +65,10 @@ namespace EngineCore
 
    void NoPhysicsMovementComponent::Teleport(const glm::vec3 &teleportPosition)
    {
-      assert(m_actorRootComponent);
-      m_actorRootComponent->SetTranslation(teleportPosition);
+      if (const auto &actorRootComponentSp = m_actorRootComponent.lock())
+      {
+         actorRootComponentSp->SetTranslation(teleportPosition);
+      }
    }
 
    glm::vec3 NoPhysicsMovementComponent::GetVelocity() const

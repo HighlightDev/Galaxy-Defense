@@ -38,6 +38,8 @@ namespace EngineCore
 
             virtual ~LuaProxy() = default;
 
+            virtual void CleanUp();
+
             virtual void OnLuaThreadDataUpdated(const std::string &jsonParameters) = 0;
 
             virtual std::string GetGameThreadData() = 0;

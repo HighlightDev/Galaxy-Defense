@@ -32,6 +32,8 @@ namespace EngineCore
 
       void ShadowFramebuffer::CleanUp()
       {
+         UnbindFramebuffer(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+         mFramebuffer.CleanUp();
       }
 
       void ShadowFramebuffer::RenderToTexture(bool bBindFramebuffer, const size_t viewportX, const size_t viewportY, const size_t viewportWidth, const size_t viewportHeight, const GLbitfield clearFlag)

@@ -20,6 +20,12 @@ namespace EngineCore
             owner->SetLuaProxyId(mLuaProxyId);
         }
 
+        void OverlayManagerLuaProxy::CleanUp()
+        {
+            mCurrentOverlayName = "";
+            mActiveBackgroundOverlays.clear();
+        }
+
         void OverlayManagerLuaProxy::SetCurrentOverlay(const std::string &currentOverlayName)
         {
             mCurrentOverlayName = currentOverlayName;

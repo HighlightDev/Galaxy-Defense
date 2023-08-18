@@ -12,20 +12,22 @@ namespace EngineCore
         , public ISerializable
     {
     protected:
-        std::shared_ptr<Actor> m_actor;
+        std::weak_ptr<Actor> m_actorWp;
 
-        std::shared_ptr<MovementComponent> m_movementComponent;
+        std::weak_ptr<MovementComponent> m_movementComponentWp;
 
     public:
         ActorController(const std::shared_ptr<Actor>& actor);
 
         virtual ~ActorController();
 
+        virtual void CleanUp();
+
         virtual void Tick(float deltaTime) = 0;
 
         void UnpausableTick(const float deltaTime) override {};
 
-        std::shared_ptr<Actor> GetBindedActor() const;
+        std::weak_ptr<Actor> GetBindedActor() const;
 
         std::string GetBindedActorName() const;
 

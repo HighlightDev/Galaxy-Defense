@@ -18,6 +18,8 @@ namespace EngineCore
             virtual void StopScript() = 0;
 
             virtual void OnUpdate(const float deltaTime) = 0;
+
+            virtual void CleanUp() = 0;
         };
     }
 }

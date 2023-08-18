@@ -613,9 +613,6 @@ namespace EngineCore
 
         void UiCanvas::CleanUp()
         {
-            RemoveSceneProxy();
-            RemoveFromReplicators();
-            RemoveLuaProxy();
             for (const auto &child : mChildren)
             {
                 child->CleanUp();

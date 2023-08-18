@@ -114,5 +114,10 @@ namespace EngineCore
 #endif
             }
         }
+
+        void LuaScriptExecutorBase::CleanUp()
+        {
+            StopScript();
+        }
     }
 }

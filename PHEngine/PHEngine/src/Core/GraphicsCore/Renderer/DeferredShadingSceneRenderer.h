@@ -84,17 +84,27 @@ namespace Graphics
          std::shared_ptr<VertexFactoryCompositeShader<SkeletalMeshVertexFactory<4>, PointLightDepthCollectShader>> mDepthCollectPointLightShaderSkeletal;
          std::shared_ptr<VertexFactoryCompositeShader<StaticMeshVertexFactory, PointLightDepthCollectShader>> mDepthCollectPointLightShaderNonSkeletal;
 
+         std::unique_ptr<PostFxRenderer> mPostFxRenderer;
+
          bool bProxiesDirty;
-
          bool bLightProxiesDirty;
-
          bool bPlanarReflectionProxiesDirty;
 
 #if DEBUG
+         int32_t mDebugUiCanvasId{-1};
          bool bRenderDebugPhysicsData{false};
          DebugPhysicsRenderData mDebugPhysicsRenderData;
 #endif
 
+         std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
+         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
+         std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
+         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
+         std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
+         std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;
+         std::shared_ptr<FontHandler> mFontHandler;
+
+         // these proxies are collected from general type of proxies
          std::vector<std::shared_ptr<PrimitiveSceneProxy>> mForwardRenderingProxiesVec;
          std::vector<std::shared_ptr<SkeletalMeshSceneProxy>> mSkeletalProxiesVec;
          std::vector<std::shared_ptr<PrimitiveSceneProxy>> mNonSkeletalProxiesVec;
@@ -104,39 +114,30 @@ namespace Graphics
          std::vector<std::shared_ptr<PlanarReflectionProxy>> mPlanarReflectionProxiesVec;
          std::vector<std::pair<size_t, std::vector<std::shared_ptr<LightSceneProxy>>>> mGroupedByShadowAtlasLights;
 
-         std::shared_ptr<FontHandler> mFontHandler;
-
-         std::unique_ptr<PostFxRenderer> mPostFxRenderer;
-
-         std::vector<std::shared_ptr<UiCanvasSceneProxy>> mUiCanvasProxies;
-
-      public:
-         std::vector<std::shared_ptr<SceneView>> SceneViewsVector;
-         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
-         std::vector<std::shared_ptr<LightSceneProxy>> LightProxiesVector;
-         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
-         std::vector<std::shared_ptr<PlanarReflectionProxy>> PlanarReflectionProxiesVector;
-
       public:
          DeferredShadingSceneRenderer(InterThreadCommunicationMgr &interThreadMgr);
 
          ~DeferredShadingSceneRenderer();
 
+         void CleanUp();
+
          void PostLevelInit();
 
          void RenderScene_RenderThread();
 
-         std::shared_ptr<SceneView> GetSceneViewByProxyId(const size_t proxyId) const;
+         std::shared_ptr<SceneView> GetSceneViewByProxyId(const int32_t proxyId) const;
          std::shared_ptr<PrimitiveSceneProxy> GetPrimitiveProxyByProxyId(const int32_t proxyId) const;
-         std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const size_t proxyId) const;
-         std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const size_t proxyId) const;
-         std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const size_t proxyId) const;
+         std::shared_ptr<LightSceneProxy> GetLightProxyByProxyId(const int32_t proxyId) const;
+         std::shared_ptr<MaterialProxy> GetMaterialProxyByProxyId(const int32_t proxyId) const;
+         std::shared_ptr<PlanarReflectionProxy> GetPlanarReflectionProxyByProxyId(const int32_t proxyId) const;
          std::shared_ptr<UiSceneProxyBase> GetUiSceneProxyByProxyId(const size_t proxyId, const size_t canvasId) const;
          std::shared_ptr<UiCanvasSceneProxy> GetCanvasSceneProxyByProxyId(const size_t proxyId) const;
 
-         bool RemovePrimitiveProxyByProxyId(const size_t proxyId);
+         void RemovePrimitiveProxyByProxyId(const int32_t proxyId);
 
-         bool RemoveLightProxyByProxyId(const size_t proxyId);
+         void RemoveLightProxyByProxyId(const int32_t proxyId);
+
+         void RemovePlanarReflectionSceneProxyByProxyId(const int32_t proxyId);
 
          void SetProxiesAreDirty(const bool bDirty);
 
@@ -167,22 +168,22 @@ namespace Graphics
                                                                const glm::mat4 &newRelativeMatrix,
                                                                const BoundingBox3D &newTransformedBoundingBox);
 
-         void UpdateLightComponentTransform_OnRenderThread(const size_t lightSceneProxyIndex,
+         void UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
                                                            const int32_t creatorObjectId,
                                                            const uint64_t functionId,
                                                            const glm::mat4 &newRelativeMatrix);
 
-         void PrimitiveSceneProxyDeleted_OnRenderThread(const size_t primitiveSceneProxyIndex);
+         void PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex);
 
          void PrimitiveSceneProxiesUpdated_OnRenderThread();
 
-         void LightSceneProxyDeleted_OnRenderThread(const size_t lightSceneProxyIndex);
+         void LightSceneProxyDeleted_OnRenderThread(const int32_t lightSceneProxyIndex);
 
          void LightSceneProxiesUpdated_OnRenderThread();
 
          void CameraSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::ACamera> &camera, const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy);
 
-         void RemoveCameraSceneProxy_OnRenderThread(const size_t cameraSceneProxyId);
+         void RemoveCameraSceneProxy_OnRenderThread(const int32_t cameraSceneProxyId);
 
          void PrimitiveSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PrimitiveComponent> &primitiveComponent, const std::shared_ptr<PrimitiveSceneProxy> &primitiveSceneProxy);
 
@@ -202,11 +203,11 @@ namespace Graphics
 
          void TextDataChanged_OnRenderThread(const std::shared_ptr<HudTextField> &textField, const eTextChangedDataType textChangedDataType);
 
-         void MaterialPropertiesUpdated_OnRenderThread(const size_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
+         void MaterialPropertiesUpdated_OnRenderThread(const int32_t materialProxyIndex, std::vector<std::shared_ptr<MaterialProperty>> &&properties);
 
          void PlanarReflectionSceneProxyAdded_OnRenderThread(const std::shared_ptr<::EngineCore::PlanarReflectionComponent> &planarReflectionComponent, const std::shared_ptr<PlanarReflectionProxy> &proxy);
 
-         void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy, const size_t cameraSceneProxyId);
+         void BindPlanarReflectionSceneProxyToSceneView_OnRenderThread(const std::shared_ptr<PlanarReflectionProxy> &planarReflectionProxy, const int32_t cameraSceneProxyId);
 
          void RegisterText(const std::shared_ptr<TextFieldProxy> &textFieldProxy);
 
@@ -223,6 +224,9 @@ namespace Graphics
          InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
 #if DEBUG
+
+         void SetDebugUiCanvasId(const int32_t debugCanvasProxyUId);
+
          void SetDebugPhysicsRenderData(const DebugPhysicsRenderData &debugPhysicsRenderData);
 
       private:

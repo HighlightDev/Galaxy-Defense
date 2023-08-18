@@ -16,10 +16,16 @@ namespace Game
 
     void AiActorController::Tick(const float deltaTime)
     {
-        if (!m_actor->IsEnabled())
-            return;
-        
-        m_movementComponent->Move(deltaTime);
+        if (const auto &actorSp = m_actorWp.lock())
+        {
+            if (!actorSp->IsEnabled())
+                return;
+
+            if (const auto &moveCompSp = m_movementComponentWp.lock())
+            {
+                moveCompSp->Move(deltaTime);
+            }
+        }
     }
 
     void AiActorController::InitActorController()

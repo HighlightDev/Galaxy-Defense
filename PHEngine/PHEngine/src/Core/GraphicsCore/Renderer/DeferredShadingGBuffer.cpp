@@ -13,7 +13,6 @@ namespace Graphics
 
    DeferredShadingGBuffer::~DeferredShadingGBuffer()
    {
-      DestroyGBuffer();
    }
 
    void DeferredShadingGBuffer::SetTextures()

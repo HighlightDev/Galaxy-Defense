@@ -30,11 +30,13 @@ namespace Game
    {
       ActorController::InitActorController();
 
-      const auto &rootComponent = m_actor->GetBaseRootComponent();
+      const auto &actorSp = m_actorWp.lock();
+      assert(actorSp);
+      const auto &rootComponent = actorSp->GetBaseRootComponent();
       assert(rootComponent);
       PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
 
-      const auto &primitiveComponents = m_actor->GetComponentsByType<PrimitiveComponent>();
+      const auto &primitiveComponents = actorSp->GetComponentsByType<PrimitiveComponent>();
       assert(primitiveComponents.size());
 
       const auto maxBoundPrimitiveComponentIt = std::max_element(primitiveComponents.begin(),
@@ -62,12 +64,13 @@ namespace Game
 
    void SpaceShipPlayerController::Tick(float deltaTime)
    {
-      assert(m_actor);
+      const auto &actorSp = m_actorWp.lock();
+      assert(actorSp);
 
-      if (!m_actor->IsEnabled())
+      if (!actorSp->IsEnabled())
          return;
 
-      auto spaceshipTweener = m_actor->GetTweenerByName("SpaceshipMovement");
+      auto spaceshipTweener = actorSp->GetTweenerByName("SpaceshipMovement");
       assert(spaceshipTweener);
 
       if ("" == mCurrentState)
@@ -75,10 +78,10 @@ namespace Game
          mCurrentState = spaceshipTweener->GetCurrentState()->GetStateName();
       }
 
-      if (m_actor->GetInputComponent())
+      if (actorSp->GetInputComponent())
       {
          bool bMoveCommitted = true;
-         const auto &inputComponent = m_actor->GetInputComponent();
+         const auto &inputComponent = actorSp->GetInputComponent();
 
          auto &mouseBindings = inputComponent->GetMouseBindings();
 
@@ -118,7 +121,7 @@ namespace Game
                if ("s_fly_forward" != mCurrentState)
                {
                   mCurrentState = "s_fly_forward";
-                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_forward");
+                  actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_forward");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
@@ -131,7 +134,7 @@ namespace Game
                if ("s_fly_left" != mCurrentState)
                {
                   mCurrentState = "s_fly_left";
-                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_left");
+                  actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_left");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
@@ -144,7 +147,7 @@ namespace Game
                if ("s_fly_right" != mCurrentState)
                {
                   mCurrentState = "s_fly_right";
-                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_right");
+                  actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_right");
                }
             }
             else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
@@ -157,7 +160,7 @@ namespace Game
                if ("s_fly_back" != mCurrentState)
                {
                   mCurrentState = "s_fly_back";
-                  m_actor->ChangeTweenerState("SpaceshipMovement", "s_fly_back");
+                  actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_back");
                }
             }
             else
@@ -167,8 +170,11 @@ namespace Game
 
             if (bMoveCommitted)
             {
-               m_movementComponent->SetDirection(direction);
-               m_movementComponent->Move(deltaTime);
+               if (const auto &movementComponentSp = m_movementComponentWp.lock())
+               {
+                  movementComponentSp->SetDirection(direction);
+                  movementComponentSp->Move(deltaTime);
+               }
             }
          }
          else
@@ -181,13 +187,13 @@ namespace Game
             if ("s_idle" != mCurrentState)
             {
                mCurrentState = "s_idle";
-               m_actor->ChangeTweenerState("SpaceshipMovement", "s_idle");
+               actorSp->ChangeTweenerState("SpaceshipMovement", "s_idle");
             }
          }
 
          if (bMoveCommitted || spaceshipTweener->IsTransitionActive())
          {
-            const auto &rootComponent = m_actor->GetBaseRootComponent();
+            const auto &rootComponent = actorSp->GetBaseRootComponent();
             PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
