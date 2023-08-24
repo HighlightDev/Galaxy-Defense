@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <type_traits>
 #include <unordered_map>
+#include <optional>
 
 #include "Core/GameCore/LoggerExtension.h"
 
@@ -145,19 +146,20 @@ namespace Resources
       return GetOrAllocateResourceBridge<InnerAllocationType>(key);
     }
 
-    key_t GetKey(sharedValue_t value) const
+    std::optional<key_t> GetKeyOptional(const sharedValue_t& value) const
     {
-      key_t key;
       auto predicate = [&value](auto &keyvalue)
       {
-        return (keyvalue.second == value);
+        if (keyvalue.second == value) return true;
+        if (keyvalue.second && value) return (*keyvalue.second) == (*value);
+        return false;
       };
       auto it = std::find_if(resourceMap.begin(), resourceMap.end(), predicate);
 
       if (it != resourceMap.end())
-        key = it->first;
+        return it->first;
 
-      return key;
+      return std::nullopt;
     }
 
     int32_t GetReferenceCount(const key_t &key) const
@@ -192,12 +194,12 @@ namespace Resources
     bool TryToFreeMemory(sharedValue_t value)
     {
       bool bMemoryFreed = false;
-      key_t key = GetKey(value);
+      const std::optional<key_t>& optionalKey = GetKeyOptional(value);
 
-      if (&(key) != nullptr)
+      if (optionalKey.has_value())
       {
         bMemoryFreed = true;
-        FreeResource(key);
+        FreeResource(*optionalKey);
       }
 
       return bMemoryFreed;

@@ -3,6 +3,7 @@
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
 #include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
+#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
 using namespace Graphics::Renderer;
 using namespace EngineCore;
@@ -25,6 +26,17 @@ namespace Graphics
 
       CubemapSceneProxy::~CubemapSceneProxy()
       {
+      }
+
+      void CubemapSceneProxy::CleanUp()
+      {
+         PrimitiveSceneProxy::CleanUp();
+
+         if (m_shaderCubemap)
+         {
+            ShaderPool::GetInstance()->TryToFreeMemory(m_shaderCubemap);
+            m_shaderCubemap = nullptr;
+         }
       }
 
       void CubemapSceneProxy::PostConstructorInitialize()
@@ -57,11 +69,10 @@ namespace Graphics
 
       void CubemapSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         std::shared_ptr<TextureAtlasHandler> texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
+         const std::shared_ptr<TextureAtlasHandler>& texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
          if (texHandler && texHandler->GetTextureType() == eTextureType::TEXTURE_CUBE)
          {
-            std::shared_ptr<ITexture> texture = texHandler->GetAtlasResource();
-
+            const auto& texture = texHandler->GetAtlasResource();
             auto cubemapShader = std::static_pointer_cast<CubemapShader>(m_shaderCubemap);
 
             cubemapShader->ExecuteShader();

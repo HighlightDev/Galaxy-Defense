@@ -12,12 +12,21 @@ using namespace Graphics::Renderer;
 namespace Graphics
 {
    DynamicMaterial::DynamicMaterial(const std::string &materialName, const std::string &materialShaderName)
-       : IMaterial(materialName, materialShaderName), mIsEnabled(true)
+       : IMaterial(materialName, materialShaderName),
+         mIsEnabled(true)
    {
    }
 
    DynamicMaterial::~DynamicMaterial()
    {
+   }
+
+   void DynamicMaterial::CleanUp()
+   {
+      IMaterial::CleanUp();
+
+      mDirtyProperties.clear();
+      mDynamicProperties.clear();
    }
 
    void DynamicMaterial::SetScene(std::weak_ptr<Scene> scene)

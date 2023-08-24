@@ -19,6 +19,11 @@ namespace Graphics
 			LogInfo( "VertexArrayObject::~dctor");
 		}
 
+		uint32_t VertexArrayObject::GetDescriptor() const
+		{
+			return m_descriptor;
+		}
+
 		bool VertexArrayObject::HasIBO() const
 		{
 			return m_ibo != nullptr;

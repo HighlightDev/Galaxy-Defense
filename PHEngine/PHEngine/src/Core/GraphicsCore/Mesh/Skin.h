@@ -27,6 +27,8 @@ namespace Graphics
 
          virtual ~Skin();
 
+         bool operator==(const Skin& right) const;
+
          const std::shared_ptr<VertexArrayObject>& GetBuffer() const;
 
          BoundingBox3D GetBoundingBox() const;

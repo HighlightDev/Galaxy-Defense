@@ -33,6 +33,8 @@ namespace EnginePhysics
 
       ~GhostController() override;
 
+      void CleanUp() override;
+
       void CompletePhysicsDescriptorConstruction() override;
 
       void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) override;

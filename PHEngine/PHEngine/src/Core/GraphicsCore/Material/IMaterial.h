@@ -37,6 +37,8 @@ namespace Graphics
 
       virtual ~IMaterial();
 
+      virtual void CleanUp();
+
       virtual eMaterialType GetMaterialType() const;
 
       std::weak_ptr<MaterialProxy> GetMaterialProxyWp() const;

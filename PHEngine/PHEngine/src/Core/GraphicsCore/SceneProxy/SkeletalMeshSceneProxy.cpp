@@ -28,6 +28,13 @@ namespace Graphics
       {
       }
 
+      void SkeletalMeshSceneProxy::CleanUp()
+      {
+         PrimitiveSceneProxy::CleanUp();
+
+         mAnimationPlayer = nullptr;
+      }
+
       void SkeletalMeshSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("SkeletalMeshSceneProxy::PostConstructorInitialize");

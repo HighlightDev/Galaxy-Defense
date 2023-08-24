@@ -180,8 +180,8 @@ namespace EngineCore
             std::shared_ptr<TextureMaterialProperty> texProp = std::static_pointer_cast<TextureMaterialProperty>(prop);
             propertyType = "texture";
             uniformValue = EngineUtility::FromOsSpecificUrlToGeneral(
-                Resources::TexturePool::GetInstance()->GetKey(
-                    texProp->GetValue()));
+                Resources::TexturePool::GetInstance()->GetKeyOptional(
+                    texProp->GetValue()).value_or(""));
          }
          else if (type == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
          {

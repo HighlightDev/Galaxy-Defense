@@ -20,6 +20,16 @@ namespace EngineCore
     {
     }
 
+    void SoundComponent::CleanUp()
+    {
+        for (const auto &[key, bufferValue] : mSoundBuffersMap)
+        {
+            SoundBufferPool::GetInstance()->TryToFreeMemory(bufferValue);
+        }
+        mSoundBuffersMap.clear();
+        mSoundSource = nullptr;
+    }
+
     void SoundComponent::Tick(const float deltaTime)
     {
     }
@@ -33,7 +43,7 @@ namespace EngineCore
         return AUDIO_COMPONENT;
     }
 
-    void SoundComponent::CreateSoundBuffer(const std::string &soundFileName, const std::string& bufferName)
+    void SoundComponent::CreateSoundBuffer(const std::string &soundFileName, const std::string &bufferName)
     {
         assert(!mSoundBuffersMap.count(bufferName));
         const auto &buffer = SoundBufferPool::GetInstance()->GetOrAllocateResource(soundFileName);
@@ -50,7 +60,7 @@ namespace EngineCore
         return mSoundSource;
     }
 
-    void SoundComponent::PlayBuffer(const std::string& soundName)
+    void SoundComponent::PlayBuffer(const std::string &soundName)
     {
         assert(mSoundBuffersMap.count(soundName));
         mSoundSource->Play(mSoundBuffersMap.at(soundName));

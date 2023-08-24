@@ -29,6 +29,10 @@ namespace EnginePhysics
       LogInfo("PhysicsWorld::dctor");
 
       Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(this);
+      for (const auto physDescriptor : mPhysicsDescriptors)
+      {
+         physDescriptor->CleanUp();
+      }
       mPhysicsDescriptors.clear();
 
       delete mBroadphase;

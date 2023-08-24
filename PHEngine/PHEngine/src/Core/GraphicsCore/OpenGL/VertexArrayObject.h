@@ -25,6 +25,8 @@ namespace Graphics
 			VertexArrayObject();
 			~VertexArrayObject();
 
+			uint32_t GetDescriptor() const;
+
 			VertexBufferObjectBase *GetVboByIndex(const size_t index) const;
 
 			VertexBufferObjectBase* GetVboByAttribArrayIndexName(const eAttribArrayIndexName attribArrayIndexName) const

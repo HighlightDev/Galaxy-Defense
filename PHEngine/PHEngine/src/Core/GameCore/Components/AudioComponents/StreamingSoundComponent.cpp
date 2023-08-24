@@ -15,6 +15,15 @@ namespace EngineCore
     {
     }
 
+    void StreamingSoundComponent::CleanUp()
+    {
+        if (mStreamingSoundSource)
+        {
+            mStreamingSoundSource->CleanUp();
+            mStreamingSoundSource = nullptr;
+        }
+    }
+
     void StreamingSoundComponent::Tick(const float deltaTime)
     {
         mStreamingSoundSource->UpdateBufferStream();

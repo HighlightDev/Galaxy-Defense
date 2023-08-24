@@ -14,5 +14,10 @@ namespace Graphics
 		{
 		}
 
+		bool ITexture::operator==(const ITexture& right) const
+		{
+			return this->m_texDescriptor == right.m_texDescriptor;
+		}
+
 	}
 }

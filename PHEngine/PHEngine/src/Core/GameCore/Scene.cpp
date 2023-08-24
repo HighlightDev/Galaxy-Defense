@@ -668,12 +668,6 @@ namespace EngineCore
       return result;
    }
 
-   /*
-      std::vector<std::shared_ptr<Graphics::IMaterial>> mMaterials;
-
-      std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
-   */
-
    void Scene::UnloadScene()
    {
       UnloadUi();
@@ -685,6 +679,7 @@ namespace EngineCore
       UnloadLuaReplicators();
       UnloadDeferredResourceCreators();
       UnloadActorControllers();
+      UnloadMaterials();
    }
 
    void Scene::UnloadUi()
@@ -729,6 +724,17 @@ namespace EngineCore
          actorController->CleanUp();
       }
       mActorControllers.clear();
+   }
+
+   void Scene::UnloadMaterials()
+   {
+      mDynamicMaterials.clear();
+
+      for (const auto& materialInstance : mMaterials)
+      {
+         materialInstance->CleanUp();
+      }
+      mMaterials.clear();
    }
 
 #ifdef DEBUG

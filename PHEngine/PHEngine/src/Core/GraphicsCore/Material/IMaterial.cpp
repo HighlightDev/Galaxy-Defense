@@ -8,12 +8,20 @@ namespace Graphics
 {
 
    IMaterial::IMaterial(const std::string &materialName, const std::string &materialShaderName)
-       : MaterialProxyId(-1), MaterialName(materialName), MaterialShaderName(materialShaderName), MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
+       : MaterialProxyId(-1),
+         MaterialName(materialName),
+         MaterialShaderName(materialShaderName),
+         MaterialShaderRelativePath(IO::FolderManager::GetInstance()->GetShadersPath() + "material_shaders" + SLASH + materialShaderName)
    {
    }
 
    IMaterial::~IMaterial()
    {
+   }
+
+   void IMaterial::CleanUp()
+   {
+      mProperties.clear();
    }
 
    std::shared_ptr<MaterialProperty> IMaterial::GetMaterialPropertyByName(const std::string &propertyName) const

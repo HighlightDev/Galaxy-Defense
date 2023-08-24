@@ -32,6 +32,8 @@ namespace EngineCore
 
         ~StreamingSoundSource();
 
+        void CleanUp();
+
         void SetPitch(const float pitch);
 
         void SetGain(const float gain);

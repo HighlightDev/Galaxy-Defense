@@ -27,6 +27,8 @@ namespace Graphics
 
          virtual ~IShader();
 
+         bool operator==(const IShader& right) const;
+
          Uniform GetUniform(const std::string &uniformName, uint32_t shaderProgramID) const;
 
          UniformArray GetUniformArray(const std::string &uniformName, size_t countOfUniforms, uint32_t shaderProgramID) const;

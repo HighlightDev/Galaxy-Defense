@@ -60,13 +60,22 @@ namespace EnginePhysics
    {
       LogInfo("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
 
+      CleanUp();
+   }
+
+   void PhysicsDescriptor::CleanUp()
+   {
       if (mRigidBody)
       {
          mPhysicsWorld->GetWorld()->removeCollisionObject(mRigidBody);
          delete mRigidBody;
       }
 
-      delete mMotionState;
+      if (mMotionState)
+      {
+         delete mMotionState;
+         mMotionState = nullptr;
+      }
    }
 
    void PhysicsDescriptor::PostPhysicsSimulationUpdate(const float deltaTime)

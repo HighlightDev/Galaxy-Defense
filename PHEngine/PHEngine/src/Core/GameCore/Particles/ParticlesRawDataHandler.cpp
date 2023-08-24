@@ -1,6 +1,7 @@
 #include "ParticlesRawDataHandler.h"
 
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <cstdlib>
 #include <cstring>
@@ -25,6 +26,7 @@ namespace EngineCore
 
     ParticlesRawDataHandler::~ParticlesRawDataHandler()
     {
+        LogInfo("ParticlesRawDataHandler::dctor");
         DeallocatePoolMemory();
     }
 

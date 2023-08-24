@@ -26,6 +26,8 @@ namespace Graphics
 
 			virtual ~ITexture();
 
+			bool operator==(const ITexture& right) const;
+
 			virtual void BindTexture(uint32_t textureSlot) const = 0;
 			virtual void UnbindTexture(uint32_t textureSlot) const = 0;
 			virtual void CleanUp() = 0;

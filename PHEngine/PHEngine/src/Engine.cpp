@@ -163,17 +163,17 @@ namespace EngineCore
    {
       assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
       assert(m_levelFactory);
-      const auto newLevel = m_levelFactory->CreateLevel(levelName);
-      assert(newLevel);
-      if (m_level != newLevel)
+
+      if (!m_level || (m_level->GetLevelName() != levelName))
       {
          bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
-
          if (m_level)
          {
             UnloadCurrentLevel();
          }
-
+         
+         const auto newLevel = m_levelFactory->CreateLevel(levelName);
+         assert(newLevel);
          m_level = newLevel;
          m_level->SetScene(m_scene);
          PreLevelInit();

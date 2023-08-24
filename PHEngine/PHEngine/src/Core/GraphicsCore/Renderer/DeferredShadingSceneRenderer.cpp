@@ -143,11 +143,6 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::CleanUp()
       {
-         /*
-         std::vector<std::shared_ptr<PrimitiveSceneProxy>> PrimitiveProxiesVector;
-         std::vector<std::shared_ptr<MaterialProxy>> MaterialProxiesVector;
-         */
-
          SceneViewsVector.clear();
 
 #if DEBUG
@@ -187,6 +182,18 @@ namespace Graphics
             lightSceneProxy->CleanUp();
          }
          LightProxiesVector.clear();
+
+         for (const auto& primitiveProxy : PrimitiveProxiesVector)
+         {
+            primitiveProxy->CleanUp();
+         }
+         PrimitiveProxiesVector.clear();
+
+         for (const auto& materialProxy : MaterialProxiesVector)
+         {
+            materialProxy->CleanUp();            
+         }
+         MaterialProxiesVector.clear();
 
          mForwardRenderingProxiesVec.clear();
          mSkeletalProxiesVec.clear();

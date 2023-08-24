@@ -31,11 +31,19 @@ namespace EnginePhysics
 
    GhostController::~GhostController()
    {
-      if (mIsCollisionEnabled)
+      CleanUp();
+   }
+
+   void GhostController::CleanUp()
+   {
+      PhysicsDescriptor::CleanUp();
+
+      if (mGhostObject)
       {
          mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+         delete mGhostObject;
+         mGhostObject = nullptr;
       }
-      delete mGhostObject;
    }
 
    ePhysicsDescriptorType GhostController::GetPhysicsDescriptorType() const

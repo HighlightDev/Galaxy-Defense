@@ -19,7 +19,6 @@ namespace Graphics
 
 			std::shared_ptr<AnimatedMeshData> GetAnimatedMeshData()
 			{
-
 				return m_animatedMeshData;
 			}
 

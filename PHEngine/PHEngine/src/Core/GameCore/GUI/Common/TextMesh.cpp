@@ -14,6 +14,11 @@ namespace Graphics
       {
       }
 
+      bool TextMesh::operator==(const TextMesh& right) const
+      {
+         return this->m_buffer.GetDescriptor() == right.m_buffer.GetDescriptor();
+      }
+
       VertexArrayObject *TextMesh::GetBuffer()
       {
          return &m_buffer;

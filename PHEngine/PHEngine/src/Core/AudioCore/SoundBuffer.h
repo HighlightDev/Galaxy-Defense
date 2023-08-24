@@ -18,8 +18,9 @@ namespace EngineCore
 
         ~SoundBuffer();
 
-        void CleanUp();
+        bool operator==(const SoundBuffer& right) const;
 
+        void CleanUp();
 
         ALuint GetBufferDesc() const;
 

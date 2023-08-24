@@ -26,6 +26,8 @@ namespace Graphics
 
          ~CubemapSceneProxy() override;
 
+         void CleanUp() override;
+
          std::shared_ptr<IShader> GetShader() const;
 
          void PostConstructorInitialize() override;

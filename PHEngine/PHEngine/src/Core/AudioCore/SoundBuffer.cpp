@@ -17,6 +17,11 @@ namespace EngineCore
         LogInfo("SoundBuffer::dctor");
     }
 
+    bool SoundBuffer::operator==(const SoundBuffer& right) const
+    {
+        return this->mBufferDesc == right.mBufferDesc;
+    }
+
     void SoundBuffer::CleanUp()
     {
         LogInfo("SoundBuffer::CleanUp => BufferDesc = ", mBufferDesc);

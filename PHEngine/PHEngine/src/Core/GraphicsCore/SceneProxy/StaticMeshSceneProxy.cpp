@@ -26,6 +26,11 @@ namespace Graphics
       {
       }
 
+      void StaticMeshSceneProxy::CleanUp()
+      {
+         PrimitiveSceneProxy::CleanUp();
+      }
+
       void StaticMeshSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("StaticMeshSceneProxy::PostConstructorInitialize");
@@ -37,14 +42,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                            [this, sceneSp, boundingBox]()
-                                            {
-                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                               assert(engineObject);
-                                               const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                                               assert(primitiveComponent);
-                                               primitiveComponent->SetBoundingBox(boundingBox);
-                                            });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }

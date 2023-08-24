@@ -22,6 +22,8 @@ namespace Graphics
 
          virtual ~Shader();
 
+         bool operator==(const Shader& right) const;
+
       private:
          ShaderParams m_shaderParams;
 

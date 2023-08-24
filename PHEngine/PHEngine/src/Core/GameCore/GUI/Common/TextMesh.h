@@ -20,6 +20,8 @@ namespace Graphics
 
             virtual ~TextMesh();
 
+            bool operator==(const TextMesh& right) const;
+
             VertexArrayObject *GetBuffer();
 
             virtual void CleanUp();

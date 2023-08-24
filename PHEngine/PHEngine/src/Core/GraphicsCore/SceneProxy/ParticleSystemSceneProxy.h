@@ -44,6 +44,8 @@ namespace Graphics
 
             ~ParticleSystemSceneProxy() override;
 
+            void CleanUp() override;
+
             void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;
 
             void PostConstructorInitialize() override;

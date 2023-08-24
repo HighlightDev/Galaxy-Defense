@@ -1,6 +1,9 @@
 #include "PrimitiveSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GameCore/Components/PrimitiveComponents/PrimitiveComponent.h"
+#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
+#include "Core/ResourceManagerCore/Pool/MeshPool.h"
+#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
 
 using namespace Graphics::Renderer;
 
@@ -28,6 +31,29 @@ namespace Graphics
 
       PrimitiveSceneProxy::~PrimitiveSceneProxy()
       {
+      }
+
+      void PrimitiveSceneProxy::CleanUp()
+      {
+         LogInfo("PrimitiveSceneProxy::CleanUp => proxyId: ", mSceneProxyId, ", gameObjectId: ", mGameObjectId);
+
+         if (m_skin)
+         {
+            MeshPool::GetInstance()->TryToFreeMemory(m_skin);
+            m_skin = nullptr;
+         }
+
+         if (m_shader)
+         {
+            CompositeShaderPool::GetInstance()->TryToFreeMemory(m_shader);
+            m_shader = nullptr;
+         }
+
+         if (m_planarReflectionShader)
+         {
+            CompositeShaderPool::GetInstance()->TryToFreeMemory(m_planarReflectionShader);
+            m_planarReflectionShader = nullptr;
+         }
       }
 
       void PrimitiveSceneProxy::PostConstructorInitialize()

@@ -21,6 +21,11 @@ namespace Graphics
    {
    }
 
+   void MaterialProxy::CleanUp()
+   {
+      mProperties.clear();
+   }
+
    const std::vector<std::shared_ptr<MaterialProperty>>& MaterialProxy::GetProperties() const
    {
       return mProperties;

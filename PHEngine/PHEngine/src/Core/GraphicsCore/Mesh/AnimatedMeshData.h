@@ -19,8 +19,6 @@ namespace Graphics
       using EngineCore::Transform;
       struct AnimatedMeshData
       {
-       
-
          struct BoneData
          {
             glm::vec3 Scale;

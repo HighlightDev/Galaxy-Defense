@@ -31,6 +31,8 @@ namespace Graphics
 
       ~MaterialProxy();
 
+      void CleanUp() override;
+
       const std::vector<std::shared_ptr<MaterialProperty>>& GetProperties() const;
 
       std::vector<std::string> GetUniformNames() const;

@@ -61,6 +61,11 @@ namespace Graphics
         {
         }
 
+        void ParticleSystemSceneProxy::CleanUp()
+        {
+            PrimitiveSceneProxy::CleanUp();
+        }
+
         void ParticleSystemSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
         {
             if (!mActiveParticlesCount)

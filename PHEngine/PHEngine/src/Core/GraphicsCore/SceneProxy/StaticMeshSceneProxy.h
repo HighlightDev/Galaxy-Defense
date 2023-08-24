@@ -37,6 +37,8 @@ namespace Graphics
 
          ~StaticMeshSceneProxy() override;
 
+         void CleanUp() override;
+
          void PostConstructorInitialize() override;
 
          void Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix) override;

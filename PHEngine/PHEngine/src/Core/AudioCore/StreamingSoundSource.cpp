@@ -28,6 +28,15 @@ namespace EngineCore
         alDeleteSources(1, &mSourceDesc);
     }
 
+    void StreamingSoundSource::CleanUp()
+    {
+        if (mStreamingBufferBundle)
+        {
+            mStreamingBufferBundle->CleanUp();
+            mStreamingBufferBundle = nullptr;
+        }
+    }
+
     void StreamingSoundSource::SetPitch(const float pitch)
     {
         mPitch = pitch;
@@ -131,7 +140,7 @@ namespace EngineCore
         alCall(alSource3f, mSourceDesc, AL_POSITION, mPosition.x, mPosition.y, mPosition.z);
         alCall(alSource3f, mSourceDesc, AL_VELOCITY, mVelocity.x, mVelocity.y, mVelocity.z);
 
-        mStreamingBufferBundle = std::make_shared<StreamingSoundBufferBundle>(soundName);
+        mStreamingBufferBundle = std::make_shared<StreamingSoundBufferBundle>(soundName, mSourceDesc);
 
         LogInfo("StreamingSoundSource::Init => mSourceDesc = ", mSourceDesc);
     }

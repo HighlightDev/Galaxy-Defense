@@ -37,11 +37,24 @@ namespace EnginePhysics
    DynamicCharacterController::~DynamicCharacterController()
    {
       KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+   }
 
-      mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
-      mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+   void DynamicCharacterController::CleanUp()
+   {
+      PhysicsDescriptor::CleanUp();
+      if (mRigidBody)
+      {
+         mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
+         delete mRigidBody;
+         mRigidBody = nullptr;
+      }
 
-      delete mGhostObject;
+      if (mGhostObject)
+      {
+         mPhysicsWorld->GetWorld()->removeCollisionObject(mGhostObject);
+         delete mGhostObject;
+         mGhostObject = nullptr;
+      }
    }
 
    void DynamicCharacterController::SetMotionStateWorldTransform(const btQuaternion &quat, const btVector3 &translation)

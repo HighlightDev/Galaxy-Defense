@@ -15,15 +15,26 @@ using namespace TinyLogger;
 namespace EngineCore
 {
 
-	StreamingSoundBufferBundle::StreamingSoundBufferBundle(const std::string &soundName)
+	StreamingSoundBufferBundle::StreamingSoundBufferBundle(const std::string &soundName, const ALuint soundDescriptor)
+		: mSoundDescriptor(soundDescriptor)
 	{
 		Init(soundName);
 	}
 
 	StreamingSoundBufferBundle::~StreamingSoundBufferBundle()
 	{
+		alCall(alSourceUnqueueBuffers, mSoundDescriptor, NUM_BUFFERS, mBuffers);
 		alDeleteBuffers(NUM_BUFFERS, mBuffers);
-		SoundMemoryChunkPool::GetInstance()->TryToFreeMemory(mSoundMemoryChunk);
+		CleanUp();
+	}
+
+	void StreamingSoundBufferBundle::CleanUp()
+	{
+		if (mSoundMemoryChunk)
+		{
+			SoundMemoryChunkPool::GetInstance()->TryToFreeMemory(mSoundMemoryChunk);
+			mSoundMemoryChunk = nullptr;
+		}
 	}
 
 	void StreamingSoundBufferBundle::Init(const std::string &soundName)

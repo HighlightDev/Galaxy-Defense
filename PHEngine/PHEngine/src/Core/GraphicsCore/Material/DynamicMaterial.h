@@ -28,6 +28,8 @@ namespace Graphics
 
       ~DynamicMaterial() override;
 
+      void CleanUp() override;
+
       eMaterialType GetMaterialType() const override;
 
       void Tick(const float deltaTime) override;

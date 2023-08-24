@@ -16,6 +16,8 @@ namespace EngineCore
 
 		ALuint mBuffers[NUM_BUFFERS];
 
+		ALuint mSoundDescriptor;
+
 		std::shared_ptr<SoundMemoryChunk> mSoundMemoryChunk;
 
 		size_t mBufferDataCursor = 0;
@@ -23,9 +25,11 @@ namespace EngineCore
 		bool mHasQueuedBuffers = false;
 
 	public:
-		StreamingSoundBufferBundle(const std::string &soundName);
+		StreamingSoundBufferBundle(const std::string &soundName, const ALuint soundDescriptor);
 
 		~StreamingSoundBufferBundle();
+
+		void CleanUp();
 
 		void PrePlayFillBuffers(const ALuint sourceDesc);
 

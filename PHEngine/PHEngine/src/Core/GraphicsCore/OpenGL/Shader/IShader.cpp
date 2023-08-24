@@ -31,6 +31,14 @@ namespace Graphics
       {
       }
 
+      bool IShader::operator==(const IShader &right) const
+      {
+         return this->mShaderName == right.mShaderName &&
+                this->m_vertexShaderID == right.m_vertexShaderID &&
+                this->m_fragmentShaderID == right.m_fragmentShaderID &&
+                this->m_shaderProgramID == right.m_shaderProgramID;
+      }
+
       Uniform IShader::GetUniform(const std::string &uniformName, uint32_t shaderProgramID) const
       {
          try

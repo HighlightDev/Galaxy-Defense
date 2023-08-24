@@ -16,6 +16,8 @@ namespace EngineCore
 
         SoundMemoryChunk(short* memoryChunkPtr, const AudioResourceInfo& audioInfo);
 
+        bool operator==(const SoundMemoryChunk& right) const;
+
         short* GetData() const;
 
         const AudioResourceInfo& GetAudioInfo() const;

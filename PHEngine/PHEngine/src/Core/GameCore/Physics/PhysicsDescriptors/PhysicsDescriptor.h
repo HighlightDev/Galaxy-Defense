@@ -68,6 +68,8 @@ namespace EnginePhysics
 
       virtual ~PhysicsDescriptor();
 
+      virtual void CleanUp();
+
       virtual void CompletePhysicsDescriptorConstruction() = 0;
 
       virtual void UpdateMotionWorldTransformLocalState(bool &bIsWorldTransformDiry, const float deltaTime) = 0;

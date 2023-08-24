@@ -25,6 +25,14 @@ namespace Graphics
       {
       }
 
+      bool Shader::operator==(const Shader &right) const
+      {
+         return this->mShaderName == right.mShaderName &&
+                this->m_vertexShaderID == right.m_vertexShaderID &&
+                this->m_fragmentShaderID == right.m_fragmentShaderID &&
+                this->m_shaderProgramID == right.m_shaderProgramID;
+      }
+
       void Shader::ShaderInit()
       {
          SetShaderPredefine(); // start precompile shader customization

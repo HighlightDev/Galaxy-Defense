@@ -26,6 +26,8 @@ namespace EngineCore
 
         ~SoundComponent() override;
 
+        void CleanUp() override;
+
         void Tick(const float deltaTime) override;
 
         void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;

@@ -78,6 +78,8 @@ namespace Graphics
 
          ~PrimitiveSceneProxy() override;
 
+         void CleanUp() override;
+
          void SetTransformationMatrix(const glm::mat4 &relativeMatrix);
 
          void SetDeferredShadingSceneRenderer(const std::weak_ptr<::Graphics::Renderer::DeferredShadingSceneRenderer> &deferredShadingSceneRenderer);

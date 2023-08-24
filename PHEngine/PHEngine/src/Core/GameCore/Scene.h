@@ -214,6 +214,8 @@ namespace EngineCore
       void UnloadDeferredResourceCreators();
 
       void UnloadActorControllers();
+
+      void UnloadMaterials();
    };
 
 }
