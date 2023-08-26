@@ -4,6 +4,8 @@
 
 namespace EnginePhysics
 {
+   class PhysicsWorld;
+
    class RigidBodyController
        : public PhysicsDescriptor,
          public Event::KinematicBodyMovedEvent
@@ -11,7 +13,7 @@ namespace EnginePhysics
       size_t mLastRayCastObjectResultId;
 
    public:
-      RigidBodyController(class PhysicsWorld *pPhysicsWorld,
+      RigidBodyController(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
                           const std::shared_ptr<CollisionShapeBase> &shape,
                           const ePhysicsBodyType bodyType,
                           const float mass = 0.0f,

@@ -4,18 +4,22 @@
 namespace Graphics
 {
 
-   ProjectedDirectionalLightShadowInfo::ProjectedDirectionalLightShadowInfo(const TextureAtlasSpaceRequest& shadowmapAtlasRequest,
-      const float shadowOrthoHalfExtent)
-      : ProjectedShadowInfo(shadowmapAtlasRequest)
-      , mShadowOrthoHalfExtent(shadowOrthoHalfExtent)
-   {    
+   ProjectedDirectionalLightShadowInfo::ProjectedDirectionalLightShadowInfo(const TextureAtlasSpaceRequest &shadowmapAtlasRequest,
+                                                                            const float shadowOrthoHalfExtent)
+       : ProjectedShadowInfo(shadowmapAtlasRequest),
+         mShadowOrthoHalfExtent(shadowOrthoHalfExtent)
+   {
       m_lightType = LightType::DIRECTIONAL_LIGHT;
-      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
    ProjectedDirectionalLightShadowInfo::~ProjectedDirectionalLightShadowInfo()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedEvent::GetInstanceId());
+   }
+
+   void ProjectedDirectionalLightShadowInfo::Initialize()
+   {
+      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedDirectionalLightShadowInfo>(shared_from_this()));
    }
 
    std::shared_ptr<Texture2dAtlasHandler> ProjectedDirectionalLightShadowInfo::GetTexture2dHandler() const
@@ -23,7 +27,7 @@ namespace Graphics
       return std::static_pointer_cast<Texture2dAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedDirectionalLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   void ProjectedDirectionalLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_2D == std::get<0>(data))
       {
@@ -41,12 +45,12 @@ namespace Graphics
       return m_shadowProjectionMatrix;
    }
 
-   void ProjectedDirectionalLightShadowInfo::SetShadowViewMatrix(const glm::mat4& shadowViewMatrix)
+   void ProjectedDirectionalLightShadowInfo::SetShadowViewMatrix(const glm::mat4 &shadowViewMatrix)
    {
       m_shadowViewMatrix = shadowViewMatrix;
    }
 
-   void ProjectedDirectionalLightShadowInfo::SetShadowProjectionMatrix(const glm::mat4& shadowProjectionMatrix)
+   void ProjectedDirectionalLightShadowInfo::SetShadowProjectionMatrix(const glm::mat4 &shadowProjectionMatrix)
    {
       m_shadowProjectionMatrix = shadowProjectionMatrix;
    }

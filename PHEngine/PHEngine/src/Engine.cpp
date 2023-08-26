@@ -38,18 +38,13 @@ namespace EngineCore
          mRenderThreadDeltaTimeSeconds(),
          mGameThreadDeltaTimeSeconds()
    {
-      Initialize();
-
-      PauseGameThreadEvent::GetInstance()->AddListener(this);
-      ExitGameThreadEvent::GetInstance()->AddListener(this);
-      LoadLevelEvent::GetInstance()->AddListener(this);
    }
 
    Engine::~Engine()
    {
-      PauseGameThreadEvent::GetInstance()->RemoveListener(this);
-      ExitGameThreadEvent::GetInstance()->RemoveListener(this);
-      LoadLevelEvent::GetInstance()->RemoveListener(this);
+      PauseGameThreadEvent::GetInstance()->RemoveListener(PauseGameThreadEvent::GetInstanceId());
+      ExitGameThreadEvent::GetInstance()->RemoveListener(ExitGameThreadEvent::GetInstanceId());
+      LoadLevelEvent::GetInstance()->RemoveListener(LoadLevelEvent::GetInstanceId());
    }
 
    void Engine::Initialize()
@@ -94,6 +89,11 @@ namespace EngineCore
                               { LogInfo("EchoTimer::Timeout => Time passed: 2 seconds"); });
       m_echoTimer.StartTimer();
 #endif
+
+      const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());
+      PauseGameThreadEvent::GetInstance()->AddListener(thisSp);
+      ExitGameThreadEvent::GetInstance()->AddListener(thisSp);
+      LoadLevelEvent::GetInstance()->AddListener(thisSp);
    }
 
    void Engine::CleanUp()
@@ -167,11 +167,12 @@ namespace EngineCore
       if (!m_level || (m_level->GetLevelName() != levelName))
       {
          bLevelIsLoading.store(true, std::memory_order::memory_order_seq_cst);
+         bPauseGameThreadExecution.store(false, std::memory_order::memory_order_seq_cst);
          if (m_level)
          {
             UnloadCurrentLevel();
          }
-         
+
          const auto newLevel = m_levelFactory->CreateLevel(levelName);
          assert(newLevel);
          m_level = newLevel;

@@ -32,15 +32,15 @@ namespace EngineCore
 
         void UiInputSystem::UnpausableTick(const float deltaTime)
         {
-            auto &mouseBindings = mInputComponent->GetMouseBindings();
+            const auto &mouseBindings = mInputComponent->GetMouseBindings();
 
             if (const auto &ownerSp = mOwnerWp.lock())
             {
                 if (ownerSp->IsVisible())
                 {
-                    const bool isMouseMoveEventDirty = mouseBindings.IsMouseMoveEventDirty();
-                    const auto &mouseMoveEventData = mouseBindings.GetLastMouseCursorPosition();
-                    mouseBindings.FlushMouseMoveEvent();
+                    const bool isMouseMoveEventDirty = mouseBindings->IsMouseMoveEventDirty();
+                    const auto &mouseMoveEventData = mouseBindings->GetLastMouseCursorPosition();
+                    mouseBindings->FlushMouseMoveEvent();
                     const auto invertedScreenYPosition = mScreenHeight - mouseMoveEventData.y;
                     mMouseKeyPressedPosition = glm::ivec2(mouseMoveEventData.x, invertedScreenYPosition);
 
@@ -49,7 +49,7 @@ namespace EngineCore
                         ownerSp->OnMousePositionChanged(mMouseKeyPressedPosition);
                     }
 
-                    if (mouseBindings.GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED)
+                    if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED)
                     {
                         if (!mIsMouseKeyPressed)
                         {
@@ -58,7 +58,7 @@ namespace EngineCore
 
                         mIsMouseKeyPressed = true;
                     }
-                    else if (mouseBindings.GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED)
+                    else if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::RELEASED)
                     {
                         if (mMousePressedTimer.IsRunning() && mIsMouseKeyPressed)
                         {

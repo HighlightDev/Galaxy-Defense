@@ -38,6 +38,7 @@ namespace EngineCore
       : public EngineObject
       , public ITickable
       , public ISerializable
+      , public std::enable_shared_from_this<ACamera>
    {
       float m_rotateSensetivity;
 
@@ -82,6 +83,8 @@ namespace EngineCore
       ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
 
       virtual ~ACamera();
+
+      virtual void Initialize();
 
       void SetCameraProxyId(const size_t proxyId);
 

@@ -5,7 +5,7 @@
 
 namespace EnginePhysics
 {
-   RigidBodyController::RigidBodyController(PhysicsWorld *pPhysicsWorld,
+   RigidBodyController::RigidBodyController(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
                                             const std::shared_ptr<CollisionShapeBase> &shape,
                                             const ePhysicsBodyType bodyType,
                                             const float mass,
@@ -23,7 +23,7 @@ namespace EnginePhysics
    {
       if (ePhysicsBodyType::DYNAMIC == mBodyType)
       {
-         Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+         Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(GetInstanceId());
       }
    }
 
@@ -57,7 +57,7 @@ namespace EnginePhysics
       case ePhysicsBodyType::DYNAMIC:
       {
          mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-         Event::KinematicBodyMovedEvent::GetInstance()->AddListener(this);
+         Event::KinematicBodyMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<RigidBodyController>(shared_from_this()));
          break;
       }
       case ePhysicsBodyType::KINEMATIC:

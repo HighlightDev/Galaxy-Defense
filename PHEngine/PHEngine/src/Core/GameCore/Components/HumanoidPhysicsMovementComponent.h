@@ -32,6 +32,8 @@ namespace EngineCore
 
       ~HumanoidPhysicsMovementComponent() override;
 
+      void Initialize() override;
+
       eComponentType GetComponentType() const override;
 
       void Tick(const float deltaTime) override;

@@ -63,7 +63,7 @@ namespace EngineCore
    {
       if (const auto &sceneSp = m_sceneWP.lock())
       {
-         sceneSp->RegisterDeferredResourceCreator(shared_from_this(), GetEngineObjectName());
+         sceneSp->RegisterDeferredResourceCreator(std::dynamic_pointer_cast<PlanarReflectionComponent>(shared_from_this()), GetEngineObjectName());
       }
    }
 

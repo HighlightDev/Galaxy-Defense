@@ -25,6 +25,8 @@ namespace Graphics
 
       ~ProjectedDirectionalLightShadowInfo() override;
 
+      void Initialize() override;
+
       void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
       void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;

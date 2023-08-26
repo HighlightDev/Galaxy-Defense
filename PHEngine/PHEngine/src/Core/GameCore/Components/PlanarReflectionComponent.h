@@ -22,8 +22,7 @@ namespace EngineCore
 
    class PlanarReflectionComponent
        : public SceneComponent,
-         public IDeferredResourceCreator,
-         public std::enable_shared_from_this<IDeferredResourceCreator>
+         public IDeferredResourceCreator
    {
       int32_t mPlanarReflectionSceneProxyId {-1};
 

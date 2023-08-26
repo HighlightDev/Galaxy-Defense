@@ -12,16 +12,16 @@ namespace EngineCore
    {
    }
 
-   void ActorController::CleanUp()
-   {
-   }
-
-   void ActorController::InitActorController()
+   void ActorController::Initialize()
    {
       const auto &actorSp = m_actorWp.lock();
       assert(actorSp);
       assert(actorSp->GetMovementComponent());
       m_movementComponentWp = actorSp->GetMovementComponent();
+   }
+
+   void ActorController::CleanUp()
+   {
    }
 
    std::weak_ptr<Actor> ActorController::GetBindedActor() const

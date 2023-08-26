@@ -2,24 +2,28 @@
 
 namespace Graphics
 {
-   ProjectedPointLightShadowInfo::ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource)
-      : ProjectedShadowInfo(shadowAtlasCellResource)
+   ProjectedPointLightShadowInfo::ProjectedPointLightShadowInfo(const TextureAtlasSpaceRequest &shadowAtlasCellResource)
+       : ProjectedShadowInfo(shadowAtlasCellResource)
    {
       m_lightType = LightType::POINT_LIGHT;
-      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
    ProjectedPointLightShadowInfo::~ProjectedPointLightShadowInfo()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedEvent::GetInstanceId());
+   }
+
+   void ProjectedPointLightShadowInfo::Initialize()
+   {
+      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedPointLightShadowInfo>(shared_from_this()));
    }
 
    std::shared_ptr<TextureCubeAtlasHandler> ProjectedPointLightShadowInfo::GetTextureCubeHandler() const
    {
-      return  std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
+      return std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_CUBE == std::get<0>(data))
       {
@@ -46,12 +50,12 @@ namespace Graphics
       return m_shadowProjectionMatrix;
    }
 
-   void ProjectedPointLightShadowInfo::SetShadowViewMatrices(const six_mat4x4& shadowViewMatrices)
+   void ProjectedPointLightShadowInfo::SetShadowViewMatrices(const six_mat4x4 &shadowViewMatrices)
    {
       m_shadowViewMatrix = shadowViewMatrices;
    }
 
-   void ProjectedPointLightShadowInfo::SetShadowProjectionMatrix(const six_mat4x4& shadowProjectionMatrices)
+   void ProjectedPointLightShadowInfo::SetShadowProjectionMatrix(const six_mat4x4 &shadowProjectionMatrices)
    {
       m_shadowProjectionMatrix = shadowProjectionMatrices;
    }

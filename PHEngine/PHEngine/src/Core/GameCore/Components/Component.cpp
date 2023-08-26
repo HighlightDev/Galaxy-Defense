@@ -21,9 +21,12 @@ namespace EngineCore
    {
    }
 
+   void Component::Initialize()
+   {
+   }
+
    void Component::CleanUp()
    {
-      
    }
 
    void Component::SetOwner(const std::weak_ptr<Actor> &ownerActor)

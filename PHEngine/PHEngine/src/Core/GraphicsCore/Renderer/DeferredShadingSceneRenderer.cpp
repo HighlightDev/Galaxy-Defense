@@ -157,7 +157,7 @@ namespace Graphics
          if (mDebugUiCanvasId != -1)
          {
             mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [debugUiCanvasId = mDebugUiCanvasId](const auto &canvasProxy)
-                                                  { return canvasProxy->GetUiItemUId() != debugUiCanvasId; }));
+                                                  { return canvasProxy->GetUiItemUId() != debugUiCanvasId; }), mUiCanvasProxies.end());
          }
          else
          {
@@ -171,27 +171,27 @@ namespace Graphics
          mUiCanvasProxies.clear();
 #endif
 
-         for (const auto& planarReflectionProxy : PlanarReflectionProxiesVector) 
+         for (const auto &planarReflectionProxy : PlanarReflectionProxiesVector)
          {
             planarReflectionProxy->CleanUp();
          }
          PlanarReflectionProxiesVector.clear();
 
-         for (const auto& lightSceneProxy : LightProxiesVector)
+         for (const auto &lightSceneProxy : LightProxiesVector)
          {
             lightSceneProxy->CleanUp();
          }
          LightProxiesVector.clear();
 
-         for (const auto& primitiveProxy : PrimitiveProxiesVector)
+         for (const auto &primitiveProxy : PrimitiveProxiesVector)
          {
             primitiveProxy->CleanUp();
          }
          PrimitiveProxiesVector.clear();
 
-         for (const auto& materialProxy : MaterialProxiesVector)
+         for (const auto &materialProxy : MaterialProxiesVector)
          {
-            materialProxy->CleanUp();            
+            materialProxy->CleanUp();
          }
          MaterialProxiesVector.clear();
 
@@ -1412,7 +1412,7 @@ namespace Graphics
                m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                     creatorObjectId, functionId, [=]()
                                                     { sceneSp->GetTextHandler()
-                                                          .GetTextFieldById(textFieldProxyId)
+                                                          ->GetTextFieldById(textFieldProxyId)
                                                           ->SetTextScreenSpaceSize(mFontHandler
                                                                                        ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
             }

@@ -19,22 +19,26 @@ namespace EngineCore
       mLightRenderData = std::make_shared<PointLightRenderData>(d_pointLight->Attenuation, d_pointLight->RadianceRadius,
                                                                 d_pointLight->Ambient, d_pointLight->Diffuse,
                                                                 d_pointLight->Specular, d_pointLight->ShadowInfo);
-
-      if (mLightRenderData->ShadowInfo)
-      {
-         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
-         KinematicBodyMovedEvent::GetInstance()->AddListener(this);
-         PlayerMovedEvent::GetInstance()->AddListener(this);
-      }
    }
 
    PointLightComponent::~PointLightComponent()
    {
       if (mLightRenderData->ShadowInfo)
       {
-         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
-         KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
-         PlayerMovedEvent::GetInstance()->RemoveListener(this);
+         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
+         KinematicBodyMovedEvent::GetInstance()->RemoveListener(KinematicBodyMovedEvent::GetInstanceId());
+         PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
+      }
+   }
+
+   void PointLightComponent::Initialize()
+   {
+      if (mLightRenderData->ShadowInfo)
+      {
+         const auto thisSp = std::dynamic_pointer_cast<PointLightComponent>(shared_from_this());
+         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(thisSp);
+         KinematicBodyMovedEvent::GetInstance()->AddListener(thisSp);
+         PlayerMovedEvent::GetInstance()->AddListener(thisSp);
       }
    }
 

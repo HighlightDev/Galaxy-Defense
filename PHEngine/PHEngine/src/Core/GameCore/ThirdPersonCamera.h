@@ -44,6 +44,8 @@ namespace EngineCore
 
       ~ThirdPersonCamera() override;
 
+      void Initialize() override;
+
       void Tick(const float DeltaTime) override;
 
       void ProcessEvent(const typename PlayerMovedEvent::EventData_t &data) override;

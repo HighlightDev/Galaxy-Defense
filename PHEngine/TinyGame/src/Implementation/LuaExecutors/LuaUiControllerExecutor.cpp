@@ -12,8 +12,9 @@ namespace Game
          mLuaCommonUiCallbacks(std::make_unique<LuaCommonUiFunctions>(this)),
          mLuaCommonEngineFunctions(std::make_unique<LuaCommonEngineFunctions>(this)),
          mLuaEngineEventsFunctions(std::make_unique<LuaEngineEventsFunctions>(this)),
-         mLuaGameEventsFunctions(std::make_unique<LuaGameEventsFunctions>(this))
+         mLuaGameEventsFunctions(std::make_shared<LuaGameEventsFunctions>(this))
    {
+      mLuaGameEventsFunctions->Initialize();
    }
 
    LuaUiControllerExecutor::~LuaUiControllerExecutor()

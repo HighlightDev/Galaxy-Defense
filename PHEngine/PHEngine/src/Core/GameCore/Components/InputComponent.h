@@ -10,9 +10,9 @@ namespace EngineCore
    class InputComponent : public Component
    {
 
-      KeyboardBindings m_keyboardBindings;
+      std::shared_ptr<KeyboardBindings> m_keyboardBindings;
 
-      MouseBindings m_mouseBindings;
+      std::shared_ptr<MouseBindings> m_mouseBindings;
 
    public:
       InputComponent(const std::shared_ptr<ComponentData> &componentData);
@@ -30,9 +30,9 @@ namespace EngineCore
 
       std::vector<eKeyActionType> GetPressedKeyActions();
 
-      KeyboardBindings &GetKeyboardBindings();
+      std::shared_ptr<KeyboardBindings> GetKeyboardBindings() const;
 
-      MouseBindings &GetMouseBindings();
+      std::shared_ptr<MouseBindings> GetMouseBindings() const;
 
       void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
 

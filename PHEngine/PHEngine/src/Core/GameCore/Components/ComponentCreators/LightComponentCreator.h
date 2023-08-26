@@ -18,6 +18,10 @@ namespace EngineCore
         CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
             const auto &mData = std::static_pointer_cast<LightComponentData>(data);
+            if (mData->ShadowInfo)
+            {
+                mData->ShadowInfo->Initialize();
+            }
             return std::make_shared<ComponentInstantiationType>(mData);
         }
     };

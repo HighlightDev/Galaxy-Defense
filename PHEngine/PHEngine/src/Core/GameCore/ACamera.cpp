@@ -37,6 +37,10 @@ namespace EngineCore
    {
    }
 
+   void ACamera::Initialize()
+   {
+   }
+
    void ACamera::SetCameraProxyId(const size_t proxyId)
    {
       mCameraProxyId = proxyId;

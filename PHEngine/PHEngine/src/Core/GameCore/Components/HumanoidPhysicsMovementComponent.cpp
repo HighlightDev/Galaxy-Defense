@@ -13,7 +13,6 @@ namespace EngineCore
          mCameraName(""),
          m_playerPhysicsComponent()
    {
-      CameraTransformChangedEvent::GetInstance()->AddListener(this);
       const auto &charMoveCompData = std::static_pointer_cast<HumanoidMovementComponentData>(movementComponentData);
       mCameraName = charMoveCompData->mCameraName;
    }
@@ -32,7 +31,14 @@ namespace EngineCore
 
    HumanoidPhysicsMovementComponent::~HumanoidPhysicsMovementComponent()
    {
-      CameraTransformChangedEvent::GetInstance()->RemoveListener(this);
+      CameraTransformChangedEvent::GetInstance()->RemoveListener(CameraTransformChangedEvent::GetInstanceId());
+   }
+
+   void HumanoidPhysicsMovementComponent::Initialize()
+   {
+      MovementComponent::Initialize();
+
+      CameraTransformChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPhysicsMovementComponent>(shared_from_this()));
    }
 
    eComponentType HumanoidPhysicsMovementComponent::GetComponentType() const

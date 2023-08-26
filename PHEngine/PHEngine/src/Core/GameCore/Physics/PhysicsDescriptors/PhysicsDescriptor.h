@@ -20,6 +20,8 @@ namespace EnginePhysics
       MotionModifiers(const btVector3 &linearFactor, const btVector3 &angularFactor);
    };
 
+   class PhysicsWorld;
+
    class PhysicsDescriptor
        : public std::enable_shared_from_this<PhysicsDescriptor>
    {
@@ -34,7 +36,7 @@ namespace EnginePhysics
 
       int32_t mOwnerActorEngineObjectId;
 
-      class PhysicsWorld *mPhysicsWorld;
+      std::shared_ptr<PhysicsWorld> mPhysicsWorld;
 
       std::shared_ptr<CollisionShapeBase> mShape;
 
@@ -60,13 +62,15 @@ namespace EnginePhysics
       bool mIsCollisionEnabled;
 
    public:
-      PhysicsDescriptor(class PhysicsWorld *pPhysicsWorld,
+      PhysicsDescriptor(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
                         const std::shared_ptr<CollisionShapeBase> &shape,
                         const ePhysicsBodyType bodyType,
                         const float mass = 0.0f,
                         const MotionModifiers &motionModifier = MotionModifiers());
 
       virtual ~PhysicsDescriptor();
+
+      virtual void Initialize();
 
       virtual void CleanUp();
 

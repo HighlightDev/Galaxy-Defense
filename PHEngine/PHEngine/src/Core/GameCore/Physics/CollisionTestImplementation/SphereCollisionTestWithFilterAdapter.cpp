@@ -22,7 +22,7 @@ namespace EnginePhysics
         Initialize(std::move(excludeCollisionComponents));
     }
 
-    void SphereCollisionTestWithFilterAdapter::SphereCollisionTest(PhysicsWorld *physWorld, const glm::vec3 &translation)
+    void SphereCollisionTestWithFilterAdapter::SphereCollisionTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3 &translation)
     {
         BulletSphereCollisionTestWithFilter::SphereCollisionTest(physWorld->GetWorld(), Converter::glmToBullet(translation));
     }

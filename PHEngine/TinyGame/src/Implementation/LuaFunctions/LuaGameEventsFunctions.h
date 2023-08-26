@@ -19,7 +19,8 @@ namespace Game
 {
    class LuaGameEventsFunctions
        : public ILuaFunctionable,
-         public LuaMainPlayerStatusChangedEvent
+         public LuaMainPlayerStatusChangedEvent,
+         public std::enable_shared_from_this<LuaGameEventsFunctions>
    {
    protected:
       ::EngineCore::Scripts::LuaScriptExecutorBase *mOwnerPtr;
@@ -32,6 +33,8 @@ namespace Game
       LuaGameEventsFunctions(::EngineCore::Scripts::LuaScriptExecutorBase *ownerPtr);
 
       ~LuaGameEventsFunctions();
+
+      void Initialize();
 
       void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp) override;
 

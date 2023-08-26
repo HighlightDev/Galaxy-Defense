@@ -38,6 +38,8 @@ namespace EngineCore
 
 		~RuntimeGeneratedLineComponent() override;
 
+		void Initialize() override;
+
 		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
 
 		void ProcessEvent(const typename Event::CameraTransformChangedEvent::EventData_t &data) override;

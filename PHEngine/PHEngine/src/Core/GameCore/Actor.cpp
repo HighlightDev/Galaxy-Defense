@@ -17,13 +17,13 @@ namespace EngineCore
          m_rootComponent(rootComponent),
          m_physicsComponent(nullptr),
          mIsVisible(std::make_shared<EngineObjectProperty<bool>>(true,
-                                                             "p_isVisible",
-                                                             [=](const bool &visibility)
-                                                             { SetIsVisible(visibility); })),
+                                                                 "p_isVisible",
+                                                                 [=](const bool &visibility)
+                                                                 { SetIsVisible(visibility); })),
          mIsEnabled(std::make_shared<EngineObjectProperty<bool>>(true,
-                                                             "p_isEnabled",
-                                                             [=](const bool &isEnabled)
-                                                             { SetIsEnabled(isEnabled); })),
+                                                                 "p_isEnabled",
+                                                                 [=](const bool &isEnabled)
+                                                                 { SetIsEnabled(isEnabled); })),
          m_inputComponent(),
          m_movementComponent(),
          mTweeners(),
@@ -61,24 +61,35 @@ namespace EngineCore
    void Actor::CleanUp()
    {
       LogInfo("Actor::CleanUp => id: ", GetObjectId(), ", name: ", GetName());
-      for (const auto& tweener : mTweeners)
+      for (const auto &tweener : mTweeners)
       {
          tweener->CleanUp();
       }
       mTweeners.clear();
 
       m_rootComponent->CleanUp();
-      m_physicsComponent->CleanUp();
-      m_inputComponent->CleanUp();
-      m_movementComponent->CleanUp();
+      if (m_physicsComponent)
+      {
+         m_physicsComponent->CleanUp();
+      }
 
-      for (const auto& component : m_allComponents)
+      if (m_inputComponent)
+      {
+         m_inputComponent->CleanUp();
+      }
+
+      if (m_movementComponent)
+      {
+         m_movementComponent->CleanUp();
+      }
+
+      for (const auto &component : m_allComponents)
       {
          component->CleanUp();
       }
       m_allComponents.clear();
 
-      for (const auto& childActor : m_children)
+      for (const auto &childActor : m_children)
       {
          childActor->CleanUp();
       }

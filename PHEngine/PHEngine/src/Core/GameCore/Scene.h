@@ -61,7 +61,7 @@ namespace EngineCore
 
    {
    private:
-      EnginePhysics::PhysicsWorld *mPhysicsWorld;
+      std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
 
       std::vector<std::weak_ptr<EngineObject>> mEngineObjects;
 
@@ -87,7 +87,7 @@ namespace EngineCore
 
       std::vector<std::shared_ptr<Graphics::DynamicMaterial>> mDynamicMaterials;
 
-      TextHandler mTextHandler;
+      std::shared_ptr<TextHandler> mTextHandler;
 
 #ifdef DEBUG
       std::unique_ptr<DebugUiController> mDebugUiController;
@@ -97,8 +97,6 @@ namespace EngineCore
 
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
-
-      ~Scene();
 
       std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
                                                             const std::shared_ptr<ComponentData> &componentData);
@@ -147,7 +145,7 @@ namespace EngineCore
 
       void AddActorController(std::shared_ptr<ActorController> actorController);
 
-      EnginePhysics::PhysicsWorld *GetPhysicsWorld() const;
+      std::shared_ptr<EnginePhysics::PhysicsWorld> GetPhysicsWorld() const;
 
       const std::vector<std::shared_ptr<Actor>> &GetActors() const;
 
@@ -165,7 +163,7 @@ namespace EngineCore
 
       InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
 
-      const TextHandler &GetTextHandler() const;
+      const std::shared_ptr<TextHandler> &GetTextHandler() const;
 
       std::shared_ptr<UiHandler> GetUiHandler() const;
 

@@ -50,9 +50,4 @@ namespace Game
             }
         }
     }
-
-    void AiSpaceshipActorController::InitActorController()
-    {
-        AiActorController::InitActorController();
-    }
 }

@@ -11,7 +11,7 @@
 namespace EnginePhysics
 {
    DynamicCharacterController::DynamicCharacterController(
-       PhysicsWorld *pPhysicsWorld, float radius, float height, float mass, float stepHeight)
+       const std::shared_ptr<PhysicsWorld> &pPhysicsWorld, float radius, float height, float mass, float stepHeight)
        : PhysicsDescriptor(pPhysicsWorld, std::make_shared<CollisionCapsuleShape>(radius, height), ePhysicsBodyType::DYNAMIC, mass),
          mGhostObject(nullptr),
          mOnGround(false),
@@ -31,12 +31,16 @@ namespace EnginePhysics
          mSurfaceHitNormals(),
          mLastRayCastObjectResult(nullptr)
    {
-      KinematicBodyMovedEvent::GetInstance()->AddListener(this);
    }
 
    DynamicCharacterController::~DynamicCharacterController()
    {
-      KinematicBodyMovedEvent::GetInstance()->RemoveListener(this);
+      KinematicBodyMovedEvent::GetInstance()->RemoveListener(KinematicBodyMovedEvent::GetInstanceId());
+   }
+
+   void DynamicCharacterController::Initialize()
+   {
+      KinematicBodyMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DynamicCharacterController>(shared_from_this()));
    }
 
    void DynamicCharacterController::CleanUp()

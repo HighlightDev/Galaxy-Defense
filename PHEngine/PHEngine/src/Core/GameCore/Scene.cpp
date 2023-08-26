@@ -28,7 +28,7 @@ namespace EngineCore
 
    Scene::Scene(InterThreadCommunicationMgr &interThreadMgr)
        : EngineObject("EngineScene"),
-         mPhysicsWorld(new PhysicsWorld()),
+         mPhysicsWorld(std::make_shared<PhysicsWorld>()),
          mEngineObjects(),
          mLuaReplicators(),
          m_interThreadMgr(interThreadMgr),
@@ -40,7 +40,7 @@ namespace EngineCore
          mActorControllers(),
          mMaterials(),
          mDynamicMaterials(),
-         mTextHandler(),
+         mTextHandler(std::make_shared<TextHandler>()),
 #ifdef DEBUG
          mDebugUiController(std::make_unique<DebugUiController>()),
 #endif
@@ -48,8 +48,9 @@ namespace EngineCore
    {
       LogInfo("Scene::ctor");
 
+      mTextHandler->Initialize();
       AddEngineProperty(mGameThreadDeltaSec);
-      mPhysicsWorld->InitPhysicsWorld();
+      mPhysicsWorld->Initialize();
    }
 
    void Scene::OnLevelInit()
@@ -62,7 +63,7 @@ namespace EngineCore
    {
       LogInfo("Scene::PostLevelInit");
 
-      mTextHandler.SetScene(shared_from_this());
+      mTextHandler->SetScene(shared_from_this());
       mUiHandler->SetScene(shared_from_this());
 #ifdef DEBUG
       mDebugUiController->SetScene(shared_from_this());
@@ -113,6 +114,7 @@ namespace EngineCore
 
    void Scene::RegisterCamera(const std::shared_ptr<ACamera> &camera)
    {
+      camera->Initialize();
       assert(!std::any_of(mActiveCameras.cbegin(), mActiveCameras.cend(), [cameraObjectId = camera->GetObjectId()](const auto &camera)
                           { return camera->GetObjectId() == cameraObjectId; }));
 
@@ -191,7 +193,7 @@ namespace EngineCore
       return m_interThreadMgr;
    }
 
-   EnginePhysics::PhysicsWorld *Scene::GetPhysicsWorld() const
+   std::shared_ptr<EnginePhysics::PhysicsWorld> Scene::GetPhysicsWorld() const
    {
       return mPhysicsWorld;
    }
@@ -315,11 +317,11 @@ namespace EngineCore
                                    { return existingController->GetBindedActorName() == actorController->GetBindedActorName(); });
       assert(it == mActorControllers.end());
 
-      actorController->InitActorController();
+      actorController->Initialize();
       mActorControllers.emplace_back(actorController);
    }
 
-   const TextHandler &Scene::GetTextHandler() const
+   const std::shared_ptr<TextHandler> &Scene::GetTextHandler() const
    {
       return mTextHandler;
    }
@@ -517,6 +519,7 @@ namespace EngineCore
                                                                 const std::shared_ptr<ComponentData> &componentData)
    {
       const auto component = componentCreator->CreateComponent(shared_from_this(), componentData);
+      component->Initialize();
       component->SetScene(shared_from_this());
       RegisterComponentSceneProxy(component);
       RegisterEngineObject(component);
@@ -730,7 +733,7 @@ namespace EngineCore
    {
       mDynamicMaterials.clear();
 
-      for (const auto& materialInstance : mMaterials)
+      for (const auto &materialInstance : mMaterials)
       {
          materialInstance->CleanUp();
       }
@@ -767,9 +770,4 @@ namespace EngineCore
    }
 
 #endif
-
-   Scene::~Scene()
-   {
-      delete mPhysicsWorld;
-   }
 }

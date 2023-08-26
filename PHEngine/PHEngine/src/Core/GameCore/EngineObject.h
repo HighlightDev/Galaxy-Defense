@@ -8,12 +8,11 @@
 
 namespace EngineCore
 {
-   class EngineObject 
+   class EngineObject
    {
       static int32_t mTotalObjectIdCounter;
 
    protected:
-
       int32_t mObjectId;
 
       std::unordered_map<std::string, std::weak_ptr<EngineObjectPropertyBase>> mEngineProperties;
@@ -21,17 +20,15 @@ namespace EngineCore
       std::string EngineObjectName;
 
    public:
-
-      EngineObject(const std::string& gameObjectName);
+      EngineObject(const std::string &gameObjectName);
 
       int32_t GetObjectId() const;
 
-      const std::weak_ptr<EngineObjectPropertyBase>& GetEnginePropertyByName(const std::string& key) const;
+      const std::weak_ptr<EngineObjectPropertyBase> &GetEnginePropertyByName(const std::string &key) const;
 
-      void AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase>& goPtr);
+      void AddEngineProperty(const std::shared_ptr<EngineObjectPropertyBase> &goPtr);
 
       std::string GetEngineObjectName() const;
-
    };
 
 }

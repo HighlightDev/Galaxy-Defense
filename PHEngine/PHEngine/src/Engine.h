@@ -35,7 +35,8 @@ namespace EngineCore
     class Engine
         : public PauseGameThreadEvent,
           public ExitGameThreadEvent,
-          public LoadLevelEvent
+          public LoadLevelEvent,
+          public std::enable_shared_from_this<Engine>
     {
         InterThreadCommunicationMgr m_interThreadMgr;
 
@@ -78,6 +79,8 @@ namespace EngineCore
         Engine();
 
         ~Engine();
+
+        void Initialize();
 
         void SetLevelFactory(const std::shared_ptr<ILevelFactory>& lvlFactory);
 
@@ -130,12 +133,9 @@ namespace EngineCore
         void RecompileAllShaders();
 
 #endif
-
         void CleanUp();
 
     private:
-        void Initialize();
-
         void StopGameThreadExecution();
 
         void StopLuaThreadExecution();

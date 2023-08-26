@@ -23,18 +23,23 @@ namespace EngineCore
       mLightRenderData = std::make_shared<DirectionalLightRenderData>(d_directionalLight->Direction, d_directionalLight->Ambient,
                                                                       d_directionalLight->Diffuse, d_directionalLight->Specular,
                                                                       d_directionalLight->ShadowInfo);
-
-      if (mLightRenderData->ShadowInfo)
-      {
-         PlayerMovedEvent::GetInstance()->AddListener(this);
-         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
-      }
    }
 
    DirectionalLightComponent::~DirectionalLightComponent()
    {
-      PlayerMovedEvent::GetInstance()->RemoveListener(this);
-      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
+      PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
+      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
+   }
+
+   void DirectionalLightComponent::Initialize()
+   {
+      LightComponent::Initialize();
+
+      if (mLightRenderData->ShadowInfo)
+      {
+         PlayerMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
+         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
+      }
    }
 
    std::shared_ptr<DirectionalLightRenderData> DirectionalLightComponent::GetRenderData() const

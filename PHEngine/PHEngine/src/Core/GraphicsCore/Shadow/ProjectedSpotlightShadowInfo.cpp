@@ -2,16 +2,20 @@
 
 namespace Graphics
 {
-   ProjectedSpotlightShadowInfo::ProjectedSpotlightShadowInfo(const TextureAtlasSpaceRequest& shadowAtlasCellResource)
-      : ProjectedShadowInfo(shadowAtlasCellResource)
+   ProjectedSpotlightShadowInfo::ProjectedSpotlightShadowInfo(const TextureAtlasSpaceRequest &shadowAtlasCellResource)
+       : ProjectedShadowInfo(shadowAtlasCellResource)
    {
       m_lightType = LightType::SPOT_LIGHT;
-      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(this);
    }
 
    ProjectedSpotlightShadowInfo::~ProjectedSpotlightShadowInfo()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(this);
+      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(GetInstanceId());
+   }
+
+   void ProjectedSpotlightShadowInfo::Initialize()
+   {
+      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedSpotlightShadowInfo>(shared_from_this()));
    }
 
    std::shared_ptr<Texture2dAtlasHandler> ProjectedSpotlightShadowInfo::GetTexture2dHandler() const
@@ -19,7 +23,7 @@ namespace Graphics
       return std::static_pointer_cast<Texture2dAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedSpotlightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data)
+   void ProjectedSpotlightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_2D == std::get<0>(data))
       {
@@ -47,12 +51,12 @@ namespace Graphics
       return mShadowProjectionMatrix;
    }
 
-   void ProjectedSpotlightShadowInfo::SetShadowViewMatrix(const glm::mat4x4& shadowViewMatrix)
+   void ProjectedSpotlightShadowInfo::SetShadowViewMatrix(const glm::mat4x4 &shadowViewMatrix)
    {
       mShadowViewMatrix = shadowViewMatrix;
    }
 
-   void ProjectedSpotlightShadowInfo::SetShadowProjectionMatrix(const glm::mat4x4& shadowProjectionMatrix)
+   void ProjectedSpotlightShadowInfo::SetShadowProjectionMatrix(const glm::mat4x4 &shadowProjectionMatrix)
    {
       mShadowProjectionMatrix = shadowProjectionMatrix;
    }

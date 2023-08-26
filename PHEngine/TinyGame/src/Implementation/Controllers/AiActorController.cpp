@@ -27,9 +27,4 @@ namespace Game
             }
         }
     }
-
-    void AiActorController::InitActorController()
-    {
-        ActorController::InitActorController();
-    }
 }

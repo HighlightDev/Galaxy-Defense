@@ -10,6 +10,8 @@
 
 namespace EnginePhysics
 {
+   class PhysicsWorld;
+
    class GhostController
        : public PhysicsDescriptor,
          public btCollisionWorld::ContactResultCallback
@@ -25,7 +27,7 @@ namespace EnginePhysics
       static constexpr float sCollisionCooldownTimeout = 0.1f;
 
    public:
-      GhostController(class PhysicsWorld *pPhysicsWorld,
+      GhostController(const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
                       const std::shared_ptr<CollisionShapeBase> &shape,
                       const float mass,
                       const int32_t collisionFilterGroup = btBroadphaseProxy::DefaultFilter,

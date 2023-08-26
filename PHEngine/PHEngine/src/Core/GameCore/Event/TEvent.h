@@ -3,13 +3,19 @@
 #include <vector>
 #include <tuple>
 #include <algorithm>
+#include <memory>
+#include <mutex>
+#include <thread>
 
 #include "IEvent.h"
 #include "Policy/Policies.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "Core/CommonCore/ThreadHelper.h"
+
+using namespace EngineCore;
 
 namespace Event
 {
-
    template <eEventThreadType threadType, typename EventHandlePolicy>
    class TEvent : public IEvent
    {
@@ -21,12 +27,15 @@ namespace Event
    private:
       static constexpr eEventThreadType mThreadType = threadType;
 
+      std::mutex mListenersMutex;
+
       EventHandlePolicy mPolicy[2];
 
-      std::vector<TEvent<threadType, EventHandlePolicy_t> *> m_listeners;
+      std::vector<std::weak_ptr<TEvent<threadType, EventHandlePolicy_t>>> m_listeners;
 
    protected:
       TEvent()
+          : IEvent()
       {
       }
 
@@ -41,7 +50,7 @@ namespace Event
          return &m_instance;
       }
 
-      std::string ToString() const
+      std::string ToString() const override
       {
          return "TEvent";
       }
@@ -57,21 +66,37 @@ namespace Event
          while (mPolicy[currentOrder].HasData())
          {
             const EventData_t &packedData = mPolicy[currentOrder].PopData();
-            for (auto &listener : m_listeners)
+
+            for (const auto &listenerWp : m_listeners)
             {
-               listener->ProcessEvent(packedData);
+               if (const auto &listenerSp = listenerWp.lock())
+               {
+                  listenerSp->ProcessEvent(packedData);
+               }
             }
          }
       }
 
-      void AddListener(Event_t *eventListener)
+      void AddListener(const std::shared_ptr<Event_t> &eventListener)
       {
-         m_listeners.push_back(eventListener);
+         std::lock_guard<std::mutex> lockEmplace(mListenersMutex);
+         m_listeners.emplace_back(eventListener);
       }
 
-      void RemoveListener(Event_t *eventListener)
+      void RemoveListener(const size_t instanceId)
       {
-         m_listeners.erase(std::remove(m_listeners.begin(), m_listeners.end(), eventListener));
+         std::lock_guard<std::mutex> lockRemove(mListenersMutex);
+         if (m_listeners.size())
+         {
+            m_listeners.erase(std::remove_if(m_listeners.begin(), m_listeners.end(), [instanceId](const auto &listenerWp) {
+               if (const auto& listenerSp = listenerWp.lock())
+               {
+                  return listenerSp->GetInstanceId() == instanceId;
+               }
+
+               return true;
+            }), m_listeners.end());
+         }
       }
 
    protected:

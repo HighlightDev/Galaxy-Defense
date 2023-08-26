@@ -34,7 +34,7 @@ namespace Game
 
       void Tick(float deltaTime) override;
    
-      void InitActorController() override;
+      void Initialize() override;
 
       void SetLevelBounds(const BoundingBox3D& mLevelBounds);
 

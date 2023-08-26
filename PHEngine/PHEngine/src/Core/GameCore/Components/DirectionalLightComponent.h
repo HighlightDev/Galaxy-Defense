@@ -31,6 +31,8 @@ namespace EngineCore
 
       ~DirectionalLightComponent() override;
 
+      void Initialize() override;
+
       void Tick(const float deltaTime) override;
 
       eComponentType GetComponentType() const override;

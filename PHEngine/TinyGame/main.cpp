@@ -137,8 +137,8 @@ int32_t main(int32_t argc, char **argv)
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-  //Logger::InitLog(std::make_shared<LoggerClientConsole>());
-  Logger::InitLog(std::make_shared<LoggerClientFile>());
+  Logger::InitLog(std::make_shared<LoggerClientConsole>());
+  //Logger::InitLog(std::make_shared<LoggerClientFile>());
   Logger::StartLogThread();
 
   GLFWwindow *window;
@@ -180,14 +180,15 @@ int32_t main(int32_t argc, char **argv)
   }
 
   {
-    Engine engine;
-    engineInputManager = engine.GetInputManager();
-    engine.SetLevelFactory(std::make_shared<GameLevelFactory>());
-    engine.PlayLevel("MainMenuLevel");
+    const auto engine = std::make_shared<Engine>();
+    engine->Initialize();
+    engineInputManager = engine->GetInputManager();
+    engine->SetLevelFactory(std::make_shared<GameLevelFactory>());
+    engine->PlayLevel("MainMenuLevel");
     // Loop until the user closes the window
-    while (!glfwWindowShouldClose(window) && !engine.IsExitGameState())
+    while (!glfwWindowShouldClose(window) && !engine->IsExitGameState())
     {
-      engine.TickWindow();
+      engine->TickWindow();
       // Swap front and back buffers
       glfwSwapBuffers(window);
       // Poll for and process events
@@ -201,14 +202,14 @@ int32_t main(int32_t argc, char **argv)
 
       if (bShaderRecompile)
       {
-        engine.RecompileAllShaders();
+        engine->RecompileAllShaders();
         bShaderRecompile = false;
       }
 
 #endif
     }
 
-    engine.CleanUp();
+    engine->CleanUp();
   }
 
   glfwTerminate();

@@ -20,15 +20,13 @@ namespace EnginePhysics
 #endif
    {
       LogInfo("PhysicsWorld::ctor");
-
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(this);
    }
 
    PhysicsWorld::~PhysicsWorld()
    {
       LogInfo("PhysicsWorld::dctor");
 
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(this);
+      Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(Event::PhysicsDescriptorRemovedEvent::GetInstanceId());
       for (const auto physDescriptor : mPhysicsDescriptors)
       {
          physDescriptor->CleanUp();
@@ -44,16 +42,11 @@ namespace EnginePhysics
 #endif
       delete mWorld;
    }
-   
-   void PhysicsWorld::UnloadExistingPhysicsSimulation()
-   {
-      LogInfo("PhysicsWorld::UnloadExistingPhysicsSimulation => descriptors count: ", mPhysicsDescriptors.size());
-      mActiveCollisions.clear();
-      mPhysicsDescriptors.clear();
-   }
 
-   void PhysicsWorld::InitPhysicsWorld()
+   void PhysicsWorld::Initialize()
    {
+      Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(shared_from_this());
+
       mBroadphase = new btDbvtBroadphase();
       mCollisionConfiguration = new btDefaultCollisionConfiguration();
       mDispatcher = new btCollisionDispatcher(mCollisionConfiguration);
@@ -64,6 +57,13 @@ namespace EnginePhysics
 #if DEBUG
       mWorld->setDebugDrawer(mDebugRenderer);
 #endif
+   }
+   
+   void PhysicsWorld::UnloadExistingPhysicsSimulation()
+   {
+      LogInfo("PhysicsWorld::UnloadExistingPhysicsSimulation => descriptors count: ", mPhysicsDescriptors.size());
+      mActiveCollisions.clear();
+      mPhysicsDescriptors.clear();
    }
 
    btDiscreteDynamicsWorld *PhysicsWorld::GetWorld() const

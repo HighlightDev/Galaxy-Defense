@@ -17,14 +17,20 @@ namespace EngineCore
                                         const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset)
        : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), PlayerMovedEvent(), mThirdPersonTargetGOName(""), bThirdPersonTargetDeferredDirty(false), m_thirdPersonTargetOffset(thirdPersonTargetOffset)
    {
-      PlayerMovedEvent::GetInstance()->AddListener(this);
       SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
       m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
    }
 
    ThirdPersonCamera::~ThirdPersonCamera()
    {
-      PlayerMovedEvent::GetInstance()->RemoveListener(this);
+      PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
+   }
+
+   void ThirdPersonCamera::Initialize()
+   {
+      ACamera::Initialize();
+
+      PlayerMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ThirdPersonCamera>(shared_from_this()));
    }
 
    void ThirdPersonCamera::ProcessEvent(const PlayerMovedEvent::EventData_t &data)

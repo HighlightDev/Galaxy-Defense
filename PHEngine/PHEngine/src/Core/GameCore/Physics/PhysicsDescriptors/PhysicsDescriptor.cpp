@@ -26,7 +26,7 @@ namespace EnginePhysics
 
    int32_t PhysicsDescriptor::mTotalIds = 0;
 
-   PhysicsDescriptor::PhysicsDescriptor(PhysicsWorld *pPhysicsWorld,
+   PhysicsDescriptor::PhysicsDescriptor(const std::shared_ptr<PhysicsWorld>& pPhysicsWorld,
                                         const std::shared_ptr<CollisionShapeBase> &shape,
                                         const ePhysicsBodyType bodyType,
                                         const float mass,
@@ -61,6 +61,10 @@ namespace EnginePhysics
       LogInfo("PhysicsDescriptor::dctor => my descriptor id=", mCurrentId);
 
       CleanUp();
+   }
+
+   void PhysicsDescriptor::Initialize()
+   {
    }
 
    void PhysicsDescriptor::CleanUp()

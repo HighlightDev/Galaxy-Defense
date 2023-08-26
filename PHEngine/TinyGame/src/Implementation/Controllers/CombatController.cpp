@@ -45,11 +45,6 @@ namespace Game
           mCameraVisibilityArea(),
           mElectroRayChainActorPool(std::make_shared<ElectroRayChainActorPool>(scene))
     {
-        SphereContactCollisionEvent::GetInstance()->AddListener(this);
-        MainPlayerActionEvent::GetInstance()->AddListener(this);
-        PhysicsCollisionEvent::GetInstance()->AddListener(this);
-        RayCollisionEvent::GetInstance()->AddListener(this);
-
         mBackgroundPlanetsSpawnTimer.SetIntervalMs(1500);
         mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
         mBackgroundPlanetsSpawnTimer.SetCallback(std::bind(&CombatController::OnBackgroundPlanetsSpawnTimerTimeout, this));
@@ -57,14 +52,19 @@ namespace Game
 
     CombatController::~CombatController()
     {
-        SphereContactCollisionEvent::GetInstance()->RemoveListener(this);
-        MainPlayerActionEvent::GetInstance()->RemoveListener(this);
-        PhysicsCollisionEvent::GetInstance()->RemoveListener(this);
-        RayCollisionEvent::GetInstance()->RemoveListener(this);
+        SphereContactCollisionEvent::GetInstance()->RemoveListener(SphereContactCollisionEvent::GetInstanceId());
+        MainPlayerActionEvent::GetInstance()->RemoveListener(MainPlayerActionEvent::GetInstanceId());
+        PhysicsCollisionEvent::GetInstance()->RemoveListener(PhysicsCollisionEvent::GetInstanceId());
+        RayCollisionEvent::GetInstance()->RemoveListener(RayCollisionEvent::GetInstanceId());
     }
 
     void CombatController::OnPreLevelInit()
     {
+        const auto thisSp = shared_from_this();
+        SphereContactCollisionEvent::GetInstance()->AddListener(thisSp);
+        MainPlayerActionEvent::GetInstance()->AddListener(thisSp);
+        PhysicsCollisionEvent::GetInstance()->AddListener(thisSp);
+        RayCollisionEvent::GetInstance()->AddListener(thisSp);
     }
 
     void CombatController::OnCameraTransformChanged(ACamera *eventSrc)
@@ -567,7 +567,7 @@ namespace Game
 
             mMissilesPool.emplace_back(a_missile);
         }
-        
+
         std::unordered_map<eMissileType, size_t> availabeMissileTypes;
         if (bombMissileCount)
         {
@@ -631,9 +631,9 @@ namespace Game
 
     void CombatController::UpdateMissilesData()
     {
-        std::unordered_map<eMissileType, size_t> missiles; 
-        const auto& availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
-        for (const auto& avlMissileType : availableMissileTypes)
+        std::unordered_map<eMissileType, size_t> missiles;
+        const auto &availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
+        for (const auto &avlMissileType : availableMissileTypes)
         {
             missiles[avlMissileType] = 0;
         }
@@ -725,6 +725,5 @@ namespace Game
 
     void CombatController::CleanUp()
     {
-        
     }
 }

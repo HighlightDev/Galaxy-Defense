@@ -99,6 +99,7 @@ namespace EngineCore
         void LuaScriptProcessor::Initialize()
         {
             mInputLuaProxy = std::make_shared<EngineInputLuaProxy>();
+            mInputLuaProxy->Initialize();
         }
 
         void LuaScriptProcessor::CleanUp()

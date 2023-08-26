@@ -22,7 +22,7 @@ namespace Game
 {
     SceneController::SceneController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
-          mCombatController(std::make_unique<CombatController>(scene)),
+          mCombatController(std::make_shared<CombatController>(scene)),
           mUiController(std::make_unique<UiController>(scene)),
           mAmbientMusicDummy(std::make_shared<Actor>("Ambient Music Dummy",
                                                      std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent",

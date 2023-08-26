@@ -63,15 +63,18 @@ namespace EngineCore
    KeyboardBindings::KeyboardBindings(std::shared_ptr<IActionBinding> actionBindings)
        : KeyboardButtonDownEvent(), mActionBindings(actionBindings), mKeyboardMaskVec(), mReleasedKeysOnCurrentTick(), mPressedKeysOnCurrentTick()
    {
-      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
-
       mReleasedKeysOnCurrentTick.reserve(15); // 15 should be enough for beginning
       mPressedKeysOnCurrentTick.reserve(15);
    }
 
    KeyboardBindings::~KeyboardBindings()
    {
-      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
+      KeyboardButtonDownEvent::GetInstance()->RemoveListener(KeyboardButtonDownEvent::GetInstanceId());
+   }
+
+   void KeyboardBindings::Initialize()
+   {
+      KeyboardButtonDownEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void KeyboardBindings::ProcessEvent(const KeyboardButtonDownEvent::EventData_t &eventData)
@@ -183,11 +186,11 @@ namespace EngineCore
 
    void KeyboardBindings::UnsubscribeFromEvents()
    {
-      KeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
+      KeyboardButtonDownEvent::GetInstance()->RemoveListener(KeyboardButtonDownEvent::GetInstanceId());
    }
 
    void KeyboardBindings::SubscribeOnEvents()
    {
-      KeyboardButtonDownEvent::GetInstance()->AddListener(this);
+      KeyboardButtonDownEvent::GetInstance()->AddListener(shared_from_this());
    }
 }

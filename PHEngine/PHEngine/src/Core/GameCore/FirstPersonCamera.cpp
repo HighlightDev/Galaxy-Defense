@@ -52,30 +52,30 @@ namespace EngineCore
 
    void FirstPersonCamera::Tick(const float DeltaTime)
    {
-      auto &mouseBindings = mInputComponent->GetMouseBindings();
-      if (mouseBindings.IsMouseMoveEventDirty())
+      const auto &mouseBindings = mInputComponent->GetMouseBindings();
+      if (mouseBindings->IsMouseMoveEventDirty())
       {
-         const auto &mouseMoveEvent = mouseBindings.FlushMouseMoveEvent();
+         const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
          SetRotation(mouseMoveEvent.z, mouseMoveEvent.w);
       }
 
       const auto &keyboardBindings = mInputComponent->GetKeyboardBindings();
-      if (keyboardBindings.HasPressedKeys())
+      if (keyboardBindings->HasPressedKeys())
       {
          int32_t moveDirection = -1;
-         if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
+         if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
          {
             moveDirection = 0;
          }
-         else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
+         else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
          {
             moveDirection = 1;
          }
-         else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
+         else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
          {
             moveDirection = 3;
          }
-         else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
+         else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
          {
             moveDirection = 2;
          }

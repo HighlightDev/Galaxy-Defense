@@ -26,7 +26,10 @@ namespace Graphics
 
       void LightSceneProxy::CleanUp()
       {
-         m_shadowInfo->CleanUp();
+         if (m_shadowInfo)
+         {
+            m_shadowInfo->CleanUp();
+         }
       }
 
       void LightSceneProxy::PostLevelInit()

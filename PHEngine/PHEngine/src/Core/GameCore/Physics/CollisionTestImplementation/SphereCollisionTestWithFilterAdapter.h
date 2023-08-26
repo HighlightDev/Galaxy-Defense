@@ -19,7 +19,7 @@ namespace EnginePhysics
 
         explicit SphereCollisionTestWithFilterAdapter(const float sphereRadius, std::vector<std::shared_ptr<PhysicsComponent>> excludeCollisionComponents);
 
-        void SphereCollisionTest(PhysicsWorld *physWorld, const glm::vec3 &translation);
+        void SphereCollisionTest(const std::shared_ptr<PhysicsWorld> &physWorld, const glm::vec3 &translation);
 
         std::vector<const PhysicsDescriptor *> GetCollisionHitPhysicsDescriptors() const;
 

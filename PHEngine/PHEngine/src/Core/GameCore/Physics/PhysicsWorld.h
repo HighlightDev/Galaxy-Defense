@@ -13,7 +13,8 @@ namespace EnginePhysics
 {
       class PhysicsWorld
           : public ITickable,
-            public Event::PhysicsDescriptorRemovedEvent
+            public Event::PhysicsDescriptorRemovedEvent,
+            public std::enable_shared_from_this<PhysicsWorld>
       {
             btBroadphaseInterface *mBroadphase;
 
@@ -37,6 +38,8 @@ namespace EnginePhysics
 
             ~PhysicsWorld();
 
+            void Initialize();
+
             btDiscreteDynamicsWorld *GetWorld() const;
 
             void Tick(const float deltaTime);
@@ -44,8 +47,6 @@ namespace EnginePhysics
             void UnpausableTick(const float deltaTime) override{};
 
             void PostPhysicsSimulationUpdate(const float deltaTime);
-
-            void InitPhysicsWorld();
 
             void AddPhysDescriptor(const std::shared_ptr<PhysicsDescriptor> &inDescriptor);
 

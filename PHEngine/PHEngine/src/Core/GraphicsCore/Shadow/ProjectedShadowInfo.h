@@ -2,6 +2,7 @@
 
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
+#include <memory>
 
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasFactory.h"
 #include "Core/GraphicsCore/TextureAtlas/TextureAtlasSpaceRequest.h"
@@ -22,10 +23,10 @@ namespace Graphics
       SPOT_LIGHT
    };
 
-   struct ProjectedShadowInfo
+   class ProjectedShadowInfo
+       : public std::enable_shared_from_this<ProjectedShadowInfo>
    {
    protected:
-
       LightType m_lightType;
 
       TextureAtlasSpaceRequest mShadowmapAtlasRequest;
@@ -41,16 +42,17 @@ namespace Graphics
       std::shared_ptr<TextureAtlasHandler> mShadowmapHandler;
 
    public:
-
-      ProjectedShadowInfo(const TextureAtlasSpaceRequest & shadowmapAtlasRequest);
+      ProjectedShadowInfo(const TextureAtlasSpaceRequest &shadowmapAtlasRequest);
 
       virtual ~ProjectedShadowInfo();
+
+      virtual void Initialize(); 
 
       virtual void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const;
 
       void SetIsShadowMapDirty(const bool bDirty);
 
-      void SetPlayerPositionOffset(const glm::vec3& offset);
+      void SetPlayerPositionOffset(const glm::vec3 &offset);
 
       std::shared_ptr<ITexture> GetAtlasResource() const;
 
@@ -65,11 +67,9 @@ namespace Graphics
       void CleanUp();
 
    protected:
-
       void AllocateFramebuffer() const;
 
       void DeallocateFramebuffer() const;
    };
 
 }
-

@@ -36,7 +36,8 @@ namespace EngineCore
    };
 
    class KeyboardBindings
-       : public KeyboardButtonDownEvent
+       : public KeyboardButtonDownEvent,
+         public std::enable_shared_from_this<KeyboardBindings>
    {
       std::shared_ptr<IActionBinding> mActionBindings;
 
@@ -52,6 +53,8 @@ namespace EngineCore
       KeyboardBindings(std::shared_ptr<IActionBinding> actionBindings);
 
       ~KeyboardBindings();
+
+      void Initialize();
 
       void ProcessEvent(const typename KeyboardButtonDownEvent::EventData_t &data) override;
 

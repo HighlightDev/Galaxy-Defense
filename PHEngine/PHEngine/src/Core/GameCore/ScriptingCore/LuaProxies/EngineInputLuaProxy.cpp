@@ -12,19 +12,23 @@ namespace EngineCore
               mKeyboardJsonData("")
         {
             mLuaProxyId = CreateUniqueLuaProxyId();
-
-            LuaThreadKeyboardButtonDownEvent::GetInstance()->AddListener(this);
-            LuaThreadMouseMovedEvent::GetInstance()->AddListener(this);
-            LuaThreadMouseScrollEvent::GetInstance()->AddListener(this);
-            LuaThreadMouseButtonDownEvent::GetInstance()->AddListener(this);
         }
 
         EngineInputLuaProxy::~EngineInputLuaProxy()
         {
-            LuaThreadKeyboardButtonDownEvent::GetInstance()->RemoveListener(this);
-            LuaThreadMouseMovedEvent::GetInstance()->RemoveListener(this);
-            LuaThreadMouseScrollEvent::GetInstance()->RemoveListener(this);
-            LuaThreadMouseButtonDownEvent::GetInstance()->RemoveListener(this);
+            LuaThreadKeyboardButtonDownEvent::GetInstance()->RemoveListener(LuaThreadKeyboardButtonDownEvent::GetInstanceId());
+            LuaThreadMouseMovedEvent::GetInstance()->RemoveListener(LuaThreadMouseMovedEvent::GetInstanceId());
+            LuaThreadMouseScrollEvent::GetInstance()->RemoveListener(LuaThreadMouseScrollEvent::GetInstanceId());
+            LuaThreadMouseButtonDownEvent::GetInstance()->RemoveListener(LuaThreadMouseButtonDownEvent::GetInstanceId());
+        }
+
+        void EngineInputLuaProxy::Initialize()
+        {
+            const auto thisSp = shared_from_this();
+            LuaThreadKeyboardButtonDownEvent::GetInstance()->AddListener(thisSp);
+            LuaThreadMouseMovedEvent::GetInstance()->AddListener(thisSp);
+            LuaThreadMouseScrollEvent::GetInstance()->AddListener(thisSp);
+            LuaThreadMouseButtonDownEvent::GetInstance()->AddListener(thisSp);
         }
 
         void EngineInputLuaProxy::CleanUp()

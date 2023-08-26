@@ -19,12 +19,16 @@ namespace Game
    LuaGameEventsFunctions::LuaGameEventsFunctions(LuaScriptExecutorBase *ownerPtr)
        : mOwnerPtr(ownerPtr)
    {
-      LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(this);
    }
 
    LuaGameEventsFunctions::~LuaGameEventsFunctions()
    {
-      LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(this);
+      LuaMainPlayerStatusChangedEvent::GetInstance()->RemoveListener(LuaMainPlayerStatusChangedEvent::GetInstanceId());
+   }
+
+   void LuaGameEventsFunctions::Initialize()
+   {
+      LuaMainPlayerStatusChangedEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void LuaGameEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -47,26 +51,26 @@ namespace Game
 
    void LuaGameEventsFunctions::RegisterCallbacks(const LuaWrapper &luaWrapper)
    {
-       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetSelectedMissileType"), int32_t(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1), "_GetSelectedMissileType");
-       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetAllMissilesData"), std::string(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetAllMissilesData, this, std::placeholders::_1), "_GetAllMissilesData");
+      LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetSelectedMissileType"), int32_t(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1), "_GetSelectedMissileType");
+      LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetAllMissilesData"), std::string(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetAllMissilesData, this, std::placeholders::_1), "_GetAllMissilesData");
    }
 
    void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
    {
       nlohmann::json jsonObj;
       jsonObj["player_status_type"] = static_cast<int32_t>(std::get<0>(data));
-      const auto& eventParams = jsonObj.dump();
+      const auto &eventParams = jsonObj.dump();
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"), eventParams);
    }
 
-   int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<>& data)
+   int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<> &data)
    {
       return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetSelectedMissileType());
    }
 
-   std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<>& data)
+   std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<> &data)
    {
-      const auto& dataProvider = PlayerDataProvider::GetInstance();
+      const auto &dataProvider = PlayerDataProvider::GetInstance();
       std::unordered_map<eMissileType, size_t> allMissilesData;
       const std::vector<eMissileType> availableMissileTypes = dataProvider->GetAvailableMissileTypes();
       for (const auto availableMissileType : availableMissileTypes)

@@ -39,7 +39,8 @@ namespace Game
                              public PhysicsCollisionEvent,
                              public RayCollisionEvent,
                              public SphereContactCollisionEvent,
-                             public ICameraTransformChangeNotifyable
+                             public ICameraTransformChangeNotifyable,
+                             public std::enable_shared_from_this<CombatController>
     {
         std::weak_ptr<Scene> mScene;
 

@@ -23,7 +23,7 @@ namespace Game
     {
         std::weak_ptr<::EngineCore::Scene> mScene;
 
-        std::unique_ptr<CombatController> mCombatController;
+        std::shared_ptr<CombatController> mCombatController;
 
         std::unique_ptr<UiController> mUiController;
 

@@ -13,16 +13,18 @@ namespace EngineCore
     class Scene;
 
     class TextHandler
-        : public TextRegisterEvent::Event_t,
-          public TextDataChangedEvent::Event_t
+        : public TextRegisterEvent,
+          public TextDataChangedEvent,
+          public std::enable_shared_from_this<TextHandler>
     {
-
         std::vector<std::shared_ptr<HudTextField>> mRegisteredTexts;
 
     public:
         TextHandler();
 
         ~TextHandler();
+
+        void Initialize();
 
         std::weak_ptr<Scene> mSceneWp;
 

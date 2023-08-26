@@ -12,6 +12,7 @@
 
 namespace EnginePhysics
 {
+   class PhysicsWorld;
 
    class DynamicCharacterController
       : public PhysicsDescriptor
@@ -44,9 +45,11 @@ namespace EnginePhysics
 
    public:
 
-      DynamicCharacterController(class PhysicsWorld* pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
+      DynamicCharacterController(const std::shared_ptr<PhysicsWorld>& pPhysicsWorld, float capsuleRadius, float capsuleHeight, float mass, float stepHeight);
 
       ~DynamicCharacterController() override;
+
+      void Initialize() override;
 
       void CleanUp() override;
 

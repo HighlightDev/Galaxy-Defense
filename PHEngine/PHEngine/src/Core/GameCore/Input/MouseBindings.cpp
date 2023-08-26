@@ -13,8 +13,6 @@ namespace EngineCore
           mMouseKeysMaskVec(),
           mPressedMouseKeysCount(0)
     {
-        SubscribeOnEvents();
-
         mMouseKeysMaskVec.reserve(3);
     }
 
@@ -25,16 +23,21 @@ namespace EngineCore
 
     void MouseBindings::UnsubscribeFromEvents()
     {
-        MouseMovedEvent::GetInstance()->RemoveListener(this);
-        MouseScrollEvent::GetInstance()->RemoveListener(this);
-        MouseButtonDownEvent::GetInstance()->RemoveListener(this);
+        MouseMovedEvent::GetInstance()->RemoveListener(MouseMovedEvent::GetInstanceId());
+        MouseScrollEvent::GetInstance()->RemoveListener(MouseScrollEvent::GetInstanceId());
+        MouseButtonDownEvent::GetInstance()->RemoveListener(MouseButtonDownEvent::GetInstanceId());
     }
 
     void MouseBindings::SubscribeOnEvents()
     {
-        MouseMovedEvent::GetInstance()->AddListener(this);
-        MouseScrollEvent::GetInstance()->AddListener(this);
-        MouseButtonDownEvent::GetInstance()->AddListener(this);
+        MouseMovedEvent::GetInstance()->AddListener(shared_from_this());
+        MouseScrollEvent::GetInstance()->AddListener(shared_from_this());
+        MouseButtonDownEvent::GetInstance()->AddListener(shared_from_this());
+    }
+
+    void MouseBindings::Initialize()
+    {
+        SubscribeOnEvents();
     }
 
     void MouseBindings::ProcessEvent(const typename MouseMovedEvent::EventData_t &mouseData)

@@ -10,36 +10,37 @@
 namespace EngineCore
 {
    class Scene;
-	class Actor;
-	// This is the base abstract class
-	// of all components which could be 
-	// picked by actor
-	class Component
-      : public EngineObject
-      , public ITickable
-      , public ISerializable
-	{
-		std::weak_ptr<Actor> m_owner;
+   class Actor;
+   // This is the base abstract class
+   // of all components which could be
+   // picked by actor
+   class Component
+       : public EngineObject,
+         public ITickable,
+         public ISerializable,
+         public std::enable_shared_from_this<Component>
+   {
+      std::weak_ptr<Actor> m_owner;
 
    protected:
-
       std::shared_ptr<EngineObjectProperty<bool>> mIsEnabled;
 
       bool mIsPostLevelInitialized;
 
       std::weak_ptr<Scene> m_sceneWP;
 
-	public:
+   public:
+      Component(const std::string &gameObjectName);
 
-      Component(const std::string& gameObjectName);
+      virtual ~Component();
 
-		virtual ~Component();
+      virtual void Initialize();
 
       virtual void CleanUp();
 
       virtual eComponentType GetComponentType() const;
 
-		virtual void SetOwner(const std::weak_ptr<Actor>& ownerActor);
+      virtual void SetOwner(const std::weak_ptr<Actor> &ownerActor);
 
       void RemoveOwner();
 
@@ -49,11 +50,11 @@ namespace EngineCore
 
       bool IsEnabled() const;
 
-      void SetScene(const std::weak_ptr<Scene>& scene);
+      void SetScene(const std::weak_ptr<Scene> &scene);
 
       void Tick(const float deltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override{};
 
       virtual void SetIsEnabled(const bool bEnabled);
 
@@ -61,12 +62,10 @@ namespace EngineCore
 
       virtual void PostLevelInit();
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
    protected:
-
-      SerializeDataActor& GetSerializeDataActor(SerializeDataContainer& dataContainer);
-	};
+      SerializeDataActor &GetSerializeDataActor(SerializeDataContainer &dataContainer);
+   };
 
 }
-

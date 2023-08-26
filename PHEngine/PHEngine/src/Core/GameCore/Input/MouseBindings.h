@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <glm/vec4.hpp>
+#include <memory>
 
 using namespace Event;
 
@@ -15,7 +16,8 @@ namespace EngineCore
    class MouseBindings
        : public MouseMovedEvent,
          public MouseScrollEvent,
-         public MouseButtonDownEvent
+         public MouseButtonDownEvent,
+         public std::enable_shared_from_this<MouseBindings>
    {
       glm::ivec4 mLastMouseMoveEvent;
 
@@ -35,6 +37,8 @@ namespace EngineCore
       MouseBindings();
 
       virtual ~MouseBindings();
+
+      void Initialize();
 
       void ProcessEvent(const typename MouseMovedEvent::EventData_t &data) override;
 

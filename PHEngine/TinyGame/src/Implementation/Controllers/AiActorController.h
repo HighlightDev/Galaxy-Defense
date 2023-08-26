@@ -15,7 +15,5 @@ namespace Game
         AiActorController(const std::shared_ptr<Actor>& actor);
 
         void Tick(const float deltaTime) override;
-
-        void InitActorController() override;
     };
 }

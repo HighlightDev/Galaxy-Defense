@@ -38,7 +38,7 @@ namespace EnginePhysics
         }
     }
 
-    void RayCastWithFilterAdapter::RayTest(const PhysicsWorld *physWorld, const glm::vec3 &rayFromPosition, const glm::vec3 &rayToPosition)
+    void RayCastWithFilterAdapter::RayTest(const std::shared_ptr<PhysicsWorld>& physWorld, const glm::vec3 &rayFromPosition, const glm::vec3 &rayToPosition)
     {
         BulletRayCastWithFilter::RayTest(physWorld->GetWorld(), Converter::glmToBullet(rayFromPosition), Converter::glmToBullet(rayToPosition));
     }

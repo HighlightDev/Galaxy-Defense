@@ -26,9 +26,9 @@ namespace Game
    {
    }
 
-   void SpaceShipPlayerController::InitActorController()
+   void SpaceShipPlayerController::Initialize()
    {
-      ActorController::InitActorController();
+      ActorController::Initialize();
 
       const auto &actorSp = m_actorWp.lock();
       assert(actorSp);
@@ -83,24 +83,23 @@ namespace Game
          bool bMoveCommitted = true;
          const auto &inputComponent = actorSp->GetInputComponent();
 
-         auto &mouseBindings = inputComponent->GetMouseBindings();
+         const auto &mouseBindings = inputComponent->GetMouseBindings();
 
-         if (mouseBindings.IsMouseScrollEventDirty())
+         if (mouseBindings->IsMouseScrollEventDirty())
          {
-            const auto scrollDirection = mouseBindings.FlushMouseScrollEvent();
+            const auto scrollDirection = mouseBindings->FlushMouseScrollEvent();
             MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                             eMouseScrollDirection::ZoomIn == scrollDirection ? eMainPlayerActionEnum::SELECT_NEXT_MISSILE_TYPE
                                                                                                              : eMainPlayerActionEnum::SELECT_PREV_MISSILE_TYPE);
-            // m_camera->Zoom(scrollDirection, 4.0f);
          }
 
-         if (KeyState::PRESSED == mouseBindings.GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
+         if (KeyState::PRESSED == mouseBindings->GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
          {
             MainPlayerActionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eMainPlayerActionEnum::SHOOT);
          }
 
          const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
-         if (keyboardBindings.HasPressedKeys())
+         if (keyboardBindings->HasPressedKeys())
          {
             const auto &levelAreaMinPos = mLevelBounds.GetMin();
             const auto &levelAreaMaxPos = mLevelBounds.GetMax();
@@ -111,7 +110,7 @@ namespace Game
 
             glm::vec3 direction(0.0f);
 
-            if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
+            if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
             {
                if (shipMaxPos.z <= levelAreaMaxPos.z)
                {
@@ -124,7 +123,7 @@ namespace Game
                   actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_forward");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
+            else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
             {
                if (shipMaxPos.x <= levelAreaMaxPos.x)
                {
@@ -137,7 +136,7 @@ namespace Game
                   actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_left");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
+            else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
             {
                if (shipMinPos.x >= levelAreaMinPos.x)
                {
@@ -150,7 +149,7 @@ namespace Game
                   actorSp->ChangeTweenerState("SpaceshipMovement", "s_fly_right");
                }
             }
-            else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
+            else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
             {
                if (shipMinPos.z >= (levelAreaMinPos.z + 25.0f))
                {

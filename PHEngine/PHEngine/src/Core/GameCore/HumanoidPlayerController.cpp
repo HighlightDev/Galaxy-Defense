@@ -11,17 +11,18 @@ namespace EngineCore
    HumanoidPlayerController::HumanoidPlayerController(const std::shared_ptr<ACamera> &playerCamera, const std::shared_ptr<Actor> &actor)
        : ActorController(actor), m_camera(playerCamera), m_inputComponent()
    {
-      PhysicsComponentUpdatedEvent::GetInstance()->AddListener(this);
    }
 
    HumanoidPlayerController::~HumanoidPlayerController()
    {
-      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(this);
+      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
    }
 
-   void HumanoidPlayerController::InitActorController()
+   void HumanoidPlayerController::Initialize()
    {
-      ActorController::InitActorController();
+      ActorController::Initialize();
+
+      PhysicsComponentUpdatedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPlayerController>(shared_from_this()));
 
       const auto &actorSp = m_actorWp.lock();
       const auto &rootComponent = actorSp->GetBaseRootComponent();
@@ -62,34 +63,34 @@ namespace EngineCore
          {
             const auto &inputComponent = actorSp->GetInputComponent();
 
-            auto &mouseBindings = inputComponent->GetMouseBindings();
-            if (mouseBindings.IsMouseMoveEventDirty())
+            const auto &mouseBindings = inputComponent->GetMouseBindings();
+            if (mouseBindings->IsMouseMoveEventDirty())
             {
-               const auto &mouseMoveQueue = mouseBindings.FlushMouseMoveEvent();
+               const auto &mouseMoveQueue = mouseBindings->FlushMouseMoveEvent();
                m_camera->SetRotation(mouseMoveQueue.z, mouseMoveQueue.w);
             }
 
             const auto &keyboardBindings = inputComponent->GetKeyboardBindings();
-            if (keyboardBindings.HasPressedKeys())
+            if (keyboardBindings->HasPressedKeys())
             {
-               if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
+               if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_FORWARD))
                {
                   if (const auto &moveCompSp = m_movementComponentWp.lock())
                   {
                      moveCompSp->Move(deltaTime);
                   }
                }
-               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
+               else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_LEFT))
                {
                }
-               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
+               else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_RIGHT))
                {
                }
-               else if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
+               else if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_MOVE_BACK))
                {
                }
 
-               if (KeyState::PRESSED == keyboardBindings.GetKeyStateByActionType(eKeyActionType::ACTION_JUMP))
+               if (KeyState::PRESSED == keyboardBindings->GetKeyStateByActionType(eKeyActionType::ACTION_JUMP))
                {
                   if (const auto &moveCompSp = m_movementComponentWp.lock())
                   {

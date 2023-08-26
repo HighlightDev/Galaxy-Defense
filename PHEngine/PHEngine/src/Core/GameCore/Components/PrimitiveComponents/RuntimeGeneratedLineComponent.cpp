@@ -23,12 +23,18 @@ namespace EngineCore
          mLineEndWorldSpacePosition(),
          mLineWidth(1.0f)
    {
-      Event::CameraTransformChangedEvent::GetInstance()->AddListener(this);
    }
 
    RuntimeGeneratedLineComponent::~RuntimeGeneratedLineComponent()
    {
-      Event::CameraTransformChangedEvent::GetInstance()->RemoveListener(this);
+      Event::CameraTransformChangedEvent::GetInstance()->RemoveListener(Event::CameraTransformChangedEvent::GetInstanceId());
+   }
+
+   void RuntimeGeneratedLineComponent::Initialize()
+   {
+      StaticMeshComponent::Initialize();
+
+      Event::CameraTransformChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<RuntimeGeneratedLineComponent>(shared_from_this()));
    }
 
    std::shared_ptr<PrimitiveSceneProxy> RuntimeGeneratedLineComponent::CreateSceneProxy() const
@@ -111,7 +117,8 @@ namespace EngineCore
       {
          if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, lineBeginWorldSpacePosition = mLineBeginWorldSpacePosition, lineEndWorldSpacePosition = mLineEndWorldSpacePosition, lineWidth = mLineWidth]() {
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId, [sceneRenderer, sceneProxyId = mSceneProxyId, lineBeginWorldSpacePosition = mLineBeginWorldSpacePosition, lineEndWorldSpacePosition = mLineEndWorldSpacePosition, lineWidth = mLineWidth]()
+                                                                                {
             if (const auto &lineProxySp = std::static_pointer_cast<RuntimeGeneratedLineSceneProxy>(sceneRenderer->GetPrimitiveProxyByProxyId(sceneProxyId)))
             {
                lineProxySp->SetLineBeginWorldSpacePosition(lineBeginWorldSpacePosition);

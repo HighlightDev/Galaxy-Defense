@@ -27,11 +27,12 @@ namespace EngineCore
 
       ~HumanoidPlayerController() override;
 
+      void Initialize() override;
+
       void Tick(float deltaTime) override;
 
       void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 
-      void InitActorController() override;
    };
 
 }

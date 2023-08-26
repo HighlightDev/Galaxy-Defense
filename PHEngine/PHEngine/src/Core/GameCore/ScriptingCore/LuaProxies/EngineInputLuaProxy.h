@@ -20,7 +20,8 @@ namespace EngineCore
                                     public LuaThreadKeyboardButtonDownEvent,
                                     public LuaThreadMouseMovedEvent,
                                     public LuaThreadMouseScrollEvent,
-                                    public LuaThreadMouseButtonDownEvent
+                                    public LuaThreadMouseButtonDownEvent,
+                                    public std::enable_shared_from_this<EngineInputLuaProxy>
 
         {
             // keyboard event data
@@ -38,6 +39,8 @@ namespace EngineCore
             EngineInputLuaProxy();
 
             ~EngineInputLuaProxy() override;
+
+            void Initialize();
 
             void CleanUp();
 

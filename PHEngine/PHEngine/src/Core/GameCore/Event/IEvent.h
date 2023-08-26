@@ -18,9 +18,17 @@ namespace Event
 
     class IEvent
     {
+        static size_t s_instanceId;
+
+        size_t m_instanceId;
+
     public:
+        IEvent();
+
         virtual void ProcessCachedEvents(const eExecutionOrder currentOrder) = 0;
 
         virtual std::string ToString() const = 0;
+
+        size_t GetInstanceId() const;
     };
 }

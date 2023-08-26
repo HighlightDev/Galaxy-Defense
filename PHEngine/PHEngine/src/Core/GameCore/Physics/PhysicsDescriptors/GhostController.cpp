@@ -12,7 +12,7 @@ using namespace EngineCore;
 namespace EnginePhysics
 {
    GhostController::GhostController(
-       PhysicsWorld *pPhysicsWorld,
+       const std::shared_ptr<PhysicsWorld> &pPhysicsWorld,
        const std::shared_ptr<CollisionShapeBase> &shape,
        const float mass,
        const int32_t collisionFilterGroup,

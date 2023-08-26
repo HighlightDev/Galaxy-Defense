@@ -4,16 +4,24 @@ namespace Graphics
 {
 
    ProjectedShadowInfo::ProjectedShadowInfo(const TextureAtlasSpaceRequest &shadowmapAtlasRequest)
-       : mShadowmapAtlasRequest(shadowmapAtlasRequest), m_shadowFramebuffer(nullptr), m_shadowBiasMatrix(
-                                                                                          0.5f, 0, 0, 0,
-                                                                                          0, 0.5f, 0, 0,
-                                                                                          0, 0, 0.5f, 0,
-                                                                                          0.5f, 0.5f, 0.5f, 1),
-         mPlayerPositionOffset(0), bShadowmapDirty(true), mShadowmapHandler(nullptr)
+       : mShadowmapAtlasRequest(shadowmapAtlasRequest),
+         m_shadowFramebuffer(nullptr),
+         m_shadowBiasMatrix(
+             0.5f, 0, 0, 0,
+             0, 0.5f, 0, 0,
+             0, 0, 0.5f, 0,
+             0.5f, 0.5f, 0.5f, 1),
+         mPlayerPositionOffset(0),
+         bShadowmapDirty(true),
+         mShadowmapHandler(nullptr)
    {
    }
 
    ProjectedShadowInfo::~ProjectedShadowInfo()
+   {
+   }
+
+   void ProjectedShadowInfo::Initialize()
    {
    }
 

@@ -168,14 +168,14 @@ namespace EngineCore
             const auto &keyboardBindings = mInputComponent->GetKeyboardBindings();
             static constexpr float buttonCooldown = 0.5f;
 
-            if (keyboardBindings.HasPressedKeys())
+            if (keyboardBindings->HasPressedKeys())
             {
-                if (KeyState::PRESSED == keyboardBindings.GetStateByKey(eKeyboardKeys::Shift) && KeyState::PRESSED == keyboardBindings.GetStateByKey(eKeyboardKeys::P))
+                if (KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::Shift) && KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::P))
                 {
                     mCanvas->SetIsVisible(false);
                     mPressButtonCooldown = 0.0f;
                 }
-                else if (KeyState::PRESSED == keyboardBindings.GetStateByKey(eKeyboardKeys::P))
+                else if (KeyState::PRESSED == keyboardBindings->GetStateByKey(eKeyboardKeys::P))
                 {
                     if (mPressButtonCooldown >= buttonCooldown)
                     {

@@ -14,14 +14,18 @@ namespace EngineCore
         : mSceneWp(),
           mRegisteredTexts()
     {
-        TextRegisterEvent::GetInstance()->AddListener(this);
-        TextDataChangedEvent::GetInstance()->AddListener(this);
     }
 
     TextHandler::~TextHandler()
     {
-        TextRegisterEvent::GetInstance()->RemoveListener(this);
-        TextDataChangedEvent::GetInstance()->RemoveListener(this);
+        TextRegisterEvent::GetInstance()->RemoveListener(TextRegisterEvent::GetInstanceId());
+        TextDataChangedEvent::GetInstance()->RemoveListener(TextDataChangedEvent::GetInstanceId());
+    }
+
+    void TextHandler::Initialize()
+    {
+        TextRegisterEvent::GetInstance()->AddListener(shared_from_this());
+        TextDataChangedEvent::GetInstance()->AddListener(shared_from_this());
     }
 
     void TextHandler::SetScene(const std::weak_ptr<Scene> &sceneWp)
