@@ -702,6 +702,9 @@ namespace EngineCore
    void Scene::UnloadPhysics()
    {
       mPhysicsWorld->UnloadExistingPhysicsSimulation();
+      mPhysicsWorld.reset();
+      mPhysicsWorld = std::make_shared<PhysicsWorld>();
+      mPhysicsWorld->Initialize();
    }
 
    void Scene::UnloadEngineObjects()

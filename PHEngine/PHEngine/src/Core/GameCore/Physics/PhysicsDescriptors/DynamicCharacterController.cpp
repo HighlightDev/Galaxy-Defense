@@ -46,12 +46,6 @@ namespace EnginePhysics
    void DynamicCharacterController::CleanUp()
    {
       PhysicsDescriptor::CleanUp();
-      if (mRigidBody)
-      {
-         mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
-         delete mRigidBody;
-         mRigidBody = nullptr;
-      }
 
       if (mGhostObject)
       {

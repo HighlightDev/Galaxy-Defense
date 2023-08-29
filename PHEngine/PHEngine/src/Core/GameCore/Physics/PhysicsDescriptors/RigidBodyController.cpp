@@ -27,6 +27,21 @@ namespace EnginePhysics
       }
    }
 
+   void RigidBodyController::CleanUp()
+   {
+      if (mRigidBody)
+      {
+         mPhysicsWorld->GetWorld()->removeRigidBody(mRigidBody);
+         delete mRigidBody;
+      }
+
+      if (mMotionState)
+      {
+         delete mMotionState;
+         mMotionState = nullptr;
+      }
+   }
+
    ePhysicsDescriptorType RigidBodyController::GetPhysicsDescriptorType() const
    {
       return ePhysicsDescriptorType::RIGID_BODY_CONTROLLER;
