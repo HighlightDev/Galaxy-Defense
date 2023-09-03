@@ -1,23 +1,26 @@
 #pragma once
 
-#include "Core/GameCore/Level.h"
-#include "Implementation/Controllers/SceneController.h"
+#include "Implementation/Levels/LevelBase.h"
+#include "Implementation/Levels/Prologue/Controllers/UiController.h"
 
 using namespace EngineCore;
 
 namespace Game
 {
+   class CombatController;
 
-   class IntroLevel : public Level
+   class PrologueLevel : public LevelBase
    {
-      using Base = Level;
+      using Base = LevelBase;
 
-      std::shared_ptr<SceneController> mSceneController;
+      std::shared_ptr<CombatController> mCombatController;
+
+      std::unique_ptr<UiController> mUiController;
 
    public:
-      IntroLevel();
+      PrologueLevel();
 
-      ~IntroLevel() override;
+      ~PrologueLevel() override;
 
       void InitLevel() override;
 

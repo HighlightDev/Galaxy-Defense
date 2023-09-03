@@ -1,4 +1,4 @@
-#include "IntroLevel.h"
+#include "PrologueLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
@@ -25,6 +25,7 @@
 
 #include "Implementation/SpaceSceneCamera.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
+#include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
@@ -48,25 +49,22 @@ using namespace Graphics;
 namespace Game
 {
 
-   IntroLevel::IntroLevel()
-       : Level("FirstLevel")
+   PrologueLevel::PrologueLevel()
+       : LevelBase("FirstLevel")
    {
       Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 
-   IntroLevel::~IntroLevel()
+   PrologueLevel::~PrologueLevel()
    {
    }
 
-   void IntroLevel::RunLuaBuildLevelScript()
+   void PrologueLevel::RunLuaBuildLevelScript()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      static constexpr const char *lvlName
-          // = "createTestLevel.lua";
-          = "spaceLvl1.lua";
-      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
+      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("introLvl.lua");
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();
@@ -74,16 +72,18 @@ namespace Game
       mLuaLevelBuilder.StopScript();
    }
 
-   void IntroLevel::PreLevelInit()
+   void PrologueLevel::PreLevelInit()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      mSceneController = std::make_shared<SceneController>(sceneSp);
       Base::PreLevelInit();
-      mSceneController->OnPreLevelInit();
+      mCombatController = std::make_shared<CombatController>(sceneSp);
+      mUiController = std::make_unique<UiController>(sceneSp);
+      mCombatController->OnPreLevelInit();
+      mUiController->OnPreLevelInit();
    }
 
-   void IntroLevel::CreateScene()
+   void PrologueLevel::CreateScene()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
@@ -150,7 +150,7 @@ namespace Game
       const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
       BindingAttachmentBuilder::SetAttachment(rootComponent, binding, "b_rotator");
 
-      mSceneController->SetPlayerActorController(spaceShipController);
+      mCombatController->SetPlayerActorController(spaceShipController);
 
       /*const auto groundActor = sceneSp->GetActorByName("Ground");
       const auto pointLightComponents = sceneSp->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
@@ -161,22 +161,25 @@ namespace Game
       const auto cubemapRendererComponent = sceneSp->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
 
-      mSceneController->OnLevelInit();
+      mCombatController->OnLevelInit();
+      mUiController->OnLevelInit();
    }
 
-   void IntroLevel::PostLevelInit()
+   void PrologueLevel::PostLevelInit()
    {
-      mSceneController->OnPostLevelInit();
+      mCombatController->OnPostLevelInit();
+      mUiController->OnPostLevelInit();
       Base::PostLevelInit();
    }
 
-   void IntroLevel::PostPlayLevelFinished()
+   void PrologueLevel::PostPlayLevelFinished()
    {
       Base::PostPlayLevelFinished();
-      mSceneController->PostPlayLevelFinished();
+      mCombatController->PostPlayLevelFinished();
+      mUiController->PostPlayLevelFinished();
    }
 
-   void IntroLevel::InitLevel()
+   void PrologueLevel::InitLevel()
    {
       Base::InitLevel();
 #if 0
@@ -187,28 +190,44 @@ namespace Game
       CreateScene();
    }
 
-   void IntroLevel::UnloadLevel()
+   void PrologueLevel::UnloadLevel()
    {
-      if (mSceneController)
+      if (mUiController)
       {
-         mSceneController->CleanUp();
-         mSceneController.reset();
+         mUiController->CleanUp();
+         mUiController.reset();
+      }
+
+      if (mCombatController)
+      {
+         mCombatController->CleanUp();
+         mCombatController.reset();
       }
    }
 
-   void IntroLevel::Tick(const float deltaTime)
+   void PrologueLevel::Tick(const float deltaTime)
    {
-      if (mSceneController)
+      if (mUiController)
       {
-         mSceneController->Tick(deltaTime);
+         mUiController->Tick(deltaTime);
+      }
+
+      if (mCombatController)
+      {
+         mCombatController->Tick(deltaTime);
       }
    }
 
-   void IntroLevel::UnpausableTick(const float deltaTime)
+   void PrologueLevel::UnpausableTick(const float deltaTime)
    {
-      if (mSceneController)
+      if (mUiController)
       {
-         mSceneController->UnpausableTick(deltaTime);
+         mUiController->UnpausableTick(deltaTime);
+      }
+
+      if (mCombatController)
+      {
+         mCombatController->UnpausableTick(deltaTime);
       }
    }
 }

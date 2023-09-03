@@ -157,7 +157,8 @@ namespace Graphics
          if (mDebugUiCanvasId != -1)
          {
             mUiCanvasProxies.erase(std::remove_if(mUiCanvasProxies.begin(), mUiCanvasProxies.end(), [debugUiCanvasId = mDebugUiCanvasId](const auto &canvasProxy)
-                                                  { return canvasProxy->GetUiItemUId() != debugUiCanvasId; }), mUiCanvasProxies.end());
+                                                  { return canvasProxy->GetUiItemUId() != debugUiCanvasId; }),
+                                   mUiCanvasProxies.end());
          }
          else
          {
@@ -1086,9 +1087,11 @@ namespace Graphics
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, bEnabled]()
                                                 {
-               const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-               assert(primitiveSp);
-               primitiveSp->SetEnabled(bEnabled); });
+            const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
+            if (primitiveSp)
+            {
+               primitiveSp->SetEnabled(bEnabled);
+            } });
       }
 
       void DeferredShadingSceneRenderer::UpdatePrimitiveComponentVisibility_OnRenderThread(const int32_t primitiveSceneProxyIndex,
@@ -1099,8 +1102,10 @@ namespace Graphics
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, visibility]()
                                                 {
             const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            assert(primitiveSp);
-            primitiveSp->SetVisibility(visibility); });
+            if (primitiveSp)
+            {
+               primitiveSp->SetVisibility(visibility);
+            } });
       }
 
       void DeferredShadingSceneRenderer::UpdatePrimitiveComponentSortOrderValue_OnRenderThread(const int32_t primitiveSceneProxyIndex,
@@ -1111,8 +1116,10 @@ namespace Graphics
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, sortOrderValue, primitiveSceneProxyIndex]()
                                                 {
             const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            assert(primitiveSp);
-            primitiveSp->SetSortOrderValue(sortOrderValue); });
+            if (primitiveSp)
+            {
+               primitiveSp->SetSortOrderValue(sortOrderValue);
+            } });
       }
 
       void DeferredShadingSceneRenderer::UpdatePrimitiveComponentTransform_OnRenderThread(const int32_t primitiveSceneProxyIndex,
@@ -1124,9 +1131,11 @@ namespace Graphics
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, primitiveSceneProxyIndex, newRelativeMatrix, newTransformedBoundingBox]()
                                                 {
             const auto &primitiveSp = GetPrimitiveProxyByProxyId(primitiveSceneProxyIndex);
-            assert(primitiveSp);
-            primitiveSp->SetTransformationMatrix(newRelativeMatrix);
-            primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox); });
+            if (primitiveSp)
+            {
+               primitiveSp->SetTransformationMatrix(newRelativeMatrix);
+               primitiveSp->SetTransformedBoundingBox(newTransformedBoundingBox);
+            } });
       }
 
       void DeferredShadingSceneRenderer::UpdateLightComponentTransform_OnRenderThread(const int32_t lightSceneProxyIndex,
@@ -1137,8 +1146,10 @@ namespace Graphics
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, creatorObjectId, functionId, [this, newRelativeMatrix, lightSceneProxyIndex]()
                                                 {
             const auto &lightProxySp = GetLightProxyByProxyId(lightSceneProxyIndex);
-            assert(lightProxySp);
-            lightProxySp->SetTransformationMatrix(newRelativeMatrix); });
+            if (lightProxySp)
+            {
+               lightProxySp->SetTransformationMatrix(newRelativeMatrix);
+            } });
       }
 
       void DeferredShadingSceneRenderer::PrimitiveSceneProxyDeleted_OnRenderThread(const int32_t primitiveSceneProxyIndex)
@@ -1412,9 +1423,9 @@ namespace Graphics
                m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                     creatorObjectId, functionId, [=]()
                                                     { sceneSp->GetTextHandler()
-                                                          ->GetTextFieldById(textFieldProxyId)
-                                                          ->SetTextScreenSpaceSize(mFontHandler
-                                                                                       ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
+                         ->GetTextFieldById(textFieldProxyId)
+                         ->SetTextScreenSpaceSize(mFontHandler
+                                                      ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
             }
          }
       }

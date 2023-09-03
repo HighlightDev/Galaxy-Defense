@@ -34,6 +34,10 @@
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 
+#include "Core/GameCore/Components/AudioComponents/StreamingSoundComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
@@ -49,8 +53,13 @@ namespace Game
 {
 
    MainMenuLevel::MainMenuLevel()
-       : Level("MainMenuLevel")
-       
+       : LevelBase("MainMenuLevel"),
+         mAmbientMusicDummy(std::make_shared<Actor>("Ambient Music Dummy",
+                                                    std::make_shared<SceneComponent>("AmbientMusicDummyRootComponent",
+                                                                                     glm::vec3(),
+                                                                                     glm::vec3(),
+                                                                                     glm::vec3())))
+
    {
    }
 
@@ -76,8 +85,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      static constexpr const char *lvlName
-          = "mainMenuLvl.lua";
+      static constexpr const char *lvlName = "mainMenuLvl.lua";
       LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
@@ -89,6 +97,25 @@ namespace Game
    void MainMenuLevel::PostLevelInit()
    {
       Base::PostLevelInit();
+
+#ifdef DEBUG
+      if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
+      {
+         if (const auto &sceneSp = mSceneWp.lock())
+         {
+            sceneSp->AddActor(mAmbientMusicDummy);
+            mAmbientMusicDummy->SetScene(mSceneWp);
+            const auto musicComponentCreator = std::make_shared<AudioComponentCreator<StreamingSoundComponent>>();
+            const auto c_streamingMusic = std::static_pointer_cast<StreamingSoundComponent>(
+                sceneSp->CreateComponent_GameThread(musicComponentCreator, std::make_shared<ComponentData>("c_ambientMusic")));
+            c_streamingMusic->CreateStreamingSoundSource("piano-loop2.wav");
+            c_streamingMusic->SetIsLoopSound(true);
+            c_streamingMusic->SetGain(0.1f);
+            mAmbientMusicDummy->AddComponent(c_streamingMusic);
+         }
+      }
+#endif
+
       mUiController->OnPostLevelInit();
    }
 
@@ -96,6 +123,13 @@ namespace Game
    {
       Base::PostPlayLevelFinished();
       mUiController->PostPlayLevelFinished();
+
+#ifdef DEBUG
+      if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
+      {
+         mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
+      }
+#endif
    }
 
    void MainMenuLevel::InitLevel()

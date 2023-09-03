@@ -14,8 +14,6 @@ using namespace Graphics::Texture;
 
 namespace Graphics
 {
-   class TextureAtlasSpaceRequest;
-
    class TextureAtlasFactory
    {
       static std::unique_ptr<TextureAtlasFactory> m_instance;

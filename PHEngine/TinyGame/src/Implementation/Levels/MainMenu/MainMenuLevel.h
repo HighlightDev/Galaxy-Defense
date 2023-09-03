@@ -1,20 +1,27 @@
 #pragma once
 
-#include "Core/GameCore/Level.h"
-#include "Implementation/Controllers/MainMenuLevelUiController.h"
+#include "Implementation/Levels/LevelBase.h"
+#include "Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h"
 
 #include <memory>
 
 using namespace EngineCore;
 
+namespace EngineCore
+{
+   class Actor;
+}
+
 namespace Game
 {
 
-   class MainMenuLevel : public Level
+   class MainMenuLevel : public LevelBase
    {
-      using Base = Level;
+      using Base = LevelBase;
 
       std::unique_ptr<MainMenuLevelUiController> mUiController;
+
+      std::shared_ptr<Actor> mAmbientMusicDummy;
 
    public:
       MainMenuLevel();

@@ -1,8 +1,11 @@
 set(
 	HEADERS
 	src/Implementation/Levels/GameLevelFactory.h
-	src/Implementation/Levels/IntroLevel.h
-	src/Implementation/Levels/MainMenuLevel.h
+	src/Implementation/Levels/LevelBase.h
+	src/Implementation/Levels/Prologue/PrologueLevel.h
+	src/Implementation/Levels/Prologue/Controllers/UiController.h
+	src/Implementation/Levels/MainMenu/MainMenuLevel.h
+	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
@@ -13,9 +16,6 @@ set(
 	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
 	src/Implementation/Controllers/CombatController.h
-	src/Implementation/Controllers/UiController.h
-	src/Implementation/Controllers/MainMenuLevelUiController.h
-	src/Implementation/Controllers/SceneController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
 	src/Implementation/Events/MainPlayerActionEvent.h
@@ -62,20 +62,21 @@ set(
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
 	src/Implementation/DataProviders/PlayerDataProvider.h
+	src/Implementation/LevelProgressSystem/LevelProgressController.h
 )
 
 set(
 	SOURCES
 	src/Implementation/Levels/GameLevelFactory.cpp
-	src/Implementation/Levels/IntroLevel.cpp
-	src/Implementation/Levels/MainMenuLevel.cpp
+	src/Implementation/Levels/LevelBase.cpp
+	src/Implementation/Levels/Prologue/PrologueLevel.cpp
+	src/Implementation/Levels/Prologue/Controllers/UiController.cpp
+	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
+	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.cpp
 	src/Implementation/SpaceSceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
-	src/Implementation/Controllers/UiController.cpp
-	src/Implementation/Controllers/MainMenuLevelUiController.cpp
 	src/Implementation/AiBrain.cpp
-	src/Implementation/Controllers/SceneController.cpp
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
@@ -117,6 +118,7 @@ set(
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
 	src/Implementation/DataProviders/PlayerDataProvider.cpp
+	src/Implementation/LevelProgressSystem/LevelProgressController.cpp
     main.cpp
 )
 
@@ -140,7 +142,7 @@ set_target_properties(TinyGame PROPERTIES LINKER_LANGUAGE CXX)
 
 set(GAME_SRC_INCLUDE ${PROJECT_SOURCE_DIR}/TinyGame/src/)
 set(ENGINE_CORE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/src/)
-set(LOGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
+set(LOGGER_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/Logger/)
 set(CEREAL_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/cereal/include/)
 set(GLEW_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLEW/include/)
 set(GLM_DEPENDENCE_INCLUDE ${PROJECT_SOURCE_DIR}/PHEngine/Dependencies/GLM/include/)
@@ -155,7 +157,7 @@ PUBLIC ${GAME_SRC_INCLUDE}
 PUBLIC ${ENGINE_CORE_INCLUDE}
 PUBLIC ${GLEW_DEPENDENCE_INCLUDE}
 PUBLIC ${GLFW_DEPENDENCE_INCLUDE}
-PUBLIC ${LOGER_DEPENDENCE_INCLUDE}
+PUBLIC ${LOGGER_DEPENDENCE_INCLUDE}
 PUBLIC ${CEREAL_DEPENDENCE_INCLUDE}
 PUBLIC ${GLM_DEPENDENCE_INCLUDE}
 PUBLIC ${BULLET_DEPENDENCE_INCLUDE}

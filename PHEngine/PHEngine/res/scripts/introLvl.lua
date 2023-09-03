@@ -59,7 +59,6 @@ function CreateTestLevel(host)
 		,missile1_model.fbx
 		,asteroid.fbx
 		,explosion1.ogg
-		,piano-loop2.wav
 		,planet_1.png
 		,planet_2.png
 		,planet_3.png
@@ -101,12 +100,12 @@ function CreateTestLevel(host)
 		1, 1, 1,
 		"")
 
-	local matProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
-	_SetTextureToMaterial(host, matProxyId, "spaceship_albedo.jpg", "albedo")
-	_SetTextureToMaterial(host, matProxyId, "spaceship_normal.jpg", "normalMap")
-	_SetTextureToMaterial(host, matProxyId, "spaceship_roughness.jpg", "roughnessMap")
-	_SetTextureToMaterial(host, matProxyId, "spaceship_metallic.jpg", "metallicMap")
-	_SetFloatToMaterial(host, matProxyId, 1.0, "uvScale")
+	local spaceshipMatProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_albedo.jpg", "albedo")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_normal.jpg", "normalMap")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_roughness.jpg", "roughnessMap")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "spaceship_metallic.jpg", "metallicMap")
+	_SetFloatToMaterial(host, spaceshipMatProxyId, 1.0, "uvScale")
 
 	_CreateAndAttachComponentToActor(host, spaceship_a, "StaticMeshComponent",
 		Json.encode(
@@ -117,7 +116,7 @@ function CreateTestLevel(host)
 				rotation = { x = 0, y = 180, z = 0 },
 				scale = { x = 5, y = 5, z = 5 },
 				luaScriptName = "",
-				materialProxyId = matProxyId
+				materialProxyId = spaceshipMatProxyId
 			}
 		))
 end

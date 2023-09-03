@@ -1,7 +1,7 @@
 #include "GameLevelFactory.h"
 
-#include "IntroLevel.h"
-#include "MainMenuLevel.h"
+#include "Implementation/Levels/Prologue/PrologueLevel.h"
+#include "Implementation/Levels/MainMenu/MainMenuLevel.h"
 
 namespace Game
 {
@@ -13,7 +13,7 @@ namespace Game
       }
       else if ("FirstLevel" == levelName)
       {
-         return std::make_shared<IntroLevel>();
+         return std::make_shared<PrologueLevel>();
       }
       return nullptr;
    }

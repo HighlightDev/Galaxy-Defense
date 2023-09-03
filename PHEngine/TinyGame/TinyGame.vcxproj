@@ -179,7 +179,6 @@
     <ClCompile Include="src\Implementation\Controllers\AiActorController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\AiSpaceshipActorController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\CombatController.cpp" />
-    <ClCompile Include="src\Implementation\Controllers\SceneController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\SpaceShipPlayerController.cpp" />
     <ClCompile Include="src\Implementation\Controllers\UiController.cpp" />
     <ClCompile Include="src\Implementation\DataProviders\PlayerDataProvider.cpp" />
@@ -211,7 +210,7 @@
     <ClCompile Include="src\Implementation\Ui\PauseMenuUi.cpp" />
     <ClCompile Include="src\Implementation\Ui\PauseSettingsMenuUi.cpp" />
     <ClCompile Include="src\Implementation\Ui\PlayerCombatUi.cpp" />
-    <ClCompile Include="src\Implementation\Levels\IntroLevel.cpp" />
+    <ClCompile Include="src\Implementation\Levels\PrologueLevel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GameLevelFactory.h" />
@@ -231,7 +230,6 @@
     <ClInclude Include="src\Implementation\Controllers\AiSpaceshipActorController.h" />
     <ClInclude Include="src\Implementation\Controllers\CombatController.h" />
     <ClInclude Include="src\Implementation\Controllers\ILevelController.h" />
-    <ClInclude Include="src\Implementation\Controllers\SceneController.h" />
     <ClInclude Include="src\Implementation\Controllers\SpaceShipPlayerController.h" />
     <ClInclude Include="src\Implementation\Controllers\UiController.h" />
     <ClInclude Include="src\Implementation\DataProviders\PlayerDataProvider.h" />
@@ -273,7 +271,7 @@
     <ClInclude Include="src\Implementation\Ui\PauseMenuUi.h" />
     <ClInclude Include="src\Implementation\Ui\PauseSettingsMenuUi.h" />
     <ClInclude Include="src\Implementation\Ui\PlayerCombatUi.h" />
-    <ClInclude Include="src\Implementation\Levels\IntroLevel.h" />
+    <ClInclude Include="src\Implementation\Levels\PrologueLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="CMakeLists.txt" />

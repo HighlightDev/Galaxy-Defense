@@ -18,7 +18,7 @@
     <ClCompile Include="src\Implementation\Levels\GameLevelFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Implementation\Levels\IntroLevel.cpp">
+    <ClCompile Include="src\Implementation\Levels\PrologueLevel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
@@ -76,9 +76,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Implementation\Controllers\CombatController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Implementation\Controllers\SceneController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Implementation\Controllers\SpaceShipPlayerController.cpp">
@@ -170,7 +167,7 @@
     <ClInclude Include="src\Implementation\Levels\GameLevelFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Implementation\IntroLevel.h">
+    <ClInclude Include="src\Implementation\PrologueLevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\AiBrain.h">
@@ -243,9 +240,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\Controllers\CombatController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Implementation\Controllers\SceneController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Implementation\Controllers\SpaceShipPlayerController.h">
