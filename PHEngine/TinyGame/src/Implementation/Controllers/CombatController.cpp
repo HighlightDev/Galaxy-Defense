@@ -276,7 +276,7 @@ namespace Game
                         LogInfo("CombatController::PhysicsCollisionEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
                                 " that_actor = ", ownerSpaceObjectActor->GetName());
 
-                        ownerEnemyShipActor->TriggerDamageReceived(1UL);
+                        ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
                         ownerSpaceObjectActor->TriggerDisabled();
                     }
                     else if (eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
@@ -612,7 +612,7 @@ namespace Game
             return;
         }
 
-        (*idleBulletIt)->TriggerSpawn(bulletStartPosition);
+        (*idleBulletIt)->TriggerSpawn(bulletStartPosition, eDamageDealerType::MAIN_PLAYER);
     }
 
     void CombatController::FlushToPoolUsedBullets()

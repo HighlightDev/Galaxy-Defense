@@ -31,7 +31,7 @@ namespace Game
         {
             if (eMissileActivityState::ACTIVE == ownerSp->GetMissileActivityState())
             {
-                spaceship->TriggerDamageReceived(3U);
+                spaceship->TriggerDamageReceived(3U, ownerSp->GetDamageDealerType());
                 if (!spaceship->IsAlive())
                 {
                     ownerSp->TriggerDisabled();

@@ -49,8 +49,10 @@ namespace Game
       void ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data) override;
 
    private:
-      int32_t GetSelectedMissileType(const std::tuple<> &data);
+      int32_t GetSelectedMissileType(const std::tuple<> &data) const;
 
-      std::string GetAllMissilesData(const std::tuple<>& data);
+      std::string GetAllMissilesData(const std::tuple<> &data) const;
+
+      int32_t GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<> &data) const;
    };
 }

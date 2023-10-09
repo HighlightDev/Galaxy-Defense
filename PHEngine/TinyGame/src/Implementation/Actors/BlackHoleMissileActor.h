@@ -17,7 +17,7 @@ namespace Game
     {
     protected:
         std::shared_ptr<Actor> mCombatActivePhaseActor;
-        std::shared_ptr<Actor> mExplosionSecondPhaseActor;
+        std::shared_ptr<MissileActor> mExplosionSecondPhaseActor;
 
         std::shared_ptr<Tweener> mBlackMissileTweener;
 
@@ -28,7 +28,7 @@ namespace Game
 
         void OnTweenStateChanged(const std::string &stateName) override;
 
-        void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
 
         void TriggerExplosion() override;
 
@@ -40,13 +40,13 @@ namespace Game
 
         void AddCombatActivePhaseActor(const std::shared_ptr<Actor> &combatActivePhaseActor);
 
-        void AddExplosionSecondPhaseActor(const std::shared_ptr<Actor> &explosionSecondPhaseActor);
+        void AddExplosionSecondPhaseActor(const std::shared_ptr<MissileActor> &explosionSecondPhaseActor);
 
         std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
         const std::shared_ptr<Actor> &GetCombatActivePhaseActor() const;
 
-        const std::shared_ptr<Actor> &GetExplosionPhaseActor() const;
+        const std::shared_ptr<MissileActor> &GetExplosionPhaseActor() const;
 
     private:
         void InitTweenerSubscriptions();

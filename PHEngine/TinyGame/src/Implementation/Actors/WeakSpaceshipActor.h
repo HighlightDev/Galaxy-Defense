@@ -21,7 +21,7 @@ namespace Game
 
         void PostLevelInit() override;
 
-        void TriggerDamageReceived(const size_t damage) override;
+        void TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType) override;
 
         void TriggerSpawn(const glm::vec3 &position) override;
 

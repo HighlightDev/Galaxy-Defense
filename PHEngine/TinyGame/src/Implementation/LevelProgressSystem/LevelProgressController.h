@@ -1,24 +1,21 @@
 #pragma once
 
 #include "Core/GameCore/ITickable.h"
+#include "LevelProgressBlueprint.h"
 
 #include <memory>
 
 namespace Game
 {
-    class LevelProgressDescriptor
-    {
-    };
-
     class LevelProgressController : public ITickable
     {
-        std::unique_ptr<LevelProgressDescriptor> mLvlProgressDescriptor;
+        std::shared_ptr<LevelProgressBlueprint> mLvlProgressBlueprint;
 
     public:
         void Tick(const float deltaTime) override;
 
         void UnpausableTick(const float deltaTime) override;
 
-        void AddLevelProgressDescriptor(const std::unique_ptr<LevelProgressDescriptor> &lvlProgressDescriptor);
+        void AddLevelProgressBlueprint(const std::shared_ptr<LevelProgressBlueprint> &lvlProgressBlueprint);
     };
 }

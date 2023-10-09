@@ -14,6 +14,11 @@ namespace Game
 
         std::atomic<eMissileType> mSelectedMissileType{eMissileType::BOMB};
 
+        int32_t mDestroyedEnemySpaceshipsCount{0};
+
+    private:
+        PlayerDataProvider() = default;
+
     public:
         static PlayerDataProvider *GetInstance();
 
@@ -23,14 +28,18 @@ namespace Game
 
         void SetMissilesCountForType(const eMissileType missileType, const size_t missilesCount);
 
-        void SetMissilesCount(const std::unordered_map<eMissileType, size_t>& missilesMap);
+        void SetMissilesCount(const std::unordered_map<eMissileType, size_t> &missilesMap);
 
         size_t GetMissilesCount(const eMissileType missileType) const;
 
         bool IsMissileAvailable(const eMissileType missileType) const;
 
-        void SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t>& availableMissileTypes);
+        void SetAvailableMissileTypes(const std::unordered_map<eMissileType, size_t> &availableMissileTypes);
 
         std::vector<eMissileType> GetAvailableMissileTypes() const;
+
+        void SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount);
+
+        int32_t GetDestroyedEnemySpaceshipsCount() const;
     };
 }

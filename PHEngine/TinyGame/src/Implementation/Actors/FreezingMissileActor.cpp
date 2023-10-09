@@ -12,8 +12,9 @@ namespace Game
         mMissileType = eMissileType::FREEZING;
     }
 
-    void FreezingMissileActor::TriggerSpawn(const glm::vec3 &position)
+    void FreezingMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
     {
+        mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
         GetMovementComponent()->Teleport(position);

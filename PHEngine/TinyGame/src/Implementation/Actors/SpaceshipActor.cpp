@@ -9,6 +9,7 @@
 #include "Core/GameCore/ACamera.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
 
 namespace Game
 {
@@ -113,7 +114,7 @@ namespace Game
         }
     }
 
-    void SpaceshipActor::TriggerDamageReceived(const size_t dmg)
+    void SpaceshipActor::TriggerDamageReceived(const size_t dmg, const eDamageDealerType damageDealerType)
     {
         if (CheckIsAliveAfterDamage(dmg))
         {
@@ -131,6 +132,11 @@ namespace Game
                 dmgTextFieldSp->SetVisibility(true);
                 dmgTextFieldSp->SetPosition(CalculatePositionForDamageText());
             }
+        }
+        else if (eDamageDealerType::MAIN_PLAYER == damageDealerType)
+        {
+            const auto &playerDataProvider = PlayerDataProvider::GetInstance();
+            playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
         }
     }
 

@@ -4,6 +4,7 @@
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Implementation/Modifiers/IModifiable.h"
 #include "Implementation/Modifiers/ModifiersHandler.h"
+#include "Implementation/DamageDealerType.h"
 
 #include <functional>
 #include <unordered_map>
@@ -60,7 +61,7 @@ namespace Game
 
         virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 
-        virtual void TriggerDamageReceived(const size_t damage);
+        virtual void TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType);
 
         virtual void TriggerSpawn(const glm::vec3 &position);
 

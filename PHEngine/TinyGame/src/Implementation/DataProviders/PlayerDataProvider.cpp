@@ -80,4 +80,17 @@ namespace Game
                        { return availableMissilePair.first; });
         return result;
     }
+
+    void PlayerDataProvider::SetDestroyedEnemySpaceshipsCount(const int32_t enemySpaceshipsCount)
+    {
+        LogInfo("PlayerDataProvider::SetDestroyedEnemySpaceshipsCount => enemySpaceshipsCount: ", enemySpaceshipsCount);
+        mDestroyedEnemySpaceshipsCount = enemySpaceshipsCount;
+        MainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED);
+        LuaMainPlayerStatusChangedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, eMainPlayerStatusType::DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED);
+    }
+
+    int32_t PlayerDataProvider::GetDestroyedEnemySpaceshipsCount() const
+    {
+        return mDestroyedEnemySpaceshipsCount;
+    }
 }

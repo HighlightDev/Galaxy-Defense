@@ -53,6 +53,7 @@ namespace Game
    {
       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetSelectedMissileType"), int32_t(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetSelectedMissileType, this, std::placeholders::_1), "_GetSelectedMissileType");
       LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetAllMissilesData"), std::string(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetAllMissilesData, this, std::placeholders::_1), "_GetAllMissilesData");
+      LuaCallbackBindingHelper<Hash64_CT("LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer"), int32_t(void)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer, this, std::placeholders::_1), "_GetEnemySpaceshipsCountDestroyedByPlayer");
    }
 
    void LuaGameEventsFunctions::ProcessEvent(const LuaMainPlayerStatusChangedEvent::EventData_t &data)
@@ -63,12 +64,12 @@ namespace Game
       LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnGameEventTriggered", (void *)mOwnerPtr, std::string("PlayerStatusChanged"), eventParams);
    }
 
-   int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<> &data)
+   int32_t LuaGameEventsFunctions::GetSelectedMissileType(const std::tuple<> &data) const
    {
       return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetSelectedMissileType());
    }
 
-   std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<> &data)
+   std::string LuaGameEventsFunctions::GetAllMissilesData(const std::tuple<> &data) const
    {
       const auto &dataProvider = PlayerDataProvider::GetInstance();
       std::unordered_map<eMissileType, size_t> allMissilesData;
@@ -80,5 +81,10 @@ namespace Game
       nlohmann::json jsonObj;
       jsonObj["all_missiles_data"] = allMissilesData;
       return jsonObj.dump();
+   }
+
+   int32_t LuaGameEventsFunctions::GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<> &data) const
+   {
+      return static_cast<int32_t>(PlayerDataProvider::GetInstance()->GetDestroyedEnemySpaceshipsCount());
    }
 }

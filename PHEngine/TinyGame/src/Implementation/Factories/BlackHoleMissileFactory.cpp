@@ -58,7 +58,7 @@ namespace Game
         const auto &missileTweener = tweenerParser.ParseTweenerDescriptor("blackHoleMissile.tween");
 
         std::shared_ptr<Actor> a_missileCombatActivePhase;
-        std::shared_ptr<Actor> a_missileExplosionSecondPhase;
+        std::shared_ptr<MissileActor> a_missileExplosionSecondPhase;
 
         {
             a_missileCombatActivePhase = std::make_shared<Actor>("a_missileCombatActivePhase_" + missileIndexStr,
@@ -111,7 +111,7 @@ namespace Game
         }
 
         {
-            a_missileExplosionSecondPhase = std::make_shared<Actor>("a_missileExplosionSecondPhase" + missileIndexStr,
+            a_missileExplosionSecondPhase = std::make_shared<MissileActor>("a_missileExplosionSecondPhase" + missileIndexStr,
                                                                     std::make_shared<EngineCore::SceneComponent>("c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr,
                                                                                                                  glm::vec3(), glm::vec3(), glm::vec3(1)));
 

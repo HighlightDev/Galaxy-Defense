@@ -49,7 +49,7 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
 
         void TriggerExplosion() override;
 

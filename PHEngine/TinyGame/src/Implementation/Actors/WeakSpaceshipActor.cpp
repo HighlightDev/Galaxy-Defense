@@ -5,6 +5,8 @@
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Implementation/DataProviders/PlayerDataProvider.h"
+#include "Implementation/DamageDealerType.h"
 
 namespace Game
 {
@@ -28,7 +30,7 @@ namespace Game
         mWeakSpaceshipTweener->SubscribeOnStateChange(std::dynamic_pointer_cast<WeakSpaceshipActor>(shared_from_this()));
     }
 
-    void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage)
+    void WeakSpaceshipActor::TriggerDamageReceived(const size_t damage, const eDamageDealerType damageDealerType)
     {
         if (CheckIsAliveAfterDamage(damage))
         {
@@ -38,6 +40,11 @@ namespace Game
         else
         {
             mWeakSpaceshipTweener->ChangeState("s_LifecycleExplosion");
+            if (eDamageDealerType::MAIN_PLAYER == damageDealerType)
+            {
+                const auto &playerDataProvider = PlayerDataProvider::GetInstance();
+                playerDataProvider->SetDestroyedEnemySpaceshipsCount(playerDataProvider->GetDestroyedEnemySpaceshipsCount() + 1);
+            }
         }
 
         mIsDamageTextActive = true;

@@ -52,7 +52,7 @@ namespace Game
 
         bool IsInsideLevel(const BoundingBox3D &boundingBox) const override;
 
-        void TriggerSpawn(const glm::vec3 &position) override;
+        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
 
         void TriggerExplosion() override;
 

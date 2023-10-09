@@ -12,6 +12,7 @@ set(
 	src/Implementation/GameObjectsCollisionType.h
 	src/Implementation/StatusTypes.h
 	src/Implementation/MissileType.h
+	src/Implementation/DamageDealerType.h
 	src/Implementation/ICameraTransformChangeNotifyable.h
 	src/Implementation/Controllers/ILevelController.h
 	src/Implementation/Controllers/SpaceShipPlayerController.h
@@ -62,7 +63,12 @@ set(
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
 	src/Implementation/DataProviders/PlayerDataProvider.h
+	src/Implementation/DataProviders/LevelDataProvider.h
 	src/Implementation/LevelProgressSystem/LevelProgressController.h
+	src/Implementation/LevelProgressSystem/LevelProgressStage.h
+	src/Implementation/LevelProgressSystem/ILevelProgressRequirement.h
+	src/Implementation/LevelProgressSystem/ILevelRequirementTracker.h
+	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h
 )
 
 set(
@@ -118,7 +124,11 @@ set(
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
 	src/Implementation/DataProviders/PlayerDataProvider.cpp
+	src/Implementation/DataProviders/LevelDataProvider.cpp
 	src/Implementation/LevelProgressSystem/LevelProgressController.cpp
+	src/Implementation/LevelProgressSystem/LevelProgressStage.cpp
+	src/Implementation/LevelProgressSystem/LevelProgressBlueprint.cpp
+	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.cpp
     main.cpp
 )
 

@@ -59,7 +59,7 @@ namespace Game
             {
                 if (eMissileActivityState::EXPLOSION_FINISHED == blackHoleMissile->GetMissileActivityState()) // spaceship should be sucked in to the black hole
                 {
-                    spaceship->TriggerDisabled();
+                    spaceship->TriggerDamageReceived(std::numeric_limits<uint32_t>::max(), ownerSp->GetDamageDealerType());
                 }
                 else if (spaceship->HasModifier(eModifierType::Gravity, ownerSp->GetObjectId()))
                 {

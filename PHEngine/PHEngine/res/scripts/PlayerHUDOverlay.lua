@@ -34,7 +34,8 @@ PlayerStatusType = {
     LIFE_POINTS_CHANGED = 1,
     ACTIVE_WEAPON_CHANGED = 2,
     MISSILES_COUNT_CHANGED = 3,
-    AVAILABLE_MISSILES_CHANGED = 4
+    AVAILABLE_MISSILES_CHANGED = 4,
+    DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 5
 }
 
 MissileType = {
@@ -89,6 +90,10 @@ local function getSelectedMissileType(host)
     return tonumber(_GetSelectedMissileType(host))
 end
 
+local function getEnemySpaceshipsCountDestroyedByPlayer(host)
+    return tonumber(_GetEnemySpaceshipsCountDestroyedByPlayer(host))
+end
+
 local function getMissileTypeNameByValue(missileTypeValue)
     assert(missileTypeValue ~= nil and type(missileTypeValue) == "number")
     local name = InvertedMissileTable[missileTypeValue]
@@ -129,6 +134,12 @@ function PlayerHUDOverlay:new(host)
     weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
     local weaponTopBottomMargin = (weaponRootContainerHeight - weaponWidth) * 0.5
     local weaponImageSize = weaponWidth * 0.75
+
+    local enemyCountTile = UiRectangle:new(host)
+    playerHUDOverlay:addWidget(enemyCountTile)
+
+    local enemyCountLabel = UiLabel:new(host, "nimbus_mono")
+    playerHUDOverlay:addWidget(enemyCountLabel) 
 
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
@@ -265,7 +276,39 @@ function PlayerHUDOverlay:new(host)
         end
     end
 
+    playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged = function ()
+        local enemySpaceshipsCount = getEnemySpaceshipsCountDestroyedByPlayer(host)
+        enemyCountLabel:setText(tostring(enemySpaceshipsCount))
+    end
+
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
+        enemyCountTile:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
+        enemyCountTile:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            playerHUDOverlayCanvas.widgetName, 30)
+        enemyCountTile:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
+            playerHUDOverlayCanvas.widgetName, 30)
+        enemyCountTile:setWidth(100)
+        enemyCountTile:setHeight(100)
+        enemyCountTile:setZOrder(3);
+        enemyCountTile:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
+        enemyCountTile:setBorderRadius(8)
+
+        enemyCountLabel:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
+        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+        enemyCountTile.widgetName, 6)
+        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+        enemyCountTile.widgetName, 0)
+        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+        enemyCountTile.widgetName, 6)
+        enemyCountLabel:setVerticalCenterOffset(20)
+        enemyCountLabel:setHeight(50)
+        enemyCountLabel:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
+        enemyCountLabel:setFontSize(10.0)
+        enemyCountLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        enemyCountLabel:setZOrder(4)
+
+        playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged()
+
         lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             playerHUDOverlayCanvas.widgetName, 30)
@@ -609,6 +652,8 @@ function PlayerHUDOverlay:new(host)
                     playerHUDOverlay.onCurrentMissileChanged()
                 elseif statusType == PlayerStatusType.MISSILES_COUNT_CHANGED then
                     playerHUDOverlay.onMissilesDataChanged()
+                elseif statusType == PlayerStatusType.DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED then
+                    playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged()
                 end
             end
         end

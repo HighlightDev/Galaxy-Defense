@@ -72,8 +72,9 @@ namespace Game
         return true;
     }
 
-    void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position)
+    void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
     {
+        mDamageDealerType = ownerType;
         DropState();
         SetIsEnabled(true);
         mActivityState = eMissileActivityState::ACTIVE;

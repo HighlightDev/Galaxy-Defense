@@ -2,7 +2,11 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
+#include "Core/AudioCore/SoundSource.h"
 #include "Implementation/MissileExplosionVisitors/BombExplosionVisitor.h"
+#include "Core/CommonCore/Random.h"
+
+#include <algorithm>
 
 namespace Game
 {
@@ -12,8 +16,9 @@ namespace Game
         mMissileType = eMissileType::BOMB;
     }
 
-    void BombMissileActor::TriggerSpawn(const glm::vec3 &position)
+    void BombMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
     {
+        mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
         SetIsEnabled(true);
         GetMovementComponent()->Teleport(position);
@@ -24,7 +29,9 @@ namespace Game
         mActivityState = eMissileActivityState::EXPLOSION;
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
-        c_soundList.back()->PlayBuffer("explosion");
+        const auto& soundSp = c_soundList.back();
+        soundSp->GetSoundSource()->SetPitch(0.75f + (Random::Float() * 0.25f));
+        soundSp->PlayBuffer("explosion");
         TriggerExplosionFinished();
     }
 

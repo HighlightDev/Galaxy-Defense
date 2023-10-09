@@ -119,8 +119,9 @@ namespace Game
         mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
     }
 
-    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position)
+    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
     {
+        mDamageDealerType = ownerType;
         DropState();
         SetIsEnabled(true);
         mActivityState = eMissileActivityState::ACTIVE;
