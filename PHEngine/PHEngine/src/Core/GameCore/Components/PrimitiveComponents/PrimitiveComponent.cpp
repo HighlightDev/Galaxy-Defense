@@ -139,6 +139,7 @@ namespace EngineCore
    void PrimitiveComponent::SetBoundingBox(const BoundingBox3D &boundingBox)
    {
       mBoundingBox = boundingBox;
+      SetIsTransformationDirty(true); // Update transform for bounding box and sync with render thread
    }
 
    void PrimitiveComponent::SyncRenderData()

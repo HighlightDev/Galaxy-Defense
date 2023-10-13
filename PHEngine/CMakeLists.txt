@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(TinyGame VERSION 1.0 LANGUAGES CXX)
+#set(PROJECT_NAME TinyGame)
+set(PROJECT_NAME GalaxyDefenseProject)
+
+project(${PROJECT_NAME} VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -32,7 +35,8 @@ add_compile_definitions(
 
 add_subdirectory(Logger/TinyLogger)
 add_subdirectory(PHEngine/src)
-add_subdirectory(TinyGame)
+#add_subdirectory(TinyGame)
+add_subdirectory(GalaxyDefense)
 
 
 

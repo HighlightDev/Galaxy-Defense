@@ -88,7 +88,12 @@ namespace Graphics
          m_textureParams.TexBufferWidth = texResource->TexInfo.Width;
          m_textureParams.TexBufferHeight = texResource->TexInfo.Height;
 
-         if (texResource->TexInfo.PixelComponents == 3)
+         if (texResource->TexInfo.PixelComponents == 1)
+         {
+            m_textureParams.TexPixelFormat = GL_RED;
+            m_textureParams.TexPixelInternalFormat = GL_RED;
+         }
+         else if (texResource->TexInfo.PixelComponents == 3)
          {
             m_textureParams.TexPixelFormat = GL_RGB;
             m_textureParams.TexPixelInternalFormat = GL_RGB;

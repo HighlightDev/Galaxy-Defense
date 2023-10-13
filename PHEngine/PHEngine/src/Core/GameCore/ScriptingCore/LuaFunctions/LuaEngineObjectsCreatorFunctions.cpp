@@ -96,7 +96,7 @@ namespace EngineCore
 
          for (std::string resName : resourceNames)
          {
-            resName = TrimEnd(resName);
+            resName = Trim(resName);
             ResourceMap::GetInstance()->AllocateAsync(resName);
          }
 
@@ -113,7 +113,7 @@ namespace EngineCore
 
          for (std::string resName : resourceNames)
          {
-            resName = TrimEnd(resName);
+            resName = Trim(resName);
             ResourceMap::GetInstance()->SaveToPool(resName);
          }
       }

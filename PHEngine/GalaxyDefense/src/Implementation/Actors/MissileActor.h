@@ -1,0 +1,57 @@
+#pragma once
+
+#include "Core/GameCore/Actor.h"
+#include "Core/GameCore/BoundingBox3D.h"
+#include "Implementation/MissileType.h"
+#include "Implementation/DamageDealerType.h"
+
+#include <functional>
+#include <unordered_map>
+#include <memory>
+
+using namespace EngineCore;
+
+namespace Game
+{
+    class MissileExplosionVisitorBase;
+    
+    enum class eMissileActivityState
+    {
+        IDLE,
+        ACTIVE,
+        EXPLOSION,
+        EXPLOSION_FINISHED
+    };
+
+    class MissileActor
+        : public Actor
+    {
+    protected:
+        eMissileActivityState mActivityState{eMissileActivityState::IDLE};
+
+        eMissileType mMissileType{eMissileType::NONE};
+
+        eDamageDealerType mDamageDealerType{eDamageDealerType::NONE};
+
+    public:
+        MissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
+
+        virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
+
+        virtual void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType);
+
+        virtual void TriggerExplosion();
+
+        virtual void TriggerExplosionFinished();
+
+        virtual void TriggerDisabled();
+
+        virtual std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor();
+
+        eMissileActivityState GetMissileActivityState() const;
+
+        eMissileType GetMissileType() const;
+
+        eDamageDealerType GetDamageDealerType() const;
+    };
+}

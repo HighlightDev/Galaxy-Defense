@@ -125,12 +125,12 @@ function UiItemBase:new()
 end
 
 function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
-    print("UiItemBase:setParent => host :" ..
+    --[[print("UiItemBase:setParent => host :" ..
         tostring(host) ..
         ", canvas name: " .. tostring(canvasName) ..
         ", uiWidgetParentName: " ..
         tostring(uiWidgetParentName) ..
-        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))
+        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))]]--
     assert(
         self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
         canvasName ~= "" and

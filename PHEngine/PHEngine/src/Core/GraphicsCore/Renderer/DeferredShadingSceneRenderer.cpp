@@ -1423,9 +1423,9 @@ namespace Graphics
                m_interThreadMgr.ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE,
                                                     creatorObjectId, functionId, [=]()
                                                     { sceneSp->GetTextHandler()
-                         ->GetTextFieldById(textFieldProxyId)
-                         ->SetTextScreenSpaceSize(mFontHandler
-                                                      ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
+                                                          ->GetTextFieldById(textFieldProxyId)
+                                                          ->SetTextScreenSpaceSize(mFontHandler
+                                                                                       ->GetTextScreenSpaceSize(fontName, textFieldProxyId)); });
             }
          }
       }
@@ -1484,6 +1484,22 @@ namespace Graphics
 
       void DeferredShadingSceneRenderer::DebugRenderPhysics(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
+         float viewMatVec[16]{0.0f};
+         const float *pSource = (const float *)glm::value_ptr(viewMatrix);
+         for (int i = 0; i < 16; ++i)
+            viewMatVec[i] = pSource[i];
+
+         glMatrixMode(GL_MODELVIEW);
+         glLoadMatrixf(pSource);
+
+         float projMatrix[16]{0.0f};
+         pSource = (const float *)glm::value_ptr(projectionMatrix);
+         for (int i = 0; i < 16; ++i)
+            projMatrix[i] = pSource[i];
+
+         glMatrixMode(GL_PROJECTION);
+         glLoadMatrixf(projMatrix);
+
          RenderState<DepthState<true, GL_LEQUAL>, StencilState<false, 0, 0, 0, 0, 0, 0, 0>, BlendingState<false, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA>> renderState;
          renderState.BindRenderState();
          // todo: delete this crap and use buffers =\
@@ -1491,22 +1507,6 @@ namespace Graphics
          const auto &physicsRenderData = mDebugPhysicsRenderData.GetDebugLines();
          if (physicsRenderData.size())
          {
-            float viewMatVec[16]{0.0f};
-            const float *pSource = (const float *)glm::value_ptr(viewMatrix);
-            for (int i = 0; i < 16; ++i)
-               viewMatVec[i] = pSource[i];
-
-            glMatrixMode(GL_MODELVIEW);
-            glLoadMatrixf(pSource);
-
-            float projMatrix[16]{0.0f};
-            pSource = (const float *)glm::value_ptr(projectionMatrix);
-            for (int i = 0; i < 16; ++i)
-               projMatrix[i] = pSource[i];
-
-            glMatrixMode(GL_PROJECTION);
-            glLoadMatrixf(projMatrix);
-
             glBegin(GL_LINES);
             for (size_t i = 0; i < physicsRenderData.size(); ++i)
             {
@@ -1518,6 +1518,7 @@ namespace Graphics
                glVertex3f(vert2.x, vert2.y, vert2.z);
             }
             glEnd();
+         }
 
 #if 0
 
@@ -1567,58 +1568,83 @@ namespace Graphics
                }
                glEnd();
             }
+#endif
+#if 1
 
-            for (auto& proxy : PrimitiveProxiesVector)
+         for (auto &proxy : PrimitiveProxiesVector)
+         {
+            if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY || proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::STATIC_MESH_PROXY)
             {
-               if (proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::SKELETAL_MESH_PROXY || proxy->GetPrimitiveProxyType() == ePrimitiveProxyType::STATIC_MESH_PROXY)
+               const auto bb = proxy->GetTransformedBoundingBox();
+               const auto &positions = bb.GetBoundPositions();
+
+               std::vector<glm::vec3> points =
+                   {
+                       // Front
+                       positions[0],
+                       positions[1],
+                       positions[2],
+                       positions[2],
+                       positions[0],
+                       positions[3],
+
+                       // Back
+                       positions[4],
+                       positions[5],
+                       positions[6],
+                       positions[6],
+                       positions[7],
+                       positions[4],
+
+                       // Right
+                       positions[3],
+                       positions[2],
+                       positions[6],
+                       positions[6],
+                       positions[7],
+                       positions[3],
+
+                       // Left
+                       positions[0],
+                       positions[1],
+                       positions[5],
+                       positions[5],
+                       positions[0],
+                       positions[4],
+
+                       // Top
+                       positions[4],
+                       positions[0],
+                       positions[3],
+                       positions[3],
+                       positions[7],
+                       positions[4],
+
+                       // Bottom
+                       positions[5],
+                       positions[1],
+                       positions[2],
+                       positions[2],
+                       positions[6],
+                       positions[5],
+                   };
+
+               glBegin(GL_TRIANGLES);
+               for (size_t i = 0; i < points.size(); i += 3)
                {
-                  const auto bb = proxy->GetTransformedBoundingBox();
-                  const auto& positions = bb.GetBoundPositions();
+                  glm::vec3 vertex1 = points[i];
+                  glm::vec3 vertex2 = points[i + 1];
+                  glm::vec3 vertex3 = points[i + 2];
 
-                  std::vector<glm::vec3> points =
-                  {
-                     // Front
-                     positions[0], positions[1], positions[2],
-                     positions[2], positions[0], positions[3],
-
-                     // Back
-                     positions[4], positions[5], positions[6],
-                     positions[6], positions[7], positions[4],
-
-                     // Right
-                     positions[3], positions[2], positions[6],
-                     positions[6], positions[7], positions[3],
-
-                     // Left
-                     positions[0], positions[1], positions[5],
-                     positions[5], positions[0], positions[4],
-
-                     // Top
-                     positions[4], positions[0], positions[3],
-                     positions[3], positions[7], positions[4],
-
-                     // Bottom
-                     positions[5], positions[1], positions[2],
-                     positions[2], positions[6], positions[5],
-                  };
-
-                  glBegin(GL_TRIANGLES);
-                  for (size_t i = 0; i < points.size(); i += 3)
-                  {
-                     glm::vec3 vertex1 = points[i];
-                     glm::vec3 vertex2 = points[i + 1];
-                     glm::vec3 vertex3 = points[i + 2];
-
-                     glColor3f(0.6f, 0.6f, 0.6f);
-                     glVertex3f(vertex1.x, vertex1.y, vertex1.z);
-                     glVertex3f(vertex2.x, vertex2.y, vertex2.z);
-                     glVertex3f(vertex3.x, vertex3.y, vertex3.z);
-                  }
-                  glEnd();
+                  glColor3f(0.6f, 0.6f, 0.6f);
+                  glVertex3f(vertex1.x, vertex1.y, vertex1.z);
+                  glVertex3f(vertex2.x, vertex2.y, vertex2.z);
+                  glVertex3f(vertex3.x, vertex3.y, vertex3.z);
                }
+               glEnd();
+            }
          }
 #endif
-         }
       }
 #endif
 

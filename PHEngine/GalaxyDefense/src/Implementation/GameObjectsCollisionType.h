@@ -1,0 +1,12 @@
+#pragma once
+
+namespace Game
+{
+    enum class eGameObjectsCollisionType
+    {
+        UNDEFINED,
+        SPACESHIP_WITH_MISSILE,
+        SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT,
+        MISSILE_WITH_NEUTRAL_SPACE_OBJECT
+    };
+}

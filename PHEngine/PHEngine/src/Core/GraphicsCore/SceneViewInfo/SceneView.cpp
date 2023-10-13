@@ -1,7 +1,5 @@
 #include "SceneView.h"
 
-#include <iostream>
-
 namespace Graphics
 {
    SceneView::SceneView(const std::shared_ptr<CameraSceneProxy> &cameraProxy, const std::vector<std::shared_ptr<PrimitiveSceneProxy>> &primitiveProxies)
@@ -17,16 +15,22 @@ namespace Graphics
 
    void SceneView::DoVisibilityTest()
    {
-      for (const auto &proxy : mPrimitiveProxies)
+      if (mCameraProxy->IsCameraFrustumBuilt())
       {
-         bool bProxyVisible = true;
-
-         if (proxy->IsFrustumCullTestNeeded() && mCameraProxy->IsCameraFrustumBuilt())
+         const auto &cameraFrustum = mCameraProxy->GetCameraFrustum();
+         for (const auto &proxy : mPrimitiveProxies)
          {
-            bProxyVisible = mCameraProxy->GetCameraFrustum().CollidesWithBoundingBox(proxy->GetTransformedBoundingBox());
+               mVisibilityMap[proxy->GetSceneProxyId()] = proxy->IsFrustumCullTestNeeded() ?
+                                                          cameraFrustum.CollidesWithBoundingBox(proxy->GetTransformedBoundingBox()) :
+                                                          true;
          }
-
-         mVisibilityMap[proxy->GetSceneProxyId()] = bProxyVisible;
+      }
+      else
+      {
+         for (const auto &proxy : mPrimitiveProxies)
+         {
+            mVisibilityMap[proxy->GetSceneProxyId()] = true;
+         }
       }
    }
 
