@@ -90,14 +90,22 @@ namespace Game
       const auto displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
       const auto displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
-      auto spaceCamera = std::make_shared<SpaceSceneCamera>("SpaceShipCamera",
-                                                            eCameraType::MAIN_FIRST_PERSON_CAMERA,
-                                                            sceneSp,
-                                                            ViewPortInfo(0, 0, displayWidth, displayHeight),
-                                                            38.88f,
-                                                            -2.72f,
-                                                            glm::vec3(5.0f, 45.0f, -40.0f));
+      const auto &a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
+      assert(a_sceneCenterActorDummy);
+
+      auto spaceCamera = std::make_shared<ThirdPersonCamera>("LevelMainCamera",
+                                                             eCameraType::MAIN_THIRD_PERSON_CAMERA,
+                                                             sceneSp,
+                                                             ViewPortInfo(0, 0, displayWidth, displayHeight),
+                                                             38.88f,
+                                                             -2.72f,
+                                                             150.0f);
+
+      spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);
+      spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
+      spaceCamera->SetDistanceFromTargetToCamera(150.0f);
       sceneSp->RegisterMainCamera(spaceCamera);
+      spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
 
       const auto &a_skybox = sceneSp->GetActorByName("SkyboxActor");
       assert(a_skybox);

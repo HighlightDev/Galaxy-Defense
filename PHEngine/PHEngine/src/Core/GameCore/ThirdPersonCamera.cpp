@@ -3,6 +3,9 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Serialize/SerializeHelper.h"
+#include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Input/KeyboardBindings.h"
+#include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
 
 #include <algorithm>
@@ -15,10 +18,16 @@ namespace EngineCore
 
    ThirdPersonCamera::ThirdPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort,
                                         const float initPitchDeg, const float initYawDeg, const float camDistanceToThirdPersonTarget, const glm::vec3 &thirdPersonTargetOffset)
-       : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg), PlayerMovedEvent(), mThirdPersonTargetGOName(""), bThirdPersonTargetDeferredDirty(false), m_thirdPersonTargetOffset(thirdPersonTargetOffset)
+       : ACamera(cameraName, cameraType, scene, viewPort, initPitchDeg, initYawDeg),
+         PlayerMovedEvent(),
+         mThirdPersonTargetGOName(""),
+         bThirdPersonTargetDeferredDirty(false),
+         m_thirdPersonTargetOffset(thirdPersonTargetOffset),
+         mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>(cameraName + "_InputComponent")))
    {
-      SetMaxDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
-      m_distanceFromTargetToCamera = camDistanceToThirdPersonTarget;
+      SetMaxDistanceFromTargetToCamera(sCameraMaxDistance);
+      SetMinDistanceFromTargetToCamera(sCameraMinDistance);
+      SetDistanceFromTargetToCamera(camDistanceToThirdPersonTarget);
    }
 
    ThirdPersonCamera::~ThirdPersonCamera()
@@ -55,10 +64,22 @@ namespace EngineCore
    {
       ACamera::Tick(DeltaTime);
 
-      float clampedDeltaTime = std::max(DeltaTime, 0.03f);
+      const auto &mouseBindings = mInputComponent->GetMouseBindings();
+      if (mouseBindings->IsMouseMoveEventDirty())
+      {
+         const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
+         SetRotation(mouseMoveEvent.z, mouseMoveEvent.w);
+      }
+
+      if (mouseBindings->IsMouseScrollEventDirty())
+      {
+         const auto mouseZoomDirection = mouseBindings->FlushMouseScrollEvent();
+         Zoom(mouseZoomDirection, 5.0f);
+      }
 
       if (m_bThirdPersonTargetTransformationDirty)
       {
+         const float clampedDeltaTime = std::max(DeltaTime, 0.03f);
          m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
 
          glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
@@ -75,15 +96,32 @@ namespace EngineCore
       }
    }
 
-   void ThirdPersonCamera::SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera)
+   void ThirdPersonCamera::SetMaxDistanceFromTargetToCamera(const float maxDistanceFromTargetToCamera)
    {
-      m_maxDistanceFromTargetToCamera = maxDistanceFromTargetToCamera;
-      SetTransformationDirty();
+      if (!EngineMath::FloatsNearEqual(maxDistanceFromTargetToCamera, m_maxDistanceFromTargetToCamera))
+      {
+         m_maxDistanceFromTargetToCamera = maxDistanceFromTargetToCamera;
+         SetTransformationDirty();
+      }
    }
 
    float ThirdPersonCamera::GetMaxDistanceFromTargetToCamera() const
    {
       return m_maxDistanceFromTargetToCamera;
+   }
+
+   void ThirdPersonCamera::SetMinDistanceFromTargetToCamera(const float minDistanceFromTargetToCamera)
+   {
+      if (!EngineMath::FloatsNearEqual(minDistanceFromTargetToCamera, m_minDistanceFromTargetToCamera))
+      {
+         m_minDistanceFromTargetToCamera = minDistanceFromTargetToCamera;
+         SetTransformationDirty();
+      }
+   }
+
+   float ThirdPersonCamera::GetMinDistanceFromTargetToCamera() const
+   {
+      return m_minDistanceFromTargetToCamera;
    }
 
    float ThirdPersonCamera::GetTimeForInterpolation() const
@@ -115,7 +153,7 @@ namespace EngineCore
 
    void ThirdPersonCamera::SetDistanceFromTargetToCamera(float distanceFromTargetToCamera)
    {
-      m_distanceFromTargetToCamera = distanceFromTargetToCamera;
+      m_distanceFromTargetToCamera = std::max(std::min(distanceFromTargetToCamera, m_maxDistanceFromTargetToCamera), m_minDistanceFromTargetToCamera);
       SetTransformationDirty();
    }
 
@@ -125,12 +163,12 @@ namespace EngineCore
       {
       case eMouseScrollDirection::ZoomIn:
       {
-         SetDistanceFromTargetToCamera(std::max(m_distanceFromTargetToCamera - zoomPower, sCameraMinDistance));
+         SetDistanceFromTargetToCamera(m_distanceFromTargetToCamera - zoomPower);
          break;
       }
       case eMouseScrollDirection::ZoomOut:
       {
-         SetDistanceFromTargetToCamera(std::min(m_distanceFromTargetToCamera + zoomPower, sCameraMaxDistance));
+         SetDistanceFromTargetToCamera(m_distanceFromTargetToCamera + zoomPower);
          break;
       }
 
@@ -195,12 +233,15 @@ namespace EngineCore
 
    void ThirdPersonCamera::ProcessDeferredThirdPersonTarget()
    {
-      if (auto sceneSp = mScene.lock())
+      if (!m_thirdPersonTarget)
       {
-         assert(mThirdPersonTargetGOName != "");
-         const auto &actor = sceneSp->GetActorByName(mThirdPersonTargetGOName);
-         bThirdPersonTargetDeferredDirty = false;
-         SetThirdPersonTarget(actor);
+         if (auto sceneSp = mScene.lock())
+         {
+            assert(mThirdPersonTargetGOName != "");
+            const auto &actor = sceneSp->GetActorByName(mThirdPersonTargetGOName);
+            bThirdPersonTargetDeferredDirty = false;
+            SetThirdPersonTarget(actor);
+         }
       }
    }
 }

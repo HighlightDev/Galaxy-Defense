@@ -8,6 +8,7 @@ using namespace Event;
 namespace EngineCore
 {
    class Scene;
+   class InputComponent;
 
    class ThirdPersonCamera
        : public ACamera,
@@ -32,11 +33,16 @@ namespace EngineCore
 
       bool bThirdPersonTargetDeferredDirty;
 
+      std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
+
+      float m_maxDistanceFromTargetToCamera;
+
+      float m_minDistanceFromTargetToCamera;
+
       static constexpr float sCameraMinDistance = 5.0f;
       static constexpr float sCameraMaxDistance = 35.0f;
 
    public:
-      float m_maxDistanceFromTargetToCamera;
 
       ThirdPersonCamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene,
                         const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg,
@@ -56,9 +62,13 @@ namespace EngineCore
 
       void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      void SetMaxDistanceFromTargetToCamera(float maxDistanceFromTargetToCamera);
+      void SetMaxDistanceFromTargetToCamera(const float maxDistanceFromTargetToCamera);
+
+      void SetMinDistanceFromTargetToCamera(const float minDistanceFromTargetToCamera);
 
       float GetMaxDistanceFromTargetToCamera() const;
+
+      float GetMinDistanceFromTargetToCamera() const;
 
       float GetTimeForInterpolation() const;
 

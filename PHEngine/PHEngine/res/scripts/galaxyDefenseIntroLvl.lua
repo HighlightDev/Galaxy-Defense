@@ -69,8 +69,16 @@ function CreateTestLevel(host)
 		Space_Station_NORMAL.png,
 		Space_Station_ROUGHNESS.jpg,
 		Space_Station_METALLIC.jpg,
-		space_station.obj
+		space_station.obj,
+		space_station_img.png
 		]])
+
+	_CreateActor(host, "Actor",
+		"SceneCenterActorDummy",
+		0, 0, 0,
+		0, 0, 0,
+		1, 1, 1,
+		"")
 
 	local a_lightId = _CreateActor(host, "Actor",
 		"MainLightActor",
@@ -131,7 +139,6 @@ function System_OnStart(host)
 end
 
 function System_OnUpdate(host, deltaTime)
-	print("LUA => deltaTime:", deltaTime)
 end
 
 HasOnStart = (_G["System_OnStart"] ~= nil and 1 or 0)

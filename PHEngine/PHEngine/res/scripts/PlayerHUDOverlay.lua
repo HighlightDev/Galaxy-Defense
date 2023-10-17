@@ -138,8 +138,12 @@ function PlayerHUDOverlay:new(host)
     local enemyCountTile = UiRectangle:new(host)
     playerHUDOverlay:addWidget(enemyCountTile)
 
-    local enemyCountLabel = UiLabel:new(host, "nimbus_mono")
-    playerHUDOverlay:addWidget(enemyCountLabel) 
+    local stationImg = UiImage:new(host)
+    playerHUDOverlay:addWidget(stationImg)
+
+    --[[ local enemyCountLabel = UiLabel:new(host, "nimbus_mono")
+        playerHUDOverlay:addWidget(enemyCountLabel)
+    --]]
 
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
@@ -276,10 +280,12 @@ function PlayerHUDOverlay:new(host)
         end
     end
 
-    playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged = function ()
-        local enemySpaceshipsCount = getEnemySpaceshipsCountDestroyedByPlayer(host)
-        enemyCountLabel:setText(tostring(enemySpaceshipsCount))
-    end
+    --[[
+        playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged = function ()
+            local enemySpaceshipsCount = getEnemySpaceshipsCountDestroyedByPlayer(host)
+            enemyCountLabel:setText(tostring(enemySpaceshipsCount))
+        end
+    --]]
 
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
         enemyCountTile:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
@@ -287,12 +293,24 @@ function PlayerHUDOverlay:new(host)
             playerHUDOverlayCanvas.widgetName, 30)
         enemyCountTile:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP,
             playerHUDOverlayCanvas.widgetName, 30)
-        enemyCountTile:setWidth(100)
-        enemyCountTile:setHeight(100)
+        enemyCountTile:setWidth(150)
+        enemyCountTile:setHeight(150)
         enemyCountTile:setZOrder(3);
         enemyCountTile:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         enemyCountTile:setBorderRadius(8)
 
+        stationImg:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
+        stationImg:setTextureSource("space_station_img.png");
+        stationImg:setZOrder(4);
+        stationImg:setRotationDegrees(180)
+        stationImg:setHeight(130);
+        stationImg:setWidth(130);
+        stationImg:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            enemyCountTile.widgetName);
+        stationImg:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            enemyCountTile.widgetName);
+
+        --[[
         enemyCountLabel:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
         enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
         enemyCountTile.widgetName, 6)
@@ -308,6 +326,8 @@ function PlayerHUDOverlay:new(host)
         enemyCountLabel:setZOrder(4)
 
         playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged()
+        --]]
+
 
         lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
