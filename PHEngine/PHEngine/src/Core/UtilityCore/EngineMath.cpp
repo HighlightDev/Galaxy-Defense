@@ -250,8 +250,23 @@ namespace EngineMath
       return color;
    }
 
-   float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection)
+   float ProjectVector3OnVector(const glm::vec3 &projectedNonUnitVec, const glm::vec3 &unitDirection)
    {
       return glm::dot(projectedNonUnitVec, unitDirection);
+   }
+
+   float RaycastPlane(const glm::vec3 &rayOrigin, const glm::vec3 &rayDirection, const glm::vec4 &plane)
+   {
+      const auto &planeNormal = glm::vec3(plane.x, plane.y, plane.z);
+      const float nd = glm::dot(rayDirection, planeNormal);
+      const float pn = glm::dot(rayOrigin, planeNormal);
+
+      if (nd >= 0.0f)
+      {
+         return -1.0f;
+      }
+
+      const float t = (plane.w - pn) / nd;
+      return t > 0.0f ? t : -1.0f;
    }
 }

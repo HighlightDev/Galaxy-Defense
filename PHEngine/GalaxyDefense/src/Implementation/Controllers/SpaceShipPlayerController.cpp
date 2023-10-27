@@ -11,15 +11,12 @@
 namespace Game
 {
 
-   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<ACamera> &playerCamera, const std::shared_ptr<Actor> &actor)
+   SpaceShipPlayerController::SpaceShipPlayerController(const std::shared_ptr<Actor> &actor)
        : ActorController(actor),
-         m_camera(),
          mCurrentState(""),
          mLevelBounds(),
          mSpaceShipPrimitiveComponent()
    {
-      assert((eCameraType::MAIN_FIRST_PERSON_CAMERA & playerCamera->GetCameraType()) == eCameraType::MAIN_FIRST_PERSON_CAMERA);
-      m_camera = std::static_pointer_cast<FirstPersonCamera>(playerCamera);
    }
 
    SpaceShipPlayerController::~SpaceShipPlayerController()
@@ -57,12 +54,7 @@ namespace Game
       mLevelBounds = levelBounds;
    }
 
-   std::shared_ptr<FirstPersonCamera> SpaceShipPlayerController::GetCamera() const
-   {
-      return m_camera;
-   }
-
-   void SpaceShipPlayerController::Tick(float deltaTime)
+   void SpaceShipPlayerController::Tick(const float deltaTime)
    {
       const auto &actorSp = m_actorWp.lock();
       assert(actorSp);

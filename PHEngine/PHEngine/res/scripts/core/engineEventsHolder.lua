@@ -23,4 +23,10 @@ function EngineEventsHolder:sendLoadLevelGameThreadEvent(host, enqueueJobPolicy,
     _SendLoadLevelGameThreadEvent(host, enqueueJobPolicy, levelName)
 end
 
+function EngineEventsHolder:sendChangeGameModeGameThreadEvent(host, enqueueJobPolicy, gameModeType)
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    assert(gameModeType ~= nil and type(gameModeType) == "number")
+    _SendChangeGameModeGameThreadEvent(host, enqueueJobPolicy, gameModeType)
+end
+
 return EngineEventsHolder

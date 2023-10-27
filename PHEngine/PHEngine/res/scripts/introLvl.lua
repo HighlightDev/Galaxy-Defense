@@ -32,8 +32,6 @@ function CreateTestLevel(host)
 		,scaled_down_heart.png
 		,background_shield.png
 		,weapon_missile.png
-		,weapon_missile_2.png
-		,weapon_missile_3.png
 		,perlin_noise.png
 		,nightLeft.jpg
 		,spaceship_albedo.jpg

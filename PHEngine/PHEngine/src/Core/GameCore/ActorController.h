@@ -26,9 +26,9 @@ namespace EngineCore
 
         virtual void CleanUp();
 
-        virtual void Tick(float deltaTime) = 0;
-
         virtual void Initialize();
+
+        void Tick(const float deltaTime) override {}
 
         void UnpausableTick(const float deltaTime) override {};
 

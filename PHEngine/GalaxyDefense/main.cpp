@@ -137,7 +137,7 @@ int32_t main(int32_t argc, char **argv)
   ThreadHelper::GetInstance()->RegisterThread("Render");
   FolderManager::GetInstance()->BuildSystemPathToFolders();
 
-  //Logger::InitLog(std::make_shared<LoggerClientConsole>());
+  // Logger::InitLog(std::make_shared<LoggerClientConsole>());
   Logger::InitLog(std::make_shared<LoggerClientFile>());
   Logger::StartLogThread();
 

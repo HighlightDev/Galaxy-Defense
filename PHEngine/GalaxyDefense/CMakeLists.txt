@@ -8,6 +8,7 @@ set(
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
+	src/Implementation/ScreenRayCaster.h
 	src/Implementation/GameObjectsType.h
 	src/Implementation/GameObjectsCollisionType.h
 	src/Implementation/StatusTypes.h
@@ -19,11 +20,14 @@ set(
 	src/Implementation/Controllers/CombatController.h
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
+	src/Implementation/Controllers/GameFlowController.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/Events/SphereContactCollisionEvent.h
 	src/Implementation/Events/RayCollisionEvent.h
 	src/Implementation/Events/MainPlayerStatusChangedEvent.h
+	src/Implementation/Events/ChangeGameModeEvent.h
 	src/Implementation/MainPlayerActionEnum.h
+	src/Implementation/GameModeTypeEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
 	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/ISpaceObjectFactory.h
@@ -83,12 +87,15 @@ set(
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp
+	src/Implementation/ScreenRayCaster.cpp
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
+	src/Implementation/Controllers/GameFlowController.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Events/SphereContactCollisionEvent.cpp
 	src/Implementation/Events/RayCollisionEvent.cpp
 	src/Implementation/Events/MainPlayerStatusChangedEvent.cpp
+	src/Implementation/Events/ChangeGameModeEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/BombMissileFactory.cpp
 	src/Implementation/Factories/FreezingMissileFactory.cpp

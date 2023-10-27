@@ -56,13 +56,15 @@ namespace EngineMath
 
    bool TestPointInAABB(const glm::ivec2 &aabbMin, const glm::ivec2 &aabbMax, const glm::ivec2 &point);
 
+   std::optional<glm::vec3> TestPlaneToPlaneToPlane(const glm::vec4 &plane1, const glm::vec4 &plane2, const glm::vec4 &plane3);
+
+   float RaycastPlane(const glm::vec3& rayOrigin, const glm::vec3& rayDirection, const glm::vec4& plane);
+
    glm::quat EulerAnglesToQuat(const glm::vec3 &eulerAngles);
 
    glm::mat4 BuildMirrorMatrix(const glm::vec4 &mirrorPlane);
 
    glm::vec3 QuatToEulerAngles(const glm::quat &rotationQuat);
-
-   std::optional<glm::vec3> TestPlaneToPlaneToPlane(const glm::vec4 &plane1, const glm::vec4 &plane2, const glm::vec4 &plane3);
 
    float GaussFunction(const float x, const float sigma);
 

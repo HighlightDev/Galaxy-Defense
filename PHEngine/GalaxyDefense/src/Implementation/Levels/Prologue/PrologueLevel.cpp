@@ -24,12 +24,13 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
 #include "Implementation/SpaceSceneCamera.h"
-#include "Implementation/Controllers/SpaceShipPlayerController.h"
+#include "Implementation/Controllers/GameFlowController.h"
 #include "Implementation/Controllers/CombatController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
+#include "Implementation/Events/ChangeGameModeEvent.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
@@ -52,7 +53,7 @@ namespace Game
    PrologueLevel::PrologueLevel()
        : LevelBase("FirstLevel")
    {
-      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent>();
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 
@@ -123,6 +124,11 @@ namespace Game
       const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
+
+      const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
+
+      const auto &gameFlowController = std::make_shared<GameFlowController>(spaceCamera, a_station->GetRootComponent());
+      sceneSp->AddActorController(gameFlowController);
 
       /*const auto &a_spaceship = sceneSp->GetActorByName("SpaceshipActor");
       assert(a_spaceship);

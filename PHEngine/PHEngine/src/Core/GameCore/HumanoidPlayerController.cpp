@@ -50,7 +50,7 @@ namespace EngineCore
       }
    }
 
-   void HumanoidPlayerController::Tick(float deltaTime)
+   void HumanoidPlayerController::Tick(const float deltaTime)
    {
       if (const auto &actorSp = m_actorWp.lock())
       {

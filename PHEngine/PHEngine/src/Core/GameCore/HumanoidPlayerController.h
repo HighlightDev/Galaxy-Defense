@@ -29,7 +29,7 @@ namespace EngineCore
 
       void Initialize() override;
 
-      void Tick(float deltaTime) override;
+      void Tick(const float deltaTime) override;
 
       void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
 

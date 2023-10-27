@@ -38,6 +38,12 @@ PlayerStatusType = {
     DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED = 5
 }
 
+GameModeType = {
+    IDLE = 0,
+    COMBAT = 1,
+    SPACE_STATION_PLACEMENT = 2
+}
+
 MissileType = {
     NONE = 0,
     BOMB = 1,
@@ -120,6 +126,9 @@ function PlayerHUDOverlay:new(host)
     local windowHeight = _GetWindowHeight(host)
 
     local playerHUDOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    playerHUDOverlayCanvas:subscribeOnLuaProxyReady(function(host)
+        _InitializeCanvasInputSystem(host, playerHUDOverlayCanvas.luaProxyId)
+    end)
     local playerHUDOverlay = UiOverlay:createBackgroundOverlay(host, "PlayerHUDOverlay", playerHUDOverlayCanvas)
 
     local lifeRootContainerWidth = windowWidth / 3.0;
@@ -137,6 +146,11 @@ function PlayerHUDOverlay:new(host)
 
     local enemyCountTile = UiRectangle:new(host)
     playerHUDOverlay:addWidget(enemyCountTile)
+
+    enemyCountTile:setOnMouseInputClickedCallback(function()
+        EngineEventsHolder:sendChangeGameModeGameThreadEvent(host,
+            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
+    end)
 
     local stationImg = UiImage:new(host)
     playerHUDOverlay:addWidget(stationImg)
@@ -298,6 +312,7 @@ function PlayerHUDOverlay:new(host)
         enemyCountTile:setZOrder(3);
         enemyCountTile:setColorHexValue(PlayerHUDOverlay.weaponBackgroundTileColor)
         enemyCountTile:setBorderRadius(8)
+        enemyCountTile:enableMouseInputReceiverBase(host)
 
         stationImg:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
         stationImg:setTextureSource("space_station_img.png");

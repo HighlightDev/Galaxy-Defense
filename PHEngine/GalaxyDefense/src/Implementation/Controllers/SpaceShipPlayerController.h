@@ -15,11 +15,6 @@ namespace Game
    class SpaceShipPlayerController
       : public ActorController
    {
-
-      using Base = Actor;
-
-      std::shared_ptr<FirstPersonCamera> m_camera;
-
       std::string mCurrentState;
 
       BoundingBox3D mLevelBounds;
@@ -28,17 +23,15 @@ namespace Game
 
    public:
 
-      SpaceShipPlayerController(const std::shared_ptr<ACamera>& playerCamera, const std::shared_ptr<Actor>& actor);
+      SpaceShipPlayerController(const std::shared_ptr<Actor>& actor);
 
       ~SpaceShipPlayerController() override;
 
-      void Tick(float deltaTime) override;
+      void Tick(const float deltaTime) override;
    
       void Initialize() override;
 
       void SetLevelBounds(const BoundingBox3D& mLevelBounds);
-
-      std::shared_ptr<FirstPersonCamera> GetCamera() const;
    };
 
 }
