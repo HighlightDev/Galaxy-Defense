@@ -7,7 +7,7 @@
 #include "Core/GameCore/Input/MouseBindings.h"
 #include "Core/GraphicsCore/SceneProxy/MainCameraSceneProxy.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Implementation/ScreenRayCaster.h"
+#include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 
@@ -51,19 +51,24 @@ namespace Game
             {
                const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
                const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
-               ScreenRayCaster screenRayCaster;
+               const ScreenRayCaster screenRayCaster;
                const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
                                                                                                    glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
                                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
                                                                                                    mProjectionMatrix,
                                                                                                    sceneCameraSp->GetViewMatrix());
-               glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+               const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
                const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
                if (tParam >= 0.0f)
                {
                   const auto &placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
                   m_tempActorRootComponent->SetTranslation(placementPosition);
                }
+            }
+
+            if (mouseBindings->GetKeyState(eMouseKeys::MouseButtonLeft) == KeyState::PRESSED)
+            {
+               mCurrentGameModeType = eGameModeType::IDLE;
             }
          }
       }

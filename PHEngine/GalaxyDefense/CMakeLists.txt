@@ -8,7 +8,6 @@ set(
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
 	src/Implementation/SpaceSceneCamera.h
 	src/Implementation/AiBrain.h
-	src/Implementation/ScreenRayCaster.h
 	src/Implementation/GameObjectsType.h
 	src/Implementation/GameObjectsCollisionType.h
 	src/Implementation/StatusTypes.h
@@ -87,7 +86,6 @@ set(
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp
-	src/Implementation/ScreenRayCaster.cpp
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
 	src/Implementation/Controllers/GameFlowController.cpp

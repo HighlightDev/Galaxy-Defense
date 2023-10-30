@@ -5,7 +5,7 @@
 
 #include <glm/matrix.hpp>
 
-namespace Game
+namespace EngineCore
 {
     glm::vec3 ScreenRayCaster::CastRayFromScreenSpaceToWorldSpace(const glm::ivec2 &screenSpacePosition,
                                                                   const glm::ivec2 &windowSize,
