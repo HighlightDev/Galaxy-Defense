@@ -132,6 +132,11 @@ void get_window_size(GLFWwindow *window)
   DisplayDeviceDataProvider::GetInstance()->SetWindowHeight(height);
 }
 
+void window_size_changed_callback(GLFWwindow *window, int width, int height)
+{
+  DisplayDeviceDataProvider::GetInstance()->SetWindowSize(width, height);
+}
+
 int32_t main(int32_t argc, char **argv)
 {
   ThreadHelper::GetInstance()->RegisterThread("Render");
@@ -170,6 +175,7 @@ int32_t main(int32_t argc, char **argv)
   glfwSetScrollCallback(window, mouse_scroll_callback);
   glfwSetKeyCallback(window, key_pressed_callback);
   glfwSetMouseButtonCallback(window, mouse_button_callback);
+  glfwSetWindowSizeCallback(window, window_size_changed_callback);
 
   GLenum initResult = glewInit();
 

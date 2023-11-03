@@ -15,8 +15,9 @@ namespace Graphics {
          FLOAT_PROPERTY,
          TEXTURE_PROPERTY,
          DEFERRED_TEXTURE_PROPERTY,
-         DYNAMIC_FLOAT_PROPERTY,
          FLOAT_BINDING_PROPERTY,
+         IVEC2_BINDING_PROPERTY,
+         VEC2_BINDING_PROPERTY,
          VEC2_PROPERTY,
          IVEC2_PROPERTY
       };

@@ -22,10 +22,12 @@ namespace Graphics {
 
       void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
-      float GetValue();
+      std::any GetValue();
+
+      void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType);
 
    protected:
 
-      float TraverseGraph() override;
+      std::any TraverseGraph() override;
    };
 }

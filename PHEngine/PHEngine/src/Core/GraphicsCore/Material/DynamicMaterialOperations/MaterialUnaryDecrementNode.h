@@ -4,10 +4,13 @@
 namespace Graphics
 {
    struct MaterialUnaryDecrementNode
-      : public MaterialUnaryOperationNode {
+       : public MaterialUnaryOperationNode
+   {
+
+      explicit MaterialUnaryDecrementNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
       eMaterialOperationType GetMaterialOperationType() const override;
 
-      float DoOperation(const float& value) override;
+      std::any DoOperation(const std::any &value) override;
    };
 }

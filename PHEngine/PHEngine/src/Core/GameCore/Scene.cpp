@@ -18,10 +18,12 @@
 #include "Core/GameCore/Components/ComponentCreators/UiComponentCreator.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 using namespace Graphics;
 using namespace TinyLogger;
 using namespace EngineCore::Scripts;
+using namespace IO;
 
 namespace EngineCore
 {
@@ -33,6 +35,9 @@ namespace EngineCore
          mLuaReplicators(),
          m_interThreadMgr(interThreadMgr),
          mGameThreadDeltaSec(std::make_shared<EngineObjectProperty<float>>(0.0f, "GT_DeltaSec")),
+         mScreenResolutionProperty(std::make_shared<EngineObjectProperty<glm::vec2>>(glm::vec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
+                                                                                     "ScreenResolution")),
          mDeferredResourceCreators(),
          mActors(),
          mMainCamera(),
@@ -50,6 +55,7 @@ namespace EngineCore
 
       mTextHandler->Initialize();
       AddEngineProperty(mGameThreadDeltaSec);
+      AddEngineProperty(mScreenResolutionProperty);
       mPhysicsWorld->Initialize();
    }
 
@@ -334,6 +340,8 @@ namespace EngineCore
    void Scene::Tick(const float delta)
    {
       mGameThreadDeltaSec->SetValue(delta);
+      mScreenResolutionProperty->SetValue(glm::vec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                    DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()));
 
       mPhysicsWorld->Tick(delta);
 

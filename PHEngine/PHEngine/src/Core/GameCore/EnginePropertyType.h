@@ -7,7 +7,9 @@ enum class eEnginePropertyBindingType
     EulerAnglesRotation,
     Animation,
     Boolean,
-    Vec3
+    Vec3,
+    iVec2,
+    Vec2
 };
 
 enum class eEnginePropertyType
@@ -16,5 +18,7 @@ enum class eEnginePropertyType
     Float,
     Vec3,
     Boolean,
-    Integer
+    Integer,
+    iVec2,
+    Vec2
 };

@@ -17,8 +17,10 @@
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 using namespace Graphics;
+using namespace Event;
 
 namespace EngineCore
 {
@@ -39,6 +41,7 @@ namespace EngineCore
       , public ITickable
       , public ISerializable
       , public std::enable_shared_from_this<ACamera>
+      , public WindowSizeChangedEvent
    {
       float m_rotateSensetivity;
 
@@ -97,6 +100,8 @@ namespace EngineCore
       void Tick(const float DeltaTime) override;
 
       void UnpausableTick(const float deltaTime) override {};
+
+      void ProcessEvent(const WindowSizeChangedEvent::EventData_t& data) override;
 
       virtual void PostLevelInit();
 

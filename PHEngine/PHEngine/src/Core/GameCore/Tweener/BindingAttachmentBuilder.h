@@ -5,6 +5,8 @@
 #include "Core/GameCore/EngineObjectPropertyBindings/BooleanPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/EulerAnglesRotationPropertyBinding.h"
 #include "Core/GameCore/EngineObjectPropertyBindings/Vec3PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/iVec2PropertyBinding.h"
+#include "Core/GameCore/EngineObjectPropertyBindings/Vec2PropertyBinding.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -70,6 +72,20 @@ namespace EngineCore
             const auto vec3Binding = std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindingSp);
             auto gameObjectProperty = CastBasePropertyToType<glm::vec3>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
             vec3Binding->SetEngineObjectProperty(gameObjectProperty);
+            break;
+         }
+         case eEnginePropertyBindingType::iVec2:
+         {
+            const auto ivec2Binding = std::static_pointer_cast<iVec2PropertyBinding>(bindingSp);
+            const auto& gameObjectProperty = CastBasePropertyToType<glm::ivec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
+            ivec2Binding->SetEngineObjectProperty(gameObjectProperty);
+            break;
+         }
+         case eEnginePropertyBindingType::Vec2:
+         {
+            const auto vec2Binding = std::static_pointer_cast<Vec2PropertyBinding>(bindingSp);
+            const auto& gameObjectProperty = CastBasePropertyToType<glm::vec2>(gameObjectSp->GetEnginePropertyByName(gameObjectPropertyName).lock());
+            vec2Binding->SetEngineObjectProperty(gameObjectProperty);
             break;
          }
          default:

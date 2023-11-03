@@ -4,10 +4,19 @@
 	material_type: "dynamic"
 </general>
 <properties>
-	<property>
+	<dynamic_property>
 		name: "resolution"
 		type: "vec2"
-	</property>
+		incremental: "false"
+		<operation>
+			<no_op>
+				<property>
+					name: "screenResolution"
+					type: "binding_vec2"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 	<dynamic_property>
 		name: "timeSec"
 		type: "float"

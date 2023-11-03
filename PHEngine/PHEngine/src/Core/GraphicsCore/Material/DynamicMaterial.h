@@ -1,7 +1,7 @@
 #pragma once
 #include "IMaterial.h"
 #include "Core/GameCore/ITickable.h"
-#include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicFloatMaterialProperty.h"
 
 namespace EngineCore
 {
@@ -19,7 +19,7 @@ namespace Graphics
       bool mIsEnabled;
 
    protected:
-      std::vector<std::shared_ptr<DynamicFloatMaterialProperty>> mDynamicProperties;
+      std::vector<std::shared_ptr<DynamicMaterialProperty>> mDynamicProperties;
 
       std::weak_ptr<EngineCore::Scene> mScene;
 
@@ -44,9 +44,9 @@ namespace Graphics
 
       void SyncDataWithRenderThread();
 
-      void PushDynamicProperty(std::shared_ptr<DynamicFloatMaterialProperty> dynamicProperty);
+      void PushDynamicProperty(const std::shared_ptr<DynamicMaterialProperty>& dynamicProperty);
 
-      std::shared_ptr<DynamicFloatMaterialProperty> TryGetDynamicPropertyByName(const std::string &propertyName) const;
+      std::shared_ptr<DynamicMaterialProperty> TryGetDynamicPropertyByName(const std::string &propertyName) const;
 
       std::shared_ptr<MaterialProperty> TryGetAnyMaterialPropertyByName(const std::string &propertyName) const;
    };

@@ -1,6 +1,8 @@
 #include "DynamicMaterial.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/CommonCore/Assertion.h"
 
@@ -67,15 +69,10 @@ namespace Graphics
    {
       for (auto dynProp : mDynamicProperties)
       {
-         // Get proxy of dynamic property
-         auto proxyProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());
-         assert(proxyProperty);
-
-         // todo: property could be not only float - need refactoring
-         auto floatProperty = std::static_pointer_cast<FloatMaterialProperty>(proxyProperty);
-         const float value = dynProp->GetValue();
-         floatProperty->SetValue(value);
-         mDirtyProperties.push_back(floatProperty);
+         const auto staticProperty = GetMaterialPropertyByName(dynProp->GetPropertyName());
+         assert(staticProperty);
+         dynProp->UpdateStaticPropertyWithDynamicValue(staticProperty);
+         mDirtyProperties.push_back(staticProperty);
       }
 
       if (mDirtyProperties.size())
@@ -85,21 +82,34 @@ namespace Graphics
       }
    }
 
-   void DynamicMaterial::PushDynamicProperty(std::shared_ptr<DynamicFloatMaterialProperty> dynamicProperty)
+   void DynamicMaterial::PushDynamicProperty(const std::shared_ptr<DynamicMaterialProperty> &dynamicProperty)
    {
-
       const auto &propertyName = dynamicProperty->GetPropertyName();
 
-      auto propertyIt = std::find_if(mDynamicProperties.begin(), mDynamicProperties.end(),
-                                     [&](const auto &dynamicProperty)
-                                     { return propertyName == dynamicProperty->GetPropertyName(); });
-      assert(propertyIt == mDynamicProperties.end());
+      const bool alreadyExistsWithSuchName = std::any_of(mDynamicProperties.begin(), mDynamicProperties.end(),
+                                                         [&](const auto &dynamicProperty)
+                                                         { return propertyName == dynamicProperty->GetPropertyName(); });
+      assert(!alreadyExistsWithSuchName);
 
-      // Add proxy of dynamic property
-      std::shared_ptr<FloatMaterialProperty> proxyProperty = std::make_shared<FloatMaterialProperty>(propertyName);
-      PushMaterialProperty(proxyProperty);
+      // Add static version of dynamic property
+      std::shared_ptr<MaterialProperty> staticProperty;
+      if (dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::FloatProperty)
+      {
+         staticProperty = std::make_shared<FloatMaterialProperty>(propertyName);
+      }
+      else if (dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::iVec2Property)
+      {
+         staticProperty = std::make_shared<iVec2MaterialProperty>(propertyName);
+      }
+      else if (dynamicProperty->GetPropertyType() == DynamicMaterialProperty::eDynamicMaterialPropertyType::Vec2Property)
+      {
+         staticProperty = std::make_shared<Vec2MaterialProperty>(propertyName);
+      }
 
-      mDynamicProperties.emplace_back(std::move(dynamicProperty));
+      assert(staticProperty);
+      PushMaterialProperty(staticProperty);
+
+      mDynamicProperties.emplace_back(dynamicProperty);
    }
 
    std::shared_ptr<MaterialProperty> DynamicMaterial::TryGetAnyMaterialPropertyByName(const std::string &propertyName) const
@@ -124,7 +134,7 @@ namespace Graphics
       return result;
    }
 
-   std::shared_ptr<DynamicFloatMaterialProperty> DynamicMaterial::TryGetDynamicPropertyByName(const std::string &propertyName) const
+   std::shared_ptr<DynamicMaterialProperty> DynamicMaterial::TryGetDynamicPropertyByName(const std::string &propertyName) const
    {
       auto propertyIt = std::find_if(mDynamicProperties.begin(), mDynamicProperties.end(),
                                      [&](const auto &dynamicProperty)

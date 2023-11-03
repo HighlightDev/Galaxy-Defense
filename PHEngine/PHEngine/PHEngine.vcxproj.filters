@@ -1931,7 +1931,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\MaterialPropertySetter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h">
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicMaterialProperties\DynamicFloatMaterialProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h">

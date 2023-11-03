@@ -565,7 +565,7 @@
     <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\AnimationPropertyBinding.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\BindingMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatBindingMaterialProperty.h" />
-    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicFloatMaterialProperty.h" />
+    <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DynamicMaterialProperties\DynamicFloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\DeferredTextureMaterialProperty.h" />
     <ClInclude Include="src\Core\GraphicsCore\Material\MaterialProperties\FloatMaterialProperty.h" />
     <ClInclude Include="src\Core\GameCore\EngineObjectPropertyBindings\FloatPropertyBinding.h" />

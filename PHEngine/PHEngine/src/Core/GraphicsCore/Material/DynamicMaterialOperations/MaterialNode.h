@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <any>
 
 #include "Core/CommonCore/Assertion.h"
 
@@ -8,6 +9,14 @@ namespace Graphics
 {
    struct MaterialNode
    {
+      enum class eMaterialPropertyType
+      {
+         UNDEFINED,
+         FLOAT,
+         VEC2,
+         IVEC2
+      };
+
       enum class eMaterialNodeType
       {
          START,
@@ -16,7 +25,8 @@ namespace Graphics
          BINARY_OP,
       };
 
-      enum class eMaterialOperationType {
+      enum class eMaterialOperationType
+      {
          NONE,
          UNARY_INCREMENT,
          UNARY_DECREMENT,
@@ -27,7 +37,11 @@ namespace Graphics
          BINARY_DIV
       };
 
-      MaterialNode() = default;
+      MaterialNode(const eMaterialPropertyType materialPropertyType)
+          : mMaterialPropertyType(materialPropertyType)
+      {
+      }
+
       virtual ~MaterialNode() = default;
 
       virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) = 0;
@@ -36,7 +50,21 @@ namespace Graphics
 
       virtual eMaterialOperationType GetMaterialOperationType() const = 0;
 
-      virtual float TraverseGraph() = 0;
+      virtual std::any TraverseGraph() = 0;
+
+      eMaterialPropertyType GetMaterialPropertyType() const
+      {
+         return mMaterialPropertyType;
+      }
+
+   protected:
+      void SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType)
+      {
+         mMaterialPropertyType = propertyType;
+      }
+
+   private:
+      eMaterialPropertyType mMaterialPropertyType;
    };
 
 }

@@ -3,27 +3,25 @@
 
 namespace Graphics
 {
- 
+
    struct MaterialBinaryOperationNode
-      : public MaterialNode
+       : public MaterialNode
    {
    private:
-
       std::shared_ptr<MaterialNode> mInputOperationA;
       std::shared_ptr<MaterialNode> mInputOperationB;
 
    public:
-      MaterialBinaryOperationNode();
+      MaterialBinaryOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
-     virtual ~MaterialBinaryOperationNode();
+      virtual ~MaterialBinaryOperationNode();
 
-     eMaterialNodeType GetMaterialNodeType()  const override;
+      eMaterialNodeType GetMaterialNodeType() const override;
 
-     void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
+      void AttachInputNode(std::shared_ptr<MaterialNode> inputNode) override;
 
-     float TraverseGraph() override;
+      std::any TraverseGraph() override;
 
-     virtual float DoOperation(const float& left, const float& right) = 0;
+      virtual std::any DoOperation(const std::any &left, const std::any &right) = 0;
    };
 }
-

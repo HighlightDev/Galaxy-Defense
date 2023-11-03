@@ -69,6 +69,7 @@ namespace Graphics
       void SetForwardVector(const glm::vec3& forwardVector);
       void SetRightVector(const glm::vec3& rightVector);
       void SetUpVector(const glm::vec3& upVector);
+      void SetViewPortInfo(const ViewPortInfo& viewPortInfo);
 
       glm::vec3 GetForwardVector() const;
       glm::vec3 GetRightVector() const;

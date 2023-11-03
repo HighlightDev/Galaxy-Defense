@@ -19,10 +19,7 @@ namespace Graphics
 
    std::shared_ptr<DynamicMaterial> MaterialPropertySetter::TryCastToDynamicMaterial(const std::shared_ptr<IMaterial> &materialInstance)
    {
-      if (materialInstance->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC)
-         return std::static_pointer_cast<DynamicMaterial>(materialInstance);
-      else
-         return nullptr;
+      return materialInstance->GetMaterialType() == IMaterial::eMaterialType::DYNAMIC ? std::static_pointer_cast<DynamicMaterial>(materialInstance) : nullptr;
    }
 
    void MaterialPropertySetter::SetTextureValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<ITexture> &texture)
@@ -171,13 +168,10 @@ namespace Graphics
 
    bool MaterialPropertySetter::IsPropertyBindingType(const std::shared_ptr<MaterialProperty> &property)
    {
-      switch (property->GetPropertyType())
-      {
-      case MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY:
-         return true;
-      default:
-         return false;
-      }
+      const auto propertyType = property->GetPropertyType();
+      return propertyType == MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY ||
+             propertyType == MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY ||
+             propertyType == MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY;
    }
 
    void MaterialPropertySetter::SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::shared_ptr<EngineObject> &gameObjectSp,

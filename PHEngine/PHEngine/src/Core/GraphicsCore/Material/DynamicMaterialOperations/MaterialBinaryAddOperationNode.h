@@ -4,11 +4,12 @@
 namespace Graphics
 {
    struct MaterialBinaryAddOperationNode
-      : public MaterialBinaryOperationNode
+       : public MaterialBinaryOperationNode
    {
+      MaterialBinaryAddOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
+
       eMaterialOperationType GetMaterialOperationType() const override;
 
-      float DoOperation(const float& left, const float& right) override;
+      std::any DoOperation(const std::any &left, const std::any &right) override;
    };
 }
-

@@ -109,6 +109,11 @@ namespace Graphics
       mUpVector = upVector;
    }
 
+   void CameraSceneProxy::SetViewPortInfo(const ViewPortInfo& viewPortInfo)
+   {
+      mViewPort = viewPortInfo;
+   }
+
    glm::vec3 CameraSceneProxy::GetForwardVector() const
    {
       return mForwardVector;

@@ -16,7 +16,7 @@ namespace Graphics
 
       eValueType GetValueType() const override;
 
-      float TraverseGraph() override;
+      std::any TraverseGraph() override;
    };
 }
 

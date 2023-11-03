@@ -73,6 +73,8 @@ namespace EngineCore
 
       std::shared_ptr<EngineObjectProperty<float>> mGameThreadDeltaSec;
 
+      std::shared_ptr<EngineObjectProperty<glm::vec2>> mScreenResolutionProperty;
+
       std::unordered_map<std::string, std::weak_ptr<IDeferredResourceCreator>> mDeferredResourceCreators;
 
       std::vector<std::shared_ptr<Actor>> mActors;

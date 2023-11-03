@@ -3,17 +3,23 @@
 #include "Core/IoCore/FileFacade.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/GraphicsCore/Material/DynamicMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicFloatMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicVec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/DynamicMaterialProperties/DynamicIVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
-#include "Core/GraphicsCore/Material/MaterialProperties/DynamicFloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/iVec2BindingMaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec2BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialValuePropertyNode.h"
 #include "Core/GraphicsCore/Material/DynamicMaterialOperations/MaterialEnterNode.h"
 
 #include <limits>
+#include <unordered_map>
 
 #ifdef max
 #undef max
@@ -55,6 +61,14 @@ namespace Graphics
       else if ("binding_float" == propertyType)
       {
          resultProperty = std::make_shared<FloatBindingMaterialProperty>(std::make_shared<FloatPropertyBinding>(propertyName), propertyName);
+      }
+      else if ("binding_ivec2" == propertyType)
+      {
+         resultProperty = std::make_shared<iVec2BindingMaterialProperty>(std::make_shared<iVec2PropertyBinding>(propertyName), propertyName);
+      }
+      else if ("binding_vec2" == propertyType)
+      {
+         resultProperty = std::make_shared<Vec2BindingMaterialProperty>(std::make_shared<Vec2PropertyBinding>(propertyName), propertyName);
       }
       else if ("ivec2" == propertyType)
       {
@@ -172,8 +186,11 @@ namespace Graphics
       return materialInstance;
    }
 
-   XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string &propertyType, std::shared_ptr<MaterialNode> node,
-                                                                      XMLParserHelper::iterator_t &propertiesBeginIt, const XMLParserHelper::iterator_t &propertiesEndIt, std::vector<std::shared_ptr<MaterialProperty>> &innerDynamicMaterialProperties)
+   XMLParserHelper::iterator_t MaterialParser::ProcessDynamicProperty(const std::string &propertyType,
+                                                                      std::shared_ptr<MaterialNode> node,
+                                                                      XMLParserHelper::iterator_t &propertiesBeginIt,
+                                                                      const XMLParserHelper::iterator_t &propertiesEndIt,
+                                                                      std::vector<std::shared_ptr<MaterialProperty>> &innerDynamicMaterialProperties)
    {
       XMLParserHelper::iterator_t lastProcessedIt = propertiesBeginIt;
 
@@ -184,10 +201,13 @@ namespace Graphics
 
          bool bOperation = false, bValue = false;
          auto nodeIt = mMaterialNodeDecorator.GetOneOfTagWithNames(lastProcessedIt, next,
-                                                                   UNARY_INCR_OP_START,
                                                                    UNARY_NO_OP_START,
+                                                                   UNARY_INCR_OP_START,
+                                                                   UNARY_DECR_OP_START,
                                                                    BINARY_ADD_OP_START,
-                                                                   BINARY_MUL_OP_START);
+                                                                   BINARY_SUB_OP_START,
+                                                                   BINARY_MUL_OP_START,
+                                                                   BINARY_DIV_OP_START);
          bOperation = nodeIt != next;
 
          if (!bOperation)
@@ -200,7 +220,8 @@ namespace Graphics
          {
             const std::string &currentNodeStr = EngineUtility::TrimStart(*nodeIt);
 
-            std::shared_ptr<MaterialNode> operationNode = mMaterialNodeDecorator.CreateMaterialNode(currentNodeStr);
+            const MaterialNode::eMaterialPropertyType materialPropType = ConvertPropertyStrToPropertyTypeForMaterialOperationNode(propertyType);
+            std::shared_ptr<MaterialNode> operationNode = mMaterialNodeDecorator.CreateMaterialOperationNode(currentNodeStr, materialPropType);
             node->AttachInputNode(operationNode);
 
             lastProcessedIt = ++nodeIt;
@@ -217,7 +238,16 @@ namespace Graphics
             if (EngineUtility::StartsWith(currentNodeStr, PROPERTY_START_NODE_NAME))
             {
                auto materialProperty = GetMaterialPropertyAndAdvanceIterator(currentNodeIt, propertiesEndIt);
-               valueNode = std::make_shared<MaterialValuePropertyNode>(materialProperty);
+               const std::unordered_map<MaterialProperty::eMaterialPropertyType, MaterialNode::eMaterialPropertyType> supportedDynamicProperties = {
+                   {MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY, MaterialNode::eMaterialPropertyType::FLOAT},
+                   {MaterialProperty::eMaterialPropertyType::FLOAT_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::FLOAT},
+                   {MaterialProperty::eMaterialPropertyType::IVEC2_PROPERTY, MaterialNode::eMaterialPropertyType::IVEC2},
+                   {MaterialProperty::eMaterialPropertyType::IVEC2_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::IVEC2},
+                   {MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY, MaterialNode::eMaterialPropertyType::VEC2},
+                   {MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY, MaterialNode::eMaterialPropertyType::VEC2}};
+
+               assert(supportedDynamicProperties.count(materialProperty->GetPropertyType()));
+               valueNode = std::make_shared<MaterialValuePropertyNode>(materialProperty, supportedDynamicProperties.at(materialProperty->GetPropertyType()));
                innerDynamicMaterialProperties.emplace_back(std::move(materialProperty));
             }
             else
@@ -238,8 +268,8 @@ namespace Graphics
       return lastProcessedIt;
    }
 
-   std::shared_ptr<DynamicFloatMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
-                                                                                                              const XMLParserHelper::iterator_t &propertiesEndIt)
+   std::shared_ptr<DynamicMaterialProperty> MaterialParser::GetMaterialDynamicPropertyAndAdvanceIterator(XMLParserHelper::iterator_t &propertiesBeginIt,
+                                                                                                         const XMLParserHelper::iterator_t &propertiesEndIt)
    {
       auto dynamicPropertyStartNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_START_NODE_NAME);
       auto dynamicPropertyEndNode = XMLParserHelper::GetItByNodeName(propertiesBeginIt, propertiesEndIt, DYNAMIC_PROPERTY_END_NODE_NAME);
@@ -248,10 +278,11 @@ namespace Graphics
       bool propertyValueIncremental = false;
 
       glm::vec2 minMaxRange(std::numeric_limits<float>::min(), std::numeric_limits<float>::max());
+      bool minMaxRangeExists = false;
 
       ++dynamicPropertyStartNode;
 
-      std::shared_ptr<MaterialEnterNode> operation = std::make_shared<MaterialEnterNode>();
+      std::shared_ptr<MaterialEnterNode> operationEnterNode = std::make_shared<MaterialEnterNode>();
       std::vector<std::shared_ptr<MaterialProperty>> innerDynamicMaterialProperties;
       while (dynamicPropertyStartNode != dynamicPropertyEndNode)
       {
@@ -259,7 +290,7 @@ namespace Graphics
 
          if (EngineUtility::StartsWith(currentNodeStr, DYNAMIC_PROPERTY_OPERATION_START_NODE_NAME))
          {
-            dynamicPropertyStartNode = ProcessDynamicProperty(propertyType, operation, ++dynamicPropertyStartNode, dynamicPropertyEndNode, innerDynamicMaterialProperties);
+            dynamicPropertyStartNode = ProcessDynamicProperty(propertyType, operationEnterNode, ++dynamicPropertyStartNode, dynamicPropertyEndNode, innerDynamicMaterialProperties);
          }
          else
          {
@@ -278,6 +309,7 @@ namespace Graphics
             else if (EngineUtility::StartsWith(currentNodeStr, "range"))
             {
                minMaxRange = mMaterialNodeDecorator.GetValueRange(currentNodeStr);
+               minMaxRangeExists = true;
             }
             ++dynamicPropertyStartNode;
          }
@@ -286,13 +318,50 @@ namespace Graphics
       propertiesBeginIt = dynamicPropertyEndNode;
 
       assert(propertyName != "" && propertyType != "");
+      operationEnterNode->SetPropertyType(ConvertPropertyStrToPropertyTypeForMaterialOperationNode(propertyType));
 
-      auto dynamicMaterialPropery = std::make_shared<DynamicFloatMaterialProperty>(operation, propertyName);
-      dynamicMaterialPropery->SetRange(minMaxRange);
-      dynamicMaterialPropery->SetIsValueIncremental(propertyValueIncremental);
+      std::shared_ptr<DynamicMaterialProperty> dynamicMaterialPropery;
+      if ("float" == propertyType)
+      {
+         const auto dynamicFloatProperty = std::make_shared<DynamicFloatMaterialProperty>(operationEnterNode, propertyName);
+         dynamicFloatProperty->SetIsValueIncremental(propertyValueIncremental);
+         if (minMaxRangeExists)
+         {
+            dynamicFloatProperty->SetRange(minMaxRange);
+         }
+         dynamicMaterialPropery = dynamicFloatProperty;
+      }
+      else if ("vec2" == propertyType)
+      {
+         const auto dynamicVec2Property = std::make_shared<DynamicVec2MaterialProperty>(operationEnterNode, propertyName);
+         dynamicVec2Property->SetIsValueIncremental(propertyValueIncremental);
+         if (minMaxRangeExists)
+         {
+            dynamicVec2Property->SetRange(minMaxRange);
+         }
+         dynamicMaterialPropery = dynamicVec2Property;
+      }
+      else if ("ivec2" == propertyType)
+      {
+         const auto dynamicIVec2Property = std::make_shared<DynamicIVec2MaterialProperty>(operationEnterNode, propertyName);
+         dynamicIVec2Property->SetIsValueIncremental(propertyValueIncremental);
+         if (minMaxRangeExists)
+         {
+            dynamicIVec2Property->SetRange(glm::ivec2(static_cast<int32_t>(minMaxRange.x), static_cast<int32_t>(minMaxRange.y)));
+         }
+         dynamicMaterialPropery = dynamicIVec2Property;
+      }
+      else
+      {
+         assert(false);
+      }
+
+      assert(dynamicMaterialPropery);
 
       if (innerDynamicMaterialProperties.size())
+      {
          dynamicMaterialPropery->SetInternalDynamicMaterialProperties(std::move(innerDynamicMaterialProperties));
+      }
 
       return dynamicMaterialPropery;
    }
@@ -322,6 +391,21 @@ namespace Graphics
       }
 
       return materialInstance;
+   }
+
+   MaterialNode::eMaterialPropertyType MaterialParser::ConvertPropertyStrToPropertyTypeForMaterialOperationNode(const std::string &propertyTypeStr) const
+   {
+      const std::unordered_map<std::string, MaterialNode::eMaterialPropertyType> strToPropTypeMapping = {
+          {"float", MaterialNode::eMaterialPropertyType::FLOAT},
+          {"binding_float", MaterialNode::eMaterialPropertyType::FLOAT},
+          {"ivec2", MaterialNode::eMaterialPropertyType::IVEC2},
+          {"binding_ivec2", MaterialNode::eMaterialPropertyType::IVEC2},
+          {"vec2", MaterialNode::eMaterialPropertyType::VEC2},
+          {"binding_vec2", MaterialNode::eMaterialPropertyType::VEC2},
+      };
+
+      assert(strToPropTypeMapping.count(propertyTypeStr));
+      return strToPropTypeMapping.at(propertyTypeStr);
    }
 
 #undef GENERAL_START_NODE_NAME

@@ -10,7 +10,7 @@ namespace Graphics
 
    public:
 
-      MaterialUnaryOperationNode();
+      explicit MaterialUnaryOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
       ~MaterialUnaryOperationNode() override;
 
@@ -18,9 +18,9 @@ namespace Graphics
 
       virtual void AttachInputNode(std::shared_ptr<MaterialNode> inputNode);
 
-      float TraverseGraph() override;
+      std::any TraverseGraph() override;
 
-      virtual float DoOperation(const float& value) = 0;
+      virtual std::any DoOperation(const std::any& value) = 0;
    };
 }
 

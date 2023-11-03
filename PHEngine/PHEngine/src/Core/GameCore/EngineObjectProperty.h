@@ -4,6 +4,7 @@
 #include <functional>
 #include <memory>
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 #include <type_traits>
 
 #include "EnginePropertyType.h"
@@ -31,6 +32,12 @@ namespace
    struct ConvertTypeToEnginePropertyType<glm::vec3>
    {
       static constexpr eEnginePropertyType value = eEnginePropertyType::Vec3;
+   };
+
+   template <>
+   struct ConvertTypeToEnginePropertyType<glm::ivec2>
+   {
+      static constexpr eEnginePropertyType value = eEnginePropertyType::iVec2;
    };
 
    template <>

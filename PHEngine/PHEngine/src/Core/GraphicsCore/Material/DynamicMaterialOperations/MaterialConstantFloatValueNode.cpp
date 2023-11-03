@@ -3,11 +3,12 @@
 namespace Graphics
 {
    MaterialConstantFloatValueNode::MaterialConstantFloatValueNode(const float value)
-      : mValue(value)
+      : MaterialValueNode(MaterialNode::eMaterialPropertyType::FLOAT)
+      , mValue(value)
    {
    }
 
-   float MaterialConstantFloatValueNode::TraverseGraph()
+   std::any MaterialConstantFloatValueNode::TraverseGraph()
    {
       return mValue;
    }

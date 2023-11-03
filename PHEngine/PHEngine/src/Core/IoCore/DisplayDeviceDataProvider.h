@@ -3,23 +3,27 @@
 #include <cstddef>
 #include <stdint.h>
 
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+
+using namespace Graphics;
+
 namespace IO
 {
-	class DisplayDeviceDataProvider
-	{
-		int32_t m_windowWidth = 0;
-		int32_t m_windowHeight = 0;
-		int32_t m_screenWidth = 0;
-		int32_t m_screenHeight = 0;
-		int32_t m_windowPosX = 0;
-		int32_t m_windowPosY = 0;
+   class DisplayDeviceDataProvider
+   {
+      int32_t m_windowWidth = 0;
+      int32_t m_windowHeight = 0;
+      int32_t m_screenWidth = 0;
+      int32_t m_screenHeight = 0;
+      int32_t m_windowPosX = 0;
+      int32_t m_windowPosY = 0;
 
       DisplayDeviceDataProvider();
 
    public:
+      static DisplayDeviceDataProvider *GetInstance();
 
-      static DisplayDeviceDataProvider* GetInstance();
-     
       inline int32_t GetWindowWidth() const
       {
          return m_windowWidth;
@@ -40,14 +44,43 @@ namespace IO
          return m_screenHeight;
       }
 
+      inline void SetWindowSize(const int32_t width, const int32_t height)
+      {
+         bool bWindowSizeDirty = false;
+         if (m_windowWidth != width)
+         {
+            m_windowWidth = width;
+            bWindowSizeDirty = true;
+         }
+
+         if (m_windowHeight != height)
+         {
+            m_windowHeight = height;
+            bWindowSizeDirty = true;
+         }
+
+         if (bWindowSizeDirty)
+         {
+            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+         }
+      }
+
       inline void SetWindowWidth(int32_t width)
       {
-         m_windowWidth = width;
+         if (m_windowWidth != width)
+         {
+            m_windowWidth = width;
+            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+         }
       }
 
       inline void SetWindowHeight(int32_t height)
       {
-         m_windowHeight = height;
+         if (m_windowHeight != height)
+         {
+            m_windowHeight = height;
+            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+         }
       }
 
       inline void SetScreenWidth(int32_t width)
@@ -66,23 +99,27 @@ namespace IO
          m_windowPosY = posY;
       }
 
-      inline float GetHeightToWidthRatio() const {
+      inline float GetHeightToWidthRatio() const
+      {
          return (float)m_screenHeight / (float)m_screenWidth;
       }
 
-        inline float GetWidthToHeightRatio() const {
+      inline float GetWidthToHeightRatio() const
+      {
          return (float)m_screenWidth / (float)m_screenHeight;
       }
 
-      inline int32_t GetWindowPosX() const {
+      inline int32_t GetWindowPosX() const
+      {
 
          return m_windowPosX;
       }
 
-      inline int32_t GetWindowPosY() const {
+      inline int32_t GetWindowPosY() const
+      {
 
          return m_windowPosY;
       }
-	};
+   };
 
 }

@@ -120,7 +120,8 @@
         "_SendLoadLevelGameThreadEvent",
         "_CreateFirstPersonCamera",
         "_CreateAndAttachComponentToActor",
-        "_GetEnemySpaceshipsCountDestroyedByPlayer"
+        "_GetEnemySpaceshipsCountDestroyedByPlayer",
+        "_SendChangeGameModeGameThreadEvent"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

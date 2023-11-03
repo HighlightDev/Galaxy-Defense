@@ -1,9 +1,11 @@
 #include "MaterialEnterNode.h"
 
-namespace Graphics {
+namespace Graphics
+{
 
    MaterialEnterNode::MaterialEnterNode()
-      : mInputOperation(nullptr)
+       : MaterialNode(MaterialNode::eMaterialPropertyType::UNDEFINED),
+         mInputOperation(nullptr)
    {
    }
 
@@ -16,22 +18,29 @@ namespace Graphics {
       return MaterialNode::eMaterialNodeType::START;
    }
 
-   MaterialNode::eMaterialOperationType MaterialEnterNode::GetMaterialOperationType() const {
+   MaterialNode::eMaterialOperationType MaterialEnterNode::GetMaterialOperationType() const
+   {
       return eMaterialOperationType::NONE;
    }
 
-   void MaterialEnterNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode) {
+   void MaterialEnterNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode)
+   {
       mInputOperation = inputNode;
    }
 
-   float MaterialEnterNode::GetValue()
+   std::any MaterialEnterNode::GetValue()
    {
       return TraverseGraph();
    }
 
-   float MaterialEnterNode::TraverseGraph()
+   std::any MaterialEnterNode::TraverseGraph()
    {
       assert(mInputOperation);
       return mInputOperation->TraverseGraph();
+   }
+
+   void MaterialEnterNode::SetPropertyType(const MaterialNode::eMaterialPropertyType propertyType)
+   {
+      MaterialNode::SetPropertyType(propertyType);
    }
 }

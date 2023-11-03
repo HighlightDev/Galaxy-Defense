@@ -3,9 +3,10 @@
 namespace Graphics
 {
 
-   MaterialBinaryOperationNode::MaterialBinaryOperationNode()
-      : mInputOperationA(nullptr)
-      , mInputOperationB(nullptr)
+   MaterialBinaryOperationNode::MaterialBinaryOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType)
+       : MaterialNode(materialPropertyType),
+         mInputOperationA(nullptr),
+         mInputOperationB(nullptr)
    {
    }
 
@@ -13,7 +14,8 @@ namespace Graphics
    {
    }
 
-   MaterialNode::eMaterialNodeType MaterialBinaryOperationNode::GetMaterialNodeType()  const {
+   MaterialNode::eMaterialNodeType MaterialBinaryOperationNode::GetMaterialNodeType() const
+   {
       return MaterialNode::eMaterialNodeType::BINARY_OP;
    }
 
@@ -29,13 +31,11 @@ namespace Graphics
       }
    }
 
-   float MaterialBinaryOperationNode::TraverseGraph()
+   std::any MaterialBinaryOperationNode::TraverseGraph()
    {
       assert(mInputOperationA);
       assert(mInputOperationB);
-      float resultNodeA = mInputOperationA->TraverseGraph();
-      float resultNodeB = mInputOperationB->TraverseGraph();
-      return DoOperation(resultNodeA, resultNodeB);
+      return DoOperation(mInputOperationA->TraverseGraph(), mInputOperationB->TraverseGraph());
    }
 
 }

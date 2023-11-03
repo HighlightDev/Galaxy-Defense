@@ -117,7 +117,7 @@ namespace Game
       const auto screenResolution = glm::vec2((float)displayWidth, (float)displayHeight);
 
       MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, "resolution", screenResolution);
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "ScreenResolution", "screenResolution");
 
       auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
       const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);

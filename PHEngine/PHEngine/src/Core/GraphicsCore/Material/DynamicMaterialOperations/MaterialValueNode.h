@@ -7,7 +7,7 @@ namespace Graphics
       public MaterialNode
    {
    public:
-      MaterialValueNode();
+      MaterialValueNode(const MaterialNode::eMaterialPropertyType materialPropertyType);
 
       ~MaterialValueNode() override;
 

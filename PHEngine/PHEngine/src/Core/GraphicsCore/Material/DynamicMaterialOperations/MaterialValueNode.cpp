@@ -2,7 +2,8 @@
 
 namespace Graphics
 {
-   MaterialValueNode::MaterialValueNode()
+   MaterialValueNode::MaterialValueNode(const MaterialNode::eMaterialPropertyType materialPropertyType)
+       : MaterialNode(materialPropertyType)
    {
    }
 
@@ -20,7 +21,7 @@ namespace Graphics
       return MaterialNode::eMaterialOperationType::NONE;
    }
 
-   void MaterialValueNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode) 
+   void MaterialValueNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode)
    {
    }
 }

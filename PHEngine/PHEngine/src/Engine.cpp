@@ -20,6 +20,7 @@
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 using namespace TinyLogger;
 using namespace IO;
@@ -64,7 +65,8 @@ namespace EngineCore
                                  TextDataChangedEvent,
                                  PauseGameThreadEvent,
                                  ExitGameThreadEvent,
-                                 LoadLevelEvent>();
+                                 LoadLevelEvent,
+                                 WindowSizeChangedEvent>();
 
       LuaThreadEventDispatcher::GetInstance()
           ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,

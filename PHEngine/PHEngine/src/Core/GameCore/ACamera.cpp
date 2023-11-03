@@ -129,6 +129,32 @@ namespace EngineCore
       }
    }
 
+   void ACamera::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+   {
+      const auto newViewPortInfo = std::get<0>(data);
+      mViewPort = newViewPortInfo;
+
+      if (auto sceneSp = mScene.lock())
+      {
+         if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
+         {
+            static constexpr uint64_t functionId = Hash64_CT("ACamera::WindowSizeChangedEvent");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
+                                                                                [newViewPortInfo = mViewPort,
+                                                                                 cameraProxyId = mCameraProxyId,
+                                                                                 sceneRendererSp]()
+                                                                                {
+                                                                                   if (const auto &sceneViewSp = sceneRendererSp->GetSceneViewByProxyId(cameraProxyId))
+                                                                                   {
+                                                                                      assert(sceneViewSp);
+                                                                                      const auto &cameraProxy = sceneViewSp->GetCameraProxy();
+                                                                                      cameraProxy->SetViewPortInfo(newViewPortInfo);
+                                                                                   }
+                                                                                });
+         }
+      }
+   }
+
    void ACamera::PostLevelInit()
    {
       if (mPlanarReflectionComponent)

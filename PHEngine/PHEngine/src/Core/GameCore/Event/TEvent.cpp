@@ -10,6 +10,7 @@
 #include "Core/GameCore/GUI/HudText/HudTextField.h"
 #include "Core/GameCore/Event/TextEvent.h"
 #include "Core/GameCore/Input/InputDeviceKeyData.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 
 using namespace Graphics::Texture;
 
@@ -24,6 +25,7 @@ namespace Event
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EulerAnglesTransform>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>;
 
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<size_t>>;

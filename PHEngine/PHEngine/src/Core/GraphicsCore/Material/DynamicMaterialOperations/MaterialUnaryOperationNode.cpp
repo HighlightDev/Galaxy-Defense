@@ -2,7 +2,8 @@
 
 namespace Graphics
 {
-   MaterialUnaryOperationNode::MaterialUnaryOperationNode()
+   MaterialUnaryOperationNode::MaterialUnaryOperationNode(const MaterialNode::eMaterialPropertyType materialPropertyType)
+       : MaterialNode(materialPropertyType)
    {
    }
 
@@ -10,19 +11,19 @@ namespace Graphics
    {
    }
 
-   MaterialNode::eMaterialNodeType MaterialUnaryOperationNode::GetMaterialNodeType() const {
+   MaterialNode::eMaterialNodeType MaterialUnaryOperationNode::GetMaterialNodeType() const
+   {
       return MaterialNode::eMaterialNodeType::UNARY_OP;
    }
 
-   void MaterialUnaryOperationNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode) 
+   void MaterialUnaryOperationNode::AttachInputNode(std::shared_ptr<MaterialNode> inputNode)
    {
       mInputOperation = inputNode;
    }
 
-   float MaterialUnaryOperationNode::TraverseGraph()
+   std::any MaterialUnaryOperationNode::TraverseGraph()
    {
       assert(mInputOperation);
-      float resultNode = mInputOperation->TraverseGraph();
-      return DoOperation(resultNode);
+      return DoOperation(mInputOperation->TraverseGraph());
    }
 }
