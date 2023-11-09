@@ -69,6 +69,14 @@ function System_OnUpdate(host, deltaTimeSec)
     end
 end
 
+function System_OnEngineEventTriggered(host, eventName, jsonArgs)
+    assert(eventName ~= nil and type(eventName) == "string")
+
+    for _, value in pairs(UiOverlays) do
+        value.onEngineEventTriggered(eventName, jsonArgs)
+    end
+end
+
 function System_OnGameEventTriggered(host, eventName, jsonArgs)
     assert(eventName ~= nil and type(eventName) == "string")
 

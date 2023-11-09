@@ -22,7 +22,7 @@ namespace Game
    {
       std::unique_ptr<LuaCommonUiFunctions> mLuaCommonUiCallbacks;
       std::unique_ptr<LuaCommonEngineFunctions> mLuaCommonEngineFunctions;
-      std::unique_ptr<LuaEngineEventsFunctions> mLuaEngineEventsFunctions;
+      std::shared_ptr<LuaEngineEventsFunctions> mLuaEngineEventsFunctions;
       std::shared_ptr<LuaGameEventsFunctions> mLuaGameEventsFunctions;
 
    public:

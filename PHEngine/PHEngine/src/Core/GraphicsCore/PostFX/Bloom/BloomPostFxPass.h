@@ -32,6 +32,8 @@ namespace Graphics
 
       void CleanUp() override;
 
+      void ResizeRenderTargets(const ViewPortInfo &viewPortInfo) override;
+
    private:
       void Init();
    };

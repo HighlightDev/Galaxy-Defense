@@ -8,6 +8,7 @@
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 #include <unordered_set>
 #include <memory>
@@ -15,21 +16,16 @@
 
 using namespace Graphics;
 using namespace EngineCore::Scripts;
+using namespace Event;
 
-namespace Graphics
+namespace Graphics::Proxy
 {
-    namespace Proxy
-    {
-        class UiCanvasSceneProxy;
-    }
+    class UiCanvasSceneProxy;
 }
 
-namespace EngineCore
+namespace EngineCore::Scripts
 {
-    namespace Scripts
-    {
-        class LuaProxy;
-    }
+    class LuaProxy;
 }
 
 struct EngineObjectPropertyBase;
@@ -43,7 +39,8 @@ namespace EngineCore
         class UiCanvas : public EngineToLuaReplicatorBase,
                          public IUiTransformable,
                          public ITickable,
-                         public IAnimatable
+                         public IAnimatable,
+                         public WindowSizeChangedEvent
         {
         private:
             static size_t s_UId;
@@ -70,7 +67,7 @@ namespace EngineCore
 
             std::atomic<bool> mIsLuaProxyReady{false};
 
-            std::unique_ptr<UiInputSystem> mInputSystem;
+            std::shared_ptr<UiInputSystem> mInputSystem;
 
             bool mWasHoveredLastFrame{false};
 
@@ -96,6 +93,10 @@ namespace EngineCore
 
         public:
             explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
+
+            ~UiCanvas() override;
+
+            void Initialize();
 
             void SetIsSceneProxyReady(const bool isReady);
 
@@ -165,16 +166,19 @@ namespace EngineCore
 
             void CreateAnimator() override;
 
-            void AddAnimation(const std::string& animationName, const AnimationData& animationData) override;
+            void AddAnimation(const std::string &animationName, const AnimationData &animationData) override;
 
             void CleanUp() override;
 
         protected:
+            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
+
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
 
         private:
+
             void SyncDataOnRenderThread();
 
             void SyncDataOnLuaThread();

@@ -47,7 +47,7 @@ namespace EngineCore
          mDynamicMaterials(),
          mTextHandler(std::make_shared<TextHandler>()),
 #ifdef DEBUG
-         mDebugUiController(std::make_unique<DebugUiController>()),
+         mDebugUiController(std::make_shared<DebugUiController>()),
 #endif
          mUiHandler(std::make_shared<UiHandler>())
    {
@@ -57,6 +57,20 @@ namespace EngineCore
       AddEngineProperty(mGameThreadDeltaSec);
       AddEngineProperty(mScreenResolutionProperty);
       mPhysicsWorld->Initialize();
+
+#ifdef DEBUG
+      mDebugUiController->Initialize();
+#endif
+   }
+
+   Scene::~Scene()
+   {
+      WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+   }
+
+   void Scene::Initialize()
+   {
+      WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void Scene::OnLevelInit()
@@ -426,6 +440,16 @@ namespace EngineCore
       }
 
       mUiHandler->UnpausableTick(deltaTime);
+   }
+
+   void Scene::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+   {
+      if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
+      {
+         m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(),
+                                                Hash("Scene::WindowSizeChangedEvent"), [sceneRendererSp, viewPortInfo = std::get<0>(data)]()
+                                                { sceneRendererSp->OnWindowSizeChanged(viewPortInfo); });
+      }
    }
 
    void Scene::RemoveComponent(std::shared_ptr<Component> component)

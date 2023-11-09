@@ -27,6 +27,10 @@ namespace EngineCore
          std::shared_ptr<FramebufferObject> mColor1Framebuffer;
          std::shared_ptr<FramebufferObject> mColor2Framebuffer;
 
+         float mQualityBloomResolutionMultiplier{1.0f};
+
+         bool mIsHdrEnabled{false};
+
       public:
          // Buffer should be recreated when window size was changed
          BloomFramebuffer(const ViewPortInfo &viewPortInfo);
@@ -57,8 +61,14 @@ namespace EngineCore
          ViewPortInfo GetFullScreenResolutionViewPortInfo() const;
          ViewPortInfo GetShrinkedResolutionViewPortInfo() const;
 
+         void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);
+
       private:
          void DestroyBloomFramebuffer();
+
+         void AllocateTextures();
+
+         void TryToFreeRenderTargetTextures();
       };
    }
 }

@@ -3,6 +3,9 @@
 #include <string>
 
 #include "ILuaFunctionable.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+
+using namespace Event;
 
 namespace EngineCore
 {
@@ -18,6 +21,8 @@ namespace EngineCore
 
       class LuaEngineEventsFunctions
           : public ILuaFunctionable
+          , public LuaWindowSizeChangedEvent
+          , public std::enable_shared_from_this<LuaEngineEventsFunctions>
       {
       protected:
          LuaScriptExecutorBase *mOwnerPtr;
@@ -28,6 +33,10 @@ namespace EngineCore
 
       public:
          LuaEngineEventsFunctions(LuaScriptExecutorBase *ownerPtr);
+
+         ~LuaEngineEventsFunctions();
+
+         void Initialize();
 
          void SetScene(const std::weak_ptr<Scene> &sceneWp) override;
 
@@ -45,6 +54,8 @@ namespace EngineCore
          void SendExitGameThreadEvent(const std::tuple<int32_t/*enqueue policy*/>& data);
 
          void SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string/*level name*/>& data);
+
+         void ProcessEvent(const LuaWindowSizeChangedEvent::EventData_t &data) override;
       };
    }
 }

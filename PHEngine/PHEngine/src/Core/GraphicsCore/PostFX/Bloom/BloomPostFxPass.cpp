@@ -104,4 +104,9 @@ namespace Graphics
       mBloomFramebuffer.reset();
       ShaderPool::GetInstance()->TryToFreeMemory(mBloomFxShader);
    }
+
+    void BloomPostFxPass::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
+    {
+      mBloomFramebuffer->ResizeRenderTargets(viewPortInfo);
+    }
 }

@@ -224,6 +224,13 @@ namespace Graphics
          return m_interThreadMgr;
       }
 
+      void DeferredShadingSceneRenderer::OnWindowSizeChanged(const ViewPortInfo& viewPortInfo)
+      {
+         m_gbuffer->ResizeRenderTargets(viewPortInfo);
+         m_resolvedSceneFramebuffer->ResizeRenderTargets(viewPortInfo);
+         mPostFxRenderer->ResizeRenderTargets(viewPortInfo);
+      }
+
       void DeferredShadingSceneRenderer::RegisterFonts()
       {
          const auto &fonts = EngineConfigHolder::GetInstance()->GetEngineConfig().FontsVector;

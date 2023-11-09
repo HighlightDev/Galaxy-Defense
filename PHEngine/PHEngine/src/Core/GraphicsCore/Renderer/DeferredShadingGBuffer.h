@@ -15,7 +15,7 @@ namespace Graphics
    {
       using RenderTarget = std::shared_ptr<ITexture>;
 
-      const ViewPortInfo mViewPortInfo;
+      ViewPortInfo mViewPortInfo;
 
       RenderTarget m_depthBuffer;
       RenderTarget m_positionBuffer;
@@ -64,7 +64,13 @@ namespace Graphics
                                                const size_t dstX, const size_t dstY, const size_t dstResolutionX, const size_t dstResolutionY,
                                                const int32_t bufferBit) override;
 
+      void ResizeRenderTargets(const ViewPortInfo& viewPortInfo);                                               
+
    private:
       void DestroyGBuffer();
+
+      void TryToFreeRenderTargetTextures();
+
+      void AllocateTextures();
    };
 }

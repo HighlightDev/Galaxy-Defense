@@ -11,6 +11,8 @@
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/Event/ExitGameThreadEvent.h"
 
+#include <json/json.hpp>
+
 using namespace EngineCore;
 using namespace IO;
 using namespace Event;
@@ -22,6 +24,16 @@ namespace EngineCore
       LuaEngineEventsFunctions::LuaEngineEventsFunctions(LuaScriptExecutorBase *ownerPtr)
           : mOwnerPtr(ownerPtr)
       {
+      }
+
+      LuaEngineEventsFunctions::~LuaEngineEventsFunctions()
+      {
+         LuaWindowSizeChangedEvent::GetInstance()->RemoveListener(LuaWindowSizeChangedEvent::GetInstanceId());
+      }
+      
+      void LuaEngineEventsFunctions::Initialize()
+      {
+         LuaWindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
       }
 
       void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -74,7 +86,7 @@ namespace EngineCore
          }
       }
 
-      void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string/*level name*/>& data)
+      void LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*level name*/> &data)
       {
          const auto enqueuePolicy = std::get<0>(data);
          const auto levelName = std::get<1>(data);
@@ -85,6 +97,16 @@ namespace EngineCore
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [levelName]()
                                                                               { LoadLevelEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName); });
          }
+      }
+
+      void LuaEngineEventsFunctions::ProcessEvent(const LuaWindowSizeChangedEvent::EventData_t &data)
+      {
+         const auto viewPortInfo = std::get<0>(data);
+         nlohmann::json jsonObj;
+         jsonObj["width"] = viewPortInfo.Width;
+         jsonObj["height"] = viewPortInfo.Height;
+         const auto &eventParams = jsonObj.dump();
+         LuaFunctionInvoker<void(void *, std::string, std::string)>::Invoke(mOwnerPtr->GetLuaInstance(), "System_OnEngineEventTriggered", (void *)mOwnerPtr, std::string("WindowSizeChanged"), eventParams);
       }
    }
 }

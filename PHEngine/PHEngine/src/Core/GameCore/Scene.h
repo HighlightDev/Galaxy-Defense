@@ -15,6 +15,7 @@
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/DebugCore/DebugUiController.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -57,8 +58,8 @@ namespace EngineCore
 
    class Scene : public EngineObject,
                  public ITickable,
-                 public std::enable_shared_from_this<Scene>
-
+                 public std::enable_shared_from_this<Scene>,
+                 public WindowSizeChangedEvent
    {
    private:
       std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
@@ -92,7 +93,7 @@ namespace EngineCore
       std::shared_ptr<TextHandler> mTextHandler;
 
 #ifdef DEBUG
-      std::unique_ptr<DebugUiController> mDebugUiController;
+      std::shared_ptr<DebugUiController> mDebugUiController;
 #endif
 
       std::shared_ptr<UiHandler> mUiHandler;
@@ -100,8 +101,12 @@ namespace EngineCore
    public:
       explicit Scene(InterThreadCommunicationMgr &interThreadMgr);
 
+      ~Scene();
+
       std::shared_ptr<Component> CreateComponent_GameThread(const std::shared_ptr<IComponentCreatable> &componentCreator,
                                                             const std::shared_ptr<ComponentData> &componentData);
+
+      void Initialize();
 
       void OnLevelInit();
 
@@ -114,6 +119,8 @@ namespace EngineCore
       void Tick(const float deltaTime) override;
 
       void UnpausableTick(const float deltaTime) override;
+
+      void ProcessEvent(const WindowSizeChangedEvent::EventData_t& data) override;
 
       void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 

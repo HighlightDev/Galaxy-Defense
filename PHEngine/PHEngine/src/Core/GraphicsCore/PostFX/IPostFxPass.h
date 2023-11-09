@@ -13,6 +13,8 @@ namespace Graphics
    {
       public:
 
+      virtual void ResizeRenderTargets(const ViewPortInfo &viewPortInfo) = 0;
+
       virtual void ExecutePostFx(const std::shared_ptr<ITexture>& sceneColorTexture, const std::shared_ptr<FramebufferBundle>& previousStepFramebuffer) = 0;
 
       virtual std::shared_ptr<ITexture> GetPostFxResult() const = 0;

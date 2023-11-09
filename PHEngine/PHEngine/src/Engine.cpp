@@ -39,6 +39,7 @@ namespace EngineCore
          mRenderThreadDeltaTimeSeconds(),
          mGameThreadDeltaTimeSeconds()
    {
+      m_scene->Initialize();
    }
 
    Engine::~Engine()
@@ -72,7 +73,8 @@ namespace EngineCore
           ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,
                                  LuaThreadMouseMovedEvent,
                                  LuaThreadMouseScrollEvent,
-                                 LuaThreadMouseButtonDownEvent>();
+                                 LuaThreadMouseButtonDownEvent,
+                                 LuaWindowSizeChangedEvent>();
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 

@@ -263,6 +263,7 @@ function PauseOverlay:new(host)
     end)
 
     pauseMenuOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
+    pauseMenuOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
 
     return pauseMenuOverlay;
 end

@@ -101,4 +101,44 @@ namespace Graphics
     {
         return mFramebuffer;
     }
+
+    void ResolvedSceneFramebuffer::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
+    {
+        mViewPortInfo = viewPortInfo;
+
+        mFramebuffer->UnbindFramebuffer();
+        TryToFreeRenderTargetTextures();
+
+        AllocateTextures();
+        mFramebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT0, m_resolvedSceneColorBuffer);
+
+        mFramebuffer->RebindFramebufferTextures();
+
+        mFramebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
+        mFramebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_resolvedSceneColorBuffer->GetTextureRezolution());
+    }
+
+    void ResolvedSceneFramebuffer::TryToFreeRenderTargetTextures()
+    {
+        assert(m_resolvedSceneColorBuffer);
+        RenderTargetPool::GetInstance()->TryToFreeMemory(m_resolvedSceneColorBuffer);
+    }
+
+    void ResolvedSceneFramebuffer::AllocateTextures()
+    {
+        const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+        const bool isHdrEnabled = cfg.IsHdrEnabled;
+        TexParams sceneColorParams(mViewPortInfo.Width,
+                                   mViewPortInfo.Height,
+                                   GL_TEXTURE_2D,
+                                   GL_NEAREST,
+                                   GL_NEAREST,
+                                   0,
+                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
+                                   GL_RGB,
+                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
+                                   GL_REPEAT,
+                                   true);
+        m_resolvedSceneColorBuffer = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(sceneColorParams);
+    }
 }

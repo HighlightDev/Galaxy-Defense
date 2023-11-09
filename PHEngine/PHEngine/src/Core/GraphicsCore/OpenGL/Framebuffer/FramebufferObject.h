@@ -16,7 +16,7 @@ namespace Graphics
    {
    private:
       uint32_t mFramebufferId;
-      std::vector<uint32_t> mRenderBufferId;
+      uint32_t mRenderBufferId;
 
       std::unordered_map<uint32_t /*FramebufferBundle attachment*/, std::shared_ptr<ITexture>> mRenderTextures;
 
@@ -31,10 +31,14 @@ namespace Graphics
 
       std::string GetFramebufferLog() const;
 
-      void AddRenderTexture(uint32_t framebufferAttachement, std::shared_ptr<ITexture> renderTexture);
+      void AddRenderTexture(const uint32_t framebufferAttachement, const std::shared_ptr<ITexture>& renderTexture);
+
+      void ReassignRenderTexture(const uint32_t framebufferAttachement, const std::shared_ptr<ITexture>& renderTexture);
 
       // should be called after all render textures are added
       void CreateFramebuffer();
+
+      void RebindFramebufferTextures();
 
       // should be called after CreateFramebuffer method was called
       void CreateRenderBuffer(const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment,
@@ -42,6 +46,8 @@ namespace Graphics
 
       void CreateRenderBuffer(const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment,
                               const glm::ivec2 &screenResolution);
+
+      void ResizeRenderBufferStorage(const int32_t renderbufferDataType, const glm::ivec2& screenResolution);
 
       void BindFramebuffer(uint32_t framebufferTarget, bool bBindFramebuffer, bool enableAttachmentDrawBuffers = true) const;
 

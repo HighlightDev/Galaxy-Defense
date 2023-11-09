@@ -38,6 +38,7 @@ namespace EngineCore
                 assert(ownerSp);
                 mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
                 LogInfo("UiHandler::CreateDebugCanvas => uid = ", mDebugUiCanvas->GetUId());
+                mDebugUiCanvas->Initialize();
                 const auto &canvasSceneProxy = mDebugUiCanvas->CreateUiCanvasSceneProxy();
                 if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                 {
@@ -56,6 +57,7 @@ namespace EngineCore
             assert(ownerSp);
             const auto &newCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
             LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
+            newCanvas->Initialize();
             const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();
             if (const auto &sceneRendererSp = ownerSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
             {

@@ -20,9 +20,12 @@ namespace EngineCore
          assert(BloomQualitySettings::s_blurQualityMap.count(cfg.BloomQualityName));
          const auto &bloomQuality = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName);
          // scale bloom render target resolution accordingly to config file
-         const auto bloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
-         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullScreenResolutionViewPortInfo.OriginX, mFullScreenResolutionViewPortInfo.OriginY, static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Width) * bloomResolutionMultiplier),
-                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Height) * bloomResolutionMultiplier));
+         mQualityBloomResolutionMultiplier = BloomQualitySettings::s_blurQualityMap.at(cfg.BloomQualityName).bloomResolutionMultiplier;
+         mIsHdrEnabled = cfg.IsHdrEnabled;
+         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullScreenResolutionViewPortInfo.OriginX,
+                                                        mFullScreenResolutionViewPortInfo.OriginY,
+                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Width) * mQualityBloomResolutionMultiplier),
+                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Height) * mQualityBloomResolutionMultiplier));
          Init();
       }
 
@@ -36,39 +39,7 @@ namespace EngineCore
 
       void BloomFramebuffer::SetTextures()
       {
-         const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
-         const bool isHdrEnabled = cfg.IsHdrEnabled;
-         // Color1 texture
-         {
-            TexParams color1Params(mShrinkedResolutionViewPortInfo.Width,
-                                   mShrinkedResolutionViewPortInfo.Height,
-                                   GL_TEXTURE_2D,
-                                   GL_LINEAR,
-                                   GL_LINEAR,
-                                   0,
-                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
-                                   GL_RGB,
-                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
-                                   GL_CLAMP_TO_EDGE,
-                                   true);
-            m_color1 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color1Params);
-         }
-
-         // Color2 texture
-         {
-            TexParams color2Params(mShrinkedResolutionViewPortInfo.Width,
-                                   mShrinkedResolutionViewPortInfo.Height,
-                                   GL_TEXTURE_2D,
-                                   GL_LINEAR,
-                                   GL_LINEAR,
-                                   0,
-                                   isHdrEnabled ? GL_RGB16F : GL_RGB8,
-                                   GL_RGB,
-                                   isHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
-                                   GL_CLAMP_TO_EDGE,
-                                   true);
-            m_color2 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color2Params);
-         }
+         AllocateTextures();
 
          mColor1Framebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT0, m_color1);
          mColor2Framebuffer->AddRenderTexture(GL_COLOR_ATTACHMENT0, m_color2);
@@ -149,6 +120,71 @@ namespace EngineCore
       ViewPortInfo BloomFramebuffer::GetShrinkedResolutionViewPortInfo() const
       {
          return mShrinkedResolutionViewPortInfo;
+      }
+
+      void BloomFramebuffer::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
+      {
+         mFullScreenResolutionViewPortInfo = viewPortInfo;
+         mShrinkedResolutionViewPortInfo = ViewPortInfo(mFullScreenResolutionViewPortInfo.OriginX,
+                                                        mFullScreenResolutionViewPortInfo.OriginY,
+                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Width) * mQualityBloomResolutionMultiplier),
+                                                        static_cast<int32_t>(static_cast<float>(mFullScreenResolutionViewPortInfo.Height) * mQualityBloomResolutionMultiplier));
+
+         mColor1Framebuffer->UnbindFramebuffer();
+         TryToFreeRenderTargetTextures();
+         AllocateTextures();
+
+         mColor1Framebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT0, m_color1);
+         mColor2Framebuffer->ReassignRenderTexture(GL_COLOR_ATTACHMENT0, m_color2);
+
+         mColor1Framebuffer->RebindFramebufferTextures();
+         mColor2Framebuffer->RebindFramebufferTextures();
+
+         mColor1Framebuffer->BindFramebuffer(GL_FRAMEBUFFER, true);
+         mColor1Framebuffer->ResizeRenderBufferStorage(GL_DEPTH24_STENCIL8, m_color1->GetTextureRezolution());
+         mColor1Framebuffer->UnbindFramebuffer();
+      }
+
+      void BloomFramebuffer::AllocateTextures()
+      {
+         // Color1 texture
+         {
+            TexParams color1Params(mShrinkedResolutionViewPortInfo.Width,
+                                   mShrinkedResolutionViewPortInfo.Height,
+                                   GL_TEXTURE_2D,
+                                   GL_LINEAR,
+                                   GL_LINEAR,
+                                   0,
+                                   mIsHdrEnabled ? GL_RGB16F : GL_RGB8,
+                                   GL_RGB,
+                                   mIsHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
+                                   GL_CLAMP_TO_EDGE,
+                                   true);
+            m_color1 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color1Params);
+         }
+
+         // Color2 texture
+         {
+            TexParams color2Params(mShrinkedResolutionViewPortInfo.Width,
+                                   mShrinkedResolutionViewPortInfo.Height,
+                                   GL_TEXTURE_2D,
+                                   GL_LINEAR,
+                                   GL_LINEAR,
+                                   0,
+                                   mIsHdrEnabled ? GL_RGB16F : GL_RGB8,
+                                   GL_RGB,
+                                   mIsHdrEnabled ? GL_FLOAT : GL_UNSIGNED_BYTE,
+                                   GL_CLAMP_TO_EDGE,
+                                   true);
+            m_color2 = RenderTargetPool::GetInstance()->GetOrAllocateResource<Texture2d>(color2Params);
+         }
+      }
+
+      void BloomFramebuffer::TryToFreeRenderTargetTextures()
+      {
+         assert(m_color1 && m_color2);
+         RenderTargetPool::GetInstance()->TryToFreeMemory(m_color1);
+         RenderTargetPool::GetInstance()->TryToFreeMemory(m_color2);
       }
    }
 }

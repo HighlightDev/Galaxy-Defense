@@ -2,11 +2,13 @@
 
 #include "Core/GameCore/ITickable.h"
 #include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 #include <memory>
 #include <glm/vec2.hpp>
 
 using namespace EngineCore;
+using namespace Event;
 
 namespace EngineCore
 {
@@ -18,6 +20,8 @@ namespace EngineCore
 
         class UiInputSystem
             : public ITickable
+            , public WindowSizeChangedEvent
+            , public std::enable_shared_from_this<UiInputSystem>
         {
         private:
             static size_t s_id;
@@ -37,9 +41,15 @@ namespace EngineCore
         public:
             UiInputSystem(const std::weak_ptr<UiCanvas> &owner);
 
+            ~UiInputSystem();
+
+            void Initialize();
+
             void Tick(const float deltaTime) override;
 
             void UnpausableTick(const float deltaTime) override;
+
+            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
 
         private:
             void OnMousePressedTimerTimeout();

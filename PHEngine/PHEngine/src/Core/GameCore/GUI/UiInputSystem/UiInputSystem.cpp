@@ -26,6 +26,16 @@ namespace EngineCore
             mMousePressedTimer.SetCallback(std::bind(&UiInputSystem::OnMousePressedTimerTimeout, this));
         }
 
+        UiInputSystem::~UiInputSystem()
+        {
+            WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+        }
+
+        void UiInputSystem::Initialize()
+        {
+            WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+        }
+
         void UiInputSystem::Tick(const float deltaTime)
         {
         }
@@ -74,6 +84,11 @@ namespace EngineCore
                     }
                 }
             }
+        }
+
+        void UiInputSystem::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+        {
+            mScreenHeight = static_cast<size_t>(std::get<0>(data).Height);
         }
 
         void UiInputSystem::OnMousePressedTimerTimeout()

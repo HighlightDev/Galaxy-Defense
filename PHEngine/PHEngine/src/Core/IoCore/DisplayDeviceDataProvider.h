@@ -62,6 +62,7 @@ namespace IO
          if (bWindowSizeDirty)
          {
             Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 
@@ -71,6 +72,7 @@ namespace IO
          {
             m_windowWidth = width;
             Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 
@@ -80,6 +82,7 @@ namespace IO
          {
             m_windowHeight = height;
             Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 

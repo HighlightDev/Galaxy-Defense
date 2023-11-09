@@ -16,4 +16,16 @@ namespace Event
             return "WindowSizeChangedEvent";
         }
     };
+
+    class LuaWindowSizeChangedEvent
+        : public TEvent<Event::eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
+    {
+    public:
+        using Event_t = TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<::Graphics::ViewPortInfo>>::Event_t;
+
+        std::string ToString() const override
+        {
+            return "LuaWindowSizeChangedEvent";
+        }
+    };
 }

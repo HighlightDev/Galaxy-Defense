@@ -74,8 +74,9 @@ function MainMenuOverlay_1:new(host)
             newGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
-    newGameButton:setOnMouseInputClickedCallback(function ()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "FirstLevel")
+    newGameButton:setOnMouseInputClickedCallback(function()
+        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "FirstLevel")
     end)
 
     local newGameButtonLabel = UiLabel:new(host, "nimbus_mono")
@@ -170,7 +171,8 @@ function MainMenuOverlay_1:new(host)
         selectLvlButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         selectLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
-        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect.widgetName,
+        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
+            .widgetName,
             20)
         selectLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
             buttonVerticalMarginHeight)
@@ -253,6 +255,7 @@ function MainMenuOverlay_1:new(host)
     end)
 
     mainMenuOverlay_1.onGameEventTriggered = function(eventName, jsonArgs) end
+    mainMenuOverlay_1.onEngineEventTriggered = function(eventName, jsonArgs) end
 
     return mainMenuOverlay_1;
 end

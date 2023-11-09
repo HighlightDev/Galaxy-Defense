@@ -196,6 +196,7 @@ function SettingsOverlay:new(host)
     end)
 
     pauseSettingsOverlay.onGameEventTriggered = function(eventName, jsonArgs) end
+    pauseSettingsOverlay.onEngineEventTriggered = function(eventName, jsonArgs) end
 
     return pauseSettingsOverlay
 end

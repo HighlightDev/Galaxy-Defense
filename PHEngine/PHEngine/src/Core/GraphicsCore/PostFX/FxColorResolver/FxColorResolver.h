@@ -23,6 +23,8 @@ namespace Graphics
 
       virtual void CleanUp();
 
+      void ResizeViewPortInfo(const ViewPortInfo &viewPortInfo);
+
    private:
       void Init();
 

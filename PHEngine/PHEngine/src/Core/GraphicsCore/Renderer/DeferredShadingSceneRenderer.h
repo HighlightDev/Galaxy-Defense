@@ -18,6 +18,7 @@
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryCompositeShader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/MaterialShader.h"
 #include "Core/GraphicsCore/SceneViewInfo/SceneView.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/Renderer/RenderState.h"
 #include "Core/GraphicsCore/PostFX/PostFxRenderer.h"
 #include "Core/GraphicsCore/UiSceneProxy/UiCanvasSceneProxy.h"
@@ -66,7 +67,6 @@ namespace Graphics
 {
    namespace Renderer
    {
-
       class DeferredShadingSceneRenderer
       {
          InterThreadCommunicationMgr &m_interThreadMgr;
@@ -222,6 +222,8 @@ namespace Graphics
          void TextVisibilityChanged(const std::string &fontName, const int32_t textFieldProxyId, const bool bIsVisible);
 
          InterThreadCommunicationMgr &GetInterThreadCommunicationManager();
+
+         void OnWindowSizeChanged(const ViewPortInfo& viewPortInfo);
 
 #if DEBUG
 

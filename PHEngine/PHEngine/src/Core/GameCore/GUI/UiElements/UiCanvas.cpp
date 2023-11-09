@@ -43,11 +43,22 @@ namespace EngineCore
             mProperties.emplace("Opacity", mOpacityProperty);
         }
 
+        UiCanvas::~UiCanvas()
+        {
+            WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+        }
+
+        void UiCanvas::Initialize()
+        {
+            WindowSizeChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<UiCanvas>(shared_from_this()));
+        }
+
         void UiCanvas::InitializeInputSystem()
         {
             if (!mInputSystem)
             {
-                mInputSystem = std::make_unique<UiInputSystem>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
+                mInputSystem = std::make_shared<UiInputSystem>(std::static_pointer_cast<UiCanvas>(shared_from_this()));
+                mInputSystem->Initialize();
             }
         }
 
@@ -290,6 +301,13 @@ namespace EngineCore
             uiItem->OnRegistered();
             SetIsTransformDirty(true);
             CollectChildrenWithDescendingZOrder();
+        }
+
+        void UiCanvas::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+        {
+            const glm::ivec4 newViewPortInfo = static_cast<glm::ivec4>(std::get<0>(data));
+            mWidthHeight = glm::ivec2(newViewPortInfo.z, newViewPortInfo.w);
+            SetIsTransformDirty(true);
         }
 
         void UiCanvas::RegisterUiItem(const size_t uiId, const std::string &uiItemName)

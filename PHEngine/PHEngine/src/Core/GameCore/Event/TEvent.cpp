@@ -40,5 +40,6 @@ namespace Event
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<eMouseScrollDirection>>;
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>;
+   template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>;
 
 }

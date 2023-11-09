@@ -41,7 +41,7 @@ namespace Graphics
       {
          ExecutePostFxDisabled(sceneColorTexture);
       }
-      else 
+      else
       {
          ExecutePostFxEnabled(sceneColorTexture, prevPostFxPass);
       }
@@ -68,6 +68,11 @@ namespace Graphics
    void FxColorResolver::CleanUp()
    {
       ShaderPool::GetInstance()->TryToFreeMemory(mResolveFxColorShader);
+   }
+
+   void FxColorResolver::ResizeViewPortInfo(const ViewPortInfo &viewPortInfo)
+   {
+      mViewPortInfo = viewPortInfo;
    }
 
 }

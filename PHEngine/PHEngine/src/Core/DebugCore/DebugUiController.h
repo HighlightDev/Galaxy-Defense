@@ -6,13 +6,16 @@
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
 #include "Core/GameCore/GUI/UiElements/UiImage.h"
 #include "Core/GameCore/GUI/UiElements/UiLabel.h"
+#include "Core/GameCore/GUI/UiElements/UiRectangle.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/ResourceManagerCore/Pool/ITextureObtainable.h"
+#include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 using namespace EngineCore::GUI;
 using namespace Graphics::Texture;
 using namespace Resources;
+using namespace Event;
 
 namespace EngineCore
 {
@@ -22,7 +25,9 @@ namespace EngineCore
     namespace Debug
     {
         class DebugUiController
-            : public ITickable
+            : public ITickable,
+              public WindowSizeChangedEvent,
+              public std::enable_shared_from_this<DebugUiController>
         {
             std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -43,8 +48,20 @@ namespace EngineCore
             std::shared_ptr<::EngineCore::GUI::UiLabel> mGameFpsLabel;
             std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaFpsLabel;
 
+            std::shared_ptr<::EngineCore::GUI::UiRectangle> mRectangleBackground;
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mRenderThreadFrameRateLabel;
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaThreadFrameRateLabel;
+            std::shared_ptr<::EngineCore::GUI::UiLabel> mGameThreadFrameRateLabel;
+            std::shared_ptr<::EngineCore::GUI::UiImage> mImage;
+            std::shared_ptr<::EngineCore::GUI::UiImage> mImage1;
+            std::shared_ptr<::EngineCore::GUI::UiImage> mNextPoolsArrowImage;
+
         public:
             DebugUiController();
+
+            ~DebugUiController();
+
+            void Initialize();
 
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
@@ -54,18 +71,22 @@ namespace EngineCore
 
             void PostPlayLevelFinished();
 
-            void SetRenderFpsText(const std::string& fpsText);
+            void SetRenderFpsText(const std::string &fpsText);
 
-            void SetGameFpsText(const std::string& fpsText);
+            void SetGameFpsText(const std::string &fpsText);
 
-            void SetLuaFpsText(const std::string& fpsText);
+            void SetLuaFpsText(const std::string &fpsText);
+
+            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
 
         private:
-            void Init();
+            void InitializeWidgets();
 
             std::shared_ptr<ITexture> GetNextTexture() const;
 
-            void OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase>& senderWp, const glm::ivec2 &mouseCursorPosition);
+            void OnNextPoolButtonClicked(const std::weak_ptr<UiItemBase> &senderWp, const glm::ivec2 &mouseCursorPosition);
+
+            void RecalculateWidgetsSize();
         };
     }
 }

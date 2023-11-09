@@ -88,16 +88,16 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      const auto displayWidth = DisplayDeviceDataProvider::GetInstance()->GetWindowWidth();
-      const auto displayHeight = DisplayDeviceDataProvider::GetInstance()->GetWindowHeight();
 
       const auto &a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
       assert(a_sceneCenterActorDummy);
-
       auto spaceCamera = std::make_shared<ThirdPersonCamera>("LevelMainCamera",
                                                              eCameraType::MAIN_THIRD_PERSON_CAMERA,
                                                              sceneSp,
-                                                             ViewPortInfo(0, 0, displayWidth, displayHeight),
+                                                             ViewPortInfo(0,
+                                                                          0,
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                          DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
                                                              38.88f,
                                                              -2.72f,
                                                              150.0f);
@@ -114,7 +114,6 @@ namespace Game
       MaterialParser materialParser;
       const std::shared_ptr<IMaterial> &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
       sceneSp->RegisterMaterialInstance(spaceStars_material);
-      const auto screenResolution = glm::vec2((float)displayWidth, (float)displayHeight);
 
       MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
       MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "ScreenResolution", "screenResolution");
@@ -126,45 +125,8 @@ namespace Game
       a_skybox->AddComponent(billboardComponent);
 
       const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
-
       const auto &gameFlowController = std::make_shared<GameFlowController>(spaceCamera, a_station->GetRootComponent());
       sceneSp->AddActorController(gameFlowController);
-
-      /*const auto &a_spaceship = sceneSp->GetActorByName("SpaceshipActor");
-      assert(a_spaceship);
-
-      const auto &inputComponentCreator = std::make_shared<InputComponentCreator<InputComponent>>();
-      const auto &c_input = sceneSp->CreateComponent_GameThread(inputComponentCreator, std::make_shared<ComponentData>("SpaceshipInputComponent"));
-      a_spaceship->AddComponent(c_input);
-
-      const auto &movementComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
-      const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(sceneSp->CreateComponent_GameThread(movementComponentCreator,
-                                                                                                                        std::make_shared<MovementComponentData>("NoPhysMoveComponentData", glm::vec3())));
-
-      c_movement->SetReferenceSpeed(40.0f);
-      c_movement->SetCurrentSpeedToReferenceValue();
-      a_spaceship->AddComponent(c_movement);
-
-      const auto &mainCamera = sceneSp->GetMainCamera();
-      assert(mainCamera);
-      const std::shared_ptr<SpaceShipPlayerController> &spaceShipController = std::make_shared<SpaceShipPlayerController>(mainCamera, a_spaceship);
-      sceneSp->AddActorController(spaceShipController);
-
-      if (eCameraType::MAIN_THIRD_PERSON_CAMERA == mainCamera->GetCameraType())
-      {
-         std::static_pointer_cast<ThirdPersonCamera>(mainCamera)->SetThirdPersonTargetDeferred(a_spaceship->GetEngineObjectName());
-      }
-
-      TweenerParser tweenerParser;
-      const auto &spaceshipTweener = tweenerParser.ParseTweenerDescriptor("spaceshipMove.tween");
-
-      a_spaceship->AttachTweener(spaceshipTweener);
-      const auto &rootComponent = a_spaceship->GetRootComponent();
-
-      const auto &binding = spaceshipTweener->GetPropertyBindingByName("b_rotator");
-      BindingAttachmentBuilder::SetAttachment(rootComponent, binding, "b_rotator");
-
-      mCombatController->SetPlayerActorController(spaceShipController);*/
 
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();

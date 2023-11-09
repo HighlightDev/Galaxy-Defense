@@ -57,4 +57,14 @@ namespace Graphics
          mFxColorResolver->Execute(resolveSceneColorFramebuffer->GetResolvedSceneColorTexture(), nullptr);
       }
    }
+
+   void PostFxRenderer::ResizeRenderTargets(const ViewPortInfo &viewPortInfo)
+   {
+      for (const auto &[postFxStageType, postFxStage] : mPostFxStages)
+      {
+         postFxStage->ResizeRenderTargets(viewPortInfo);
+      }
+
+      mFxColorResolver->ResizeViewPortInfo(viewPortInfo);
+   }
 }

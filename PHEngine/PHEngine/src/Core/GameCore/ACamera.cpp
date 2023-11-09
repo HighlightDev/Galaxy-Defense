@@ -35,10 +35,12 @@ namespace EngineCore
 
    ACamera::~ACamera()
    {
+      WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
    }
 
    void ACamera::Initialize()
    {
+      WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void ACamera::SetCameraProxyId(const size_t proxyId)

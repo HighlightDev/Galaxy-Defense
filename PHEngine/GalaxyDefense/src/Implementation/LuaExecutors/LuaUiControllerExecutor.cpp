@@ -11,10 +11,11 @@ namespace Game
        : LuaScriptExecutorBase(scriptName),
          mLuaCommonUiCallbacks(std::make_unique<LuaCommonUiFunctions>(this)),
          mLuaCommonEngineFunctions(std::make_unique<LuaCommonEngineFunctions>(this)),
-         mLuaEngineEventsFunctions(std::make_unique<LuaEngineEventsFunctions>(this)),
+         mLuaEngineEventsFunctions(std::make_shared<LuaEngineEventsFunctions>(this)),
          mLuaGameEventsFunctions(std::make_shared<LuaGameEventsFunctions>(this))
    {
       mLuaGameEventsFunctions->Initialize();
+      mLuaEngineEventsFunctions->Initialize();
    }
 
    LuaUiControllerExecutor::~LuaUiControllerExecutor()

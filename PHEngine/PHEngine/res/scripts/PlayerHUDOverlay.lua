@@ -155,10 +155,6 @@ function PlayerHUDOverlay:new(host)
     local stationImg = UiImage:new(host)
     playerHUDOverlay:addWidget(stationImg)
 
-    --[[ local enemyCountLabel = UiLabel:new(host, "nimbus_mono")
-        playerHUDOverlay:addWidget(enemyCountLabel)
-    --]]
-
     local lifeRootContainer = UiItem:new(host)
     playerHUDOverlay:addWidget(lifeRootContainer)
 
@@ -294,12 +290,83 @@ function PlayerHUDOverlay:new(host)
         end
     end
 
-    --[[
-        playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged = function ()
-            local enemySpaceshipsCount = getEnemySpaceshipsCountDestroyedByPlayer(host)
-            enemyCountLabel:setText(tostring(enemySpaceshipsCount))
-        end
-    --]]
+    playerHUDOverlay.onWindowSizeChanged = function(width, height)
+        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
+        local lifeRootContainerWidth = width / 3.0;
+        local lifeRootContainerHeight = height / 4.0;
+        local weaponRootContainerWidth = width / 3.0;
+        local heartWidth = lifeRootContainerWidth / 10.0
+        local heartInterval = heartWidth * 0.5
+        local weaponCount = 4.0
+        local weaponWidth = weaponRootContainerWidth / weaponCount
+        local weaponRootContainerHeight = weaponWidth + 10
+        local weaponInterval = weaponWidth / 8.0
+        weaponWidth = (weaponRootContainerWidth - (weaponInterval * (weaponCount + 1))) / weaponCount
+        local weaponTopBottomMargin = (weaponRootContainerHeight - weaponWidth) * 0.5
+        local weaponImageSize = weaponWidth * 0.75
+
+        lifeRootContainer:setWidth(lifeRootContainerWidth)
+        lifeRootContainer:setHeight(lifeRootContainerHeight)
+        weaponRootContainer:setWidth(weaponRootContainerWidth)
+        weaponRootContainer:setHeight(lifeRootContainerHeight)
+
+        weaponBackgroundTile1:setHeight(weaponWidth);
+        weaponBackgroundTile1:setWidth(weaponWidth);
+        weaponBackgroundTile1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            weaponRootContainer.widgetName, weaponInterval);
+        weaponBackgroundTile1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin);
+        weaponImage1:setHeight(weaponImageSize);
+        weaponImage1:setWidth(weaponImageSize);
+        weaponTile1Label:setHeight(weaponImageSize / 15)
+
+        weaponBackgroundTile2:setHeight(weaponWidth);
+        weaponBackgroundTile2:setWidth(weaponWidth);
+        weaponBackgroundTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponBackgroundTile1.widgetName, weaponInterval);
+        weaponBackgroundTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin)
+        weaponImage2:setHeight(weaponImageSize);
+        weaponImage2:setWidth(weaponImageSize);
+        weaponTile2Label:setHeight(weaponImageSize / 15)
+
+        weaponBackgroundTile3:setHeight(weaponWidth);
+        weaponBackgroundTile3:setWidth(weaponWidth);
+        weaponBackgroundTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponBackgroundTile2.widgetName, weaponInterval);
+        weaponBackgroundTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin)
+        weaponImage3:setHeight(weaponImageSize);
+        weaponImage3:setWidth(weaponImageSize);
+        weaponTile3Label:setHeight(weaponImageSize / 15)
+
+        weaponBackgroundTile4:setHeight(weaponWidth);
+        weaponBackgroundTile4:setWidth(weaponWidth);
+        weaponBackgroundTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            weaponBackgroundTile3.widgetName, weaponInterval);
+        weaponBackgroundTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            weaponRootContainer.widgetName, weaponTopBottomMargin)
+        weaponImage4:setHeight(weaponImageSize);
+        weaponImage4:setWidth(weaponImageSize);
+        weaponTile4Label:setHeight(weaponImageSize / 15)
+
+        lifeImage1:setHeight(heartWidth);
+        lifeImage1:setWidth(heartWidth);
+        lifeImage2:setHeight(heartWidth);
+        lifeImage2:setWidth(heartWidth);
+        lifeImage3:setHeight(heartWidth);
+        lifeImage3:setWidth(heartWidth);
+        lifeImage3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage2.widgetName,
+            heartInterval);
+        lifeImage4:setHeight(heartWidth);
+        lifeImage4:setWidth(heartWidth);
+        lifeImage4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage3.widgetName,
+            heartInterval);
+        lifeImage5:setHeight(heartWidth);
+        lifeImage5:setWidth(heartWidth);
+        lifeImage5:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT, lifeImage4.widgetName,
+            heartInterval);
+    end
 
     playerHUDOverlay:subscribeOnAllWidgetLuaProxiesReady(function()
         enemyCountTile:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
@@ -324,25 +391,6 @@ function PlayerHUDOverlay:new(host)
             enemyCountTile.widgetName);
         stationImg:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
             enemyCountTile.widgetName);
-
-        --[[
-        enemyCountLabel:setParent(host, playerHUDOverlayCanvas.widgetName, enemyCountTile.widgetName)
-        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-        enemyCountTile.widgetName, 6)
-        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-        enemyCountTile.widgetName, 0)
-        enemyCountLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-        enemyCountTile.widgetName, 6)
-        enemyCountLabel:setVerticalCenterOffset(20)
-        enemyCountLabel:setHeight(50)
-        enemyCountLabel:setTextColorHexValue(PlayerHUDOverlay.missilesCountLabelColor)
-        enemyCountLabel:setFontSize(10.0)
-        enemyCountLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        enemyCountLabel:setZOrder(4)
-
-        playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged()
-        --]]
-
 
         lifeRootContainer:setParent(host, playerHUDOverlayCanvas.widgetName, playerHUDOverlayCanvas.widgetName)
         lifeRootContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -688,9 +736,23 @@ function PlayerHUDOverlay:new(host)
                 elseif statusType == PlayerStatusType.MISSILES_COUNT_CHANGED then
                     playerHUDOverlay.onMissilesDataChanged()
                 elseif statusType == PlayerStatusType.DESTROYED_ENEMY_SPACESHIPS_COUNT_CHANGED then
-                    playerHUDOverlay.onDestroyedEnemySpaceshipsCountChanged()
                 end
             end
+        end
+    end
+
+    playerHUDOverlay.onEngineEventTriggered = function(eventName, jsonArgs)
+        if "WindowSizeChanged" == eventName and playerHUDOverlay.allWidgetLuaProxiesReady == true then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            local windowSize = {}
+            if parsedJson["width"] ~= nil then
+                windowSize.width = tonumber(parsedJson["width"])
+            end
+            if parsedJson["height"] ~= nil then
+                windowSize.height = tonumber(parsedJson["height"])
+            end
+            playerHUDOverlay.onWindowSizeChanged(windowSize.width, windowSize.height)
         end
     end
 

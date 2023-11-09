@@ -11,7 +11,9 @@ namespace Graphics
 {
 
    FramebufferObject::FramebufferObject()
-       : mFramebufferId(std::numeric_limits<uint32_t>::max()), mRenderBufferId(), mRenderTextures()
+       : mFramebufferId(std::numeric_limits<uint32_t>::max()),
+         mRenderBufferId(std::numeric_limits<uint32_t>::max()),
+         mRenderTextures()
    {
    }
 
@@ -19,9 +21,15 @@ namespace Graphics
    {
    }
 
-   void FramebufferObject::AddRenderTexture(uint32_t framebufferAttachement, std::shared_ptr<ITexture> renderTexture)
+   void FramebufferObject::AddRenderTexture(const uint32_t framebufferAttachement, const std::shared_ptr<ITexture> &renderTexture)
    {
       assert(mRenderTextures.count(framebufferAttachement) == 0);
+      mRenderTextures[framebufferAttachement] = renderTexture;
+   }
+
+   void FramebufferObject::ReassignRenderTexture(const uint32_t framebufferAttachement, const std::shared_ptr<ITexture> &renderTexture)
+   {
+      assert(mRenderTextures.count(framebufferAttachement) > 0);
       mRenderTextures[framebufferAttachement] = renderTexture;
    }
 
@@ -48,6 +56,25 @@ namespace Graphics
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
       CollectAttachments();
+   }
+
+   void FramebufferObject::RebindFramebufferTextures()
+   {
+      assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
+      glBindFramebuffer(GL_FRAMEBUFFER, mFramebufferId);
+      for (const auto &attachmentToTexture : mRenderTextures)
+      {
+         const auto &renderTexture = attachmentToTexture.second;
+         if (renderTexture->GetTextureType() == eTextureType::TEXTURE_2D)
+         {
+            glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentToTexture.first, GL_TEXTURE_2D, renderTexture->GetTextureDescriptor(), 0);
+         }
+         else if (renderTexture->GetTextureType() == eTextureType::TEXTURE_CUBE)
+         {
+            glFramebufferTexture(GL_FRAMEBUFFER, attachmentToTexture.first, renderTexture->GetTextureDescriptor(), 0);
+         }
+      }
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
    }
 
    void FramebufferObject::CheckErrors()
@@ -148,28 +175,33 @@ namespace Graphics
                                               const size_t screenResX, const size_t screenResY)
    {
       assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
+      assert(mRenderBufferId == std::numeric_limits<uint32_t>::max());
       assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
-      uint32_t renderBufferId;
-      glGenRenderbuffers(1, &renderBufferId);
-      glBindRenderbuffer(GL_FRAMEBUFFER, renderBufferId);
+      glGenRenderbuffers(1, &mRenderBufferId);
+      glBindRenderbuffer(GL_FRAMEBUFFER, mRenderBufferId);
       glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResX, screenResY);
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, renderBufferId);
-      mRenderBufferId.push_back(renderBufferId);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
    }
 
    void FramebufferObject::CreateRenderBuffer(const int32_t renderbufferDataType, const int32_t framebufferRenderbufferAttachment,
                                               const glm::ivec2 &screenResolution)
    {
       assert(mFramebufferId != std::numeric_limits<uint32_t>::max());
+      assert(mRenderBufferId == std::numeric_limits<uint32_t>::max());
       assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Render"));
 
-      uint32_t renderBufferId;
-      glGenRenderbuffers(1, &renderBufferId);
-      glBindRenderbuffer(GL_RENDERBUFFER, renderBufferId);
+      glGenRenderbuffers(1, &mRenderBufferId);
+      glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
       glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, renderBufferId);
-      mRenderBufferId.push_back(renderBufferId);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, framebufferRenderbufferAttachment, GL_RENDERBUFFER, mRenderBufferId);
+   }
+
+   void FramebufferObject::ResizeRenderBufferStorage(const int32_t renderbufferDataType, const glm::ivec2 &screenResolution)
+   {
+      assert(mRenderBufferId != std::numeric_limits<uint32_t>::max());
+      glBindRenderbuffer(GL_RENDERBUFFER, mRenderBufferId);
+      glRenderbufferStorage(GL_RENDERBUFFER, renderbufferDataType, screenResolution.x, screenResolution.y);
    }
 
    void FramebufferObject::BindFramebuffer(uint32_t framebufferTarget, bool bBindFramebuffer, bool enableAttachmentDrawBuffers) const
@@ -202,8 +234,8 @@ namespace Graphics
       if (mFramebufferId != std::numeric_limits<uint32_t>::max())
          glDeleteFramebuffers(1, &mFramebufferId);
 
-      if (mRenderBufferId.size())
-         glDeleteRenderbuffers(mRenderBufferId.size(), mRenderBufferId.data());
+      if (mRenderBufferId != std::numeric_limits<uint32_t>::max())
+         glDeleteRenderbuffers(1, &mRenderBufferId);
    }
 
    void FramebufferObject::BindFramebufferAsReadTarget()

@@ -32,7 +32,9 @@ namespace Graphics
       PostFxRenderer(const ViewPortInfo &viewPortInfo);
       ~PostFxRenderer();
 
-      void Execute(const std::shared_ptr<ResolvedSceneFramebuffer>& resolveSceneColorFramebuffer);
+      void Execute(const std::shared_ptr<ResolvedSceneFramebuffer> &resolveSceneColorFramebuffer);
+
+      void ResizeRenderTargets(const ViewPortInfo &viewPortInfo);
 
    private:
       void Init();
