@@ -130,7 +130,8 @@ function UiItemBase:setParent(host, canvasName, uiWidgetParentName)
         ", canvas name: " .. tostring(canvasName) ..
         ", uiWidgetParentName: " ..
         tostring(uiWidgetParentName) ..
-        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))]]--
+        ", myName: " .. tostring(self.widgetName) .. ", self.luaProxyReady: " .. tostring(self.luaProxyReady))]]
+    --
     assert(
         self.luaProxyReady == true and host ~= nil and type(host) == "userdata" and type(canvasName) == "string" and
         canvasName ~= "" and
@@ -276,6 +277,13 @@ function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
     self.properties.anchors.value[srcAnchor].dstAnchor = dstAnchor
     self.properties.anchors.value[srcAnchor].dstUiItemWidgetName = dstUiItemWidgetName
     self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin ~= nil and anchorMargin or 0
+end
+
+function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
+    assert(srcAnchor ~= nil and srcAnchor > UiItemBase.UiAnchorType.NONE and
+        srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER and anchorMargin ~= nil and type(anchorMargin) == "number")
+    self.properties.anchors.dirty = true
+    self.properties.anchors.value[srcAnchor].srcAnchorMargin = anchorMargin
 end
 
 function UiItemBase:enableMouseInputReceiverBase(host)
