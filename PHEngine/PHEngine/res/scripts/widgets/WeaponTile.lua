@@ -112,7 +112,6 @@ end
 
 function WeaponTile:setLabelText(labelText)
     assert(labelText ~= nil and type(labelText) == "string")
-    print("WeaponTile:setLabelText => " .. labelText)
     self.weaponLabel:setText(labelText)
 end
 

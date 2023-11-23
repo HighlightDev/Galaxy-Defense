@@ -39,10 +39,10 @@ namespace Graphics
 		{
 			GenIndexBuffer();
 			BindIndexBuffer();
-			size_t bufferSize = sizeof(size_t) * GetTotalLengthOfData();
+			m_allocatedBufferSize = sizeof(size_t) * GetTotalLengthOfData();
 
-			LogInfo("IndexBufferObject::SendDataToGPU => bufferSize = ", bufferSize);
-			glBufferData(m_bufferTarget, bufferSize, m_data.data(), GL_STATIC_DRAW);
+			LogInfo("IndexBufferObject::SendDataToGPU => bufferSize = ", m_allocatedBufferSize);
+			glBufferData(m_bufferTarget, m_allocatedBufferSize, m_data.data(), GL_STATIC_DRAW);
 
 			// If data on CPU is unnecessary
 			if (m_dataCarryFlag == eDataCarryFlag::INVALIDATE)

@@ -6,7 +6,7 @@ set(
 	src/Implementation/Levels/Prologue/Controllers/UiController.h
 	src/Implementation/Levels/MainMenu/MainMenuLevel.h
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
-	src/Implementation/SpaceSceneCamera.h
+	src/Implementation/GalaxySceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
 	src/Implementation/GameObjectsCollisionType.h
@@ -82,7 +82,7 @@ set(
 	src/Implementation/Levels/Prologue/Controllers/UiController.cpp
 	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.cpp
-	src/Implementation/SpaceSceneCamera.cpp
+	src/Implementation/GalaxySceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
 	src/Implementation/AiBrain.cpp

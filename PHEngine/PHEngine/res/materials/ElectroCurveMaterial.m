@@ -21,17 +21,8 @@
 			</no_op>
 		</operation>
 	</dynamic_property>
-	<dynamic_property>
+	<property>
 		name: "opacity"
 		type: "float"
-		range: "[0.0 ; 1.0]"
-		<operation>
-			<no_op>
-				<property>
-					name: "b_opacity"
-					type: "binding_float"
-				</property>
-			</no_op>
-		</operation>
-	</dynamic_property>
+	</property>
 </properties>

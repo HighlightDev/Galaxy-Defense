@@ -18,10 +18,11 @@ namespace Graphics
    {
       class RuntimeGeneratedLineSceneProxy : public StaticMeshSceneProxy
       {
-         using Base = PrimitiveSceneProxy;
+         using Base = StaticMeshSceneProxy;
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
          using PlanarReflectionShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, CapturePlanarReflectionShader>;
 
+      protected:
          RuntimeGeneratedMeshPoolParameters mRtMeshPoolParams;
 
          glm::vec3 mLineBeginWorldSpacePosition;
@@ -31,6 +32,8 @@ namespace Graphics
          float mLineWidth;
 
          bool bUpdateLineGeometry{true};
+
+         uint32_t mVerticesCountToRender{4};
 
       public:
          RuntimeGeneratedLineSceneProxy(const RuntimeGeneratedLineComponent *component);
@@ -47,8 +50,8 @@ namespace Graphics
 
          bool CanBloomBeApplied() const override;
 
-      private:
-         void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix);
+      protected:
+         virtual void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix);
       };
 
    }

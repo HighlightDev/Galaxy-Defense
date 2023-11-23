@@ -269,4 +269,13 @@ namespace EngineMath
       const float t = (plane.w - pn) / nd;
       return t > 0.0f ? t : -1.0f;
    }
+
+   glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const float t)
+   {
+      const float restTime = 1.0f - t;
+      const float x = (restTime * restTime) * p1.x + 2.0f * restTime * t * p2.x + (t * t) * p3.x;
+      const float y = (restTime * restTime) * p1.y + 2.0f * restTime * t * p2.y + (t * t) * p3.y;
+      const float z = (restTime * restTime) * p1.z + 2.0f * restTime * t * p2.z + (t * t) * p3.z;
+      return glm::vec3(x, y, z);
+   }
 }

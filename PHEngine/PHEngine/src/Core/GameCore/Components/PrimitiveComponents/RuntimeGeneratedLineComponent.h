@@ -18,18 +18,18 @@ namespace EngineCore
 	class RuntimeGeneratedLineComponent : public StaticMeshComponent,
 										  public Event::CameraTransformChangedEvent
 	{
+		using Base = StaticMeshComponent;
+
 		RuntimeGeneratedMeshPoolParameters mRtMeshParams;
 
 		glm::vec3 mLineBeginWorldSpacePosition;
 
 		glm::vec3 mLineEndWorldSpacePosition;
 
-		bool mIsRenderDataDirty{false};
-
 		float mLineWidth;
 
 	protected:
-		using Base = StaticMeshComponent;
+		bool mIsRenderDataDirty{false};
 
 	public:
 		RuntimeGeneratedLineComponent(const std::shared_ptr<MeshComponentData> &meshComponentData,
@@ -60,8 +60,8 @@ namespace EngineCore
 
 		glm::vec3 GetLineEndWorldSpacePosition() const;
 
-	private:
-		void SyncRenderData();
+	protected:
+		virtual void SyncRenderData();
 	};
 
 }

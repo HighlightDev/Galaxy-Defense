@@ -18,7 +18,7 @@
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
-#include "Implementation/SpaceSceneCamera.h"
+#include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/MissileType.h"
@@ -124,9 +124,6 @@ namespace Game
     {
         if (const auto &sceneSp = mScene.lock())
         {
-            const auto &spaceCamera = std::static_pointer_cast<SpaceSceneCamera>(sceneSp->GetMainCamera());
-            spaceCamera->AddCameraTransformObserver(this);
-
             CreateWeaponBulletPool(sceneSp);
 
             WeakSpaceShipFactory spaceShipFactory;

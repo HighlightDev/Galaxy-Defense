@@ -740,7 +740,6 @@ namespace EngineCore
 
         void UiItemBase::GetDependentByTransformChildren(const std::string &nameOfRelatedUiItem, std::vector<std::shared_ptr<UiItemBase>> &affectedUiItems)
         {
-            LogInfo("UiItemBase::GetDependentByTransformChildren => UiItem name: ", GetName());
             for (const auto &child : mChildren)
             {
                 if (child->IsTransformDependentToUiItem(nameOfRelatedUiItem))

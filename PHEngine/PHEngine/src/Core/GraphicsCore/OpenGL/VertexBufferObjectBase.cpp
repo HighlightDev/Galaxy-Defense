@@ -49,12 +49,18 @@ namespace Graphics
 
 		void VertexBufferObjectBase::BufferSubData(const size_t offset, const size_t size, const void *data) const
 		{
+			assert(m_allocatedBufferSize >= size);
 			glBufferSubData(m_bufferTarget, offset, size, data);
 		}
 
 		int32_t VertexBufferObjectBase::GetBufferTarget() const
 		{
 			return m_bufferTarget;
+		}
+
+		size_t VertexBufferObjectBase::GetAllocatedBufferSize() const
+		{
+			return m_allocatedBufferSize;
 		}
 	}
 }

@@ -64,7 +64,7 @@ namespace Graphics
          shader->ExecuteShader();
          shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
          shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
-         m_skin->GetBuffer()->RenderVAO(0, 4, GL_TRIANGLE_STRIP);
+         m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
          shader->StopShader();
 
          if (isCullFaceEnabled)

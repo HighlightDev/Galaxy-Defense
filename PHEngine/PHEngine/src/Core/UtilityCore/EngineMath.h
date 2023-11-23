@@ -81,4 +81,6 @@ namespace EngineMath
 
    float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection);
 
+   glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const float t);
+
 }

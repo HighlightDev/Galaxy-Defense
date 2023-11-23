@@ -19,6 +19,8 @@ namespace Graphics
 
 			eAttribArrayIndexName mAttribArrayIndexName;
 
+			size_t m_allocatedBufferSize{0};
+
 		public:
 			VertexBufferObjectBase(const eAttribArrayIndexName attribArrayIndexName, const int32_t bufferTarget = GL_ARRAY_BUFFER);
 			virtual ~VertexBufferObjectBase();
@@ -52,6 +54,8 @@ namespace Graphics
 			eAttribArrayIndexName GetAttribArrayIndexName() const;
 
 			int32_t GetBufferTarget() const;
+
+			size_t GetAllocatedBufferSize() const;
 		};
 	}
 }

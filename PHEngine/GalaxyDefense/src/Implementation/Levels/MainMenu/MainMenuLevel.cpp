@@ -23,7 +23,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
-#include "Implementation/SpaceSceneCamera.h"
+#include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Controllers/SpaceShipPlayerController.h"
 #include "Implementation/Events/MainPlayerActionEvent.h"
 #include "Implementation/Events/RayCollisionEvent.h"
