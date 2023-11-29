@@ -5,6 +5,7 @@
 #include "Implementation/Modifiers/IModifiable.h"
 #include "Implementation/Modifiers/ModifiersHandler.h"
 #include "Implementation/DamageDealerType.h"
+#include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 
 #include <functional>
 #include <unordered_map>
@@ -98,6 +99,8 @@ namespace Game
         eSpaceshipActivityState GetSpaceshipActivityState() const;
 
         void SetFreezingEffectValue(const float value);
+
+        std::shared_ptr<OnRouteMovementComponent> GetOnRouteMovementComponent() const;
 
     protected:
         virtual glm::vec2 CalculatePositionForDamageText() const;

@@ -1,6 +1,6 @@
 <general>
-	name: "ElectroRay material"
-	shader: "ElectroRayMaterial.glsl"
+	name: "ElectroCurve material"
+	shader: "ElectroCurveMaterial.glsl"
 	material_type: "dynamic"
 </general>
 <properties>

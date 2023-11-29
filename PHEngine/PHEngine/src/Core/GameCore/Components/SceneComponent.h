@@ -51,6 +51,8 @@ namespace EngineCore
 
       void SetAdditionalRotation(const glm::vec3 &rotationDegrees);
 
+      glm::vec3 GetAdditionalRotation() const;
+
       std::weak_ptr<Transform> GetTransformWeakPtr() const;
 
       bool GetIsTransformationDirty() const;

@@ -117,6 +117,11 @@ namespace EngineCore
       SetIsTransformationDirty(true);
    }
 
+   glm::vec3 SceneComponent::GetAdditionalRotation() const
+   {
+      return m_additionalRotationEuler->GetValue();
+   }
+
    std::weak_ptr<Transform> SceneComponent::GetTransformWeakPtr() const
    {
       return mTransform;

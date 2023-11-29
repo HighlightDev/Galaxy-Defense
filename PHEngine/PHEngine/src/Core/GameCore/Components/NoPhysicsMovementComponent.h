@@ -5,15 +5,16 @@
 namespace EngineCore
 {
    struct MovementComponentData;
-   
+
    class NoPhysicsMovementComponent
        : public MovementComponent
    {
 
+   protected:
       std::weak_ptr<SceneComponent> m_actorRootComponent;
 
    public:
-      NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData>& movementComponentData);
+      NoPhysicsMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData);
 
       ~NoPhysicsMovementComponent() override;
 
@@ -25,11 +26,11 @@ namespace EngineCore
 
       void Move(const float deltaTime) override;
 
-      void Move(const glm::vec3& direction, const float deltaTime) override;
+      void Move(const glm::vec3 &direction, const float deltaTime) override;
 
       void Jump() override;
 
-      void Teleport(const glm::vec3& teleportPosition) override;
+      void Teleport(const glm::vec3 &teleportPosition) override;
 
       void PostLevelInit() override;
 

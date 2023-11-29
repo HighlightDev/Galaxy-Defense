@@ -49,7 +49,7 @@ namespace EngineCore
       if (!mIsPostLevelInitialized)
       {
          // this call is necessary to resolve issue which could be observed in case component
-         // had been created AFTER level was initialized
+         // was created AFTER level had been initialized
          PostLevelInit();
       }
    }

@@ -1,5 +1,6 @@
 set(
 	HEADERS
+	src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
 	src/Implementation/Levels/GameLevelFactory.h
 	src/Implementation/Levels/LevelBase.h
 	src/Implementation/Levels/Prologue/PrologueLevel.h
@@ -20,6 +21,7 @@ set(
 	src/Implementation/Controllers/AiActorController.h
 	src/Implementation/Controllers/AiSpaceshipActorController.h
 	src/Implementation/Controllers/GameFlowController.h
+	src/Implementation/Controllers/NavigationController.h
 	src/Implementation/Events/MainPlayerActionEvent.h
 	src/Implementation/Events/SphereContactCollisionEvent.h
 	src/Implementation/Events/RayCollisionEvent.h
@@ -72,10 +74,13 @@ set(
 	src/Implementation/LevelProgressSystem/ILevelProgressRequirement.h
 	src/Implementation/LevelProgressSystem/ILevelRequirementTracker.h
 	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h
+	src/Implementation/Navigation/NavigationPathBuilder.h
+	src/Implementation/Navigation/PathSegment.h
 )
 
 set(
 	SOURCES
+	src/Implementation/Components/MovementComponents/OnRouteMovementComponent.cpp
 	src/Implementation/Levels/GameLevelFactory.cpp
 	src/Implementation/Levels/LevelBase.cpp
 	src/Implementation/Levels/Prologue/PrologueLevel.cpp
@@ -89,6 +94,7 @@ set(
 	src/Implementation/Controllers/AiActorController.cpp
 	src/Implementation/Controllers/AiSpaceshipActorController.cpp
 	src/Implementation/Controllers/GameFlowController.cpp
+	src/Implementation/Controllers/NavigationController.cpp
 	src/Implementation/Events/MainPlayerActionEvent.cpp
 	src/Implementation/Events/SphereContactCollisionEvent.cpp
 	src/Implementation/Events/RayCollisionEvent.cpp
@@ -134,6 +140,8 @@ set(
 	src/Implementation/LevelProgressSystem/LevelProgressStage.cpp
 	src/Implementation/LevelProgressSystem/LevelProgressBlueprint.cpp
 	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.cpp
+	src/Implementation/Navigation/NavigationPathBuilder.cpp
+	src/Implementation/Navigation/PathSegment.cpp
     main.cpp
 )
 

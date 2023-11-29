@@ -43,7 +43,8 @@ namespace Game
           mEnemies(),
           mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(50, 50, 100))),
           mCameraVisibilityArea(),
-          mElectroRayChainActorPool(std::make_shared<ElectroRayChainActorPool>(scene))
+          mElectroRayChainActorPool(std::make_shared<ElectroRayChainActorPool>(scene)),
+          mNavigationController(std::make_shared<NavigationController>(scene))
     {
         mBackgroundPlanetsSpawnTimer.SetIntervalMs(1500);
         mBackgroundPlanetsSpawnTimer.SetIsRepeat(true);
@@ -65,6 +66,7 @@ namespace Game
         MainPlayerActionEvent::GetInstance()->AddListener(thisSp);
         PhysicsCollisionEvent::GetInstance()->AddListener(thisSp);
         RayCollisionEvent::GetInstance()->AddListener(thisSp);
+        mNavigationController->OnPreLevelInit();
     }
 
     void CombatController::OnCameraTransformChanged(ACamera *eventSrc)
@@ -128,7 +130,7 @@ namespace Game
 
             WeakSpaceShipFactory spaceShipFactory;
 
-            static constexpr int s_enemySpaceshipsCount = 0;
+            static constexpr int s_enemySpaceshipsCount = 1;
             for (size_t i = 0; i < s_enemySpaceshipsCount; ++i)
             {
                 const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,
@@ -143,6 +145,8 @@ namespace Game
 
             CreateBackgroundSpaceObjectsPool(sceneSp);
         }
+        mNavigationController->SetEnemies(mEnemies);
+        mNavigationController->OnLevelInit();
     }
 
     void CombatController::CreateBackgroundSpaceObjectsPool(const std::shared_ptr<Scene> &sceneSp)
@@ -167,11 +171,6 @@ namespace Game
             missile->SetIsEnabled(false); // disable all missiles at level beginning
         }
 
-        for (const auto &spaceship : mEnemies)
-        {
-            spaceship->TriggerSpawn(GenRandomPositionForSpaceship());
-        }
-
         for (const auto &asteroid : mSpaceObjectsPool)
         {
             asteroid->TriggerSpawn(GenRandomPositionForSpaceObject());
@@ -183,6 +182,8 @@ namespace Game
         }
 
         mBackgroundPlanetsSpawnTimer.StartTimer();
+
+        mNavigationController->PostPlayLevelFinished();
     }
 
     void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
@@ -399,22 +400,6 @@ namespace Game
             }
         }
 
-        for (const auto &enemyActor : mEnemies)
-        {
-            if (eSpaceshipActivityState::ACTIVE == enemyActor->GetSpaceshipActivityState())
-            {
-                const auto &enemyTranslation = enemyActor->GetRootComponent()->GetTranslation();
-                if (enemyTranslation.z < -10.0f)
-                {
-                    enemyActor->TriggerDisabled();
-                }
-            }
-            else
-            {
-                enemyActor->TriggerSpawn(GenRandomPositionForSpaceship());
-            }
-        }
-
         for (const auto &spaceObject : mSpaceObjectsPool)
         {
             if (eSpaceObjectActivityState::ACTIVE == spaceObject->GetActivityState())
@@ -441,6 +426,8 @@ namespace Game
                 }
             }
         }
+
+        mNavigationController->Tick(deltaTime);
     }
 
     void CombatController::OnBackgroundPlanetsSpawnTimerTimeout()

@@ -15,8 +15,6 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
-#include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -41,7 +39,6 @@
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
 
-using namespace Graphics;
 using namespace EnginePhysics;
 using namespace IO;
 using namespace EngineCore;
@@ -125,35 +122,6 @@ namespace Game
       const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
       billboardComponent->SetSortOrderValue(-100000);
       a_skybox->AddComponent(billboardComponent);
-
-      const std::shared_ptr<IMaterial> &electro_material = materialParser.ParseMaterialDescriptor("ElectroCurveMaterial.m");
-      sceneSp->RegisterMaterialInstance(electro_material);
-      const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
-
-      MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
-      MaterialPropertySetter::SetMaterialPropertyValue(electro_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-      MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "opacity", 1.0f);
-
-      auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_1", 150, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
-      const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
-      auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-      c_mesh->SetLineWidth(20.0f);
-      c_mesh->SetSortOrderValue(100);
-		c_mesh->SetCurveSegmentsCount(50);
-      c_mesh->SetBezierControlPointWorldSpacePosition(glm::vec3(-50, 0, 50));
-		c_mesh->SetLineBeginWorldSpacePosition(glm::vec3(-100, 0, 0));
-		c_mesh->SetLineEndWorldSpacePosition(glm::vec3(0, 0, 0));
-      a_skybox->AddComponent(c_mesh);
-
-      d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_2", 150, glm::vec3(0), glm::vec3(), glm::vec3(1), "", electro_material);
-      c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-      c_mesh->SetLineWidth(20.0f);
-      c_mesh->SetSortOrderValue(100);
-		c_mesh->SetCurveSegmentsCount(50);
-      c_mesh->SetBezierControlPointWorldSpacePosition(glm::vec3(50, 0, -50));
-		c_mesh->SetLineBeginWorldSpacePosition(glm::vec3(0, 0, 0));
-		c_mesh->SetLineEndWorldSpacePosition(glm::vec3(100, 0, 0));
-      a_skybox->AddComponent(c_mesh);
 
       const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
       const auto &gameFlowController = std::make_shared<GameFlowController>(spaceCamera, a_station->GetRootComponent());

@@ -5,7 +5,7 @@
 #include "Implementation/Controllers/AiSpaceshipActorController.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/WeakSpaceshipActor.h"
-#include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
+#include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 #include "Core/GameCore/Components/ParticleComponents/ParticleSystemComponent.h"
 #include "Core/GameCore/Components/ComponentData/ParticleSystemComponentData.h"
 #include "Core/GameCore/Components/SceneComponent.h"
@@ -101,8 +101,8 @@ namespace Game
         a_enemySpaceship->AddComponent(c_mesh);
 
         const auto d_movement = std::make_shared<MovementComponentData>("NoPhysMoveComponentData_" + enemyShipIndexStr, glm::vec3(0.0f, 0.0f, -1.0f));
-        const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<NoPhysicsMovementComponent>>();
-        const auto &c_movement = std::static_pointer_cast<NoPhysicsMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
+        const auto &moveComponentCreator = std::make_shared<MovementComponentCreator<OnRouteMovementComponent>>();
+        const auto &c_movement = std::static_pointer_cast<OnRouteMovementComponent>(scene->CreateComponent_GameThread(moveComponentCreator, d_movement));
         c_movement->SetReferenceSpeed(10.0f);
         c_movement->SetCurrentSpeedToReferenceValue();
         a_enemySpaceship->AddComponent(c_movement);

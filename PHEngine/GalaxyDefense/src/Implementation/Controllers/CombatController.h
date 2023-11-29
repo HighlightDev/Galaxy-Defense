@@ -15,6 +15,7 @@
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/Pools/ElectroRayChainActorPool.h"
+#include "Implementation/Controllers/NavigationController.h"
 
 #include <memory>
 #include <utility>
@@ -57,6 +58,8 @@ namespace Game
         std::vector<std::shared_ptr<BackgroundSpaceObjectActor>> mBackgroundSpaceObjects;
 
         std::shared_ptr<ElectroRayChainActorPool> mElectroRayChainActorPool; // todo: rework with pointer to generic interface
+
+        std::shared_ptr<NavigationController> mNavigationController;
 
         float mCoolDownTime = 0.2f;
 

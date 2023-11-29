@@ -10,6 +10,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/Common/TextHorizontalAlignmentType.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
+#include "Implementation/Components/MovementComponents/OnRouteMovementComponent.h"
 
 namespace Game
 {
@@ -242,5 +243,10 @@ namespace Game
     void SpaceshipActor::SetFreezingEffectValue(const float value)
     {
         mFreezingEffectProperty->SetValue(value);
+    }
+
+    std::shared_ptr<OnRouteMovementComponent> SpaceshipActor::GetOnRouteMovementComponent() const
+    {
+        return std::dynamic_pointer_cast<OnRouteMovementComponent>(GetMovementComponent());
     }
 }

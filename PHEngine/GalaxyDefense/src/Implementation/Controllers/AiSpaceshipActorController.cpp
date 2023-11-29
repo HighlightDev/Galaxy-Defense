@@ -19,7 +19,7 @@ namespace Game
     {
         AiActorController::Tick(deltaTime);
 
-        if (const auto &actorSp = m_actorWp.lock())
+        /*if (const auto &actorSp = m_actorWp.lock())
         {
             if (const auto &movementComponentSp = m_movementComponentWp.lock())
             {
@@ -48,6 +48,6 @@ namespace Game
                     mCurrentState = actualDirectionName;
                 }
             }
-        }
+        }*/
     }
 }
