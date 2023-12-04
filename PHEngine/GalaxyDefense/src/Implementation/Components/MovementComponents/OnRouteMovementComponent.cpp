@@ -14,78 +14,87 @@ namespace Game
 
     void OnRouteMovementComponent::SetRoutePoints(const std::vector<glm::vec3> &routePoints)
     {
-        mRoutePoints = routePoints;
-        if (mRoutePoints.size())
+        const auto newRoutePointsSize = routePoints.size();
+        if (newRoutePointsSize)
         {
-            CalculateRouteTotalDistance();
-        }
-    }
-
-    void OnRouteMovementComponent::CalculateRouteTotalDistance()
-    {
-        const auto routePointsCount = mRoutePoints.size();
-        for (int i = 1; i < routePointsCount; ++i)
-        {
-            mRouteTotalDistance += glm::length(mRoutePoints[i] - mRoutePoints[i - 1]);
-        }
-    }
-
-    const std::vector<glm::vec3> &OnRouteMovementComponent::GetRoutePoints() const
-    {
-        return mRoutePoints;
-    }
-
-    void OnRouteMovementComponent::TeleportToDistanceOnRoute(const float distance)
-    {
-    }
-
-    float OnRouteMovementComponent::GetCurrentDistanceOnRoute() const
-    {
-        return mCurrentDistanceOnRoute;
-    }
-
-    void OnRouteMovementComponent::Move(const float deltaTime)
-    {
-        if (mIsMovementAllowed)
-        {
-            if (const auto &actorRootComponentSp = m_actorRootComponent.lock())
+            float totalDistance = 0.0f;
+            for (int i = 0; i < newRoutePointsSize; ++i)
             {
-                const float distanceToBeDone = mCurrentSpeed * deltaTime;
-                float distanceAlreadyDone = mCurrentDistanceOnRoute * mRouteTotalDistance + distanceToBeDone;
-                distanceAlreadyDone = std::fmod(distanceAlreadyDone, mRouteTotalDistance);
-                const float prctDistanceDone = EngineMath::FloatsNearEqual(mRouteTotalDistance, 0.0f) ? 0.0f : distanceToBeDone / mRouteTotalDistance;
-                mCurrentDistanceOnRoute += prctDistanceDone;
-                mCurrentDistanceOnRoute = mCurrentDistanceOnRoute > 1.0f ? 0.0f : mCurrentDistanceOnRoute;
+                if (0 == i)
+                {
+                    mRoutePoints.emplace_back(std::make_pair(0.0f, routePoints.at(0)));
+                }
+                else
+                {
+                    const auto nowAndPrevPointsDistance = glm::length(routePoints[i] - routePoints[i - 1]);
+                    totalDistance += nowAndPrevPointsDistance;
+                    mRoutePoints.emplace_back(std::make_pair(totalDistance, routePoints[i]));
+                }
+            }
+            mRouteTotalDistance = totalDistance;
+        }
+    }
 
-                glm::vec3 pPrev, pNext;
-                float distancePrev = 0.0f, distanceNext = 0.0f;
+    std::vector<glm::vec3> OnRouteMovementComponent::GetRoutePoints() const
+    {
+        std::vector<glm::vec3> result;
+        result.reserve(mRoutePoints.size());
+        std::transform(mRoutePoints.begin(), mRoutePoints.end(), std::back_inserter(result), [](const auto &routePair)
+                       { return routePair.second; });
+        return result;
+    }
+
+    void OnRouteMovementComponent::TeleportToMovementProgressOnRoute(const float seekDistance)
+    {
+        if (const auto &actorRootComponentSp = m_actorRootComponent.lock())
+        {
+            if (seekDistance <= mRouteTotalDistance && seekDistance >= 0.0f)
+            {
+                std::pair<float, glm::vec3> pPrev, pNext;
                 const auto routePointsCount = mRoutePoints.size();
-                float accumulatedDistance = 0.0f;
                 for (int i = 1; i < routePointsCount; ++i)
                 {
-                    const float distanceBetweenPrevAndNow = glm::length(mRoutePoints[i] - mRoutePoints[i - 1]);
-                    accumulatedDistance += distanceBetweenPrevAndNow;
-                    if (distanceAlreadyDone <= accumulatedDistance)
+                    const auto &prevRoutePoint = mRoutePoints[i - 1];
+                    const auto &currentRoutePoint = mRoutePoints[i];
+                    if (currentRoutePoint.first >= seekDistance && prevRoutePoint.first <= seekDistance)
                     {
-                        pPrev = mRoutePoints[i - 1];
-                        pNext = mRoutePoints[i];
-                        distanceNext = accumulatedDistance;
-                        distancePrev = accumulatedDistance - distanceBetweenPrevAndNow;
+                        pNext = currentRoutePoint;
+                        pPrev = prevRoutePoint;
                         break;
                     }
                 }
 
-                const auto currentPosition = EngineMath::LerpVec3(distanceAlreadyDone, distancePrev, distanceNext, pPrev, pNext);
+                const auto currentPosition = EngineMath::LerpVec3(seekDistance, pPrev.first, pNext.first, pPrev.second, pNext.second);
 
-                if (!EngineMath::CheckSimilarityVec3(currentPosition, pPrev))
+                if (!EngineMath::CheckSimilarityVec3(currentPosition, pPrev.second))
                 {
-                    const auto directionVec = glm::normalize(currentPosition - pPrev);
+                    const auto directionVec = glm::normalize(currentPosition - pPrev.second);
                     const auto yawRad = std::atan2(directionVec.x, directionVec.z);
                     const auto &euelerRotationDeg = actorRootComponentSp->GetAdditionalRotation();
                     actorRootComponentSp->SetAdditionalRotation(glm::vec3(euelerRotationDeg.x, RAD_TO_DEG(yawRad + glm::pi<float>()), euelerRotationDeg.z));
                 }
                 actorRootComponentSp->SetTranslation(currentPosition);
             }
+        }
+    }
+
+    float OnRouteMovementComponent::GetMovementProgressOnRoute() const
+    {
+        return mMovementProgressOnRoute;
+    }
+
+    void OnRouteMovementComponent::Move(const float deltaTime)
+    {
+        if (mIsMovementAllowed)
+        {
+            const float distanceToBeDone = mCurrentSpeed * deltaTime;
+            float distanceAlreadyDone = mMovementProgressOnRoute * mRouteTotalDistance + distanceToBeDone;
+            distanceAlreadyDone = std::fmod(distanceAlreadyDone, mRouteTotalDistance);
+            const float prctDistanceDone = EngineMath::FloatsNearEqual(mRouteTotalDistance, 0.0f) ? 0.0f : distanceToBeDone / mRouteTotalDistance;
+            mMovementProgressOnRoute += prctDistanceDone;
+            mMovementProgressOnRoute = mMovementProgressOnRoute > 1.0f ? mMovementProgressOnRoute - 1.0f : mMovementProgressOnRoute;
+
+            TeleportToMovementProgressOnRoute(distanceAlreadyDone);
         }
     }
 

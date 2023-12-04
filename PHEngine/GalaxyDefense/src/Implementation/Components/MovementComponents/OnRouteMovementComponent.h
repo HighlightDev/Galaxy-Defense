@@ -3,6 +3,7 @@
 #include "Core/GameCore/Components/NoPhysicsMovementComponent.h"
 
 #include <vector>
+#include <utility>
 #include <glm/vec3.hpp>
 
 using namespace EngineCore;
@@ -13,10 +14,10 @@ namespace Game
         : public NoPhysicsMovementComponent
     {
     protected:
-        std::vector<glm::vec3> mRoutePoints;
+        std::vector<std::pair<float /*total distance from the beginning of the route*/, glm::vec3>> mRoutePoints;
 
-        // param which lies between 0 and 1 and denotes route movement completion
-        float mCurrentDistanceOnRoute{0.0f};
+        // param which lies between 0 and 1 and denotes route movement progress
+        float mMovementProgressOnRoute{0.0f};
 
         bool mIsMovementAllowed{false};
 
@@ -29,17 +30,14 @@ namespace Game
 
         void SetRoutePoints(const std::vector<glm::vec3> &routePoints);
 
-        const std::vector<glm::vec3> &GetRoutePoints() const;
+        std::vector<glm::vec3> GetRoutePoints() const;
 
-        void TeleportToDistanceOnRoute(const float distance);
+        void TeleportToMovementProgressOnRoute(const float seekDistance);
 
-        float GetCurrentDistanceOnRoute() const;
+        float GetMovementProgressOnRoute() const;
 
         bool GetIsMovementAllowed() const;
 
         void SetIsMovementAllowed(const bool isAllowed);
-
-    private:
-        void CalculateRouteTotalDistance();
     };
 }

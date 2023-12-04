@@ -98,7 +98,7 @@ namespace Game
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
                                                                     38.88f,
-                                                                    -2.72f,
+                                                                    0.0f,
                                                                     150.0f);
 
       spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);

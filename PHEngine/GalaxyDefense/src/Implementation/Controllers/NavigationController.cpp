@@ -65,7 +65,7 @@ namespace Game
             auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", electro_material);
             const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
             auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            c_mesh->SetLineWidth(10.0f);
+            c_mesh->SetLineWidth(2.5f);
             c_mesh->SetSortOrderValue(100);
             c_mesh->SetCurveSegmentsCount(50);
             c_mesh->SetLineBeginWorldSpacePosition(bezierControlPoints.at(0));

@@ -8,46 +8,35 @@ uniform float opacity;
 
 float alpha;
 
-vec4 getElectroColor(in MATERIAL_VS_OUTPUT materialIn)
-{
-  vec2 uv = materialIn.TextureCoordinates.xy;
-  uv = uv * 2. -1.;
-  float intensity = texture(noise, materialIn.TextureCoordinates.xy + vec2(timeSec * 0.5f, timeSec * 0.5f)).r;
+const float c_lineWidthPct = 0.2; // % from total route
+const float c_gapWidthPct = 0.15; // % from line width
 
-  float t = clamp((uv.x * -uv.x * 0.08) + 0.58, 0., 1.);          
-  float y = abs(intensity * -t + uv.y);
-    
-  float g = pow(y, 0.2);
-
-  vec4 rgba = vec4(1.70, 1.48, 1.78, 1.98);
-  rgba = rgba * -g + rgba;      
-  rgba = rgba * rgba * rgba;
-
-  return rgba;
+vec4 getLineColor(in MATERIAL_VS_OUTPUT materialIn) {
+  float xCoordinate = materialIn.TextureCoordinates.x;
+  float gapWidthPct = (c_lineWidthPct * c_gapWidthPct);
+  float totalLineWidthPct = c_lineWidthPct + gapWidthPct;
+  float fractPart = fract(xCoordinate / totalLineWidthPct);
+  return vec4(vec3(1.0), step(c_gapWidthPct, fractPart));
 }
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
-{
-    alpha = 1.0;
-	return vec3(1.0);
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn) {
+  vec4 colorResult = getLineColor(materialIn);
+  alpha = colorResult.a;
+  return colorResult.rgb;
 }
 
-vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
-{
-    return vec2(0);
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn) {
+  return vec2(0);
 }
 
-float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
-{
-	return 0.0;
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn) {
+  return 0.0;
 }
 
-float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
-{
-	return alpha * opacity;
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn) {
+  return alpha * opacity;
 };
 
-vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)
-{
-    return vec3(0);
+vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn) {
+  return vec3(0);
 }
