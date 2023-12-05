@@ -1,40 +1,37 @@
 #include "NavigationPathBuilder.h"
-
-#include <algorithm>
-#include <numeric>
+#include "Core/CommonCore/Assertion.h"
 
 namespace Game
 {
-    void NavigationPathBuilder::AppendPathSegmentToTheEnd(const PathSegment &pathSegment)
+    void NavigationPathBuilder::AddPath(const std::string &pathName, const Path &pathSegment)
     {
-        mPathSegments.push_back(pathSegment);
+        assert(!mPaths.count(pathName));
+        mPaths[pathName] = pathSegment;
     }
 
-    const std::vector<PathSegment> &NavigationPathBuilder::GetPathSegments() const
+    Path NavigationPathBuilder::GetPathByName(const std::string &name) const
     {
-        return mPathSegments;
+        assert(mPaths.count(name));
+        return mPaths.at(name);
     }
 
-    const std::vector<glm::vec3> &NavigationPathBuilder::GetRoutePoints()
+    bool NavigationPathBuilder::TryToRemovePathByName(const std::string &name)
     {
-        const auto actualPathSegmentsPointsCount = std::accumulate(mPathSegments.cbegin(), mPathSegments.cend(), 0, [](const int32_t total, const PathSegment &segment)
-                                                                   { return segment.GetTotalSegmentPointsCount() + total; });
-        if (actualPathSegmentsPointsCount != mCachedRoutePoints.size())
+        if (mPaths.count(name))
         {
-            mCachedRoutePoints.clear();
-            mCachedRoutePoints.reserve(actualPathSegmentsPointsCount);
-            for (const auto &segment : mPathSegments)
-            {
-                const auto &totalPoints = segment.GetTotalSegmentPoints();
-                mCachedRoutePoints.insert(mCachedRoutePoints.end(), totalPoints.cbegin(), totalPoints.cend());
-            }
+            mPaths.erase(name);
+            return true;
         }
-
-        return mCachedRoutePoints;
+        return false;
     }
 
-    glm::vec3 NavigationPathBuilder::GetRouteFirstPoint() const
+    const std::unordered_map<std::string, Path>& NavigationPathBuilder::GetPaths() const
     {
-        return mCachedRoutePoints.size() ? mCachedRoutePoints[0] : glm::vec3();
+        return mPaths;
+    }
+
+    std::unordered_map<std::string, Path>& NavigationPathBuilder::GetPaths()
+    {
+        return mPaths;
     }
 }

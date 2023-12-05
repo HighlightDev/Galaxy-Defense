@@ -130,7 +130,7 @@ namespace Game
 
             WeakSpaceShipFactory spaceShipFactory;
 
-            static constexpr int s_enemySpaceshipsCount = 1;
+            static constexpr int s_enemySpaceshipsCount = 5;
             for (size_t i = 0; i < s_enemySpaceshipsCount; ++i)
             {
                 const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,

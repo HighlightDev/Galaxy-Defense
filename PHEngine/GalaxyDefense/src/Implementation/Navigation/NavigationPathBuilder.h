@@ -1,24 +1,24 @@
 #pragma once
 
-#include "PathSegment.h"
+#include "Path.h"
 
-#include <vector>
+#include <unordered_map>
 
 namespace Game
 {
     class NavigationPathBuilder
     {
-        std::vector<PathSegment> mPathSegments;
-
-        std::vector<glm::vec3> mCachedRoutePoints;
+        std::unordered_map<std::string, Path> mPaths;
 
     public:
-        void AppendPathSegmentToTheEnd(const PathSegment &pathSegment);
+        void AddPath(const std::string& pathName, const Path &pathSegment);
 
-        const std::vector<PathSegment> &GetPathSegments() const;
+        Path GetPathByName(const std::string& name) const;
 
-        const std::vector<glm::vec3> &GetRoutePoints();
+        bool TryToRemovePathByName(const std::string& name);
 
-        glm::vec3 GetRouteFirstPoint() const;
+        const std::unordered_map<std::string, Path>& GetPaths() const;
+
+        std::unordered_map<std::string, Path>& GetPaths();
     };
 }

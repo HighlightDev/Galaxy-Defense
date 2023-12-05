@@ -76,6 +76,7 @@ set(
 	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.h
 	src/Implementation/Navigation/NavigationPathBuilder.h
 	src/Implementation/Navigation/PathSegment.h
+	src/Implementation/Navigation/Path.h
 )
 
 set(
@@ -142,6 +143,7 @@ set(
 	src/Implementation/LevelProgressSystem/LevelRequirementTrackers/DestroySpaceshipsTracker.cpp
 	src/Implementation/Navigation/NavigationPathBuilder.cpp
 	src/Implementation/Navigation/PathSegment.cpp
+	src/Implementation/Navigation/Path.cpp
     main.cpp
 )
 

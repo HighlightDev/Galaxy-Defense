@@ -13,6 +13,7 @@
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Implementation/Navigation/PathSegment.h"
+#include "Implementation/Navigation/Path.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 
 #include <array>
@@ -38,16 +39,29 @@ namespace Game
     {
         const auto sceneSp = mSceneWp.lock();
         assert(sceneSp);
+        Path path;
         PathSegment segment;
         segment.SetSubdivisionsCount(50);
         segment.SetControlPoints({{glm::vec3(-50, 0, 50), glm::vec3(-60, 0, 30), glm::vec3(-20, 0, 10)}});
-        mNavPathBuilder.AppendPathSegmentToTheEnd(segment);
+        path.AppendPathSegmentToTheEnd(segment);
         segment.SetControlPoints({{glm::vec3(-20, 0, 10), glm::vec3(20, 0, -100), glm::vec3(40, 0, -50)}});
-        mNavPathBuilder.AppendPathSegmentToTheEnd(segment);
+        path.AppendPathSegmentToTheEnd(segment);
         segment.SetControlPoints({{glm::vec3(40, 0, -50), glm::vec3(20, 0, 20), glm::vec3(50, 0, -30)}});
-        mNavPathBuilder.AppendPathSegmentToTheEnd(segment);
+        path.AppendPathSegmentToTheEnd(segment);
         segment.SetControlPoints({{glm::vec3(50, 0, -30), glm::vec3(60, 0, -40), glm::vec3(100, 0, -100)}});
-        mNavPathBuilder.AppendPathSegmentToTheEnd(segment);
+        path.AppendPathSegmentToTheEnd(segment);
+        mNavPathBuilder.AddPath("FirstPath", path);
+
+        path = Path();
+        segment.SetControlPoints({{glm::vec3(-50, 0, -50), glm::vec3(-60, 0, -30), glm::vec3(-20, 0, -10)}});
+        path.AppendPathSegmentToTheEnd(segment);
+        segment.SetControlPoints({{glm::vec3(-20, 0, -10), glm::vec3(20, 0, 100), glm::vec3(40, 0, 50)}});
+        path.AppendPathSegmentToTheEnd(segment);
+        segment.SetControlPoints({{glm::vec3(40, 0, 50), glm::vec3(20, 0, -20), glm::vec3(50, 0, 30)}});
+        path.AppendPathSegmentToTheEnd(segment);
+        segment.SetControlPoints({{glm::vec3(50, 0, 30), glm::vec3(60, 0, 40), glm::vec3(100, 0, 100)}});
+        path.AppendPathSegmentToTheEnd(segment);
+        mNavPathBuilder.AddPath("Second", path);
 
         MaterialParser materialParser;
         const std::shared_ptr<IMaterial> &electro_material = materialParser.ParseMaterialDescriptor("ElectroCurveMaterial.m");
@@ -58,20 +72,24 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
         MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "opacity", 1.0f);
 
-        const auto pathSegments = mNavPathBuilder.GetPathSegments();
-        for (int i = 0; i < pathSegments.size(); ++i)
+        const auto &paths = mNavPathBuilder.GetPaths();
+        for (const auto &[pathName, path] : paths)
         {
-            const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
-            auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", electro_material);
-            const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
-            auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            c_mesh->SetLineWidth(2.5f);
-            c_mesh->SetSortOrderValue(100);
-            c_mesh->SetCurveSegmentsCount(50);
-            c_mesh->SetLineBeginWorldSpacePosition(bezierControlPoints.at(0));
-            c_mesh->SetBezierControlPointWorldSpacePosition(bezierControlPoints.at(1));
-            c_mesh->SetLineEndWorldSpacePosition(bezierControlPoints.at(2));
-            mNavPathDummyActor->AddComponent(c_mesh);
+            const auto pathSegments = path.GetPathSegments();
+            for (int i = 0; i < pathSegments.size(); ++i)
+            {
+                const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
+                auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", electro_material);
+                const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
+                auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+                c_mesh->SetLineWidth(2.5f);
+                c_mesh->SetSortOrderValue(100);
+                c_mesh->SetCurveSegmentsCount(50);
+                c_mesh->SetLineBeginWorldSpacePosition(bezierControlPoints.at(0));
+                c_mesh->SetBezierControlPointWorldSpacePosition(bezierControlPoints.at(1));
+                c_mesh->SetLineEndWorldSpacePosition(bezierControlPoints.at(2));
+                mNavPathDummyActor->AddComponent(c_mesh);
+            }
         }
 
         sceneSp->AddActor(mNavPathDummyActor);
@@ -92,13 +110,20 @@ namespace Game
 
     void NavigationController::PostPlayLevelFinished()
     {
-        for (const std::shared_ptr<SpaceshipActor> &enemy : mEnemies)
+        auto &spacePaths = mNavPathBuilder.GetPaths();
+        for (auto &[pathName, path] : spacePaths)
         {
-            const auto enemyMovementComponent = enemy->GetOnRouteMovementComponent();
-            assert(enemyMovementComponent);
-            enemyMovementComponent->SetRoutePoints(mNavPathBuilder.GetRoutePoints());
-            enemyMovementComponent->SetIsMovementAllowed(true);
-            enemy->TriggerSpawn(mNavPathBuilder.GetRouteFirstPoint());
+            auto freeSpaceshipIt = std::find_if(mEnemies.begin(), mEnemies.end(), [](const std::shared_ptr<SpaceshipActor> &enemySpaceship)
+                                                { return eSpaceshipActivityState::IDLE == enemySpaceship->GetSpaceshipActivityState(); });
+            if (freeSpaceshipIt != mEnemies.end())
+            {
+                const auto &enemySpaceshipSp = (*freeSpaceshipIt);
+                const auto enemyMovementComponent = enemySpaceshipSp->GetOnRouteMovementComponent();
+                assert(enemyMovementComponent);
+                enemyMovementComponent->SetRoutePoints(path.GetRoutePoints());
+                enemyMovementComponent->SetIsMovementAllowed(true);
+                enemySpaceshipSp->TriggerSpawn(path.GetRouteFirstPoint());
+            }
         }
     }
 
