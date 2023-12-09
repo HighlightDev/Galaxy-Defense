@@ -5,6 +5,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2BindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec3MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2BindingMaterialProperty.h"
 
 namespace Graphics
@@ -50,6 +51,10 @@ namespace Graphics
       else if (mValueProperty->GetPropertyType()== MaterialProperty::eMaterialPropertyType::VEC2_PROPERTY)
       {
          return std::static_pointer_cast<Vec2MaterialProperty>(mValueProperty)->GetValue();
+      }
+      else if (mValueProperty->GetPropertyType() == MaterialProperty::eMaterialPropertyType::VEC3_PROPERTY)
+      {
+         return std::static_pointer_cast<Vec3MaterialProperty>(mValueProperty)->GetValue();
       }
       else if (mValueProperty->GetPropertyType()== MaterialProperty::eMaterialPropertyType::VEC2_BINDING_PROPERTY)
       {

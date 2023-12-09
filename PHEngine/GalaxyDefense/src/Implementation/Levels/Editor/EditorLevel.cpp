@@ -1,0 +1,145 @@
+#include "EditorLevel.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
+
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+
+#include "Implementation/GalaxySceneCamera.h"
+
+#include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
+#include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
+#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
+
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
+#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
+
+using namespace IO;
+using namespace EngineCore;
+using namespace EngineCore::Scripts;
+using namespace EngineCore::GUI;
+
+namespace Game
+{
+
+   EditorLevel::EditorLevel()
+       : LevelBase("EditorLevel")
+   {
+   }
+
+   EditorLevel::~EditorLevel()
+   {
+   }
+
+   void EditorLevel::RunLuaBuildLevelScript()
+   {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("editorLvl.lua");
+      mLuaLevelBuilder.SetScene(sceneSp);
+      mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
+      mLuaLevelBuilder.RegisterCallbacks();
+      mLuaLevelBuilder.RunScript();
+      mLuaLevelBuilder.StopScript();
+   }
+
+   void EditorLevel::PreLevelInit()
+   {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      Base::PreLevelInit();
+      mLevelEditorController = std::make_shared<LevelEditorController>(sceneSp);
+      mLevelEditorController->OnPreLevelInit();
+   }
+
+   void EditorLevel::CreateScene()
+   {
+      const auto sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+
+      const auto &a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
+      assert(a_sceneCenterActorDummy);
+      const auto &spaceCamera = std::make_shared<GalaxySceneCamera>("LevelMainCamera",
+                                                                    eCameraType::MAIN_THIRD_PERSON_CAMERA,
+                                                                    sceneSp,
+                                                                    ViewPortInfo(0,
+                                                                                 0,
+                                                                                 DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
+                                                                                 DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
+                                                                    60.0f,
+                                                                    0.0f,
+                                                                    200.0f);
+
+      spaceCamera->SetMaxDistanceFromTargetToCamera(200.0f);
+      spaceCamera->SetMinDistanceFromTargetToCamera(50.0f);
+      spaceCamera->SetDistanceFromTargetToCamera(200.0f);
+      sceneSp->RegisterMainCamera(spaceCamera);
+      spaceCamera->SetThirdPersonTarget(a_sceneCenterActorDummy);
+
+      const auto &a_skybox = sceneSp->GetActorByName("SkyboxActor");
+      assert(a_skybox);
+
+      MaterialParser materialParser;
+      const std::shared_ptr<IMaterial> &spaceStars_material = materialParser.ParseMaterialDescriptor("SpaceStarsMaterial.m");
+      sceneSp->RegisterMaterialInstance(spaceStars_material);
+
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
+      MaterialPropertySetter::SetMaterialPropertyValue(spaceStars_material, sceneSp, "ScreenResolution", "screenResolution");
+
+      auto billboardComponentCreator = std::make_shared<BillboardComponentCreator<FullscreenBillboardComponent>>();
+      const auto backgroundBillboardComponentData = std::make_shared<BillboardComponentData>("c_spaceBackgroundBillboard", 1.0f, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), spaceStars_material);
+      const auto &billboardComponent = std::static_pointer_cast<FullscreenBillboardComponent>(sceneSp->CreateComponent_GameThread(billboardComponentCreator, backgroundBillboardComponentData));
+      billboardComponent->SetSortOrderValue(-100000);
+      a_skybox->AddComponent(billboardComponent);
+
+      mLevelEditorController->OnLevelInit();
+      mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(100.0f)));
+   }
+
+   void EditorLevel::PostLevelInit()
+   {
+      Base::PostLevelInit();
+   }
+
+   void EditorLevel::PostPlayLevelFinished()
+   {
+      Base::PostPlayLevelFinished();
+      mLevelEditorController->PostPlayLevelFinished();
+   }
+
+   void EditorLevel::InitLevel()
+   {
+      Base::InitLevel();
+      RunLuaBuildLevelScript();
+      CreateScene();
+   }
+
+   void EditorLevel::UnloadLevel()
+   {
+      if (mLevelEditorController)
+      {
+         mLevelEditorController->CleanUp();
+         mLevelEditorController.reset();
+      }
+   }
+
+   void EditorLevel::Tick(const float deltaTime)
+   {
+      if (mLevelEditorController)
+      {
+         mLevelEditorController->Tick(deltaTime);
+      }
+   }
+
+   void EditorLevel::UnpausableTick(const float deltaTime)
+   {
+      if (mLevelEditorController)
+      {
+         mLevelEditorController->UnpausableTick(deltaTime);
+      }
+   }
+}

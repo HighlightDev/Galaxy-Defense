@@ -36,7 +36,7 @@ namespace EngineCore
             mMouseClickedCallback = callback;
         }
 
-        void UiMouseInputReceiverBase::OnMousePositionChanged(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        void UiMouseInputReceiverBase::OnMousePositionChanged(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
             if (mMouseHoverEnteredCallback && mMouseHoverLeavedCallback)
             {
@@ -59,7 +59,7 @@ namespace EngineCore
             }
         }
 
-        void UiMouseInputReceiverBase::OnMouseReleased(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        void UiMouseInputReceiverBase::OnMouseReleased(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
             if (mMouseReleasedCallback)
             {
@@ -71,7 +71,7 @@ namespace EngineCore
             }
         }
 
-        void UiMouseInputReceiverBase::OnMousePressed(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        void UiMouseInputReceiverBase::OnMousePressed(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
             if (mMousePressedCallback)
             {
@@ -83,7 +83,7 @@ namespace EngineCore
             }
         }
 
-        void UiMouseInputReceiverBase::OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        void UiMouseInputReceiverBase::OnMouseClicked(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
             if (mMouseClickedCallback)
             {

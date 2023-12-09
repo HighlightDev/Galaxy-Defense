@@ -11,6 +11,7 @@
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/Vec2MaterialProperty.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/Vec3MaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/DeferredTextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatBindingMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/iVec2BindingMaterialProperty.h"
@@ -77,6 +78,10 @@ namespace Graphics
       else if ("vec2" == propertyType)
       {
          resultProperty = std::make_shared<Vec2MaterialProperty>(propertyName);
+      }
+      else if ("vec3" == propertyType)
+      {
+         resultProperty = std::make_shared<Vec3MaterialProperty>(propertyName);
       }
       else
       {

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Core/GameCore/ActorController.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Core/GameCore/ITickable.h"
+#include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
 #include "Implementation/GameModeTypeEnum.h"
 
@@ -15,16 +16,18 @@ namespace EngineCore
    class InputComponent;
    class ThirdPersonCamera;
    class SceneComponent;
+   class Scene;
 }
 
 namespace Game
 {
-   class CombatController;
-
    class GameFlowController
-       : public ActorController,
-         public ChangeGameModeEvent
+       : public ILevelController,
+         public ITickable,
+         public ChangeGameModeEvent,
+         public std::enable_shared_from_this<GameFlowController>
    {
+      std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
       BoundingBox3D mLevelBounds;
 
@@ -34,25 +37,37 @@ namespace Game
 
       std::weak_ptr<ThirdPersonCamera> mMainSceneCamera;
 
-      std::weak_ptr<CombatController> mCombatControllerWp;
-
       glm::mat4 mProjectionMatrix;
 
-// TEMP 
+      // TEMP
       std::shared_ptr<SceneComponent> m_tempActorRootComponent;
 
    public:
-      GameFlowController(const std::weak_ptr<ThirdPersonCamera> &mainSceneCamera, std::shared_ptr<SceneComponent> tempActorRootComponent);
+      GameFlowController(const std::weak_ptr<::EngineCore::Scene>& sceneWp);
 
       ~GameFlowController() override;
 
       void Tick(const float deltaTime) override;
 
-      void Initialize() override;
+      void UnpausableTick(const float deltaTime) override;
+
+      void OnPreLevelInit() override;
+
+      void OnLevelInit() override;
+
+      void OnPostLevelInit() override;
+
+      void PostPlayLevelFinished() override;
+
+      void CleanUp() override;
 
       void ProcessEvent(const typename ChangeGameModeEvent::EventData_t &data) override;
 
+      void Initialize();
+
       void SetLevelBounds(const BoundingBox3D &mLevelBounds);
+
+      void SetTempRootComponent(const std::shared_ptr<SceneComponent>& tempActorRootComponent);
 
    private:
       void PrepareForSpaceStationPlacementMode();

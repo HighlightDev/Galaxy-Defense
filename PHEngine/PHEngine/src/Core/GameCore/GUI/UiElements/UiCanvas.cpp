@@ -272,10 +272,10 @@ namespace EngineCore
             return mName;
         }
 
-        BoundingBox2D UiCanvas::GetBoundingArea() const
+        BoundingBox2D<glm::ivec2> UiCanvas::GetBoundingArea() const
         {
             const auto &halfExtent = mWidthHeight / 2;
-            return BoundingBox2D(mAbsoluteOrigin + halfExtent, halfExtent);
+            return BoundingBox2D<glm::ivec2>(mAbsoluteOrigin + halfExtent, halfExtent);
         }
 
         void UiCanvas::SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName)

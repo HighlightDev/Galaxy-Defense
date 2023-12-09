@@ -60,6 +60,7 @@ namespace EngineCore
       if (mIsRenderDataDirty && bIsSceneProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          SyncRenderData();
+         mIsRenderDataDirty = false;
       }
    }
 

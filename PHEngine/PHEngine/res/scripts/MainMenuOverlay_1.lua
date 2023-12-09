@@ -82,18 +82,22 @@ function MainMenuOverlay_1:new(host)
     local newGameButtonLabel = UiLabel:new(host, "nimbus_mono")
     mainMenuOverlay_1:addWidget(newGameButtonLabel)
 
-    local selectLvlButton = UiRectangle:new(host)
-    mainMenuOverlay_1:addWidget(selectLvlButton)
-    selectLvlButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
+    local editorLvlButton = UiRectangle:new(host)
+    mainMenuOverlay_1:addWidget(editorLvlButton)
+    editorLvlButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            selectLvlButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            editorLvlButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
         else
-            selectLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            editorLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         end
     end)
 
-    local selectLvlButtonLabel = UiLabel:new(host, "nimbus_mono")
-    mainMenuOverlay_1:addWidget(selectLvlButtonLabel)
+    local editorLvlButtonLabel = UiLabel:new(host, "nimbus_mono")
+    mainMenuOverlay_1:addWidget(editorLvlButtonLabel)
+    editorLvlButton:setOnMouseInputClickedCallback(function ()
+        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "EditorLevel")
+    end)
 
     local settingsButton = UiRectangle:new(host)
     mainMenuOverlay_1:addWidget(settingsButton)
@@ -168,34 +172,34 @@ function MainMenuOverlay_1:new(host)
         newGameButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
         newGameButtonLabel:setZOrder(3)
 
-        selectLvlButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
-        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
+        editorLvlButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
+        editorLvlButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
             20)
-        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
+        editorLvlButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, backgroundRect
             .widgetName,
             20)
-        selectLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
+        editorLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
             buttonVerticalMarginHeight)
-        selectLvlButton:setHeight(buttonHeight)
-        selectLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
-        selectLvlButton:setZOrder(2)
-        selectLvlButton:enableMouseInputReceiverBase(host)
-        selectLvlButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        editorLvlButton:setHeight(buttonHeight)
+        editorLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        editorLvlButton:setZOrder(2)
+        editorLvlButton:enableMouseInputReceiverBase(host)
+        editorLvlButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
 
-        selectLvlButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, selectLvlButton.widgetName)
-        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            selectLvlButton.widgetName)
-        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            selectLvlButton.widgetName)
-        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, selectLvlButton
+        editorLvlButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, editorLvlButton.widgetName)
+        editorLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            editorLvlButton.widgetName)
+        editorLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            editorLvlButton.widgetName)
+        editorLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, editorLvlButton
             .widgetName)
-        selectLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            selectLvlButton.widgetName)
-        selectLvlButtonLabel:setText("Select level")
-        selectLvlButtonLabel:setTextColorHexValue(0xFFFFFF)
-        selectLvlButtonLabel:setFontSize(20.0)
-        selectLvlButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
-        selectLvlButtonLabel:setZOrder(3)
+        editorLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+            editorLvlButton.widgetName)
+        editorLvlButtonLabel:setText("Go to editor")
+        editorLvlButtonLabel:setTextColorHexValue(0xFFFFFF)
+        editorLvlButtonLabel:setFontSize(20.0)
+        editorLvlButtonLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editorLvlButtonLabel:setZOrder(3)
 
         settingsButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -203,7 +207,7 @@ function MainMenuOverlay_1:new(host)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
             backgroundRect.widgetName, 20)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
-            selectLvlButton.widgetName, buttonVerticalMarginHeight)
+            editorLvlButton.widgetName, buttonVerticalMarginHeight)
         settingsButton:setHeight(buttonHeight)
         settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
         settingsButton:setZOrder(2)

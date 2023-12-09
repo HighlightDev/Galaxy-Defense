@@ -2,31 +2,56 @@
 
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
+#include <type_traits>
 
 namespace EngineCore
 {
    namespace GUI
    {
+      template <typename T,
+                std::enable_if_t<std::is_same_v<T, glm::vec2> || std::is_same_v<T, glm::ivec2>, bool> = true>
       class BoundingBox2D
       {
-         glm::ivec2 mOrigin;
+         T mOrigin;
 
-         glm::ivec2 mHalfExtent;
+         T mHalfExtent;
 
       public:
-         BoundingBox2D();
+         BoundingBox2D()
+             : mOrigin(),
+               mHalfExtent()
+         {
+         }
 
-         BoundingBox2D(const glm::ivec2 &origin, const glm::ivec2 &halfExtent);
+         BoundingBox2D(const T &origin, const T &halfExtent)
+             : mOrigin(origin),
+               mHalfExtent(halfExtent)
+         {
+         }
 
-         ~BoundingBox2D();
+         ~BoundingBox2D()
+         {
+         }
 
-         glm::ivec2 GetMax() const;
+         T GetOrigin() const
+         {
+            return mOrigin;
+         }
 
-         glm::ivec2 GetMin() const;
+         T GetHalfExtent() const
+         {
+            return mHalfExtent;
+         }
 
-         glm::ivec2 GetOrigin() const;
+         T GetMax() const
+         {
+            return mOrigin + mHalfExtent;
+         }
 
-         glm::ivec2 GetHalfExtent() const;
+         T GetMin() const
+         {
+            return mOrigin - mHalfExtent;
+         }
       };
    }
 }

@@ -7,6 +7,7 @@ set(
 	src/Implementation/Levels/Prologue/Controllers/UiController.h
 	src/Implementation/Levels/MainMenu/MainMenuLevel.h
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
+	src/Implementation/Levels/Editor/EditorLevel.h
 	src/Implementation/GalaxySceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
@@ -77,6 +78,8 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.h
 	src/Implementation/Navigation/PathSegment.h
 	src/Implementation/Navigation/Path.h
+	src/Implementation/LevelEditor/LevelEditorController.h
+	src/Implementation/LevelEditor/LevelPlacementGrid.h
 )
 
 set(
@@ -88,6 +91,7 @@ set(
 	src/Implementation/Levels/Prologue/Controllers/UiController.cpp
 	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.cpp
+	src/Implementation/Levels/Editor/EditorLevel.cpp
 	src/Implementation/GalaxySceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
@@ -144,6 +148,8 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.cpp
 	src/Implementation/Navigation/PathSegment.cpp
 	src/Implementation/Navigation/Path.cpp
+	src/Implementation/LevelEditor/LevelEditorController.cpp
+	src/Implementation/LevelEditor/LevelPlacementGrid.cpp
     main.cpp
 )
 

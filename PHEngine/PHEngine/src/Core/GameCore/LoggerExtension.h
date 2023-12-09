@@ -111,9 +111,18 @@ namespace TinyLogger
       };
 
       template <>
-      struct CastTypeToString<BoundingBox2D>
+      struct CastTypeToString<BoundingBox2D<glm::vec2>>
       {
-         static std::string Do(const BoundingBox2D &value)
+         static std::string Do(const BoundingBox2D<glm::vec2> &value)
+         {
+            return "origin = " + CastTypeToString<glm::vec2>::Do(value.GetOrigin()) + "; half extent = " + CastTypeToString<glm::vec2>::Do(value.GetHalfExtent());
+         }
+      };
+
+      template <>
+      struct CastTypeToString<BoundingBox2D<glm::ivec2>>
+      {
+         static std::string Do(const BoundingBox2D<glm::ivec2> &value)
          {
             return "origin = " + CastTypeToString<glm::ivec2>::Do(value.GetOrigin()) + "; half extent = " + CastTypeToString<glm::ivec2>::Do(value.GetHalfExtent());
          }

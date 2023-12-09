@@ -1,5 +1,6 @@
 #include "FolderManager.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/GameCore/LoggerExtension.h"
 
 #include <filesystem>
 
@@ -55,6 +56,7 @@ namespace IO
 
 	std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string &fileName) const
 	{
+		EngineCore::LogInfo("FolderManager::GetDirectoryRelativePathByFileName => file: ", fileName);
 		assert(mFilesPathMap.count(fileName));
 		return mFilesPathMap.at(fileName) + fileName;
 	}

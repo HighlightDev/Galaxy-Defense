@@ -290,7 +290,7 @@ namespace EngineCore
             return mName;
         }
 
-        BoundingBox2D UiItemBase::GetBoundingArea() const
+        BoundingBox2D<glm::ivec2> UiItemBase::GetBoundingArea() const
         {
             return mBoundingArea;
         }

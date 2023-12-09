@@ -64,13 +64,11 @@ namespace Game
         mNavPathBuilder.AddPath("Second", path);
 
         MaterialParser materialParser;
-        const std::shared_ptr<IMaterial> &electro_material = materialParser.ParseMaterialDescriptor("ElectroCurveMaterial.m");
-        sceneSp->RegisterMaterialInstance(electro_material);
-        const auto noiseTex = TexturePool::GetInstance()->GetOrAllocateResource("perlin_noise.png");
+        const std::shared_ptr<IMaterial> &splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
+        sceneSp->RegisterMaterialInstance(splineMaterial);
 
-        MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "noise", noiseTex);
-        MaterialPropertySetter::SetMaterialPropertyValue(electro_material, sceneSp, "GT_DeltaSec", "gt_timeSec");
-        MaterialPropertySetter::SetMaterialPropertyValue(electro_material, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
 
         const auto &paths = mNavPathBuilder.GetPaths();
         for (const auto &[pathName, path] : paths)
@@ -79,7 +77,7 @@ namespace Game
             for (int i = 0; i < pathSegments.size(); ++i)
             {
                 const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
-                auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", electro_material);
+                auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", splineMaterial);
                 const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
                 auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
                 c_mesh->SetLineWidth(2.5f);

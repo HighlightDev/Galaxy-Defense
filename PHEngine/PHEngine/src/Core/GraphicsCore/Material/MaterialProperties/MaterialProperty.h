@@ -19,7 +19,8 @@ namespace Graphics {
          IVEC2_BINDING_PROPERTY,
          VEC2_BINDING_PROPERTY,
          VEC2_PROPERTY,
-         IVEC2_PROPERTY
+         IVEC2_PROPERTY,
+         VEC3_PROPERTY
       };
 
    protected:

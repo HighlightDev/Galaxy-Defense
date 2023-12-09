@@ -36,15 +36,18 @@
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 
+#include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
+#include <glm/vec2.hpp>
 
-using namespace EnginePhysics;
 using namespace IO;
+using namespace Graphics;
+using namespace EnginePhysics;
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
-using namespace Resources;
-using namespace Graphics;
+using namespace EngineCore::GUI;
 
 namespace Game
 {
@@ -78,6 +81,7 @@ namespace Game
       assert(sceneSp);
       Base::PreLevelInit();
       mCombatController = std::make_shared<CombatController>(sceneSp);
+      mGameFlowController = std::make_shared<GameFlowController>(sceneSp);
       mUiController = std::make_unique<UiController>(sceneSp);
       mCombatController->OnPreLevelInit();
       mUiController->OnPreLevelInit();
@@ -124,9 +128,9 @@ namespace Game
       a_skybox->AddComponent(billboardComponent);
 
       const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
-      const auto &gameFlowController = std::make_shared<GameFlowController>(spaceCamera, a_station->GetRootComponent());
-      sceneSp->AddActorController(gameFlowController);
-
+      
+      mGameFlowController->SetTempRootComponent(a_station->GetRootComponent());
+      mGameFlowController->OnLevelInit();
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();
    }
@@ -134,6 +138,7 @@ namespace Game
    void PrologueLevel::PostLevelInit()
    {
       mCombatController->OnPostLevelInit();
+      mGameFlowController->OnPostLevelInit();
       mUiController->OnPostLevelInit();
       Base::PostLevelInit();
    }
@@ -142,6 +147,7 @@ namespace Game
    {
       Base::PostPlayLevelFinished();
       mCombatController->PostPlayLevelFinished();
+      mGameFlowController->PostPlayLevelFinished();
       mUiController->PostPlayLevelFinished();
    }
 
@@ -169,6 +175,12 @@ namespace Game
          mCombatController->CleanUp();
          mCombatController.reset();
       }
+
+      if (mGameFlowController)
+      {
+         mGameFlowController->CleanUp();
+         mGameFlowController.reset();
+      }
    }
 
    void PrologueLevel::Tick(const float deltaTime)
@@ -182,6 +194,11 @@ namespace Game
       {
          mCombatController->Tick(deltaTime);
       }
+
+      if (mGameFlowController)
+      {
+         mGameFlowController->Tick(deltaTime);
+      }
    }
 
    void PrologueLevel::UnpausableTick(const float deltaTime)
@@ -194,6 +211,11 @@ namespace Game
       if (mCombatController)
       {
          mCombatController->UnpausableTick(deltaTime);
+      }
+
+      if (mGameFlowController)
+      {
+         mGameFlowController->UnpausableTick(deltaTime);
       }
    }
 }

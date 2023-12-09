@@ -31,7 +31,6 @@ namespace EngineCore
 	std::vector<TextLine> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &textField)
 	{
 		const auto& text = textField->GetText();
-		assert(text.size()); // empty text
 
 		std::vector<TextLine> resultTextLines;
 		TextLine currentLine = CreateEmptyLine(textField);

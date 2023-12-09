@@ -127,7 +127,7 @@ namespace EngineCore
             std::weak_ptr<IUiTransformable> GetParent() const override;
             std::string GetName() const override;
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;
-            BoundingBox2D GetBoundingArea() const override;
+            BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
             bool IsVisible() const override;
             bool IsTransformDirty() const override;
             bool IsInputSystemInitialized() const;

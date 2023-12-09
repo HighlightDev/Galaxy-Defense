@@ -2,6 +2,7 @@
 
 #include "Implementation/Levels/Prologue/PrologueLevel.h"
 #include "Implementation/Levels/MainMenu/MainMenuLevel.h"
+#include "Implementation/Levels/Editor/EditorLevel.h"
 
 namespace Game
 {
@@ -14,6 +15,10 @@ namespace Game
       else if ("FirstLevel" == levelName)
       {
          return std::make_shared<PrologueLevel>();
+      }
+      else if ("EditorLevel" == levelName)
+      {
+         return std::make_shared<EditorLevel>();
       }
       return nullptr;
    }

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Implementation/Levels/LevelBase.h"
-#include "Implementation/Controllers/GameFlowController.h"
-#include "Implementation/Levels/Prologue/Controllers/UiController.h"
+#include "Implementation/LevelEditor/LevelEditorController.h"
 
 using namespace EngineCore;
 
@@ -10,20 +9,16 @@ namespace Game
 {
    class CombatController;
 
-   class PrologueLevel : public LevelBase
+   class EditorLevel : public LevelBase
    {
       using Base = LevelBase;
 
-      std::shared_ptr<CombatController> mCombatController;
-
-      std::shared_ptr<GameFlowController> mGameFlowController;
-
-      std::unique_ptr<UiController> mUiController;
+      std::shared_ptr<LevelEditorController> mLevelEditorController;
 
    public:
-      PrologueLevel();
+      EditorLevel();
 
-      ~PrologueLevel() override;
+      ~EditorLevel() override;
 
       void InitLevel() override;
 

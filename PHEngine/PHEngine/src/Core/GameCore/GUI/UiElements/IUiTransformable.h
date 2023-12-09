@@ -29,7 +29,7 @@ namespace EngineCore
             virtual std::weak_ptr<IUiTransformable> GetParent() const = 0;
             virtual std::string GetName() const = 0;
             virtual bool IsVisible() const = 0;
-            virtual BoundingBox2D GetBoundingArea() const = 0;
+            virtual BoundingBox2D<glm::ivec2> GetBoundingArea() const = 0;
             virtual bool IsTransformDirty() const = 0;
 
             virtual void SetAbsoluteOrigin(const glm::ivec2 &translation) = 0;

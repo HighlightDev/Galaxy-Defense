@@ -74,8 +74,8 @@ namespace Graphics
                const auto &prevPosition = curvePathPoints[i - 1];
                const auto &currentPosition = curvePathPoints[i];
 
-               const auto &forwardVec = glm::normalize(currentPosition - prevPosition);
-               const auto &lineBasisVector = glm::normalize(glm::cross(glm::normalize(cameraForwardVec), forwardVec));
+               const auto &viewForwardVec = glm::normalize(currentPosition - prevPosition);
+               const auto &lineBasisVector = glm::normalize(glm::cross(glm::normalize(cameraForwardVec), viewForwardVec));
 
                const auto viewP3 = currentPosition - (lineBasisVector * halfWidth);
                const auto viewP4 = currentPosition + (lineBasisVector * halfWidth);

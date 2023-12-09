@@ -54,7 +54,7 @@ namespace EngineCore
 
             size_t mHeight;
 
-            BoundingBox2D mBoundingArea;
+            BoundingBox2D<glm::ivec2> mBoundingArea;
 
             std::unordered_map<eUiAnchor /*src anchor*/, UiAnchorData> mAnchors;
 
@@ -150,7 +150,7 @@ namespace EngineCore
             bool IsVisible() const override;
             std::string GetName() const override;
             size_t GetUId() const override;
-            BoundingBox2D GetBoundingArea() const override;
+            BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
             bool IsTransformDirty() const override;
             std::vector<std::shared_ptr<UiItemBase>> GetAllChildren() const;
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;

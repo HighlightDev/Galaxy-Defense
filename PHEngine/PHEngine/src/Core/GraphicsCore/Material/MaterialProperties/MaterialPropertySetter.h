@@ -2,6 +2,7 @@
 #include <string>
 #include <memory>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "MaterialProperty.h"
@@ -38,20 +39,17 @@ namespace Graphics
 
       static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::ivec2 &value);
       static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::vec2 &value);
+      static void SetMaterialPropertyValue(const std::shared_ptr<IMaterial> &materialInstance, const std::string &propertyName, const glm::vec3 &value);
 
    private:
       static std::shared_ptr<DynamicMaterial> TryCastToDynamicMaterial(const std::shared_ptr<IMaterial> &materialIsntance);
-
-      static void SetTextureValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<ITexture> &texture);
-
-      static void SetFloatValue(const std::shared_ptr<MaterialProperty> &materialProperty, const float value);
-
-      static void SetIVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::ivec2 &value);
-
-      static void SetVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::vec2 &value);
+      static bool IsPropertyBindingType(const std::shared_ptr<MaterialProperty> &property);
 
       static void SetDeferredResourceValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<IDeferredResourceCreator> &deferredResourceCreator);
-
-      static bool IsPropertyBindingType(const std::shared_ptr<MaterialProperty> &property);
+      static void SetTextureValue(const std::shared_ptr<MaterialProperty> &materialProperty, const std::shared_ptr<ITexture> &texture);
+      static void SetFloatValue(const std::shared_ptr<MaterialProperty> &materialProperty, const float value);
+      static void SetIVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::ivec2 &value);
+      static void SetVec2Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::vec2 &value);
+      static void SetVec3Value(const std::shared_ptr<MaterialProperty> &materialProperty, const glm::vec3 &value);
    };
 }

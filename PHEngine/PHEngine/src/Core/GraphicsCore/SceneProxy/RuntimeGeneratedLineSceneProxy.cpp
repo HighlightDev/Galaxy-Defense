@@ -39,14 +39,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                  [this, sceneSp, boundingBox]()
-                  {
-                     const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                     assert(engineObject);
-                     const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                     assert(primitiveComponent);
-                     primitiveComponent->SetBoundingBox(boundingBox);
-                  });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }
@@ -60,10 +60,12 @@ namespace Graphics
          GLboolean isCullFaceEnabled;
          glGetBooleanv(GL_CULL_FACE, &isCullFaceEnabled);
 
+         glm::mat4 orthoMatrix = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, 0.1f, 200.0f * 4.0f);
+
          glDisable(GL_CULL_FACE);
          shader->ExecuteShader();
          shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
-         shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
+         shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, orthoMatrix);
          m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
          shader->StopShader();
 
@@ -96,6 +98,11 @@ namespace Graphics
          return false;
       }
 
+      bool RuntimeGeneratedLineSceneProxy::IsFrustumCullTestNeeded() const
+      {
+         return false;
+      }
+
       void RuntimeGeneratedLineSceneProxy::UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix)
       {
          if (bUpdateLineGeometry)
@@ -104,23 +111,23 @@ namespace Graphics
             auto *const textureCoordinatesVBO = m_skin->GetBuffer()->GetVboByAttribArrayIndexName(eAttribArrayIndexName::TEXTURE_COORDINATES);
 
             assert(verticesVBO && textureCoordinatesVBO);
-            auto lineBeginViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineBeginWorldSpacePosition.x, mLineBeginWorldSpacePosition.y, mLineBeginWorldSpacePosition.z, 1.0f));
-            auto lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition.x, mLineEndWorldSpacePosition.y, mLineEndWorldSpacePosition.z, 1.0f));
+            const auto &lineBeginViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineBeginWorldSpacePosition, 1.0f));
+            const auto &lineEndViewSpacePosition = glm::vec3(viewMatrix * glm::vec4(mLineEndWorldSpacePosition, 1.0f));
 
             const float halfWidth = mLineWidth * 0.5f;
-            const auto forwardVec = glm::normalize(mLineEndWorldSpacePosition - mLineBeginWorldSpacePosition);
+            const auto &viewForwardVec = glm::normalize(lineEndViewSpacePosition - lineBeginViewSpacePosition);
             const auto &cameraForwardVec = cameraSceneProxy->GetForwardVector();
-            const auto &lineBasisVector = glm::normalize(glm::cross(glm::normalize(cameraForwardVec), forwardVec));
+            const auto &lineBasisVector = glm::normalize(glm::cross(glm::normalize(cameraForwardVec), viewForwardVec));
 
-            const auto viewP1 = lineBeginViewSpacePosition - (lineBasisVector * halfWidth);
-            const auto viewP2 = lineBeginViewSpacePosition + (lineBasisVector * halfWidth);
-            const auto viewP3 = lineEndViewSpacePosition - (lineBasisVector * halfWidth);
-            const auto viewP4 = lineEndViewSpacePosition + (lineBasisVector * halfWidth);
+            const auto &viewP1 = lineBeginViewSpacePosition - (lineBasisVector * halfWidth);
+            const auto &viewP2 = lineBeginViewSpacePosition + (lineBasisVector * halfWidth);
+            const auto &viewP3 = lineEndViewSpacePosition - (lineBasisVector * halfWidth);
+            const auto &viewP4 = lineEndViewSpacePosition + (lineBasisVector * halfWidth);
 
-            const auto texP1 = glm::vec2(0, 1);
-            const auto texP2 = glm::vec2(0, 0);
-            const auto texP3 = glm::vec2(1, 1);
-            const auto texP4 = glm::vec2(1, 0);
+            const auto &texP1 = glm::vec2(0, 1);
+            const auto &texP2 = glm::vec2(0, 0);
+            const auto &texP3 = glm::vec2(1, 1);
+            const auto &texP4 = glm::vec2(1, 0);
 
             std::vector<float> vertices = std::vector<float>({viewP1.x, viewP1.y, viewP1.z,
                                                               viewP2.x, viewP2.y, viewP2.z,

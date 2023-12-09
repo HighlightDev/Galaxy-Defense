@@ -11,13 +11,13 @@ namespace EngineCore
         class IUiMouseInputReceivable
         {
         public:
-            virtual void OnMousePositionChanged(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+            virtual void OnMousePositionChanged(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
 
-            virtual void OnMouseReleased(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+            virtual void OnMouseReleased(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
 
-            virtual void OnMousePressed(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+            virtual void OnMousePressed(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
 
-            virtual void OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
+            virtual void OnMouseClicked(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition) = 0;
         };
     }
 }

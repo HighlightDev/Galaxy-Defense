@@ -26,7 +26,7 @@ namespace EngineCore
             void SetButtonToggledCallback(std::function<void(std::weak_ptr<UiToggleButton>, bool)> callback);
 
         protected:
-            void OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition) override;
+            void OnMouseClicked(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition) override;
         };
     }
 }

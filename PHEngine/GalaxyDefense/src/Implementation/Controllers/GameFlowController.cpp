@@ -9,19 +9,20 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 
 using namespace IO;
 
 namespace Game
 {
-   GameFlowController::GameFlowController(const std::weak_ptr<ThirdPersonCamera> &mainSceneCamera, std::shared_ptr<SceneComponent> tempActorRootComponent)
-       : ActorController(nullptr),
+   GameFlowController::GameFlowController(const std::weak_ptr<Scene> &sceneWp)
+       : mSceneWp(sceneWp),
          mLevelBounds(),
          mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("GameFlowController_InputComponent"))),
-         mMainSceneCamera(mainSceneCamera),
+         mMainSceneCamera(),
          mProjectionMatrix(),
-         m_tempActorRootComponent(tempActorRootComponent)
+         m_tempActorRootComponent()
    {
    }
 
@@ -32,12 +33,39 @@ namespace Game
 
    void GameFlowController::Initialize()
    {
-      ChangeGameModeEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<GameFlowController>(shared_from_this()));
+      ChangeGameModeEvent::GetInstance()->AddListener(shared_from_this());
+
+      const auto &sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      const auto &mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
+      assert(mainCameraSp);
+      mMainSceneCamera = mainCameraSp;
    }
 
    void GameFlowController::SetLevelBounds(const BoundingBox3D &levelBounds)
    {
       mLevelBounds = levelBounds;
+   }
+
+   void GameFlowController::OnPreLevelInit()
+   {
+      Initialize();
+   }
+
+   void GameFlowController::OnLevelInit()
+   {
+   }
+
+   void GameFlowController::OnPostLevelInit()
+   {
+   }
+
+   void GameFlowController::PostPlayLevelFinished()
+   {
+   }
+
+   void GameFlowController::CleanUp()
+   {
    }
 
    void GameFlowController::Tick(const float deltaTime)
@@ -74,6 +102,10 @@ namespace Game
       }
    }
 
+   void GameFlowController::UnpausableTick(const float deltaTime)
+   {
+   }
+
    void GameFlowController::ProcessEvent(const typename ChangeGameModeEvent::EventData_t &data)
    {
       const eGameModeType newGameModeType = std::get<0>(data);
@@ -85,6 +117,11 @@ namespace Game
             PrepareForSpaceStationPlacementMode();
          }
       }
+   }
+
+   void GameFlowController::SetTempRootComponent(const std::shared_ptr<SceneComponent> &tempActorRootComponent)
+   {
+      m_tempActorRootComponent = tempActorRootComponent;
    }
 
    void GameFlowController::PrepareForSpaceStationPlacementMode()

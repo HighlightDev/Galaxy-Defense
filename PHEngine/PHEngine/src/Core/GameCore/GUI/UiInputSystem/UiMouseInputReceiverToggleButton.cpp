@@ -12,7 +12,7 @@ namespace EngineCore
         {
         }
 
-        void UiMouseInputReceiverToggleButton::OnMouseClicked(const BoundingBox2D &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
+        void UiMouseInputReceiverToggleButton::OnMouseClicked(const BoundingBox2D<glm::ivec2> &mouseInputArea, const glm::ivec2 &mouseCursorPosition)
         {
             if (const auto &toggleButtonSp = mOwnerWp.lock())
             {

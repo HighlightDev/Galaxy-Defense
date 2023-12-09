@@ -50,6 +50,8 @@ namespace Graphics
 
          bool CanBloomBeApplied() const override;
 
+         bool IsFrustumCullTestNeeded() const override;
+
       protected:
          virtual void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix);
       };
