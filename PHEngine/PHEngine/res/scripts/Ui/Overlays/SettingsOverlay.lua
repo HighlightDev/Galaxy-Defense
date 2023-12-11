@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -22,12 +24,12 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
-local UiOverlayManager = require("core/uiOverlayManager")
-local UiCanvas = require("core/uiCanvas")
-local UiOverlay = require("core/uiOverlay")
-local UiRectangle = require("core/uiRectangle")
-local UiLabel = require("core/uiLabel")
-local UiToggleButton = require("core/uiToggleButton")
+local UiOverlayManager = require("Ui/Core/uiOverlayManager")
+local UiCanvas = require("Ui/Core/uiCanvas")
+local UiOverlay = require("Ui/Core/uiOverlay")
+local UiRectangle = require("Ui/Core/uiRectangle")
+local UiLabel = require("Ui/Core/uiLabel")
+local UiToggleButton = require("Ui/Core/uiToggleButton")
 
 SettingsOverlay = {
     buttonColor = 0x403649,

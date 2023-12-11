@@ -60,12 +60,10 @@ namespace Graphics
          GLboolean isCullFaceEnabled;
          glGetBooleanv(GL_CULL_FACE, &isCullFaceEnabled);
 
-         glm::mat4 orthoMatrix = glm::ortho(-200.0f, 200.0f, -200.0f, 200.0f, 0.1f, 200.0f * 4.0f);
-
          glDisable(GL_CULL_FACE);
          shader->ExecuteShader();
          shader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
-         shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, orthoMatrix);
+         shader->GetVertexFactoryShader()->SetMatrices(m_relativeMatrix, viewMatrix, projectionMatrix);
          m_skin->GetBuffer()->RenderVAO(0, mVerticesCountToRender, GL_TRIANGLE_STRIP);
          shader->StopShader();
 

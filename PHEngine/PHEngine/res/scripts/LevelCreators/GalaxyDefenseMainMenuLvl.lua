@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -22,7 +24,7 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
-local Json = require("core/3rdparty/json")
+local Json = require("Ui/Core/3rdparty/json")
 
 local function initialize(host)
     _LazyLoadResourcesAsync(host,

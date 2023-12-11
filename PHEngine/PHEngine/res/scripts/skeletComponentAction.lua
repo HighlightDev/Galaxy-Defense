@@ -1,1 +1,0 @@
-AnimationTimeMultiply = 90.0

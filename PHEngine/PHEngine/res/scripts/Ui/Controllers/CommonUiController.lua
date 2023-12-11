@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -21,12 +23,12 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-local EngineInputReceiver = require("core/engineInputReceiver")
-local UiOverlayManager = require("core/uiOverlayManager")
-local EngineEventsHolder = require("core/engineEventsHolder")
-local PauseOverlay = require("PauseOverlay")
-local SettingsOverlay = require("SettingsOverlay")
-local PlayerHUDOverlay = require("PlayerHUDOverlay")
+local EngineInputReceiver = require("Ui/Core/engineInputReceiver")
+local UiOverlayManager = require("Ui/Core/uiOverlayManager")
+local EngineEventsHolder = require("Ui/Core/engineEventsHolder")
+local PauseOverlay = require("Ui/Overlays/PauseOverlay")
+local SettingsOverlay = require("Ui/Overlays/SettingsOverlay")
+local PlayerHUDOverlay = require("Ui/Overlays/PlayerHUDOverlay")
 
 GlobalContext = {
 }

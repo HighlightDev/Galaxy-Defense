@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -21,13 +23,13 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-local json = require("core/3rdparty/json")
-local UiCanvas = require("core/uiCanvas")
-local UiOverlay = require("core/uiOverlay")
-local UiItem = require("core/uiItem")
-local UiRectangle = require("core/uiRectangle")
-local UiImage = require("core/uiImage")
-local WeaponTile = require("widgets/WeaponTile")
+local json = require("Ui/Core/3rdparty/json")
+local UiCanvas = require("Ui/Core/uiCanvas")
+local UiOverlay = require("Ui/Core/uiOverlay")
+local UiItem = require("Ui/Core/uiItem")
+local UiRectangle = require("Ui/Core/uiRectangle")
+local UiImage = require("Ui/Core/uiImage")
+local WeaponTile = require("Ui/Widgets/WeaponTile")
 
 PlayerStatusType = {
     NONE = 0,

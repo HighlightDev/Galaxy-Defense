@@ -67,7 +67,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("galaxyDefenseIntroLvl.lua");
+      LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor("LevelCreators/GalaxyDefenseIntroLvl.lua");
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());
       mLuaLevelBuilder.RegisterCallbacks();

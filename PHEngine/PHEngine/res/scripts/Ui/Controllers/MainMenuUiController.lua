@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -21,8 +23,8 @@ end
 setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
-local UiOverlayManager = require("core/uiOverlayManager")
-local MainMenuOverlay_1 = require("MainMenuOverlay_1")
+local UiOverlayManager = require("Ui/Core/uiOverlayManager")
+local MainMenuOverlay_1 = require("Ui/Overlays/MainMenuOverlay_1")
 
 GlobalContext = {
 }

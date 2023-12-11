@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -22,8 +24,8 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
-local Vec3 = require("core/vec3")
-local Json = require("core/3rdparty/json")
+local Vec3 = require("Ui/Core/vec3")
+local Json = require("Ui/Core/3rdparty/json")
 
 function CreateTestLevel(host)
     _LazyLoadResourcesAsync(host,

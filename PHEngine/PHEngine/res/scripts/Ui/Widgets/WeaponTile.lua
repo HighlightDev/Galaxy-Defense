@@ -14,6 +14,8 @@ local function setup()
     if pathToCurrentScript ~= nil then
         local unixLikePath = pathToCurrentScript:gsub("\\", "/")
         unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
         package.path = package.path .. ";" .. unixLikePath .. "?.lua"
     end
 end
@@ -22,9 +24,9 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
-local UiRectangle = require("core/uiRectangle")
-local UiImage = require("core/uiImage")
-local UiLabel = require("core/uiLabel")
+local UiRectangle = require("Ui/Core/uiRectangle")
+local UiImage = require("Ui/Core/uiImage")
+local UiLabel = require("Ui/Core/uiLabel")
 
 WeaponTile = {
     weaponBackgroundTileColor = 0xdb9427,
