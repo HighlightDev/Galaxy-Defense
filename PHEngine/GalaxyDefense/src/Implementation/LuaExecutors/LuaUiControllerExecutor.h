@@ -20,10 +20,7 @@ namespace Game
    class LuaUiControllerExecutor
        : public LuaScriptExecutorBase
    {
-      std::unique_ptr<LuaCommonUiFunctions> mLuaCommonUiCallbacks;
-      std::unique_ptr<LuaCommonEngineFunctions> mLuaCommonEngineFunctions;
-      std::shared_ptr<LuaEngineEventsFunctions> mLuaEngineEventsFunctions;
-      std::shared_ptr<LuaGameEventsFunctions> mLuaGameEventsFunctions;
+      std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
 
    public:
       LuaUiControllerExecutor(const std::string &scriptName);

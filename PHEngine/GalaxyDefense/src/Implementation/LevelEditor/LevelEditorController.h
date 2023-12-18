@@ -12,6 +12,8 @@ namespace EngineCore
 {
     class Scene;
     class Actor;
+    class ThirdPersonCamera;
+    class InputComponent;
 }
 
 using namespace EngineCore::GUI;
@@ -28,7 +30,13 @@ namespace Game
 
         std::unique_ptr<LevelPlacementGrid> mLevelPlacementGrid;
 
-        std::shared_ptr<Actor> mLevelPlacementGridActor;
+        std::shared_ptr<Actor> mRoutePlacementGridActor;
+
+        std::shared_ptr<Actor> mTowerPlacementPickerActor;
+
+        std::weak_ptr<::EngineCore::ThirdPersonCamera> mMainSceneCamera;
+
+        std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
 
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
@@ -51,5 +59,9 @@ namespace Game
 
     private:
         void Initialize();
+
+        void InitializeRoutePlacementGrid();
+
+        void InitializeTowerPlacementGrid();
     };
 }

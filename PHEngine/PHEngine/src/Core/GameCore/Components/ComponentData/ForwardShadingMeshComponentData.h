@@ -7,15 +7,17 @@
 
 namespace EngineCore
 {
-	struct WaterPlaneComponentData : public ComponentData
+	struct ForwardShadingMeshComponentData : public ComponentData
 	{
-		WaterPlaneComponentData(const std::string &gameObjectName,
-								const glm::vec3 &translation,
-								const glm::vec3 &rotation,
-								const glm::vec3 &scale,
-								const std::shared_ptr<Graphics::IMaterial> &materialInstance)
+		ForwardShadingMeshComponentData(const std::string &gameObjectName,
+										const std::string &pathToMesh,
+										const glm::vec3 &translation,
+										const glm::vec3 &rotation,
+										const glm::vec3 &scale,
+										const std::shared_ptr<Graphics::IMaterial> &materialInstance)
 
 			: ComponentData(gameObjectName),
+			  mPathToMesh(pathToMesh),
 			  m_translation(translation),
 			  m_eulerRotationDegrees(rotation),
 			  m_scale(scale),
@@ -23,6 +25,7 @@ namespace EngineCore
 		{
 		}
 
+		std::string mPathToMesh;
 		glm::vec3 m_translation;
 		glm::vec3 m_eulerRotationDegrees;
 		glm::vec3 m_scale;

@@ -49,7 +49,6 @@ namespace Game
 
    void GameFlowController::OnPreLevelInit()
    {
-      Initialize();
    }
 
    void GameFlowController::OnLevelInit()
@@ -58,6 +57,7 @@ namespace Game
 
    void GameFlowController::OnPostLevelInit()
    {
+      Initialize();
    }
 
    void GameFlowController::PostPlayLevelFinished()

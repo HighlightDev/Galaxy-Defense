@@ -42,6 +42,8 @@ namespace EngineCore
 
          void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor>& scriptProcessor) override;
 
+         void Initialize() override;
+
       private:
          /*Get Window height*/
          int32_t GetWindowHeight(const std::tuple<> &data);

@@ -36,7 +36,7 @@ namespace EngineCore
 
          ~LuaEngineEventsFunctions();
 
-         void Initialize();
+         void Initialize() override;
 
          void SetScene(const std::weak_ptr<Scene> &sceneWp) override;
 

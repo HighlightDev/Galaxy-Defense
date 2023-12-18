@@ -40,7 +40,7 @@
 #include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/WaterPlaneComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
 
 #include <unordered_map>
@@ -66,7 +66,7 @@ namespace EngineCore
                 {"PointLightComponent", std::make_shared<LightComponentCreator<PointLightComponent>>()},
                 {"DirectionalLightComponent", std::make_shared<LightComponentCreator<DirectionalLightComponent>>()},
                 {"SpotlightComponent", std::make_shared<LightComponentCreator<SpotlightComponent>>()},
-                {"StaticMeshComponent", std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>()},
+                {"StaticMeshComponent", std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true)},
                 {"SkeletalMeshComponent", std::make_shared<SkeletalMeshComponentCreator<SkeletalMeshComponent>>()},
                 {"RigidBodyPhysicsComponent", std::make_shared<PhysicsComponentCreator<RigidBodyPhysicsComponent>>()},
                 {"CharacterPhysicsComponent", std::make_shared<PhysicsComponentCreator<CharacterPhysicsComponent>>()},
@@ -74,7 +74,7 @@ namespace EngineCore
                 {"HumanoidPhysicsMovementComponent", std::make_shared<MovementComponentCreator<HumanoidPhysicsMovementComponent>>()},
                 {"PlatformTraverseComponent", std::make_shared<PlatformTraverseComponentCreator<PlatformTraverseComponent>>()},
                 {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
-                {"WaterPlaneComponent", std::make_shared<WaterPlaneComponentCreator<WaterPlaneComponent>>()},
+                {"WaterPlaneComponent", std::make_shared<ForwardShadingMeshComponentCreator<WaterPlaneComponent>>()},
                 {"PlanarReflectionComponent", std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>()},
                 {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()}};
 
@@ -253,7 +253,7 @@ namespace EngineCore
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
                 const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
                 assert(material);
-                componentData = std::make_shared<WaterPlaneComponentData>(objectName, translation, rotation, scale, material);
+                componentData = std::make_shared<ForwardShadingMeshComponentData>("", objectName, translation, rotation, scale, material);
             }
             else if ("PlanarReflectionComponent" == componentType)
             {

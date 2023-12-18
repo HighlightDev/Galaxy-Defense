@@ -29,7 +29,6 @@ namespace EngineCore
         {
             mPlatformTraverseComponentFunctions->SetScene(GetScene());
             mPlatformTraverseComponentFunctions->SetLuaScriptProcessor(GetLuaScriptProcessor());
-
             mPlatformTraverseComponentFunctions->RegisterCallbacks(mLuaInstance);
         }
     }

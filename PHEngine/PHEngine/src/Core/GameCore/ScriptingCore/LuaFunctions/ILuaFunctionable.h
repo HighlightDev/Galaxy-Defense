@@ -28,6 +28,8 @@ namespace EngineCore
             virtual void SetScene(const std::weak_ptr<Scene> &sceneWp) = 0;
 
             virtual void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor) = 0;
+
+            virtual void Initialize() = 0;
         };
     }
 }

@@ -30,7 +30,7 @@ namespace EngineCore
 
 	std::vector<TextLine> TextMeshCreator::CreateStructure(const std::shared_ptr<TextFieldProxy> &textField)
 	{
-		const auto& text = textField->GetText();
+		const auto &text = textField->GetText();
 
 		std::vector<TextLine> resultTextLines;
 		TextLine currentLine = CreateEmptyLine(textField);
@@ -51,7 +51,10 @@ namespace EngineCore
 				{
 					resultTextLines.emplace_back(std::move(currentLine));
 					currentLine = CreateEmptyLine(textField);
-					assert(currentLine.IsEnoughSpaceForWord(currentWord)); // Word is extremely big, even to fit inside empty line
+					if (!currentLine.IsEnoughSpaceForWord(currentWord))
+					{
+						LogInfo("TextMeshCreator::CreateStructure => Word is extremely big, even to fit inside empty line. Text: ", text);
+					}
 				}
 				currentLine.AddWord(std::move(currentWord));
 				currentWord = CreateEmptyWord(textField);
@@ -67,7 +70,10 @@ namespace EngineCore
 		{
 			resultTextLines.emplace_back(std::move(currentLine));
 			currentLine = CreateEmptyLine(textField);
-			assert(currentLine.IsEnoughSpaceForWord(currentWord)); // Word is extremely big, even to fit inside empty line
+			if (!currentLine.IsEnoughSpaceForWord(currentWord))
+			{
+				LogInfo("TextMeshCreator::CreateStructure => Word is extremely big, even to fit inside empty line. Text: ", text);
+			}
 		}
 
 		currentLine.AddWord(std::move(currentWord));
@@ -84,7 +90,7 @@ namespace EngineCore
 		std::vector<float> textureCoords;
 		for (const auto &line : lines)
 		{
-			// todo: 
+			// todo:
 			if (eTextHorizontalAlignmentType::CENTER == text->GetTextHorizontalAlignment())
 			{
 				const auto &lineMaxLengthInScreenCoords = line.GetMaxLength();

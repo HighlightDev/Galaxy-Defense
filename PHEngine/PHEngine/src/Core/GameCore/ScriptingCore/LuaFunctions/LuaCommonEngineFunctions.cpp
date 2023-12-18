@@ -24,6 +24,10 @@ namespace EngineCore
          mSceneWp = sceneWp;
       }
 
+      void LuaCommonEngineFunctions::Initialize()
+      {
+      }
+
       void LuaCommonEngineFunctions::SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor)
       {
          mLuaScriptProcessor = scriptProcessor;

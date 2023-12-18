@@ -36,7 +36,8 @@ function CreateTestLevel(host)
 		Space_Station_ROUGHNESS.jpg,
 		Space_Station_METALLIC.jpg,
 		space_station.obj,
-		space_station_img.png
+		space_station_img.png,
+        plane.obj
 		]])
 
     _CreateActor(host, "Actor",

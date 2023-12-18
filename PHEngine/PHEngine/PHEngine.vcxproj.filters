@@ -1412,7 +1412,7 @@
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\WaterPlaneRenderData.h">
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\ForwardShadingMeshRenderData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h">
@@ -1427,9 +1427,6 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\InputComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1439,7 +1436,7 @@
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h">
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\ForwardShadingMeshComponentData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h">
@@ -2171,9 +2168,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\CubemapComponentCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingStaticMeshComponentCreator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\IComponentCreatable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -2210,7 +2204,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\UiComponentCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\WaterPlaneComponentCreator.h">
+    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingMeshComponentCreator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Core\GameCore\Components\UiComponents\UiComponent.h">
@@ -2798,9 +2792,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\ResourceManagerCore\Policy\RenderTargetAllocationPolicy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Core\GameCore\Components\InputComponent.cpp">

@@ -7,8 +7,8 @@
 #include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
-#include "Core/GameCore/Components/ComponentData/WaterPlaneComponentData.h"
-#include "Core/GraphicsCore/RenderData/WaterPlaneRenderData.h"
+#include "Core/GameCore/Components/ComponentData/ForwardShadingMeshComponentData.h"
+#include "Core/GraphicsCore/RenderData/ForwardShadingMeshRenderData.h"
 
 using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
@@ -20,7 +20,7 @@ namespace EngineCore
     class Scene;
 
     template <typename ComponentInstantiationType>
-    class WaterPlaneComponentCreator
+    class ForwardShadingMeshComponentCreator
         : public ComponentCreatorBase
     {
     public:
@@ -28,7 +28,7 @@ namespace EngineCore
         CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
             const auto &mData =
-                std::static_pointer_cast<WaterPlaneComponentData>(data);
+                std::static_pointer_cast<ForwardShadingMeshComponentData>(data);
 
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
@@ -46,7 +46,7 @@ namespace EngineCore
                     shaderParams, materialProxy);
 
             return std::make_shared<ComponentInstantiationType>(mData,
-                                                                WaterPlaneRenderData(waterPlaneShader, materialProxy));
+                                                                ForwardShadingMeshRenderData(mData->mPathToMesh, waterPlaneShader, materialProxy));
         }
     };
 }

@@ -20,6 +20,10 @@ namespace EngineCore
       {
       }
 
+      void LuaPlatformTraverseComponentFunctions::Initialize()
+      {
+      }
+
       void LuaPlatformTraverseComponentFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
       {
          mSceneWp = sceneWp;

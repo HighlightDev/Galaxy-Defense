@@ -38,6 +38,10 @@ namespace EngineCore
       {
       }
 
+      void LuaEngineObjectsCreatorFunctions::Initialize()
+      {
+      }
+
       void LuaEngineObjectsCreatorFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
       {
          mSceneWp = sceneWp;

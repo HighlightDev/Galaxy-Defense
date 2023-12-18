@@ -39,7 +39,7 @@
 #include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/WaterPlaneComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 
 using namespace EngineUtility;
 

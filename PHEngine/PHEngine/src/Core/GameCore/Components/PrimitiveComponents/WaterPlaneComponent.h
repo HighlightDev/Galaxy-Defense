@@ -1,12 +1,12 @@
 #pragma once
 #include "PrimitiveComponent.h"
-#include "Core/GraphicsCore/RenderData/WaterPlaneRenderData.h"
+#include "Core/GraphicsCore/RenderData/ForwardShadingMeshRenderData.h"
 
 using namespace Graphics::Data;
 
 namespace EngineCore
 {
-   struct WaterPlaneComponentData;
+   struct ForwardShadingMeshComponentData;
 
    enum WaterQualityFlag
    {
@@ -27,15 +27,15 @@ namespace EngineCore
       float m_nearClipPlane;
       float m_farClipPlane;
       WaterQualityFlag m_waterQuality;
-      WaterPlaneRenderData m_renderData;
+      ForwardShadingMeshRenderData m_renderData;
 
       bool bIsRenderDataDirty{false};
 
    public:
       using Base = PrimitiveComponent;
 
-      WaterPlaneComponent(const std::shared_ptr<WaterPlaneComponentData> &data,
-                          const WaterPlaneRenderData &renderData,
+      WaterPlaneComponent(const std::shared_ptr<ForwardShadingMeshComponentData> &data,
+                          const ForwardShadingMeshRenderData &renderData,
                           WaterQualityFlag waterQuality = (WaterQualityFlag)(REFLECT_SKELETAL_MESH | REFRACT_STATIC_MESH | REFLECT_STATIC_MESH | REFRACT_SKELETAL_MESH));
 
       ~WaterPlaneComponent() override;
@@ -44,7 +44,7 @@ namespace EngineCore
 
       void Tick(const float deltaTime) override;
 
-      inline const WaterPlaneRenderData &GetRenderData() const
+      inline const ForwardShadingMeshRenderData &GetRenderData() const
       {
          return m_renderData;
       }

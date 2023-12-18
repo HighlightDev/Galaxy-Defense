@@ -85,6 +85,7 @@ namespace Game
       mUiController = std::make_unique<UiController>(sceneSp);
       mCombatController->OnPreLevelInit();
       mUiController->OnPreLevelInit();
+      mGameFlowController->OnPreLevelInit();
    }
 
    void PrologueLevel::CreateScene()

@@ -1,34 +1,32 @@
 #pragma once
 #include "PrimitiveSceneProxy.h"
-#include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
 
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 #include "Core/GameCore/ShaderImplementation/SimpleShader.h"
 #include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
+#include "Core/GraphicsCore/RenderData/ForwardShadingMeshRenderData.h"
 
 using namespace EngineCore;
 using namespace EngineCore::ShaderImpl;
+using namespace Graphics::Data;
 
 namespace Graphics
 {
    namespace Proxy
    {
-
-      class WaterPlaneSceneProxy : public PrimitiveSceneProxy
+      class ForwardShadingMeshSceneProxy
+          : public PrimitiveSceneProxy
       {
          using ShaderType = VertexFactoryMaterialCompositeShader<StaticMeshVertexFactory, SimpleShader>;
 
-         float m_waveStrength;
-         float m_transparencyDepth;
-         float m_nearClipPlane;
-         float m_farClipPlane;
+      protected:
+         ForwardShadingMeshRenderData mRenderData;
 
       public:
          std::shared_ptr<ShaderType> GetShader() const;
 
-         WaterPlaneSceneProxy(const WaterPlaneComponent *component);
-
-         ~WaterPlaneSceneProxy() override;
+         ForwardShadingMeshSceneProxy(const ForwardShadingMeshComponent *component);
 
          void PostConstructorInitialize() override;
 
@@ -39,14 +37,6 @@ namespace Graphics
          eMeshFacing GetMeshFrontFace() const override;
 
          ePrimitiveProxyType GetPrimitiveProxyType() const override;
-
-         void SetWaveStrength(float waveStr);
-         void SetTransparencyDepth(float transparencyDepth);
-         void SetNearClipPlane(float nearClipPlane);
-         void SetFarClipPlane(float farClipPlane);
-
-      private:
-         void Init();
       };
    }
 }

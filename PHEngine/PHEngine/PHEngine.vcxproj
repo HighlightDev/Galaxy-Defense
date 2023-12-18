@@ -477,7 +477,6 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\AudioComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\BillboardComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\CubemapComponentCreator.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingStaticMeshComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\IComponentCreatable.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\InputComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\LightComponentCreator.h" />
@@ -490,7 +489,7 @@
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\SkyboxComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\StaticMeshComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\UiComponentCreator.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\WaterPlaneComponentCreator.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ComponentCreators\ForwardShadingMeshComponentCreator.h" />
     <ClInclude Include="src\Core\GameCore\Components\UiComponents\UiComponent.h" />
     <ClInclude Include="src\Core\GameCore\Event\eTextEventEnums.h" />
     <ClInclude Include="src\Core\GameCore\Event\MouseButtonDownEvent.h" />
@@ -744,7 +743,7 @@
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\SkeletalMeshComponent.h" />
     <ClInclude Include="src\Core\GameCore\Physics\PhysicsWorld.h" />
     <ClInclude Include="src\Core\GameCore\Components\ComponentData\MovementComponentData.h" />
-    <ClInclude Include="src\Core\GameCore\Components\ComponentData\WaterPlaneComponentData.h" />
+    <ClInclude Include="src\Core\GameCore\Components\ComponentData\ForwardShadingMeshComponentData.h" />
     <ClInclude Include="src\Core\GameCore\Input\InputManager.h" />
     <ClInclude Include="src\Core\GameCore\Input\KeyboardBindings.h" />
     <ClInclude Include="src\Core\GameCore\Components\InputComponent.h" />
@@ -754,7 +753,7 @@
     <ClInclude Include="src\Core\ResourceManagerCore\Pool\RenderTargetPool.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Framebuffer\FramebufferBundle.h" />
     <ClInclude Include="src\Core\InterThreadCommunicationMgr.h" />
-    <ClInclude Include="src\Core\GraphicsCore\RenderData\WaterPlaneRenderData.h" />
+    <ClInclude Include="src\Core\GraphicsCore\RenderData\ForwardShadingMeshRenderData.h" />
     <ClInclude Include="src\Core\GraphicsCore\Shadow\ProjectedShadowInfo.h" />
     <ClInclude Include="src\Core\GameCore\HumanoidPlayerController.h" />
     <ClInclude Include="src\Core\GraphicsCore\TextureAtlas\TextureAtlasFactory.h" />
@@ -1076,7 +1075,6 @@
     <ClInclude Include="src\Core\GraphicsCore\RenderData\StaticMeshRenderData.h" />
     <ClInclude Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.h" />
     <ClInclude Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.h" />
-    <ClInclude Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.h" />
     <ClInclude Include="src\Core\GameCore\Event\TEvent.h" />
     <ClInclude Include="src\Core\GameCore\ThirdPersonCamera.h" />
     <ClInclude Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.h" />
@@ -1389,7 +1387,6 @@
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\StaticMeshSceneProxy.cpp" />
     <ClCompile Include="src\Core\GameCore\Components\PrimitiveComponents\WaterPlaneComponent.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\SceneProxy\WaterPlaneSceneProxy.cpp" />
-    <ClCompile Include="src\Core\GameCore\ShaderImplementation\WaterPlaneShader.cpp" />
     <ClCompile Include="src\Core\GameCore\Event\TEvent.cpp" />
     <ClCompile Include="src\Core\GameCore\ThirdPersonCamera.cpp" />
     <ClCompile Include="src\Core\GraphicsCore\OpenGL\Shader\VertexFactoryShader.cpp" />

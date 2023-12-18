@@ -30,6 +30,10 @@ namespace EngineCore
       {
       }
 
+      void LuaCommonUiFunctions::Initialize()
+      {
+      }
+
       void LuaCommonUiFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
       {
          mSceneWp = sceneWp;

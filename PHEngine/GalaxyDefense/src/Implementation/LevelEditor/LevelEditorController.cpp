@@ -1,21 +1,30 @@
 #include "LevelEditorController.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/SceneComponent.h"
-#include "Core/GraphicsCore/Material/MaterialParser.h"
-#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
+#include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
+#include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/UtilityCore/ScreenRayCaster.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 using namespace Resources;
 using namespace EngineCore;
 using namespace Graphics;
+using namespace IO;
 
 namespace Game
 {
     LevelEditorController::LevelEditorController(const std::weak_ptr<Scene> &sceneWp)
-        : mSceneWp(sceneWp)
+        : mSceneWp(sceneWp),
+          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
     {
     }
 
@@ -29,6 +38,11 @@ namespace Game
 
     void LevelEditorController::OnPostLevelInit()
     {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const auto &mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
+        assert(mainCameraSp);
+        mMainSceneCamera = mainCameraSp;
     }
 
     void LevelEditorController::PostPlayLevelFinished()
@@ -47,6 +61,33 @@ namespace Game
 
     void LevelEditorController::Tick(const float deltaTime)
     {
+        if (const auto &sceneCameraSp = mMainSceneCamera.lock())
+        {
+            const auto viewPerspectiveInfo = sceneCameraSp->GetViewPerspectiveInfo();
+            const auto projectionMatrix = glm::perspective<float>(viewPerspectiveInfo.FoV,
+                                                        viewPerspectiveInfo.AspectRatio,
+                                                        viewPerspectiveInfo.NearPlane,
+                                                        viewPerspectiveInfo.FarPlane);
+            const auto &mouseBindings = mInputComponent->GetMouseBindings();
+            if (mouseBindings->IsMouseMoveEventDirty())
+            {
+                const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
+                const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+                const ScreenRayCaster screenRayCaster;
+                const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
+                                                                                                    glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
+                                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
+                                                                                                    projectionMatrix,
+                                                                                                    sceneCameraSp->GetViewMatrix());
+                const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+                const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
+                if (tParam >= 0.0f)
+                {
+                    const auto &placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(placementPosition);
+                }
+            }
+        }
     }
 
     void LevelEditorController::UnpausableTick(const float deltaTime)
@@ -56,12 +97,17 @@ namespace Game
     void LevelEditorController::Initialize()
     {
         mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
+        InitializeRoutePlacementGrid();
+        InitializeTowerPlacementGrid();
+    }
 
+    void LevelEditorController::InitializeRoutePlacementGrid()
+    {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
 
-        mLevelPlacementGridActor = std::make_shared<Actor>("LevelPlacementGridActor", std::make_shared<SceneComponent>("LevelPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
-        sceneSp->AddActor(mLevelPlacementGridActor);
+        mRoutePlacementGridActor = std::make_shared<Actor>("RoutePlacementGridActor", std::make_shared<SceneComponent>("RoutePlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        sceneSp->AddActor(mRoutePlacementGridActor);
         const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
         const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
         const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
@@ -86,21 +132,41 @@ namespace Game
             c_mesh->SetSortOrderValue(100);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
-            mLevelPlacementGridActor->AddComponent(c_mesh);
+            mRoutePlacementGridActor->AddComponent(c_mesh);
         }
 
         const int32_t forwardSideRowsCount = rowsLineCount / 2;
         const int32_t nearSideRowsCount = rowsLineCount - forwardSideRowsCount;
         for (int32_t rowIdx = -forwardSideRowsCount; rowIdx < nearSideRowsCount; ++rowIdx)
         {
-            const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridRowLineMesh_" + rowIdx, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridRowLineMesh_" + rowIdx, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, 0.0f, rowIdx * mLevelPlacementGrid->GetGridCellSizeForTower());
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, 0.0f, rowIdx * mLevelPlacementGrid->GetGridCellSizeForTower());
             c_mesh->SetSortOrderValue(100);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
-            mLevelPlacementGridActor->AddComponent(c_mesh);
+            mRoutePlacementGridActor->AddComponent(c_mesh);
         }
+    }
+
+    void LevelEditorController::InitializeTowerPlacementGrid()
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+
+        mTowerPlacementPickerActor = std::make_shared<Actor>("TowerPlacementPickerActor", std::make_shared<SceneComponent>("TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        sceneSp->AddActor(mTowerPlacementPickerActor);
+
+        MaterialParser materialParser;
+        const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+        sceneSp->RegisterMaterialInstance(lineMaterial);
+        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
+
+        const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
+        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(1.0f), lineMaterial);
+        const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        mTowerPlacementPickerActor->AddComponent(c_mesh);
     }
 }

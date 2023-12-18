@@ -103,6 +103,7 @@ namespace Game
    void EditorLevel::PostLevelInit()
    {
       Base::PostLevelInit();
+      mLevelEditorController->OnPostLevelInit();
    }
 
    void EditorLevel::PostPlayLevelFinished()

@@ -35,6 +35,8 @@ namespace EngineCore
       public:
          LuaPlatformTraverseComponentFunctions(::EngineCore::PlatformTraverseComponent *owner, LuaScriptExecutorBase *ownerPtr);
 
+         void Initialize() override;
+
          void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp) override;
 
          void SetLuaScriptProcessor(const std::weak_ptr<LuaScriptProcessor> &scriptProcessor) override;

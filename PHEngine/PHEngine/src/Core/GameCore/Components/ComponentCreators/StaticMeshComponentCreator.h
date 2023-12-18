@@ -26,7 +26,14 @@ namespace EngineCore
     class StaticMeshComponentCreator
         : public ComponentCreatorBase
     {
+        const bool mIsDeferredShaderUsed;
+
     public:
+        StaticMeshComponentCreator(const bool useDeferredShader)
+            : mIsDeferredShaderUsed(useDeferredShader)
+        {
+        }
+
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
@@ -38,12 +45,14 @@ namespace EngineCore
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
 
+            const auto shaderIdName = mIsDeferredShaderUsed ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
+            const auto fragmentShaderName = mIsDeferredShaderUsed ? "deferredFS.glsl" : "forwardFS.glsl";
             const ShaderParams shaderParams(
-                "DeferredNonSkeletalBase Shader",
+                shaderIdName,
                 FolderManager::GetInstance()->GetShadersPath() +
                     "composite_shaders" + SLASH + "simpleVS.glsl",
                 FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "deferredFS.glsl");
+                    "composite_shaders" + SLASH + fragmentShaderName);
 
             typename CompositeShaderPool::sharedValue_t staticMeshShader =
                 CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
@@ -65,7 +74,7 @@ namespace EngineCore
                                                                 StaticMeshRenderData(mData->m_pathToMesh,
                                                                                      staticMeshShader,
                                                                                      planarReflectionShader,
-                                                                                     materialProxy, true));
+                                                                                     materialProxy, mIsDeferredShaderUsed));
         }
     };
 }

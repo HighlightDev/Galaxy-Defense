@@ -1,7 +1,7 @@
 #version 400
 
 #define HAS_PREVIOUS_STAGE 1 
-#define lum vec3(0.2126, 0.7152, 0.0722) 
+#define lum vec3(0.2126, 0.7152, 0.0722)
 #define MAX_BLUR_WIDTH 10
 layout (location = 0) out vec4 FragColor;
 

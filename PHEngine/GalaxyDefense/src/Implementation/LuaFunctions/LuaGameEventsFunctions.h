@@ -34,7 +34,7 @@ namespace Game
 
       ~LuaGameEventsFunctions();
 
-      void Initialize();
+      void Initialize() override;
 
       void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp) override;
 

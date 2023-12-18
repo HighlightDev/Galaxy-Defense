@@ -12,8 +12,7 @@ namespace EngineCore
         class LuaEngineScriptExecutor
             : public LuaScriptExecutorBase
         {
-            std::unique_ptr<LuaCommonEngineFunctions> mLuaCommonEngineFunctions;
-            std::unique_ptr<LuaEngineObjectsCreatorFunctions> mLuaEngineObjectsCreatorFunctions;
+            std::vector<std::shared_ptr<ILuaFunctionable>> mLuaFunctions;
 
         public:
             explicit LuaEngineScriptExecutor(const std::string &scriptName);

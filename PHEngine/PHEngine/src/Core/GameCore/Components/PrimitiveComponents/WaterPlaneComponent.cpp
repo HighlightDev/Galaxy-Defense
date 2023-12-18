@@ -3,7 +3,7 @@
 #include "Core/GraphicsCore/SceneProxy/WaterPlaneSceneProxy.h"
 #include "Core/GraphicsCore/Renderer/DeferredShadingSceneRenderer.h"
 #include "Core/CommonCore/StringHash.h"
-#include "Core/GameCore/Components/ComponentData/WaterPlaneComponentData.h"
+#include "Core/GameCore/Components/ComponentData/ForwardShadingMeshComponentData.h"
 
 #include <glm/vec3.hpp>
 
@@ -12,7 +12,7 @@ using namespace Graphics::Renderer;
 namespace EngineCore
 {
 
-   WaterPlaneComponent::WaterPlaneComponent(const std::shared_ptr<WaterPlaneComponentData> &data, const WaterPlaneRenderData &renderData,
+   WaterPlaneComponent::WaterPlaneComponent(const std::shared_ptr<ForwardShadingMeshComponentData> &data, const ForwardShadingMeshRenderData &renderData,
                                             WaterQualityFlag waterQuality)
        : PrimitiveComponent(data->EngineObjectName, data->m_translation, data->m_eulerRotationDegrees, data->m_scale),
          m_waveSpeed(0.4f),

@@ -23,7 +23,7 @@ namespace Graphics
          bool mIsDeferredShaded;
 
          StaticMeshRenderData(
-             const std::string modelPath,
+             const std::string& modelPath,
              std::shared_ptr<IShader> materialShader,
              std::shared_ptr<IShader> planarReflectionShader,
              std::shared_ptr<MaterialProxy> materialProxy,
