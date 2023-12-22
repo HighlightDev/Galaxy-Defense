@@ -1,0 +1,30 @@
+#version 400
+
+#include "materialCommon.incl"
+
+uniform float opacity;
+uniform vec3 color;
+
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn) { return color; }
+
+vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn) {
+  return vec2(0);
+}
+
+float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn) {
+  return 0.0;
+}
+
+float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn) {
+  float maxSqrOuterRectangleRadius = pow(0.65, 2);
+  float maxSqrRectangleRadius = pow(0.6, 2);
+  vec2 texelVec = materialIn.TextureCoordinates.xy - vec2(0.5);
+  float sqrRectangleRadius = texelVec.x * texelVec.x + texelVec.y * texelVec.y;
+  float innerRadiusOpacity = step(maxSqrRectangleRadius, sqrRectangleRadius);
+  float outerRadiusOpacity = 1.0 - step(maxSqrOuterRectangleRadius, sqrRectangleRadius); 
+  return innerRadiusOpacity * outerRadiusOpacity * opacity;
+};
+
+vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn) {
+  return vec3(0);
+}

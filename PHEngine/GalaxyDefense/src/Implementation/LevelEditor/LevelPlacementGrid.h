@@ -22,11 +22,13 @@ namespace Game
 
         glm::ivec2 GetTowerGridColumnsAndRowsCount() const;
 
-        const BoundingBox2D<glm::vec2>& GetLevelAreaBoundingBox() const;
+        const BoundingBox2D<glm::vec2> &GetLevelAreaBoundingBox() const;
 
         float GetGridCellSizeForTower() const;
 
         float GetGridCellSizeForRoute() const;
+
+        BoundingBox2D<glm::vec2> GetNearestToPositionTowerCellBoundingBox(const glm::vec2 &xzPosition) const;
 
     private:
         void Initialize();

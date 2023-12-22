@@ -42,4 +42,15 @@ namespace Game
         return mLevelAreaBoundingBox;
      }
 
+     BoundingBox2D<glm::vec2> LevelPlacementGrid::GetNearestToPositionTowerCellBoundingBox(const glm::vec2& xzPosition) const
+     {
+        const auto& gridColumnAndRowIndices = xzPosition * s_gridCellSizeForTowerInv;
+        const auto& nearestLowBoundaryIndices = glm::floor(gridColumnAndRowIndices);
+        const auto& nearestHighBoundaryIndices = glm::ceil(gridColumnAndRowIndices);
+        const auto& nearestLowBoundary = nearestLowBoundaryIndices * s_gridCellSizeForTower;
+        const auto& nearestHighBoundary = nearestHighBoundaryIndices * s_gridCellSizeForTower;
+        const auto& boundaryExtent = ((nearestHighBoundary - nearestLowBoundary) * 0.5f);
+        return BoundingBox2D<glm::vec2>(nearestLowBoundary + boundaryExtent, boundaryExtent);
+     }
+
 }

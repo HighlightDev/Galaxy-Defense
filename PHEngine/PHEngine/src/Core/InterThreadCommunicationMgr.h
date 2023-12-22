@@ -46,13 +46,13 @@ namespace Thread
       PUSH_ANYWAY
    };
 
-   enum class eReadChainType : uint8_t
+   enum eReadChainType : uint8_t
    {
       READ_1 = 0,
       READ_2 = 1
    };
 
-   enum class eWriteChainType : uint8_t
+   enum eWriteChainType : uint8_t
    {
       WRITE_1 = 0,
       WRITE_2 = 1
@@ -61,8 +61,8 @@ namespace Thread
    struct TasksSwapChain
    {
       std::mutex StoreOperationMutex;
-      std::atomic<eReadChainType> ReadChainType = {eReadChainType::READ_1};
-      std::atomic<eWriteChainType> WriteChainType = {eWriteChainType::WRITE_2};
+      std::atomic<uint8_t> ReadChainType = {eReadChainType::READ_1};
+      std::atomic<uint8_t> WriteChainType = {eWriteChainType::WRITE_2};
 
       // make sure we won't get false sharing for our jobs
       alignas(hardware_destructive_interference_size) std::deque<Job> Jobs1;

@@ -65,9 +65,9 @@ namespace Game
         {
             const auto viewPerspectiveInfo = sceneCameraSp->GetViewPerspectiveInfo();
             const auto projectionMatrix = glm::perspective<float>(viewPerspectiveInfo.FoV,
-                                                        viewPerspectiveInfo.AspectRatio,
-                                                        viewPerspectiveInfo.NearPlane,
-                                                        viewPerspectiveInfo.FarPlane);
+                                                                  viewPerspectiveInfo.AspectRatio,
+                                                                  viewPerspectiveInfo.NearPlane,
+                                                                  viewPerspectiveInfo.FarPlane);
             const auto &mouseBindings = mInputComponent->GetMouseBindings();
             if (mouseBindings->IsMouseMoveEventDirty())
             {
@@ -84,7 +84,10 @@ namespace Game
                 if (tParam >= 0.0f)
                 {
                     const auto &placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(placementPosition);
+                    const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z));
+                    const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
+                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
+                        glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y) - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
                 }
             }
         }
@@ -123,13 +126,15 @@ namespace Game
 
         const int32_t leftSideColumnsCount = columnsLineCount / 2;
         const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
+        static constexpr float grid_elevation_bias = 2.0f;
+        const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
         for (int32_t columnIdx = -leftSideColumnsCount; columnIdx < rightSideColumnsCount; ++columnIdx)
         {
             const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridColumnLineMesh_" + columnIdx, 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            const auto &lineBegin = glm::vec3(columnIdx * mLevelPlacementGrid->GetGridCellSizeForTower(), 0.0f, levelAreaBoundingBox.GetMin().y);
-            const auto &lineEnd = glm::vec3(columnIdx * mLevelPlacementGrid->GetGridCellSizeForTower(), 0.0f, levelAreaBoundingBox.GetMax().y);
-            c_mesh->SetSortOrderValue(100);
+            const auto &lineBegin = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
+            const auto &lineEnd = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
+            c_mesh->SetSortOrderValue(50 + columnIdx);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
             mRoutePlacementGridActor->AddComponent(c_mesh);
@@ -141,9 +146,9 @@ namespace Game
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridRowLineMesh_" + rowIdx, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, 0.0f, rowIdx * mLevelPlacementGrid->GetGridCellSizeForTower());
-            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, 0.0f, rowIdx * mLevelPlacementGrid->GetGridCellSizeForTower());
-            c_mesh->SetSortOrderValue(100);
+            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias, rowIdx * gridCellSize);
+            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias, rowIdx * gridCellSize);
+            c_mesh->SetSortOrderValue(100 + rowIdx);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
             mRoutePlacementGridActor->AddComponent(c_mesh);
@@ -155,18 +160,20 @@ namespace Game
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
 
+        const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
         mTowerPlacementPickerActor = std::make_shared<Actor>("TowerPlacementPickerActor", std::make_shared<SceneComponent>("TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
         sceneSp->AddActor(mTowerPlacementPickerActor);
 
         MaterialParser materialParser;
-        const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
-        sceneSp->RegisterMaterialInstance(lineMaterial);
-        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
-        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
+        const std::shared_ptr<IMaterial> &editorPickerMaterial = materialParser.ParseMaterialDescriptor("EditorPickerMaterial.m");
+        sceneSp->RegisterMaterialInstance(editorPickerMaterial);
+        MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
 
         const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
-        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(1.0f), lineMaterial);
+        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerCellSize, 1.0f, pickerCellSize), editorPickerMaterial);
         const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        c_mesh->SetSortOrderValue(200);
         mTowerPlacementPickerActor->AddComponent(c_mesh);
     }
 }

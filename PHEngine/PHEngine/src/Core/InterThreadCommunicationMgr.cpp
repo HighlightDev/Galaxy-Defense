@@ -13,9 +13,10 @@ using namespace EngineCore::Scripts;
 using namespace Graphics::Renderer;
 using namespace TinyLogger;
 
+#define flipBits(n, b) ((n) ^ ((1u << (b)) - 1))
+
 namespace Thread
 {
-
    InterThreadCommunicationMgr::InterThreadCommunicationMgr()
        : mRenderThreadSwapChain()
    {
@@ -75,7 +76,7 @@ namespace Thread
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
-      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.WriteChainType.load())));
+      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.WriteChainType.load()));
    }
 
    void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
@@ -158,7 +159,7 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SpinRenderThreadJobs()
    {
-      auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(uint8_t(mRenderThreadSwapChain.ReadChainType.load()));
+      auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.ReadChainType.load());
       auto countRenderThreadJobs = renderThreadChain.size();
 
       while (countRenderThreadJobs)
@@ -188,8 +189,8 @@ namespace Thread
    void InterThreadCommunicationMgr::SwapRenderThreadChain()
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
-      mRenderThreadSwapChain.ReadChainType = mRenderThreadSwapChain.ReadChainType == eReadChainType::READ_1 ? eReadChainType::READ_2 : eReadChainType::READ_1;
-      mRenderThreadSwapChain.WriteChainType = mRenderThreadSwapChain.WriteChainType == eWriteChainType::WRITE_1 ? eWriteChainType::WRITE_2 : eWriteChainType::WRITE_1;
+      mRenderThreadSwapChain.ReadChainType = flipBits(mRenderThreadSwapChain.ReadChainType, 1);
+      mRenderThreadSwapChain.WriteChainType = flipBits(mRenderThreadSwapChain.WriteChainType, 1);
    }
 
    void InterThreadCommunicationMgr::ClearGameThreadJobs()
@@ -214,3 +215,4 @@ namespace Thread
       mIsAllowedPushLuaThreadJobs.store(isAllowed, std::memory_order::memory_order_seq_cst);
    }
 }
+#undef flipBits
