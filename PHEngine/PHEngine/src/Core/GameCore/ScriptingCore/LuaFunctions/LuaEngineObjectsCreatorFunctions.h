@@ -59,21 +59,21 @@ namespace EngineCore
 
          /* -------------------  Create Actor ----------------------------*/
          int32_t CreateActor(const std::tuple<std::string /*Actor type*/,
-                                               std::string /*Actor name*/,
-                                               glm::vec3 /*root component translation*/,
-                                               glm::vec3 /*root component rotation*/,
-                                               glm::vec3 /*root component scale*/,
-                                               std::string/*json params string*/> &actorData);
+                                              std::string /*Actor name*/,
+                                              glm::vec3 /*root component translation*/,
+                                              glm::vec3 /*root component rotation*/,
+                                              glm::vec3 /*root component scale*/,
+                                              std::string /*json params string*/> &actorData);
          /* -------------------  Create component and attach to actor ----------------------------*/
          void CreateAndAttachComponentToActor(const std::tuple<int32_t /*actorObjectId*/,
                                                                std::string /*componentType*/,
                                                                std::string /*component data json*/> &componentData);
 
          /* -------------------  Create third person camera ----------------------------*/
-         void CreateThirdPersonCamera(const std::tuple<std::string, glm::ivec4, float, float, float, glm::vec3, int32_t> &cameraData);
+         void CreateThirdPersonCamera(const std::tuple<std::string, glm::ivec4, std::string /*viewProjectionJsonArgs*/, float, float, float, glm::vec3, int32_t> &cameraData);
 
          /* -------------------  Create first person camera ----------------------------*/
-         void CreateFirstPersonCamera(const std::tuple<std::string, glm::ivec4, float, float, glm::vec3, int32_t> &cameraData);
+         void CreateFirstPersonCamera(const std::tuple<std::string, glm::ivec4, std::string /*viewProjectionJsonArgs*/, float, float, glm::vec3, int32_t> &cameraData);
 
          /* -------------------  Create material instance and register --------------------*/
          int32_t CreateMaterial(const std::tuple<std::string> &buildMaterial);

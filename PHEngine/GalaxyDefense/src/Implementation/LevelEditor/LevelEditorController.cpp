@@ -63,11 +63,7 @@ namespace Game
     {
         if (const auto &sceneCameraSp = mMainSceneCamera.lock())
         {
-            const auto viewPerspectiveInfo = sceneCameraSp->GetViewPerspectiveInfo();
-            const auto projectionMatrix = glm::perspective<float>(viewPerspectiveInfo.FoV,
-                                                                  viewPerspectiveInfo.AspectRatio,
-                                                                  viewPerspectiveInfo.NearPlane,
-                                                                  viewPerspectiveInfo.FarPlane);
+            const auto projectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
             const auto &mouseBindings = mInputComponent->GetMouseBindings();
             if (mouseBindings->IsMouseMoveEventDirty())
             {
@@ -126,15 +122,15 @@ namespace Game
 
         const int32_t leftSideColumnsCount = columnsLineCount / 2;
         const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
-        static constexpr float grid_elevation_bias = 2.0f;
+        static constexpr float grid_elevation_bias = 1.0f;
         const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
         for (int32_t columnIdx = -leftSideColumnsCount; columnIdx < rightSideColumnsCount; ++columnIdx)
         {
-            const auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridColumnLineMesh_" + columnIdx, 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_levelGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
             const auto &lineBegin = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
             const auto &lineEnd = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
-            c_mesh->SetSortOrderValue(50 + columnIdx);
+            c_mesh->SetSortOrderValue(0);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
             mRoutePlacementGridActor->AddComponent(c_mesh);
@@ -144,11 +140,11 @@ namespace Game
         const int32_t nearSideRowsCount = rowsLineCount - forwardSideRowsCount;
         for (int32_t rowIdx = -forwardSideRowsCount; rowIdx < nearSideRowsCount; ++rowIdx)
         {
-            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_levelGridRowLineMesh_" + rowIdx, 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_levelGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias, rowIdx * gridCellSize);
-            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias, rowIdx * gridCellSize);
-            c_mesh->SetSortOrderValue(100 + rowIdx);
+            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
+            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
+            c_mesh->SetSortOrderValue(0);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
             mRoutePlacementGridActor->AddComponent(c_mesh);
@@ -169,6 +165,7 @@ namespace Game
         sceneSp->RegisterMaterialInstance(editorPickerMaterial);
         MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "opacity", 1.0f);
         MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, "color", glm::vec3(0.4f, 0.8f, 0.2f));
+        MaterialPropertySetter::SetMaterialPropertyValue(editorPickerMaterial, sceneSp, "GT_DeltaSec", "gt_timeSec");
 
         const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
         const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerCellSize, 1.0f, pickerCellSize), editorPickerMaterial);

@@ -22,6 +22,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
 #include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/TextureMaterialProperty.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/FloatMaterialProperty.h"
 #include "Core/GameCore/FirstPersonCamera.h"
@@ -181,7 +182,8 @@ namespace EngineCore
             propertyType = "texture";
             uniformValue = EngineUtility::FromOsSpecificUrlToGeneral(
                 Resources::TexturePool::GetInstance()->GetKeyOptional(
-                    texProp->GetValue()).value_or(""));
+                                                         texProp->GetValue())
+                    .value_or(""));
          }
          else if (type == MaterialProperty::eMaterialPropertyType::FLOAT_PROPERTY)
          {
@@ -284,7 +286,10 @@ namespace EngineCore
       {
          auto fpCameraData = std::static_pointer_cast<SerializeDataFirstPersonCamera>(data);
          assert(fpCameraData);
-         result = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, cameraType, scene, ViewPortInfo(fpCameraData->ViewPortInfo), fpCameraData->InitPitchDeg,
+         result = std::make_shared<FirstPersonCamera>(fpCameraData->CameraName, cameraType, scene,
+                                                      ViewPortInfo(fpCameraData->ViewPortInfo),
+                                                      std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 16.0f / 9.0f, 0.1f, 500.0f),
+                                                      fpCameraData->InitPitchDeg,
                                                       fpCameraData->InitYawDeg, fpCameraData->CameraPosition);
       }
       if ((eCameraType::SECONDARY_THIRD_PERSON_CAMERA & cameraType) == eCameraType::SECONDARY_THIRD_PERSON_CAMERA)
@@ -292,8 +297,13 @@ namespace EngineCore
          auto thpCameraData = std::static_pointer_cast<SerializeDataThirdPersonCamera>(data);
          assert(thpCameraData);
 
-         const auto &thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, cameraType, scene, ViewPortInfo(thpCameraData->ViewPortInfo),
-                                                                             thpCameraData->InitPitchDeg, thpCameraData->InitYawDeg, thpCameraData->CameraDistanceToThirdPersonTarget, thpCameraData->ThirdPersonTargetOffset);
+         const auto &thirdPersonCamera = std::make_shared<ThirdPersonCamera>(thpCameraData->CameraName, cameraType, scene,
+                                                                             ViewPortInfo(thpCameraData->ViewPortInfo),
+                                                                             std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 16.0f / 9.0f, 0.1f, 500.0f),
+                                                                             thpCameraData->InitPitchDeg,
+                                                                             thpCameraData->InitYawDeg,
+                                                                             thpCameraData->CameraDistanceToThirdPersonTarget,
+                                                                             thpCameraData->ThirdPersonTargetOffset);
          thirdPersonCamera->SetThirdPersonTargetDeferred(thpCameraData->ThirdPersonTargetActorName);
 
          result = thirdPersonCamera;

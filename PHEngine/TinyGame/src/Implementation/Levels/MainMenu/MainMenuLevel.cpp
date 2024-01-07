@@ -85,7 +85,7 @@ namespace Game
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
-      static constexpr const char *lvlName = "mainMenuLvl.lua";
+      static constexpr const char *lvlName = "Obsolete/SpaceShooterProject/mainMenuLvl.lua";
       LuaEngineScriptExecutor mLuaLevelBuilder = LuaEngineScriptExecutor(lvlName);
       mLuaLevelBuilder.SetScene(sceneSp);
       mLuaLevelBuilder.SetLuaScriptProcessor(sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor());

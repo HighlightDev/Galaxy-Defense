@@ -2,44 +2,12 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/FirstPersonCamera.h"
-#include "Core/GameCore/Components/DirectionalLightComponent.h"
-#include "Core/GameCore/Components/PlatformTraverseComponent.h"
-#include "Core/GameCore/Components/HumanoidPhysicsMovementComponent.h"
-#include "Core/GameCore/Components/ComponentData/DirectionalLightComponentData.h"
-#include "Core/GameCore/Components/ComponentData/PlanarReflectionComponentData.h"
-#include "Core/GameCore/Components/ComponentData/SpotlightComponentData.h"
-#include "Core/GameCore/Components/SpotlightComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
-#include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCapsuleShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionPlaneShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCompoundShape.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/RigidBodyController.h"
-#include "Core/GameCore/Physics/PhysicsDescriptors/DynamicCharacterController.h"
-#include "Core/GameCore/Components/PhysicsComponents/RigidBodyPhysicsComponent.h"
-#include "Core/GameCore/Components/PhysicsComponents/CharacterPhysicsComponent.h"
-#include "Core/GameCore/Components/PlanarReflectionComponent.h"
-#include "Core/GraphicsCore/Shadow/ProjectedDirectionalLightShadowInfo.h"
-#include "Core/GraphicsCore/Shadow/ProjectedPointLightShadowInfo.h"
-#include "Core/GraphicsCore/Shadow/ProjectedSpotlightShadowInfo.h"
-#include "Core/UtilityCore/EngineConfigHolder.h"
-#include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/CubemapComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/LightComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/PlanarReflectionComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/PlatformTraverseComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/SkeletalMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/SkyboxComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewProjectionInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewOrthographicInfo.h"
+#include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
+
+#include <json/json.hpp>
 
 using namespace EngineUtility;
 
@@ -111,6 +79,7 @@ namespace EngineCore
 
    void EngineObjectCreator::CreateThirdPersonCamera(const std::string &cameraName,
                                                      const ViewPortInfo &viewPort,
+                                                     const std::shared_ptr<ViewProjectionInfo> &viewProjectionInfo,
                                                      const float initPitchDeg,
                                                      const float initYawDeg,
                                                      const float camDistanceToThirdPersonTarget,
@@ -120,7 +89,7 @@ namespace EngineCore
       if (const auto &sceneSp = mSceneWp.lock())
       {
          const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_THIRD_PERSON_CAMERA : eCameraType::SECONDARY_THIRD_PERSON_CAMERA;
-         const auto camera = std::make_shared<ThirdPersonCamera>(cameraName, cameraType, sceneSp, viewPort,
+         const auto camera = std::make_shared<ThirdPersonCamera>(cameraName, cameraType, sceneSp, viewPort, viewProjectionInfo,
                                                                  initPitchDeg, initYawDeg, camDistanceToThirdPersonTarget, thirdPersonTargetOffset);
 
          if (bIsMainSceneCamera)
@@ -136,6 +105,7 @@ namespace EngineCore
 
    void EngineObjectCreator::CreateFirstPersonCamera(const std::string &cameraName,
                                                      const ViewPortInfo &viewPort,
+                                                     const std::shared_ptr<ViewProjectionInfo> &viewProjectionInfo,
                                                      const float initPitchDeg,
                                                      const float initYawDeg,
                                                      const glm::vec3 &cameraPosition,
@@ -144,7 +114,7 @@ namespace EngineCore
       if (const auto &sceneSp = mSceneWp.lock())
       {
          const eCameraType cameraType = bIsMainSceneCamera ? eCameraType::MAIN_FIRST_PERSON_CAMERA : eCameraType::SECONDARY_FIRST_PERSON_CAMERA;
-         const auto camera = std::make_shared<FirstPersonCamera>(cameraName, cameraType, sceneSp, viewPort, initPitchDeg, initYawDeg, cameraPosition);
+         const auto camera = std::make_shared<FirstPersonCamera>(cameraName, cameraType, sceneSp, viewPort, viewProjectionInfo, initPitchDeg, initYawDeg, cameraPosition);
 
          if (bIsMainSceneCamera)
          {
@@ -155,5 +125,33 @@ namespace EngineCore
             sceneSp->RegisterCamera(camera);
          }
       }
+   }
+
+   std::shared_ptr<ViewProjectionInfo> EngineObjectCreator::CreateViewProjectionInfo(const std::string &jsonArgs) const
+   {
+      const auto &jsonObj = nlohmann::json::parse(jsonArgs);
+      const auto &projectionType = JsonParserHelper::FromJsonToString("projectionType", jsonObj);
+
+      if ("Perspective" == projectionType)
+      {
+         const float fov = JsonParserHelper::FromJsonToFloat("FoV", jsonObj);
+         const float aspectRatio = JsonParserHelper::FromJsonToFloat("AspectRatio", jsonObj);
+         const float nearPlane = JsonParserHelper::FromJsonToFloat("NearPlane", jsonObj);
+         const float farPlane = JsonParserHelper::FromJsonToFloat("FarPlane", jsonObj);
+         return std::make_shared<ViewPerspectiveInfo>(fov, aspectRatio, nearPlane, farPlane);
+      }
+      else if ("Orthographic" == projectionType)
+      {
+         const float left = JsonParserHelper::FromJsonToFloat("left", jsonObj);
+         const float right = JsonParserHelper::FromJsonToFloat("right", jsonObj);
+         const float bottom = JsonParserHelper::FromJsonToFloat("bottom", jsonObj);
+         const float top = JsonParserHelper::FromJsonToFloat("top", jsonObj);
+         const float zNear = JsonParserHelper::FromJsonToFloat("zNear", jsonObj);
+         const float zFar = JsonParserHelper::FromJsonToFloat("zFar", jsonObj);
+         return std::make_shared<ViewOrthographicInfo>(left, right, bottom, top, zNear, zFar);
+      }
+
+      assert(false);
+      return nullptr;
    }
 }

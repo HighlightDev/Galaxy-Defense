@@ -61,19 +61,16 @@ namespace Thread
    struct TasksSwapChain
    {
       std::mutex StoreOperationMutex;
-      std::atomic<uint8_t> ReadChainType = {eReadChainType::READ_1};
-      std::atomic<uint8_t> WriteChainType = {eWriteChainType::WRITE_2};
+      uint8_t ReadChainType = {eReadChainType::READ_1};
+      uint8_t WriteChainType = {eWriteChainType::WRITE_2};
 
       // make sure we won't get false sharing for our jobs
       alignas(hardware_destructive_interference_size) std::deque<Job> Jobs1;
       alignas(hardware_destructive_interference_size) std::deque<Job> Jobs2;
 
-      inline std::deque<Job> &GetDequeByIndex(uint8_t index)
+      inline std::deque<Job> &GetDequeByIndex(const uint8_t index)
       {
-         if (0 == index)
-            return Jobs1;
-         else
-            return Jobs2;
+         return index == 0 ? Jobs1 : Jobs2;
       }
    };
 

@@ -74,7 +74,7 @@ namespace Game
 
         const auto d_mesh = std::make_shared<MeshComponentData>("c_asteroid_mesh_" + asteroidIndexStr, "asteroid.fbx", glm::vec3(0),
                                                                 rotation, scale, "", asteroidPbs_mat);
-        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
         const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
         a_asteroid->AddComponent(c_mesh);
 

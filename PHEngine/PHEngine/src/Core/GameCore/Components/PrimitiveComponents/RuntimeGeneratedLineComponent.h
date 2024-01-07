@@ -2,7 +2,6 @@
 #include "StaticMeshComponent.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 #include "Core/GraphicsCore/Material/IMaterial.h"
-#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
 
 #include <glm/mat4x4.hpp>
@@ -15,8 +14,7 @@ namespace EngineCore
 {
 	struct MeshComponentData;
 
-	class RuntimeGeneratedLineComponent : public StaticMeshComponent,
-										  public Event::CameraTransformChangedEvent
+	class RuntimeGeneratedLineComponent : public StaticMeshComponent
 	{
 		using Base = StaticMeshComponent;
 
@@ -38,11 +36,7 @@ namespace EngineCore
 
 		~RuntimeGeneratedLineComponent() override;
 
-		void Initialize() override;
-
 		std::shared_ptr<PrimitiveSceneProxy> CreateSceneProxy() const override;
-
-		void ProcessEvent(const typename Event::CameraTransformChangedEvent::EventData_t &data) override;
 
 		void UnpausableTick(const float deltaTime) override;
 

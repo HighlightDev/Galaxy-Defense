@@ -15,11 +15,17 @@ using namespace Graphics::Renderer;
 namespace EngineCore
 {
 
-   ACamera::ACamera(const std::string &cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo &viewPort, const float initPitchDeg, const float initYawDeg)
+   ACamera::ACamera(const std::string &cameraName,
+                    const eCameraType cameraType,
+                    std::shared_ptr<Scene> scene,
+                    const ViewPortInfo &viewPort,
+                    const std::shared_ptr<ViewProjectionInfo> &viewProjectionInfo,
+                    const float initPitchDeg,
+                    const float initYawDeg)
        : EngineObject(cameraName),
          m_rotateSensetivity(0.08f),
          mCameraName(cameraName),
-         mViewPerspectiveInfo(DEG_TO_RAD(60), 16.0f / 9.0f, 1, 1000),
+         mViewProjectionInfo(viewProjectionInfo),
          mScene(scene), mPlanarReflectionComponent(nullptr),
          mViewPort(viewPort), m_localSpaceRightVector(1, 0, 0),
          m_localSpaceUpVector(0, 1, 0),
@@ -267,9 +273,9 @@ namespace EngineCore
       return mViewPort;
    }
 
-   ViewPerspectiveInfo ACamera::GetViewPerspectiveInfo() const
+   const std::shared_ptr<ViewProjectionInfo>& ACamera::GetViewProjectionInfo() const
    {
-      return mViewPerspectiveInfo;
+      return mViewProjectionInfo;
    }
 
    void ACamera::SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent)

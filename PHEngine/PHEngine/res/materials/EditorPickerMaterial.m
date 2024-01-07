@@ -1,7 +1,7 @@
 <general>
 	name: "EditorPicker material"
 	shader: "EditorPickerMaterial.glsl"
-	material_type: "static"
+	material_type: "dynamic"
 </general>
 <properties>
 	<property>
@@ -12,4 +12,18 @@
 		name: "color"
 		type: "vec3"
 	</property>
+	<dynamic_property>
+		name: "pulse_animation_time"
+		type: "float"
+		incremental: "true"
+		range: "[0.0 ; 2.0]"
+		<operation>
+			<no_op>
+				<property>
+					name: "gt_timeSec"
+					type: "binding_float"
+				</property>
+			</no_op>
+		</operation>
+	</dynamic_property>
 </properties>

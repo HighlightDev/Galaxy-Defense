@@ -128,11 +128,7 @@ namespace Game
    {
       if (const auto &sceneCameraSp = mMainSceneCamera.lock())
       {
-         const auto viewPerspectiveInfo = sceneCameraSp->GetViewPerspectiveInfo();
-         mProjectionMatrix = glm::perspective<float>(viewPerspectiveInfo.FoV,
-                                                     viewPerspectiveInfo.AspectRatio,
-                                                     viewPerspectiveInfo.NearPlane,
-                                                     viewPerspectiveInfo.FarPlane);
+         mProjectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
       }
    }
 }

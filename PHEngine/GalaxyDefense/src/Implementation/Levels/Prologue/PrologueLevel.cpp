@@ -15,6 +15,7 @@
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionSphereShape.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 
 #include "Core/GameCore/Components/ComponentCreators/InputComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
@@ -102,6 +103,7 @@ namespace Game
                                                                                  0,
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
+                                                                    std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 16.0f / 9.0f, 0.1f, 500.0f),
                                                                     38.88f,
                                                                     0.0f,
                                                                     150.0f);
@@ -129,7 +131,7 @@ namespace Game
       a_skybox->AddComponent(billboardComponent);
 
       const auto &a_station = sceneSp->GetActorByName("SpaceshipActor");
-      
+
       mGameFlowController->SetTempRootComponent(a_station->GetRootComponent());
       mGameFlowController->OnLevelInit();
       mCombatController->OnLevelInit();

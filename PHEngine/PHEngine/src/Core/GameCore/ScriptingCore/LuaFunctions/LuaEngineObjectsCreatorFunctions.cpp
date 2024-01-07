@@ -77,8 +77,8 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateActor"), int32_t(std::string, std::string, glm::vec3, glm::vec3, glm::vec3, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateActor, this, std::placeholders::_1), "_CreateActor");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor"), void(int32_t /*actorObjectId*/, std::string /*componentType*/, std::string /*component data json*/)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateAndAttachComponentToActor, this, std::placeholders::_1), "_CreateAndAttachComponentToActor");
 
-         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera"), void(std::string, glm::ivec4, float, float, float, glm::vec3, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1), "_CreateThirdPersonCamera");
-         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera"), void(std::string, glm::ivec4, float, float, glm::vec3, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera, this, std::placeholders::_1), "_CreateFirstPersonCamera");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera"), void(std::string, glm::ivec4, std::string, float, float, float, glm::vec3, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera, this, std::placeholders::_1), "_CreateThirdPersonCamera");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera"), void(std::string, glm::ivec4, std::string, float, float, glm::vec3, int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera, this, std::placeholders::_1), "_CreateFirstPersonCamera");
 
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::CreateMaterial"), int32_t(std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::CreateMaterial, this, std::placeholders::_1), "_CreateMaterial");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineObjectsCreatorFunctions::SetTextureToMaterial"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineObjectsCreatorFunctions::SetTextureToMaterial, this, std::placeholders::_1), "_SetTextureToMaterial");
@@ -151,26 +151,31 @@ namespace EngineCore
       /* -------------------  Create first person camera ----------------------------*/
       void LuaEngineObjectsCreatorFunctions::CreateFirstPersonCamera(const std::tuple<std::string /*cameraName*/,
                                                                                       glm::ivec4 /*viewPort*/,
+                                                                                      std::string /*viewProjectionJsonArgs*/,
                                                                                       float /*initPitchDeg*/,
                                                                                       float /*initYawDeg*/,
                                                                                       glm::vec3 /*init camera position*/,
                                                                                       int32_t /*is main camera in the scene*/> &cameraData)
       {
          const glm::ivec4 &viewPortData = std::get<1>(cameraData);
-         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<5>(cameraData));
+         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<6>(cameraData));
+
+         const auto& viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
 
          mEngineObjectCreator->CreateFirstPersonCamera(
              std::get<0>(cameraData),
              ViewPortInfo(viewPortData.x, viewPortData.y, viewPortData.z, viewPortData.w),
-             std::get<2>(cameraData),
+             viewProjectionInfo,
              std::get<3>(cameraData),
              std::get<4>(cameraData),
+             std::get<5>(cameraData),
              bIsMainSceneCamera);
       }
 
       /* -------------------  Create third person camera ----------------------------*/
       void LuaEngineObjectsCreatorFunctions::CreateThirdPersonCamera(const std::tuple<std::string /*cameraName*/,
                                                                                       glm::ivec4 /*viewPort*/,
+                                                                                      std::string /*viewProjectionJsonArgs*/,
                                                                                       float /*initPitchDeg*/,
                                                                                       float /*initYawDeg*/,
                                                                                       float /*camDistanceToThirdPersonTarget*/,
@@ -178,15 +183,18 @@ namespace EngineCore
                                                                                       int32_t /*is main camera in the scene*/> &cameraData)
       {
          const glm::ivec4 &viewPortData = std::get<1>(cameraData);
-         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<6>(cameraData));
+         const bool bIsMainSceneCamera = static_cast<int32_t>(std::get<7>(cameraData));
+
+         const auto& viewProjectionInfo = mEngineObjectCreator->CreateViewProjectionInfo(std::get<2>(cameraData));
 
          mEngineObjectCreator->CreateThirdPersonCamera(
              std::get<0>(cameraData),
              ViewPortInfo(viewPortData.x, viewPortData.y, viewPortData.z, viewPortData.w),
-             std::get<2>(cameraData),
+             viewProjectionInfo,
              std::get<3>(cameraData),
              std::get<4>(cameraData),
              std::get<5>(cameraData),
+             std::get<6>(cameraData),
              bIsMainSceneCamera);
       }
 

@@ -76,7 +76,7 @@ namespace Thread
    void InterThreadCommunicationMgr::ProcessPushRenderThreadJob(const eEnqueueJobPolicy policy, Job &&job)
    {
       std::lock_guard<std::mutex> lock(mRenderThreadSwapChain.StoreOperationMutex);
-      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.WriteChainType.load()));
+      ProcessPushJob(policy, std::move(job), mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.WriteChainType));
    }
 
    void InterThreadCommunicationMgr::ProcessPushGameThreadJob(const eEnqueueJobPolicy policy, Job &&job)
@@ -159,7 +159,7 @@ namespace Thread
 
    void InterThreadCommunicationMgr::SpinRenderThreadJobs()
    {
-      auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.ReadChainType.load());
+      auto &renderThreadChain = mRenderThreadSwapChain.GetDequeByIndex(mRenderThreadSwapChain.ReadChainType);
       auto countRenderThreadJobs = renderThreadChain.size();
 
       while (countRenderThreadJobs)

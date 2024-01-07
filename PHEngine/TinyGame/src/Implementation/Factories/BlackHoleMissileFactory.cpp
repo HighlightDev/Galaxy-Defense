@@ -17,7 +17,6 @@
 #include "Core/AudioCore/SoundSource.h"
 #include "Core/GameCore/Components/ComponentCreators/MovementComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
-#include "Core/GameCore/Components/ComponentCreators/ForwardShadingStaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/PhysicsComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/AudioComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ParticleSystemComponentCreator.h"
@@ -88,7 +87,7 @@ namespace Game
 
             const auto d_mesh = std::make_shared<MeshComponentData>("c_missileCombatActivePhaseMesh_" + missileIndexStr, "missile1_model.fbx", glm::vec3(0),
                                                                     glm::vec3(0), glm::vec3(1.5), "", pbs_mat);
-            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>();
+            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
             a_missileCombatActivePhase->AddComponent(c_mesh);
 
@@ -134,7 +133,7 @@ namespace Game
                                                                     "sphere.obj",
                                                                     glm::vec3(0),
                                                                     glm::vec3(0), glm::vec3(5), "", missile_mat);
-            const auto &meshComponentCreator = std::make_shared<ForwardShadingStaticMeshComponentCreator<StaticMeshComponent>>();
+            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(false);
             const auto &c_mesh = scene->CreateComponent_GameThread(meshComponentCreator, d_mesh);
             a_missileExplosionSecondPhase->AddComponent(c_mesh);
 

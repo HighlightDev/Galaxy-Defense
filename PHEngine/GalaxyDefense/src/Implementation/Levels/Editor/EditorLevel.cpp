@@ -1,6 +1,7 @@
 #include "EditorLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -22,6 +23,7 @@ using namespace IO;
 using namespace EngineCore;
 using namespace EngineCore::Scripts;
 using namespace EngineCore::GUI;
+using namespace Graphics;
 
 namespace Game
 {
@@ -70,6 +72,7 @@ namespace Game
                                                                                  0,
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowWidth(),
                                                                                  DisplayDeviceDataProvider::GetInstance()->GetWindowHeight()),
+                                                                    std::make_shared<ViewPerspectiveInfo>(glm::radians<float>(60.0f), 1.0f, 0.1f, 500.0f),
                                                                     60.0f,
                                                                     0.0f,
                                                                     200.0f);

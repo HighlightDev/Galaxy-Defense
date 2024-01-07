@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/CommonCore/Assertion.h"
+
 #include <string>
 
 namespace EngineCore
@@ -11,6 +13,7 @@ namespace EngineCore
       ComponentData(const std::string &gameObjectName)
           : EngineObjectName(gameObjectName)
       {
+         assert(EngineObjectName != "");
       }
 
       virtual ~ComponentData()

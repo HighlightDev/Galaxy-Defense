@@ -13,7 +13,7 @@
 #include "Core/GameCore/ITickable.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
-#include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
+#include "Core/GraphicsCore/SceneViewInfo/ViewProjectionInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/CameraFrustum.h"
 #include "Core/GameCore/Serialize/ISerializable.h"
 #include "Core/GameCore/Input/MouseEventEnums.h"
@@ -27,34 +27,33 @@ namespace EngineCore
    class Scene;
    class PlanarReflectionComponent;
 
-      enum eCameraType
-      {
-         UNINITIALIZED = 0,
-         SECONDARY_FIRST_PERSON_CAMERA = 1,
-         MAIN_FIRST_PERSON_CAMERA = (SECONDARY_FIRST_PERSON_CAMERA | (SECONDARY_FIRST_PERSON_CAMERA << 1)),
-         SECONDARY_THIRD_PERSON_CAMERA = (1 << 2),
-         MAIN_THIRD_PERSON_CAMERA = (SECONDARY_THIRD_PERSON_CAMERA | (SECONDARY_FIRST_PERSON_CAMERA << 3)),
-      };
+   enum eCameraType
+   {
+      UNINITIALIZED = 0,
+      SECONDARY_FIRST_PERSON_CAMERA = 1,
+      MAIN_FIRST_PERSON_CAMERA = (SECONDARY_FIRST_PERSON_CAMERA | (SECONDARY_FIRST_PERSON_CAMERA << 1)),
+      SECONDARY_THIRD_PERSON_CAMERA = (1 << 2),
+      MAIN_THIRD_PERSON_CAMERA = (SECONDARY_THIRD_PERSON_CAMERA | (SECONDARY_FIRST_PERSON_CAMERA << 3)),
+   };
 
    class ACamera
-      : public EngineObject
-      , public ITickable
-      , public ISerializable
-      , public std::enable_shared_from_this<ACamera>
-      , public WindowSizeChangedEvent
+       : public EngineObject,
+         public ITickable,
+         public ISerializable,
+         public std::enable_shared_from_this<ACamera>,
+         public WindowSizeChangedEvent
    {
       float m_rotateSensetivity;
 
       std::string mCameraName;
 
-      ViewPerspectiveInfo mViewPerspectiveInfo;
+      std::shared_ptr<ViewProjectionInfo> mViewProjectionInfo;
 
       bool bTransformationDirty = false;
 
       std::atomic<bool> bIsCameraProxyReady{false};
 
    protected:
-
       size_t mCameraProxyId{0};
 
       std::weak_ptr<Scene> mScene;
@@ -82,8 +81,13 @@ namespace EngineCore
       eCameraType m_cameraType;
 
    public:
-
-      ACamera(const std::string& cameraName, const eCameraType cameraType, std::shared_ptr<Scene> scene, const ViewPortInfo& viewPort, const float initPitchDeg, const float initYawDeg);
+      ACamera(const std::string &cameraName,
+              const eCameraType cameraType,
+              std::shared_ptr<Scene> scene,
+              const ViewPortInfo &viewPort,
+              const std::shared_ptr<ViewProjectionInfo> &viewProjectionInfo,
+              const float initPitchDeg,
+              const float initYawDeg);
 
       virtual ~ACamera();
 
@@ -99,9 +103,9 @@ namespace EngineCore
 
       void Tick(const float DeltaTime) override;
 
-      void UnpausableTick(const float deltaTime) override {};
+      void UnpausableTick(const float deltaTime) override{};
 
-      void ProcessEvent(const WindowSizeChangedEvent::EventData_t& data) override;
+      void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
 
       virtual void PostLevelInit();
 
@@ -113,7 +117,7 @@ namespace EngineCore
 
       virtual std::shared_ptr<CameraSceneProxy> CreateSceneProxy() const = 0;
 
-      virtual void CollectDataForSerialization(SerializeDataContainer& dataContainer) = 0;
+      virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
       std::shared_ptr<PlanarReflectionComponent> GetPlanarReflectionComponent() const;
 
@@ -125,11 +129,11 @@ namespace EngineCore
 
       void SetPlanarReflectionComponent(std::shared_ptr<PlanarReflectionComponent> planarReflectionComponent);
 
-      void SetLocalSpaceUpVector(glm::vec3& upVector);
+      void SetLocalSpaceUpVector(glm::vec3 &upVector);
 
-      void SetLocalSpaceForwardVector(glm::vec3& forwardVector);
+      void SetLocalSpaceForwardVector(glm::vec3 &forwardVector);
 
-      void SetLocalSpaceRightVector(glm::vec3& rightVector);
+      void SetLocalSpaceRightVector(glm::vec3 &rightVector);
 
       void SetCameraSensetivity(float rotateSensetivity);
 
@@ -151,20 +155,19 @@ namespace EngineCore
 
       ViewPortInfo GetViewPort() const;
 
-      ViewPerspectiveInfo GetViewPerspectiveInfo() const;
+      const std::shared_ptr<ViewProjectionInfo> &GetViewProjectionInfo() const;
 
       void SetRotation(const int32_t deltaX, const int32_t deltaY);
 
       virtual void Zoom(eMouseScrollDirection zoomDirection, float zoomPower) = 0;
 
-      glm::vec4 GetConvertedToClippedSpacePosition(const glm::vec4& worldPosition);
+      glm::vec4 GetConvertedToClippedSpacePosition(const glm::vec4 &worldPosition);
 
       std::optional<CameraFrustum> GetCameraFrustum() const;
 
       void OnCameraSceneProxyDataUpdated();
 
    protected:
-
       virtual void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY);
 
       virtual void OnTransformationUpdated();
@@ -172,9 +175,7 @@ namespace EngineCore
       void SetTransformationDirty();
 
    private:
-
       void UpdateCameraProxyData();
    };
 
 }
-

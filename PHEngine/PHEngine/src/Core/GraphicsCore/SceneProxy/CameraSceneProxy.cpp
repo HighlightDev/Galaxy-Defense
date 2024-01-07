@@ -17,8 +17,7 @@ namespace Graphics
          mViewMatrix(),
          mIsInitializedFirstTime(false)
    {
-      const auto &perspectiveInfo = camera->GetViewPerspectiveInfo();
-      mProjectionMatrix = glm::perspective<float>(perspectiveInfo.FoV, perspectiveInfo.AspectRatio, perspectiveInfo.NearPlane, perspectiveInfo.FarPlane);
+      mProjectionMatrix = camera->GetViewProjectionInfo()->CreateProjectionMatrix();
    }
 
    void CameraSceneProxy::UpdateViewMatrix(const glm::mat4 &viewMatrix)

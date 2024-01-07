@@ -28,7 +28,7 @@ namespace Graphics
          void SetCurveSegmentsCount(const int32_t curveSegmentsCount);
 
       protected:
-         void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix) override;
+         void UpdateGeometry(const glm::mat4 &viewMatrix) override;
       };
 
    }

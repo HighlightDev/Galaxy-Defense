@@ -24,6 +24,7 @@ namespace EngineCore
                         const eCameraType cameraType,
                         std::shared_ptr<Scene> scene,
                         const ViewPortInfo &viewPort,
+                        const std::shared_ptr<ViewProjectionInfo> &viewProjectionInfo,
                         const float initPitchDeg,
                         const float initYawDeg,
                         glm::vec3 camPos);

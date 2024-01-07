@@ -53,7 +53,7 @@ namespace Graphics
          bool IsFrustumCullTestNeeded() const override;
 
       protected:
-         virtual void UpdateGeometry(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix);
+         virtual void UpdateGeometry(const glm::mat4 &viewMatrix);
       };
 
    }

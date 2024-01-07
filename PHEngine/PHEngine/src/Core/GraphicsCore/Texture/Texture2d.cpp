@@ -126,7 +126,6 @@ namespace Graphics
          {
             m_mipmapState->ExecuteTextureSampleFilteringInstructions();
          }
-         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
          glTexImage2D(textureTarget, 0, m_textureParams.TexPixelInternalFormat,
                       m_textureParams.TexBufferWidth, m_textureParams.TexBufferHeight, 0, m_textureParams.TexPixelFormat, m_textureParams.TexPixelType, pixelsData);

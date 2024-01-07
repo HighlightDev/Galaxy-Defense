@@ -27,30 +27,11 @@ namespace EngineCore
 
    RuntimeGeneratedLineComponent::~RuntimeGeneratedLineComponent()
    {
-      Event::CameraTransformChangedEvent::GetInstance()->RemoveListener(Event::CameraTransformChangedEvent::GetInstanceId());
-   }
-
-   void RuntimeGeneratedLineComponent::Initialize()
-   {
-      StaticMeshComponent::Initialize();
-
-      Event::CameraTransformChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<RuntimeGeneratedLineComponent>(shared_from_this()));
    }
 
    std::shared_ptr<PrimitiveSceneProxy> RuntimeGeneratedLineComponent::CreateSceneProxy() const
    {
       return std::make_shared<RuntimeGeneratedLineSceneProxy>(this);
-   }
-
-   void RuntimeGeneratedLineComponent::ProcessEvent(const typename Event::CameraTransformChangedEvent::EventData_t &data)
-   {
-      if (const auto &sceneSp = m_sceneWP.lock())
-      {
-         if (std::get<0>(data)->GetCameraName() == sceneSp->GetMainCamera()->GetCameraName())
-         {
-            mIsRenderDataDirty = true;
-         }
-      }
    }
 
    void RuntimeGeneratedLineComponent::UnpausableTick(const float deltaTime)
