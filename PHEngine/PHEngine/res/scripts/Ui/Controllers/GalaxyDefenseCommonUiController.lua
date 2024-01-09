@@ -26,8 +26,8 @@ setup()
 local EngineInputReceiver = require("Ui/Core/engineInputReceiver")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
 local EngineEventsHolder = require("Ui/Core/engineEventsHolder")
-local PauseOverlay = require("Ui/Overlays/PauseOverlay")
-local SettingsOverlay = require("Ui/Overlays/SettingsOverlay")
+local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
+local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 local PlayerHUDOverlay = require("Ui/Overlays/PlayerHUDOverlay")
 
 GlobalContext = {

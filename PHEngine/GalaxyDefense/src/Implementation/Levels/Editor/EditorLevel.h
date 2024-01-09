@@ -2,16 +2,17 @@
 
 #include "Implementation/Levels/LevelBase.h"
 #include "Implementation/LevelEditor/LevelEditorController.h"
+#include "Implementation/Levels/Editor/Controllers/LevelEditorUiController.h"
 
 using namespace EngineCore;
 
 namespace Game
 {
-   class CombatController;
-
    class EditorLevel : public LevelBase
    {
       using Base = LevelBase;
+
+      std::unique_ptr<LevelEditorUiController> mUiController;
 
       std::shared_ptr<LevelEditorController> mLevelEditorController;
 

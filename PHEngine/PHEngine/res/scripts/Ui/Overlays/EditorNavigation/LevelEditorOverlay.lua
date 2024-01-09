@@ -1,0 +1,127 @@
+--[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--
+local function setup()
+    local slash = package.config:sub(1, 1)
+    assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+    local pattern = ""
+    if slash == "/" then
+        pattern = "(.*/)"
+    elseif slash == "\\" then
+        pattern = "(.*\\)"
+    end
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match(pattern)
+    if pathToCurrentScript ~= nil then
+        local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+        unixLikePath = unixLikePath:gsub("//", "/")
+        local _, endindex = string.find(unixLikePath, "scripts/")
+        unixLikePath = string.sub(unixLikePath, 1, endindex)
+        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+    end
+end
+
+setup()
+--
+--[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
+local json = require("Ui/Core/3rdparty/json")
+local UiCanvas = require("Ui/Core/uiCanvas")
+local UiOverlay = require("Ui/Core/uiOverlay")
+local UiItem = require("Ui/Core/uiItem")
+local UiImage = require("Ui/Core/uiImage")
+
+local EditorContainerState = {
+    Expanded = 0,
+    Shrinked = 1
+}
+
+LevelEditorOverlay = {
+    editorContainerState = EditorContainerState.Expanded
+}
+
+local function getEditorContainerWidth(self, windowWidth)
+    assert(self ~= nil and type(self) == "table" and windowWidth ~= nil and type(windowWidth) == "number")
+    return self.editorContainerState == EditorContainerState.Expanded and windowWidth * 0.2 or windowWidth * 0.01;
+end
+
+function LevelEditorOverlay:new(host)
+    local windowWidth = _GetWindowWidth(host)
+    local windowHeight = _GetWindowHeight(host)
+
+    local canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    canvas:subscribeOnLuaProxyReady(function(host)
+        _InitializeCanvasInputSystem(host, canvas.luaProxyId)
+    end)
+    local overlay = UiOverlay:createBackgroundOverlay(host, "LevelEditorOverlay", canvas)
+
+    local editorContainer = UiRectangle:new(host)
+    overlay:addWidget(editorContainer)
+
+    local changeContainerStateButton = UiRectangle:new(host)
+    overlay:addWidget(changeContainerStateButton)
+
+    changeContainerStateButton:setOnMouseInputClickedCallback(function()
+        self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
+            EditorContainerState.Shrinked or EditorContainerState.Expanded
+        local newContainerWidth = getEditorContainerWidth(self, _GetWindowWidth(host))
+        editorContainer:setWidth(newContainerWidth)
+    end)
+
+    overlay.onWindowSizeChanged = function(width, height)
+        assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
+
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, canvas.widgetName, 0)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvas.widgetName, 0)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
+        editorContainer:setWidth(getEditorContainerWidth(self, width))
+
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            editorContainer.widgetName, 5)
+        changeContainerStateButton:setWidth(10)
+    end
+
+    overlay:subscribeOnAllWidgetLuaProxiesReady(function()
+        editorContainer:setParent(host, canvas.widgetName, canvas.widgetName)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, canvas.widgetName, 0)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvas.widgetName, 0)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
+        editorContainer:setWidth(getEditorContainerWidth(self, windowWidth))
+        editorContainer:setZOrder(1)
+        editorContainer:setColorHexValue(0xffffff)
+
+        changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+            UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+            editorContainer.widgetName, 0)
+        changeContainerStateButton:setWidth(20)
+        changeContainerStateButton:setHeight(10)
+        changeContainerStateButton:setZOrder(2)
+        changeContainerStateButton:setColorHexValue(0xff0000)
+        changeContainerStateButton:enableMouseInputReceiverBase(host)
+    end)
+
+    overlay.onGameEventTriggered = function(eventName, jsonArgs)
+    end
+
+    overlay.onEngineEventTriggered = function(eventName, jsonArgs)
+        if "WindowSizeChanged" == eventName and overlay.allWidgetLuaProxiesReady == true then
+            assert(jsonArgs ~= nil and type(jsonArgs) == "string")
+            local parsedJson = json.decode(jsonArgs)
+            local windowSize = {}
+            if parsedJson["width"] ~= nil then
+                windowSize.width = tonumber(parsedJson["width"])
+            end
+            if parsedJson["height"] ~= nil then
+                windowSize.height = tonumber(parsedJson["height"])
+            end
+            overlay.onWindowSizeChanged(windowSize.width, windowSize.height)
+        end
+    end
+
+    return overlay
+end
+
+return LevelEditorOverlay

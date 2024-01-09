@@ -1,4 +1,4 @@
-#include "UiController.h"
+#include "LevelEditorUiController.h"
 
 #include "Core/GameCore/Scene.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
@@ -17,42 +17,42 @@ using namespace Thread;
 
 namespace Game
 {
-    UiController::UiController(const std::weak_ptr<Scene> &scene)
+    LevelEditorUiController::LevelEditorUiController(const std::weak_ptr<Scene> &scene)
         : mSceneWp(scene),
           mOverlayManager(std::make_shared<OverlayManager>(mSceneWp)),
-          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("UiController Input Component")))
+          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorUiController Input Component")))
     {
     }
 
-    void UiController::UnpausableTick(const float deltaTime)
+    void LevelEditorUiController::UnpausableTick(const float deltaTime)
     {
         mOverlayManager->UnpausableTick(deltaTime);
     }
 
-    void UiController::Tick(const float deltaTime)
+    void LevelEditorUiController::Tick(const float deltaTime)
     {
         mOverlayManager->Tick(deltaTime);
     }
 
-    void UiController::OnPreLevelInit()
+    void LevelEditorUiController::OnPreLevelInit()
     {
     }
 
-    void UiController::OnLevelInit()
+    void LevelEditorUiController::OnLevelInit()
     {
     }
 
-    void UiController::OnPostLevelInit()
+    void LevelEditorUiController::OnPostLevelInit()
     {
     }
 
-    void UiController::PostPlayLevelFinished()
+    void LevelEditorUiController::PostPlayLevelFinished()
     {
         Initialize();
         mOverlayManager->Initialize();
     }
 
-    void UiController::CleanUp()
+    void LevelEditorUiController::CleanUp()
     {
         if (const auto &sceneSp = mSceneWp.lock())
         {
@@ -68,14 +68,14 @@ namespace Game
         mOverlayManager->CleanUp();
     }
 
-    void UiController::Initialize()
+    void LevelEditorUiController::Initialize()
     {
         if (const auto &sceneSp = mSceneWp.lock())
         {
             if (const auto &luaScriptProcessorSp = sceneSp->GetInterThreadCommunicationManager().GetLuaScriptProcessor().lock())
             {
-                static constexpr uint64_t functionId = Hash64_CT("UiController::Initialize");
-                const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/GalaxyDefenseCommonUiController.lua");
+                static constexpr uint64_t functionId = Hash64_CT("LevelEditorUiController::Initialize");
+                const auto& luaScriptExecutor = std::make_shared<LuaUiControllerExecutor>("Ui/Controllers/EditorUiController.lua");
                 mExecutorId = luaScriptExecutor->GetUId();
                 sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, 0, functionId, [luaScriptProcessorSp, luaScriptExecutor]()
                 {

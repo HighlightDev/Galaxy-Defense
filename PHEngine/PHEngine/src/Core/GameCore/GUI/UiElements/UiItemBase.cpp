@@ -450,6 +450,7 @@ namespace EngineCore
         {
             if (mAnchors.count(eUiAnchor::HORIZONTAL_CENTER))
             {
+                assert(mWidth != 0); // don't forget to set the width in addition to the horizontal center alignment settings
                 const auto &dstAnchor = mAnchors.at(eUiAnchor::HORIZONTAL_CENTER);
                 const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
                 assert(dstAnchoringUiItem);
@@ -531,6 +532,7 @@ namespace EngineCore
         {
             if (mAnchors.count(eUiAnchor::VERTICAL_CENTER))
             {
+                assert(mHeight != 0); // don't forget to set the height in addition to the horizontal center alignment settings
                 const auto &dstAnchor = mAnchors.at(eUiAnchor::VERTICAL_CENTER);
                 const auto &dstAnchoringUiItem = TryFindAncestryUiItem(dstAnchor.GetDstUiItemName());
                 assert(dstAnchoringUiItem);

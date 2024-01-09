@@ -31,13 +31,13 @@ local UiOverlay = require("Ui/Core/uiOverlay")
 local UiRectangle = require("Ui/Core/uiRectangle")
 local UiLabel = require("Ui/Core/uiLabel")
 
-MainMenuOverlay_1 = {
+MainMenuOverlay = {
     buttonColor = 0x403649,
     hoveredButtonColor = 0x201b24,
     buttonRadius = 6
 }
 
-function MainMenuOverlay_1:new(host)
+function MainMenuOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
@@ -51,7 +51,7 @@ function MainMenuOverlay_1:new(host)
             0.3, "Opacity",
             UiBaseWidget.EnginePropertyType.Float, 1.0, 0.0)
     end)
-    local mainMenuOverlay_1 = UiOverlay:createOverlay(host, "MainMenuOverlay_1", mainMenuOverlay_1Canvas)
+    local mainMenuOverlay_1 = UiOverlay:createOverlay(host, "MainMenuOverlay", mainMenuOverlay_1Canvas)
 
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 15.0;
@@ -71,9 +71,9 @@ function MainMenuOverlay_1:new(host)
     mainMenuOverlay_1:addWidget(newGameButton)
     newGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            newGameButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            newGameButton:setColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
-            newGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            newGameButton:setColorHexValue(MainMenuOverlay.buttonColor)
         end
     end)
     newGameButton:setOnMouseInputClickedCallback(function()
@@ -88,9 +88,9 @@ function MainMenuOverlay_1:new(host)
     mainMenuOverlay_1:addWidget(editorLvlButton)
     editorLvlButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            editorLvlButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            editorLvlButton:setColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
-            editorLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            editorLvlButton:setColorHexValue(MainMenuOverlay.buttonColor)
         end
     end)
 
@@ -105,9 +105,9 @@ function MainMenuOverlay_1:new(host)
     mainMenuOverlay_1:addWidget(settingsButton)
     settingsButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            settingsButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            settingsButton:setColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
-            settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            settingsButton:setColorHexValue(MainMenuOverlay.buttonColor)
         end
     end)
 
@@ -121,9 +121,9 @@ function MainMenuOverlay_1:new(host)
     end)
     exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then
-            exitGameButton:setColorHexValue(MainMenuOverlay_1.hoveredButtonColor)
+            exitGameButton:setColorHexValue(MainMenuOverlay.hoveredButtonColor)
         else
-            exitGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+            exitGameButton:setColorHexValue(MainMenuOverlay.buttonColor)
         end
     end)
 
@@ -144,7 +144,7 @@ function MainMenuOverlay_1:new(host)
             mainMenuOverlay_1Canvas.widgetName, menuVerticalMargin)
         backgroundRect:setColorHexValue(0x6C5B7B)
         backgroundRect:setZOrder(1)
-        backgroundRect:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        backgroundRect:setBorderRadius(MainMenuOverlay.buttonRadius)
 
         newGameButton:setParent(host, mainMenuOverlay_1Canvas.widgetName, backgroundRect.widgetName)
         newGameButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, backgroundRect.widgetName,
@@ -154,10 +154,10 @@ function MainMenuOverlay_1:new(host)
         newGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, backgroundRect.widgetName,
             buttonVerticalMarginHeight)
         newGameButton:setHeight(buttonHeight)
-        newGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        newGameButton:setColorHexValue(MainMenuOverlay.buttonColor)
         newGameButton:setZOrder(2)
         newGameButton:enableMouseInputReceiverBase(host)
-        newGameButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        newGameButton:setBorderRadius(MainMenuOverlay.buttonRadius)
 
         newGameButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, newGameButton.widgetName)
         newGameButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -183,10 +183,10 @@ function MainMenuOverlay_1:new(host)
         editorLvlButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM, newGameButton.widgetName,
             buttonVerticalMarginHeight)
         editorLvlButton:setHeight(buttonHeight)
-        editorLvlButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        editorLvlButton:setColorHexValue(MainMenuOverlay.buttonColor)
         editorLvlButton:setZOrder(2)
         editorLvlButton:enableMouseInputReceiverBase(host)
-        editorLvlButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        editorLvlButton:setBorderRadius(MainMenuOverlay.buttonRadius)
 
         editorLvlButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, editorLvlButton.widgetName)
         editorLvlButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -211,10 +211,10 @@ function MainMenuOverlay_1:new(host)
         settingsButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             editorLvlButton.widgetName, buttonVerticalMarginHeight)
         settingsButton:setHeight(buttonHeight)
-        settingsButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        settingsButton:setColorHexValue(MainMenuOverlay.buttonColor)
         settingsButton:setZOrder(2)
         settingsButton:enableMouseInputReceiverBase(host)
-        settingsButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        settingsButton:setBorderRadius(MainMenuOverlay.buttonRadius)
 
         settingsButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, settingsButton.widgetName)
         settingsButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -239,10 +239,10 @@ function MainMenuOverlay_1:new(host)
         exitGameButton:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.BOTTOM,
             settingsButton.widgetName, buttonVerticalMarginHeight)
         exitGameButton:setHeight(buttonHeight)
-        exitGameButton:setColorHexValue(MainMenuOverlay_1.buttonColor)
+        exitGameButton:setColorHexValue(MainMenuOverlay.buttonColor)
         exitGameButton:setZOrder(2)
         exitGameButton:enableMouseInputReceiverBase(host)
-        exitGameButton:setBorderRadius(MainMenuOverlay_1.buttonRadius)
+        exitGameButton:setBorderRadius(MainMenuOverlay.buttonRadius)
 
         exitGameMenuButtonLabel:setParent(host, mainMenuOverlay_1Canvas.widgetName, exitGameButton.widgetName)
         exitGameMenuButtonLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
@@ -266,4 +266,4 @@ function MainMenuOverlay_1:new(host)
     return mainMenuOverlay_1;
 end
 
-return MainMenuOverlay_1
+return MainMenuOverlay

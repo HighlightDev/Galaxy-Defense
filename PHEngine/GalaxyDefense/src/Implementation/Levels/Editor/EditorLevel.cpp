@@ -56,6 +56,9 @@ namespace Game
       Base::PreLevelInit();
       mLevelEditorController = std::make_shared<LevelEditorController>(sceneSp);
       mLevelEditorController->OnPreLevelInit();
+
+      mUiController = std::make_unique<LevelEditorUiController>(sceneSp);
+      mUiController->OnPreLevelInit();
    }
 
    void EditorLevel::CreateScene()
@@ -101,18 +104,22 @@ namespace Game
 
       mLevelEditorController->OnLevelInit();
       mLevelEditorController->SetLevelAreaBoundingBox(BoundingBox2D<glm::vec2>(glm::vec2(), glm::vec2(100.0f)));
+
+      mUiController->OnLevelInit();
    }
 
    void EditorLevel::PostLevelInit()
    {
       Base::PostLevelInit();
       mLevelEditorController->OnPostLevelInit();
+      mUiController->OnPostLevelInit();
    }
 
    void EditorLevel::PostPlayLevelFinished()
    {
       Base::PostPlayLevelFinished();
       mLevelEditorController->PostPlayLevelFinished();
+      mUiController->PostPlayLevelFinished();
    }
 
    void EditorLevel::InitLevel()
@@ -129,6 +136,12 @@ namespace Game
          mLevelEditorController->CleanUp();
          mLevelEditorController.reset();
       }
+
+      if (mUiController)
+      {
+         mUiController->CleanUp();
+         mUiController.reset();
+      }
    }
 
    void EditorLevel::Tick(const float deltaTime)
@@ -137,6 +150,11 @@ namespace Game
       {
          mLevelEditorController->Tick(deltaTime);
       }
+
+      if (mUiController)
+      {
+         mUiController->Tick(deltaTime);
+      }
    }
 
    void EditorLevel::UnpausableTick(const float deltaTime)
@@ -144,6 +162,11 @@ namespace Game
       if (mLevelEditorController)
       {
          mLevelEditorController->UnpausableTick(deltaTime);
+      }
+
+      if (mUiController)
+      {
+         mUiController->UnpausableTick(deltaTime);
       }
    }
 }

@@ -24,7 +24,7 @@ setup()
 --
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
-local MainMenuOverlay_1 = require("Ui/Overlays/MainMenuOverlay_1")
+local MainMenuOverlay = require("Ui/Overlays/MenuNavigation/MainMenuOverlay")
 
 GlobalContext = {
 }
@@ -36,18 +36,18 @@ local function createMainMenuOverlay(host, overlayNumber)
     assert(host ~= nil and type(host) == "userdata" and overlayNumber ~= nil and type(overlayNumber) == "number" and
         overlayNumber > 0 and overlayNumber <= 1)
     if overlayNumber == 1 then
-        return MainMenuOverlay_1:new(host)
+        return MainMenuOverlay:new(host)
     end
     return nil;
 end
 
 local function initialize(host)
-    UiOverlays["MainMenuOverlay_1"] = createMainMenuOverlay(host, 1)
+    UiOverlays["MainMenuOverlay"] = createMainMenuOverlay(host, 1)
 end
 
 function System_OnStart(host)
     initialize(host)
-    UiOverlayManager:openOverlay(host, "MainMenuOverlay_1")
+    UiOverlayManager:openOverlay(host, "MainMenuOverlay")
 end
 
 function System_OnUpdate(host, deltaTimeSec)
