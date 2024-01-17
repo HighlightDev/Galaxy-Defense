@@ -89,7 +89,6 @@ namespace Graphics
 
 			virtual ~VertexBufferObject()
 			{
-				LogInfo("VertexBufferObject::~dctor");
 			}
 
 			virtual void *GetData()

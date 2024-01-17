@@ -25,6 +25,8 @@ namespace EngineCore
             : UiItemBase(),
               mTextureSrc(""),
               mTexture(),
+              mColor(),
+              mIsCustomColor(false),
               mOpacity(1.0f),
               mRotationDegrees(0.0f),
               mIsFlipped(false)
@@ -117,6 +119,45 @@ namespace EngineCore
             return mTexture;
         }
 
+        void UiImage::SetTextureColor(const glm::vec3 &color)
+        {
+            if (!EngineMath::CheckSimilarityVec3(mColor, color))
+            {
+                mColor = color;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+            }
+        }
+
+        void UiImage::SetTextureColor(const uint8_t r, const uint8_t g, const uint8_t b)
+        {
+            static constexpr float INV_COLOR_MAX_BYTE_VALUE = 1.0f / 255.0f;
+            glm::vec3 color = glm::vec3(static_cast<float>(r) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(g) * INV_COLOR_MAX_BYTE_VALUE,
+                                        static_cast<float>(b) * INV_COLOR_MAX_BYTE_VALUE);
+            SetTextureColor(color);
+        }
+
+        glm::vec3 UiImage::GetTextureColor() const
+        {
+            return mColor;
+        }
+
+        void UiImage::SetIsCustomColorEnabled(const bool isCustomColorEnabled)
+        {
+            if (mIsCustomColor != isCustomColorEnabled)
+            {
+                mIsCustomColor = isCustomColorEnabled;
+                SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+            }
+        }
+
+        bool UiImage::IsCustomColorEnabled() const
+        {
+            return mIsCustomColor;
+        }
+
         void UiImage::SetOpacity(const float opacity)
         {
             if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
@@ -187,6 +228,45 @@ namespace EngineCore
                     SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 }
             }
+            if (jsonObj.contains("is_custom_color"))
+            {
+                const auto isCustomColor = jsonObj["is_custom_color"].get<bool>();
+                if (mIsCustomColor != isCustomColor)
+                {
+                    mIsCustomColor = isCustomColor;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("color"))
+            {
+                const auto colorProps = jsonObj["color"];
+                glm::vec3 color;
+                for (auto it = colorProps.cbegin(); it != colorProps.cend(); ++it)
+                {
+                    const auto key = it.key();
+                    if ("r" == key)
+                    {
+                        color.r = it->get<float>();
+                    }
+                    else if ("g" == key)
+                    {
+                        color.g = it->get<float>();
+                    }
+                    else if ("b" == key)
+                    {
+                        color.b = it->get<float>();
+                    }
+                    else
+                    {
+                        assert(false);
+                    }
+                }
+                if (!EngineMath::CheckSimilarityVec3(color, mColor))
+                {
+                    mColor = color;
+                    SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
             if (jsonObj.contains("opacity"))
             {
                 const auto opacity = jsonObj["opacity"].get<float>();
@@ -227,13 +307,15 @@ namespace EngineCore
                     {
                         if (const auto &sceneRenderer = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
                         {
-                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canasUId = canvasSp->GetUId(), textureSp = mTexture, opacity = mOpacity, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
+                            sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [sceneRenderer, myUId = GetUId(), canasUId = canvasSp->GetUId(), textureSp = mTexture, textureColor = mColor, isCustomColor = mIsCustomColor, opacity = mOpacity, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
                                                                                                 {
                                 const auto &uiSceneProxy = sceneRenderer->GetUiSceneProxyByProxyId(myUId, canasUId);
                                 if (uiSceneProxy)
                                 {
                                     const auto& imageSceneProxy = std::static_pointer_cast<UiImageSceneProxy>(uiSceneProxy);
                                     imageSceneProxy->SetTexture(textureSp);
+                                    imageSceneProxy->SetColor(textureColor);
+                                    imageSceneProxy->SetUseCustomColor(isCustomColor);
                                     imageSceneProxy->SetOpacity(opacity);
                                     imageSceneProxy->SetRotationDegrees(rotationDegrees);
                                     imageSceneProxy->SetIsFlipped(isFlipped); 
@@ -258,11 +340,13 @@ namespace EngineCore
                     if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, textureSrc = mTextureSrc, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), textureColor = mColor, isCustomColor = mIsCustomColor, opacity = mOpacity, textureSrc = mTextureSrc, rotationDegrees = mRotationDegrees, isFlipped = mIsFlipped]()
                                                                                          {
                         if (const auto &imageLuaProxy = std::static_pointer_cast<UiImageLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                         {
                             imageLuaProxy->SetOpacity_FromGameThread(opacity);
+                            imageLuaProxy->SetColor_FromGameThread(textureColor);
+                            imageLuaProxy->SetUseCustomColor_FromGameThread(isCustomColor);
                             imageLuaProxy->SetTextureSource_FromGameThread(textureSrc);
                             imageLuaProxy->SetRotationDegrees_FromGameThread(rotationDegrees);
                             imageLuaProxy->SetIsFlipped_FromGameThread(isFlipped); 

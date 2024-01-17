@@ -20,11 +20,23 @@ namespace EngineCore
          u_scale = GetUniform("scale", shaderProgramId);
          u_rotationRadians = GetUniform("rotationRadians", shaderProgramId);
          u_isFlipped = GetUniform("isFlipped", shaderProgramId);
+         u_isCustomColor = GetUniform("isCustomColor", shaderProgramId);
+         u_color = GetUniform("color", shaderProgramId);
       }
 
       void UiImageShader::SetImageTexture(const int32_t texSlot)
       {
          u_image.LoadUniform(texSlot);
+      }
+
+      void UiImageShader::SetIsCustomColorEnabled(const bool isCustomColorEnabled)
+      {
+         u_isCustomColor.LoadUniform(isCustomColorEnabled ? 1.0f : 0.0f);
+      }
+
+      void UiImageShader::SetCustomColor(const glm::vec3 &color)
+      {
+         u_color.LoadUniform(color);
       }
 
       void UiImageShader::SetOpacity(const float opacity)

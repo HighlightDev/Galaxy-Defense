@@ -21,6 +21,8 @@ namespace EngineCore
          Uniform u_scale;
          Uniform u_rotationRadians;
          Uniform u_isFlipped;
+         Uniform u_isCustomColor;
+         Uniform u_color;
          Uniform u_opacity;
 
       public:
@@ -32,6 +34,10 @@ namespace EngineCore
          void SetTransform(const glm::vec2& normalizedTranslation, const glm::vec2& normalizedScale);
 
          void SetRotationRadians(const float rotationRadians);
+
+         void SetIsCustomColorEnabled(const bool isCustomColorEnabled);
+
+         void SetCustomColor(const glm::vec3& color);
 
          void SetOpacity(const float opacity);
 

@@ -3,6 +3,8 @@
 #include "UiItemBase.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 
+#include <glm/vec3.hpp>
+
 namespace Graphics
 {
     namespace Proxy
@@ -33,6 +35,10 @@ namespace EngineCore
 
             std::shared_ptr<ITexture> mTexture;
 
+            glm::vec3 mColor;
+
+            bool mIsCustomColor;
+
             float mOpacity;
 
             float mRotationDegrees;
@@ -51,6 +57,16 @@ namespace EngineCore
             std::string GetTextureSrc() const;
 
             std::shared_ptr<ITexture> GetTexture() const;
+
+            void SetTextureColor(const glm::vec3 &color);
+
+            void SetTextureColor(const uint8_t r, const uint8_t g, const uint8_t b);
+
+            glm::vec3 GetTextureColor() const;
+
+            void SetIsCustomColorEnabled(const bool isCustomColorEnabled);
+
+            bool IsCustomColorEnabled() const;
 
             void SetOpacity(const float opacity);
 

@@ -15,6 +15,8 @@ namespace EngineCore
         UiImageLuaProxy::UiImageLuaProxy(const std::shared_ptr<::EngineCore::GUI::UiImage> &ownerImage)
             : UiItemBaseLuaProxy(ownerImage),
               mTextureSrc(ownerImage->GetTextureSrc()),
+              mColor(ownerImage->GetTextureColor()),
+              mIsCustomColor(ownerImage->IsCustomColorEnabled()),
               mOpacity(ownerImage->GetOpacity()),
               mRotationDegrees(ownerImage->GetRotationDegrees()),
               mIsFlipped(ownerImage->GetIsFlipped())
@@ -42,6 +44,9 @@ namespace EngineCore
         {
             const auto &baseJsonStr = UiItemBaseLuaProxy::GetGameThreadData();
             auto jsonObj = nlohmann::json::parse(baseJsonStr);
+            std::vector<float> colorVec = {mColor.r, mColor.g, mColor.b};
+            jsonObj["color"] = colorVec;
+            jsonObj["is_custom_color"] = mIsCustomColor;
             jsonObj["texture_source"] = mTextureSrc;
             jsonObj["opacity"] = mOpacity;
             jsonObj["rotation_degrees"] = mRotationDegrees;
@@ -81,6 +86,24 @@ namespace EngineCore
             if (!EngineMath::FloatsNearEqual(mOpacity, opacity))
             {
                 mOpacity = opacity;
+                mIsLuaDataDirty = true;
+            }
+        }
+
+        void UiImageLuaProxy::SetColor_FromGameThread(const glm::vec3 &color)
+        {
+            if (!EngineMath::CheckSimilarityVec3(mColor, color))
+            {
+                mColor = color;
+                mIsLuaDataDirty = true;
+            }
+        }
+
+        void UiImageLuaProxy::SetUseCustomColor_FromGameThread(const bool enableCustomColor)
+        {
+            if (mIsCustomColor != enableCustomColor)
+            {
+                mIsCustomColor = enableCustomColor;
                 mIsLuaDataDirty = true;
             }
         }

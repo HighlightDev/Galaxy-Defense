@@ -33,26 +33,27 @@ WeaponTile = {
     missilesCountLabelColor = 0xFFFFFF,
 }
 
-function WeaponTile:new(host, parentOverlay)
-    assert(host ~= nil and type(host) == "userdata" and parentOverlay ~= nil and type(parentOverlay) == "table")
+function WeaponTile:new(host, overlay)
+    assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
 
     local newObj = {
-        overlay = parentOverlay,
+        host = host,
+        overlayCanvasName = "",
+        parentName = "",
         weaponLabel = nil,
         weaponBackgroundTile = nil,
         weaponImage = nil,
         tileWidth = 0,
-        tileHeight = 0,
-        widgetsInitialized = false
+        tileHeight = 0
     }
 
     newObj.weaponBackgroundTile = UiRectangle:new(host)
     newObj.weaponLabel = UiLabel:new(host, "nimbus_mono")
     newObj.weaponImage = UiImage:new(host)
 
-    parentOverlay:addWidget(newObj.weaponBackgroundTile)
-    parentOverlay:addWidget(newObj.weaponLabel)
-    parentOverlay:addWidget(newObj.weaponImage)
+    overlay:addWidget(newObj.weaponBackgroundTile)
+    overlay:addWidget(newObj.weaponLabel)
+    overlay:addWidget(newObj.weaponImage)
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -77,6 +78,7 @@ function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
     self.weaponBackgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+    self:resizeWidgets()
 end
 
 function WeaponTile:getAnchorWidgetName()
@@ -85,7 +87,7 @@ end
 
 function WeaponTile:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                  animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.widgetsInitialized == true)
+    assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
         type(animationFunctionType) == "number" and animationDuration ~= nil and
         type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and
@@ -118,68 +120,66 @@ function WeaponTile:setLabelText(labelText)
 end
 
 function WeaponTile:resizeWidgets()
-    if self.widgetsInitialized then
-        local weaponRootContainerHeight = self.tileWidth + 10
-        local weaponInterval = self.tileWidth / 12.0
-        local weaponTopBottomMargin = (weaponRootContainerHeight - self.tileWidth) * 0.5
-        local weaponImageSize = self.tileWidth * 0.75
+    local weaponRootContainerHeight = self.tileWidth + 10
+    local weaponInterval = self.tileWidth / 12.0
+    local weaponTopBottomMargin = (weaponRootContainerHeight - self.tileWidth) * 0.5
+    local weaponImageSize = self.tileWidth * 0.75
 
-        self.weaponBackgroundTile:setHeight(self.tileHeight);
-        self.weaponBackgroundTile:setWidth(self.tileWidth);
-        self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, weaponInterval);
-        self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM, weaponTopBottomMargin);
-        self.weaponImage:setHeight(weaponImageSize);
-        self.weaponImage:setWidth(weaponImageSize);
-        self.weaponLabel:setHeight(weaponImageSize / 15)
-    end
+    self.weaponBackgroundTile:setHeight(self.tileHeight);
+    self.weaponBackgroundTile:setWidth(self.tileWidth);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.LEFT, weaponInterval);
+    self.weaponBackgroundTile:setAnchorMargin(UiItemBase.UiAnchorType.BOTTOM, weaponTopBottomMargin);
+    self.weaponImage:setHeight(weaponImageSize);
+    self.weaponImage:setWidth(weaponImageSize);
+    self.weaponLabel:setHeight(weaponImageSize / 15)
 end
 
-function WeaponTile:tryToInitializeWidgets(host, parent)
-    assert(host ~= nil and type(host) == "userdata" and parent ~= nil and type(parent) == "table")
-    if not self.widgetsInitialized and
-        self.weaponBackgroundTile.luaProxyReady and
-        self.weaponLabel.luaProxyReady and
-        self.weaponImage.luaProxyReady then
-        self.widgetsInitialized = true
+function WeaponTile:setParent(host, overlayCanvasName, parentName)
+    assert(
+        host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
+        type(parentName) == "string" and parentName ~= "", debug.traceback())
 
-        local weaponImageSize = self.tileWidth * 0.75
+    self.overlayCanvasName = overlayCanvasName
+    self.parentName = parentName
+end
 
-        self.weaponBackgroundTile:setParent(host, self.overlay.overlayCanvas.widgetName, parent
-            .widgetName)
-        self.weaponBackgroundTile:setZOrder(3);
-        self.weaponBackgroundTile:setHeight(self.tileHeight);
-        self.weaponBackgroundTile:setWidth(self.tileWidth);
+function WeaponTile:onCompoundWidgetInitialize()
+    local weaponImageSize = self.tileWidth * 0.75
 
-        self.weaponBackgroundTile:setColorHexValue(WeaponTile.weaponBackgroundTileColor)
-        self.weaponBackgroundTile:setBorderRadius(8)
+    self.weaponBackgroundTile:setParent(self.host, self.overlayCanvasName, self.parentName)
+    self.weaponBackgroundTile:setZOrder(3);
+    self.weaponBackgroundTile:setHeight(self.tileHeight);
+    self.weaponBackgroundTile:setWidth(self.tileWidth);
 
-        self.weaponImage:setParent(host, self.overlay.overlayCanvas.widgetName,
-            self.weaponBackgroundTile.widgetName)
-        self.weaponImage:setTextureSource("weapon_missile.png");
-        self.weaponImage:setZOrder(4);
-        self.weaponImage:setRotationDegrees(180)
-        self.weaponImage:setHeight(weaponImageSize);
-        self.weaponImage:setWidth(weaponImageSize);
-        self.weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            self.weaponBackgroundTile.widgetName);
-        self.weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            self.weaponBackgroundTile.widgetName);
+    self.weaponBackgroundTile:setColorHexValue(WeaponTile.weaponBackgroundTileColor)
+    self.weaponBackgroundTile:setBorderRadius(8)
 
-        self.weaponLabel:setParent(host, self.overlay.overlayCanvas.widgetName,
-            self.weaponBackgroundTile.widgetName)
-        self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            self.weaponBackgroundTile.widgetName, 6)
-        self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
-            self.weaponBackgroundTile.widgetName, 0)
-        self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
-            self.weaponBackgroundTile.widgetName, 6)
-        self.weaponLabel:setVerticalCenterOffset(-8)
-        self.weaponLabel:setHeight(weaponImageSize / 15)
-        self.weaponLabel:setTextColorHexValue(WeaponTile.missilesCountLabelColor)
-        self.weaponLabel:setFontSize(10.0)
-        self.weaponLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
-        self.weaponLabel:setZOrder(4)
-    end
+    self.weaponImage:setParent(self.host, self.overlayCanvasName,
+        self.weaponBackgroundTile.widgetName)
+    self.weaponImage:setTextureSource("weapon_missile.png");
+    self.weaponImage:setZOrder(4);
+    self.weaponImage:setRotationDegrees(180)
+    self.weaponImage:setHeight(weaponImageSize);
+    self.weaponImage:setWidth(weaponImageSize);
+    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+        self.weaponBackgroundTile.widgetName);
+    self.weaponImage:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        self.weaponBackgroundTile.widgetName);
+
+    self.weaponLabel:setParent(self.host, self.overlayCanvasName,
+        self.weaponBackgroundTile.widgetName)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+        self.weaponBackgroundTile.widgetName, 6)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+        self.weaponBackgroundTile.widgetName, 0)
+    self.weaponLabel:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
+        self.weaponBackgroundTile.widgetName, 6)
+    self.weaponLabel:setVerticalCenterOffset(-8)
+    self.weaponLabel:setHeight(weaponImageSize / 15)
+    self.weaponLabel:setTextColorHexValue(WeaponTile.missilesCountLabelColor)
+    self.weaponLabel:setFontSize(10.0)
+    self.weaponLabel:setTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.LEFT)
+    self.weaponLabel:setZOrder(4)
 end
 
 return WeaponTile

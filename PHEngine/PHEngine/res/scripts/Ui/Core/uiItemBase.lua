@@ -237,11 +237,19 @@ function UiItemBase:setIsVisible(isVisible)
     end
 end
 
+function UiItemBase:getIsVisible()
+    return self.properties.visible.value
+end
+
 function UiItemBase:setZOrder(z_order)
     if self.properties.z_order.value ~= z_order then
         self.properties.z_order.value = z_order
         self.properties.z_order.dirty = true
     end
+end
+
+function UiItemBase:getZOrder()
+    return self.properties.z_order.value
 end
 
 function UiItemBase:setWidth(width)
@@ -251,11 +259,19 @@ function UiItemBase:setWidth(width)
     end
 end
 
+function UiItemBase:getWidth()
+    return self.properties.width.value
+end
+
 function UiItemBase:setHeight(height)
     if self.properties.height.value ~= height then
         self.properties.height.value = height
         self.properties.height.dirty = true
     end
+end
+
+function UiItemBase:getHeight()
+    return self.properties.height.value
 end
 
 function UiItemBase:setVerticalCenterOffset(verticalCenterOffset)
@@ -265,11 +281,19 @@ function UiItemBase:setVerticalCenterOffset(verticalCenterOffset)
     end
 end
 
+function UiItemBase:getVerticalCenterOffset()
+    return self.properties.verticalCenterOffset.value
+end
+
 function UiItemBase:setHorizontalCenterOffset(horizontalCenterOffset)
     if self.properties.horizontalCenterOffset.value ~= horizontalCenterOffset then
         self.properties.horizontalCenterOffset.value = horizontalCenterOffset
         self.properties.horizontalCenterOffset.dirty = true
     end
+end
+
+function UiItemBase:getHorizontalCenterOffset()
+    return self.properties.horizontalCenterOffset.value
 end
 
 function UiItemBase:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
@@ -289,7 +313,7 @@ function UiItemBase:setAnchorMargin(srcAnchor, anchorMargin)
 end
 
 function UiItemBase:enableMouseInputReceiverBase(host)
-    assert(host ~= nil and type(host) == "userdata")
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
     _EnableMouseInputReceiverBase(host, self.luaProxyId)
 end
 
@@ -331,7 +355,7 @@ end
 
 function UiItemBase:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
-    assert(animationName ~= nil and type(animationName) == "string")
+    assert(animationName ~= nil and type(animationName) == "string" and self.luaProxyReady == true)
 
     _StartUiItemAnimation(host, self.luaProxyId, animationName)
 end

@@ -40,6 +40,7 @@ namespace IO
 		CreateFilePathMap(GetMaskTexturePath(), GetShortMaskTexturePath());
 		CreateFilePathMap(GetUiTexturePath(), GetShortUiTexturePath());
 		CreateFilePathMap(GetLandscapeTexturePath(), GetShortLandscapeTexturePath());
+		CreateFilePathMap(GetEditorTexturePath(), GetShortEditorTexturePath());
 	}
 
 	void FolderManager::CreateFilePathMap(const std::string &absolutePathToDirectory, const std::string &relativePathToDirectory)

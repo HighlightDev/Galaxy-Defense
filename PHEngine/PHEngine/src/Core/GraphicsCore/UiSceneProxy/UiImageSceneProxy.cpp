@@ -31,24 +31,37 @@ namespace Graphics
 
         void UiImageSceneProxy::Render()
         {
-            mUiImageShader->ExecuteShader();
-            const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
-            mUiImageShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
             if (mTexture)
             {
+                mUiImageShader->ExecuteShader();
+                const glm::vec2 scaleOffset = glm::vec2((mNormalizedScale - (mNormalizedScale * mScale)) * 0.5f);
+                mUiImageShader->SetTransform(mNormalizedTranslation + mCenterOffset + scaleOffset, mNormalizedScale * glm::vec2(mScale));
+
                 mTexture->BindTexture(0);
                 mUiImageShader->SetImageTexture(0);
+                mUiImageShader->SetIsCustomColorEnabled(mIsCustomColor);
+                mUiImageShader->SetCustomColor(mColor);
+                mUiImageShader->SetOpacity(mOpacity * mOverlayOpacity);
+                mUiImageShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
+                mUiImageShader->SetIsFlipped(mIsFlipped);
+                ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
+                mUiImageShader->StopShader();
             }
-            mUiImageShader->SetOpacity(mOpacity * mOverlayOpacity);
-            mUiImageShader->SetRotationRadians(glm::radians<float>(mRotationDegrees));
-            mUiImageShader->SetIsFlipped(mIsFlipped);
-            ScreenQuad::GetInstance()->GetBuffer()->RenderVAO(GL_TRIANGLES);
-            mUiImageShader->StopShader();
         }
 
         void UiImageSceneProxy::SetTexture(const std::shared_ptr<ITexture> &texture)
         {
             mTexture = texture;
+        }
+
+        void UiImageSceneProxy::SetUseCustomColor(const bool isCustomColorEnabled)
+        {
+            mIsCustomColor = isCustomColorEnabled;
+        }
+
+        void UiImageSceneProxy::SetColor(const glm::vec3 &color)
+        {
+            mColor = color;
         }
 
         void UiImageSceneProxy::SetOpacity(const float opacity)

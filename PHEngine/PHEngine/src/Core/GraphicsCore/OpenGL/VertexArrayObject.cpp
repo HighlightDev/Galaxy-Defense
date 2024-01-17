@@ -16,7 +16,6 @@ namespace Graphics
 
 		VertexArrayObject::~VertexArrayObject()
 		{
-			LogInfo( "VertexArrayObject::~dctor");
 		}
 
 		uint32_t VertexArrayObject::GetDescriptor() const

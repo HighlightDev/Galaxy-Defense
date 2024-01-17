@@ -145,9 +145,13 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addWidget(weaponRootContainer)
 
     local weaponTile1 = WeaponTile:new(host, playerHUDOverlay)
+    playerHUDOverlay:addCompoundWidget(weaponTile1)
     local weaponTile2 = WeaponTile:new(host, playerHUDOverlay)
+    playerHUDOverlay:addCompoundWidget(weaponTile2)
     local weaponTile3 = WeaponTile:new(host, playerHUDOverlay)
+    playerHUDOverlay:addCompoundWidget(weaponTile3)
     local weaponTile4 = WeaponTile:new(host, playerHUDOverlay)
+    playerHUDOverlay:addCompoundWidget(weaponTile4)
 
     local lifeImage1 = UiImage:new(host)
     playerHUDOverlay:addWidget(lifeImage1)
@@ -210,7 +214,7 @@ function PlayerHUDOverlay:new(host)
 
     playerHUDOverlay.onCurrentMissileChanged = function()
         local currentMissileType = getSelectedMissileType(host)
-        if PlayerHUDOverlay.prevSelectedMissileType ~= currentMissileType then
+        if false and PlayerHUDOverlay.prevSelectedMissileType ~= currentMissileType then
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusOut")
             PlayerHUDOverlay.prevSelectedMissileType = currentMissileType
             startAnimationForMissileWidget(host, PlayerHUDOverlay.prevSelectedMissileType, "FocusIn")
@@ -318,13 +322,13 @@ function PlayerHUDOverlay:new(host)
         weaponRootContainer:setWidth(weaponRootContainerWidth)
         weaponRootContainer:setHeight(lifeRootContainerHeight)
 
+        weaponTile1:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile1:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, weaponRootContainer.widgetName,
             weaponInterval);
         weaponTile1:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin);
         weaponTile1:setWidth(weaponWidth)
         weaponTile1:setHeight(weaponWidth)
-        weaponTile1:tryToInitializeWidgets(host, weaponRootContainer)
         weaponTile1:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -334,13 +338,13 @@ function PlayerHUDOverlay:new(host)
         weaponTile1:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
+        weaponTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
             weaponTile1:getAnchorWidgetName(), weaponInterval);
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile2:setHeight(weaponWidth);
         weaponTile2:setWidth(weaponWidth);
-        weaponTile2:tryToInitializeWidgets(host, weaponRootContainer)
         weaponTile2:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -350,13 +354,13 @@ function PlayerHUDOverlay:new(host)
         weaponTile2:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
-        weaponTile3:setHeight(weaponWidth);
-        weaponTile3:setWidth(weaponWidth);
+        weaponTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
             weaponTile2:getAnchorWidgetName(), weaponInterval);
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponTile3:tryToInitializeWidgets(host, weaponRootContainer)
+        weaponTile3:setHeight(weaponWidth);
+        weaponTile3:setWidth(weaponWidth);
         weaponTile3:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
@@ -366,13 +370,13 @@ function PlayerHUDOverlay:new(host)
         weaponTile3:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "VerticalCenterOffset", UiBaseWidget.EnginePropertyType.Integer, 40, 0)
 
-        weaponTile4:setHeight(weaponWidth);
-        weaponTile4:setWidth(weaponWidth);
+        weaponTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
             weaponTile3:getAnchorWidgetName(), weaponInterval);
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
-        weaponTile4:tryToInitializeWidgets(host, weaponRootContainer)
+        weaponTile4:setHeight(weaponWidth);
+        weaponTile4:setWidth(weaponWidth);
         weaponTile4:addAnimation(host, "FocusIn", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,
             "Scale", UiBaseWidget.EnginePropertyType.Float, 1.0, 1.25)
         weaponTile4:addAnimation(host, "FocusOut", UiBaseWidget.AnimationInterpolationFunctionType.LINEAR, 0.2,

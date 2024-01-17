@@ -28,6 +28,7 @@ local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
 local UiItem = require("Ui/Core/uiItem")
 local UiImage = require("Ui/Core/uiImage")
+local ImageButton = require("Ui/Widgets/ImageButton")
 
 local EditorContainerState = {
     Expanded = 0,
@@ -40,7 +41,7 @@ LevelEditorOverlay = {
 
 local function getEditorContainerWidth(self, windowWidth)
     assert(self ~= nil and type(self) == "table" and windowWidth ~= nil and type(windowWidth) == "number")
-    return self.editorContainerState == EditorContainerState.Expanded and windowWidth * 0.2 or windowWidth * 0.01;
+    return self.editorContainerState == EditorContainerState.Expanded and windowWidth * 0.3 or windowWidth * 0.05;
 end
 
 function LevelEditorOverlay:new(host)
@@ -56,14 +57,19 @@ function LevelEditorOverlay:new(host)
     local editorContainer = UiRectangle:new(host)
     overlay:addWidget(editorContainer)
 
-    local changeContainerStateButton = UiRectangle:new(host)
-    overlay:addWidget(changeContainerStateButton)
+    local changeContainerStateButton = ImageButton:new(host, overlay)
+    overlay:addCompoundWidget(changeContainerStateButton)
 
     changeContainerStateButton:setOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
             EditorContainerState.Shrinked or EditorContainerState.Expanded
         local newContainerWidth = getEditorContainerWidth(self, _GetWindowWidth(host))
         editorContainer:setWidth(newContainerWidth)
+
+        changeContainerStateButton:setWidth(newContainerWidth * 0.25)
+        changeContainerStateButton:setHeight(newContainerWidth * 0.15)
+        changeContainerStateButton:setImageRotationDegrees(math.fmod(
+            changeContainerStateButton:getImageRotationDegrees() + 180.0, 360.0))
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
@@ -78,7 +84,8 @@ function LevelEditorOverlay:new(host)
             UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
             editorContainer.widgetName, 5)
-        changeContainerStateButton:setWidth(10)
+        changeContainerStateButton:setWidth(editorContainer:getWidth() * 0.25)
+        changeContainerStateButton:setHeight(editorContainer:getWidth() * 0.15)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -93,14 +100,17 @@ function LevelEditorOverlay:new(host)
         changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
             UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
-        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-            editorContainer.widgetName, 0)
-        changeContainerStateButton:setWidth(20)
-        changeContainerStateButton:setHeight(10)
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
+            editorContainer.widgetName, 5)
+        changeContainerStateButton:setWidth(editorContainer:getWidth() * 0.25)
+        changeContainerStateButton:setHeight(editorContainer:getWidth() * 0.15)
+        changeContainerStateButton:setImageTextureSource("arrow_left.png")
+        changeContainerStateButton:setImageRotationDegrees(180.0)
+        changeContainerStateButton:setButtonBorderRadius(8)
+        changeContainerStateButton:setButtonColorHexValue(0xdb9427)
+        changeContainerStateButton:setUseImageCustomColor(true)
+        changeContainerStateButton:setImageColorHexValue(0x000000)
         changeContainerStateButton:setZOrder(2)
-        changeContainerStateButton:setColorHexValue(0xff0000)
-        changeContainerStateButton:enableMouseInputReceiverBase(host)
     end)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)
