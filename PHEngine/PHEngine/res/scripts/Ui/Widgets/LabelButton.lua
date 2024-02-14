@@ -1,4 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--[[ BEGIN *** this snippet has to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
     local slash = package.config:sub(1, 1)
@@ -25,12 +25,12 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local UiRectangle = require("Ui/Core/uiRectangle")
-local UiImage = require("Ui/Core/uiImage")
+local UiLabel = require("Ui/Core/uiLabel")
 
-ImageButton = {
+LabelButton = {
 }
 
-function ImageButton:new(host, overlay)
+function LabelButton:new(host, overlay, labelFontName)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
 
     local newObj = {
@@ -38,7 +38,7 @@ function ImageButton:new(host, overlay)
         overlayCanvasName = "",
         parentName = "",
         buttonContainer = nil,
-        image = nil,
+        label = nil,
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
@@ -46,16 +46,16 @@ function ImageButton:new(host, overlay)
     }
 
     newObj.buttonContainer = UiRectangle:new(host)
-    newObj.image = UiImage:new(host)
+    newObj.label = UiLabel:new(host, labelFontName)
 
     overlay:addWidget(newObj.buttonContainer)
-    overlay:addWidget(newObj.image)
+    overlay:addWidget(newObj.label)
 
     self.__index = self
     return setmetatable(newObj, self)
 end
 
-function ImageButton:setParent(host, overlayCanvasName, parentName)
+function LabelButton:setParent(host, overlayCanvasName, parentName)
     assert(
         host ~= nil and type(host) == "userdata" and type(overlayCanvasName) == "string" and overlayCanvasName ~= "" and
         type(parentName) == "string" and parentName ~= "", debug.traceback())
@@ -64,12 +64,14 @@ function ImageButton:setParent(host, overlayCanvasName, parentName)
     self.parentName = parentName
 end
 
-function ImageButton:onPreCompoundWidgetInitialize()
+function LabelButton:onPreCompoundWidgetInitialize()
     self.widgetName = self.buttonContainer.widgetName
 end
 
-function ImageButton:onCompoundWidgetInitialize()
-    local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
+function LabelButton:onCompoundWidgetInitialize()
+    local labelHeight = self.buttonHeight * 0.75
+    local labelTopMargin = self.buttonHeight * 0.15
+    local labelSideMargin = self.buttonWidth * 0.1
 
     self.buttonContainer:setParent(self.host, self.overlayCanvasName, self.parentName)
     self.buttonContainer:setZOrder(3);
@@ -78,31 +80,40 @@ function ImageButton:onCompoundWidgetInitialize()
     self.buttonContainer:setColorHexValue(self.containerColor)
     self.buttonContainer:enableMouseInputReceiverBase(self.host)
 
-    self.image:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
-    self.image:setZOrder(4);
-    self.image:setHeight(imageSize);
-    self.image:setWidth(imageSize);
-    self.image:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER, UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
-        self.buttonContainer.widgetName);
-    self.image:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER, UiItemBase.UiAnchorType.VERTICAL_CENTER,
-        self.buttonContainer.widgetName);
+    self.label:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.label:setZOrder(4);
+    self.label:setHeight(labelHeight);
+    self.label:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, self.buttonContainer.widgetName,
+        labelSideMargin)
+    self.label:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, self.buttonContainer.widgetName,
+        labelSideMargin)
+    self.label:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, self.buttonContainer.widgetName,
+        labelTopMargin)
 end
 
-function ImageButton:setWidth(width)
+function LabelButton:setLabelTextHorizontalAlignment(textHorizontalAlignment)
+    assert(textHorizontalAlignment ~= nil and type(textHorizontalAlignment) == "number" and
+        textHorizontalAlignment >= UiLabel.TextHorizontalAlignmentType.LEFT and
+        textHorizontalAlignment <= UiLabel.TextHorizontalAlignmentType.RIGHT)
+
+    self.label:setTextHorizontalAlignment(textHorizontalAlignment)
+end
+
+function LabelButton:setWidth(width)
     assert(width ~= nil and type(width) == "number")
 
     self.buttonWidth = width;
     self:resizeWidgets()
 end
 
-function ImageButton:setHeight(height)
+function LabelButton:setHeight(height)
     assert(height ~= nil and type(height) == "number")
 
     self.buttonHeight = height;
     self:resizeWidgets()
 end
 
-function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
+function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     assert(srcAnchor ~= nil and dstAnchor ~= nil and dstUiItemWidgetName ~= nil and
         srcAnchor > UiItemBase.UiAnchorType.NONE and srcAnchor <= UiItemBase.UiAnchorType.HORIZONTAL_CENTER)
 
@@ -110,12 +121,12 @@ function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     self:resizeWidgets()
 end
 
-function ImageButton:setOnMouseInputClickedCallback(callback)
+function LabelButton:setOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
     self.buttonContainer:setOnMouseInputClickedCallback(callback)
 end
 
-function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
+function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                   animatedPropertyType, propertySrcValue, propertyDstValue)
     assert(host ~= nil and type(host) == "userdata" and self.widgetsInitialized == true)
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
@@ -127,76 +138,65 @@ function ImageButton:addAnimation(host, animationName, animationFunctionType, an
     self.buttonContainer:addAnimation(host, animationName, animationFunctionType, animationDuration,
         animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
-    self.image:addAnimation(host, animationName, animationFunctionType, animationDuration,
+    self.label:addAnimation(host, animationName, animationFunctionType, animationDuration,
         animatedPropertyName,
         animatedPropertyType, propertySrcValue, propertyDstValue)
 end
 
-function ImageButton:startAnimation(host, animationName)
+function LabelButton:startAnimation(host, animationName)
     assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string")
 
     self.buttonContainer:startAnimation(host, animationName)
-    self.image:startAnimation(host, animationName)
+    self.label:startAnimation(host, animationName)
 end
 
-function ImageButton:setImageTextureSource(textureSource)
-    assert(textureSource ~= nil and type(textureSource) == "string")
-    self.image:setTextureSource(textureSource)
+function LabelButton:setLabelText(labelText)
+    assert(labelText ~= nil and type(labelText) == "string")
+    self.label:setText(labelText)
 end
 
-function ImageButton:setButtonBorderRadius(radius)
+function LabelButton:setButtonBorderRadius(radius)
     assert(radius ~= nil and type(radius) == "number")
     self.buttonContainer:setBorderRadius(radius)
 end
 
-function ImageButton:setImageRotationDegrees(angleDegrees)
-    assert(angleDegrees ~= nil and type(angleDegrees) == "number")
-    self.image:setRotationDegrees(angleDegrees)
+function LabelButton:setLabelOpacity(opacity)
+    assert(opacity ~= nil and type(opacity) == "number")
+    self.label:setOpacity(opacity)
 end
 
-function ImageButton:getImageRotationDegrees()
-    return self.image:getRotationDegrees()
-end
-
-function ImageButton:resizeWidgets()
-    local imageSize = math.min(self.buttonWidth * 0.75, self.buttonHeight)
+function LabelButton:resizeWidgets()
+    local labelHeight = self.buttonHeight * 0.75
 
     self.buttonContainer:setHeight(self.buttonHeight);
     self.buttonContainer:setWidth(self.buttonWidth);
-    self.image:setHeight(imageSize);
-    self.image:setWidth(imageSize);
+    self.label:setHeight(labelHeight);
 end
 
-function ImageButton:setButtonColorHexValue(colorHex)
+function LabelButton:setButtonColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
 
     self.containerColor = colorHex
     self.buttonContainer:setColorHexValue(colorHex)
 end
 
-function ImageButton:setUseImageCustomColor(isUsed)
-    assert(isUsed ~= nil and type(isUsed) == "boolean")
-
-    self.image:setUseImageCustomColor(isUsed)
-end
-
-function ImageButton:setImageColorHexValue(colorHex)
+function LabelButton:setLabelTextColorHexValue(colorHex)
     assert(colorHex ~= nil and type(colorHex) == "number")
 
-    self.image:setColorHexValue(colorHex)
+    self.label:setTextColorHexValue(colorHex)
 end
 
-function ImageButton:setZOrder(zOrder)
+function LabelButton:setZOrder(zOrder)
     assert(zOrder ~= nil and type(zOrder) == "number")
     self.buttonContainer:setZOrder(zOrder)
-    self.image:setZOrder(zOrder + 1)
+    self.label:setZOrder(zOrder + 1)
 end
 
-function ImageButton:setIsVisible(isVisible)
+function LabelButton:setIsVisible(isVisible)
     assert(isVisible ~= nil and type(isVisible) == "boolean")
     self.buttonContainer:setIsVisible(isVisible)
-    self.image:setIsVisible(isVisible)
+    self.label:setIsVisible(isVisible)
 end
 
-return ImageButton
+return LabelButton

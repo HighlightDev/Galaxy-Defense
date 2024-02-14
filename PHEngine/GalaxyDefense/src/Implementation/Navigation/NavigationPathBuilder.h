@@ -3,6 +3,7 @@
 #include "Path.h"
 
 #include <unordered_map>
+#include <string>
 
 namespace Game
 {

@@ -250,9 +250,12 @@ namespace EngineCore
                  assert(uiItemBase);
                  const auto mouseInputReceiverBase = std::make_shared<UiMouseInputReceiverBase>(uiItemBase);
                  uiItemBase->SetMouseInputReceiver(mouseInputReceiverBase);
-                  mouseInputReceiverBase->SetMouseClickedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
+                 mouseInputReceiverBase->SetMouseClickedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
                     if (const auto senderSp = eventSender.lock())
                     {
+                       if (!senderSp->IsVisible())
+                        return;
+
                        if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
                        {
                           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputClicked");
@@ -271,6 +274,9 @@ namespace EngineCore
                  mouseInputReceiverBase->SetMousePressedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
                     if (const auto senderSp = eventSender.lock())
                     {
+                       if (!senderSp->IsVisible())
+                        return;
+
                        if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
                        {
                           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputPressState");
@@ -289,6 +295,9 @@ namespace EngineCore
                  mouseInputReceiverBase->SetMouseReleasedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
                     if (const auto senderSp = eventSender.lock())
                     {
+                       if (!senderSp->IsVisible())
+                           return;
+
                        if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
                        {
                           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputPressState");
@@ -307,6 +316,9 @@ namespace EngineCore
                  mouseInputReceiverBase->SetMouseHoverEnteredCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
                     if (const auto senderSp = eventSender.lock())
                     {
+                       if (!senderSp->IsVisible())
+                           return;
+
                        if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
                        {
                           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputCursorHoverState");
@@ -325,6 +337,9 @@ namespace EngineCore
                  mouseInputReceiverBase->SetMouseHoverLeavedCallback([luaProxyId = uiItemBase->GetLuaProxyId()](const std::weak_ptr<UiItemBase>& eventSender, const glm::ivec2& mousePosition) {
                     if (const auto senderSp = eventSender.lock())
                     {
+                       if (!senderSp->IsVisible())
+                           return;
+
                        if (const auto luaScriptProcessorSp = senderSp->GetLuaScriptProcessorWp().lock())
                        {
                           static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::SetInputCursorHoverState");

@@ -25,7 +25,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 local EngineInputReceiver = require("Ui/Core/engineInputReceiver")
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
-local EngineEventsHolder = require("Ui/Core/engineEventsHolder")
+local EventsHelper = require("Ui/Core/eventsHelper")
 local PauseOverlay = require("Ui/Overlays/MenuNavigation/PauseOverlay")
 local SettingsOverlay = require("Ui/Overlays/MenuNavigation/SettingsOverlay")
 local PlayerHUDOverlay = require("Ui/Overlays/PlayerHUDOverlay")
@@ -48,13 +48,13 @@ local function onPressedKeyboardButtons(host, keyboardPressedKeyNames)
                 if pressButtonCooldown >= 0.5 then
                     pressButtonCooldown = 0.0
                     if "PauseMenuOverlay" == UiOverlayManager:getCurrentOverlayName(host) then
-                        EngineEventsHolder:sendPauseGameThreadEvent(host,
-                            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
+                        EventsHelper:sendPauseGameThreadEvent(host,
+                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
                         UiOverlayManager:closeCurrentOverlay(host)
                         UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
                     else
-                        EngineEventsHolder:sendPauseGameThreadEvent(host,
-                            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
+                        EventsHelper:sendPauseGameThreadEvent(host,
+                            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, true)
                         UiOverlayManager:openOverlay(host, "PauseMenuOverlay")
                         UiOverlayManager:closeBackgroundOverlay(host, "PlayerHUDOverlay")
                     end

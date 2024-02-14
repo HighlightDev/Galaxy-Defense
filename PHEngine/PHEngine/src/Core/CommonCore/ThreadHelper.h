@@ -2,6 +2,7 @@
 
 #include <unordered_map>
 #include <thread>
+#include <string>
 
 #include "Assertion.h"
 

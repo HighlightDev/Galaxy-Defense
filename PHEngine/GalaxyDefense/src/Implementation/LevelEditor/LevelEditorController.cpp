@@ -28,8 +28,14 @@ namespace Game
     {
     }
 
+    LevelEditorController::~LevelEditorController()
+    {
+        ChangeEditModeEvent::GetInstance()->RemoveListener(GetInstanceId());
+    }
+
     void LevelEditorController::OnPreLevelInit()
     {
+        ChangeEditModeEvent::GetInstance()->AddListener(shared_from_this());
     }
 
     void LevelEditorController::OnLevelInit()
@@ -93,23 +99,35 @@ namespace Game
     {
     }
 
+    void LevelEditorController::ProcessEvent(const ChangeEditModeEvent::EventData_t &data)
+    {
+        const auto editModeType = std::get<0>(data);
+        const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == editModeType;
+        const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == editModeType;
+        mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
+        mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
+        mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor);
+    }
+
     void LevelEditorController::Initialize()
     {
         mLevelPlacementGrid = std::make_unique<LevelPlacementGrid>(mLevelAreaBoundingBox);
         InitializeRoutePlacementGrid();
         InitializeTowerPlacementGrid();
+        ProcessEvent(std::make_tuple<eEditModeType>(eEditModeType::IDLE));
     }
 
     void LevelEditorController::InitializeRoutePlacementGrid()
     {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
+        // Route grid initialize
 
         mRoutePlacementGridActor = std::make_shared<Actor>("RoutePlacementGridActor", std::make_shared<SceneComponent>("RoutePlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
         sceneSp->AddActor(mRoutePlacementGridActor);
-        const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
-        const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
-        const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
+        const glm::ivec2 routeGridColumnsAndRowsCount = mLevelPlacementGrid->GetRouteGridColumnsAndRowsCount();
+        const int32_t columnsLineCount = routeGridColumnsAndRowsCount.x + 1;
+        const int32_t rowsLineCount = routeGridColumnsAndRowsCount.y + 1;
 
         MaterialParser materialParser;
         const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
@@ -118,18 +136,19 @@ namespace Game
         MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
 
         const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
-        const auto &levelAreaBoundingBox = mLevelPlacementGrid->GetLevelAreaBoundingBox();
+        const auto &levelAreaBoundingBox = mLevelPlacementGrid->GetRouteLevelAreaBoundingBox();
 
         const int32_t leftSideColumnsCount = columnsLineCount / 2;
         const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
         static constexpr float grid_elevation_bias = 1.0f;
-        const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+        const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForRoute();
+        const auto halfGridCellSize = gridCellSize * 0.5f;
         for (int32_t columnIdx = -leftSideColumnsCount; columnIdx < rightSideColumnsCount; ++columnIdx)
         {
-            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_levelGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            const auto &lineBegin = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
-            const auto &lineEnd = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
+            const auto &lineBegin = glm::vec3(columnIdx * gridCellSize + halfGridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
+            const auto &lineEnd = glm::vec3(columnIdx * gridCellSize + halfGridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
             c_mesh->SetSortOrderValue(0);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
@@ -140,10 +159,10 @@ namespace Game
         const int32_t nearSideRowsCount = rowsLineCount - forwardSideRowsCount;
         for (int32_t rowIdx = -forwardSideRowsCount; rowIdx < nearSideRowsCount; ++rowIdx)
         {
-            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_levelGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
             const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
-            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
+            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize + halfGridCellSize);
+            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize + halfGridCellSize);
             c_mesh->SetSortOrderValue(0);
             c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
             c_mesh->SetLineEndWorldSpacePosition(lineEnd);
@@ -155,6 +174,8 @@ namespace Game
     {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
+
+        // Tower grid picker initialize
 
         const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
         mTowerPlacementPickerActor = std::make_shared<Actor>("TowerPlacementPickerActor", std::make_shared<SceneComponent>("TowerPlacementPickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
@@ -172,5 +193,51 @@ namespace Game
         const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(200);
         mTowerPlacementPickerActor->AddComponent(c_mesh);
+
+        // Tower grid initialize
+
+        mTowerPlacementGridActor = std::make_shared<Actor>("TowerPlacementGridActor", std::make_shared<SceneComponent>("TowerPlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        sceneSp->AddActor(mTowerPlacementGridActor);
+        const glm::ivec2 towerGridColumnsAndRowsCount = mLevelPlacementGrid->GetTowerGridColumnsAndRowsCount();
+        const int32_t columnsLineCount = towerGridColumnsAndRowsCount.x + 1;
+        const int32_t rowsLineCount = towerGridColumnsAndRowsCount.y + 1;
+
+        const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+        sceneSp->RegisterMaterialInstance(lineMaterial);
+        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
+
+        const auto &rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
+        const auto &levelAreaBoundingBox = mLevelPlacementGrid->GetTowerLevelAreaBoundingBox();
+
+        const int32_t leftSideColumnsCount = columnsLineCount / 2;
+        const int32_t rightSideColumnsCount = columnsLineCount - leftSideColumnsCount;
+        static constexpr float grid_elevation_bias = 1.0f;
+        const auto gridCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+        for (int32_t columnIdx = -leftSideColumnsCount; columnIdx < rightSideColumnsCount; ++columnIdx)
+        {
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            const auto &lineBegin = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
+            const auto &lineEnd = glm::vec3(columnIdx * gridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
+            c_mesh->SetSortOrderValue(0);
+            c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
+            c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+            mTowerPlacementGridActor->AddComponent(c_mesh);
+        }
+
+        const int32_t forwardSideRowsCount = rowsLineCount / 2;
+        const int32_t nearSideRowsCount = rowsLineCount - forwardSideRowsCount;
+        for (int32_t rowIdx = -forwardSideRowsCount; rowIdx < nearSideRowsCount; ++rowIdx)
+        {
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_towerGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
+            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
+            const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
+            const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize);
+            c_mesh->SetSortOrderValue(0);
+            c_mesh->SetLineBeginWorldSpacePosition(lineBegin);
+            c_mesh->SetLineEndWorldSpacePosition(lineEnd);
+            mTowerPlacementGridActor->AddComponent(c_mesh);
+        }
     }
 }

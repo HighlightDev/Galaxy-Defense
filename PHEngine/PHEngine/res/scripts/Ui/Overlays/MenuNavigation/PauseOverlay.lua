@@ -25,7 +25,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
-local EngineEventsHolder = require("Ui/Core/engineEventsHolder")
+local EventsHelper = require("Ui/Core/eventsHelper")
 local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
 local UiRectangle = require("Ui/Core/uiRectangle")
@@ -71,8 +71,8 @@ function PauseOverlay:new(host)
     local continueButton = UiRectangle:new(host)
     pauseMenuOverlay:addWidget(continueButton)
     continueButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendPauseGameThreadEvent(host,
-            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
+        EventsHelper:sendPauseGameThreadEvent(host,
+            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, false)
         UiOverlayManager:closeCurrentOverlay(host)
         UiOverlayManager:openBackgroundOverlay(host, "PlayerHUDOverlay")
     end)
@@ -113,7 +113,7 @@ function PauseOverlay:new(host)
         end
     end)
     exitToMainMenuButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "MainMenuLevel")
+        EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, "MainMenuLevel")
     end)
 
     local exitToMainMenuButtonLabel = UiLabel:new(host, "nimbus_mono")
@@ -122,7 +122,7 @@ function PauseOverlay:new(host)
     local exitGameButton = UiRectangle:new(host)
     pauseMenuOverlay:addWidget(exitGameButton)
     exitGameButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendExitGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
+        EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
     exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then

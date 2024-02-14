@@ -25,7 +25,7 @@ setup()
 --[[ END   *** this snippet has to be inserted everywhere where your want to require custom modules  ***  END]]
 
 local UiOverlayManager = require("Ui/Core/uiOverlayManager")
-local EngineEventsHolder = require("Ui/Core/engineEventsHolder")
+local EventsHelper = require("Ui/Core/eventsHelper")
 local UiCanvas = require("Ui/Core/uiCanvas")
 local UiOverlay = require("Ui/Core/uiOverlay")
 local UiRectangle = require("Ui/Core/uiRectangle")
@@ -77,7 +77,7 @@ function MainMenuOverlay:new(host)
         end
     end)
     newGameButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+        EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "FirstLevel")
     end)
 
@@ -97,7 +97,7 @@ function MainMenuOverlay:new(host)
     local editorLvlButtonLabel = UiLabel:new(host, "nimbus_mono")
     mainMenuOverlay_1:addWidget(editorLvlButtonLabel)
     editorLvlButton:setOnMouseInputClickedCallback(function ()
-        EngineEventsHolder:sendLoadLevelGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+        EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevel")
     end)
 
@@ -117,7 +117,7 @@ function MainMenuOverlay:new(host)
     local exitGameButton = UiRectangle:new(host)
     mainMenuOverlay_1:addWidget(exitGameButton)
     exitGameButton:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendExitGameThreadEvent(host, EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
+        EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
     exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)
         if newState == UiItemBase.UiMouseInputCursorHoverState.ENTERED then

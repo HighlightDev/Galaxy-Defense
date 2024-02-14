@@ -4,7 +4,6 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/GameCore/Event/PauseGameThreadEvent.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
@@ -19,8 +18,7 @@ namespace Game
 {
     LevelEditorUiController::LevelEditorUiController(const std::weak_ptr<Scene> &scene)
         : mSceneWp(scene),
-          mOverlayManager(std::make_shared<OverlayManager>(mSceneWp)),
-          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorUiController Input Component")))
+          mOverlayManager(std::make_shared<OverlayManager>(mSceneWp))
     {
     }
 

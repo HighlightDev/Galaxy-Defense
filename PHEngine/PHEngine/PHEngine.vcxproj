@@ -285,7 +285,7 @@
     <None Include="Dependencies\GLM\include\glm\gtx\wrap.inl" />
     <None Include="res\scripts\core\3rdparty\json.lua" />
     <None Include="res\scripts\core\commonUiWidgetCreator.lua" />
-    <None Include="res\scripts\core\engineEventsHolder.lua" />
+    <None Include="res\scripts\core\eventsHelper.lua" />
     <None Include="res\scripts\core\engineInputReceiver.lua" />
     <None Include="res\scripts\core\keyboardKeys.lua" />
     <None Include="res\scripts\core\uiBaseWidget.lua" />

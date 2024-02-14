@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <cstddef>
+#include <stdint.h>
 
 namespace Thread
 {

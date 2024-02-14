@@ -55,6 +55,8 @@ namespace Game
 
       int32_t GetEnemySpaceshipsCountDestroyedByPlayer(const std::tuple<> &data) const;
 
-      void SendChangeGameModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::int32_t/*game mode type*/>& data);
+      void SendChangeGameModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t/*game mode type*/>& data);
+
+      void SendChangeEditModeGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, int32_t/*edit mode type*/>& data);
    };
 }

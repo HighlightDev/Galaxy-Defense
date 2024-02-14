@@ -2,6 +2,7 @@
 
 #include "LevelPlacementGrid.h"
 #include "Implementation/Controllers/ILevelController.h"
+#include "Implementation/Events/ChangeEditModeEvent.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ITickable.h"
@@ -17,12 +18,15 @@ namespace EngineCore
 }
 
 using namespace EngineCore::GUI;
+using namespace Event;
 
 namespace Game
 {
     class LevelEditorController
-        : public ILevelController,
-          public ITickable
+        : public std::enable_shared_from_this<LevelEditorController>,
+          public ILevelController,
+          public ITickable,
+          public ChangeEditModeEvent
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -32,6 +36,8 @@ namespace Game
 
         std::shared_ptr<Actor> mRoutePlacementGridActor;
 
+        std::shared_ptr<Actor> mTowerPlacementGridActor;
+
         std::shared_ptr<Actor> mTowerPlacementPickerActor;
 
         std::weak_ptr<::EngineCore::ThirdPersonCamera> mMainSceneCamera;
@@ -40,6 +46,8 @@ namespace Game
 
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
+
+        ~LevelEditorController() override;
 
         void OnPreLevelInit() override;
 
@@ -54,6 +62,8 @@ namespace Game
         void Tick(const float deltaTime) override;
 
         void UnpausableTick(const float deltaTime) override;
+
+        void ProcessEvent(const ChangeEditModeEvent::EventData_t &data) override;
 
         void SetLevelAreaBoundingBox(const BoundingBox2D<glm::vec2> &levelAreaBoundingBox);
 

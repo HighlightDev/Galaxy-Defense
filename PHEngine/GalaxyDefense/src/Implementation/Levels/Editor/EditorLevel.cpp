@@ -3,17 +3,19 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GraphicsCore/SceneViewInfo/ViewPerspectiveInfo.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/GameCore/Event/GameThreadEventDispatcher.h"
+#include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
 
 #include "Core/GraphicsCore/Material/MaterialParser.h"
 #include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
 
-#include "Implementation/GalaxySceneCamera.h"
-
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
-
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+
+#include "Implementation/GalaxySceneCamera.h"
+#include "Implementation/Events/ChangeEditModeEvent.h"
 
 #include <glm/vec4.hpp>
 #include <glm/vec3.hpp>
@@ -31,6 +33,8 @@ namespace Game
    EditorLevel::EditorLevel()
        : LevelBase("EditorLevel")
    {
+      Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ChangeEditModeEvent>();
+      Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::ChangeEditModeEvent>();
    }
 
    EditorLevel::~EditorLevel()

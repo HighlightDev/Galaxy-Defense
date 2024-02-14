@@ -477,7 +477,7 @@
     <None Include="res\scripts\spaceLvl1.lua" />
     <None Include="res\scripts\uiController.lua" />
     <None Include="res\scripts\core\commonUiWidgetCreator.lua" />
-    <None Include="res\scripts\core\engineEventsHolder.lua" />
+    <None Include="res\scripts\core\eventsHelper.lua" />
     <None Include="res\scripts\core\engineInputReceiver.lua" />
     <None Include="res\scripts\core\keyboardKeys.lua" />
     <None Include="res\scripts\core\uiBaseWidget.lua" />

@@ -131,8 +131,8 @@ function PlayerHUDOverlay:new(host)
     playerHUDOverlay:addWidget(enemyCountTile)
 
     enemyCountTile:setOnMouseInputClickedCallback(function()
-        EngineEventsHolder:sendChangeGameModeGameThreadEvent(host,
-            EngineEventsHolder.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
+        EventsHelper:sendChangeGameModeGameThreadEvent(host,
+            EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
     end)
 
     local stationImg = UiImage:new(host)
@@ -340,7 +340,7 @@ function PlayerHUDOverlay:new(host)
 
         weaponTile2:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile1:getAnchorWidgetName(), weaponInterval);
+            weaponTile1.widgetName, weaponInterval);
         weaponTile2:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile2:setHeight(weaponWidth);
@@ -356,7 +356,7 @@ function PlayerHUDOverlay:new(host)
 
         weaponTile3:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile2:getAnchorWidgetName(), weaponInterval);
+            weaponTile2.widgetName, weaponInterval);
         weaponTile3:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile3:setHeight(weaponWidth);
@@ -372,7 +372,7 @@ function PlayerHUDOverlay:new(host)
 
         weaponTile4:setParent(host, playerHUDOverlayCanvas.widgetName, weaponRootContainer.widgetName)
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            weaponTile3:getAnchorWidgetName(), weaponInterval);
+            weaponTile3.widgetName, weaponInterval);
         weaponTile4:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM,
             weaponRootContainer.widgetName, weaponTopBottomMargin)
         weaponTile4:setHeight(weaponWidth);

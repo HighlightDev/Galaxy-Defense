@@ -29,8 +29,10 @@ set(
 	src/Implementation/Events/RayCollisionEvent.h
 	src/Implementation/Events/MainPlayerStatusChangedEvent.h
 	src/Implementation/Events/ChangeGameModeEvent.h
+	src/Implementation/Events/ChangeEditModeEvent.h
 	src/Implementation/MainPlayerActionEnum.h
 	src/Implementation/GameModeTypeEnum.h
+	src/Implementation/EditModeTypeEnum.h
 	src/Implementation/Factories/ISpaceShipFactory.h
 	src/Implementation/Factories/IMissileFactory.h
 	src/Implementation/Factories/ISpaceObjectFactory.h
@@ -107,6 +109,7 @@ set(
 	src/Implementation/Events/RayCollisionEvent.cpp
 	src/Implementation/Events/MainPlayerStatusChangedEvent.cpp
 	src/Implementation/Events/ChangeGameModeEvent.cpp
+	src/Implementation/Events/ChangeEditModeEvent.cpp
 	src/Implementation/Factories/WeakSpaceShipFactory.cpp
 	src/Implementation/Factories/BombMissileFactory.cpp
 	src/Implementation/Factories/FreezingMissileFactory.cpp

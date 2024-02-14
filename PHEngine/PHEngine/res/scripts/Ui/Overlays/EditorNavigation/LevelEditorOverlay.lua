@@ -1,4 +1,4 @@
---[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
+--[[ BEGIN *** this snippet has to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
     local slash = package.config:sub(1, 1)
@@ -29,20 +29,26 @@ local UiOverlay = require("Ui/Core/uiOverlay")
 local UiItem = require("Ui/Core/uiItem")
 local UiImage = require("Ui/Core/uiImage")
 local ImageButton = require("Ui/Widgets/ImageButton")
+local LabelButton = require("Ui/Widgets/LabelButton")
+local EventsHelper = require("Ui/Core/eventsHelper")
+
+EditModeType = {
+    IDLE = 0,
+    EDIT_TOWERS = 1,
+    EDIT_ROUTES = 2
+}
 
 local EditorContainerState = {
     Expanded = 0,
-    Shrinked = 1
+    Hided = 1
 }
 
 LevelEditorOverlay = {
-    editorContainerState = EditorContainerState.Expanded
+    overlayName = "LevelEditorOverlay",
+    editorContainerState = EditorContainerState.Expanded,
+    currentEditModeType = EditModeType.IDLE,
+    labelFontName = "nimbus_mono",
 }
-
-local function getEditorContainerWidth(self, windowWidth)
-    assert(self ~= nil and type(self) == "table" and windowWidth ~= nil and type(windowWidth) == "number")
-    return self.editorContainerState == EditorContainerState.Expanded and windowWidth * 0.3 or windowWidth * 0.05;
-end
 
 function LevelEditorOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
@@ -52,7 +58,7 @@ function LevelEditorOverlay:new(host)
     canvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, canvas.luaProxyId)
     end)
-    local overlay = UiOverlay:createBackgroundOverlay(host, "LevelEditorOverlay", canvas)
+    local overlay = UiOverlay:createBackgroundOverlay(host, LevelEditorOverlay.overlayName, canvas)
 
     local editorContainer = UiRectangle:new(host)
     overlay:addWidget(editorContainer)
@@ -60,50 +66,73 @@ function LevelEditorOverlay:new(host)
     local changeContainerStateButton = ImageButton:new(host, overlay)
     overlay:addCompoundWidget(changeContainerStateButton)
 
+    local editStationSocketsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName)
+    overlay:addCompoundWidget(editStationSocketsButton)
+
+    local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName);
+    overlay:addCompoundWidget(editRoutesButton)
+
     changeContainerStateButton:setOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
-            EditorContainerState.Shrinked or EditorContainerState.Expanded
-        local newContainerWidth = getEditorContainerWidth(self, _GetWindowWidth(host))
-        editorContainer:setWidth(newContainerWidth)
+            EditorContainerState.Hided or EditorContainerState.Expanded
 
-        changeContainerStateButton:setWidth(newContainerWidth * 0.25)
-        changeContainerStateButton:setHeight(newContainerWidth * 0.15)
         changeContainerStateButton:setImageRotationDegrees(math.fmod(
             changeContainerStateButton:getImageRotationDegrees() + 180.0, 360.0))
+        editStationSocketsButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
+        editRoutesButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
+    end)
+
+    editStationSocketsButton:setOnMouseInputClickedCallback(function()
+        self.currentEditModeType = EditModeType.EDIT_TOWERS == self.currentEditModeType and EditModeType.IDLE or
+            EditModeType.EDIT_TOWERS
+        EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            self.currentEditModeType)
+    end)
+    editRoutesButton:setOnMouseInputClickedCallback(function()
+        self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
+            EditModeType.EDIT_ROUTES
+        EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            self.currentEditModeType)
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
 
-        editorContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, canvas.widgetName, 0)
-        editorContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvas.widgetName, 0)
-        editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
-        editorContainer:setWidth(getEditorContainerWidth(self, width))
+        editorContainer:setHeight(height * 0.15)
 
-        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
-        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 5)
-        changeContainerStateButton:setWidth(editorContainer:getWidth() * 0.25)
-        changeContainerStateButton:setHeight(editorContainer:getWidth() * 0.15)
+        local buttonWidth = editorContainer:getHeight() * 0.55
+        local buttonHeight = editorContainer:getHeight() * 0.55
+
+        changeContainerStateButton:setWidth(buttonWidth)
+        changeContainerStateButton:setHeight(buttonHeight)
+
+        editStationSocketsButton:setWidth(buttonWidth)
+        editStationSocketsButton:setHeight(buttonHeight)
+
+        editRoutesButton:setWidth(buttonWidth)
+        editRoutesButton:setHeight(buttonHeight)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
         editorContainer:setParent(host, canvas.widgetName, canvas.widgetName)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT, canvas.widgetName, 0)
-        editorContainer:setAnchor(UiItemBase.UiAnchorType.TOP, UiItemBase.UiAnchorType.TOP, canvas.widgetName, 0)
+        editorContainer:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT, canvas.widgetName, 0)
         editorContainer:setAnchor(UiItemBase.UiAnchorType.BOTTOM, UiItemBase.UiAnchorType.BOTTOM, canvas.widgetName, 0)
-        editorContainer:setWidth(getEditorContainerWidth(self, windowWidth))
+        editorContainer:setHeight(windowHeight * 0.15)
         editorContainer:setZOrder(1)
         editorContainer:setColorHexValue(0xffffff)
+        editorContainer:setOpacity(0.0)
+
+        local buttonWidth = editorContainer:getHeight() * 0.55
+        local buttonHeight = editorContainer:getHeight() * 0.55
 
         changeContainerStateButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
-        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
-            UiItemBase.UiAnchorType.VERTICAL_CENTER, editorContainer.widgetName, 0)
+        changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
         changeContainerStateButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.LEFT,
-            editorContainer.widgetName, 5)
-        changeContainerStateButton:setWidth(editorContainer:getWidth() * 0.25)
-        changeContainerStateButton:setHeight(editorContainer:getWidth() * 0.15)
+            editorContainer.widgetName, 10)
+        changeContainerStateButton:setWidth(buttonWidth)
+        changeContainerStateButton:setHeight(buttonHeight)
         changeContainerStateButton:setImageTextureSource("arrow_left.png")
         changeContainerStateButton:setImageRotationDegrees(180.0)
         changeContainerStateButton:setButtonBorderRadius(8)
@@ -111,6 +140,34 @@ function LevelEditorOverlay:new(host)
         changeContainerStateButton:setUseImageCustomColor(true)
         changeContainerStateButton:setImageColorHexValue(0x000000)
         changeContainerStateButton:setZOrder(2)
+
+        editStationSocketsButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        editStationSocketsButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            changeContainerStateButton.widgetName, 10)
+        editStationSocketsButton:setWidth(buttonWidth)
+        editStationSocketsButton:setHeight(buttonHeight)
+        editStationSocketsButton:setButtonBorderRadius(8)
+        editStationSocketsButton:setLabelText("Edit stations")
+        editStationSocketsButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editStationSocketsButton:setLabelTextColorHexValue(0x000000)
+        editStationSocketsButton:setZOrder(2)
+        editStationSocketsButton:setButtonColorHexValue(0xdb9427)
+
+        editRoutesButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        editRoutesButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        editRoutesButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            editStationSocketsButton.widgetName, 10)
+        editRoutesButton:setWidth(buttonWidth)
+        editRoutesButton:setHeight(buttonHeight)
+        editRoutesButton:setButtonBorderRadius(8)
+        editRoutesButton:setLabelText("Edit routes")
+        editRoutesButton:setLabelTextHorizontalAlignment(UiLabel.TextHorizontalAlignmentType.CENTER)
+        editRoutesButton:setLabelTextColorHexValue(0x000000)
+        editRoutesButton:setZOrder(2)
+        editRoutesButton:setButtonColorHexValue(0xdb9427)
     end)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)

@@ -10,7 +10,6 @@
 namespace EngineCore
 {
     class Scene;
-    class InputComponent;
 }
 
 using namespace EngineCore::GUI;
@@ -23,8 +22,6 @@ namespace Game
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
         std::shared_ptr<OverlayManager> mOverlayManager;
-
-        std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
 
         size_t mExecutorId;
 

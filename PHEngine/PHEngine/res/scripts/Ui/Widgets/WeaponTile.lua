@@ -44,7 +44,8 @@ function WeaponTile:new(host, overlay)
         weaponBackgroundTile = nil,
         weaponImage = nil,
         tileWidth = 0,
-        tileHeight = 0
+        tileHeight = 0,
+        widgetName = ""
     }
 
     newObj.weaponBackgroundTile = UiRectangle:new(host)
@@ -79,10 +80,6 @@ function WeaponTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorM
 
     self.weaponBackgroundTile:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchorMargin)
     self:resizeWidgets()
-end
-
-function WeaponTile:getAnchorWidgetName()
-    return self.weaponBackgroundTile.widgetName
 end
 
 function WeaponTile:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
@@ -141,6 +138,10 @@ function WeaponTile:setParent(host, overlayCanvasName, parentName)
 
     self.overlayCanvasName = overlayCanvasName
     self.parentName = parentName
+end
+
+function WeaponTile:onPreCompoundWidgetInitialize()
+    self.widgetName = self.weaponBackgroundTile.widgetName
 end
 
 function WeaponTile:onCompoundWidgetInitialize()
