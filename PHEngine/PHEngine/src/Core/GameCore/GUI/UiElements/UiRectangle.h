@@ -34,7 +34,7 @@ namespace EngineCore
             float mBorderRadius;
 
         public:
-            UiRectangle();
+            explicit UiRectangle(const std::string& name = std::string(""));
 
             ~UiRectangle() override;
 
@@ -63,6 +63,8 @@ namespace EngineCore
             void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
             void SyncFromLuaJsonProperties(const std::string& luaJsonPropsStr) override;
+
+            std::string GetUiTypeString() const override;
 
         protected:
             void OnRegistered() override;

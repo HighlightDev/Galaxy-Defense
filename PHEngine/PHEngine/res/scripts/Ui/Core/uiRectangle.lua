@@ -1,23 +1,23 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
-	local slash = package.config:sub(1,1)
-	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
-	local pattern = ""
-	if slash == "/" then
-		pattern = "(.*/)"
-	elseif slash == "\\" then
-		pattern = "(.*\\)"
-	end
-	local str = debug.getinfo(2, "S").source:sub(2)
-	local pathToCurrentScript = str:match(pattern)
-	if pathToCurrentScript ~= nil then
-		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
-		unixLikePath = unixLikePath:gsub("//", "/")
+    local slash = package.config:sub(1, 1)
+    assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+    local pattern = ""
+    if slash == "/" then
+        pattern = "(.*/)"
+    elseif slash == "\\" then
+        pattern = "(.*\\)"
+    end
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match(pattern)
+    if pathToCurrentScript ~= nil then
+        local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+        unixLikePath = unixLikePath:gsub("//", "/")
         local _, endindex = string.find(unixLikePath, "scripts/")
         unixLikePath = string.sub(unixLikePath, 1, endindex)
-		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
-	end
+        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+    end
 end
 
 setup()
@@ -29,11 +29,17 @@ local json = require("Ui/Core/3rdparty/json")
 
 UiRectangle = UiItemBase:new()
 
-function UiRectangle:new(host)
+function UiRectangle:new(host, name)
     assert(host ~= nil)
-    print("UiRectangle::ctor")
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE)
+    local jsonParameters = nil;
+    if name ~= nil then
+        assert(type(name) == "string" and name ~= "")
+        jsonParameters = json.encode({ name = name })
+    end
+
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_RECTANGLE,
+        jsonParameters)
 
     local rectangleProperties = {
         color = {

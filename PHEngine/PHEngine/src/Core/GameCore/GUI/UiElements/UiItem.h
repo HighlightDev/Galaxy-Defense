@@ -24,13 +24,15 @@ namespace EngineCore
         class UiItem : public UiItemBase
         {
         public:
-            UiItem();
+            UiItem(const std::string& name = std::string(""));
 
             void OnRegistered() override;
             
             void OnUnregistered() override;
 
             std::shared_ptr<::EngineCore::Scripts::LuaProxy> ReplicateLuaProxy() override;
+
+            std::string GetUiTypeString() const override;
         };
     }
 }

@@ -41,7 +41,7 @@ function PauseOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local pauseMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local pauseMenuOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "PauseMenuCanvas")
     pauseMenuOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         pauseMenuOverlayCanvas:setCanvasZOrder(100)
         _InitializeCanvasInputSystem(host, pauseMenuOverlayCanvas.luaProxyId)

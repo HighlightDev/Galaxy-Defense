@@ -48,7 +48,6 @@ UiItemBase.UiMouseInputCursorHoverState = {
 }
 
 function UiItemBase:new()
-    print("UiItemBase::ctor")
 
     local uiItemBaseProperties = {
         visible = {

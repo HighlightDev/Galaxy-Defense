@@ -29,7 +29,7 @@ local function getTypeToString(commonUiWidgetType)
     elseif commonUiWidgetType == CommonUiWidgetCreator.CommonUiWidgetType.UI_BACKGROUND_OVERLAY then
         return "UI_BACKGROUND_OVERLAY"
     else
-        assert(false, "Wrong type of widget type.")
+        assert(false, "Wrong type of widget type: " .. tostring(commonUiWidgetType))
     end
 end
 

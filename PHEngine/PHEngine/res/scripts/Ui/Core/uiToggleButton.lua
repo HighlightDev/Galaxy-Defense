@@ -1,23 +1,23 @@
 --[[ BEGIN *** this snippet h to be inserted everywhere where your want to require custom modules *** BEGIN]]
 --
 local function setup()
-	local slash = package.config:sub(1,1)
-	assert(slash ~= nil and type(slash) == "string" and slash ~= "")
-	local pattern = ""
-	if slash == "/" then
-		pattern = "(.*/)"
-	elseif slash == "\\" then
-		pattern = "(.*\\)"
-	end
-	local str = debug.getinfo(2, "S").source:sub(2)
-	local pathToCurrentScript = str:match(pattern)
-	if pathToCurrentScript ~= nil then
-		local unixLikePath = pathToCurrentScript:gsub("\\", "/")
-		unixLikePath = unixLikePath:gsub("//", "/")
+    local slash = package.config:sub(1, 1)
+    assert(slash ~= nil and type(slash) == "string" and slash ~= "")
+    local pattern = ""
+    if slash == "/" then
+        pattern = "(.*/)"
+    elseif slash == "\\" then
+        pattern = "(.*\\)"
+    end
+    local str = debug.getinfo(2, "S").source:sub(2)
+    local pathToCurrentScript = str:match(pattern)
+    if pathToCurrentScript ~= nil then
+        local unixLikePath = pathToCurrentScript:gsub("\\", "/")
+        unixLikePath = unixLikePath:gsub("//", "/")
         local _, endindex = string.find(unixLikePath, "scripts/")
         unixLikePath = string.sub(unixLikePath, 1, endindex)
-		package.path = package.path .. ";" .. unixLikePath .. "?.lua"
-	end
+        package.path = package.path .. ";" .. unixLikePath .. "?.lua"
+    end
 end
 
 setup()
@@ -29,13 +29,19 @@ local json = require("Ui/Core/3rdparty/json")
 
 UiToggleButton = UiItemBase:new()
 
-function UiToggleButton:new(host, isStateOn)
+function UiToggleButton:new(host, isStateOn, name)
     assert(host ~= nil and isStateOn ~= nil and type(isStateOn) == "boolean")
-    print("UiToggleButton::ctor")
+
+    local jsonParameters = nil;
+    if name ~= nil then
+        assert(type(name) == "string" and name ~= "")
+        jsonParameters = json.encode({ is_state_on = isStateOn, name = name })
+    else
+        jsonParameters = json.encode({ is_state_on = isStateOn })
+    end
 
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host,
-        CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON,
-        json.encode({ is_state_on = isStateOn }))
+        CommonUiWidgetCreator.CommonUiWidgetType.UI_TOGGLE_BUTTON, jsonParameters)
 
     local toggleButtonProperties = {
         is_state_on = {

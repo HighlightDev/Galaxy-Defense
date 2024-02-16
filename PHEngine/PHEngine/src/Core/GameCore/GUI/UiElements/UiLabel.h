@@ -46,7 +46,7 @@ namespace EngineCore
             eTextHorizontalAlignmentType mTextHorizontalAlignment{eTextHorizontalAlignmentType::LEFT};
 
         public:
-            explicit UiLabel(const std::string &fontName);
+            explicit UiLabel(const std::string &fontName, const std::string& name = std::string(""));
 
             ~UiLabel() override;
 
@@ -85,6 +85,8 @@ namespace EngineCore
             void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
             void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
+            std::string GetUiTypeString() const override;
 
         protected:
             void OnRegistered() override;

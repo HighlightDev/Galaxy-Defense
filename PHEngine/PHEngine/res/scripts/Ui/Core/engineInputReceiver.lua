@@ -31,7 +31,6 @@ EngineInputReceiver = {
 }
 
 function EngineInputReceiver:new()
-    print("EngineInputReceiver::ctor")
     local localObj = {
         subscribeToKeyboardEvents = true,
         subscribeToMouseEvents = true,
@@ -73,7 +72,6 @@ function EngineInputReceiver:update(host)
 end
 
 function EngineInputReceiver:__gc(self)
-    print("EngineInputReceiver::dctor")
 end
 
 function EngineInputReceiver:subscribeOnPressedKeyboardButton(callback)

@@ -69,27 +69,38 @@ namespace Game
     {
         if (const auto &sceneCameraSp = mMainSceneCamera.lock())
         {
-            const auto projectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
-            const auto &mouseBindings = mInputComponent->GetMouseBindings();
-            if (mouseBindings->IsMouseMoveEventDirty())
+            if (eEditModeType::IDLE != mCurrentEditModeType)
             {
-                const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
-                const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
-                const ScreenRayCaster screenRayCaster;
-                const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
-                                                                                                    glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
-                                                                                                               DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
-                                                                                                    projectionMatrix,
-                                                                                                    sceneCameraSp->GetViewMatrix());
-                const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
-                const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
-                if (tParam >= 0.0f)
+                const auto projectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
+                const auto &mouseBindings = mInputComponent->GetMouseBindings();
+                if (mouseBindings->IsMouseMoveEventDirty())
                 {
-                    const auto &placementPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                    const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(placementPosition.x, placementPosition.z));
-                    const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
-                    mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
-                        glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y) - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
+                    const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
+                    const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+                    const ScreenRayCaster screenRayCaster;
+                    const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
+                                                                                                        glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
+                                                                                                                   DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
+                                                                                                        projectionMatrix,
+                                                                                                        sceneCameraSp->GetViewMatrix());
+                    const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+                    const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
+                    if (tParam >= 0.0f)
+                    {
+                        const auto &rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+                        if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType)
+                        {
+                            const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
+                            mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
+                                glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y) - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
+                        }
+                        else
+                        {
+                            const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            mRouteNodePickerActor->GetRootComponent()->SetTranslation(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
+                        }
+                    }
                 }
             }
         }
@@ -102,11 +113,13 @@ namespace Game
     void LevelEditorController::ProcessEvent(const ChangeEditModeEvent::EventData_t &data)
     {
         const auto editModeType = std::get<0>(data);
-        const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == editModeType;
-        const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == editModeType;
+        mCurrentEditModeType = editModeType;
+        const bool isVisibleTowerPlacementGridActor = eEditModeType::EDIT_TOWERS == mCurrentEditModeType;
+        const bool isVisibleRoutePlacementGridActor = eEditModeType::EDIT_ROUTES == mCurrentEditModeType;
         mTowerPlacementGridActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
         mTowerPlacementPickerActor->SetIsEnabled(isVisibleTowerPlacementGridActor);
         mRoutePlacementGridActor->SetIsEnabled(isVisibleRoutePlacementGridActor);
+        mRouteNodePickerActor->SetIsEnabled(isVisibleRoutePlacementGridActor);
     }
 
     void LevelEditorController::Initialize()
@@ -121,6 +134,25 @@ namespace Game
     {
         const auto &sceneSp = mSceneWp.lock();
         assert(sceneSp);
+
+        // Route node picker initialize
+
+        const auto pickerSize = 2.0f;
+        mRouteNodePickerActor = std::make_shared<Actor>("RouteNodePickerActor", std::make_shared<SceneComponent>("RouteNodePickerActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        sceneSp->AddActor(mRouteNodePickerActor);
+
+        MaterialParser materialParser;
+        const std::shared_ptr<IMaterial> &editorNodePickerMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
+        sceneSp->RegisterMaterialInstance(editorNodePickerMaterial);
+        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "color", glm::vec3(1.0f, 0.0f, 0.0f));
+
+        const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
+        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "sphere.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerSize, 1.0f, pickerSize), editorNodePickerMaterial);
+        const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        c_mesh->SetSortOrderValue(200);
+        mRouteNodePickerActor->AddComponent(c_mesh);
+
         // Route grid initialize
 
         mRoutePlacementGridActor = std::make_shared<Actor>("RoutePlacementGridActor", std::make_shared<SceneComponent>("RoutePlacementGridActor_rootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
@@ -129,13 +161,12 @@ namespace Game
         const int32_t columnsLineCount = routeGridColumnsAndRowsCount.x + 1;
         const int32_t rowsLineCount = routeGridColumnsAndRowsCount.y + 1;
 
-        MaterialParser materialParser;
         const std::shared_ptr<IMaterial> &lineMaterial = materialParser.ParseMaterialDescriptor("AlbedoColorWithOpacityMaterial.m");
         sceneSp->RegisterMaterialInstance(lineMaterial);
         MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "opacity", 1.0f);
         MaterialPropertySetter::SetMaterialPropertyValue(lineMaterial, "color", glm::vec3(1.0f));
 
-        const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
+        const auto &rtMeshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedLineComponent>>();
         const auto &levelAreaBoundingBox = mLevelPlacementGrid->GetRouteLevelAreaBoundingBox();
 
         const int32_t leftSideColumnsCount = columnsLineCount / 2;
@@ -146,7 +177,7 @@ namespace Game
         for (int32_t columnIdx = -leftSideColumnsCount; columnIdx < rightSideColumnsCount; ++columnIdx)
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridColumnLineMesh_" + std::to_string(columnIdx)), 4, glm::vec3(), glm::vec3(), glm::vec3(1), "", lineMaterial);
-            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
             const auto &lineBegin = glm::vec3(columnIdx * gridCellSize + halfGridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMin().y);
             const auto &lineEnd = glm::vec3(columnIdx * gridCellSize + halfGridCellSize, -grid_elevation_bias, levelAreaBoundingBox.GetMax().y);
             c_mesh->SetSortOrderValue(0);
@@ -160,7 +191,7 @@ namespace Game
         for (int32_t rowIdx = -forwardSideRowsCount; rowIdx < nearSideRowsCount; ++rowIdx)
         {
             const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>(std::string("c_routeGridRowLineMesh_" + std::to_string(rowIdx)), 4, glm::vec3(0), glm::vec3(), glm::vec3(1), "", lineMaterial);
-            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(sceneSp->CreateComponent_GameThread(rtMeshComponentCreator, d_mesh));
             const auto &lineBegin = glm::vec3(levelAreaBoundingBox.GetMin().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize + halfGridCellSize);
             const auto &lineEnd = glm::vec3(levelAreaBoundingBox.GetMax().x, -grid_elevation_bias * 1.5f, rowIdx * gridCellSize + halfGridCellSize);
             c_mesh->SetSortOrderValue(0);

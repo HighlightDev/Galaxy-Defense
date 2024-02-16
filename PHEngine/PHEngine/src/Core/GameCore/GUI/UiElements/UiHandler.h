@@ -27,7 +27,7 @@ namespace EngineCore
 
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &owner);
 
-            std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo &canvasScreenSize);
+            std::shared_ptr<UiCanvas> CreateCanvas(const ViewPortInfo &canvasScreenSize, const std::string& name = std::string(""));
 #ifdef DEBUG
             std::shared_ptr<UiCanvas> CreateDebugCanvas(const ViewPortInfo &canvasScreenSize);
 #endif

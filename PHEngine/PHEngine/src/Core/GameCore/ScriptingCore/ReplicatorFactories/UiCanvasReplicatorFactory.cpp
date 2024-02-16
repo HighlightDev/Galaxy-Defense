@@ -26,15 +26,20 @@ namespace EngineCore
             const auto &originY = jsonObj["originY"].get<int32_t>();
             const auto &width = jsonObj["width"].get<int32_t>();
             const auto &height = jsonObj["height"].get<int32_t>();
+            std::string name = "";
+            if (jsonObj.contains("name"))
+            {
+                name = jsonObj["name"].get<std::string>();
+            }
 
             const auto canvasLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiCanvasReplicatorFactory::CreateReplicator");
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, canvasLuaProxyId, functionId, [originX, originY, width, height, sceneSp, luaScriptProcessorWp, canvasLuaProxyId, name = name]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                    const auto& createdUiCanvas = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height));
+                    const auto& createdUiCanvas = sceneSp->GetUiHandler()->CreateCanvas(ViewPortInfo(originX, originY, width, height), name);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiCanvas);
                     createdUiCanvas->SetIsVisible(false);
                     createdUiCanvas->SetLuaProxyId(canvasLuaProxyId);

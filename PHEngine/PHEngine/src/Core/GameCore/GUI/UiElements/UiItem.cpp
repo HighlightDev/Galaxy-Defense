@@ -15,8 +15,8 @@ namespace EngineCore
     namespace GUI
     {
 
-        UiItem::UiItem()
-            : UiItemBase()
+        UiItem::UiItem(const std::string& name)
+            : UiItemBase(name)
         {
         }
 
@@ -33,6 +33,11 @@ namespace EngineCore
         std::shared_ptr<LuaProxy> UiItem::ReplicateLuaProxy()
         {
             return std::make_shared<UiItemLuaProxy>(std::static_pointer_cast<UiItem>(shared_from_this()));
+        }
+
+        std::string UiItem::GetUiTypeString() const
+        {
+            return "UiItem";
         }
     }
 }

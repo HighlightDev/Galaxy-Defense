@@ -28,9 +28,9 @@ namespace EngineCore
     {
         size_t UiItemBase::s_UIds = 0;
 
-        UiItemBase::UiItemBase()
+        UiItemBase::UiItemBase(const std::string& name)
             : mUId(s_UIds++),
-              mName("UiItemBase_" + std::to_string(mUId)),
+              mName(name),
               mAbsoluteOrigin(),
               mNormalizedTranslation(),
               mNormalizedScale(glm::vec2(1.0)),
@@ -58,6 +58,11 @@ namespace EngineCore
             mProperties.emplace("Scale", mScaleProperty);
             mProperties.emplace("VerticalCenterOffset", mVerticalCenterOffsetProperty);
             mProperties.emplace("HorizontalCenterOffset", mHorizontalCenterOffsetProperty);
+        }
+
+        void UiItemBase::Initialize()
+        {
+            mName = mName == std::string("") ? GetUiTypeString() + "_" + std::to_string(mUId) : mName + "_" + std::to_string(mUId);
         }
 
         void UiItemBase::SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent)
@@ -287,6 +292,8 @@ namespace EngineCore
 
         std::string UiItemBase::GetName() const
         {
+            // Forgot to call Initialize() method
+            assert(std::string("") != mName);
             return mName;
         }
 

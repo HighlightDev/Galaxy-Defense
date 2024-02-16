@@ -22,10 +22,10 @@ namespace EngineCore
     {
         size_t UiCanvas::s_UId = 0;
 
-        UiCanvas::UiCanvas(const ViewPortInfo &canvasScreenProperties)
+        UiCanvas::UiCanvas(const ViewPortInfo &canvasScreenProperties, const std::string &name)
             : EngineToLuaReplicatorBase(),
               mUId(s_UId++),
-              mName("UiCanvas_" + std::to_string(mUId)),
+              mName(""),
               mAbsoluteOrigin(glm::ivec2(canvasScreenProperties.OriginX, canvasScreenProperties.OriginY)),
               mWidthHeight(glm::ivec2(canvasScreenProperties.Width, canvasScreenProperties.Height)),
               mChildren(),
@@ -40,6 +40,7 @@ namespace EngineCore
         {
             LogInfo("UiCanvas::ctor => ", mUId);
 
+            mName = name != "" ? (name + "_" + std::to_string(mUId)) : ("UiCanvas_" + std::to_string(mUId));
             mProperties.emplace("Opacity", mOpacityProperty);
         }
 

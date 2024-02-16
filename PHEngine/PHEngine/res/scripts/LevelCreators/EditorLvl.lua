@@ -38,7 +38,8 @@ function CreateTestLevel(host)
 		space_station.obj,
 		space_station_img.png,
         arrow_left.png,
-        plane.obj
+        plane.obj,
+        sphere.obj
 		]])
 
     _CreateActor(host, "Actor",

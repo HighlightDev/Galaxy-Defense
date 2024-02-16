@@ -29,11 +29,17 @@ local json = require("Ui/Core/3rdparty/json")
 
 UiImage = UiItemBase:new()
 
-function UiImage:new(host)
+function UiImage:new(host, name)
     assert(host ~= nil)
-    print("UiImage::ctor")
 
-    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE)
+    local jsonParameters = nil;
+    if name ~= nil then
+        assert(type(name) == "string" and name ~= "")
+        jsonParameters = json.encode({ name = name })
+    end
+
+    local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_IMAGE,
+        jsonParameters)
 
     local imageProperties = {
         texture_source = {

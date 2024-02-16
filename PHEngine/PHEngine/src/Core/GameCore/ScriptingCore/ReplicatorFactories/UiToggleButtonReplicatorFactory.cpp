@@ -22,14 +22,21 @@ namespace EngineCore
             assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
             const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
             const auto isStateOn = jsonObj["is_state_on"].get<bool>();
+            std::string name = "";
+            if (jsonObj.contains("name"))
+            {
+                name = jsonObj["name"].get<std::string>();
+            }
+
             const auto uiToggleButtonLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiToggleButtonReplicatorFactory::CreateReplicator");
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiToggleButtonLuaProxyId, functionId, [sceneSp, isStateOn, luaScriptProcessorWp, uiToggleButtonLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiToggleButtonLuaProxyId, functionId, [sceneSp, isStateOn, luaScriptProcessorWp, uiToggleButtonLuaProxyId, name]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                    const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn);
+                    const auto& createdUiToggleButton = std::make_shared<UiToggleButton>(isStateOn, name);
+                    createdUiToggleButton->Initialize();
                     createdUiToggleButton->SetLuaProxyId(uiToggleButtonLuaProxyId);
                     createdUiToggleButton->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiToggleButton);

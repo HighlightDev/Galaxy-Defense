@@ -36,7 +36,7 @@ namespace EngineCore
             {
                 const auto &ownerSp = mOwner.lock();
                 assert(ownerSp);
-                mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
+                mDebugUiCanvas = std::make_shared<UiCanvas>(canvasScreenSize, "DebugCanvas");
                 LogInfo("UiHandler::CreateDebugCanvas => uid = ", mDebugUiCanvas->GetUId());
                 mDebugUiCanvas->Initialize();
                 const auto &canvasSceneProxy = mDebugUiCanvas->CreateUiCanvasSceneProxy();
@@ -51,11 +51,11 @@ namespace EngineCore
         }
 #endif
 
-        std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize)
+        std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize, const std::string& name)
         {
             const auto &ownerSp = mOwner.lock();
             assert(ownerSp);
-            const auto &newCanvas = std::make_shared<UiCanvas>(canvasScreenSize);
+            const auto &newCanvas = std::make_shared<UiCanvas>(canvasScreenSize, name);
             LogInfo("UiHandler::CreateCanvas => uid = ", newCanvas->GetUId());
             newCanvas->Initialize();
             const auto &canvasSceneProxy = newCanvas->CreateUiCanvasSceneProxy();

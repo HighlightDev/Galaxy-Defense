@@ -37,7 +37,7 @@ namespace EngineCore
             bool mIsStateOn;
 
         public:
-            UiToggleButton(const bool isInitialStateOn);
+            explicit UiToggleButton(const bool isInitialStateOn, const std::string& name = std::string(""));
 
             ~UiToggleButton() override;
 
@@ -70,6 +70,8 @@ namespace EngineCore
             void OnPropertiesShouldBeUpdatedOnLuaThread() override;
 
             void SyncFromLuaJsonProperties(const std::string &luaJsonPropsStr) override;
+
+            std::string GetUiTypeString() const override;
 
         protected:
             void OnRegistered() override;

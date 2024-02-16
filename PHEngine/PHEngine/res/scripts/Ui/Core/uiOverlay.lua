@@ -77,7 +77,6 @@ function UiOverlay:createBackgroundOverlay(host, overlayName, overlayCanvas)
 end
 
 function UiOverlay:__gc(self)
-    print("UiOverlay::dctor => luaProxyId: " .. tostring(self.luaProxyId))
 end
 
 function UiOverlay:updateFromReplicatorData(host)

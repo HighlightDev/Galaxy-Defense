@@ -49,9 +49,6 @@ namespace EngineCore
             std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaFpsLabel;
 
             std::shared_ptr<::EngineCore::GUI::UiRectangle> mRectangleBackground;
-            std::shared_ptr<::EngineCore::GUI::UiLabel> mRenderThreadFrameRateLabel;
-            std::shared_ptr<::EngineCore::GUI::UiLabel> mLuaThreadFrameRateLabel;
-            std::shared_ptr<::EngineCore::GUI::UiLabel> mGameThreadFrameRateLabel;
             std::shared_ptr<::EngineCore::GUI::UiImage> mImage;
             std::shared_ptr<::EngineCore::GUI::UiImage> mImage1;
             std::shared_ptr<::EngineCore::GUI::UiImage> mNextPoolsArrowImage;

@@ -40,9 +40,13 @@ namespace Game
 
         std::shared_ptr<Actor> mTowerPlacementPickerActor;
 
+        std::shared_ptr<Actor> mRouteNodePickerActor;
+
         std::weak_ptr<::EngineCore::ThirdPersonCamera> mMainSceneCamera;
 
         std::shared_ptr<::EngineCore::InputComponent> mInputComponent;
+
+        eEditModeType mCurrentEditModeType{eEditModeType::IDLE};
 
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);

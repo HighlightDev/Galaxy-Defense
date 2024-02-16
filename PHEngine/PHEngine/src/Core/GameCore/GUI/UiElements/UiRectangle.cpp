@@ -19,8 +19,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiRectangle::UiRectangle()
-            : UiItemBase(),
+        UiRectangle::UiRectangle(const std::string& name)
+            : UiItemBase(name),
               mColor(glm::vec3(1.0f)),
               mOpacity(1.0f),
               mBorderRadius(0.0f)
@@ -121,6 +121,11 @@ namespace EngineCore
         float UiRectangle::GetBorderRadius() const
         {
             return mBorderRadius;
+        }
+
+        std::string UiRectangle::GetUiTypeString() const
+        {
+            return "UiRectangle";
         }
 
         std::shared_ptr<UiSceneProxyBase> UiRectangle::CreateUiSceneProxy() const

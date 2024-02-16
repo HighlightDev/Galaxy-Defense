@@ -18,12 +18,15 @@
 		incremental: "true"
 		range: "[0.0 ; 2.0]"
 		<operation>
-			<no_op>
+			<mul>
+				<float_constant>
+					value: "0.8"
+				</float_constant>
 				<property>
 					name: "gt_timeSec"
 					type: "binding_float"
 				</property>
-			</no_op>
+			</mul>
 		</operation>
 	</dynamic_property>
 </properties>

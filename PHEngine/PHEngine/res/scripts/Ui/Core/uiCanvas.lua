@@ -29,10 +29,27 @@ local json = require("Ui/Core/3rdparty/json")
 
 UiCanvas = UiBaseWidget:new()
 
-function UiCanvas:new(host, originX, originY, width, height)
-    print("UiCanvas::ctor")
+function UiCanvas:new(host, originX, originY, width, height, name)
     assert(host ~= nil and originX ~= nil and originY ~= nil and width ~= nil and height ~= nil)
-    local canvasJsonParameters = json.encode({ originX = originX, originY = originY, width = width, height = height })
+    local canvasJsonParameters;
+    if name ~= nil then
+        assert(type(name) == "string" and name ~= "")
+        canvasJsonParameters = json.encode({
+            originX = originX,
+            originY = originY,
+            width = width,
+            height = height,
+            name = name
+        })
+    else
+        canvasJsonParameters = json.encode({
+            originX = originX,
+            originY = originY,
+            width = width,
+            height = height
+        })
+    end
+
     local luaProxyId = CommonUiWidgetCreator:createUiWidget(host, CommonUiWidgetCreator.CommonUiWidgetType.UI_CANVAS,
         canvasJsonParameters)
 

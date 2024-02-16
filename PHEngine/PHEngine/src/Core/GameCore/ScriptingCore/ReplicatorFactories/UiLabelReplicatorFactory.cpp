@@ -22,14 +22,20 @@ namespace EngineCore
             assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
             const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
             const auto &fontName = jsonObj["font_name"].get<std::string>();
+            std::string name = "";
+            if (jsonObj.contains("name"))
+            {
+                name = jsonObj["name"].get<std::string>();
+            }
             const auto uiLabelLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiLabelReplicatorFactory::CreateReplicator");
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiLabelLuaProxyId, functionId, [sceneSp, fontName, luaScriptProcessorWp, uiLabelLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiLabelLuaProxyId, functionId, [sceneSp, fontName, luaScriptProcessorWp, uiLabelLuaProxyId, name]() {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                    const auto& createdUiLabel = std::make_shared<UiLabel>(fontName);
+                    const auto& createdUiLabel = std::make_shared<UiLabel>(fontName, name);
+                    createdUiLabel->Initialize();
                     createdUiLabel->SetLuaProxyId(uiLabelLuaProxyId);
                     createdUiLabel->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiLabel);

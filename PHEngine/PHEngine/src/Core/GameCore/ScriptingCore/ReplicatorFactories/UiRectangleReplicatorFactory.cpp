@@ -17,23 +17,34 @@ namespace EngineCore
     namespace Scripts
     {
         int32_t UiRectangleReplicatorFactory::CreateReplicator(const std::weak_ptr<Scene> &sceneWp,
-                                                            const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
-                                                            const std::string &jsonParamsStr) const
+                                                               const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
+                                                               const std::string &jsonParamsStr) const
         {
             assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
             const auto uiRectangleLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
+            std::string name = "";
+            if (jsonParamsStr != "")
+            {
+                const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
+                if (jsonObj.contains("name"))
+                {
+                    name = jsonObj["name"].get<std::string>();
+                }
+            }
+
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiRectangleReplicatorFactory::CreateReplicator");
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiRectangleLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiRectangleLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiRectangleLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiRectangleLuaProxyId, name]()
+                                                                                  {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                    const auto& createdUiRectangle = std::make_shared<UiRectangle>();
+                    const auto& createdUiRectangle = std::make_shared<UiRectangle>(name);
+                    createdUiRectangle->Initialize();
                     createdUiRectangle->SetLuaProxyId(uiRectangleLuaProxyId);
                     createdUiRectangle->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiRectangle);
-                    createdUiRectangle->SetPendingToCreateLuaProxy();
-                });
+                    createdUiRectangle->SetPendingToCreateLuaProxy(); });
             }
             else
             {

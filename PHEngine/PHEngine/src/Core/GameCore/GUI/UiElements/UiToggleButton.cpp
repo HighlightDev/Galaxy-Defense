@@ -17,8 +17,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiToggleButton::UiToggleButton(const bool isInitialStateOn)
-            : UiItemBase(),
+        UiToggleButton::UiToggleButton(const bool isInitialStateOn, const std::string& name)
+            : UiItemBase(name),
               mToggleOffColor(),
               mToggleOnColor(),
               mOpacity(1.0f),
@@ -113,6 +113,11 @@ namespace EngineCore
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
+        }
+
+        std::string UiToggleButton::GetUiTypeString() const
+        {
+            return "UiToggleButton";
         }
 
         void UiToggleButton::OnPropertiesShouldBeUpdatedOnRenderThread()

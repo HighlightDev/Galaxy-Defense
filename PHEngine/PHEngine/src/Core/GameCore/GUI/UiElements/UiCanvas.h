@@ -92,7 +92,7 @@ namespace EngineCore
             std::unordered_set<std::string> mRegisteredNames;
 
         public:
-            explicit UiCanvas(const ViewPortInfo &canvasScreenProperties);
+            UiCanvas(const ViewPortInfo &canvasScreenProperties, const std::string &name);
 
             ~UiCanvas() override;
 
@@ -178,7 +178,6 @@ namespace EngineCore
             void UnregisterUiItem(const size_t uiId, const std::string &uiItemName);
 
         private:
-
             void SyncDataOnRenderThread();
 
             void SyncDataOnLuaThread();

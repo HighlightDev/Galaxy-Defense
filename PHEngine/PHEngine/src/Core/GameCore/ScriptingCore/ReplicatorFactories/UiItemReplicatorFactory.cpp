@@ -17,23 +17,34 @@ namespace EngineCore
     namespace Scripts
     {
         int32_t UiItemReplicatorFactory::CreateReplicator(const std::weak_ptr<Scene> &sceneWp,
-                                                            const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
-                                                            const std::string &jsonParamsStr) const
+                                                          const std::weak_ptr<LuaScriptProcessor> &luaScriptProcessorWp,
+                                                          const std::string &jsonParamsStr) const
         {
             assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Lua"));
             const auto uiItemLuaProxyId = LuaProxy::CreateUniqueLuaProxyId();
 
+            std::string name = "";
+            if (jsonParamsStr != "")
+            {
+                const auto &jsonObj = nlohmann::json::parse(jsonParamsStr);
+                if (jsonObj.contains("name"))
+                {
+                    name = jsonObj["name"].get<std::string>();
+                }
+            }
+
             if (const auto &sceneSp = sceneWp.lock())
             {
                 static constexpr auto functionId = Hash64_CT("UiItemReplicatorFactory::CreateReplicator");
-                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiItemLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiItemLuaProxyId]() {
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_NO_PUSH, uiItemLuaProxyId, functionId, [sceneSp, luaScriptProcessorWp, uiItemLuaProxyId, name]()
+                                                                                  {
                     assert(ThreadHelper::GetInstance()->IsCurrentThreadEqualToProvidedByName("Game"));
-                    const auto& createdUiItem = std::make_shared<UiItem>();
+                    const auto& createdUiItem = std::make_shared<UiItem>(name);
+                    createdUiItem->Initialize();
                     createdUiItem->SetLuaProxyId(uiItemLuaProxyId);
                     createdUiItem->SetLuaScriptProcessor(luaScriptProcessorWp);
                     sceneSp->RegisterEngineToLuaReplicator(createdUiItem);
-                    createdUiItem->SetPendingToCreateLuaProxy();
-                });
+                    createdUiItem->SetPendingToCreateLuaProxy(); });
             }
             else
             {

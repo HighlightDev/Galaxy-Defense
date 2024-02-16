@@ -20,8 +20,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiLabel::UiLabel(const std::string &fontName)
-            : UiItemBase(),
+        UiLabel::UiLabel(const std::string &fontName, const std::string& name)
+            : UiItemBase(name),
               mText(""),
               mOpacity(1.0f),
               mFontName(fontName),
@@ -256,6 +256,11 @@ namespace EngineCore
         std::shared_ptr<LuaProxy> UiLabel::ReplicateLuaProxy()
         {
             return std::make_shared<UiLabelLuaProxy>(std::static_pointer_cast<UiLabel>(shared_from_this()));
+        }
+
+        std::string UiLabel::GetUiTypeString() const
+        {
+            return "UiLabel";
         }
 
         void UiLabel::SyncDataOnRenderThread()

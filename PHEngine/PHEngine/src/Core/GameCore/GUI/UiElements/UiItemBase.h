@@ -93,7 +93,9 @@ namespace EngineCore
             std::shared_ptr<EngineObjectProperty<int32_t>> mHorizontalCenterOffsetProperty;
 
         public:
-            UiItemBase();
+            explicit UiItemBase(const std::string& name);
+
+            void Initialize();
 
             void SetParents(const std::weak_ptr<UiCanvas> &parentCanvas, const std::weak_ptr<IUiTransformable> &parent);
 
@@ -102,6 +104,8 @@ namespace EngineCore
             void SetIsSceneProxyReady(const bool isSceneProxyReady);
 
             void SetIsLuaProxyReady(const bool isLuaProxyReady);
+
+            virtual std::string GetUiTypeString() const = 0;
 
             virtual void OnRegistered() = 0;
 

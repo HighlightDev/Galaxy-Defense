@@ -38,6 +38,8 @@ namespace Game
 
         BoundingBox2D<glm::vec2> GetNearestToPositionTowerCellBoundingBox(const glm::vec2 &xzPosition) const;
 
+        glm::vec2 GetNearestToPositionRouteEdgeNode(const glm::vec2 &xzPosition) const;
+
     private:
         void Initialize();
 

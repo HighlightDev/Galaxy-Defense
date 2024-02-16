@@ -21,8 +21,8 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiImage::UiImage()
-            : UiItemBase(),
+        UiImage::UiImage(const std::string& name)
+            : UiItemBase(name),
               mTextureSrc(""),
               mTexture(),
               mColor(),
@@ -201,6 +201,11 @@ namespace EngineCore
         bool UiImage::GetIsFlipped() const
         {
             return mIsFlipped;
+        }
+
+        std::string UiImage::GetUiTypeString() const
+        {
+            return "UiImage";
         }
 
         std::shared_ptr<UiSceneProxyBase> UiImage::CreateUiSceneProxy() const

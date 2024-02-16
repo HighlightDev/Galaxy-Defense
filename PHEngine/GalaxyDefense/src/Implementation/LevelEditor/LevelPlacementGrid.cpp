@@ -80,4 +80,11 @@ namespace Game
         return BoundingBox2D<glm::vec2>(nearestLowBoundary + boundaryExtent, boundaryExtent);
     }
 
+    glm::vec2 LevelPlacementGrid::GetNearestToPositionRouteEdgeNode(const glm::vec2 &xzPosition) const
+    {
+        const auto &gridColumnAndRowIndices = xzPosition * s_gridCellSizeForRouteInv;
+        const auto &nearestRoundedBoundaryIndices = glm::round(gridColumnAndRowIndices);
+        const auto &nearestRoundedBoundaryPosition = nearestRoundedBoundaryIndices * s_gridCellSizeForRoute + (s_gridCellSizeForRoute * 0.5f);
+        return nearestRoundedBoundaryPosition;
+    }
 }

@@ -41,7 +41,7 @@ function MainMenuOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local mainMenuOverlay_1Canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local mainMenuOverlay_1Canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "mainMenuOverlay_1Canvas")
     mainMenuOverlay_1Canvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, mainMenuOverlay_1Canvas.luaProxyId)
         mainMenuOverlay_1Canvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
@@ -56,7 +56,7 @@ function MainMenuOverlay:new(host)
     local menuHorizontalMargin = windowWidth / 4.0;
     local menuVerticalMargin = windowHeight / 15.0;
 
-    local backgroundRect = UiRectangle:new(host)
+    local backgroundRect = UiRectangle:new(host, "MainMenuBackgroundContainer")
     mainMenuOverlay_1:addWidget(backgroundRect)
 
     local mainMenuOverlayHeight = (windowHeight - (menuVerticalMargin * 2.0))
