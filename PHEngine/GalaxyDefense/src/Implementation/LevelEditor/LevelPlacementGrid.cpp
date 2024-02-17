@@ -82,9 +82,12 @@ namespace Game
 
     glm::vec2 LevelPlacementGrid::GetNearestToPositionRouteEdgeNode(const glm::vec2 &xzPosition) const
     {
-        const auto &gridColumnAndRowIndices = xzPosition * s_gridCellSizeForRouteInv;
-        const auto &nearestRoundedBoundaryIndices = glm::round(gridColumnAndRowIndices);
-        const auto &nearestRoundedBoundaryPosition = nearestRoundedBoundaryIndices * s_gridCellSizeForRoute + (s_gridCellSizeForRoute * 0.5f);
-        return nearestRoundedBoundaryPosition;
+        const auto &clampedPosition = glm::clamp(xzPosition, mRouteLevelAreaBoundingBox.GetMin(), mRouteLevelAreaBoundingBox.GetMax());
+        const auto &normalizedPosition = (clampedPosition + mRouteLevelAreaBoundingBox.GetHalfExtent()) * 0.5f;
+        const auto &gridColumnAndRowIndices = normalizedPosition * (s_gridCellSizeForRouteInv * 2.0f);
+        const auto &nearestNormRoundedBoundaryIndices = glm::round(gridColumnAndRowIndices);
+        const auto &nearestNormRoundedBoundaryPosition = nearestNormRoundedBoundaryIndices * (s_gridCellSizeForRoute * 0.5f);
+        const auto &restoredPosition = (nearestNormRoundedBoundaryPosition * 2.0f) - mRouteLevelAreaBoundingBox.GetHalfExtent();
+        return restoredPosition;
     }
 }
