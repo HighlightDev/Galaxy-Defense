@@ -13,23 +13,13 @@ namespace Graphics
    {
 
       PrimitiveSceneProxy::PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
-                                               const std::shared_ptr<Skin> &skin,
-                                               const std::shared_ptr<IShader> &materialShader,
-                                               const std::shared_ptr<IShader> &planarReflectionShader,
                                                const std::shared_ptr<MaterialProxy> &materialProxy)
           : SceneProxyBase(component->IsEnabled()),
             AProxyVisibilityController(component->IsVisible()),
             bTransformInitialized(false),
             m_relativeMatrix(component->GetRelativeMatrix()),
-            m_skin(skin),
-            m_shader(materialShader),
-            m_planarReflectionShader(planarReflectionShader),
             mMaterialProxy(materialProxy),
             mSortOrderValue(component->GetSortOrderValue())
-      {
-      }
-
-      PrimitiveSceneProxy::~PrimitiveSceneProxy()
       {
       }
 

@@ -13,7 +13,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class PlanarReflectionComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<std::is_base_of<PlanarReflectionComponent, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type

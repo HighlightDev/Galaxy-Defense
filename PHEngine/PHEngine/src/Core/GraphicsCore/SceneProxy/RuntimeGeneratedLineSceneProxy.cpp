@@ -31,6 +31,28 @@ namespace Graphics
       void RuntimeGeneratedLineSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("RuntimeGeneratedLineSceneProxy::PostConstructorInitialize");
+
+         const ShaderParams shaderParams(
+             "RuntimeGeneratedMesh_BaseShader",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "runtimeGeneratedMeshVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
+             "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
+
+         const ShaderParams planarReflectionParams(
+             "PlanarReflectionShader",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "planarReflectionVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_planarReflectionShader = CreateMaterialShader<StaticMeshVertexFactory,
+                                                         CapturePlanarReflectionShader>(
+             "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName, planarReflectionParams, mMaterialProxy);
+
          m_skin = RuntimeGeneratedMeshPool::GetInstance()->GetOrAllocateResource(mRtMeshPoolParams);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())

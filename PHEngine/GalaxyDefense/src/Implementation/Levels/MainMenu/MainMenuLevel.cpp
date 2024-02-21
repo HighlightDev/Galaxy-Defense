@@ -99,7 +99,7 @@ namespace Game
       Base::PostLevelInit();
 
 #ifdef DEBUG
-      if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
+      if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
       {
          if (const auto &sceneSp = mSceneWp.lock())
          {
@@ -125,7 +125,7 @@ namespace Game
       mUiController->PostPlayLevelFinished();
 
 #ifdef DEBUG
-      if (EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
+      if (EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig().EnableAmbientMusic)
       {
          mAmbientMusicDummy->GetComponentsByType<StreamingSoundComponent>().back()->PlayStream();
       }

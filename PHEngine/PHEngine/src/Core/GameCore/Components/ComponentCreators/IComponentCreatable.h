@@ -4,9 +4,6 @@
 
 #include "Core/GameCore/Components/Component.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
-#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
 
 using namespace Resources;
 
@@ -19,26 +16,5 @@ namespace EngineCore
     {
     public:
         virtual std::shared_ptr<Component> CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const = 0;
-    };
-
-    class ComponentCreatorBase 
-    : public IComponentCreatable
-    {
-    public:
-        template <typename VertexFactoryType, typename BaseShaderType>
-        typename CompositeShaderPool::sharedValue_t
-        CreateMaterialShader(const std::string &compositeShaderName,
-                             const ShaderParams &shaderParams,
-                             std::shared_ptr<MaterialProxy> materialProxy) const
-        {
-            CompositeMaterialShaderParams compositeParams(compositeShaderName,
-                                                                   shaderParams,
-                                                                   materialProxy);
-
-            return CompositeShaderPool::GetInstance()
-                ->template GetOrAllocateResource<VertexFactoryMaterialCompositeShader<
-                    VertexFactoryType,
-                    BaseShaderType>>(compositeParams);
-        }
     };
 }

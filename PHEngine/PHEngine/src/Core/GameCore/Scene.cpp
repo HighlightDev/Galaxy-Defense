@@ -201,13 +201,6 @@ namespace EngineCore
       }
    }
 
-   std::shared_ptr<IMaterial> Scene::GetMaterialInstanceById(const int32_t materialProxyId) const
-   {
-      const auto foundIt = std::find_if(mMaterials.cbegin(), mMaterials.cend(), [materialProxyId](const auto &instance)
-                                        { return instance->MaterialProxyId == materialProxyId; });
-      return foundIt != mMaterials.cend() ? *foundIt : nullptr;
-   }
-
    InterThreadCommunicationMgr &Scene::GetInterThreadCommunicationManager()
    {
       return m_interThreadMgr;

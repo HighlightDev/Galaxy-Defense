@@ -6,17 +6,10 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
 #include "Core/ResourceManagerCore/Pool/MeshPool.h"
-#include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
-#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
-#include "Core/IoCore/FolderManager.h"
 
-using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
-using namespace Graphics::OpenGL;
-using namespace IO;
 
 namespace EngineCore
 {
@@ -24,7 +17,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class StaticMeshComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
         const bool mIsDeferredShaderUsed;
 
@@ -45,36 +38,7 @@ namespace EngineCore
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
 
-            const auto shaderIdName = mIsDeferredShaderUsed ? "DeferredNonSkeletalBase Shader" : "ForwardNonSkeletalBase Shader";
-            const auto fragmentShaderName = mIsDeferredShaderUsed ? "deferredFS.glsl" : "forwardFS.glsl";
-            const ShaderParams shaderParams(
-                shaderIdName,
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "simpleVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + fragmentShaderName);
-
-            typename CompositeShaderPool::sharedValue_t staticMeshShader =
-                CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
-                    "StaticMeshVertexFactory_SimpleShader_" + materialProxy->MaterialName, shaderParams, materialProxy);
-
-            const ShaderParams planarReflectionParams(
-                "PlanarReflectionShader",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "forwardFS.glsl");
-
-            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
-                CreateMaterialShader<StaticMeshVertexFactory,
-                                     CapturePlanarReflectionShader>(
-                    "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
-
-            return std::make_shared<ComponentInstantiationType>(mData,
-                                                                StaticMeshRenderData(mData->m_pathToMesh,
-                                                                                     staticMeshShader,
-                                                                                     planarReflectionShader,
-                                                                                     materialProxy, mIsDeferredShaderUsed));
+            return std::make_shared<ComponentInstantiationType>(mData, StaticMeshRenderData(mData->m_pathToMesh, materialProxy, mIsDeferredShaderUsed));
         }
     };
 }

@@ -11,7 +11,6 @@ using namespace Graphics::Texture;
 
 namespace Graphics
 {
-
    class MaterialProxy
       : public SceneProxyBase
    {

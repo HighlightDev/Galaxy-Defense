@@ -4,16 +4,10 @@
 
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
-#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/SkyboxVertexFactory.h"
 #include "Core/GraphicsCore/RenderData/SkyboxRenderData.h"
 #include "Core/GameCore/Components/ComponentData/SkyboxComponentData.h"
 
-using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
-using namespace Graphics::OpenGL;
 
 namespace EngineCore
 {
@@ -21,7 +15,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class SkyboxComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
@@ -33,31 +27,7 @@ namespace EngineCore
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
 
-            const ShaderParams shaderParams(
-                "SkyboxForwardShader",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "simpleVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "forwardFS.glsl");
-
-            typename CompositeShaderPool::sharedValue_t skyboxMeshShader =
-                CreateMaterialShader<SkyboxVertexFactory, SimpleShader>(
-                    "SkyboxVertexFactory_SimpleShader_" + materialProxy->MaterialName,
-                    shaderParams, materialProxy);
-
-            const ShaderParams planarReflectionParams(
-                "PlanarReflectionShader",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "forwardFS.glsl");
-
-            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
-                CreateMaterialShader<SkyboxVertexFactory, CapturePlanarReflectionShader>("SkyboxVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName,
-                                                                                         planarReflectionParams, materialProxy);
-
-            return std::make_shared<ComponentInstantiationType>(
-                mData, SkyboxRenderData(skyboxMeshShader, planarReflectionShader, materialProxy));
+            return std::make_shared<ComponentInstantiationType>(mData, SkyboxRenderData(materialProxy));
         }
     };
 }

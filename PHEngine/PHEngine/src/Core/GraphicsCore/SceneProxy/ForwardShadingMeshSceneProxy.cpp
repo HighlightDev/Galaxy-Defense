@@ -15,9 +15,6 @@ namespace Graphics
    {
       ForwardShadingMeshSceneProxy::ForwardShadingMeshSceneProxy(const ForwardShadingMeshComponent *component)
           : PrimitiveSceneProxy(component,
-                                nullptr,
-                                component->GetRenderData().m_materialShader,
-                                nullptr,
                                 component->GetRenderData().mMaterialProxy),
             mRenderData(component->GetRenderData())
       {
@@ -27,6 +24,16 @@ namespace Graphics
       {
          static constexpr uint64_t functionId = Hash64_CT("ForwardShadingMeshSceneProxy::PostConstructorInitialize");
          m_skin = MeshPool::GetInstance()->GetOrAllocateResource(mRenderData.mModelPath);
+
+         const ShaderParams shaderParams(
+             "ForwardWaterPlane Shader",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "simpleVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_shader = CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
+             "StaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
          {

@@ -11,7 +11,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class InputComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type

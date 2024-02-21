@@ -13,7 +13,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class AudioComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<

@@ -158,8 +158,7 @@ namespace Game
       const auto pointLightComponents = sceneSp->GetActorByName("MainLightActor")->GetComponentsByType<PointLightComponent>();
       const auto plShadowTexAtlasRequest = pointLightComponents[0]->GetRenderData().ShadowInfo->GetTextureAtlasSpaceRequest();
 
-      const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2),
-                                                      FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl", FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl", plShadowTexAtlasRequest);
+      const CubemapComponentData cubemapComponentData("CubemapComponent", glm::vec3(10, 2, 10), glm::vec3(), glm::vec3(2), plShadowTexAtlasRequest);
       const auto cubemapRendererComponent = sceneSp->CreateComponent_GameThread<CubemapComponent, EngineCore::eComponentMetaType::Cubemap>(cubemapComponentData);
       groundActor->AddComponent(cubemapRendererComponent);*/
 

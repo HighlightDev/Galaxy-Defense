@@ -42,6 +42,7 @@
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/ScriptingCore/Common/JsonParserHelper.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
 
 #include <unordered_map>
 #include <json/json.hpp>
@@ -121,7 +122,7 @@ namespace EngineCore
                 std::shared_ptr<ProjectedShadowInfo> shadowInfo;
                 if (jsonObj.contains("shadowAtlasSize"))
                 {
-                    const auto &cfg = EngineConfigHolder::GetInstance()->GetEngineConfig();
+                    const auto &cfg = EngineUtility::EngineConfigHolder::GetInstance()->GetEngineConfig();
                     const float orthoHalfExtent = cfg.ShadowOrthoProjectionHalfExtent;
                     const auto shadowAtlasSize = JsonParserHelper::FromJsonToInt("shadowAtlasSize", jsonObj);
                     const auto &directionalLightTAR = TextureAtlasFactory::GetInstance()->AddTextureAtlasRequest(glm::ivec2(shadowAtlasSize));
@@ -158,7 +159,7 @@ namespace EngineCore
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto luaScriptRelPath = JsonParserHelper::FromJsonToString("luaScriptName", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
 
                 componentData = std::make_shared<MeshComponentData>(objectName, pathToMesh, translation, rotation, scale, luaScriptRelPath, material);
@@ -240,7 +241,7 @@ namespace EngineCore
             {
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
 
                 componentData = std::make_shared<SkyboxComponentData>(objectName, scale, material);
@@ -251,7 +252,7 @@ namespace EngineCore
                 const auto rotation = JsonParserHelper::FromJsonToVec3("rotation", jsonObj);
                 const auto scale = JsonParserHelper::FromJsonToVec3("scale", jsonObj);
                 const auto materialProxyId = JsonParserHelper::FromJsonToInt("materialProxyId", jsonObj);
-                const auto &material = sceneSp->GetMaterialInstanceById(materialProxyId);
+                const auto &material = sceneSp->GetMaterialByProxyId(materialProxyId);
                 assert(material);
                 componentData = std::make_shared<ForwardShadingMeshComponentData>("", objectName, translation, rotation, scale, material);
             }

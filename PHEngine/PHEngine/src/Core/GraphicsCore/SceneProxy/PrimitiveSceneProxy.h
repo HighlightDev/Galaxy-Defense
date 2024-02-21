@@ -2,20 +2,25 @@
 
 #include <memory>
 
-#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/Mesh/Skin.h"
 #include "Core/GraphicsCore/Texture/ITexture.h"
 #include "Core/GameCore/EngineObject.h"
 #include "Core/GraphicsCore/Material/MaterialProxy.h"
+#include "Core/GraphicsCore/OpenGL/Shader/Shader.h"
 #include "Core/GraphicsCore/OpenGL/Shader/VertexFactoryMaterialCompositeShader.h"
+#include "Core/GraphicsCore/OpenGL/Shader/CompositeShaderParams.h"
 #include "Core/GraphicsCore/SceneViewInfo/AProxyVisibilityController.h"
 #include "Core/GraphicsCore/SceneProxy/SceneProxyBase.h"
 #include "Core/GraphicsCore/SceneProxy/CameraSceneProxy.h"
+#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
+#include "Core/IoCore/FolderManager.h"
 
 using namespace Graphics::OpenGL;
 using namespace Graphics::Mesh;
 using namespace Graphics::Texture;
 using namespace EngineCore;
+using namespace Resources;
+using namespace IO;
 
 namespace Graphics
 {
@@ -71,12 +76,7 @@ namespace Graphics
 
       public:
          PrimitiveSceneProxy(const ::EngineCore::PrimitiveComponent *component,
-                             const std::shared_ptr<Skin> &skin,
-                             const std::shared_ptr<IShader> &materialShader,
-                             const std::shared_ptr<IShader> &planarReflectionShader,
                              const std::shared_ptr<MaterialProxy> &materialProxy);
-
-         ~PrimitiveSceneProxy() override;
 
          void CleanUp() override;
 
@@ -114,6 +114,23 @@ namespace Graphics
          void SetSortOrderValue(const int32_t sortOrderValue);
 
          int32_t GetSortOrderValue() const;
+
+      protected:
+         template <typename VertexFactoryType, typename BaseShaderType>
+         typename CompositeShaderPool::sharedValue_t
+         CreateMaterialShader(const std::string &compositeShaderName,
+                              const ShaderParams &shaderParams,
+                              std::shared_ptr<MaterialProxy> materialProxy) const
+         {
+            CompositeMaterialShaderParams compositeParams(compositeShaderName,
+                                                          shaderParams,
+                                                          materialProxy);
+
+            return CompositeShaderPool::GetInstance()
+                ->template GetOrAllocateResource<VertexFactoryMaterialCompositeShader<
+                    VertexFactoryType,
+                    BaseShaderType>>(compositeParams);
+         }
       };
 
    }

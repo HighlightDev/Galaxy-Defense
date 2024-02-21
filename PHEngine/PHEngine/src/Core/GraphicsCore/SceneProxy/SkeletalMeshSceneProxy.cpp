@@ -15,9 +15,6 @@ namespace Graphics
    {
       SkeletalMeshSceneProxy::SkeletalMeshSceneProxy(const SkeletalMeshComponent *component)
           : PrimitiveSceneProxy(component,
-                                nullptr,
-                                component->GetRenderData().m_materialShader,
-                                component->GetRenderData().m_planarReflectionShader,
                                 component->GetRenderData().mMaterialProxy),
             mRenderData(component->GetRenderData()),
             mAnimationPlayer(nullptr)
@@ -38,6 +35,27 @@ namespace Graphics
       void SkeletalMeshSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("SkeletalMeshSceneProxy::PostConstructorInitialize");
+
+         const ShaderParams shaderParams(
+             "DeferredNonSkeletalBase Shader",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "simpleVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "deferredFS.glsl");
+
+         m_shader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, SimpleShader>(
+             "SkeletalMeshVertexFactory<4>_SimpleShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
+
+         const ShaderParams planarReflectionParams(
+             "PlanarReflectionShader",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "planarReflectionVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() +
+                 "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_planarReflectionShader = CreateMaterialShader<SkeletalMeshVertexFactory<4>, CapturePlanarReflectionShader>(
+             "SkeletalMeshVertexFactory<4>_CapturePlanarReflectionShader" + mMaterialProxy->MaterialName, planarReflectionParams, mMaterialProxy);
+
          m_skin = MeshPool::GetInstance()->GetOrAllocateResource(mRenderData.mModelName);
          std::shared_ptr<AnimatedSkin> animatedSkinSp = std::dynamic_pointer_cast<AnimatedSkin>(m_skin);
          assert((animatedSkinSp));
@@ -49,14 +67,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                  [this, sceneSp, boundingBox]()
-                  {
-                     const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                     assert(engineObject);
-                     const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                     assert(primitiveComponent);
-                     primitiveComponent->SetBoundingBox(boundingBox);
-                  });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }

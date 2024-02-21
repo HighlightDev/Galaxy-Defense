@@ -24,9 +24,6 @@ namespace Graphics
     {
         ParticleSystemSceneProxy::ParticleSystemSceneProxy(const ParticleSystemComponent *component)
             : PrimitiveSceneProxy(component,
-                                  nullptr,
-                                  component->GetRenderData().m_shader,
-                                  nullptr,
                                   component->GetRenderData().mMaterialProxy),
               mParticlesRawDataHandler(component->GetParticlesCount()),
               mRenderData(component->GetRenderData()),
@@ -37,6 +34,20 @@ namespace Graphics
         void ParticleSystemSceneProxy::PostConstructorInitialize()
         {
             static constexpr uint64_t functionId = Hash64_CT("ParticleSystemSceneProxy::PostConstructorInitialize");
+
+            const ShaderParams particlesShaderParams(
+                "ParticleShader",
+                FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleVS.glsl",
+                FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleFS.glsl",
+                FolderManager::GetInstance()->GetShadersPath() + SLASH + "particleGS.glsl");
+
+            CompositeShaderParams particlesCompositeShaderParams("InstancedStaticMeshVertexFactory_SimpleShader",
+                                                                 particlesShaderParams);
+
+            const auto &particleSystemShader = CreateMaterialShader<InstancedStaticMeshVertexFactory, SimpleShader>(
+                "InstancedStaticMeshVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName,
+                particlesShaderParams, mMaterialProxy);
+
             m_skin = ParticlesPool::GetInstance()->GetOrAllocateResource(mRenderData.mParticleMeshParams);
 
             if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
@@ -45,14 +56,14 @@ namespace Graphics
                 {
                     const auto boundingBox = m_skin->GetBoundingBox();
                     sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                                 [this, boundingBox, sceneSp]()
-                                                 {
-                                                     const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                                     assert(engineObject);
-                                                     const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                                                     assert(primitiveComponent);
-                                                     primitiveComponent->SetBoundingBox(boundingBox);
-                                                 });
+                                                                                      [this, boundingBox, sceneSp]()
+                                                                                      {
+                                                                                          const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                          assert(engineObject);
+                                                                                          const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                          assert(primitiveComponent);
+                                                                                          primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                      });
                 }
             }
         }

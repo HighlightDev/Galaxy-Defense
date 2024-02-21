@@ -12,10 +12,6 @@ namespace Graphics
       SceneProxyIdCounter++;
    }
 
-   SceneProxyBase::~SceneProxyBase()
-   {
-   }
-
    int32_t SceneProxyBase::GetSceneProxyId() const
    {
       return mSceneProxyId;

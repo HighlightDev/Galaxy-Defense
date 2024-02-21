@@ -21,7 +21,7 @@ namespace Graphics {
 
       SceneProxyBase(const bool isEnabled);
 
-      virtual ~SceneProxyBase();
+      virtual ~SceneProxyBase() = default;
 
       int32_t GetSceneProxyId() const;
 

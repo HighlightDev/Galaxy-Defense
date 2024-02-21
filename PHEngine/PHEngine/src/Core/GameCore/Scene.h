@@ -134,8 +134,6 @@ namespace EngineCore
 
       void RegisterMaterialInstance(const std::shared_ptr<Graphics::IMaterial> &material);
 
-      std::shared_ptr<IMaterial> GetMaterialInstanceById(const int32_t materialProxyId) const;
-
       std::shared_ptr<EngineObject> GetEngineObjectByName(const std::string &name) const;
 
       std::shared_ptr<EngineObject> GetEngineObjectById(const int32_t id) const;

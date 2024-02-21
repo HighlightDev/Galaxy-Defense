@@ -15,11 +15,8 @@ namespace Graphics
    {
       CubemapSceneProxy::CubemapSceneProxy(const CubemapComponent *component)
           : PrimitiveSceneProxy(component,
-                                nullptr,
-                                nullptr,
-                                nullptr,
                                 nullptr),
-            m_shaderCubemap(std::static_pointer_cast<CubemapShader>(component->GetRenderData().m_shader)),
+            m_shaderCubemap(nullptr),
             m_textureObtainer(component->GetRenderData().m_texture)
       {
       }
@@ -42,6 +39,12 @@ namespace Graphics
       void CubemapSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("CubemapSceneProxy::PostConstructorInitialize");
+
+         const ShaderParams shaderParams("Cubemap Shader",
+                                   FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererVS.glsl",
+                                   FolderManager::GetInstance()->GetShadersPath() + "cubemapRendererFS.glsl");
+         m_shaderCubemap = ShaderPool::GetInstance()->template GetOrAllocateResource<CubemapShader>(shaderParams);
+
          m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::CUBE);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
@@ -50,14 +53,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                            [this, sceneSp, boundingBox]()
-                                            {
-                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                               assert(engineObject);
-                                               const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                                               assert(primitiveComponent);
-                                               primitiveComponent->SetBoundingBox(boundingBox);
-                                            });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }
@@ -69,10 +72,10 @@ namespace Graphics
 
       void CubemapSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const std::shared_ptr<TextureAtlasHandler>& texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
+         const std::shared_ptr<TextureAtlasHandler> &texHandler = TextureAtlasFactory::GetInstance()->GetTextureAtlasCellByRequestId(m_textureObtainer.MyRequestId);
          if (texHandler && texHandler->GetTextureType() == eTextureType::TEXTURE_CUBE)
          {
-            const auto& texture = texHandler->GetAtlasResource();
+            const auto &texture = texHandler->GetAtlasResource();
             auto cubemapShader = std::static_pointer_cast<CubemapShader>(m_shaderCubemap);
 
             cubemapShader->ExecuteShader();

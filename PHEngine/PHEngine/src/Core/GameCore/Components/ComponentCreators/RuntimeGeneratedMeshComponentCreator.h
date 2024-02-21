@@ -4,19 +4,11 @@
 
 #include "IComponentCreatable.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/ResourceManagerCore/Pool/CompositeShaderPool.h"
-#include "Core/GameCore/ShaderImplementation/CapturePlanarReflectionShader.h"
-#include "Core/GameCore/ShaderImplementation/SimpleShader.h"
-#include "Core/GameCore/ShaderImplementation/VertexFactoryImp/StaticMeshVertexFactory.h"
 #include "Core/GraphicsCore/RenderData/StaticMeshRenderData.h"
 #include "Core/GameCore/Components/ComponentData/MeshComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedMeshPoolParameters.h"
-#include "Core/IoCore/FolderManager.h"
 
-using namespace EngineCore::ShaderImpl;
 using namespace Graphics::Data;
-using namespace Graphics::OpenGL;
-using namespace IO;
 
 namespace EngineCore
 {
@@ -24,7 +16,7 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class RuntimeGeneratedMeshComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
@@ -33,42 +25,12 @@ namespace EngineCore
             std::shared_ptr<Skin> skin;
 
             const auto &mData = std::static_pointer_cast<RuntimeGeneratedMeshComponentData>(data);
-
             assert(eMeshComponentDataType::RUNTIME_GENERATED_MESH == mData->GetMeshComponentDataType());
             RuntimeGeneratedMeshPoolParameters runtimeMeshParams(mData->EngineObjectName, mData->mMaxVerticesCount);
 
             const auto &materialProxy = mData->m_material->GetMaterialProxyWp().lock();
             assert(materialProxy);
-
-            const ShaderParams shaderParams(
-                "RuntimeGeneratedMesh_BaseShader",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "runtimeGeneratedMeshVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "forwardFS.glsl");
-
-            typename CompositeShaderPool::sharedValue_t meshShader =
-                CreateMaterialShader<StaticMeshVertexFactory, SimpleShader>(
-                    "StaticMeshVertexFactory_SimpleShader_" + materialProxy->MaterialName, shaderParams, materialProxy);
-
-            const ShaderParams planarReflectionParams(
-                "PlanarReflectionShader",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "planarReflectionVS.glsl",
-                FolderManager::GetInstance()->GetShadersPath() +
-                    "composite_shaders" + SLASH + "forwardFS.glsl");
-
-            typename CompositeShaderPool::sharedValue_t planarReflectionShader =
-                CreateMaterialShader<StaticMeshVertexFactory,
-                                     CapturePlanarReflectionShader>(
-                    "StaticMeshVertexFactory_CapturePlanarReflectionShader_" + materialProxy->MaterialName, planarReflectionParams, materialProxy);
-
-            return std::make_shared<ComponentInstantiationType>(mData,
-                                                                StaticMeshRenderData("",
-                                                                                     meshShader,
-                                                                                     planarReflectionShader,
-                                                                                     materialProxy, false),
-                                                                runtimeMeshParams);
+            return std::make_shared<ComponentInstantiationType>(mData, StaticMeshRenderData("", materialProxy, false), runtimeMeshParams);
         }
     };
 }

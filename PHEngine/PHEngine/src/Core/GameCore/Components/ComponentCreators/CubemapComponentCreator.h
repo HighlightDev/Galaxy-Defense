@@ -3,9 +3,6 @@
 #include <type_traits>
 
 #include "IComponentCreatable.h"
-#include "Core/ResourceManagerCore/Pool/ShaderPool.h"
-#include "Core/ResourceManagerCore/Pool/SimplePrimitivePool.h"
-#include "Core/GameCore/ShaderImplementation/CubemapShader.h"
 #include "Core/GameCore/Components/ComponentData/CubemapComponentData.h"
 #include "Core/GraphicsCore/RenderData/CubemapRenderData.h"
 
@@ -18,22 +15,14 @@ namespace EngineCore
 
     template <typename ComponentInstantiationType>
     class CubemapComponentCreator
-        : public ComponentCreatorBase
+        : public IComponentCreatable
     {
     public:
         virtual typename std::enable_if<std::is_base_of<Component, ComponentInstantiationType>::value, std::shared_ptr<Component>>::type
         CreateComponent(const std::shared_ptr<Scene> &spScene, const std::shared_ptr<ComponentData> &data) const override
         {
-            const auto &mData =
-                std::static_pointer_cast<CubemapComponentData>(data);
-
-            ShaderParams shaderParams("Cubemap Shader", mData->m_vsShaderPath,
-                                      mData->m_fsShaderPath);
-            ShaderPool::sharedValue_t shader =
-                ShaderPool::GetInstance()
-                    ->template GetOrAllocateResource<CubemapShader>(shaderParams);
-
-            CubemapRenderData renderData(shader, mData->m_textureObtainer);
+            const auto &mData = std::static_pointer_cast<CubemapComponentData>(data);
+            CubemapRenderData renderData(mData->m_textureObtainer);
 
             return std::make_shared<ComponentInstantiationType>(mData, renderData);
         }

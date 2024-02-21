@@ -13,20 +13,29 @@ namespace Graphics
    {
       SkyboxSceneProxy::SkyboxSceneProxy(const SkyboxComponent *component)
           : PrimitiveSceneProxy(component,
-                                nullptr,
-                                component->GetRenderData().m_materialShader,
-                                component->GetRenderData().m_planarReflectionShader,
                                 component->GetRenderData().mMaterialProxy)
-      {
-      }
-
-      SkyboxSceneProxy::~SkyboxSceneProxy()
       {
       }
 
       void SkyboxSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("SkyboxSceneProxy::PostConstructorInitialize");
+
+         const ShaderParams shaderParams = ShaderParams("SkyboxForwardShader",
+                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "simpleVS.glsl",
+                                                        FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_shader = CreateMaterialShader<SkyboxVertexFactory, SimpleShader>("SkyboxVertexFactory_SimpleShader_" + mMaterialProxy->MaterialName,
+                                                                            shaderParams, mMaterialProxy);
+
+         const ShaderParams planarReflectionParams("PlanarReflectionShader",
+                                                   FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "planarReflectionVS.glsl",
+                                                   FolderManager::GetInstance()->GetShadersPath() + "composite_shaders" + SLASH + "forwardFS.glsl");
+
+         m_planarReflectionShader = CreateMaterialShader<SkyboxVertexFactory,
+                                                         CapturePlanarReflectionShader>("SkyboxVertexFactory_CapturePlanarReflectionShader_" + mMaterialProxy->MaterialName,
+                                                                                        planarReflectionParams, mMaterialProxy);
+
          m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource(static_cast<int32_t>(SimplePrimitiveType::INVERTED_VERTICES_DIRECTION_CUBE));
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
@@ -35,14 +44,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                            [this, sceneSp, boundingBox]()
-                                            {
-                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                               assert(engineObject);
-                                               const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                                               assert(primitiveComponent);
-                                               primitiveComponent->SetBoundingBox(boundingBox);
-                                            });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }

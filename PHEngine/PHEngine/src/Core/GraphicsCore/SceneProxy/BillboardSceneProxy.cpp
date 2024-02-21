@@ -14,9 +14,6 @@ namespace Graphics
 
       BillboardSceneProxy::BillboardSceneProxy(const BillboardComponent *component)
           : PrimitiveSceneProxy(component,
-                                nullptr,
-                                component->GetRenderData().m_shader,
-                                nullptr,
                                 component->GetRenderData().mMaterialProxy),
             mRenderData(component->GetRenderData()),
             mBillboardExtent(component->GetBillboardExtent())
@@ -30,6 +27,16 @@ namespace Graphics
       void BillboardSceneProxy::PostConstructorInitialize()
       {
          static constexpr uint64_t functionId = Hash64_CT("BillboardSceneProxy::PostConstructorInitialize");
+
+         const ShaderParams shaderParams(
+             "Billboard Shader",
+             FolderManager::GetInstance()->GetShadersPath() + "billboardVS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() + "billboardFS.glsl",
+             FolderManager::GetInstance()->GetShadersPath() + "billboardGS.glsl");
+
+         m_shader = CreateMaterialShader<StaticMeshVertexFactory, BillboardShader>(
+             "StaticMeshVertexFactory_BillboardShader_" + mMaterialProxy->MaterialName, shaderParams, mMaterialProxy);
+
          m_skin = SimplePrimitivePool::GetInstance()->GetOrAllocateResource((int32_t)SimplePrimitiveType::POINT);
 
          if (const auto &deferredShadingSceneRendererSp = GetDeferredShadingSceneRendererWp().lock())
@@ -38,14 +45,14 @@ namespace Graphics
             {
                const auto boundingBox = m_skin->GetBoundingBox();
                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mSceneProxyId, functionId,
-                                            [this, sceneSp, boundingBox]()
-                                            {
-                                               const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
-                                               assert(engineObject);
-                                               const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
-                                               assert(primitiveComponent);
-                                               primitiveComponent->SetBoundingBox(boundingBox);
-                                            });
+                                                                                 [this, sceneSp, boundingBox]()
+                                                                                 {
+                                                                                    const auto &engineObject = sceneSp->GetEngineObjectById(GetGameObjectId());
+                                                                                    assert(engineObject);
+                                                                                    const auto &primitiveComponent = std::static_pointer_cast<PrimitiveComponent>(engineObject);
+                                                                                    assert(primitiveComponent);
+                                                                                    primitiveComponent->SetBoundingBox(boundingBox);
+                                                                                 });
             }
          }
       }
@@ -57,7 +64,7 @@ namespace Graphics
 
       void BillboardSceneProxy::Render(const std::shared_ptr<CameraSceneProxy> &cameraSceneProxy, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
       {
-         const auto& billboardShader = GetShader();
+         const auto &billboardShader = GetShader();
 
          billboardShader->ExecuteShader();
          billboardShader->GetMaterialShader()->LoadUniformValues(mMaterialProxy);
