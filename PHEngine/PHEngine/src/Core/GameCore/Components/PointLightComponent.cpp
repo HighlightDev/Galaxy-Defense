@@ -25,9 +25,9 @@ namespace EngineCore
    {
       if (mLightRenderData->ShadowInfo)
       {
-         PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
-         KinematicBodyMovedEvent::GetInstance()->RemoveListener(KinematicBodyMovedEvent::GetInstanceId());
-         PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
+         PhysicsComponentUpdatedGameThreadEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedGameThreadEvent::GetInstanceId());
+         KinematicBodyMovedGameThreadEvent::GetInstance()->RemoveListener(KinematicBodyMovedGameThreadEvent::GetInstanceId());
+         PlayerMovedGameThreadEvent::GetInstance()->RemoveListener(PlayerMovedGameThreadEvent::GetInstanceId());
       }
    }
 
@@ -36,9 +36,9 @@ namespace EngineCore
       if (mLightRenderData->ShadowInfo)
       {
          const auto thisSp = std::dynamic_pointer_cast<PointLightComponent>(shared_from_this());
-         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(thisSp);
-         KinematicBodyMovedEvent::GetInstance()->AddListener(thisSp);
-         PlayerMovedEvent::GetInstance()->AddListener(thisSp);
+         PhysicsComponentUpdatedGameThreadEvent::GetInstance()->AddListener(thisSp);
+         KinematicBodyMovedGameThreadEvent::GetInstance()->AddListener(thisSp);
+         PlayerMovedGameThreadEvent::GetInstance()->AddListener(thisSp);
       }
    }
 
@@ -93,21 +93,21 @@ namespace EngineCore
       actorData.ComponentsData.emplace_back(lightCompData);
    }
 
-   void PointLightComponent::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
-   void PointLightComponent::ProcessEvent(const KinematicBodyMovedEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const KinematicBodyMovedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 
       NotifySceneProxyThatShadowmapIsDirty(functionId);
    }
 
-   void PointLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t &data)
+   void PointLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       static const uint64_t functionId = Hash("PointLightComponent: Set shadowInfo->bMustUpdateShadowmap");
 

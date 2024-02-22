@@ -28,12 +28,12 @@ namespace EngineCore
 
         DebugUiController::~DebugUiController()
         {
-            WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+            WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
         }
 
         void DebugUiController::Initialize()
         {
-            WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+            WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
         }
 
         void DebugUiController::SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp)
@@ -274,7 +274,7 @@ namespace EngineCore
             }
         }
 
-        void DebugUiController::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+        void DebugUiController::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             RecalculateWidgetsSize();
         }

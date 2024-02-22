@@ -15,8 +15,8 @@ namespace EngineCore
 
    class DirectionalLightComponent 
       : public LightComponent
-      , public PlayerMovedEvent
-      , public PhysicsComponentUpdatedEvent
+      , public PlayerMovedGameThreadEvent
+      , public PhysicsComponentUpdatedGameThreadEvent
    {
 
       using Base = LightComponent;
@@ -47,8 +47,8 @@ namespace EngineCore
 
    protected:
 
-      void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
-      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
 
    private:
 

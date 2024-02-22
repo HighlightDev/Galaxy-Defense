@@ -10,12 +10,12 @@ namespace Graphics
 
    ProjectedPointLightShadowInfo::~ProjectedPointLightShadowInfo()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedEvent::GetInstanceId());
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedGameThreadEvent::GetInstanceId());
    }
 
    void ProjectedPointLightShadowInfo::Initialize()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedPointLightShadowInfo>(shared_from_this()));
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedPointLightShadowInfo>(shared_from_this()));
    }
 
    std::shared_ptr<TextureCubeAtlasHandler> ProjectedPointLightShadowInfo::GetTextureCubeHandler() const
@@ -23,7 +23,7 @@ namespace Graphics
       return std::static_pointer_cast<TextureCubeAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t &data)
+   void ProjectedPointLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_CUBE == std::get<0>(data))
       {

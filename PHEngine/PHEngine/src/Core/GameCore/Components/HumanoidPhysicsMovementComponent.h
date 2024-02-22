@@ -15,7 +15,7 @@ namespace EngineCore
 
    class HumanoidPhysicsMovementComponent
        : public MovementComponent,
-         public CameraTransformChangedEvent
+         public CameraTransformChangedGameThreadEvent
    {
 
       float mCameraYaw;
@@ -40,7 +40,7 @@ namespace EngineCore
 
       void CollectDataForSerialization(SerializeDataContainer &dataContainer) override;
 
-      void ProcessEvent(const typename CameraTransformChangedEvent::EventData_t &data) override;
+      void ProcessEvent(const typename CameraTransformChangedGameThreadEvent::EventData_t &data) override;
 
       void Move(const float deltaTime) override;
 

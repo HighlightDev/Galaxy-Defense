@@ -5,7 +5,7 @@
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
-#include "Core/GameCore/Event/PauseGameThreadEvent.h"
+#include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/InterThreadCommunicationMgr.h"
 

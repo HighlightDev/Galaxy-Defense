@@ -57,7 +57,7 @@ namespace EngineCore
     assert(!mIsRegistered);
     mTextFieldId = UniqueFontTextIdGenerator::GenerateUniqueFontTextId();
     mIsRegistered = true;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER, receiveUpdateOnTextScreenSpaceSizeChanged);
+    TextRegisterGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::REGISTER, receiveUpdateOnTextScreenSpaceSizeChanged);
 
     LogInfo("HudTextField::RegisterText => Registered text with id = ", mTextFieldId);
   }
@@ -66,7 +66,7 @@ namespace EngineCore
   {
     assert(mIsRegistered);
     mIsRegistered = false;
-    TextRegisterEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER, false);
+    TextRegisterGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, shared_from_this(), eRegisterType::UNREGISTER, false);
 
     LogInfo( "HudTextField::UnregisterText => Unregistered text with id = ", mTextFieldId);
   }
@@ -134,7 +134,7 @@ namespace EngineCore
 
       if (mIsRegistered)
       {
-        TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+        TextDataChangedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                        shared_from_this(),
                                                        eTextChangedDataType::TEXT);
       }
@@ -149,7 +149,7 @@ namespace EngineCore
 
       if (mIsRegistered)
       {
-        TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+        TextDataChangedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                        shared_from_this(),
                                                        eTextChangedDataType::VISIBILITY);
       }
@@ -162,7 +162,7 @@ namespace EngineCore
 
     if (mIsRegistered)
     {
-      TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+      TextDataChangedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                      shared_from_this(),
                                                      eTextChangedDataType::COLOR);
     }
@@ -174,7 +174,7 @@ namespace EngineCore
 
     if (mIsRegistered)
     {
-      TextDataChangedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+      TextDataChangedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                      shared_from_this(),
                                                      eTextChangedDataType::OFFSET);
     }

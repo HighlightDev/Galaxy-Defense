@@ -9,7 +9,7 @@ using namespace EngineCore;
 namespace Event
 {
 
-   class CameraTransformChangedEvent
+   class CameraTransformChangedGameThreadEvent
       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<ACamera*>>
    {
    public:

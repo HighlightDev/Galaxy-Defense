@@ -40,7 +40,7 @@ namespace EngineCore
                          public IUiTransformable,
                          public ITickable,
                          public IAnimatable,
-                         public WindowSizeChangedEvent
+                         public WindowSizeChangedGameThreadEvent
         {
         private:
             static size_t s_UId;
@@ -171,7 +171,7 @@ namespace EngineCore
             void CleanUp() override;
 
         protected:
-            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
             void RegisterUiItem(const size_t uiId, const std::string &uiItemName);
 

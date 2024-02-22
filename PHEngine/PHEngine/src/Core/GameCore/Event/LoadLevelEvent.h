@@ -7,14 +7,14 @@
 
 namespace Event
 {
-   class LoadLevelEvent
+   class LoadLevelGameThreadEvent
       : public TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string>>
    {
    public:
       using Event = TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string>>::Event_t;
       
       std::string ToString() const override {
-         return "LoadLevelEvent";
+         return "LoadLevelGameThreadEvent";
       }
    };
 

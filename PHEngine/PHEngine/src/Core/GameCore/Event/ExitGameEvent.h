@@ -11,7 +11,7 @@ namespace Event
       using Event_t = TEvent<eEventThreadType::GAME_THREAD, NoDataEventPolicy>::Event_t;
 
       std::string ToString() const override {
-         return "GameThreadExitGameThreadEvent";
+         return "ExitGameThreadEvent";
       }
    };
 

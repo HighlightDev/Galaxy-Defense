@@ -30,7 +30,7 @@ namespace Event
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<eTextureType>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<size_t>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string>>;
-
+   template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::shared_ptr<HudTextField>, eRegisterType, bool>>;
    template class TEvent<eEventThreadType::GAME_THREAD, MultipleDataEventPolicy<std::weak_ptr<HudTextField>, eTextChangedDataType>>;
 
@@ -41,5 +41,7 @@ namespace Event
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<glm::ivec4>>;
    template class TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>;
+
+   template class TEvent<eEventThreadType::LUA_THREAD, MultipleDataEventPolicy<std::string /*event header*/, std::string /*json parameters*/>>;
 
 }

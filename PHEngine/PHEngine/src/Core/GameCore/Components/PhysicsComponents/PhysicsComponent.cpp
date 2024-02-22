@@ -26,7 +26,7 @@ namespace EnginePhysics
 
    PhysicsComponent::~PhysicsComponent()
    {
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mDescriptor->GetId());
+      Event::PhysicsDescriptorRemovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mDescriptor->GetId());
    }
 
    void PhysicsComponent::CleanUp()

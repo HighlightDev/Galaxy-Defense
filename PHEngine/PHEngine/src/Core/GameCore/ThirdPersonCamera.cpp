@@ -32,7 +32,7 @@ namespace EngineCore
                  viewProjectionInfo,
                  initPitchDeg,
                  initYawDeg),
-         PlayerMovedEvent(),
+         PlayerMovedGameThreadEvent(),
          mThirdPersonTargetGOName(""),
          bThirdPersonTargetDeferredDirty(false),
          m_thirdPersonTargetOffset(thirdPersonTargetOffset),
@@ -45,17 +45,17 @@ namespace EngineCore
 
    ThirdPersonCamera::~ThirdPersonCamera()
    {
-      PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
+      PlayerMovedGameThreadEvent::GetInstance()->RemoveListener(PlayerMovedGameThreadEvent::GetInstanceId());
    }
 
    void ThirdPersonCamera::Initialize()
    {
       ACamera::Initialize();
 
-      PlayerMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ThirdPersonCamera>(shared_from_this()));
+      PlayerMovedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ThirdPersonCamera>(shared_from_this()));
    }
 
-   void ThirdPersonCamera::ProcessEvent(const PlayerMovedEvent::EventData_t &data)
+   void ThirdPersonCamera::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       m_bThirdPersonTargetTransformationDirty = true;
       m_lerpTimeElapsed = 0.0f;

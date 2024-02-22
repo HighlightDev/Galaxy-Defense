@@ -35,12 +35,12 @@ namespace EnginePhysics
 
    DynamicCharacterController::~DynamicCharacterController()
    {
-      KinematicBodyMovedEvent::GetInstance()->RemoveListener(KinematicBodyMovedEvent::GetInstanceId());
+      KinematicBodyMovedGameThreadEvent::GetInstance()->RemoveListener(KinematicBodyMovedGameThreadEvent::GetInstanceId());
    }
 
    void DynamicCharacterController::Initialize()
    {
-      KinematicBodyMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DynamicCharacterController>(shared_from_this()));
+      KinematicBodyMovedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DynamicCharacterController>(shared_from_this()));
    }
 
    void DynamicCharacterController::CleanUp()
@@ -241,7 +241,7 @@ namespace EnginePhysics
       }
    }
 
-   void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
+   void DynamicCharacterController::ProcessEvent(const Event::KinematicBodyMovedGameThreadEvent::EventData_t &data)
    {
       if (const auto &kinematicObjDescSp = std::get<0>(data).lock())
       {

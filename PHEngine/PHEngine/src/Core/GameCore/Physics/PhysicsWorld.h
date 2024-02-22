@@ -13,7 +13,7 @@ namespace EnginePhysics
 {
       class PhysicsWorld
           : public ITickable,
-            public Event::PhysicsDescriptorRemovedEvent,
+            public Event::PhysicsDescriptorRemovedGameThreadEvent,
             public std::enable_shared_from_this<PhysicsWorld>
       {
             btBroadphaseInterface *mBroadphase;
@@ -63,6 +63,6 @@ namespace EnginePhysics
 #endif
 
       protected:
-            void ProcessEvent(const typename Event::PhysicsDescriptorRemovedEvent::EventData_t &data) override;
+            void ProcessEvent(const typename Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data) override;
       };
 }

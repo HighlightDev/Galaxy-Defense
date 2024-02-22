@@ -27,8 +27,8 @@ namespace EngineCore
 
    DirectionalLightComponent::~DirectionalLightComponent()
    {
-      PlayerMovedEvent::GetInstance()->RemoveListener(PlayerMovedEvent::GetInstanceId());
-      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
+      PlayerMovedGameThreadEvent::GetInstance()->RemoveListener(PlayerMovedGameThreadEvent::GetInstanceId());
+      PhysicsComponentUpdatedGameThreadEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedGameThreadEvent::GetInstanceId());
    }
 
    void DirectionalLightComponent::Initialize()
@@ -37,8 +37,8 @@ namespace EngineCore
 
       if (mLightRenderData->ShadowInfo)
       {
-         PlayerMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
-         PhysicsComponentUpdatedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
+         PlayerMovedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
+         PhysicsComponentUpdatedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<DirectionalLightComponent>(shared_from_this()));
       }
    }
 
@@ -104,7 +104,7 @@ namespace EngineCore
       return eComponentType::LIGHT_COMPONENT;
    }
 
-   void DirectionalLightComponent::ProcessEvent(const PlayerMovedEvent::EventData_t &data)
+   void DirectionalLightComponent::ProcessEvent(const PlayerMovedGameThreadEvent::EventData_t &data)
    {
       if (const auto playerTranslationOffset = std::get<0>(data).lock())
       {
@@ -121,7 +121,7 @@ namespace EngineCore
       }
    }
 
-   void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
+   void DirectionalLightComponent::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       bIsRenderDataDirty = true;
    }

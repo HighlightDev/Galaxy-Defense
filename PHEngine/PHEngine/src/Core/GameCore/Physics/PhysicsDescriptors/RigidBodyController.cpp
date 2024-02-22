@@ -23,7 +23,7 @@ namespace EnginePhysics
    {
       if (ePhysicsBodyType::DYNAMIC == mBodyType)
       {
-         Event::KinematicBodyMovedEvent::GetInstance()->RemoveListener(GetInstanceId());
+         Event::KinematicBodyMovedGameThreadEvent::GetInstance()->RemoveListener(GetInstanceId());
       }
    }
 
@@ -72,7 +72,7 @@ namespace EnginePhysics
       case ePhysicsBodyType::DYNAMIC:
       {
          mRigidBody->setActivationState(DISABLE_DEACTIVATION);
-         Event::KinematicBodyMovedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<RigidBodyController>(shared_from_this()));
+         Event::KinematicBodyMovedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<RigidBodyController>(shared_from_this()));
          break;
       }
       case ePhysicsBodyType::KINEMATIC:
@@ -114,7 +114,7 @@ namespace EnginePhysics
       return bResult;
    }
 
-   void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedEvent::EventData_t &data)
+   void RigidBodyController::ProcessEvent(const Event::KinematicBodyMovedGameThreadEvent::EventData_t &data)
    {
       if (const auto &kinematicObjDescSp = std::get<0>(data).lock())
       {

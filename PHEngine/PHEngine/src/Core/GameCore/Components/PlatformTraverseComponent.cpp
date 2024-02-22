@@ -126,7 +126,7 @@ namespace EngineCore
             if (auto physCompSP = spOwner->GetPhysicsComponent())
             {
                const auto physDescriptor = physCompSP->GetDescriptor();
-               KinematicBodyMovedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
+               KinematicBodyMovedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, physDescriptor, transform);
             }
          }
       }

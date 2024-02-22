@@ -16,7 +16,7 @@ namespace EnginePhysics
 
    class DynamicCharacterController
       : public PhysicsDescriptor
-      , public Event::KinematicBodyMovedEvent
+      , public Event::KinematicBodyMovedGameThreadEvent
    {
    private:
       // Physics
@@ -59,7 +59,7 @@ namespace EnginePhysics
 
       void SetMotionStateWorldTransform(const btQuaternion& quat, const btVector3& translation) override;
 
-      void ProcessEvent(const typename Event::KinematicBodyMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename Event::KinematicBodyMovedGameThreadEvent::EventData_t& data) override;
 
       ePhysicsDescriptorType GetPhysicsDescriptorType() const override;
 

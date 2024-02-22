@@ -23,7 +23,7 @@ namespace Event
                                                         int32_t /*that_phys_descriptor_id*/,
                                                         int32_t /*that_actor_id*/>>;
 
-   class PhysicsCollisionEvent
+   class PhysicsCollisionGameThreadEvent
        : public ParentEvent_t
    {
    public:
@@ -31,7 +31,7 @@ namespace Event
 
       std::string ToString() const override
       {
-         return "GameThreadPhysicsCollisionEvent";
+         return "PhysicsCollisionGameThreadEvent";
       }
    };
 }

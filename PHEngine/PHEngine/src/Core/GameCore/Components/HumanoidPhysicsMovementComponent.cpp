@@ -9,7 +9,7 @@ namespace EngineCore
 
    HumanoidPhysicsMovementComponent::HumanoidPhysicsMovementComponent(const std::shared_ptr<MovementComponentData> &movementComponentData)
        : MovementComponent(movementComponentData),
-         CameraTransformChangedEvent(),
+         CameraTransformChangedGameThreadEvent(),
          mCameraName(""),
          m_playerPhysicsComponent()
    {
@@ -31,14 +31,14 @@ namespace EngineCore
 
    HumanoidPhysicsMovementComponent::~HumanoidPhysicsMovementComponent()
    {
-      CameraTransformChangedEvent::GetInstance()->RemoveListener(CameraTransformChangedEvent::GetInstanceId());
+      CameraTransformChangedGameThreadEvent::GetInstance()->RemoveListener(CameraTransformChangedGameThreadEvent::GetInstanceId());
    }
 
    void HumanoidPhysicsMovementComponent::Initialize()
    {
       MovementComponent::Initialize();
 
-      CameraTransformChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPhysicsMovementComponent>(shared_from_this()));
+      CameraTransformChangedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPhysicsMovementComponent>(shared_from_this()));
    }
 
    eComponentType HumanoidPhysicsMovementComponent::GetComponentType() const
@@ -74,7 +74,7 @@ namespace EngineCore
       actorData.ComponentsData.emplace_back(data);
    }
 
-   void HumanoidPhysicsMovementComponent::ProcessEvent(const CameraTransformChangedEvent::EventData_t &data)
+   void HumanoidPhysicsMovementComponent::ProcessEvent(const CameraTransformChangedGameThreadEvent::EventData_t &data)
    {
       auto &cameraPtr = std::get<0>(data);
 

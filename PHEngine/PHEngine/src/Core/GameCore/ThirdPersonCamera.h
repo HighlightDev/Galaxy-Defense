@@ -12,7 +12,7 @@ namespace EngineCore
 
    class ThirdPersonCamera
        : public ACamera,
-         public PlayerMovedEvent
+         public PlayerMovedGameThreadEvent
    {
    protected:
       float m_distanceFromTargetToCamera;
@@ -59,7 +59,7 @@ namespace EngineCore
 
       void Tick(const float DeltaTime) override;
 
-      void ProcessEvent(const typename PlayerMovedEvent::EventData_t &data) override;
+      void ProcessEvent(const typename PlayerMovedGameThreadEvent::EventData_t &data) override;
 
       void UpdateRotationMatrix(int32_t deltaX, int32_t deltaY) override;
 

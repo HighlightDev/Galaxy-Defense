@@ -23,16 +23,16 @@ namespace EngineCore
 
     void MouseBindings::UnsubscribeFromEvents()
     {
-        MouseMovedEvent::GetInstance()->RemoveListener(MouseMovedEvent::GetInstanceId());
-        MouseScrollEvent::GetInstance()->RemoveListener(MouseScrollEvent::GetInstanceId());
-        MouseButtonDownEvent::GetInstance()->RemoveListener(MouseButtonDownEvent::GetInstanceId());
+        MouseMovedGameThreadEvent::GetInstance()->RemoveListener(MouseMovedGameThreadEvent::GetInstanceId());
+        MouseScrollGameThreadEvent::GetInstance()->RemoveListener(MouseScrollGameThreadEvent::GetInstanceId());
+        MouseButtonDownGameThreadEvent::GetInstance()->RemoveListener(MouseButtonDownGameThreadEvent::GetInstanceId());
     }
 
     void MouseBindings::SubscribeOnEvents()
     {
-        MouseMovedEvent::GetInstance()->AddListener(shared_from_this());
-        MouseScrollEvent::GetInstance()->AddListener(shared_from_this());
-        MouseButtonDownEvent::GetInstance()->AddListener(shared_from_this());
+        MouseMovedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
+        MouseScrollGameThreadEvent::GetInstance()->AddListener(shared_from_this());
+        MouseButtonDownGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     }
 
     void MouseBindings::Initialize()
@@ -40,19 +40,19 @@ namespace EngineCore
         SubscribeOnEvents();
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseMovedEvent::EventData_t &mouseData)
+    void MouseBindings::ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &mouseData)
     {
         const glm::ivec4 &mouseMoveData = std::get<0>(mouseData);
         PushMouseMoveEvent(mouseMoveData);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseScrollEvent::EventData_t &mouseData)
+    void MouseBindings::ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &mouseData)
     {
         const eMouseScrollDirection mouseScrollDirection = std::get<0>(mouseData);
         PushMouseScrollEvent(mouseScrollDirection);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data)
+    void MouseBindings::ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data)
     {
         mMouseKeysMaskVec = std::move(std::get<0>(data));
     }

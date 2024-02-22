@@ -9,7 +9,7 @@ namespace EnginePhysics
 {
 
    PhysicsWorld::PhysicsWorld()
-       : Event::PhysicsDescriptorRemovedEvent(),
+       : Event::PhysicsDescriptorRemovedGameThreadEvent(),
          mBroadphase(nullptr),
          mCollisionConfiguration(nullptr),
          mDispatcher(nullptr),
@@ -26,7 +26,7 @@ namespace EnginePhysics
    {
       LogInfo("PhysicsWorld::dctor");
 
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->RemoveListener(Event::PhysicsDescriptorRemovedEvent::GetInstanceId());
+      Event::PhysicsDescriptorRemovedGameThreadEvent::GetInstance()->RemoveListener(Event::PhysicsDescriptorRemovedGameThreadEvent::GetInstanceId());
       for (const auto physDescriptor : mPhysicsDescriptors)
       {
          physDescriptor->CleanUp();
@@ -45,7 +45,7 @@ namespace EnginePhysics
 
    void PhysicsWorld::Initialize()
    {
-      Event::PhysicsDescriptorRemovedEvent::GetInstance()->AddListener(shared_from_this());
+      Event::PhysicsDescriptorRemovedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
 
       mBroadphase = new btDbvtBroadphase();
       mCollisionConfiguration = new btDefaultCollisionConfiguration();
@@ -118,7 +118,7 @@ namespace EnginePhysics
 
          if (activeCollision.IsCollisionExpired())
          {
-            PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+            PhysicsCollisionGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                             ePhysicsCollisionStateType::COLLISION_UNREGISTER,
                                                             activeCollision.GetFirstCollisionBodyType(),
                                                             activeCollision.GetFirstCollisionBodyId(),
@@ -165,7 +165,7 @@ namespace EnginePhysics
          if (activeCollisionIt == mActiveCollisions.end())
          {
             mActiveCollisions.emplace_back(collisionBody1Sp, collisionBody2Sp);
-            PhysicsCollisionEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
+            PhysicsCollisionGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION,
                                                             ePhysicsCollisionStateType::COLLISION_REGISTERED,
                                                             collisionBody1Sp->GetPhysicsBodyType(),
                                                             collisionBody1Sp->GetId(),
@@ -187,7 +187,7 @@ namespace EnginePhysics
    }
 #endif
 
-   void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedEvent::EventData_t &data)
+   void PhysicsWorld::ProcessEvent(const Event::PhysicsDescriptorRemovedGameThreadEvent::EventData_t &data)
    {
       if (mPhysicsDescriptors.size())
       {

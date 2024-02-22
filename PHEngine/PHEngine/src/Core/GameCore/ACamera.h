@@ -41,7 +41,7 @@ namespace EngineCore
          public ITickable,
          public ISerializable,
          public std::enable_shared_from_this<ACamera>,
-         public WindowSizeChangedEvent
+         public WindowSizeChangedGameThreadEvent
    {
       float m_rotateSensetivity;
 
@@ -105,7 +105,7 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override{};
 
-      void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
+      void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
       virtual void PostLevelInit();
 

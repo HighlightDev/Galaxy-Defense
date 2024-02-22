@@ -7,7 +7,7 @@ namespace Graphics
 
    class ProjectedDirectionalLightShadowInfo 
       : public ProjectedShadowInfo
-      , public Event::TextureAtlasGeneratedEvent
+      , public Event::TextureAtlasGeneratedGameThreadEvent
    {
       glm::mat4x4 m_shadowViewMatrix;
 
@@ -29,7 +29,7 @@ namespace Graphics
 
       void BindShadowFramebuffer(bool bBindFramebuffer, bool clearDepthBuffer) const override;
 
-      void ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t& data) override;
 
       glm::mat4 GetShadowViewMatrix() const;
 

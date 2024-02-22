@@ -12,7 +12,7 @@ namespace EngineCore
    
    class HumanoidPlayerController
       : public ActorController
-      , public PhysicsComponentUpdatedEvent
+      , public PhysicsComponentUpdatedGameThreadEvent
    {
 
       using Base = Actor;
@@ -31,7 +31,7 @@ namespace EngineCore
 
       void Tick(const float deltaTime) override;
 
-      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
 
    };
 

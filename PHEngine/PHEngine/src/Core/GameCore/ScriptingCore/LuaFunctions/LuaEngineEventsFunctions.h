@@ -21,7 +21,7 @@ namespace EngineCore
 
       class LuaEngineEventsFunctions
           : public ILuaFunctionable
-          , public LuaWindowSizeChangedEvent
+          , public WindowSizeChangedLuaThreadEvent
           , public std::enable_shared_from_this<LuaEngineEventsFunctions>
       {
       protected:
@@ -55,7 +55,7 @@ namespace EngineCore
 
          void SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string/*level name*/>& data);
 
-         void ProcessEvent(const LuaWindowSizeChangedEvent::EventData_t &data) override;
+         void ProcessEvent(const WindowSizeChangedLuaThreadEvent::EventData_t &data) override;
       };
    }
 }

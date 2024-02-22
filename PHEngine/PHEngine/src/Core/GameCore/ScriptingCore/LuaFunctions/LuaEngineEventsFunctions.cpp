@@ -7,9 +7,9 @@
 #include "Core/CommonCore/ThreadHelper.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/GameCore/Scene.h"
-#include "Core/GameCore/Event/PauseGameThreadEvent.h"
+#include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
-#include "Core/GameCore/Event/ExitGameThreadEvent.h"
+#include "Core/GameCore/Event/ExitGameEvent.h"
 
 #include <json/json.hpp>
 
@@ -28,12 +28,12 @@ namespace EngineCore
 
       LuaEngineEventsFunctions::~LuaEngineEventsFunctions()
       {
-         LuaWindowSizeChangedEvent::GetInstance()->RemoveListener(LuaWindowSizeChangedEvent::GetInstanceId());
+         WindowSizeChangedLuaThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedLuaThreadEvent::GetInstanceId());
       }
       
       void LuaEngineEventsFunctions::Initialize()
       {
-         LuaWindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+         WindowSizeChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
       }
 
       void LuaEngineEventsFunctions::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -95,11 +95,11 @@ namespace EngineCore
          {
             static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [levelName]()
-                                                                              { LoadLevelEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName); });
+                                                                              { LoadLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName); });
          }
       }
 
-      void LuaEngineEventsFunctions::ProcessEvent(const LuaWindowSizeChangedEvent::EventData_t &data)
+      void LuaEngineEventsFunctions::ProcessEvent(const WindowSizeChangedLuaThreadEvent::EventData_t &data)
       {
          const auto viewPortInfo = std::get<0>(data);
          nlohmann::json jsonObj;

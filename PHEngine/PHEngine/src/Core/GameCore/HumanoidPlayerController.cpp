@@ -15,14 +15,14 @@ namespace EngineCore
 
    HumanoidPlayerController::~HumanoidPlayerController()
    {
-      PhysicsComponentUpdatedEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedEvent::GetInstanceId());
+      PhysicsComponentUpdatedGameThreadEvent::GetInstance()->RemoveListener(PhysicsComponentUpdatedGameThreadEvent::GetInstanceId());
    }
 
    void HumanoidPlayerController::Initialize()
    {
       ActorController::Initialize();
 
-      PhysicsComponentUpdatedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPlayerController>(shared_from_this()));
+      PhysicsComponentUpdatedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<HumanoidPlayerController>(shared_from_this()));
 
       const auto &actorSp = m_actorWp.lock();
       const auto &rootComponent = actorSp->GetBaseRootComponent();
@@ -31,10 +31,10 @@ namespace EngineCore
       m_inputComponent = actorSp->GetInputComponent();
       assert(m_inputComponent);
 
-      PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+      PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
    }
 
-   void HumanoidPlayerController::ProcessEvent(const PhysicsComponentUpdatedEvent::EventData_t &data)
+   void HumanoidPlayerController::ProcessEvent(const PhysicsComponentUpdatedGameThreadEvent::EventData_t &data)
    {
       const std::string &actorName = std::move(std::get<0>(data));
 
@@ -44,7 +44,7 @@ namespace EngineCore
          {
             if (auto rootComponent = actorSp->GetBaseRootComponent())
             {
-               PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
+               PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, rootComponent->GetTransformWeakPtr());
             }
          }
       }

@@ -46,12 +46,12 @@ namespace EngineCore
 
         UiCanvas::~UiCanvas()
         {
-            WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+            WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
         }
 
         void UiCanvas::Initialize()
         {
-            WindowSizeChangedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<UiCanvas>(shared_from_this()));
+            WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<UiCanvas>(shared_from_this()));
         }
 
         void UiCanvas::InitializeInputSystem()
@@ -304,7 +304,7 @@ namespace EngineCore
             CollectChildrenWithDescendingZOrder();
         }
 
-        void UiCanvas::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+        void UiCanvas::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             const glm::ivec4 newViewPortInfo = static_cast<glm::ivec4>(std::get<0>(data));
             mWidthHeight = glm::ivec2(newViewPortInfo.z, newViewPortInfo.w);

@@ -37,7 +37,7 @@ namespace Game
     class CombatController : public ITickable,
                              public ILevelController,
                              public MainPlayerActionEvent,
-                             public PhysicsCollisionEvent,
+                             public PhysicsCollisionGameThreadEvent,
                              public RayCollisionEvent,
                              public SphereContactCollisionEvent,
                              public ICameraTransformChangeNotifyable,
@@ -95,7 +95,7 @@ namespace Game
     protected:
         void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
-        void ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data) override;
+        void ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data) override;
 
         void ProcessEvent(const typename RayCollisionEvent::EventData_t &data) override;
 

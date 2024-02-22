@@ -31,7 +31,7 @@ namespace Game
       assert(actorSp);
       const auto &rootComponent = actorSp->GetBaseRootComponent();
       assert(rootComponent);
-      PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+      PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
 
       const auto &primitiveComponents = actorSp->GetComponentsByType<PrimitiveComponent>();
       assert(primitiveComponents.size());
@@ -185,7 +185,7 @@ namespace Game
          if (bMoveCommitted || spaceshipTweener->IsTransitionActive())
          {
             const auto &rootComponent = actorSp->GetBaseRootComponent();
-            PlayerMovedEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
+            PlayerMovedGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, rootComponent->GetTransformWeakPtr());
          }
       }
    }

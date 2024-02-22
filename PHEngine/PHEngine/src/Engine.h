@@ -6,8 +6,8 @@
 #include "Core/GameCore/ILevelFactory.h"
 #include "Core/GameCore/Input/InputManager.h"
 #include "Core/CommonCore/TimeHelper.h"
-#include "Core/GameCore/Event/PauseGameThreadEvent.h"
-#include "Core/GameCore/Event/ExitGameThreadEvent.h"
+#include "Core/GameCore/Event/PauseGameEvent.h"
+#include "Core/GameCore/Event/ExitGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/CommonCore/Timer.h"
 
@@ -35,7 +35,7 @@ namespace EngineCore
     class Engine
         : public PauseGameThreadEvent,
           public ExitGameThreadEvent,
-          public LoadLevelEvent,
+          public LoadLevelGameThreadEvent,
           public std::enable_shared_from_this<Engine>
     {
         InterThreadCommunicationMgr m_interThreadMgr;
@@ -104,7 +104,7 @@ namespace EngineCore
 
         void ProcessEvent(const ExitGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const LoadLevelEvent::EventData_t &data) override;
+        void ProcessEvent(const LoadLevelGameThreadEvent::EventData_t &data) override;
 
         void GameThreadPulse();
 

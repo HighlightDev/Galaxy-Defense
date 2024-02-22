@@ -20,7 +20,7 @@ namespace EngineCore
 
         class UiInputSystem
             : public ITickable
-            , public WindowSizeChangedEvent
+            , public WindowSizeChangedGameThreadEvent
             , public std::enable_shared_from_this<UiInputSystem>
         {
         private:
@@ -49,7 +49,7 @@ namespace EngineCore
 
             void UnpausableTick(const float deltaTime) override;
 
-            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
         private:
             void OnMousePressedTimerTimeout();

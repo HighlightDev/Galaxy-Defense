@@ -65,12 +65,12 @@ namespace EngineCore
 
    Scene::~Scene()
    {
-      WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+      WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
    }
 
    void Scene::Initialize()
    {
-      WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+      WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void Scene::OnLevelInit()
@@ -435,12 +435,12 @@ namespace EngineCore
       mUiHandler->UnpausableTick(deltaTime);
    }
 
-   void Scene::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+   void Scene::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
    {
       if (const auto &sceneRendererSp = m_interThreadMgr.GetSceneRendererWP().lock())
       {
          m_interThreadMgr.ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(),
-                                                Hash("Scene::WindowSizeChangedEvent"), [sceneRendererSp, viewPortInfo = std::get<0>(data)]()
+                                                Hash("Scene::WindowSizeChangedGameThreadEvent"), [sceneRendererSp, viewPortInfo = std::get<0>(data)]()
                                                 { sceneRendererSp->OnWindowSizeChanged(viewPortInfo); });
       }
    }

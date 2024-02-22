@@ -16,19 +16,19 @@ namespace EngineCore
 
         EngineInputLuaProxy::~EngineInputLuaProxy()
         {
-            LuaThreadKeyboardButtonDownEvent::GetInstance()->RemoveListener(LuaThreadKeyboardButtonDownEvent::GetInstanceId());
-            LuaThreadMouseMovedEvent::GetInstance()->RemoveListener(LuaThreadMouseMovedEvent::GetInstanceId());
-            LuaThreadMouseScrollEvent::GetInstance()->RemoveListener(LuaThreadMouseScrollEvent::GetInstanceId());
-            LuaThreadMouseButtonDownEvent::GetInstance()->RemoveListener(LuaThreadMouseButtonDownEvent::GetInstanceId());
+            KeyboardButtonDownLuaThreadEvent::GetInstance()->RemoveListener(KeyboardButtonDownLuaThreadEvent::GetInstanceId());
+            MouseMovedLuaThreadEvent::GetInstance()->RemoveListener(MouseMovedLuaThreadEvent::GetInstanceId());
+            MouseScrollLuaThreadEvent::GetInstance()->RemoveListener(MouseScrollLuaThreadEvent::GetInstanceId());
+            MouseButtonDownLuaThreadEvent::GetInstance()->RemoveListener(MouseButtonDownLuaThreadEvent::GetInstanceId());
         }
 
         void EngineInputLuaProxy::Initialize()
         {
             const auto thisSp = shared_from_this();
-            LuaThreadKeyboardButtonDownEvent::GetInstance()->AddListener(thisSp);
-            LuaThreadMouseMovedEvent::GetInstance()->AddListener(thisSp);
-            LuaThreadMouseScrollEvent::GetInstance()->AddListener(thisSp);
-            LuaThreadMouseButtonDownEvent::GetInstance()->AddListener(thisSp);
+            KeyboardButtonDownLuaThreadEvent::GetInstance()->AddListener(thisSp);
+            MouseMovedLuaThreadEvent::GetInstance()->AddListener(thisSp);
+            MouseScrollLuaThreadEvent::GetInstance()->AddListener(thisSp);
+            MouseButtonDownLuaThreadEvent::GetInstance()->AddListener(thisSp);
         }
 
         void EngineInputLuaProxy::CleanUp()
@@ -40,7 +40,7 @@ namespace EngineCore
             mReleasedKeysOnCurrentTick.clear();
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadKeyboardButtonDownEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data)
         {
             const auto &keyboardKeysState = std::get<0>(data);
 
@@ -80,17 +80,17 @@ namespace EngineCore
             }
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const typename MouseMovedLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseScrollEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const typename MouseScrollLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }
 
-        void EngineInputLuaProxy::ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data)
+        void EngineInputLuaProxy::ProcessEvent(const typename MouseButtonDownLuaThreadEvent::EventData_t &data)
         {
             // todo: to be implemented later
         }

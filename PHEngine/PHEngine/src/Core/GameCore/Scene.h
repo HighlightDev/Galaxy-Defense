@@ -59,7 +59,7 @@ namespace EngineCore
    class Scene : public EngineObject,
                  public ITickable,
                  public std::enable_shared_from_this<Scene>,
-                 public WindowSizeChangedEvent
+                 public WindowSizeChangedGameThreadEvent
    {
    private:
       std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
@@ -120,7 +120,7 @@ namespace EngineCore
 
       void UnpausableTick(const float deltaTime) override;
 
-      void ProcessEvent(const WindowSizeChangedEvent::EventData_t& data) override;
+      void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
 
       void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 

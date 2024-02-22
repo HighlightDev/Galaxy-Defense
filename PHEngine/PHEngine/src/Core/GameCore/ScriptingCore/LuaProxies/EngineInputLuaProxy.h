@@ -17,10 +17,10 @@ namespace EngineCore
     namespace Scripts
     {
         class EngineInputLuaProxy : public LuaProxy,
-                                    public LuaThreadKeyboardButtonDownEvent,
-                                    public LuaThreadMouseMovedEvent,
-                                    public LuaThreadMouseScrollEvent,
-                                    public LuaThreadMouseButtonDownEvent,
+                                    public KeyboardButtonDownLuaThreadEvent,
+                                    public MouseMovedLuaThreadEvent,
+                                    public MouseScrollLuaThreadEvent,
+                                    public MouseButtonDownLuaThreadEvent,
                                     public std::enable_shared_from_this<EngineInputLuaProxy>
 
         {
@@ -44,13 +44,13 @@ namespace EngineCore
 
             void CleanUp();
 
-            void ProcessEvent(const typename LuaThreadKeyboardButtonDownEvent::EventData_t &data) override;
+            void ProcessEvent(const typename KeyboardButtonDownLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename LuaThreadMouseMovedEvent::EventData_t &data) override;
+            void ProcessEvent(const typename MouseMovedLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename LuaThreadMouseScrollEvent::EventData_t &data) override;
+            void ProcessEvent(const typename MouseScrollLuaThreadEvent::EventData_t &data) override;
 
-            void ProcessEvent(const typename LuaThreadMouseButtonDownEvent::EventData_t &data) override;
+            void ProcessEvent(const typename MouseButtonDownLuaThreadEvent::EventData_t &data) override;
 
             void OnLuaThreadDataUpdated(const std::string &jsonParameters) override;
 

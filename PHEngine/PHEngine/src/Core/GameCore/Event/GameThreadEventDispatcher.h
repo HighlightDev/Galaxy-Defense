@@ -1,17 +1,5 @@
 #pragma once
 
-#include "PlayerMovedEvent.h"
-#include "CameraTransformChangedEvent.h"
-#include "PhysicsComponentUpdatedEvent.h"
-#include "KeyboardInputEvent.h"
-#include "KinematicBodyMovedEvent.h"
-#include "TextureAtlasGeneratedEvent.h"
-#include "MouseMovedEvent.h"
-#include "MouseScrollEvent.h"
-#include "MouseButtonDownEvent.h"
-#include "PhysicsCollisionEvent.h"
-#include "TextEvent.h"
-
 #include <type_traits>
 
 namespace Event

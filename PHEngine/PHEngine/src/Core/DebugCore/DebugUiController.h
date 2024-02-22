@@ -26,7 +26,7 @@ namespace EngineCore
     {
         class DebugUiController
             : public ITickable,
-              public WindowSizeChangedEvent,
+              public WindowSizeChangedGameThreadEvent,
               public std::enable_shared_from_this<DebugUiController>
         {
             std::weak_ptr<::EngineCore::Scene> mSceneWp;
@@ -74,7 +74,7 @@ namespace EngineCore
 
             void SetLuaFpsText(const std::string &fpsText);
 
-            void ProcessEvent(const WindowSizeChangedEvent::EventData_t &data) override;
+            void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data) override;
 
         private:
             void InitializeWidgets();

@@ -55,7 +55,7 @@ namespace Game
     {
         SphereContactCollisionEvent::GetInstance()->RemoveListener(SphereContactCollisionEvent::GetInstanceId());
         MainPlayerActionEvent::GetInstance()->RemoveListener(MainPlayerActionEvent::GetInstanceId());
-        PhysicsCollisionEvent::GetInstance()->RemoveListener(PhysicsCollisionEvent::GetInstanceId());
+        PhysicsCollisionGameThreadEvent::GetInstance()->RemoveListener(PhysicsCollisionGameThreadEvent::GetInstanceId());
         RayCollisionEvent::GetInstance()->RemoveListener(RayCollisionEvent::GetInstanceId());
     }
 
@@ -64,7 +64,7 @@ namespace Game
         const auto thisSp = shared_from_this();
         SphereContactCollisionEvent::GetInstance()->AddListener(thisSp);
         MainPlayerActionEvent::GetInstance()->AddListener(thisSp);
-        PhysicsCollisionEvent::GetInstance()->AddListener(thisSp);
+        PhysicsCollisionGameThreadEvent::GetInstance()->AddListener(thisSp);
         RayCollisionEvent::GetInstance()->AddListener(thisSp);
         mNavigationController->OnPreLevelInit();
     }
@@ -218,7 +218,7 @@ namespace Game
         }
     }
 
-    void CombatController::ProcessEvent(const typename PhysicsCollisionEvent::EventData_t &data)
+    void CombatController::ProcessEvent(const typename PhysicsCollisionGameThreadEvent::EventData_t &data)
     {
         const ePhysicsCollisionStateType collisionEventType = std::get<0>(data);
         const ePhysicsBodyType physBodyType = std::get<1>(data);
@@ -254,7 +254,7 @@ namespace Game
                                                                  ? ownerEnemyShipActor
                                                                  : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
 
-                        LogInfo("CombatController::PhysicsCollisionEvent =>", collisionType, "missile with spaceship, this_actor = ", concreteMissileActor->GetName(), " that_actor = ",
+                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "missile with spaceship, this_actor = ", concreteMissileActor->GetName(), " that_actor = ",
                                 concreteSpaceshipActor->GetName());
 
                         const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
@@ -272,7 +272,7 @@ namespace Game
                         const auto &ownerEnemyShipActor = eGameObjectsType::SPACESHIP == thisActorGameObjectType ? GetEnemyShipOwnerActorById(this_actor_id) : GetEnemyShipOwnerActorById(that_actor_id);
                         const auto &ownerSpaceObjectActor = eGameObjectsType::NEUTRAL_SPACE_OBJECT == thisActorGameObjectType ? GetSpaceObjectOwnerActorById(this_actor_id) : GetSpaceObjectOwnerActorById(that_actor_id);
 
-                        LogInfo("CombatController::PhysicsCollisionEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
+                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
                                 " that_actor = ", ownerSpaceObjectActor->GetName());
 
                         ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
@@ -288,7 +288,7 @@ namespace Game
                                                                ? ownerMissileActor
                                                                : ownerMissileActor->GetChildByObjectId(missileActor_id);
 
-                        LogInfo("CombatController::PhysicsCollisionEvent => ", collisionType, "missile with space object, this_actor = ", concreteMissileActor->GetName(),
+                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent => ", collisionType, "missile with space object, this_actor = ", concreteMissileActor->GetName(),
                                 " that_actor = ", ownerSpaceObjectActor->GetName());
 
                         const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();

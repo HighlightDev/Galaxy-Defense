@@ -28,12 +28,12 @@ namespace EngineCore
 
         UiInputSystem::~UiInputSystem()
         {
-            WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+            WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
         }
 
         void UiInputSystem::Initialize()
         {
-            WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+            WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
         }
 
         void UiInputSystem::Tick(const float deltaTime)
@@ -86,7 +86,7 @@ namespace EngineCore
             }
         }
 
-        void UiInputSystem::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+        void UiInputSystem::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
         {
             mScreenHeight = static_cast<size_t>(std::get<0>(data).Height);
         }

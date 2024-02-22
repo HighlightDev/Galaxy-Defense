@@ -65,9 +65,6 @@ set(
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
-	src/Implementation/Ui/PauseMenuUi.h
-	src/Implementation/Ui/PauseSettingsMenuUi.h
-	src/Implementation/Ui/PlayerCombatUi.h
 	src/Implementation/Pools/ElectroRayChainActorPool.h
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
@@ -138,9 +135,6 @@ set(
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
-	src/Implementation/Ui/PauseMenuUi.cpp
-	src/Implementation/Ui/PauseSettingsMenuUi.cpp
-	src/Implementation/Ui/PlayerCombatUi.cpp
 	src/Implementation/Pools/ElectroRayChainActorPool.cpp
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp

@@ -1,6 +1,6 @@
+#include "Core/GameCore/Actor.h"
 #include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
 #include "Core/GameCore/Event/PhysicsDescriptorRemovedEvent.h"
-#include "Core/GameCore/Actor.h"
 
 #include "Core/UtilityCore/GlmToBulletConverter.h"
 #include "Core/UtilityCore/EngineMath.h"
@@ -32,7 +32,7 @@ namespace EnginePhysics
          if (const auto &spOwner = GetOwner().lock())
          {
             spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(characterController->GetTranslation()));
-            Event::PhysicsComponentUpdatedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, spOwner->GetName());
+            Event::PhysicsComponentUpdatedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, spOwner->GetName());
          }
       }
    }

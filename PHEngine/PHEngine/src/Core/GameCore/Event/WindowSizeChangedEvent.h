@@ -5,7 +5,7 @@
 
 namespace Event
 {
-    class WindowSizeChangedEvent
+    class WindowSizeChangedGameThreadEvent
         : public TEvent<Event::eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
     {
     public:
@@ -13,11 +13,11 @@ namespace Event
 
         std::string ToString() const override
         {
-            return "WindowSizeChangedEvent";
+            return "WindowSizeChangedGameThreadEvent";
         }
     };
 
-    class LuaWindowSizeChangedEvent
+    class WindowSizeChangedLuaThreadEvent
         : public TEvent<Event::eEventThreadType::LUA_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>
     {
     public:
@@ -25,7 +25,7 @@ namespace Event
 
         std::string ToString() const override
         {
-            return "LuaWindowSizeChangedEvent";
+            return "WindowSizeChangedLuaThreadEvent";
         }
     };
 }

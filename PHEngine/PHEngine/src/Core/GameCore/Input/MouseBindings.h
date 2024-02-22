@@ -14,9 +14,9 @@ using namespace Event;
 namespace EngineCore
 {
    class MouseBindings
-       : public MouseMovedEvent,
-         public MouseScrollEvent,
-         public MouseButtonDownEvent,
+       : public MouseMovedGameThreadEvent,
+         public MouseScrollGameThreadEvent,
+         public MouseButtonDownGameThreadEvent,
          public std::enable_shared_from_this<MouseBindings>
    {
       glm::ivec4 mLastMouseMoveEvent;
@@ -40,11 +40,11 @@ namespace EngineCore
 
       void Initialize();
 
-      void ProcessEvent(const typename MouseMovedEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &data) override;
 
-      void ProcessEvent(const typename MouseScrollEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &data) override;
 
-      void ProcessEvent(const typename MouseButtonDownEvent::EventData_t &data) override;
+      void ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data) override;
 
       bool IsMouseMoveEventDirty() const;
 

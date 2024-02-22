@@ -13,8 +13,8 @@ namespace EngineCore
     class Scene;
 
     class TextHandler
-        : public TextRegisterEvent,
-          public TextDataChangedEvent,
+        : public TextRegisterGameThreadEvent,
+          public TextDataChangedGameThreadEvent,
           public std::enable_shared_from_this<TextHandler>
     {
         std::vector<std::shared_ptr<HudTextField>> mRegisteredTexts;
@@ -33,9 +33,9 @@ namespace EngineCore
         std::shared_ptr<HudTextField> GetTextFieldById(const int32_t fieldId) const;
 
     protected:
-        void ProcessEvent(const TextRegisterEvent::EventData_t &data) override;
+        void ProcessEvent(const TextRegisterGameThreadEvent::EventData_t &data) override;
 
-        void ProcessEvent(const TextDataChangedEvent::EventData_t &data) override;
+        void ProcessEvent(const TextDataChangedGameThreadEvent::EventData_t &data) override;
     };
 
 }

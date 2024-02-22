@@ -18,9 +18,9 @@ namespace EngineCore
 
    class PointLightComponent
       : public LightComponent
-      , public PhysicsComponentUpdatedEvent
-      , public KinematicBodyMovedEvent
-      , public PlayerMovedEvent
+      , public PhysicsComponentUpdatedGameThreadEvent
+      , public KinematicBodyMovedGameThreadEvent
+      , public PlayerMovedGameThreadEvent
    {
       using Base = LightComponent;
 
@@ -44,9 +44,9 @@ namespace EngineCore
 
    protected:
 
-      void ProcessEvent(const typename PhysicsComponentUpdatedEvent::EventData_t& data) override;
-      void ProcessEvent(const typename KinematicBodyMovedEvent::EventData_t& data) override;
-      void ProcessEvent(const typename PlayerMovedEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PhysicsComponentUpdatedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const typename KinematicBodyMovedGameThreadEvent::EventData_t& data) override;
+      void ProcessEvent(const typename PlayerMovedGameThreadEvent::EventData_t& data) override;
 
    private:
 

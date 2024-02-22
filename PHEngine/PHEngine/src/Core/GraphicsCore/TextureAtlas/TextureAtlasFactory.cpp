@@ -159,8 +159,8 @@ namespace Graphics
 
       std::for_each(mTextureAtlasHandlers.begin(), mTextureAtlasHandlers.end(), [](const auto& texAtlasHandlerPair) { texAtlasHandlerPair.second->NotifyTextureAtlasBuilded(); });
 
-      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_2D);
-      Event::TextureAtlasGeneratedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_CUBE);
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_2D);
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, eTextureType::TEXTURE_CUBE);
 
    }
 

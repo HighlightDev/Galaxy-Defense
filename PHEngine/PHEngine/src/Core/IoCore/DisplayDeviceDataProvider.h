@@ -61,8 +61,8 @@ namespace IO
 
          if (bWindowSizeDirty)
          {
-            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
-            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedLuaThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 
@@ -71,8 +71,8 @@ namespace IO
          if (m_windowWidth != width)
          {
             m_windowWidth = width;
-            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
-            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedLuaThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 
@@ -81,8 +81,8 @@ namespace IO
          if (m_windowHeight != height)
          {
             m_windowHeight = height;
-            Event::WindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
-            Event::LuaWindowSizeChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
+            Event::WindowSizeChangedLuaThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::POST_EXECUTION, ViewPortInfo(0, 0, m_windowWidth, m_windowHeight));
          }
       }
 

@@ -39,7 +39,7 @@ namespace EnginePhysics
                spOwner->GetRootComponent()->SetTranslation(Converter::bulletToGlm(mDescriptor->GetTranslation()));
                spOwner->GetRootComponent()->SetRotator(Converter::bulletToGlm(mDescriptor->GetRotator()));
 
-               Event::PhysicsComponentUpdatedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, spOwner->GetName());
+               Event::PhysicsComponentUpdatedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, spOwner->GetName());
             }
          }
       }

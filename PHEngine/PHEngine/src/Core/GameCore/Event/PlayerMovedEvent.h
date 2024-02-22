@@ -7,7 +7,7 @@
 namespace Event
 {
 
-   class PlayerMovedEvent
+   class PlayerMovedGameThreadEvent
       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EngineCore::Transform>>>
    {
    public:

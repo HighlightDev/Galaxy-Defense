@@ -10,17 +10,29 @@
 #include "Core/ResourceManagerCore/Pool/SoundMemoryChunkPool.h"
 #include "Core/ResourceManagerCore/Pool/RuntimeGeneratedMeshPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
+#include "Core/IoCore/FolderManager.h"
+#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
+#include "Core/UtilityCore/EngineConfigHolder.h"
+#include "Core/UtilityCore/StringExtendedFunctions.h"
+#include "Core/AudioCore/SoundDevice.h"
+#include "Core/CommonCore/Timer.h"
+#include "Core/GameCore/LoggerExtension.h"
+#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
 #include "Core/GameCore/Event/GameThreadEventDispatcher.h"
 #include "Core/GameCore/Event/LuaThreadEventDispatcher.h"
-#include "Core/IoCore/FolderManager.h"
-#include "Core/UtilityCore/EngineConfigHolder.h"
-#include "Core/AudioCore/SoundDevice.h"
-#include "Core/GameCore/LoggerExtension.h"
-#include "Core/CommonCore/Timer.h"
-#include "Core/UtilityCore/StringExtendedFunctions.h"
-#include "Core/GameCore/ScriptingCore/LuaScriptProcessor.h"
-#include "Core/IoCore/AsyncLoaderCore/ResourceMap.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
+#include "Core/GameCore/Event/PlayerMovedEvent.h"
+#include "Core/GameCore/Event/CameraTransformChangedEvent.h"
+#include "Core/GameCore/Event/PhysicsComponentUpdatedEvent.h"
+#include "Core/GameCore/Event/KeyboardInputEvent.h"
+#include "Core/GameCore/Event/KinematicBodyMovedEvent.h"
+#include "Core/GameCore/Event/TextureAtlasGeneratedEvent.h"
+#include "Core/GameCore/Event/MouseMovedEvent.h"
+#include "Core/GameCore/Event/MouseScrollEvent.h"
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
+#include "Core/GameCore/Event/PhysicsCollisionEvent.h"
+#include "Core/GameCore/Event/TextEvent.h"
 
 using namespace TinyLogger;
 using namespace IO;
@@ -46,35 +58,37 @@ namespace EngineCore
    {
       PauseGameThreadEvent::GetInstance()->RemoveListener(PauseGameThreadEvent::GetInstanceId());
       ExitGameThreadEvent::GetInstance()->RemoveListener(ExitGameThreadEvent::GetInstanceId());
-      LoadLevelEvent::GetInstance()->RemoveListener(LoadLevelEvent::GetInstanceId());
+      LoadLevelGameThreadEvent::GetInstance()->RemoveListener(LoadLevelGameThreadEvent::GetInstanceId());
    }
 
    void Engine::Initialize()
    {
       GameThreadEventDispatcher::GetInstance()
-          ->RegisterEventsByType<CameraTransformChangedEvent,
-                                 PlayerMovedEvent,
-                                 PhysicsComponentUpdatedEvent,
-                                 KeyboardButtonDownEvent,
-                                 KinematicBodyMovedEvent,
-                                 TextureAtlasGeneratedEvent,
-                                 MouseMovedEvent,
-                                 MouseScrollEvent,
-                                 MouseButtonDownEvent,
-                                 PhysicsCollisionEvent,
-                                 TextRegisterEvent,
-                                 TextDataChangedEvent,
+          ->RegisterEventsByType<CameraTransformChangedGameThreadEvent,
+                                 PlayerMovedGameThreadEvent,
+                                 PhysicsComponentUpdatedGameThreadEvent,
+                                 KeyboardButtonDownGameThreadEvent,
+                                 KinematicBodyMovedGameThreadEvent,
+                                 TextureAtlasGeneratedGameThreadEvent,
+                                 MouseMovedGameThreadEvent,
+                                 MouseScrollGameThreadEvent,
+                                 MouseButtonDownGameThreadEvent,
+                                 PhysicsCollisionGameThreadEvent,
+                                 TextRegisterGameThreadEvent,
+                                 TextDataChangedGameThreadEvent,
                                  PauseGameThreadEvent,
                                  ExitGameThreadEvent,
-                                 LoadLevelEvent,
-                                 WindowSizeChangedEvent>();
+                                 LoadLevelGameThreadEvent,
+                                 WindowSizeChangedGameThreadEvent,
+                                 BroadcastGameThreadEvent>();
 
       LuaThreadEventDispatcher::GetInstance()
-          ->RegisterEventsByType<LuaThreadKeyboardButtonDownEvent,
-                                 LuaThreadMouseMovedEvent,
-                                 LuaThreadMouseScrollEvent,
-                                 LuaThreadMouseButtonDownEvent,
-                                 LuaWindowSizeChangedEvent>();
+          ->RegisterEventsByType<KeyboardButtonDownLuaThreadEvent,
+                                 MouseMovedLuaThreadEvent,
+                                 MouseScrollLuaThreadEvent,
+                                 MouseButtonDownLuaThreadEvent,
+                                 WindowSizeChangedLuaThreadEvent,
+                                 BroadcastLuaThreadEvent>();
 
       EngineConfigHolder::GetInstance()->LoadSettings(FolderManager::GetInstance()->GetConfigPath() + "engineConfig.cfg");
 
@@ -97,7 +111,7 @@ namespace EngineCore
       const auto& thisSp = std::dynamic_pointer_cast<Engine>(shared_from_this());
       PauseGameThreadEvent::GetInstance()->AddListener(thisSp);
       ExitGameThreadEvent::GetInstance()->AddListener(thisSp);
-      LoadLevelEvent::GetInstance()->AddListener(thisSp);
+      LoadLevelGameThreadEvent::GetInstance()->AddListener(thisSp);
    }
 
    void Engine::CleanUp()
@@ -243,10 +257,10 @@ namespace EngineCore
       StopLuaThreadExecution();
    }
 
-   void Engine::ProcessEvent(const LoadLevelEvent::EventData_t &data)
+   void Engine::ProcessEvent(const LoadLevelGameThreadEvent::EventData_t &data)
    {
       const auto lvlName = std::get<0>(data);
-      static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelEvent");
+      static constexpr auto functionId = Hash64_CT("Engine::ProcessEvent::LoadLevelGameThreadEvent");
       m_interThreadMgr.ExecuteOnRenderThread(Thread::eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, 0, functionId, [this, lvlName]()
                                              { PlayLevel(lvlName); });
    }

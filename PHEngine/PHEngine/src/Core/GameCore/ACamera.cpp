@@ -41,12 +41,12 @@ namespace EngineCore
 
    ACamera::~ACamera()
    {
-      WindowSizeChangedEvent::GetInstance()->RemoveListener(WindowSizeChangedEvent::GetInstanceId());
+      WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
    }
 
    void ACamera::Initialize()
    {
-      WindowSizeChangedEvent::GetInstance()->AddListener(shared_from_this());
+      WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void ACamera::SetCameraProxyId(const size_t proxyId)
@@ -111,7 +111,7 @@ namespace EngineCore
    void ACamera::OnCameraSceneProxyDataUpdated()
    {
       OnTransformationUpdated();
-      Event::CameraTransformChangedEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
+      Event::CameraTransformChangedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
    }
 
    void ACamera::OnTransformationUpdated()
@@ -137,7 +137,7 @@ namespace EngineCore
       }
    }
 
-   void ACamera::ProcessEvent(const WindowSizeChangedEvent::EventData_t &data)
+   void ACamera::ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t &data)
    {
       const auto newViewPortInfo = std::get<0>(data);
       mViewPort = newViewPortInfo;
@@ -146,7 +146,7 @@ namespace EngineCore
       {
          if (const auto &sceneRendererSp = sceneSp->GetInterThreadCommunicationManager().GetSceneRendererWP().lock())
          {
-            static constexpr uint64_t functionId = Hash64_CT("ACamera::WindowSizeChangedEvent");
+            static constexpr uint64_t functionId = Hash64_CT("ACamera::WindowSizeChangedGameThreadEvent");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnRenderThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetObjectId(), functionId,
                                                                                 [newViewPortInfo = mViewPort,
                                                                                  cameraProxyId = mCameraProxyId,

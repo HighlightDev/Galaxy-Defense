@@ -18,14 +18,14 @@ namespace EngineCore
 
     TextHandler::~TextHandler()
     {
-        TextRegisterEvent::GetInstance()->RemoveListener(TextRegisterEvent::GetInstanceId());
-        TextDataChangedEvent::GetInstance()->RemoveListener(TextDataChangedEvent::GetInstanceId());
+        TextRegisterGameThreadEvent::GetInstance()->RemoveListener(TextRegisterGameThreadEvent::GetInstanceId());
+        TextDataChangedGameThreadEvent::GetInstance()->RemoveListener(TextDataChangedGameThreadEvent::GetInstanceId());
     }
 
     void TextHandler::Initialize()
     {
-        TextRegisterEvent::GetInstance()->AddListener(shared_from_this());
-        TextDataChangedEvent::GetInstance()->AddListener(shared_from_this());
+        TextRegisterGameThreadEvent::GetInstance()->AddListener(shared_from_this());
+        TextDataChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     }
 
     void TextHandler::SetScene(const std::weak_ptr<Scene> &sceneWp)
@@ -41,7 +41,7 @@ namespace EngineCore
         return foundIt != mRegisteredTexts.end() ? *foundIt : nullptr;
     }
 
-    void TextHandler::ProcessEvent(const TextRegisterEvent::EventData_t &data)
+    void TextHandler::ProcessEvent(const TextRegisterGameThreadEvent::EventData_t &data)
     {
         if (const auto &sceneSp = mSceneWp.lock())
         {
@@ -66,7 +66,7 @@ namespace EngineCore
         }
     }
 
-    void TextHandler::ProcessEvent(const TextDataChangedEvent::EventData_t &data)
+    void TextHandler::ProcessEvent(const TextDataChangedGameThreadEvent::EventData_t &data)
     {
         if (auto sceneSp = mSceneWp.lock())
         {

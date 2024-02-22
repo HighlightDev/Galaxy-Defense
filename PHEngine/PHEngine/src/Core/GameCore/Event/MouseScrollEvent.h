@@ -5,7 +5,7 @@
 
 namespace Event
 {
-   struct MouseScrollEvent
+   struct MouseScrollGameThreadEvent
       : public TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>
    {
    public:
@@ -16,14 +16,14 @@ namespace Event
       }
    };
 
-   struct LuaThreadMouseScrollEvent
+   struct MouseScrollLuaThreadEvent
       : public TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>
    {
    public:
       using Event_t = TEvent<eEventThreadType::LUA_THREAD, SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Event_t;
 
       std::string ToString() const override {
-         return "LuaThreadMouseScrollEvent";
+         return "MouseScrollLuaThreadEvent";
       }
    };
 }

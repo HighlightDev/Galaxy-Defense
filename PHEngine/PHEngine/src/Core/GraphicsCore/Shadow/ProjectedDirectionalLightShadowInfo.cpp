@@ -14,12 +14,12 @@ namespace Graphics
 
    ProjectedDirectionalLightShadowInfo::~ProjectedDirectionalLightShadowInfo()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedEvent::GetInstanceId());
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->RemoveListener(Event::TextureAtlasGeneratedGameThreadEvent::GetInstanceId());
    }
 
    void ProjectedDirectionalLightShadowInfo::Initialize()
    {
-      Event::TextureAtlasGeneratedEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedDirectionalLightShadowInfo>(shared_from_this()));
+      Event::TextureAtlasGeneratedGameThreadEvent::GetInstance()->AddListener(std::dynamic_pointer_cast<ProjectedDirectionalLightShadowInfo>(shared_from_this()));
    }
 
    std::shared_ptr<Texture2dAtlasHandler> ProjectedDirectionalLightShadowInfo::GetTexture2dHandler() const
@@ -27,7 +27,7 @@ namespace Graphics
       return std::static_pointer_cast<Texture2dAtlasHandler>(mShadowmapHandler);
    }
 
-   void ProjectedDirectionalLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedEvent::EventData_t &data)
+   void ProjectedDirectionalLightShadowInfo::ProcessEvent(const typename Event::TextureAtlasGeneratedGameThreadEvent::EventData_t &data)
    {
       if (eTextureType::TEXTURE_2D == std::get<0>(data))
       {
