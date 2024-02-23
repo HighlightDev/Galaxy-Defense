@@ -28,7 +28,7 @@ namespace EngineCore
     {
         size_t UiItemBase::s_UIds = 0;
 
-        UiItemBase::UiItemBase(const std::string& name)
+        UiItemBase::UiItemBase(const std::string &name)
             : mUId(s_UIds++),
               mName(name),
               mAbsoluteOrigin(),
@@ -45,6 +45,7 @@ namespace EngineCore
               mParentCanvas(),
               mChildren(),
               mIsVisible(true),
+              mCanInterceptMouseInputEvents(true),
               mIsTransformDirty(false),
               mIsPropertiesShouldBeUpdatedOnRenderThread(false),
               mIsPropertiesShouldBeUpdatedOnLuaThread(false),
@@ -217,6 +218,20 @@ namespace EngineCore
                 mIsVisible = isVisible;
                 SetChildrenIsVisible(mIsVisible);
                 SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
+            }
+        }
+
+        bool UiItemBase::GetIfCanInterceptMouseInputEvents() const
+        {
+            return mCanInterceptMouseInputEvents;
+        }
+
+        void UiItemBase::SetIfCanInterceptMouseInputEvents(const bool intercepts)
+        {
+            if (mCanInterceptMouseInputEvents != intercepts)
+            {
+                mCanInterceptMouseInputEvents = intercepts;
                 SetIsPropertiesShouldBeUpdatedOnLuaThread(true);
             }
         }
@@ -735,6 +750,14 @@ namespace EngineCore
             }
         }
 
+        bool UiItemBase::CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const
+        {
+            const auto &uiItemBoundingArea = GetBoundingArea();
+            const auto &boundMin = uiItemBoundingArea.GetMin();
+            const auto &boundMax = uiItemBoundingArea.GetMax();
+            return EngineMath::TestPointInAABB(boundMin, boundMax, currentMousePosition);
+        }
+
         void UiItemBase::UpdateDependentChildrenAnchorTransform()
         {
             LogInfo("UiItemBase::UpdateDependentChildrenAnchorTransform => UiItem name: ", GetName());
@@ -813,6 +836,14 @@ namespace EngineCore
                     mIsVisible = isVisible;
                     SetChildrenIsVisible(mIsVisible);
                     SetIsPropertiesShouldBeUpdatedOnRenderThread(true);
+                }
+            }
+            if (jsonObj.contains("intercept_mouse_input_event"))
+            {
+                const auto canIntercept = jsonObj["intercept_mouse_input_event"].get<bool>();
+                if (mCanInterceptMouseInputEvents != canIntercept)
+                {
+                    mCanInterceptMouseInputEvents = canIntercept;
                 }
             }
             if (jsonObj.contains("z_order"))
@@ -925,11 +956,12 @@ namespace EngineCore
                     if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), visible = mIsVisible, zorder = mZOrder, width = mWidth, height = mHeight, horizontalOffset = mHorizontalCenterOffset, verticalOffset = mVerticalCenterOffset, anchorsMap = mAnchors]()
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), visible = mIsVisible, interceptsMouseInputEvent = mCanInterceptMouseInputEvents, zorder = mZOrder, width = mWidth, height = mHeight, horizontalOffset = mHorizontalCenterOffset, verticalOffset = mVerticalCenterOffset, anchorsMap = mAnchors]()
                                                                                          {
                         if (const auto &uiItemBaseLuaProxy = std::static_pointer_cast<UiItemBaseLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                         {
                             uiItemBaseLuaProxy->SetIsVisible_FromGameThread(visible);
+                            uiItemBaseLuaProxy->SetIfCanInterceptMouseInputEvents_FromGameThread(interceptsMouseInputEvent);
                             uiItemBaseLuaProxy->SetZOrder_FromGameThread(zorder);
                             uiItemBaseLuaProxy->SetWidth_FromGameThread(width);
                             uiItemBaseLuaProxy->SetHeight_FromGameThread(height);
@@ -1057,7 +1089,7 @@ namespace EngineCore
 
         void UiItemBase::CleanUp()
         {
-            for (const auto& child: mChildren)
+            for (const auto &child : mChildren)
             {
                 child->CleanUp();
             }

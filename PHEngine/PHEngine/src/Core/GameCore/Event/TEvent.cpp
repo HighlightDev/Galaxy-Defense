@@ -22,7 +22,8 @@ namespace Event
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<KeyboardKeysData>>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseScrollDirection>>;
-   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::vector<MouseKeysData>>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<eMouseEventTargetReceiverType, std::vector<MouseKeysData>>>;
+   template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec2, std::vector<MouseKeysData>>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<std::weak_ptr<EnginePhysics::PhysicsDescriptor>, EulerAnglesTransform>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<bool>>;
    template class TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<::Graphics::ViewPortInfo>>;

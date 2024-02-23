@@ -29,6 +29,7 @@ namespace EngineCore
             virtual std::weak_ptr<IUiTransformable> GetParent() const = 0;
             virtual std::string GetName() const = 0;
             virtual bool IsVisible() const = 0;
+            virtual bool GetIfCanInterceptMouseInputEvents() const = 0;
             virtual BoundingBox2D<glm::ivec2> GetBoundingArea() const = 0;
             virtual bool IsTransformDirty() const = 0;
 
@@ -37,6 +38,7 @@ namespace EngineCore
             virtual void SetWidth(const size_t width) = 0;
             virtual void SetHeight(const size_t height) = 0;
             virtual void SetIsVisible(const bool visibility) = 0;
+            virtual void SetIfCanInterceptMouseInputEvents(const bool intercepts) = 0;
             virtual void SetAnchor(const eUiAnchor srcAnchor, const eUiAnchor dstAnchor, const std::string &dstUiItemName) = 0;
             virtual void SetAnchorMargin(const eUiAnchor anchor, const int32_t anchorMargin) = 0;
             virtual void SetHorizontalCenterOffset(const int32_t offset) = 0;

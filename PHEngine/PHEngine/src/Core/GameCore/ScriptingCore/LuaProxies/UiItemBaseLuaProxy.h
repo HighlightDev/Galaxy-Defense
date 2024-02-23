@@ -33,6 +33,8 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            bool mCanInterceptMouseInputEvents;
+
             size_t mZOrder;
 
             size_t mWidth;
@@ -65,6 +67,8 @@ namespace EngineCore
 
             void SetIsVisible_FromGameThread(const bool isVisible);
 
+            void SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts);
+
             void SetZOrder_FromGameThread(const size_t zOrder);
 
             void SetWidth_FromGameThread(const size_t width);
@@ -90,6 +94,8 @@ namespace EngineCore
             std::string GetMouseInputData();
 
             bool IsVisible() const;
+
+            bool GetIfCanInterceptMouseInputEvents() const;
 
             void EnableMouseInputReceiverBase();
 

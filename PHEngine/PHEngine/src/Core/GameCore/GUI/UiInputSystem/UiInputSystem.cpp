@@ -1,7 +1,7 @@
 #include "UiInputSystem.h"
 
 #include "Core/GameCore/GUI/UiElements/UiCanvas.h"
-#include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/GameCore/Components/ComponentData/ComponentData.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -17,7 +17,7 @@ namespace EngineCore
         UiInputSystem::UiInputSystem(const std::weak_ptr<UiCanvas> &owner)
             : mScreenHeight(0),
               mOwnerWp(owner),
-              mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>(std::to_string(s_id++)))),
+              mInputComponent(std::make_unique<UiInputComponent>(std::make_shared<ComponentData>(std::to_string(s_id++)))),
               mMouseKeyPressedPosition()
         {
             mScreenHeight = static_cast<size_t>(DisplayDeviceDataProvider::GetInstance()->GetWindowHeight());

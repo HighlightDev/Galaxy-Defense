@@ -17,6 +17,7 @@ namespace EngineCore
             : LuaProxy(),
               mCanvasName(ownerCanvas->GetName()),
               mIsVisible(ownerCanvas->IsVisible()),
+              mCanInterceptMouseInputEvents(ownerCanvas->GetIfCanInterceptMouseInputEvents()),
               mCanvasZOrder(ownerCanvas->GetZOrder())
         {
             mLuaProxyId = ownerCanvas->GetLuaProxyId();
@@ -37,6 +38,15 @@ namespace EngineCore
             if (mIsVisible != isVisible)
             {
                 mIsVisible = isVisible;
+                mIsLuaDataDirty = true;
+            }
+        }
+
+        void UiCanvasLuaProxy::SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts)
+        {
+            if (mCanInterceptMouseInputEvents != intercepts)
+            {
+                mCanInterceptMouseInputEvents = intercepts;
                 mIsLuaDataDirty = true;
             }
         }
@@ -97,6 +107,7 @@ namespace EngineCore
             nlohmann::json jsonObj;
             jsonObj["visible"] = mIsVisible;
             jsonObj["canvas_z_order"] = mCanvasZOrder;
+            jsonObj["intercept_mouse_input_event"] = mCanInterceptMouseInputEvents;
 
             mIsLuaDataDirty = false;
             return jsonObj.dump();
@@ -105,6 +116,11 @@ namespace EngineCore
         bool UiCanvasLuaProxy::IsVisible() const
         {
             return mIsVisible;
+        }
+
+        bool UiCanvasLuaProxy::GetIfCanInterceptMouseInputEvents() const
+        {
+            return mCanInterceptMouseInputEvents;
         }
 
         void UiCanvasLuaProxy::InitializeInputSystem()

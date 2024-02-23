@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <memory>
+#include <glm/vec2.hpp>
 
 namespace EngineCore
 {
@@ -39,6 +40,8 @@ namespace EngineCore
             std::shared_ptr<UiCanvas> GetCanvasByName(const std::string &canvasName) const;
 
             std::shared_ptr<UiCanvas> GetCanvasByUId(const uint32_t canvasId) const;
+
+            bool CheckIfUiInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
 
             void CleanUp();
         };

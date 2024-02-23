@@ -48,9 +48,12 @@ UiItemBase.UiMouseInputCursorHoverState = {
 }
 
 function UiItemBase:new()
-
     local uiItemBaseProperties = {
         visible = {
+            value = false,
+            dirty = false
+        },
+        intercept_mouse_input_event = {
             value = false,
             dirty = false
         },
@@ -145,6 +148,9 @@ function UiItemBase:extractUiItemBaseReplicatorData(parsedJsonData)
     if parsedJsonData["visible"] ~= nil then
         self.properties.visible.value = parsedJsonData["visible"]
     end
+    if parsedJsonData["intercept_mouse_input_event"] ~= nil then
+        self.properties.intercept_mouse_input_event.value = parsedJsonData["intercept_mouse_input_event"]
+    end
     if parsedJsonData["z_order"] ~= nil then
         self.properties.z_order.value = parsedJsonData["z_order"]
     end
@@ -238,6 +244,17 @@ end
 
 function UiItemBase:getIsVisible()
     return self.properties.visible.value
+end
+
+function UiItemBase:setIfCanInterceptMouseInputEvent(intercept)
+    if self.properties.intercept_mouse_input_event.value ~= intercept then
+        self.properties.intercept_mouse_input_event.value = intercept
+        self.properties.intercept_mouse_input_event.dirty = true
+    end
+end
+
+function UiItemBase:getIfCanInterceptMouseInputEvent()
+    return self.properties.intercept_mouse_input_event.value
 end
 
 function UiItemBase:setZOrder(z_order)

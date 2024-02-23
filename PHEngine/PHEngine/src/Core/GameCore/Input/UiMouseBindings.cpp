@@ -1,11 +1,12 @@
-#include "MouseBindings.h"
+#include "UiMouseBindings.h"
+#include "Core/GameCore/Input/MouseEventEnums.h"
 
 #include <iostream>
 
 namespace EngineCore
 {
 
-    MouseBindings::MouseBindings()
+    UiMouseBindings::UiMouseBindings()
         : mLastMouseMoveEvent(0),
           bMouseMoveEventDirty(false),
           mLastMouseScrollDirectionEvent(eMouseScrollDirection::Undefined),
@@ -16,51 +17,51 @@ namespace EngineCore
         mMouseKeysMaskVec.reserve(3);
     }
 
-    MouseBindings::~MouseBindings()
+    UiMouseBindings::~UiMouseBindings()
     {
         UnsubscribeFromEvents();
     }
 
-    void MouseBindings::UnsubscribeFromEvents()
+    void UiMouseBindings::UnsubscribeFromEvents()
     {
         MouseMovedGameThreadEvent::GetInstance()->RemoveListener(MouseMovedGameThreadEvent::GetInstanceId());
         MouseScrollGameThreadEvent::GetInstance()->RemoveListener(MouseScrollGameThreadEvent::GetInstanceId());
         MouseButtonDownGameThreadEvent::GetInstance()->RemoveListener(MouseButtonDownGameThreadEvent::GetInstanceId());
     }
 
-    void MouseBindings::SubscribeOnEvents()
+    void UiMouseBindings::SubscribeOnEvents()
     {
         MouseMovedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
         MouseScrollGameThreadEvent::GetInstance()->AddListener(shared_from_this());
         MouseButtonDownGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     }
 
-    void MouseBindings::Initialize()
+    void UiMouseBindings::Initialize()
     {
         SubscribeOnEvents();
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &mouseData)
+    void UiMouseBindings::ProcessEvent(const typename MouseMovedGameThreadEvent::EventData_t &mouseData)
     {
         const glm::ivec4 &mouseMoveData = std::get<0>(mouseData);
         PushMouseMoveEvent(mouseMoveData);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &mouseData)
+    void UiMouseBindings::ProcessEvent(const typename MouseScrollGameThreadEvent::EventData_t &mouseData)
     {
         const eMouseScrollDirection mouseScrollDirection = std::get<0>(mouseData);
         PushMouseScrollEvent(mouseScrollDirection);
     }
 
-    void MouseBindings::ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data)
+    void UiMouseBindings::ProcessEvent(const typename MouseButtonDownGameThreadEvent::EventData_t &data)
     {
-        if (eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS == std::get<0>(data))
+        if (eMouseEventTargetReceiverType::UI_INPUT_SYSTEM == std::get<0>(data))
         {
-            mMouseKeysMaskVec = std::move(std::get<1>(data));
+            mMouseKeysMaskVec = std::get<1>(data);
         }
     }
 
-    KeyState MouseBindings::GetKeyState(const eMouseKeys mouseButtonKey) const
+    KeyState UiMouseBindings::GetKeyState(const eMouseKeys mouseButtonKey) const
     {
         KeyState state = KeyState::RELEASED;
 
@@ -76,7 +77,7 @@ namespace EngineCore
         return state;
     }
 
-    void MouseBindings::SetIsReceivingMouseEvents(const bool receiveMouseEvents)
+    void UiMouseBindings::SetIsReceivingMouseEvents(const bool receiveMouseEvents)
     {
         if (bReceiveMouseEvents != receiveMouseEvents)
         {
@@ -94,12 +95,12 @@ namespace EngineCore
         }
     }
 
-    bool MouseBindings::IsMouseMoveEventDirty() const
+    bool UiMouseBindings::IsMouseMoveEventDirty() const
     {
         return bMouseMoveEventDirty;
     }
 
-    glm::ivec4 MouseBindings::FlushMouseMoveEvent()
+    glm::ivec4 UiMouseBindings::FlushMouseMoveEvent()
     {
         glm::ivec4 result = glm::ivec4(0);
 
@@ -112,23 +113,23 @@ namespace EngineCore
         return result;
     }
 
-    glm::ivec4 MouseBindings::GetLastMouseCursorPosition() const
+    glm::ivec4 UiMouseBindings::GetLastMouseCursorPosition() const
     {
         return mLastMouseMoveEvent;
     }
 
-    void MouseBindings::PushMouseMoveEvent(const glm::ivec4 &moveEvent)
+    void UiMouseBindings::PushMouseMoveEvent(const glm::ivec4 &moveEvent)
     {
         mLastMouseMoveEvent = moveEvent;
         bMouseMoveEventDirty = true;
     }
 
-    bool MouseBindings::IsMouseScrollEventDirty() const
+    bool UiMouseBindings::IsMouseScrollEventDirty() const
     {
         return bMouseScrollEventDirty;
     }
 
-    eMouseScrollDirection MouseBindings::FlushMouseScrollEvent()
+    eMouseScrollDirection UiMouseBindings::FlushMouseScrollEvent()
     {
         eMouseScrollDirection result = eMouseScrollDirection::Undefined;
 
@@ -141,19 +142,19 @@ namespace EngineCore
         return result;
     }
 
-    void MouseBindings::PushMouseScrollEvent(const eMouseScrollDirection mouseScrollEvent)
+    void UiMouseBindings::PushMouseScrollEvent(const eMouseScrollDirection mouseScrollEvent)
     {
         mLastMouseScrollDirectionEvent = mouseScrollEvent;
         bMouseScrollEventDirty = true;
     }
 
-    void MouseBindings::ClearMouseScrollCache()
+    void UiMouseBindings::ClearMouseScrollCache()
     {
         mLastMouseScrollDirectionEvent = eMouseScrollDirection::Undefined;
         bMouseScrollEventDirty = false;
     }
 
-    void MouseBindings::ClearMouseMoveCache()
+    void UiMouseBindings::ClearMouseMoveCache()
     {
         mLastMouseMoveEvent = {};
         bMouseMoveEventDirty = false;

@@ -85,8 +85,7 @@ namespace EngineCore
          it->State = key.State;
       }
 
-      MouseButtonDownGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mMouseButtonMaskVec);
-      MouseButtonDownLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mMouseButtonMaskVec);
+      MouseButtonDownRootEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, glm::ivec2(mPrevMouseX, mPrevMouseY), mMouseButtonMaskVec);
    }
 
 }

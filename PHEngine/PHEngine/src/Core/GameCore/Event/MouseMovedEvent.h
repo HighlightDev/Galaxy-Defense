@@ -13,7 +13,7 @@ namespace Event
       using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<glm::ivec4>>::Event_t;
 
       std::string ToString() const override {
-         return "GameThreadMouseMovedEvent";
+         return "MouseMovedGameThreadEvent";
       }
    };
 

@@ -66,11 +66,13 @@ namespace EngineCore
    Scene::~Scene()
    {
       WindowSizeChangedGameThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedGameThreadEvent::GetInstanceId());
+      MouseButtonDownRootEvent::GetInstance()->RemoveListener(MouseButtonDownRootEvent::GetInstanceId());
    }
 
    void Scene::Initialize()
    {
       WindowSizeChangedGameThreadEvent::GetInstance()->AddListener(shared_from_this());
+      MouseButtonDownRootEvent::GetInstance()->AddListener(shared_from_this());
    }
 
    void Scene::OnLevelInit()
@@ -443,6 +445,23 @@ namespace EngineCore
                                                 Hash("Scene::WindowSizeChangedGameThreadEvent"), [sceneRendererSp, viewPortInfo = std::get<0>(data)]()
                                                 { sceneRendererSp->OnWindowSizeChanged(viewPortInfo); });
       }
+   }
+
+   void Scene::ProcessEvent(const MouseButtonDownRootEvent::EventData_t &data)
+   {
+      const auto &currentMousePosition = std::get<0>(data);
+      const auto invertedScreenYPosition = static_cast<int32_t>(mScreenResolutionProperty->GetValue().y) - currentMousePosition.y;
+      const auto &mousePressedKeys = std::get<1>(data);
+
+      auto recieverType = eMouseEventTargetReceiverType::SCENE_GAME_OBJECTS;
+      if (mUiHandler->CheckIfUiInterceptsMouseEvent(glm::ivec2(currentMousePosition.x, invertedScreenYPosition)))
+      {
+         LogInfo("Scene::MouseButtonDownRootEvent => Mouse press events will be propagated only to UI input system");
+         recieverType = eMouseEventTargetReceiverType::UI_INPUT_SYSTEM; // Mouse press events will be propagated only to UI input system
+      }
+
+      MouseButtonDownGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, recieverType, mousePressedKeys);
+      MouseButtonDownLuaThreadEvent::GetInstance()->SendEvent(eExecutionOrder::PRE_EXECUTION, mousePressedKeys);
    }
 
    void Scene::RemoveComponent(std::shared_ptr<Component> component)

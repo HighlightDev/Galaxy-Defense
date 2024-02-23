@@ -20,7 +20,7 @@ using namespace Event;
 namespace EngineCore
 {
     class Scene;
-    class InputComponent;
+    class UiInputComponent;
 
     namespace Debug
     {
@@ -34,7 +34,7 @@ namespace EngineCore
             std::shared_ptr<::EngineCore::GUI::UiCanvas> mCanvas;
             std::vector<std::shared_ptr<::EngineCore::GUI::UiImage>> mImages;
 
-            std::unique_ptr<InputComponent> mInputComponent;
+            std::unique_ptr<UiInputComponent> mInputComponent;
 
             mutable size_t mTextureIndex{0};
 

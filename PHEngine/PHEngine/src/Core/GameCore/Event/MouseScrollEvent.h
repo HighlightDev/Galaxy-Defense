@@ -12,7 +12,7 @@ namespace Event
       using Event_t = TEvent<eEventThreadType::GAME_THREAD, SingleDataEventPolicy<EngineCore::eMouseScrollDirection>>::Event_t;
 
       std::string ToString() const override {
-         return "GameThreadMouseScrollEvent";
+         return "MouseScrollGameThreadEvent";
       }
    };
 

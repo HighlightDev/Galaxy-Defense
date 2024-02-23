@@ -41,7 +41,7 @@ function SettingsOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local pauseSettingsOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local pauseSettingsOverlayCanvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "PauseSettingsCanvas")
     pauseSettingsOverlayCanvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, pauseSettingsOverlayCanvas.luaProxyId)
         pauseSettingsOverlayCanvas:addFadeInAnimation(host, UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,

@@ -1,22 +1,22 @@
 #pragma once
 #include "Component.h"
 #include "Core/GameCore/Input/KeyboardBindings.h"
-#include "Core/GameCore/Input/MouseBindings.h"
+#include "Core/GameCore/Input/UiMouseBindings.h"
 
 namespace EngineCore
 {
    struct ComponentData;
 
-   class InputComponent : public Component
+   class UiInputComponent : public Component
    {
       std::shared_ptr<KeyboardBindings> m_keyboardBindings;
 
-      std::shared_ptr<MouseBindings> m_mouseBindings;
+      std::shared_ptr<UiMouseBindings> m_uiMouseBindings;
 
    public:
-      InputComponent(const std::shared_ptr<ComponentData> &componentData);
+      UiInputComponent(const std::shared_ptr<ComponentData> &componentData);
 
-      virtual ~InputComponent();
+      virtual ~UiInputComponent();
 
       eComponentType GetComponentType() const override;
 
@@ -31,7 +31,7 @@ namespace EngineCore
 
       std::shared_ptr<KeyboardBindings> GetKeyboardBindings() const;
 
-      std::shared_ptr<MouseBindings> GetMouseBindings() const;
+      std::shared_ptr<UiMouseBindings> GetMouseBindings() const;
 
       void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
 

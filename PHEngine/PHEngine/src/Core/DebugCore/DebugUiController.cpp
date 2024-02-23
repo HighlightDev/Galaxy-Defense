@@ -4,7 +4,7 @@
 #include "Core/GraphicsCore/SceneViewInfo/ViewPortInfo.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
-#include "Core/GameCore/Components/InputComponent.h"
+#include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/ResourceManagerCore/Pool/RenderTargetPool.h"
 #include "Core/ResourceManagerCore/Pool/TexturePool.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
@@ -20,7 +20,7 @@ namespace EngineCore
         DebugUiController::DebugUiController()
             : mSceneWp(),
               mCanvas(),
-              mInputComponent(std::make_unique<InputComponent>(std::make_shared<ComponentData>("DebugUiControllerInputComponent"))),
+              mInputComponent(std::make_unique<UiInputComponent>(std::make_shared<ComponentData>("DebugUiControllerInputComponent"))),
               mPressButtonCooldown(0.0f)
         {
             mInputComponent->SetIsReceivingMouseEvents(false);
@@ -252,7 +252,7 @@ namespace EngineCore
 
         void DebugUiController::SetRenderFpsText(const std::string &fpsText)
         {
-            if (mRenderFpsLabel)
+            if (mCanvas && mCanvas->IsVisible() && mRenderFpsLabel && mRenderFpsLabel->IsVisible())
             {
                 mRenderFpsLabel->SetText("Render FPS: " + fpsText);
             }
@@ -260,7 +260,7 @@ namespace EngineCore
 
         void DebugUiController::SetGameFpsText(const std::string &fpsText)
         {
-            if (mGameFpsLabel)
+            if (mCanvas && mCanvas->IsVisible() && mGameFpsLabel && mGameFpsLabel->IsVisible())
             {
                 mGameFpsLabel->SetText("Game FPS: " + fpsText);
             }
@@ -268,7 +268,7 @@ namespace EngineCore
 
         void DebugUiController::SetLuaFpsText(const std::string &fpsText)
         {
-            if (mLuaFpsLabel)
+            if (mCanvas && mCanvas->IsVisible() && mLuaFpsLabel && mLuaFpsLabel->IsVisible())
             {
                 mLuaFpsLabel->SetText("Lua FPS: " + fpsText);
             }

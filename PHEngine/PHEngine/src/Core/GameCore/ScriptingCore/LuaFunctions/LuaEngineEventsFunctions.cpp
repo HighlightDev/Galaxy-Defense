@@ -10,6 +10,7 @@
 #include "Core/GameCore/Event/PauseGameEvent.h"
 #include "Core/GameCore/Event/LoadLevelEvent.h"
 #include "Core/GameCore/Event/ExitGameEvent.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
 
 #include <json/json.hpp>
 
@@ -30,7 +31,7 @@ namespace EngineCore
       {
          WindowSizeChangedLuaThreadEvent::GetInstance()->RemoveListener(WindowSizeChangedLuaThreadEvent::GetInstanceId());
       }
-      
+
       void LuaEngineEventsFunctions::Initialize()
       {
          WindowSizeChangedLuaThreadEvent::GetInstance()->AddListener(shared_from_this());
@@ -59,6 +60,7 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendPauseGameThreadEvent"), void(int32_t, bool)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendPauseGameThreadEvent, this, std::placeholders::_1), "_SendPauseGameThreadEvent");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendExitGameThreadEvent"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendExitGameThreadEvent, this, std::placeholders::_1), "_SendExitGameThreadEvent");
          LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent, this, std::placeholders::_1), "_SendLoadLevelGameThreadEvent");
+         LuaCallbackBindingHelper<Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaEngineEventsFunctions::SendBroadcastGameThreadEvent, this, std::placeholders::_1), "_SendBroadcastGameThreadEvent");
       }
 
       void LuaEngineEventsFunctions::SendPauseGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/> &data)
@@ -96,6 +98,20 @@ namespace EngineCore
             static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendLoadLevelGameThreadEvent");
             sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [levelName]()
                                                                               { LoadLevelGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, levelName); });
+         }
+      }
+
+      void LuaEngineEventsFunctions::SendBroadcastGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*event header*/, std::string /*json parameters*/> &data)
+      {
+         const auto enqueuePolicy = std::get<0>(data);
+         const auto &eventHeader = std::get<1>(data);
+         const auto &eventJsonParameters = std::get<2>(data);
+
+         if (const auto &sceneSp = mSceneWp.lock())
+         {
+            static constexpr auto functionId = Hash64_CT("LuaEngineEventsFunctions::SendBroadcastGameThreadEvent");
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(static_cast<eEnqueueJobPolicy>(enqueuePolicy), 0, functionId, [eventHeader, eventJsonParameters]()
+                                                                              { BroadcastGameThreadEvent::GetInstance()->SendEvent(eExecutionOrder::POST_EXECUTION, eventHeader, eventJsonParameters); });
          }
       }
 

@@ -20,9 +20,9 @@ namespace EngineCore
       class LuaScriptProcessor;
 
       class LuaEngineEventsFunctions
-          : public ILuaFunctionable
-          , public WindowSizeChangedLuaThreadEvent
-          , public std::enable_shared_from_this<LuaEngineEventsFunctions>
+          : public ILuaFunctionable,
+            public WindowSizeChangedLuaThreadEvent,
+            public std::enable_shared_from_this<LuaEngineEventsFunctions>
       {
       protected:
          LuaScriptExecutorBase *mOwnerPtr;
@@ -51,9 +51,11 @@ namespace EngineCore
       private:
          void SendPauseGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, bool /*true: pause, false: unpause*/> &data);
 
-         void SendExitGameThreadEvent(const std::tuple<int32_t/*enqueue policy*/>& data);
+         void SendExitGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/> &data);
 
-         void SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string/*level name*/>& data);
+         void SendLoadLevelGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*level name*/> &data);
+
+         void SendBroadcastGameThreadEvent(const std::tuple<int32_t /*enqueue policy*/, std::string /*event header*/, std::string /*json parameters*/> &data);
 
          void ProcessEvent(const WindowSizeChangedLuaThreadEvent::EventData_t &data) override;
       };

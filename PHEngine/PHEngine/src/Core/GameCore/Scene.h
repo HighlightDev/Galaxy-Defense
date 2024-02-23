@@ -16,6 +16,7 @@
 #include "Core/DebugCore/DebugUiController.h"
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
+#include "Core/GameCore/Event/MouseButtonDownEvent.h"
 
 #include <type_traits>
 #include <glm/vec3.hpp>
@@ -59,7 +60,8 @@ namespace EngineCore
    class Scene : public EngineObject,
                  public ITickable,
                  public std::enable_shared_from_this<Scene>,
-                 public WindowSizeChangedGameThreadEvent
+                 public WindowSizeChangedGameThreadEvent,
+                 public MouseButtonDownRootEvent
    {
    private:
       std::shared_ptr<EnginePhysics::PhysicsWorld> mPhysicsWorld;
@@ -121,6 +123,8 @@ namespace EngineCore
       void UnpausableTick(const float deltaTime) override;
 
       void ProcessEvent(const WindowSizeChangedGameThreadEvent::EventData_t& data) override;
+
+      void ProcessEvent(const MouseButtonDownRootEvent::EventData_t& data) override;
 
       void RegisterCamera(const std::shared_ptr<ACamera> &camera);
 

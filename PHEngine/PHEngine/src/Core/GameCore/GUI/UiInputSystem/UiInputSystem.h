@@ -12,7 +12,7 @@ using namespace Event;
 
 namespace EngineCore
 {
-    class InputComponent;
+    class UiInputComponent;
 
     namespace GUI
     {
@@ -30,7 +30,7 @@ namespace EngineCore
 
             std::weak_ptr<UiCanvas> mOwnerWp;
 
-            std::unique_ptr<::EngineCore::InputComponent> mInputComponent;
+            std::unique_ptr<::EngineCore::UiInputComponent> mInputComponent;
 
             GameThreadTimer mMousePressedTimer;
 

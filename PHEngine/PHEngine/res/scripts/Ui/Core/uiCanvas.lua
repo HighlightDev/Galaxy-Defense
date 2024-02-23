@@ -58,6 +58,10 @@ function UiCanvas:new(host, originX, originY, width, height, name)
             value = false,
             dirty = false
         },
+        intercept_mouse_input_event = {
+            value = false,
+            dirty = false
+        },
         canvas_z_order = {
             value = 0,
             dirty = false
@@ -80,6 +84,9 @@ function UiCanvas:updateFromReplicatorData(host)
         local parsedJson = json.decode(replicatorJsonData)
         if parsedJson["visible"] ~= nil then
             self.properties.visible.value = parsedJson["visible"]
+        end
+        if parsedJson["intercept_mouse_input_event"] ~= nil then
+            self.properties.intercept_mouse_input_event.value = parsedJson["intercept_mouse_input_event"]
         end
         if parsedJson["canvas_z_order"] ~= nil then
             self.properties.canvas_z_order.value = parsedJson["canvas_z_order"];
@@ -109,6 +116,17 @@ function UiCanvas:setIsVisible(isVisible)
         self.properties.visible.value = isVisible
         self.properties.visible.dirty = true
     end
+end
+
+function UiCanvas:setIfCanInterceptMouseInputEvent(intercept)
+    if self.properties.intercept_mouse_input_event.value ~= intercept then
+        self.properties.intercept_mouse_input_event.value = intercept
+        self.properties.intercept_mouse_input_event.dirty = true
+    end
+end
+
+function UiCanvas:getIfCanInterceptMouseInputEvent()
+    return self.properties.intercept_mouse_input_event.value
 end
 
 function UiCanvas:setCanvasZOrder(zOrder)

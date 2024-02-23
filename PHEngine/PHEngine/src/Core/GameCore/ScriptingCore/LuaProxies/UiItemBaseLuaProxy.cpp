@@ -19,6 +19,7 @@ namespace EngineCore
           : LuaProxy(),
             mUiItemName(ownerUiItem->GetName()),
             mIsVisible(ownerUiItem->IsVisible()),
+            mCanInterceptMouseInputEvents(ownerUiItem->GetIfCanInterceptMouseInputEvents()),
             mZOrder(ownerUiItem->GetZOrder()),
             mWidth(ownerUiItem->GetWidth()),
             mHeight(ownerUiItem->GetHeight()),
@@ -39,6 +40,15 @@ namespace EngineCore
          if (mIsVisible != isVisible)
          {
             mIsVisible = isVisible;
+            mIsLuaDataDirty = true;
+         }
+      }
+
+      void UiItemBaseLuaProxy::SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts)
+      {
+         if (mCanInterceptMouseInputEvents != intercepts)
+         {
+            mCanInterceptMouseInputEvents = intercepts;
             mIsLuaDataDirty = true;
          }
       }
@@ -164,6 +174,7 @@ namespace EngineCore
                         });
          nlohmann::json jsonObj;
          jsonObj["visible"] = mIsVisible;
+         jsonObj["intercept_mouse_input_event"] = mCanInterceptMouseInputEvents;
          jsonObj["z_order"] = mZOrder;
          jsonObj["width"] = mWidth;
          jsonObj["height"] = mHeight;
@@ -190,6 +201,11 @@ namespace EngineCore
       bool UiItemBaseLuaProxy::IsVisible() const
       {
          return mIsVisible;
+      }
+
+      bool UiItemBaseLuaProxy::GetIfCanInterceptMouseInputEvents() const
+      {
+         return mCanInterceptMouseInputEvents;
       }
 
       void UiItemBaseLuaProxy::AddAnimation(const std::string &animationName, const AnimationData &animationData)

@@ -13,6 +13,7 @@
 #include <unordered_set>
 #include <memory>
 #include <atomic>
+#include <glm/vec2.hpp>
 
 using namespace Graphics;
 using namespace EngineCore::Scripts;
@@ -56,6 +57,8 @@ namespace EngineCore
             glm::ivec2 mWidthHeight;
 
             bool mIsVisible;
+
+            bool mCanInterceptMouseInputEvents;
 
             bool mIsTransformDirty;
 
@@ -129,6 +132,7 @@ namespace EngineCore
             std::weak_ptr<::EngineCore::Scene> GetScene() const override;
             BoundingBox2D<glm::ivec2> GetBoundingArea() const override;
             bool IsVisible() const override;
+            bool GetIfCanInterceptMouseInputEvents() const override;
             bool IsTransformDirty() const override;
             bool IsInputSystemInitialized() const;
             std::shared_ptr<IUiTransformable> TryFindChildByName(const std::string &name) const override;
@@ -140,6 +144,7 @@ namespace EngineCore
             void SetWidth(const size_t width) override;
             void SetHeight(const size_t height) override;
             void SetIsVisible(const bool isVisible) override;
+            void SetIfCanInterceptMouseInputEvents(const bool intercepts) override;
             void SetScene(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
             void AddUiItem(const std::shared_ptr<UiItemBase> &uiItem) override;
@@ -167,6 +172,8 @@ namespace EngineCore
             void CreateAnimator() override;
 
             void AddAnimation(const std::string &animationName, const AnimationData &animationData) override;
+
+            bool CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
 
             void CleanUp() override;
 

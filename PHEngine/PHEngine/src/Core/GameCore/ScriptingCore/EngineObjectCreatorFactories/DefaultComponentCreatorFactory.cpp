@@ -13,6 +13,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/SkeletalMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/SkyboxComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/WaterPlaneComponent.h"
+#include "Core/GameCore/Components/UiInputComponent.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionBoxShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionCapsuleShape.h"
 #include "Core/GameCore/Physics/PhysicsDescriptors/Shapes/CollisionPlaneShape.h"
@@ -77,7 +78,8 @@ namespace EngineCore
                 {"SkyboxComponent", std::make_shared<SkyboxComponentCreator<SkyboxComponent>>()},
                 {"WaterPlaneComponent", std::make_shared<ForwardShadingMeshComponentCreator<WaterPlaneComponent>>()},
                 {"PlanarReflectionComponent", std::make_shared<PlanarReflectionComponentCreator<PlanarReflectionComponent>>()},
-                {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()}};
+                {"InputComponent", std::make_shared<InputComponentCreator<InputComponent>>()},
+                {"UiInputComponent", std::make_shared<InputComponentCreator<UiInputComponent>>()}};
 
             assert(creatorsMap.count(componentType));
 
@@ -275,7 +277,8 @@ namespace EngineCore
                                                                                 ownerCameraSp,
                                                                                 ::Graphics::ViewPortInfo(viewPortX, viewPortY, viewPortWidth, viewPortHeight));
             }
-            else if ("InputComponent" == componentType)
+            else if ("InputComponent" == componentType ||
+                     "UiInputComponent" == componentType)
             {
                 componentData = std::make_shared<ComponentData>(objectName);
             }

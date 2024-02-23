@@ -51,7 +51,7 @@ namespace EngineCore
         }
 #endif
 
-        std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize, const std::string& name)
+        std::shared_ptr<UiCanvas> UiHandler::CreateCanvas(const ViewPortInfo &canvasScreenSize, const std::string &name)
         {
             const auto &ownerSp = mOwner.lock();
             assert(ownerSp);
@@ -109,6 +109,27 @@ namespace EngineCore
                                                     { return canvasId == canvas->GetUId(); });
 
             return foundResultIt != mUiCanvases.cend() ? *foundResultIt : nullptr;
+        }
+
+        bool UiHandler::CheckIfUiInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const
+        {
+            for (const auto &canvas : mUiCanvases)
+            {
+                if (canvas->IsVisible() &&
+                    canvas->GetIfCanInterceptMouseInputEvents() &&
+                    canvas->CheckIfInterceptsMouseEvent(currentMousePosition))
+                {
+                    return true;
+                }
+            }
+
+#ifdef DEBUG
+            if (mDebugUiCanvas && mDebugUiCanvas->IsVisible() && mDebugUiCanvas->CheckIfInterceptsMouseEvent(currentMousePosition))
+            {
+                return true;
+            }
+#endif
+            return false;
         }
 
         void UiHandler::CleanUp()

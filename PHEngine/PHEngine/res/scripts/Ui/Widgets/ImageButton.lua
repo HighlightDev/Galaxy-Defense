@@ -30,7 +30,7 @@ local UiImage = require("Ui/Core/uiImage")
 ImageButton = {
 }
 
-function ImageButton:new(host, overlay)
+function ImageButton:new(host, overlay, name)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
 
     local newObj = {
@@ -42,11 +42,14 @@ function ImageButton:new(host, overlay)
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
-        widgetName = ""
+        widgetName = "",
     }
 
-    newObj.buttonContainer = UiRectangle:new(host)
-    newObj.image = UiImage:new(host)
+    local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
+    local containerName = debugName ~= nil and "ImageButton_" .. debugName or nil
+    local imageName = debugName ~= nil and "ImageButton_" .. debugName or nil
+    newObj.buttonContainer = UiRectangle:new(host, containerName)
+    newObj.image = UiImage:new(host, imageName)
 
     overlay:addWidget(newObj.buttonContainer)
     overlay:addWidget(newObj.image)

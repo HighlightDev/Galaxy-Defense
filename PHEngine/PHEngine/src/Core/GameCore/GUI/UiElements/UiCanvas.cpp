@@ -32,6 +32,7 @@ namespace EngineCore
               mRegisteredUIds(),
               mRegisteredNames(),
               mIsVisible(true),
+              mCanInterceptMouseInputEvents(true),
               mIsTransformDirty(true),
               mInputSystem(),
               mDescendingByZOrderHierarchyChildren(),
@@ -212,9 +213,36 @@ namespace EngineCore
             mAnimator->AddAnimation(animationName, animationData);
         }
 
+        bool UiCanvas::CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const
+        {
+            const auto &boundingArea = GetBoundingArea();
+            if (EngineMath::TestPointInAABB(boundingArea.GetMin(), boundingArea.GetMax(), currentMousePosition))
+            {
+                for (const auto &childWp : mDescendingByZOrderHierarchyChildren)
+                {
+                    if (const auto &childSp = childWp.lock())
+                    {
+                        if (childSp->IsVisible() &&
+                            childSp->GetIfCanInterceptMouseInputEvents() &&
+                            childSp->CheckIfInterceptsMouseEvent(currentMousePosition))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         bool UiCanvas::IsVisible() const
         {
             return mIsVisible;
+        }
+
+        bool UiCanvas::GetIfCanInterceptMouseInputEvents() const
+        {
+            return mCanInterceptMouseInputEvents;
         }
 
         void UiCanvas::SetIsTransformDirty(const bool isDirty)
@@ -228,6 +256,15 @@ namespace EngineCore
             {
                 mIsVisible = isVisible;
                 mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                mIsPropertiesShouldBeUpdatedOnLuaThread = true;
+            }
+        }
+
+        void UiCanvas::SetIfCanInterceptMouseInputEvents(const bool intercepts)
+        {
+            if (mCanInterceptMouseInputEvents != intercepts)
+            {
+                mCanInterceptMouseInputEvents = intercepts;
                 mIsPropertiesShouldBeUpdatedOnLuaThread = true;
             }
         }
@@ -481,11 +518,12 @@ namespace EngineCore
             {
                 if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                 {
-                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), isVisible = mIsVisible, canvasZOrder = mCanvasZOrder]()
+                    sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetReplicatorId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), isVisible = mIsVisible, interceptsMouseInputEvents = mCanInterceptMouseInputEvents, canvasZOrder = mCanvasZOrder]()
                                                                                      {
                         if (const auto &canvasProxy = std::static_pointer_cast<UiCanvasLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                         {
                             canvasProxy->SetIsVisible_FromGameThread(isVisible);
+                            canvasProxy->SetIfCanInterceptMouseInputEvents_FromGameThread(interceptsMouseInputEvents);
                             canvasProxy->SetCanvasZOrder_FromGameThread(canvasZOrder);
                         } });
                 }
@@ -606,6 +644,14 @@ namespace EngineCore
                 {
                     mCanvasZOrder = zOrder;
                     mIsPropertiesShouldBeUpdatedOnRenderThread = true;
+                }
+            }
+            if (jsonObj.contains("intercept_mouse_input_event"))
+            {
+                const auto canIntercept = jsonObj["intercept_mouse_input_event"].get<bool>();
+                if (mCanInterceptMouseInputEvents != canIntercept)
+                {
+                    mCanInterceptMouseInputEvents = canIntercept;
                 }
             }
         }

@@ -8,4 +8,10 @@ namespace EngineCore
         ZoomIn,
         ZoomOut,
     };
+
+    enum class eMouseEventTargetReceiverType
+   {
+      SCENE_GAME_OBJECTS,
+      UI_INPUT_SYSTEM
+   };
 }

@@ -80,7 +80,8 @@ namespace EngineCore
                                  ExitGameThreadEvent,
                                  LoadLevelGameThreadEvent,
                                  WindowSizeChangedGameThreadEvent,
-                                 BroadcastGameThreadEvent>();
+                                 BroadcastGameThreadEvent,
+                                 MouseButtonDownRootEvent>();
 
       LuaThreadEventDispatcher::GetInstance()
           ->RegisterEventsByType<KeyboardButtonDownLuaThreadEvent,

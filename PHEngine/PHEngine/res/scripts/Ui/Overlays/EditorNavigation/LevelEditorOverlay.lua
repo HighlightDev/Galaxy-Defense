@@ -54,16 +54,16 @@ function LevelEditorOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
     local windowHeight = _GetWindowHeight(host)
 
-    local canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight)
+    local canvas = UiCanvas:new(host, 0, 0, windowWidth, windowHeight, "EditorCanvas")
     canvas:subscribeOnLuaProxyReady(function(host)
         _InitializeCanvasInputSystem(host, canvas.luaProxyId)
     end)
     local overlay = UiOverlay:createBackgroundOverlay(host, LevelEditorOverlay.overlayName, canvas)
 
-    local editorContainer = UiRectangle:new(host)
+    local editorContainer = UiRectangle:new(host, "EditorPanelContainer")
     overlay:addWidget(editorContainer)
 
-    local changeContainerStateButton = ImageButton:new(host, overlay)
+    local changeContainerStateButton = ImageButton:new(host, overlay, "ChangeContainerStateButton")
     overlay:addCompoundWidget(changeContainerStateButton)
 
     local editStationSocketsButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName)
@@ -71,6 +71,9 @@ function LevelEditorOverlay:new(host)
 
     local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName);
     overlay:addCompoundWidget(editRoutesButton)
+
+    local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton");
+    overlay:addCompoundWidget(undoLastActionButton)
 
     changeContainerStateButton:setOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
@@ -80,6 +83,7 @@ function LevelEditorOverlay:new(host)
             changeContainerStateButton:getImageRotationDegrees() + 180.0, 360.0))
         editStationSocketsButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
         editRoutesButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
+        undoLastActionButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
     end)
 
     editStationSocketsButton:setOnMouseInputClickedCallback(function()
@@ -93,6 +97,10 @@ function LevelEditorOverlay:new(host)
             EditModeType.EDIT_ROUTES
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
+    end)
+    undoLastActionButton:setOnMouseInputClickedCallback(function()
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "EditorLevelEvents", json.encode({ action = "undo" }))
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
@@ -111,6 +119,9 @@ function LevelEditorOverlay:new(host)
 
         editRoutesButton:setWidth(buttonWidth)
         editRoutesButton:setHeight(buttonHeight)
+
+        undoLastActionButton:setWidth(buttonWidth)
+        undoLastActionButton:setHeight(buttonHeight)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -122,6 +133,7 @@ function LevelEditorOverlay:new(host)
         editorContainer:setZOrder(1)
         editorContainer:setColorHexValue(0xffffff)
         editorContainer:setOpacity(0.0)
+        editorContainer:setIfCanInterceptMouseInputEvent(false)
 
         local buttonWidth = editorContainer:getHeight() * 0.55
         local buttonHeight = editorContainer:getHeight() * 0.55
@@ -168,6 +180,18 @@ function LevelEditorOverlay:new(host)
         editRoutesButton:setLabelTextColorHexValue(0x000000)
         editRoutesButton:setZOrder(2)
         editRoutesButton:setButtonColorHexValue(0xdb9427)
+
+        undoLastActionButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        undoLastActionButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
+            editRoutesButton.widgetName, 10)
+        undoLastActionButton:setWidth(buttonWidth)
+        undoLastActionButton:setHeight(buttonHeight)
+        undoLastActionButton:setButtonBorderRadius(8)
+        undoLastActionButton:setImageTextureSource("arrow_counter_clockwise.png")
+        undoLastActionButton:setZOrder(2)
+        undoLastActionButton:setButtonColorHexValue(0xdb9427)
     end)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)

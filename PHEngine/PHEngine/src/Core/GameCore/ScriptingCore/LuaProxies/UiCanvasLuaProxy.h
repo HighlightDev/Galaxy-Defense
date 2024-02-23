@@ -26,6 +26,8 @@ namespace EngineCore
 
             bool mIsVisible;
 
+            bool mCanInterceptMouseInputEvents;
+
             size_t mCanvasZOrder;
 
         public:
@@ -37,6 +39,8 @@ namespace EngineCore
 
             void SetIsVisible_FromGameThread(const bool isVisible);
 
+            void SetIfCanInterceptMouseInputEvents_FromGameThread(const bool intercepts);
+
             void SetCanvasZOrder_FromGameThread(const size_t zOrder);
 
             size_t GetCanvasZOrder() const;
@@ -46,6 +50,8 @@ namespace EngineCore
             std::string GetGameThreadData() override;
 
             bool IsVisible() const;
+
+            bool GetIfCanInterceptMouseInputEvents() const;
 
             void InitializeInputSystem();
 
