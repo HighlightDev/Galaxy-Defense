@@ -65,8 +65,10 @@ namespace EngineCore
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetGameThreadData"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetGameThreadData, this, std::placeholders::_1), "_GetGameThreadData");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::InitializeCanvasInputSystem"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::InitializeCanvasInputSystem, this, std::placeholders::_1), "_InitializeCanvasInputSystem");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::AddCanvasFadeAnimation"), void(int32_t, int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::AddCanvasFadeAnimation, this, std::placeholders::_1), "_AddCanvasFadeAnimation");
-         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::AddUiItemAnimation"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::AddUiItemAnimation, this, std::placeholders::_1), "_AddUiItemAnimation");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::AddUiItemAnimation"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::AddUiItemAnimation, this, std::placeholders::_1), "_AddUiItemAnimation");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::AddUiItemSequenceAnimation"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::AddUiItemSequenceAnimation, this, std::placeholders::_1), "_AddUiItemSequenceAnimation");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::StartUiItemAnimation"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::StartUiItemAnimation, this, std::placeholders::_1), "_StartUiItemAnimation");
+         LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::StartUiItemSequenceAnimation"), void(int32_t, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::StartUiItemSequenceAnimation, this, std::placeholders::_1), "_StartUiItemSequenceAnimation");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::GetUiWidgetName"), std::string(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::GetUiWidgetName, this, std::placeholders::_1), "_GetUiWidgetName");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::SetUiWidgetParent"), void(int32_t, std::string, std::string)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::SetUiWidgetParent, this, std::placeholders::_1), "_SetUiWidgetParent");
          LuaCallbackBindingHelper<Hash64_CT("LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver"), void(int32_t)>::Bind(luaWrapper, mOwnerPtr, std::bind(&LuaCommonUiFunctions::EnableToggleButtonMouseInputReceiver, this, std::placeholders::_1), "_EnableToggleButtonMouseInputReceiver");
@@ -258,79 +260,83 @@ namespace EngineCore
          const auto animationJsonData = std::get<2>(data);
          const auto animationDataJsonObj = nlohmann::json::parse(animationJsonData);
 
-         assert(animationDataJsonObj.contains("animatedPropertyType"));
-         assert(animationDataJsonObj.contains("animationFunctionType"));
-         assert(animationDataJsonObj.contains("animationDuration"));
-         assert(animationDataJsonObj.contains("animatedPropertyName"));
-         assert(animationDataJsonObj.contains("srcValue"));
-         assert(animationDataJsonObj.contains("dstValue"));
-         const auto functionType = static_cast<eAnimationInterpolationFunctionType>(animationDataJsonObj["animationFunctionType"].get<int32_t>());
-         const auto propType = static_cast<eEnginePropertyType>(animationDataJsonObj["animatedPropertyType"].get<int32_t>());
-         const auto animationDuration = animationDataJsonObj["animationDuration"].get<float>();
-         const auto animatedPropertyName = animationDataJsonObj["animatedPropertyName"].get<std::string>();
-         std::any srcData, dstData;
-         if (eEnginePropertyType::Float == propType)
-         {
-            srcData = animationDataJsonObj["srcValue"].get<float>();
-            dstData = animationDataJsonObj["dstValue"].get<float>();
-         }
-         else if (eEnginePropertyType::Integer == propType)
-         {
-            srcData = animationDataJsonObj["srcValue"].get<int32_t>();
-            dstData = animationDataJsonObj["dstValue"].get<int32_t>();
-         }
-         else
-         {
-            assert(false); // Not supported yet
-         }
-
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {
             const auto &canvasSp = std::dynamic_pointer_cast<UiCanvasLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
             assert(canvasSp);
-            canvasSp->AddAnimation(animationName, AnimationData(functionType, animationDuration, animatedPropertyName, srcData, dstData));
+            canvasSp->AddAnimation(animationName, ParseAnimationDataFromJson(animationDataJsonObj));
          }
       }
 
-      void LuaCommonUiFunctions::AddUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation json data*/> &data)
+      AnimationData LuaCommonUiFunctions::ParseAnimationDataFromJson(const nlohmann::json &jsonObj)
       {
-         const auto luaProxyId = std::get<0>(data);
-         const auto animationJsonData = std::get<1>(data);
-         const auto animationDataJsonObj = nlohmann::json::parse(animationJsonData);
-
-         assert(animationDataJsonObj.contains("animatedPropertyType"));
-         assert(animationDataJsonObj.contains("animationName"));
-         assert(animationDataJsonObj.contains("animationFunctionType"));
-         assert(animationDataJsonObj.contains("animationDuration"));
-         assert(animationDataJsonObj.contains("animatedPropertyName"));
-         assert(animationDataJsonObj.contains("srcValue"));
-         assert(animationDataJsonObj.contains("dstValue"));
-         const auto animationName = animationDataJsonObj["animationName"].get<std::string>();
-         const auto functionType = static_cast<eAnimationInterpolationFunctionType>(animationDataJsonObj["animationFunctionType"].get<int32_t>());
-         const auto propType = static_cast<eEnginePropertyType>(animationDataJsonObj["animatedPropertyType"].get<int32_t>());
-         const auto animationDuration = animationDataJsonObj["animationDuration"].get<float>();
-         const auto animatedPropertyName = animationDataJsonObj["animatedPropertyName"].get<std::string>();
+         assert(jsonObj.contains("animatedPropertyType"));
+         assert(jsonObj.contains("animationFunctionType"));
+         assert(jsonObj.contains("animationDuration"));
+         assert(jsonObj.contains("animatedPropertyName"));
+         assert(jsonObj.contains("propertySrcValue"));
+         assert(jsonObj.contains("propertyDstValue"));
+         const auto functionType = static_cast<eAnimationInterpolationFunctionType>(jsonObj["animationFunctionType"].get<int32_t>());
+         const auto propType = static_cast<eEnginePropertyType>(jsonObj["animatedPropertyType"].get<int32_t>());
+         const auto animationDuration = jsonObj["animationDuration"].get<float>();
+         const auto animatedPropertyName = jsonObj["animatedPropertyName"].get<std::string>();
          std::any srcData, dstData;
          if (eEnginePropertyType::Float == propType)
          {
-            srcData = animationDataJsonObj["srcValue"].get<float>();
-            dstData = animationDataJsonObj["dstValue"].get<float>();
+            srcData = jsonObj["propertySrcValue"].get<float>();
+            dstData = jsonObj["propertyDstValue"].get<float>();
          }
          else if (eEnginePropertyType::Integer == propType)
          {
-            srcData = animationDataJsonObj["srcValue"].get<int32_t>();
-            dstData = animationDataJsonObj["dstValue"].get<int32_t>();
+            srcData = jsonObj["propertySrcValue"].get<int32_t>();
+            dstData = jsonObj["propertyDstValue"].get<int32_t>();
          }
          else
          {
             assert(false); // Not supported yet
          }
+
+         return AnimationData(functionType, animationDuration, animatedPropertyName, srcData, dstData);
+      }
+
+      void LuaCommonUiFunctions::AddUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/, std::string /*animation json data*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         const auto &animationName = std::get<1>(data);
+         const auto &animationJsonData = std::get<2>(data);
+         const auto &animationDataJsonObj = nlohmann::json::parse(animationJsonData);
 
          if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
          {
             const auto &uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
             assert(uiItemBaseLuaProxySp);
-            uiItemBaseLuaProxySp->AddAnimation(animationName, AnimationData(functionType, animationDuration, animatedPropertyName, srcData, dstData));
+
+            uiItemBaseLuaProxySp->AddAnimation(animationName, ParseAnimationDataFromJson(animationDataJsonObj));
+         }
+      }
+
+      void LuaCommonUiFunctions::AddUiItemSequenceAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/, std::string /*animation json data*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         const auto &animationName = std::get<1>(data);
+         const auto &animationJsonData = std::get<2>(data);
+         const auto animationRootDataMap = nlohmann::json::parse(animationJsonData);
+
+         std::vector<AnimationData> animationsDataList;
+         for (auto it = animationRootDataMap.begin(); it != animationRootDataMap.end(); ++it)
+         {
+            const auto &animationSequenceMap = it.value();
+            animationsDataList.emplace_back(ParseAnimationDataFromJson(animationSequenceMap));
+         }
+         AnimationSequence resultAnimationSequence;
+         resultAnimationSequence.SetAnimationDataInSequence(animationsDataList);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            const auto &uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+            assert(uiItemBaseLuaProxySp);
+
+            uiItemBaseLuaProxySp->AddSequenceAnimation(animationName, resultAnimationSequence);
          }
       }
 
@@ -344,6 +350,19 @@ namespace EngineCore
             const auto &uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
             assert(uiItemBaseLuaProxySp);
             uiItemBaseLuaProxySp->StartAnimation(animationName);
+         }
+      }
+
+      void LuaCommonUiFunctions::StartUiItemSequenceAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/> &data)
+      {
+         const auto luaProxyId = std::get<0>(data);
+         const auto animationName = std::get<1>(data);
+
+         if (const auto &luaProcessorSp = mOwnerPtr->GetLuaScriptProcessor().lock())
+         {
+            const auto &uiItemBaseLuaProxySp = std::dynamic_pointer_cast<UiItemBaseLuaProxy>(luaProcessorSp->GetLuaProxy(luaProxyId));
+            assert(uiItemBaseLuaProxySp);
+            uiItemBaseLuaProxySp->StartSequenceAnimation(animationName);
          }
       }
 

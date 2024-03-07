@@ -35,4 +35,10 @@ function EventsHelper:sendChangeEditModeGameThreadEvent(host, enqueueJobPolicy, 
     _SendChangeEditModeGameThreadEvent(host, enqueueJobPolicy, editModeType)
 end
 
+function EventsHelper:sendBroadcastGameThreadEvent(host, enqueueJobPolicy, eventHeader, jsonParameters)
+    assert(enqueueJobPolicy >= 0 or enqueueJobPolicy <= 2, "enqueueJobPolicy value must be [0; 2]")
+    assert(eventHeader ~= nil and type(eventHeader) == "string")
+    assert(jsonParameters ~= nil and type(jsonParameters) == "string")
+    _SendBroadcastGameThreadEvent(host, enqueueJobPolicy, eventHeader, jsonParameters)
+end
 return EventsHelper

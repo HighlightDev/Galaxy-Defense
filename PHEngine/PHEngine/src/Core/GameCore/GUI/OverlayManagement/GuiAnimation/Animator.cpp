@@ -16,10 +16,6 @@ namespace EngineCore
             assert(mAnimatable);
         }
 
-        Animator::~Animator()
-        {
-        }
-
         void Animator::Tick(const float deltaTime)
         {
         }
@@ -31,13 +27,16 @@ namespace EngineCore
                 mAnimationTimePassed += deltaTime;
                 assert(!mActiveAnimationName.empty());
                 assert(mAnimations.count(mActiveAnimationName));
-                bool isAnimationFinished = false;
-                for (const auto& animationData : mAnimations.at(mActiveAnimationName))
+                bool isAnimationFinished = true;
+                for (const auto &animationData : mAnimations.at(mActiveAnimationName))
                 {
-                   assert(mAnimationControllers.count(animationData.GetPropertyName()));
-                   const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
-                   propertyController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
-                   isAnimationFinished = propertyController->IsAnimationFinished();
+                    assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                    const auto &propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+                    if (!propertyController->IsAnimationFinished())
+                    {
+                        propertyController->ProcessAnimation(mAnimationTimePassed, animationData, mAnimatable);
+                        isAnimationFinished = !propertyController->IsAnimationFinished() ? false : isAnimationFinished;
+                    }
                 }
                 if (isAnimationFinished)
                 {
@@ -55,14 +54,14 @@ namespace EngineCore
 
         void Animator::AddAnimation(const std::string &animationName, const AnimationData &animationData)
         {
-           if (mAnimations.count(animationName))
-           {
-              mAnimations.at(animationName).emplace_back(animationData);
-           }
-           else 
-           {
-              mAnimations.emplace(animationName, std::vector<AnimationData>({ animationData }));
-           }
+            if (mAnimations.count(animationName))
+            {
+                mAnimations.at(animationName).emplace_back(animationData);
+            }
+            else
+            {
+                mAnimations.emplace(animationName, std::vector<AnimationData>({animationData}));
+            }
         }
 
         void Animator::RemoveAnimation(const std::string &animationName)
@@ -82,11 +81,11 @@ namespace EngineCore
             {
                 assert(!mActiveAnimationName.empty());
                 assert(mAnimations.count(mActiveAnimationName));
-                for (const auto& animationData : mAnimations.at(mActiveAnimationName))
+                for (const auto &animationData : mAnimations.at(mActiveAnimationName))
                 {
-                   assert(mAnimationControllers.count(animationData.GetPropertyName()));
-                   const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
-                   propertyController->ForceFinishAnimation(animationData, mAnimatable);
+                    assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                    const auto &propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+                    propertyController->ForceFinishAnimation(animationData, mAnimatable);
                 }
                 for (const auto &animationFinishedCallback : mOnAnimationFinishedCallbacks)
                 {
@@ -101,11 +100,11 @@ namespace EngineCore
             mAnimationTimePassed = 0.0f;
             mAnimationInProgress = true;
             CreateAnimationControllersForAnimation(newAnimationName);
-            for (const auto& animationData : mAnimations.at(mActiveAnimationName))
+            for (const auto &animationData : mAnimations.at(mActiveAnimationName))
             {
-               assert(mAnimationControllers.count(animationData.GetPropertyName()));
-               const auto& propertyController = mAnimationControllers.at(animationData.GetPropertyName());
-               propertyController->InitWithSrcValues(animationData, mAnimatable);
+                assert(mAnimationControllers.count(animationData.GetPropertyName()));
+                const auto &propertyController = mAnimationControllers.at(animationData.GetPropertyName());
+                propertyController->InitWithSrcValues(animationData, mAnimatable);
             }
         }
 
@@ -114,17 +113,17 @@ namespace EngineCore
             return mAnimations.count(animationName) > 0;
         }
 
-        void Animator::CreateAnimationControllersForAnimation(const std::string& animationName)
+        void Animator::CreateAnimationControllersForAnimation(const std::string &animationName)
         {
-           for (const auto& animationData : mAnimations.at(animationName))
-           {
-              const auto &property = mAnimatable->GetPropertyByName(animationData.GetPropertyName());
-              assert(property);
-              const auto propertyType = property->GetPropertyType();
-              const std::shared_ptr<IAnimationController> propertyController = AnimationControllerFactory::CreateAnimationController(propertyType);
-              assert(propertyController);
-              mAnimationControllers.emplace(animationData.GetPropertyName(), propertyController);
-           }
+            for (const auto &animationData : mAnimations.at(animationName))
+            {
+                const auto &property = mAnimatable->GetPropertyByName(animationData.GetPropertyName());
+                assert(property);
+                const auto propertyType = property->GetPropertyType();
+                const std::shared_ptr<IAnimationController> propertyController = AnimationControllerFactory::CreateAnimationController(propertyType);
+                assert(propertyController);
+                mAnimationControllers.emplace(animationData.GetPropertyName(), propertyController);
+            }
         }
     }
 }

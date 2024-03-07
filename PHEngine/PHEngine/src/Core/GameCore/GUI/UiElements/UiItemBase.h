@@ -25,6 +25,7 @@ namespace EngineCore
     {
         class UiCanvas;
         class Animator;
+        class SequenceAnimator;
 
         class UiItemBase
             : public EngineToLuaReplicatorBase,
@@ -88,6 +89,8 @@ namespace EngineCore
 
             std::shared_ptr<::EngineCore::GUI::Animator> mAnimator;
 
+            std::shared_ptr<::EngineCore::GUI::SequenceAnimator> mSequenceAnimator;
+
             std::shared_ptr<EngineObjectProperty<float>> mScaleProperty;
 
             std::shared_ptr<EngineObjectProperty<int32_t>> mVerticalCenterOffsetProperty;
@@ -95,7 +98,7 @@ namespace EngineCore
             std::shared_ptr<EngineObjectProperty<int32_t>> mHorizontalCenterOffsetProperty;
 
         public:
-            explicit UiItemBase(const std::string& name);
+            explicit UiItemBase(const std::string &name);
 
             void Initialize();
 
@@ -187,11 +190,17 @@ namespace EngineCore
 
             std::shared_ptr<::EngineCore::GUI::Animator> GetAnimator() const override;
 
+            std::shared_ptr<::EngineCore::GUI::SequenceAnimator> GetSequenceAnimator() const override;
+
             void CreateAnimator() override;
+
+            void CreateSequenceAnimator() override;
 
             void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
 
-            void InitLuaProxy(const std::shared_ptr<Scene>& sceneSp) override;
+            void AddSequenceAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationSequence &animationSequence) override;
+
+            void InitLuaProxy(const std::shared_ptr<Scene> &sceneSp) override;
 
             void CleanUp() override;
 

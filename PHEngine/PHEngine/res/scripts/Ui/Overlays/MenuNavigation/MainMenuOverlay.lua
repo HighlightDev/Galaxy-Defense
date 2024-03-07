@@ -76,7 +76,7 @@ function MainMenuOverlay:new(host)
             newGameButton:setColorHexValue(MainMenuOverlay.buttonColor)
         end
     end)
-    newGameButton:setOnMouseInputClickedCallback(function()
+    newGameButton:subscriveOnMouseInputClickedCallback(function()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "FirstLevel")
     end)
@@ -96,7 +96,7 @@ function MainMenuOverlay:new(host)
 
     local editorLvlButtonLabel = UiLabel:new(host, "nimbus_mono")
     mainMenuOverlay_1:addWidget(editorLvlButtonLabel)
-    editorLvlButton:setOnMouseInputClickedCallback(function ()
+    editorLvlButton:subscriveOnMouseInputClickedCallback(function ()
         EventsHelper:sendLoadLevelGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevel")
     end)
@@ -116,7 +116,7 @@ function MainMenuOverlay:new(host)
 
     local exitGameButton = UiRectangle:new(host)
     mainMenuOverlay_1:addWidget(exitGameButton)
-    exitGameButton:setOnMouseInputClickedCallback(function()
+    exitGameButton:subscriveOnMouseInputClickedCallback(function()
         EventsHelper:sendExitGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH)
     end)
     exitGameButton:setOnMouseInputCursorHoverStateChangedCallback(function(newState)

@@ -5,6 +5,7 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
@@ -15,6 +16,8 @@
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Core/UtilityCore/EngineMath.h"
 
+#include <json/json.hpp>
+
 using namespace Resources;
 using namespace EngineCore;
 using namespace Graphics;
@@ -24,18 +27,24 @@ namespace Game
 {
     LevelEditorController::LevelEditorController(const std::weak_ptr<Scene> &sceneWp)
         : mSceneWp(sceneWp),
-          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent")))
+          mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent"))),
+          mBezierCurvesActor(std::make_shared<Actor>("BezierCurvesActor",
+                                                     std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
     {
     }
 
+    static std::shared_ptr<IMaterial> splineMaterial = nullptr;
+
     LevelEditorController::~LevelEditorController()
     {
-        ChangeEditModeEvent::GetInstance()->RemoveListener(GetInstanceId());
+        ChangeEditModeEvent::GetInstance()->RemoveListener(ChangeEditModeEvent::GetInstanceId());
+        BroadcastGameThreadEvent::GetInstance()->RemoveListener(BroadcastGameThreadEvent::GetInstanceId());
     }
 
     void LevelEditorController::OnPreLevelInit()
     {
         ChangeEditModeEvent::GetInstance()->AddListener(shared_from_this());
+        BroadcastGameThreadEvent::GetInstance()->AddListener(shared_from_this());
     }
 
     void LevelEditorController::OnLevelInit()
@@ -49,6 +58,14 @@ namespace Game
         const auto &mainCameraSp = std::dynamic_pointer_cast<ThirdPersonCamera>(sceneSp->GetMainCamera());
         assert(mainCameraSp);
         mMainSceneCamera = mainCameraSp;
+
+        sceneSp->AddActor(mBezierCurvesActor);
+
+        MaterialParser materialParser;
+        splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
+        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "opacity", 1.0f);
+        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
+        sceneSp->RegisterMaterialInstance(splineMaterial);
     }
 
     void LevelEditorController::PostPlayLevelFinished()
@@ -65,8 +82,44 @@ namespace Game
         Initialize();
     }
 
+    void LevelEditorController::SpawnBezierCurveComponent(const int32_t bezierIndex, const glm::vec3 &pointA, const glm::vec3 &controlPoint, const glm::vec3 &pointB)
+    {
+        if (mIdleCurveComponents.empty())
+        {
+            const auto &sceneSp = mSceneWp.lock();
+            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + std::to_string(bezierIndex), 150, glm::vec3(0, 5, 0), glm::vec3(), glm::vec3(1), "", splineMaterial);
+            const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
+            auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            c_mesh->SetLineWidth(1.5f);
+            c_mesh->SetSortOrderValue(30);
+            c_mesh->SetCurveSegmentsCount(50);
+            c_mesh->SetLineBeginWorldSpacePosition(pointA);
+            c_mesh->SetBezierControlPointWorldSpacePosition(controlPoint);
+            c_mesh->SetLineEndWorldSpacePosition(pointB);
+            mBezierCurvesActor->AddComponent(c_mesh);
+            mActiveCurveComponents.emplace(c_mesh);
+        }
+        else
+        {
+            const auto& idleCurveComponent = mIdleCurveComponents.top();
+            idleCurveComponent->SetIsEnabled(true);
+            idleCurveComponent->SetLineBeginWorldSpacePosition(pointA);
+            idleCurveComponent->SetBezierControlPointWorldSpacePosition(controlPoint);
+            idleCurveComponent->SetLineEndWorldSpacePosition(pointB);
+            mActiveCurveComponents.emplace(idleCurveComponent);
+            mIdleCurveComponents.pop();
+        }
+    }
+
     void LevelEditorController::Tick(const float deltaTime)
     {
+        if (bezierControlPointsList.size() >= 3)
+        {
+            static int sBezierCurveCounter = 0;
+            SpawnBezierCurveComponent(sBezierCurveCounter++, bezierControlPointsList.at(0), bezierControlPointsList.at(1), bezierControlPointsList.at(2));
+            bezierControlPointsList.clear();
+        }
+
         if (const auto &sceneCameraSp = mMainSceneCamera.lock())
         {
             if (eEditModeType::IDLE != mCurrentEditModeType)
@@ -97,9 +150,40 @@ namespace Game
                         }
                         else
                         {
-                            const auto& nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
                             mRouteNodePickerActor->GetRootComponent()->SetTranslation(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
                         }
+                    }
+                }
+
+                if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType)
+                {
+                    if (KeyState::PRESSED == mouseBindings->GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
+                    {
+                        if (!leftButtonPressed)
+                        {
+                            leftButtonPressed = true;
+                            const auto &mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
+                            const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+                            const ScreenRayCaster screenRayCaster;
+                            const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
+                                                                                                                glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
+                                                                                                                           DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
+                                                                                                                projectionMatrix,
+                                                                                                                sceneCameraSp->GetViewMatrix());
+                            const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+                            const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
+                            if (tParam >= 0.0f)
+                            {
+                                const auto &rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+                                const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                                bezierControlPointsList.emplace_back(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
+                            }
+                        }
+                    }
+                    else
+                    {
+                        leftButtonPressed = false;
                     }
                 }
             }
@@ -108,6 +192,30 @@ namespace Game
 
     void LevelEditorController::UnpausableTick(const float deltaTime)
     {
+    }
+
+    void LevelEditorController::ProcessEvent(const BroadcastGameThreadEvent::EventData_t &data)
+    {
+        const auto eventHeader = std::get<0>(data);
+
+        if ("EditorLevelEvents" == eventHeader)
+        {
+            const auto &jsonObj = nlohmann::json::parse(std::get<1>(data));
+            if (jsonObj.contains("action"))
+            {
+                const auto &doneAction = jsonObj["action"].get<std::string>();
+                if ("undo" == doneAction)
+                {
+                    if (!mActiveCurveComponents.empty())
+                    {
+                        const auto& lastActiveCurveComponent = mActiveCurveComponents.top();
+                        lastActiveCurveComponent->SetIsEnabled(false);
+                        mIdleCurveComponents.emplace(lastActiveCurveComponent);
+                        mActiveCurveComponents.pop();
+                    }
+                }
+            }
+        }
     }
 
     void LevelEditorController::ProcessEvent(const ChangeEditModeEvent::EventData_t &data)
@@ -150,7 +258,7 @@ namespace Game
         const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
         const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "sphere.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerSize, 1.0f, pickerSize), editorNodePickerMaterial);
         const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-        c_mesh->SetSortOrderValue(200);
+        c_mesh->SetSortOrderValue(1);
         mRouteNodePickerActor->AddComponent(c_mesh);
 
         // Route grid initialize
@@ -217,7 +325,7 @@ namespace Game
         const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
         const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "plane.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerCellSize, 1.0f, pickerCellSize), editorPickerMaterial);
         const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-        c_mesh->SetSortOrderValue(200);
+        c_mesh->SetSortOrderValue(1);
         mTowerPlacementPickerActor->AddComponent(c_mesh);
 
         // Tower grid initialize

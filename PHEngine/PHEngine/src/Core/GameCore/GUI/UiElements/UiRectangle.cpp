@@ -19,12 +19,16 @@ namespace EngineCore
 {
     namespace GUI
     {
-        UiRectangle::UiRectangle(const std::string& name)
+        UiRectangle::UiRectangle(const std::string &name)
             : UiItemBase(name),
               mColor(glm::vec3(1.0f)),
               mOpacity(1.0f),
-              mBorderRadius(0.0f)
+              mBorderRadius(0.0f),
+              mOpacityProperty(std::make_shared<EngineObjectProperty<float>>(1.0f, "Opacity", [this](const float newOpacityValue)
+                                                                             { SetOpacity(newOpacityValue); }))
         {
+            assert(!mProperties.count("Opacity"));
+            mProperties.emplace("Opacity", mOpacityProperty);
         }
 
         UiRectangle::~UiRectangle()
@@ -235,14 +239,14 @@ namespace EngineCore
                     if (const auto &luaScriptProcessorSp = GetLuaScriptProcessorWp().lock())
                     {
                         SetIsPropertiesShouldBeUpdatedOnLuaThread(false);
-                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, color = mColor, borderRadius = mBorderRadius]() {
+                        sceneSp->GetInterThreadCommunicationManager().ExecuteOnLuaThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, GetUId(), functionId, [luaScriptProcessorSp, luaProxyId = GetLuaProxyId(), opacity = mOpacity, color = mColor, borderRadius = mBorderRadius]()
+                                                                                         {
                             if (const auto &rectangleLuaProxy = std::static_pointer_cast<UiRectangleLuaProxy>(luaScriptProcessorSp->GetLuaProxy(luaProxyId)))
                             {
                                 rectangleLuaProxy->SetOpacity_FromGameThread(opacity);
                                 rectangleLuaProxy->SetColor_FromGameThread(color);
                                 rectangleLuaProxy->SetBorderRadius_FromGrameThread(borderRadius); 
-                            }
-                        });
+                            } });
                     }
                 }
             }

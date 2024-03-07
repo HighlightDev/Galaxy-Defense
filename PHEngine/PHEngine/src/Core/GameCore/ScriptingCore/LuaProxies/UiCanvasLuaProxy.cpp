@@ -81,10 +81,31 @@ namespace EngineCore
             }
         }
 
+        void UiCanvasLuaProxy::AddSequenceAnimation(const std::string& sequenceAnimationName, const AnimationSequence& animationSequence)
+        {
+            static constexpr auto functionId = Hash64_CT("UiCanvasLuaProxy::AddSequenceAnimation");
+            if (const auto sceneSp = mSceneWp.lock())
+            {
+                const auto replicatorId = GetReplicatorId();
+                sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, sequenceAnimationName, animationSequence]()
+                                                                                  {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & canvas = std::static_pointer_cast<::EngineCore::GUI::UiCanvas>(replicator);
+                    assert(canvas);
+                    canvas->AddSequenceAnimation(sequenceAnimationName, animationSequence); });
+            }
+        }
+
         void UiCanvasLuaProxy::StartAnimation(const std::string &animationName)
         {
             // not implemented
         }
+
+        void UiCanvasLuaProxy::StartSequenceAnimation(const std::string &animationName)
+        {
+            // not implemented
+        } 
 
         void UiCanvasLuaProxy::OnLuaThreadDataUpdated(const std::string &jsonParameters)
         {

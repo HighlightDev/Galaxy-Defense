@@ -61,6 +61,7 @@ namespace EngineCore
             assert(eEnginePropertyType::Integer == propertyType);
             const auto intProperty = std::static_pointer_cast<EngineObjectProperty<int32_t>>(engineProperty);
             intProperty->SetValue(std::any_cast<int32_t>(data.GetSrcValue()));
+            mIsAnimationFinished = false;
         }
 
         eEnginePropertyType IntegerAnimationController::GetPropertyType() const

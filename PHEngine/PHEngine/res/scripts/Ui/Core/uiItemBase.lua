@@ -121,9 +121,9 @@ function UiItemBase:new()
     uiItemBaseObj.mouseInputPressState = UiItemBase.UiMouseInputPressState.RELEASED
     uiItemBaseObj.mouseInputCursorHoverState = UiItemBase.UiMouseInputCursorHoverState.LEAVED
     uiItemBaseObj.mouseInputClicked = false
-    uiItemBaseObj.onMouseInputPressStateChangedCallback = nil
+    uiItemBaseObj.onMouseInputPressStateChangedCallbacks = {}
     uiItemBaseObj.onMouseInputCursorHoverStateChangedCallback = nil
-    uiItemBaseObj.onMouseInputClickedCallback = nil
+    uiItemBaseObj.onMouseInputClickedCallbacks = {}
 
     return uiItemBaseObj
 end
@@ -209,8 +209,8 @@ function UiItemBase:updateFromReplicatorMouseInputData(host)
                 local newState = tonumber(parsedJson["input_press_state"])
                 if newState ~= self.mouseInputPressState then
                     self.mouseInputPressState = newState
-                    if self.onMouseInputPressStateChangedCallback ~= nil then
-                        self.onMouseInputPressStateChangedCallback(newState)
+                    for _, callback in pairs(self.onMouseInputPressStateChangedCallbacks) do
+                        callback(newState)
                     end
                 end
             end
@@ -226,8 +226,8 @@ function UiItemBase:updateFromReplicatorMouseInputData(host)
             if parsedJson["input_clicked"] ~= nil then
                 local newState = parsedJson["input_clicked"]
                 if newState ~= self.mouseInputClicked then
-                    if self.onMouseInputClickedCallback ~= nil then
-                        self.onMouseInputClickedCallback()
+                    for _, callback in pairs(self.onMouseInputClickedCallbacks) do
+                        callback()
                     end
                 end
             end
@@ -333,9 +333,9 @@ function UiItemBase:enableMouseInputReceiverBase(host)
     _EnableMouseInputReceiverBase(host, self.luaProxyId)
 end
 
-function UiItemBase:setOnMouseInputPressStateChangedCallback(callback)
+function UiItemBase:subscribeOnMouseInputPressStateChanged(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.onMouseInputPressStateChangedCallback = callback
+    self.onMouseInputPressStateChangedCallbacks[#self.onMouseInputPressStateChangedCallbacks + 1] = callback
 end
 
 function UiItemBase:setOnMouseInputCursorHoverStateChangedCallback(callback)
@@ -343,9 +343,9 @@ function UiItemBase:setOnMouseInputCursorHoverStateChangedCallback(callback)
     self.onMouseInputCursorHoverStateChangedCallback = callback
 end
 
-function UiItemBase:setOnMouseInputClickedCallback(callback)
+function UiItemBase:subscriveOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.onMouseInputClickedCallback = callback
+    self.onMouseInputClickedCallbacks[#self.onMouseInputClickedCallbacks + 1] = callback
 end
 
 function UiItemBase:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
@@ -358,15 +358,39 @@ function UiItemBase:addAnimation(host, animationName, animationFunctionType, ani
     assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
 
     local animationJsonData = json.encode({
-        animationName = animationName,
         animatedPropertyType = animatedPropertyType,
         animationFunctionType = animationFunctionType,
         animationDuration = animationDuration,
         animatedPropertyName = animatedPropertyName,
-        srcValue = propertySrcValue,
-        dstValue = propertyDstValue
+        propertySrcValue = propertySrcValue,
+        propertyDstValue = propertyDstValue
     })
-    _AddUiItemAnimation(host, self.luaProxyId, animationJsonData)
+    _AddUiItemAnimation(host, animationName, self.luaProxyId, animationJsonData)
+end
+
+function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)
+    assert(host ~= nil and type(host) == "userdata" and self.luaProxyReady == true)
+    assert(animationName ~= nil and type(animationName) == "string")
+    assert(animationDataList ~= nil and type(animationDataList) == "table")
+
+    -- check validity of animation sequence
+    for _, animationData in pairs(animationDataList) do
+        assert(animationData ~= nil and type(animationData) == "table")
+        local animationFunctionType = animationData.animationFunctionType
+        local animationDuration = animationData.animationDuration
+        local animatedPropertyName = animationData.animatedPropertyName
+        local animatedPropertyType = animationData.animatedPropertyType
+        local propertySrcValue = animationData.propertySrcValue
+        local propertyDstValue = animationData.propertyDstValue
+
+        assert(type(animationFunctionType) == "number" and animationDuration ~= nil and
+            type(animationDuration) == "number" and animatedPropertyName ~= nil and
+            type(animatedPropertyName) == "string" and
+            animatedPropertyType ~= nil and type(animatedPropertyType) == "number")
+        assert(propertySrcValue ~= nil and propertyDstValue ~= nil and type(propertySrcValue) == type(propertyDstValue))
+    end
+
+    _AddUiItemSequenceAnimation(host, self.luaProxyId, animationName, json.encode(animationDataList))
 end
 
 function UiItemBase:startAnimation(host, animationName)
@@ -374,6 +398,13 @@ function UiItemBase:startAnimation(host, animationName)
     assert(animationName ~= nil and type(animationName) == "string" and self.luaProxyReady == true)
 
     _StartUiItemAnimation(host, self.luaProxyId, animationName)
+end
+
+function UiItemBase:startSequenceAnimation(host, animationSequenceName)
+    assert(host ~= nil and type(host) == "userdata")
+    assert(animationSequenceName ~= nil and type(animationSequenceName) == "string" and self.luaProxyReady == true)
+
+    _StartUiItemSequenceAnimation(host, self.luaProxyId, animationSequenceName)
 end
 
 return UiItemBase

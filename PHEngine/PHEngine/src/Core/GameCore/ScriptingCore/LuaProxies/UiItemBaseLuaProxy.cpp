@@ -1,6 +1,7 @@
 #include "UiItemBaseLuaProxy.h"
 #include "Core/GameCore/GUI/UiElements/UiItemBase.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationSequence.h"
 #include "Core/CommonCore/StringHash.h"
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/GUI/UiInputSystem/UiMouseInputReceiverBase.h"
@@ -224,6 +225,22 @@ namespace EngineCore
          }
       }
 
+      void UiItemBaseLuaProxy::AddSequenceAnimation(const std::string &animationName, const AnimationSequence &animationSequence)
+      {
+         static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::AddSequenceAnimation");
+         if (const auto sceneSp = mSceneWp.lock())
+         {
+            const auto replicatorId = GetReplicatorId();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::PUSH_ANYWAY, mLuaProxyId, functionId, [sceneSp, replicatorId, animationName, animationSequence]()
+                                                                              {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
+                    assert(uiItemBase);
+                    uiItemBase->AddSequenceAnimation(animationName, animationSequence); });
+         }
+      }
+
       void UiItemBaseLuaProxy::StartAnimation(const std::string &animationName)
       {
          static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::StartAnimation");
@@ -239,6 +256,24 @@ namespace EngineCore
                     const auto& animator = uiItemBase->GetAnimator();
                     assert(animator && animator->HasAnimation(animationName));
                     animator->StartAnimation(animationName); });
+         }
+      }
+
+      void UiItemBaseLuaProxy::StartSequenceAnimation(const std::string &animationSequenceName)
+      {
+         static constexpr auto functionId = Hash64_CT("UiItemBaseLuaProxy::StartSequenceAnimation");
+         if (const auto sceneSp = mSceneWp.lock())
+         {
+            const auto replicatorId = GetReplicatorId();
+            sceneSp->GetInterThreadCommunicationManager().ExecuteOnGameThread(eEnqueueJobPolicy::IF_DUPLICATE_REPLACE, mLuaProxyId, functionId, [sceneSp, replicatorId, animationSequenceName]()
+                                                                              {
+                    const auto &replicator = sceneSp->GetEngineToLuaReplicatorById(replicatorId);
+                    assert(replicator);
+                    const auto & uiItemBase = std::dynamic_pointer_cast<::EngineCore::GUI::UiItemBase>(replicator);
+                    assert(uiItemBase);
+                    const auto& sequenceAnimator = uiItemBase->GetSequenceAnimator();
+                    assert(sequenceAnimator && sequenceAnimator->HasAnimation(animationSequenceName));
+                    sequenceAnimator->StartSequenceAnimation(animationSequenceName); });
          }
       }
 

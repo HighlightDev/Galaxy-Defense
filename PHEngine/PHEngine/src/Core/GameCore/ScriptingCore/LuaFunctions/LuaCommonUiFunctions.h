@@ -1,13 +1,18 @@
 #pragma once
 #include <tuple>
 #include <string>
+#include <json/json.hpp>
 
 #include "ILuaFunctionable.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationSequence.h"
 
 namespace EngineCore
 {
    class Scene;
 }
+
+using namespace EngineCore::GUI;
 
 namespace EngineCore
 {
@@ -74,9 +79,16 @@ namespace EngineCore
 
          void SetUiWidgetParent(const std::tuple<int32_t /*lua proxy id*/, std::string /*canvas name*/, std::string /*parent name*/> &data);
 
-         void AddUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation json data*/> &data);
+         void AddUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/, std::string /*animation json data*/> &data);
 
-         void StartUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/>& data);
+         void AddUiItemSequenceAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/, std::string /*animation json data*/> &data);
+
+         void StartUiItemAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/> &data);
+
+         void StartUiItemSequenceAnimation(const std::tuple<int32_t /*lua proxy id*/, std::string /*animation name*/> &data);
+
+      private:
+         AnimationData ParseAnimationDataFromJson(const nlohmann::json &jsonObj);
       };
    }
 }

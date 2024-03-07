@@ -6,8 +6,10 @@
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ITickable.h"
+#include "Core/GameCore/Event/BroadcastEvent.h"
 
 #include <memory>
+#include <stack>
 
 namespace EngineCore
 {
@@ -15,6 +17,7 @@ namespace EngineCore
     class Actor;
     class ThirdPersonCamera;
     class InputComponent;
+    class RuntimeGeneratedQuadraticBezierCurveComponent;
 }
 
 using namespace EngineCore::GUI;
@@ -26,7 +29,8 @@ namespace Game
         : public std::enable_shared_from_this<LevelEditorController>,
           public ILevelController,
           public ITickable,
-          public ChangeEditModeEvent
+          public ChangeEditModeEvent,
+          public BroadcastGameThreadEvent
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
 
@@ -48,6 +52,19 @@ namespace Game
 
         eEditModeType mCurrentEditModeType{eEditModeType::IDLE};
 
+        std::shared_ptr<Actor> mBezierCurvesActor;
+
+        // todo: rework
+        std::stack<std::shared_ptr<RuntimeGeneratedQuadraticBezierCurveComponent>> mActiveCurveComponents;
+
+        std::stack<std::shared_ptr<RuntimeGeneratedQuadraticBezierCurveComponent>> mIdleCurveComponents;
+
+        bool leftButtonPressed = false;
+
+        std::vector<glm::vec3> bezierControlPointsList;
+
+        void SpawnBezierCurveComponent(const int32_t bezierIndex, const glm::vec3 &pointA, const glm::vec3 &controlPoint, const glm::vec3 &pointB);
+
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
@@ -68,6 +85,8 @@ namespace Game
         void UnpausableTick(const float deltaTime) override;
 
         void ProcessEvent(const ChangeEditModeEvent::EventData_t &data) override;
+
+        void ProcessEvent(const BroadcastGameThreadEvent::EventData_t &data) override;
 
         void SetLevelAreaBoundingBox(const BoundingBox2D<glm::vec2> &levelAreaBoundingBox);
 

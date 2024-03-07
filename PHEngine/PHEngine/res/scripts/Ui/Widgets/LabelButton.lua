@@ -121,14 +121,14 @@ function LabelButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     self:resizeWidgets()
 end
 
-function LabelButton:setOnMouseInputClickedCallback(callback)
+function LabelButton:subscriveOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:setOnMouseInputClickedCallback(callback)
+    self.buttonContainer:subscriveOnMouseInputClickedCallback(callback)
 end
 
 function LabelButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                   animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.widgetsInitialized == true)
+    assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
         type(animationFunctionType) == "number" and animationDuration ~= nil and
         type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and

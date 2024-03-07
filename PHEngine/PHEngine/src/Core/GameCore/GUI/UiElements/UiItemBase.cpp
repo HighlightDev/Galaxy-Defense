@@ -9,6 +9,7 @@
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/GameCore/GUI/UiElements/UiHandler.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationSequence.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/Animator.h"
 #include "Core/GameCore/EngineObjectProperty.h"
 
@@ -704,6 +705,11 @@ namespace EngineCore
             {
                 mAnimator->UnpausableTick(deltaTime);
             }
+
+            if (mSequenceAnimator)
+            {
+                mSequenceAnimator->UnpausableTick(deltaTime);
+            }
         }
 
         void UiItemBase::Tick(const float deltaTime)
@@ -1070,11 +1076,24 @@ namespace EngineCore
             return mAnimator;
         }
 
+        std::shared_ptr<::EngineCore::GUI::SequenceAnimator> UiItemBase::GetSequenceAnimator() const
+        {
+            return mSequenceAnimator;
+        }
+
         void UiItemBase::CreateAnimator()
         {
             if (!mAnimator)
             {
                 mAnimator = std::make_shared<Animator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
+            }
+        }
+
+        void UiItemBase::CreateSequenceAnimator()
+        {
+            if (!mSequenceAnimator)
+            {
+                mSequenceAnimator = std::make_shared<SequenceAnimator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
             }
         }
 
@@ -1085,6 +1104,15 @@ namespace EngineCore
                 CreateAnimator();
             }
             mAnimator->AddAnimation(animationName, animationData);
+        }
+
+        void UiItemBase::AddSequenceAnimation(const std::string &animationName, const AnimationSequence &animationSequence)
+        {
+            if (!mSequenceAnimator)
+            {
+                CreateSequenceAnimator();
+            }
+            mSequenceAnimator->AddSequenceAnimation(animationName, animationSequence);
         }
 
         void UiItemBase::CleanUp()

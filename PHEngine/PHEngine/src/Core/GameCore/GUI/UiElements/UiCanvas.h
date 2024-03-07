@@ -8,6 +8,7 @@
 #include "Core/GameCore/ScriptingCore/EngineToLuaReplicatorBase.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/IAnimatable.h"
 #include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationData.h"
+#include "Core/GameCore/GUI/OverlayManagement/GuiAnimation/AnimationSequence.h"
 #include "Core/GameCore/Event/WindowSizeChangedEvent.h"
 
 #include <unordered_set>
@@ -85,6 +86,8 @@ namespace EngineCore
             std::unordered_map<std::string, std::shared_ptr<::EngineObjectPropertyBase>> mProperties;
 
             std::shared_ptr<Animator> mAnimator;
+
+            std::shared_ptr<SequenceAnimator> mSequenceAnimator;
 
             size_t mCanvasZOrder{0}; // order of rendering canvases
 
@@ -169,11 +172,17 @@ namespace EngineCore
 
             std::shared_ptr<Animator> GetAnimator() const override;
 
+            std::shared_ptr<::EngineCore::GUI::SequenceAnimator> GetSequenceAnimator() const override;
+
             void CreateAnimator() override;
+
+            void CreateSequenceAnimator() override;
 
             void AddAnimation(const std::string &animationName, const AnimationData &animationData) override;
 
-            bool CheckIfInterceptsMouseEvent(const glm::ivec2& currentMousePosition) const;
+            void AddSequenceAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationSequence &animationSequence) override;
+
+            bool CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const;
 
             void CleanUp() override;
 

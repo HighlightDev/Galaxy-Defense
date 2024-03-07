@@ -75,7 +75,7 @@ function LevelEditorOverlay:new(host)
     local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton");
     overlay:addCompoundWidget(undoLastActionButton)
 
-    changeContainerStateButton:setOnMouseInputClickedCallback(function()
+    changeContainerStateButton:subscriveOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
             EditorContainerState.Hided or EditorContainerState.Expanded
 
@@ -86,19 +86,19 @@ function LevelEditorOverlay:new(host)
         undoLastActionButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
     end)
 
-    editStationSocketsButton:setOnMouseInputClickedCallback(function()
+    editStationSocketsButton:subscriveOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_TOWERS == self.currentEditModeType and EditModeType.IDLE or
             EditModeType.EDIT_TOWERS
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
     end)
-    editRoutesButton:setOnMouseInputClickedCallback(function()
+    editRoutesButton:subscriveOnMouseInputClickedCallback(function()
         self.currentEditModeType = EditModeType.EDIT_ROUTES == self.currentEditModeType and EditModeType.IDLE or
             EditModeType.EDIT_ROUTES
         EventsHelper:sendChangeEditModeGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             self.currentEditModeType)
     end)
-    undoLastActionButton:setOnMouseInputClickedCallback(function()
+    undoLastActionButton:subscriveOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevelEvents", json.encode({ action = "undo" }))
     end)

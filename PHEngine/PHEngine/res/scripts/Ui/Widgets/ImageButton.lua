@@ -39,6 +39,7 @@ function ImageButton:new(host, overlay, name)
         parentName = "",
         buttonContainer = nil,
         image = nil,
+        pressButtonStateContainer = nil,
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
@@ -50,9 +51,11 @@ function ImageButton:new(host, overlay, name)
     local imageName = debugName ~= nil and "ImageButton_" .. debugName or nil
     newObj.buttonContainer = UiRectangle:new(host, containerName)
     newObj.image = UiImage:new(host, imageName)
+    newObj.pressButtonStateContainer = UiRectangle:new(host, "DEBUG_PRESS_BUTTON_CONTAINER")
 
     overlay:addWidget(newObj.buttonContainer)
     overlay:addWidget(newObj.image)
+    overlay:addWidget(newObj.pressButtonStateContainer)
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -80,6 +83,60 @@ function ImageButton:onCompoundWidgetInitialize()
     self.buttonContainer:setWidth(self.buttonWidth);
     self.buttonContainer:setColorHexValue(self.containerColor)
     self.buttonContainer:enableMouseInputReceiverBase(self.host)
+
+    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.pressButtonStateContainer:setZOrder(4);
+    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+        UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+        self.buttonContainer.widgetName);
+    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        self.buttonContainer.widgetName);
+    self.pressButtonStateContainer:setOpacity(0.0);
+    self.pressButtonStateContainer:setHeight(self.buttonHeight);
+    self.pressButtonStateContainer:setWidth(self.buttonWidth);
+    self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonPress",
+        {
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.2,
+                animatedPropertyName = "Scale",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 0.0,
+                propertyDstValue = 1.0
+            },
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.2,
+                animatedPropertyName = "Scale",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 1.0,
+                propertyDstValue = 0.0
+            },
+        });
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonPress",
+        {
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.2,
+                animatedPropertyName = "Opacity",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 0.0,
+                propertyDstValue = 1.0
+            },
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.2,
+                animatedPropertyName = "Opacity",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 1.0,
+                propertyDstValue = 0.0
+            },
+        });
+    self.pressButtonStateContainer:subscriveOnMouseInputClickedCallback(function()
+        self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonPress")
+    end)
 
     self.image:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
     self.image:setZOrder(4);
@@ -113,14 +170,14 @@ function ImageButton:setAnchor(srcAnchor, dstAnchor, dstUiItemWidgetName, anchor
     self:resizeWidgets()
 end
 
-function ImageButton:setOnMouseInputClickedCallback(callback)
+function ImageButton:subscriveOnMouseInputClickedCallback(callback)
     assert(callback ~= nil and type(callback) == "function")
-    self.buttonContainer:setOnMouseInputClickedCallback(callback)
+    self.buttonContainer:subscriveOnMouseInputClickedCallback(callback)
 end
 
 function ImageButton:addAnimation(host, animationName, animationFunctionType, animationDuration, animatedPropertyName,
                                   animatedPropertyType, propertySrcValue, propertyDstValue)
-    assert(host ~= nil and type(host) == "userdata" and self.widgetsInitialized == true)
+    assert(host ~= nil and type(host) == "userdata")
     assert(animationName ~= nil and type(animationName) == "string" and animationFunctionType ~= nil and
         type(animationFunctionType) == "number" and animationDuration ~= nil and
         type(animationDuration) == "number" and animatedPropertyName ~= nil and type(animatedPropertyName) == "string" and

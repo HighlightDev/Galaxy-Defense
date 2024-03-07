@@ -148,8 +148,8 @@ function UiCanvas:addFadeInAnimation(host, animationFunctionType, animationDurat
         animationFunctionType = animationFunctionType,
         animationDuration = animationDuration,
         animatedPropertyName = animatedPropertyName,
-        srcValue = propertySrcValue,
-        dstValue = propertyDstValue
+        propertySrcValue = propertySrcValue,
+        propertyDstValue = propertyDstValue
     })
     _AddCanvasFadeAnimation(host, self.luaProxyId, 0, animationJsonData)
 end
@@ -166,8 +166,8 @@ function UiCanvas:addFadeOutAnimation(host, animationFunctionType, animationDura
         animationFunctionType = animationFunctionType,
         animationDuration = animationDuration,
         animatedPropertyName = animatedPropertyName,
-        srcValue = propertySrcValue,
-        dstValue = propertyDstValue
+        propertySrcValue = propertySrcValue,
+        propertyDstValue = propertyDstValue
     })
     _AddCanvasFadeAnimation(host, self.luaProxyId, 1, animationJsonData)
 end

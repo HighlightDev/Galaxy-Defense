@@ -61,6 +61,7 @@ namespace EngineCore
             assert(eEnginePropertyType::Float == propertyType);
             const auto floatProperty = std::static_pointer_cast<EngineObjectProperty<float>>(engineProperty);
             floatProperty->SetValue(std::any_cast<float>(data.GetSrcValue()));
+            mIsAnimationFinished = false;
         }
 
         eEnginePropertyType FloatAnimationController::GetPropertyType() const

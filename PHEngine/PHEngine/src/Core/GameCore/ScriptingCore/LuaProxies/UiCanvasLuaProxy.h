@@ -11,6 +11,7 @@ namespace EngineCore
     {
         class UiCanvas;
         class AnimationData;
+        class AnimationSequence;
     }
 }
 
@@ -57,7 +58,11 @@ namespace EngineCore
 
             void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
 
+            void AddSequenceAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationSequence& animationSequence) override;
+
             void StartAnimation(const std::string &animationName) override;
+
+            void StartSequenceAnimation(const std::string& animationSequenceName) override;
         };
     }
 }

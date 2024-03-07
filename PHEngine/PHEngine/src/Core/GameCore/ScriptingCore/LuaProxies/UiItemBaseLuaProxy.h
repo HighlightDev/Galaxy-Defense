@@ -16,6 +16,7 @@ namespace EngineCore
     {
         class UiItemBase;
         class AnimationData;
+        class AnimationSequence;
     }
 }
 
@@ -101,9 +102,13 @@ namespace EngineCore
 
             bool IsMouseInputDataDirty() const;
 
-            void AddAnimation(const std::string& animationName, const ::EngineCore::GUI::AnimationData& animationData) override;
+            void AddAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationData &animationData) override;
 
-            void StartAnimation(const std::string& animationName) override;
+            void StartAnimation(const std::string &animationName) override;
+
+            void AddSequenceAnimation(const std::string &animationName, const ::EngineCore::GUI::AnimationSequence &animationSequence) override;
+
+            void StartSequenceAnimation(const std::string &animationSequenceName) override;
         };
     }
 }

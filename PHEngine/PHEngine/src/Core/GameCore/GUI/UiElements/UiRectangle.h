@@ -33,6 +33,8 @@ namespace EngineCore
 
             float mBorderRadius;
 
+            std::shared_ptr<EngineObjectProperty<float>> mOpacityProperty;
+
         public:
             explicit UiRectangle(const std::string& name = std::string(""));
 

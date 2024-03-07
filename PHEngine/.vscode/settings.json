@@ -74,7 +74,11 @@
         "any": "cpp",
         "climits": "cpp",
         "cassert": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "ranges": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled",
     "Lua.diagnostics.globals": [
@@ -121,7 +125,11 @@
         "_CreateFirstPersonCamera",
         "_CreateAndAttachComponentToActor",
         "_GetEnemySpaceshipsCountDestroyedByPlayer",
-        "_SendChangeGameModeGameThreadEvent"
+        "_SendChangeGameModeGameThreadEvent",
+        "_SendChangeEditModeGameThreadEvent",
+        "_SendBroadcastGameThreadEvent",
+        "_AddUiItemSequenceAnimation",
+        "_StartUiItemSequenceAnimation"
     ],
     "Lua.diagnostics.disable": [
         "duplicate-set-field"

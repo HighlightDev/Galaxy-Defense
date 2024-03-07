@@ -130,7 +130,7 @@ function PlayerHUDOverlay:new(host)
     local enemyCountTile = UiRectangle:new(host)
     playerHUDOverlay:addWidget(enemyCountTile)
 
-    enemyCountTile:setOnMouseInputClickedCallback(function()
+    enemyCountTile:subscriveOnMouseInputClickedCallback(function()
         EventsHelper:sendChangeGameModeGameThreadEvent(host,
             EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH, GameModeType.SPACE_STATION_PLACEMENT)
     end)

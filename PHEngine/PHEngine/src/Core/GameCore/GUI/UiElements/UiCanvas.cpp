@@ -196,11 +196,24 @@ namespace EngineCore
             return mAnimator;
         }
 
+        std::shared_ptr<SequenceAnimator> UiCanvas::GetSequenceAnimator() const
+        {
+            return mSequenceAnimator;
+        }
+
         void UiCanvas::CreateAnimator()
         {
             if (!mAnimator)
             {
                 mAnimator = std::make_shared<Animator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
+            }
+        }
+
+        void UiCanvas::CreateSequenceAnimator()
+        {
+            if (!mSequenceAnimator)
+            {
+                mSequenceAnimator = std::make_shared<SequenceAnimator>(std::dynamic_pointer_cast<IAnimatable>(shared_from_this()));
             }
         }
 
@@ -211,6 +224,15 @@ namespace EngineCore
                 CreateAnimator();
             }
             mAnimator->AddAnimation(animationName, animationData);
+        }
+
+        void UiCanvas::AddSequenceAnimation(const std::string &animationName, const AnimationSequence &animationSequence)
+        {
+            if (!mSequenceAnimator)
+            {
+                CreateSequenceAnimator();
+            }
+            mSequenceAnimator->AddSequenceAnimation(animationName, animationSequence);
         }
 
         bool UiCanvas::CheckIfInterceptsMouseEvent(const glm::ivec2 &currentMousePosition) const
