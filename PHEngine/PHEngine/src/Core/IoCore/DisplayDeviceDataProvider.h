@@ -114,13 +114,11 @@ namespace IO
 
       inline int32_t GetWindowPosX() const
       {
-
          return m_windowPosX;
       }
 
       inline int32_t GetWindowPosY() const
       {
-
          return m_windowPosY;
       }
    };

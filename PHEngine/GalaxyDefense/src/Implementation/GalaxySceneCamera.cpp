@@ -1,6 +1,9 @@
 #include "GalaxySceneCamera.h"
 
 #include "Core/GameCore/LoggerExtension.h"
+#include "Core/IoCore/DisplayDeviceDataProvider.h"
+
+using namespace IO;
 
 namespace Game
 {
@@ -21,8 +24,18 @@ namespace Game
                             initPitchDeg,
                             initYawDeg,
                             camDistanceToThirdPersonTarget,
-                            thirdPersonTargetOffset)
+                            thirdPersonTargetOffset),
+          mFallbackToStartPositionTimer()
     {
+        mFallbackToStartPositionTimer.SetIsPausable(true);
+        mFallbackToStartPositionTimer.SetIsRepeat(true);
+        mFallbackToStartPositionTimer.SetIntervalMs(s_userIdleTimeLimit);
+        mFallbackToStartPositionTimer.SetCallback(std::bind(&GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout, this));
+    }
+
+    void GalaxySceneCamera::OnFallbackToStartPositionTimerTimeout()
+    {
+        bFallbackToStartPositionFlag = true;
     }
 
     void GalaxySceneCamera::Tick(const float deltaTime)
@@ -30,6 +43,43 @@ namespace Game
         ACamera::Tick(deltaTime);
 
         const auto &mouseBindings = mInputComponent->GetMouseBindings();
+        bool isUserMouseMoveIdle = true;
+        if (mouseBindings->IsMouseMoveEventDirty())
+        {
+            mouseBindings->FlushMouseMoveEvent();
+            isUserMouseMoveIdle = false;
+        }
+
+        if (mouseBindings->GetMouseMoveEventReceivedAtLeastOnce())
+        {
+            const auto displayDeviceProvider = DisplayDeviceDataProvider::GetInstance();
+            const auto &mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
+            if ((mouseMoveEvent.x <= 20 || mouseMoveEvent.x >= (displayDeviceProvider->GetWindowWidth() - 20)) ||
+                (mouseMoveEvent.y <= 20 || mouseMoveEvent.y >= (displayDeviceProvider->GetWindowHeight() - 20)))
+            {
+                isUserMouseMoveIdle = false;
+                const glm::vec2 &windowPos = glm::vec2(static_cast<float>(displayDeviceProvider->GetWindowPosX()),
+                                                       static_cast<float>(displayDeviceProvider->GetWindowPosY()));
+                const auto &centerOfScreen = glm::vec2(static_cast<float>(displayDeviceProvider->GetWindowWidth() >> 1),
+                                                       static_cast<float>(displayDeviceProvider->GetWindowHeight() >> 1)) +
+                                             windowPos;
+                const auto &mousePosition = glm::vec2(static_cast<float>(mouseMoveEvent.x),
+                                                      static_cast<float>(mouseMoveEvent.y));
+                const glm::vec2 nCameraMovementDir = glm::normalize(centerOfScreen - mousePosition);
+
+                const float s_movementPower = 100.0f * deltaTime;
+                m_actualTargetVector += glm::vec3(nCameraMovementDir.x * s_movementPower,
+                                                  0,
+                                                  nCameraMovementDir.y * s_movementPower);
+                SetTransformationDirty();
+                bFallbackToStartPositionFlag = false;
+            }
+        }
+
+        if (!isUserMouseMoveIdle)
+        {
+            mFallbackToStartPositionTimer.RestartTimer();
+        }
 
         if (mouseBindings->IsMouseScrollEventDirty())
         {
@@ -37,21 +87,19 @@ namespace Game
             Zoom(mouseZoomDirection, 5.0f);
         }
 
-        if (m_bThirdPersonTargetTransformationDirty)
+        if (bFallbackToStartPositionFlag)
         {
-            const float clampedDeltaTime = std::max(deltaTime, 0.03f);
-            m_lerpTimeElapsed = std::min(m_lerpTimeElapsed + clampedDeltaTime, m_timeForInterpolation);
-
-            glm::vec3 finalTargetVector = m_thirdPersonTarget->GetRootComponent()->GetTranslation();
-            m_actualTargetVector = EngineMath::LerpVec3(m_lerpTimeElapsed, 0.0f, m_timeForInterpolation, m_actualTargetVector, finalTargetVector);
-
+            const auto &finalTargetVector = glm::vec3(0.0f);
+            const auto &directionVector = finalTargetVector - m_actualTargetVector;
+            const float distance = glm::length(directionVector);
+            const auto nDirVec = directionVector * (1.0f / distance);
+            const float s_cameraMovementSpeedPerTick = 200.0f * deltaTime;
+            const float actualSpeed = distance <= s_cameraMovementSpeedPerTick ? distance : s_cameraMovementSpeedPerTick;
+            m_actualTargetVector = m_actualTargetVector + nDirVec * actualSpeed;
             SetTransformationDirty();
-
-            // If camera is at final position
-            if (EngineMath::FloatsNearEqual(m_lerpTimeElapsed, m_timeForInterpolation))
+            if (distance <= s_cameraMovementSpeedPerTick)
             {
-                m_lerpTimeElapsed = 0.0f;
-                m_bThirdPersonTargetTransformationDirty = false;
+                bFallbackToStartPositionFlag = false;
             }
         }
     }

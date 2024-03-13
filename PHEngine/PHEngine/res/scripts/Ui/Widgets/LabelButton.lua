@@ -30,7 +30,7 @@ local UiLabel = require("Ui/Core/uiLabel")
 LabelButton = {
 }
 
-function LabelButton:new(host, overlay, labelFontName)
+function LabelButton:new(host, overlay, labelFontName, name)
     assert(host ~= nil and type(host) == "userdata" and overlay ~= nil and type(overlay) == "table")
 
     local newObj = {
@@ -39,17 +39,23 @@ function LabelButton:new(host, overlay, labelFontName)
         parentName = "",
         buttonContainer = nil,
         label = nil,
+        pressButtonStateContainer = nil,
         buttonWidth = 0,
         buttonHeight = 0,
         containerColor = 0xffffff,
         widgetName = ""
     }
 
-    newObj.buttonContainer = UiRectangle:new(host)
-    newObj.label = UiLabel:new(host, labelFontName)
+    local debugName = (name ~= nil and type(name) == "string" and name ~= "") and name or nil
+    local containerName = debugName ~= nil and "LabelButton_" .. debugName or nil
+    local labelName = debugName ~= nil and "LabelButton_" .. debugName or nil
+    newObj.buttonContainer = UiRectangle:new(host, containerName)
+    newObj.label = UiLabel:new(host, labelFontName, labelName)
+    newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.buttonContainer)
     overlay:addWidget(newObj.label)
+    overlay:addWidget(newObj.pressButtonStateContainer)
 
     self.__index = self
     return setmetatable(newObj, self)
@@ -79,6 +85,60 @@ function LabelButton:onCompoundWidgetInitialize()
     self.buttonContainer:setWidth(self.buttonWidth);
     self.buttonContainer:setColorHexValue(self.containerColor)
     self.buttonContainer:enableMouseInputReceiverBase(self.host)
+
+    self.pressButtonStateContainer:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
+    self.pressButtonStateContainer:setZOrder(4);
+    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+        UiItemBase.UiAnchorType.HORIZONTAL_CENTER,
+        self.buttonContainer.widgetName);
+    self.pressButtonStateContainer:setAnchor(UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        UiItemBase.UiAnchorType.VERTICAL_CENTER,
+        self.buttonContainer.widgetName);
+    self.pressButtonStateContainer:setOpacity(0.0);
+    self.pressButtonStateContainer:setHeight(self.buttonHeight);
+    self.pressButtonStateContainer:setWidth(self.buttonWidth);
+    self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
+        {
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.1,
+                animatedPropertyName = "Scale",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 0.0,
+                propertyDstValue = 1.0
+            },
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.1,
+                animatedPropertyName = "Scale",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 1.0,
+                propertyDstValue = 0.0
+            },
+        });
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
+        {
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.1,
+                animatedPropertyName = "Opacity",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 0.0,
+                propertyDstValue = 1.0
+            },
+            {
+                animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
+                animationDuration = 0.1,
+                animatedPropertyName = "Opacity",
+                animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
+                propertySrcValue = 1.0,
+                propertyDstValue = 0.0
+            },
+        });
+    self.pressButtonStateContainer:subscriveOnMouseInputClickedCallback(function()
+        self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
+    end)
 
     self.label:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)
     self.label:setZOrder(4);

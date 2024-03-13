@@ -365,7 +365,7 @@ function UiItemBase:addAnimation(host, animationName, animationFunctionType, ani
         propertySrcValue = propertySrcValue,
         propertyDstValue = propertyDstValue
     })
-    _AddUiItemAnimation(host, animationName, self.luaProxyId, animationJsonData)
+    _AddUiItemAnimation(host, self.luaProxyId, animationName, animationJsonData)
 end
 
 function UiItemBase:addSequenceAnimation(host, animationName, animationDataList)

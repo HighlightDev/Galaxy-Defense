@@ -76,6 +76,8 @@ namespace EngineCore
 
         void SequenceAnimator::AddSequenceAnimation(const std::string &animationName, const AnimationSequence &animationSequence)
         {
+            assert(CheckNewAnimationSequenceForValidity(animationName, animationSequence));
+
             if (mAnimationSequences.count(animationName))
             {
                 mAnimationSequences.at(animationName).emplace_back(animationSequence);
@@ -84,6 +86,25 @@ namespace EngineCore
             {
                 mAnimationSequences.emplace(animationName, std::vector<AnimationSequence>({animationSequence}));
             }
+        }
+
+        bool SequenceAnimator::CheckNewAnimationSequenceForValidity(const std::string &animationName, const AnimationSequence &animationSequence) const
+        {
+            if (mAnimationSequences.count(animationName))
+            {
+                const auto &animationSequencesList = mAnimationSequences.at(animationName);
+                const auto bSamePropertyInDifferentSequences = std::any_of(animationSequencesList.cbegin(), animationSequencesList.cend(), [newAnimationSequence = animationSequence](const auto &existingAnimationSequence) {
+                    const auto& newAnimationDataList = newAnimationSequence.GetAnimationDataInSequence();
+                    const auto& existingAnimationDataList = existingAnimationSequence.GetAnimationDataInSequence();
+                    return std::any_of(existingAnimationDataList.cbegin(), existingAnimationDataList.cend(), [&newAnimationDataList](const auto& existingAnimationData) {
+                        return std::any_of(newAnimationDataList.cbegin(), newAnimationDataList.cend(), [&existingAnimationData](const auto& newAnimationData) {
+                            return newAnimationData.GetPropertyName() == existingAnimationData.GetPropertyName();
+                        });
+                    });
+                });
+                return !bSamePropertyInDifferentSequences;
+            }
+            return true;
         }
 
         void SequenceAnimator::RemoveAnimation(const std::string &animationName)

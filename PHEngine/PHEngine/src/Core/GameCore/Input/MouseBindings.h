@@ -33,6 +33,8 @@ namespace EngineCore
 
       bool bReceiveMouseEvents{true};
 
+      bool bMouseMoveEventReceivedAtLeastOnce{false};
+
    public:
       MouseBindings();
 
@@ -63,6 +65,8 @@ namespace EngineCore
       KeyState GetKeyState(const eMouseKeys mouseButtonKey) const;
 
       void SetIsReceivingMouseEvents(const bool receiveMouseEvents);
+
+      bool GetMouseMoveEventReceivedAtLeastOnce() const;
 
    protected:
       void PushMouseMoveEvent(const glm::ivec4 &moveEvent);

@@ -51,7 +51,7 @@ function ImageButton:new(host, overlay, name)
     local imageName = debugName ~= nil and "ImageButton_" .. debugName or nil
     newObj.buttonContainer = UiRectangle:new(host, containerName)
     newObj.image = UiImage:new(host, imageName)
-    newObj.pressButtonStateContainer = UiRectangle:new(host, "DEBUG_PRESS_BUTTON_CONTAINER")
+    newObj.pressButtonStateContainer = UiRectangle:new(host)
 
     overlay:addWidget(newObj.buttonContainer)
     overlay:addWidget(newObj.image)
@@ -96,11 +96,11 @@ function ImageButton:onCompoundWidgetInitialize()
     self.pressButtonStateContainer:setHeight(self.buttonHeight);
     self.pressButtonStateContainer:setWidth(self.buttonWidth);
     self.pressButtonStateContainer:enableMouseInputReceiverBase(self.host)
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonPress",
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
         {
             {
                 animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.2,
+                animationDuration = 0.1,
                 animatedPropertyName = "Scale",
                 animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
                 propertySrcValue = 0.0,
@@ -108,18 +108,18 @@ function ImageButton:onCompoundWidgetInitialize()
             },
             {
                 animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.2,
+                animationDuration = 0.1,
                 animatedPropertyName = "Scale",
                 animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
                 propertySrcValue = 1.0,
                 propertyDstValue = 0.0
             },
         });
-    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonPress",
+    self.pressButtonStateContainer:addSequenceAnimation(self.host, "ButtonClick",
         {
             {
                 animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.2,
+                animationDuration = 0.1,
                 animatedPropertyName = "Opacity",
                 animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
                 propertySrcValue = 0.0,
@@ -127,7 +127,7 @@ function ImageButton:onCompoundWidgetInitialize()
             },
             {
                 animationFunctionType = UiBaseWidget.AnimationInterpolationFunctionType.LINEAR,
-                animationDuration = 0.2,
+                animationDuration = 0.1,
                 animatedPropertyName = "Opacity",
                 animatedPropertyType = UiBaseWidget.EnginePropertyType.Float,
                 propertySrcValue = 1.0,
@@ -135,7 +135,7 @@ function ImageButton:onCompoundWidgetInitialize()
             },
         });
     self.pressButtonStateContainer:subscriveOnMouseInputClickedCallback(function()
-        self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonPress")
+        self.pressButtonStateContainer:startSequenceAnimation(self.host, "ButtonClick")
     end)
 
     self.image:setParent(self.host, self.overlayCanvasName, self.buttonContainer.widgetName)

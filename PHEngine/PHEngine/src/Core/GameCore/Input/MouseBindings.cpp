@@ -120,7 +120,13 @@ namespace EngineCore
     void MouseBindings::PushMouseMoveEvent(const glm::ivec4 &moveEvent)
     {
         mLastMouseMoveEvent = moveEvent;
+        bMouseMoveEventReceivedAtLeastOnce = true;
         bMouseMoveEventDirty = true;
+    }
+
+    bool MouseBindings::GetMouseMoveEventReceivedAtLeastOnce() const
+    {
+        return bMouseMoveEventReceivedAtLeastOnce;
     }
 
     bool MouseBindings::IsMouseScrollEventDirty() const

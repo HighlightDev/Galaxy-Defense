@@ -47,6 +47,8 @@ namespace EngineCore
 
         private:
             void CreateAnimationControllersForAnimationSequences(const std::string &animationName);
+
+            bool CheckNewAnimationSequenceForValidity(const std::string &animationName, const AnimationSequence &animationSequence) const;
         };
     }
 }
