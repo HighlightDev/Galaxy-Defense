@@ -2,6 +2,7 @@
 
 #include "Core/GameCore/LoggerExtension.h"
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
+#include "Core/UtilityCore/EngineMath.h"
 
 using namespace IO;
 
@@ -38,13 +39,20 @@ namespace Game
         bFallbackToStartPositionFlag = true;
     }
 
+    void GalaxySceneCamera::OnTransformationUpdated()
+    {
+        mCameraFrustum.ConstructFromViewProjectionMatrix(GetViewMatrix(), GetViewProjectionInfo()->CreateProjectionMatrix());
+    }
+
     void GalaxySceneCamera::Tick(const float deltaTime)
     {
         ACamera::Tick(deltaTime);
 
         const auto &mouseBindings = mInputComponent->GetMouseBindings();
         bool isUserMouseMoveIdle = true;
-        if (mouseBindings->IsMouseMoveEventDirty())
+
+        if (mouseBindings->IsMouseMoveEventDirty() ||
+            mCameraFrustum.CollidesWithBoundingBox(mLevelBoundaries))
         {
             mouseBindings->FlushMouseMoveEvent();
             isUserMouseMoveIdle = false;
@@ -54,8 +62,8 @@ namespace Game
         {
             const auto displayDeviceProvider = DisplayDeviceDataProvider::GetInstance();
             const auto &mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
-            if ((mouseMoveEvent.x <= 20 || mouseMoveEvent.x >= (displayDeviceProvider->GetWindowWidth() - 20)) ||
-                (mouseMoveEvent.y <= 20 || mouseMoveEvent.y >= (displayDeviceProvider->GetWindowHeight() - 20)))
+            if ((mouseMoveEvent.x <= s_screenThresholdOffset || mouseMoveEvent.x >= (displayDeviceProvider->GetWindowWidth() - s_screenThresholdOffset)) ||
+                (mouseMoveEvent.y <= s_screenThresholdOffset || mouseMoveEvent.y >= (displayDeviceProvider->GetWindowHeight() - s_screenThresholdOffset)))
             {
                 isUserMouseMoveIdle = false;
                 const glm::vec2 &windowPos = glm::vec2(static_cast<float>(displayDeviceProvider->GetWindowPosX()),
@@ -102,5 +110,10 @@ namespace Game
                 bFallbackToStartPositionFlag = false;
             }
         }
+    }
+
+    void GalaxySceneCamera::SetLevelBoundaries(const BoundingBox3D &levelBoundaries)
+    {
+        mLevelBoundaries = levelBoundaries;
     }
 }

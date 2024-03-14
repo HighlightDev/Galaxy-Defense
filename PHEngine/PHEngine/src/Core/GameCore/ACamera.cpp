@@ -110,7 +110,6 @@ namespace EngineCore
 
    void ACamera::OnCameraSceneProxyDataUpdated()
    {
-      OnTransformationUpdated();
       Event::CameraTransformChangedGameThreadEvent::GetInstance()->SendEvent(Event::eExecutionOrder::PRE_EXECUTION, this);
    }
 
@@ -133,6 +132,7 @@ namespace EngineCore
       if (bTransformationDirty && bIsCameraProxyReady.load(std::memory_order::memory_order_seq_cst))
       {
          bTransformationDirty = false;
+         OnTransformationUpdated();
          UpdateCameraProxyData();
       }
    }

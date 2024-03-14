@@ -13,6 +13,7 @@
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
+#include "Core/GameCore/BoundingBox3D.h"
 
 #include "Implementation/GalaxySceneCamera.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
@@ -84,6 +85,7 @@ namespace Game
                                                                     0.0f,
                                                                     200.0f);
 
+      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(100.0f, 5.0f, 100.0f)));
       spaceCamera->SetMaxDistanceFromTargetToCamera(200.0f);
       spaceCamera->SetMinDistanceFromTargetToCamera(50.0f);
       spaceCamera->SetDistanceFromTargetToCamera(200.0f);

@@ -10,10 +10,6 @@ namespace Graphics
    {
    }
 
-   CameraFrustum::~CameraFrustum()
-   {
-   }
-
    void CameraFrustum::ConstructFromViewProjectionMatrix(const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
    {
       const glm::mat4 &comboMatrix = projectionMatrix * viewMatrix;
