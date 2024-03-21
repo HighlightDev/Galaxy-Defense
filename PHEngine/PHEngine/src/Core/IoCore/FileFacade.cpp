@@ -3,19 +3,29 @@
 #include "Core/CommonCore/Assertion.h"
 
 #include <iterator>
+#include <fstream>
+#include <filesystem>
 
-FileFacade::FileFacade(const std::string& pathToFile)
-   : mPathToFile(pathToFile)
+bool FileFacade::OpenAndReadFile(const std::string &pathToFile)
 {
-   assert(LoadFile(pathToFile));
+   assert(pathToFile != "");
+   mPathToFile = pathToFile;
+   return LoadFile(pathToFile);
 }
 
-const std::list<std::string> FileFacade::GetFileSrc() const
+bool FileFacade::OpenAndReadOrCreateFile(const std::string &pathToFile)
+{
+   assert(pathToFile != "");
+   mPathToFile = pathToFile;
+   return OpenOrLoadFile(pathToFile);
+}
+
+const std::list<std::string> &FileFacade::GetFileSrc() const
 {
    return mFileSrc;
 }
 
-bool FileFacade::LoadFile(const std::string& pathToFile)
+bool FileFacade::LoadFile(const std::string &pathToFile)
 {
    std::ifstream stream(pathToFile);
    std::string line;
@@ -28,28 +38,33 @@ bool FileFacade::LoadFile(const std::string& pathToFile)
    return mFileSrc.size() > 0;
 }
 
+bool FileFacade::OpenOrLoadFile(const std::string &pathToFile)
+{
+   return std::filesystem::exists(pathToFile) ? LoadFile(pathToFile) : true;
+}
+
 size_t FileFacade::GetFileSourceLinesCount() const
 {
    return mFileSrc.size();
 }
 
-void FileFacade::AppendToTheSrcEnd(const std::string& line)
+void FileFacade::AppendToTheSrcEnd(const std::string &line)
 {
    mFileSrc.emplace_back(std::move(line));
 }
 
-void FileFacade::AppendAtTheSrcBiginning(const std::string& line)
+void FileFacade::AppendAtTheSrcBiginning(const std::string &line)
 {
    mFileSrc.emplace_front(std::move(line));
 }
 
-void FileFacade::InsertInSrc(const std::string& line, const size_t index)
+void FileFacade::InsertInSrc(const std::string &line, const size_t index)
 {
    auto it = std::next(mFileSrc.begin(), index);
    mFileSrc.emplace(it, std::move(line));
 }
 
-bool FileFacade::ReplaceSourceLineAt(const size_t index, const std::string& insertText)
+bool FileFacade::ReplaceSourceLineAt(const size_t index, const std::string &insertText)
 {
    bool bResult = false;
 
@@ -62,14 +77,20 @@ bool FileFacade::ReplaceSourceLineAt(const size_t index, const std::string& inse
    return bResult;
 }
 
-std::string FileFacade::SeparateByFunctor(const size_t index, std::function<std::string(const std::string&, const std::string&)> separateFunctor, const std::string& separateBy) const
+void FileFacade::RewriteSrc(const std::string &newSrc)
+{
+   mFileSrc.clear();
+   mFileSrc.emplace_back(newSrc);
+}
+
+std::string FileFacade::SeparateByFunctor(const size_t index, std::function<std::string(const std::string &, const std::string &)> separateFunctor, const std::string &separateBy) const
 {
    std::string result;
 
    if (index >= 0 && index < mFileSrc.size())
    {
       auto it = std::next(mFileSrc.begin(), index);
-      const std::string& lookupString = *(it);
+      const std::string &lookupString = *(it);
 
       result = separateFunctor(lookupString, separateBy);
    }
@@ -79,15 +100,15 @@ std::string FileFacade::SeparateByFunctor(const size_t index, std::function<std:
 
 void FileFacade::WriteToFile() const
 {
+   assert(mPathToFile != "");
    std::ofstream stream;
-   stream.open(mPathToFile);
+   stream.open(mPathToFile, std::fstream::out);
 
-   std::string result = ConcatFileSrc();
-
+   const std::string &result = ConcatFileSrc();
    stream << result;
 }
 
-std::string FileFacade::ConcatFileSrc() const 
+std::string FileFacade::ConcatFileSrc() const
 {
    std::string result;
 

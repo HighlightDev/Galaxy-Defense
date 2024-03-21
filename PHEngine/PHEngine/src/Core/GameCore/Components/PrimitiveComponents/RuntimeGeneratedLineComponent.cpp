@@ -52,12 +52,12 @@ namespace EngineCore
 
    glm::vec3 RuntimeGeneratedLineComponent::GetLineBeginWorldSpacePosition() const
    {
-      return mLineEndWorldSpacePosition;
+      return mLineBeginWorldSpacePosition;
    }
 
    glm::vec3 RuntimeGeneratedLineComponent::GetLineEndWorldSpacePosition() const
    {
-      return mLineBeginWorldSpacePosition;
+      return mLineEndWorldSpacePosition;
    }
 
    void RuntimeGeneratedLineComponent::SetLineBeginWorldSpacePosition(const glm::vec3 &position)

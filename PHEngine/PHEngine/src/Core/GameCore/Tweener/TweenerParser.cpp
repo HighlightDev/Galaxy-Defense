@@ -164,7 +164,8 @@ namespace EngineCore
    {
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetTweenerPath() + tweenerName;
 
-      FileFacade fileWorker(absolutePath);
+      FileFacade fileWorker;
+      fileWorker.OpenAndReadFile(absolutePath);
       const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
       assert(sizeOfSrc > 0);
 
@@ -271,41 +272,41 @@ namespace EngineCore
       return result;
    }
 
-   glm::vec3 ExtractVec3FromStrings(const std::vector<std::string>& valuesStr)
+   glm::vec3 ExtractVec3FromStrings(const std::vector<std::string> &valuesStr)
    {
       glm::vec3 result(0.0f);
       bool b_xValueFound = false, b_yValueFound = false, b_zValueFound = false;
       for (const auto &value : valuesStr)
+      {
+         const auto trimmedValueStr = TrimEnd(TrimStart(RemoveAll(value, ' ')));
+
+         if (StartsWith(trimmedValueStr, "x="))
          {
-            const auto trimmedValueStr = TrimEnd(TrimStart(RemoveAll(value, ' ')));
-
-            if (StartsWith(trimmedValueStr, "x="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               result.x = GetTrivialValueAfterAssignOperator<float>(valueStr);
-               b_xValueFound = true;
-            }
-            else if (StartsWith(trimmedValueStr, "y="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               result.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
-               b_yValueFound = true;
-            }
-            else if (StartsWith(trimmedValueStr, "z="))
-            {
-               const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
-               result.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
-               b_zValueFound = true;
-            }
-            else
-            {
-               assert(false);
-            }
+            const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+            result.x = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            b_xValueFound = true;
          }
+         else if (StartsWith(trimmedValueStr, "y="))
+         {
+            const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+            result.y = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            b_yValueFound = true;
+         }
+         else if (StartsWith(trimmedValueStr, "z="))
+         {
+            const auto &valueStr = trimmedValueStr.substr(IndexOf(trimmedValueStr, "=") + 1);
+            result.z = GetTrivialValueAfterAssignOperator<float>(valueStr);
+            b_zValueFound = true;
+         }
+         else
+         {
+            assert(false);
+         }
+      }
 
-         assert(b_xValueFound && b_yValueFound && b_zValueFound);
+      assert(b_xValueFound && b_yValueFound && b_zValueFound);
 
-         return result;
+      return result;
    }
 
    std::unique_ptr<BaseStateProperty> CreateProperty(const TweenerParser::TweenerParser_Property &property, const std::unordered_map<std::string, std::shared_ptr<PropertyBinding>> &bindings)
@@ -328,21 +329,21 @@ namespace EngineCore
          const auto &values = Split(property.Value, ';');
          const glm::vec3 eulerAngles = ExtractVec3FromStrings(values);
          result = std::make_unique<StateProperty<eEnginePropertyBindingType::EulerAnglesRotation>>(eulerAngles,
-                                                                                     std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
+                                                                                                   std::static_pointer_cast<EulerAnglesRotationPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("boolean" == property.Type)
       {
          const std::string &value = ToLower(property.Value);
          const bool booleanValue = "true" == value;
          result = std::make_unique<StateProperty<eEnginePropertyBindingType::Boolean>>(booleanValue,
-                                                                         std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
+                                                                                       std::static_pointer_cast<BooleanPropertyBinding>(bindings.at(property.BindingName)));
       }
       else if ("vec3" == property.Type)
       {
          const auto &values = Split(property.Value, ';');
          const glm::vec3 vec3Value = ExtractVec3FromStrings(values);
          result = std::make_unique<StateProperty<eEnginePropertyBindingType::Vec3>>(vec3Value,
-                                                                      std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
+                                                                                    std::static_pointer_cast<Vec3PropertyBinding>(bindings.at(property.BindingName)));
       }
 
       assert(result);
@@ -350,7 +351,7 @@ namespace EngineCore
       return result;
    }
 
-   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string &relPathTweener, const std::string& tweenerInnerName)
+   std::shared_ptr<Tweener> TweenerParser::BuildTweener(const std::string &relPathTweener, const std::string &tweenerInnerName)
    {
       std::unordered_map<std::string, std::shared_ptr<State>> states;
       std::vector<std::shared_ptr<State>> allStates;

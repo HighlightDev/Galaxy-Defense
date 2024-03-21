@@ -123,7 +123,8 @@ namespace Graphics
    std::shared_ptr<IMaterial> MaterialParser::ParseMaterialDescriptor(const std::string &materialFileName)
    {
       const std::string &absolutePath = IO::FolderManager::GetInstance()->GetMaterialPath() + materialFileName;
-      FileFacade fileWorker(absolutePath);
+      FileFacade fileWorker;
+      fileWorker.OpenAndReadFile(absolutePath);
 
       const size_t sizeOfSrc = fileWorker.GetFileSourceLinesCount();
       assert(sizeOfSrc > 0);

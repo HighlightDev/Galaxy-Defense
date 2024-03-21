@@ -15,6 +15,8 @@
 #include "Core/IoCore/DisplayDeviceDataProvider.h"
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Core/UtilityCore/EngineMath.h"
+#include "Core/IoCore/FileFacade.h"
+#include "Implementation/Navigation/PathSerializationHelper.h"
 
 #include <json/json.hpp>
 
@@ -101,7 +103,7 @@ namespace Game
         }
         else
         {
-            const auto& idleCurveComponent = mIdleCurveComponents.top();
+            const auto &idleCurveComponent = mIdleCurveComponents.top();
             idleCurveComponent->SetIsEnabled(true);
             idleCurveComponent->SetLineBeginWorldSpacePosition(pointA);
             idleCurveComponent->SetBezierControlPointWorldSpacePosition(controlPoint);
@@ -177,7 +179,19 @@ namespace Game
                             {
                                 const auto &rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
                                 const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
-                                bezierControlPointsList.emplace_back(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
+                                const auto &newControlPoint = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
+                                if (bezierControlPointsList.size() || !mActiveCurveComponents.size())
+                                {
+                                    bezierControlPointsList.emplace_back(newControlPoint);
+                                }
+                                else
+                                {
+                                    const auto &previousLineEndPosition = mActiveCurveComponents.top()->GetLineEndWorldSpacePosition();
+                                    if (EngineMath::CheckSimilarityVec3(previousLineEndPosition, newControlPoint))
+                                    {
+                                        bezierControlPointsList.emplace_back(newControlPoint);
+                                    }
+                                }
                             }
                         }
                     }
@@ -208,10 +222,40 @@ namespace Game
                 {
                     if (!mActiveCurveComponents.empty())
                     {
-                        const auto& lastActiveCurveComponent = mActiveCurveComponents.top();
+                        const auto &lastActiveCurveComponent = mActiveCurveComponents.top();
                         lastActiveCurveComponent->SetIsEnabled(false);
                         mIdleCurveComponents.emplace(lastActiveCurveComponent);
                         mActiveCurveComponents.pop();
+                    }
+                }
+                else if ("save" == doneAction)
+                {
+                    std::string lvlName = "unknown";
+                    if (jsonObj.contains("name"))
+                    {
+                        lvlName = jsonObj["name"].get<std::string>();
+                    }
+
+                    if (!mActiveCurveComponents.empty())
+                    {
+                        std::vector<std::tuple<glm::vec3 /*start*/, glm::vec3 /*control point*/, glm::vec3 /*end*/>> pathControlPoints;
+                        pathControlPoints.reserve(mActiveCurveComponents.size() * 3);
+                        auto curveComponentsCopy = mActiveCurveComponents;
+                        while (!curveComponentsCopy.empty())
+                        {
+                            const auto &topPathComponent = curveComponentsCopy.top();
+                            curveComponentsCopy.pop();
+                            pathControlPoints.emplace_back(std::make_tuple<glm::vec3, glm::vec3, glm::vec3>(topPathComponent->GetLineBeginWorldSpacePosition(),
+                                                                                                            topPathComponent->GetBezierControlPointWorldSpacePosition(),
+                                                                                                            topPathComponent->GetLineEndWorldSpacePosition()));
+                        }
+
+                        PathSerializationHelper pathSerialization;
+                        const std::string& serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(pathControlPoints);
+                        FileFacade fileFacade;
+                        fileFacade.OpenAndReadOrCreateFile(lvlName);
+                        fileFacade.RewriteSrc(serializedPathJsonStr);
+                        fileFacade.WriteToFile();
                     }
                 }
             }

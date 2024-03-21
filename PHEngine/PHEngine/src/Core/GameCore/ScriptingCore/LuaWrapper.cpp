@@ -1,7 +1,6 @@
 #include "LuaWrapper.h"
 #include "Core/UtilityCore/PlatformDependentFunctions.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/IoCore/FileFacade.h"
 #include "Core/UtilityCore/StringExtendedFunctions.h"
 #include "Core/IoCore/FolderManager.h"
 #include "Core/CommonCore/Assertion.h"

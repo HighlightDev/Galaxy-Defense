@@ -72,8 +72,11 @@ function LevelEditorOverlay:new(host)
     local editRoutesButton = LabelButton:new(host, overlay, LevelEditorOverlay.labelFontName);
     overlay:addCompoundWidget(editRoutesButton)
 
-    local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton");
+    local undoLastActionButton = ImageButton:new(host, overlay, "EditStationSocketsButton")
     overlay:addCompoundWidget(undoLastActionButton)
+
+    local saveLevelButton = ImageButton:new(host, overlay, "SaveLevelButton")
+    overlay:addCompoundWidget(saveLevelButton)
 
     changeContainerStateButton:subscriveOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
@@ -81,9 +84,11 @@ function LevelEditorOverlay:new(host)
 
         changeContainerStateButton:setImageRotationDegrees(math.fmod(
             changeContainerStateButton:getImageRotationDegrees() + 180.0, 360.0))
-        editStationSocketsButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
-        editRoutesButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
-        undoLastActionButton:setIsVisible(self.editorContainerState == EditorContainerState.Expanded)
+        local buttonsVisible = self.editorContainerState == EditorContainerState.Expanded
+        editStationSocketsButton:setIsVisible(buttonsVisible)
+        editRoutesButton:setIsVisible(buttonsVisible)
+        undoLastActionButton:setIsVisible(buttonsVisible)
+        saveLevelButton:setIsVisible(buttonsVisible)
     end)
 
     editStationSocketsButton:subscriveOnMouseInputClickedCallback(function()
@@ -101,6 +106,14 @@ function LevelEditorOverlay:new(host)
     undoLastActionButton:subscriveOnMouseInputClickedCallback(function()
         EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
             "EditorLevelEvents", json.encode({ action = "undo" }))
+    end)
+
+    saveLevelButton:subscriveOnMouseInputClickedCallback(function()
+        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
+            "EditorLevelEvents", json.encode({
+                action = "save",
+                name = "TestLevelName"
+            }))
     end)
 
     overlay.onWindowSizeChanged = function(width, height)
@@ -122,6 +135,9 @@ function LevelEditorOverlay:new(host)
 
         undoLastActionButton:setWidth(buttonWidth)
         undoLastActionButton:setHeight(buttonHeight)
+
+        saveLevelButton:setWidth(buttonWidth)
+        saveLevelButton:setHeight(buttonHeight)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -192,6 +208,18 @@ function LevelEditorOverlay:new(host)
         undoLastActionButton:setImageTextureSource("arrow_counter_clockwise.png")
         undoLastActionButton:setZOrder(2)
         undoLastActionButton:setButtonColorHexValue(0xdb9427)
+
+        saveLevelButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
+        saveLevelButton:setAnchor(UiItemBase.UiAnchorType.TOP,
+            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
+        saveLevelButton:setAnchor(UiItemBase.UiAnchorType.RIGHT, UiItemBase.UiAnchorType.RIGHT,
+            editorContainer.widgetName, 10)
+        saveLevelButton:setWidth(buttonWidth)
+        saveLevelButton:setHeight(buttonHeight)
+        saveLevelButton:setButtonBorderRadius(8)
+        saveLevelButton:setImageTextureSource("floppy-disk.png")
+        saveLevelButton:setZOrder(2)
+        saveLevelButton:setButtonColorHexValue(0xdb9427)
     end)
 
     overlay.onGameEventTriggered = function(eventName, jsonArgs)

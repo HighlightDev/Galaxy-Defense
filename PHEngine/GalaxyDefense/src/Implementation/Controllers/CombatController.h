@@ -11,7 +11,6 @@
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Core/GameCore/BoundingBox3D.h"
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
-#include "Core/CommonCore/Timer.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/GameObjectsCollisionType.h"
 #include "Implementation/Pools/ElectroRayChainActorPool.h"
@@ -27,35 +26,27 @@ namespace EngineCore
 {
     class Scene;
     class Actor;
-    class ACamera;
 }
 
 namespace Game
 {
-    class SpaceShipPlayerController;
-
     class CombatController : public ITickable,
                              public ILevelController,
                              public MainPlayerActionEvent,
                              public PhysicsCollisionGameThreadEvent,
                              public RayCollisionEvent,
                              public SphereContactCollisionEvent,
-                             public ICameraTransformChangeNotifyable,
                              public std::enable_shared_from_this<CombatController>
     {
         std::weak_ptr<Scene> mScene;
 
         std::shared_ptr<Actor> mPlayerShip;
 
-        std::shared_ptr<SpaceShipPlayerController> mMainPlayerActorController;
-
         std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
 
         std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
-
-        std::vector<std::shared_ptr<BackgroundSpaceObjectActor>> mBackgroundSpaceObjects;
 
         std::shared_ptr<ElectroRayChainActorPool> mElectroRayChainActorPool; // todo: rework with pointer to generic interface
 
@@ -66,10 +57,6 @@ namespace Game
         bool bIsCoolDownInProgress = false;
 
         BoundingBox3D mLevelBounds;
-
-        std::unique_ptr<BoundingBox3D> mCameraVisibilityArea; // todo: prepare a better solution
-
-        GameThreadTimer mBackgroundPlanetsSpawnTimer;
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -90,8 +77,6 @@ namespace Game
 
         void CleanUp() override;
 
-        void SetPlayerActorController(const std::shared_ptr<SpaceShipPlayerController> &mainPlayerActorController);
-
     protected:
         void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
@@ -101,14 +86,10 @@ namespace Game
 
         void ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data) override;
 
-        void OnCameraTransformChanged(::EngineCore::ACamera *eventSrc) override;
-
     private:
         void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);
 
         void CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp);
-
-        void CreateBackgroundSpaceObjectsPool(const std::shared_ptr<Scene> &sceneSp);
 
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
@@ -127,9 +108,10 @@ namespace Game
         eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
 
         glm::vec3 GenRandomPositionForSpaceship() const;
-        glm::vec3 GenRandomPositionForSpaceObject() const;
-        glm::vec3 GetRandomPositionForBackgroundSpaceObject() const;
 
-        void OnBackgroundPlanetsSpawnTimerTimeout();
+        glm::vec3 GenRandomPositionForSpaceObject() const;
+
+        // Todo: need to be reworked later
+        void TempInitRoutes();
     };
 }

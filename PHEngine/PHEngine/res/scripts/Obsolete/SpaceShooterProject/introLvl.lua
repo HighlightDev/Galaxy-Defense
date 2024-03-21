@@ -59,12 +59,6 @@ function CreateTestLevel(host)
 		,missile1_model.fbx
 		,asteroid.fbx
 		,explosion1.ogg
-		,planet_1.png
-		,planet_2.png
-		,planet_3.png
-		,planet_4.png
-		,planet_5.png
-		,planet_6.png
 		]])
 
 	local a_lightId = _CreateActor(host, "Actor",

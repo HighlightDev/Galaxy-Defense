@@ -59,18 +59,12 @@ function CreateTestLevel(host)
 		,missile1_model.fbx
 		,asteroid.fbx
 		,explosion1.ogg
-		,planet_1.png
-		,planet_2.png
-		,planet_3.png
-		,planet_4.png
-		,planet_5.png
-		,planet_6.png,
-		Space_Station_COLOR.png,
-		Space_Station_NORMAL.png,
-		Space_Station_ROUGHNESS.jpg,
-		Space_Station_METALLIC.jpg,
-		space_station.obj,
-		space_station_img.png
+		,Space_Station_COLOR.png
+		,Space_Station_NORMAL.png
+		,Space_Station_ROUGHNESS.jpg
+		,Space_Station_METALLIC.jpg
+		,space_station.obj
+		,space_station_img.png
 		]])
 
 	_CreateActor(host, "Actor",

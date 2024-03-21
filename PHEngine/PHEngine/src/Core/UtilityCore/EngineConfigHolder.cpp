@@ -19,7 +19,8 @@ namespace EngineUtility
     void EngineConfigHolder::LoadSettings(const std::string &pathToSettings)
     {
         assert(!bSettingsLoaded);
-        FileFacade fileLoader(pathToSettings);
+        FileFacade fileLoader;
+        fileLoader.OpenAndReadFile(pathToSettings);
         const auto &configFileLines = fileLoader.GetFileSrc();
         FillEngineConfig(configFileLines);
         bSettingsLoaded = true;

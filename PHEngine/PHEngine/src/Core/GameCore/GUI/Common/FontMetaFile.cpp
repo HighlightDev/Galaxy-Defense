@@ -94,8 +94,9 @@ namespace EngineCore
 
     void FontMetaFile::OpenFile(const std::string &pathToFile)
     {
-        FileFacade fileReader(pathToFile);
-        mFileSrc = std::move(fileReader.GetFileSrc());
+        FileFacade fileReader;
+        fileReader.OpenAndReadFile(pathToFile);
+        mFileSrc = fileReader.GetFileSrc();
     }
 
     void FontMetaFile::LoadPaddingData()

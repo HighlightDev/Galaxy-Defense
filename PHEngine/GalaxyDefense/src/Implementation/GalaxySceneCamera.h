@@ -16,7 +16,7 @@ namespace Game
     class GalaxySceneCamera : public ThirdPersonCamera
     {
 
-        static constexpr uint32_t s_userIdleTimeLimit{3000}; // after 3000 ms return camera to start position of scene
+        static constexpr uint32_t s_userIdleTimeLimit{2000}; // after 3000 ms return camera to start position of scene
 
         BoundingBox3D mLevelBoundaries;
 

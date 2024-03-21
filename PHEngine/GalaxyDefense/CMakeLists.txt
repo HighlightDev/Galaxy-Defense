@@ -78,6 +78,7 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.h
 	src/Implementation/Navigation/PathSegment.h
 	src/Implementation/Navigation/Path.h
+	src/Implementation/Navigation/PathSerializationHelper.h
 	src/Implementation/LevelEditor/LevelEditorController.h
 	src/Implementation/LevelEditor/LevelPlacementGrid.h
 )
@@ -147,6 +148,7 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.cpp
 	src/Implementation/Navigation/PathSegment.cpp
 	src/Implementation/Navigation/Path.cpp
+	src/Implementation/Navigation/PathSerializationHelper.cpp
 	src/Implementation/LevelEditor/LevelEditorController.cpp
 	src/Implementation/LevelEditor/LevelPlacementGrid.cpp
     main.cpp

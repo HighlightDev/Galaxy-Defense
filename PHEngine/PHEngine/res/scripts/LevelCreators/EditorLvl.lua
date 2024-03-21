@@ -39,6 +39,7 @@ function CreateTestLevel(host)
 		space_station_img.png,
         arrow_left.png,
         arrow_counter_clockwise.png,
+        floppy-disk.png,
         plane.obj,
         sphere.obj
 		]])

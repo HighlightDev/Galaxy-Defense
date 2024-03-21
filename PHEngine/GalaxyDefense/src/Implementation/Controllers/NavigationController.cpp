@@ -39,30 +39,13 @@ namespace Game
     {
         const auto sceneSp = mSceneWp.lock();
         assert(sceneSp);
-        Path path;
-        PathSegment segment;
-        segment.SetSubdivisionsCount(50);
-        segment.SetControlPoints({{glm::vec3(-50, 0, 50), glm::vec3(-60, 0, 30), glm::vec3(-20, 0, 10)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(-20, 0, 10), glm::vec3(20, 0, -100), glm::vec3(40, 0, -50)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(40, 0, -50), glm::vec3(20, 0, 20), glm::vec3(50, 0, -30)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(50, 0, -30), glm::vec3(60, 0, -40), glm::vec3(100, 0, -100)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        mNavPathBuilder.AddPath("FirstPath", path);
+        sceneSp->AddActor(mNavPathDummyActor);
+    }
 
-        path = Path();
-        segment.SetControlPoints({{glm::vec3(-50, 0, -50), glm::vec3(-60, 0, -30), glm::vec3(-20, 0, -10)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(-20, 0, -10), glm::vec3(20, 0, 100), glm::vec3(40, 0, 50)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(40, 0, 50), glm::vec3(20, 0, -20), glm::vec3(50, 0, 30)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        segment.SetControlPoints({{glm::vec3(50, 0, 30), glm::vec3(60, 0, 40), glm::vec3(100, 0, 100)}});
-        path.AppendPathSegmentToTheEnd(segment);
-        mNavPathBuilder.AddPath("Second", path);
-
+    void NavigationController::InitializePathDebugRendering()
+    {
+        const auto sceneSp = mSceneWp.lock();
+        assert(sceneSp);
         MaterialParser materialParser;
         const std::shared_ptr<IMaterial> &splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
         sceneSp->RegisterMaterialInstance(splineMaterial);
@@ -77,7 +60,11 @@ namespace Game
             for (int i = 0; i < pathSegments.size(); ++i)
             {
                 const auto bezierControlPoints = pathSegments.at(i).GetQuadraticBezierControlPoints();
-                auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i), 150, glm::vec3(0, 0, 0), glm::vec3(), glm::vec3(1), "", splineMaterial);
+                auto d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + pathName + "_" + std::to_string(i),
+                                                                                  150,
+                                                                                  glm::vec3(), glm::vec3(), glm::vec3(1),
+                                                                                  "",
+                                                                                  splineMaterial);
                 const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
                 auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
                 c_mesh->SetLineWidth(2.5f);
@@ -89,8 +76,14 @@ namespace Game
                 mNavPathDummyActor->AddComponent(c_mesh);
             }
         }
+    }
 
-        sceneSp->AddActor(mNavPathDummyActor);
+    void NavigationController::SetPathRoutes(const std::unordered_map<std::string, Path> &paths)
+    {
+        for (const auto &[pathName, pathSegment] : paths)
+        {
+            mNavPathBuilder.AddPath(pathName, pathSegment);
+        }
     }
 
     void NavigationController::OnPreLevelInit()
@@ -99,7 +92,9 @@ namespace Game
 
     void NavigationController::OnLevelInit()
     {
+        assert(mNavPathBuilder.GetPaths().size());
         Initialize();
+        InitializePathDebugRendering(); // for debug visualisation purpose
     }
 
     void NavigationController::OnPostLevelInit()

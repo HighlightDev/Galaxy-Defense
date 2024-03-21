@@ -32,6 +32,8 @@ namespace Game
     public:
         explicit NavigationController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
+        void SetPathRoutes(const std::unordered_map<std::string, Path>& paths);
+
         void OnPreLevelInit() override;
 
         void OnLevelInit() override;
@@ -50,5 +52,7 @@ namespace Game
 
     private:
         void Initialize();
+
+        void InitializePathDebugRendering();
     };
 }
