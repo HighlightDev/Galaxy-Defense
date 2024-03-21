@@ -248,10 +248,11 @@ namespace Game
                             pathControlPoints.emplace_back(std::make_tuple<glm::vec3, glm::vec3, glm::vec3>(topPathComponent->GetLineBeginWorldSpacePosition(),
                                                                                                             topPathComponent->GetBezierControlPointWorldSpacePosition(),
                                                                                                             topPathComponent->GetLineEndWorldSpacePosition()));
+                            std::rotate(pathControlPoints.rbegin(), pathControlPoints.rbegin() + 1, pathControlPoints.rend());
                         }
 
                         PathSerializationHelper pathSerialization;
-                        const std::string& serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(pathControlPoints);
+                        const std::string &serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(pathControlPoints);
                         FileFacade fileFacade;
                         fileFacade.OpenAndReadOrCreateFile(lvlName);
                         fileFacade.RewriteSrc(serializedPathJsonStr);
