@@ -1,13 +1,11 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform float opacity;
 uniform vec3 color;
 
-vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn) {
-  return color;
-}
+vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn) { return color; }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn) {
   return vec2(0);
@@ -21,6 +19,6 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn) {
   return opacity;
 };
 
-vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn) {
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn) {
   return vec3(0);
 }

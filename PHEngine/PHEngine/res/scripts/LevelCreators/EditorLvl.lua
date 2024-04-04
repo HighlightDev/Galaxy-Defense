@@ -40,8 +40,11 @@ function CreateTestLevel(host)
         arrow_left.png,
         arrow_counter_clockwise.png,
         floppy-disk.png,
+        route.png,
+        tower.png,
         plane.obj,
-        sphere.obj
+        sphere.obj,
+        cube.obj
 		]])
 
     _CreateActor(host, "Actor",

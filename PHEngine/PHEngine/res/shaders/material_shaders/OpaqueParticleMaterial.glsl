@@ -1,6 +1,6 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform float opacity;
 
@@ -26,7 +26,7 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 	return opacity * (1.0 - smoothstep(0.0, 0.25, sqrDistance));
 };
 
-vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return vec3(0);
 }

@@ -81,6 +81,8 @@ set(
 	src/Implementation/Navigation/PathSerializationHelper.h
 	src/Implementation/LevelEditor/LevelEditorController.h
 	src/Implementation/LevelEditor/LevelPlacementGrid.h
+	src/Implementation/LevelEditor/RoutesHandler.h
+	src/Implementation/LevelEditor/TowersHandler.h
 )
 
 set(
@@ -151,6 +153,8 @@ set(
 	src/Implementation/Navigation/PathSerializationHelper.cpp
 	src/Implementation/LevelEditor/LevelEditorController.cpp
 	src/Implementation/LevelEditor/LevelPlacementGrid.cpp
+	src/Implementation/LevelEditor/RoutesHandler.cpp
+	src/Implementation/LevelEditor/TowersHandler.cpp
     main.cpp
 )
 

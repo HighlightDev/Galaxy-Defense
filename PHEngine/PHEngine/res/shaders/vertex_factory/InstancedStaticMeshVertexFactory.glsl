@@ -11,7 +11,7 @@ layout (location = 8) in vec3 Custom_0;
 layout (location = 9) in vec2 Custom_1;
 layout (location = 10) in vec4 Custom_2;
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;

@@ -81,7 +81,7 @@ namespace Graphics
          Resource *outResource;
          const bool bResourceValid = ResourceMap::GetInstance()->TryGetResource(outResource, pathToTex);
 
-         assert(bResourceValid);
+         ext_assert(bResourceValid, "Missing texture resource: " + pathToTex);
 
          TextureResource *texResource = static_cast<TextureResource *>(outResource);
 

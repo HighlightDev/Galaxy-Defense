@@ -71,16 +71,18 @@ namespace Game
 
         std::unordered_map<std::string, Path> pathRoutes;
 
-        Path path;
-        PathSegment segment;
-        segment.SetSubdivisionsCount(50);
-        for (const auto &routeControlPoint : routeControlPoints)
+        for (const auto &[routeName, route] : routeControlPoints)
         {
-            segment.SetControlPoints({{std::get<0>(routeControlPoint), std::get<1>(routeControlPoint), std::get<2>(routeControlPoint)}});
-            path.AppendPathSegmentToTheEnd(segment);
-            
+            Path path;
+            PathSegment segment;
+            segment.SetSubdivisionsCount(50);
+            for (const auto &routeControlPoint : route)
+            {
+                segment.SetControlPoints({{std::get<0>(routeControlPoint), std::get<1>(routeControlPoint), std::get<2>(routeControlPoint)}});
+                path.AppendPathSegmentToTheEnd(segment);
+            }
+            pathRoutes.emplace(routeName, path);
         }
-        pathRoutes.emplace("TheOneAndOnlyRoute", path);
         mNavigationController->SetPathRoutes(pathRoutes);
     }
 

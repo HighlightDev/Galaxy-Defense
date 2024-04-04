@@ -2,7 +2,7 @@
 
 layout (location = 0) in vec3 VertexPosition;
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform mat4 worldMatrix;
 uniform mat4 viewMatrix;

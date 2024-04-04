@@ -2,20 +2,18 @@
 
 #include "materialCommon.incl.glsl"
 
-uniform sampler2D albedo;
-
-float alphaValue;
+uniform vec3 albedo;
+uniform float metallicValue;
+uniform float roughnessValue;
 
 vec3 GetMaterialAlbedo(in MATERIAL_VS_OUTPUT materialIn)
 {
-    vec4 sampleColor = texture(albedo, materialIn.TextureCoordinates.xy);
-    alphaValue = sampleColor.a;
-	return sampleColor.rgb;
+	return albedo;
 }
 
 vec2 GetMaterialMetallicRoughness(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec2(0);
+	return vec2(metallicValue, roughnessValue);
 }
 
 float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
@@ -25,10 +23,10 @@ float GetMaterialAmbientOcclusion(in MATERIAL_VS_OUTPUT materialIn)
 
 float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return alphaValue;
+	return 1.0;
 };
 
 vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
-	return vec3(0);
+	return normalize(materialIn.WorldNormal);
 }

@@ -423,7 +423,7 @@
     <None Include="res\shaders\cubemapRendererFS.glsl" />
     <None Include="res\shaders\vertex_factory\StaticMeshVertexFactory.glsl" />
     <None Include="res\shaders\common\VSCommon.glsl" />
-    <None Include="res\shaders\common\materialCommon.incl" />
+    <None Include="res\shaders\common\materialCommon.incl.glsl" />
     <None Include="res\shaders\vertex_factory\SkeletalMeshVertexFactory.glsl" />
     <None Include="res\shaders\material_shaders\PBRMaterial.glsl" />
     <None Include="res\shaders\composite_shaders\simpleVS.glsl" />

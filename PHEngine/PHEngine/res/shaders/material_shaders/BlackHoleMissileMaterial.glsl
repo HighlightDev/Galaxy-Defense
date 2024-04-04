@@ -1,6 +1,6 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform sampler2D albedo;
 uniform sampler2D dudv;
@@ -33,7 +33,7 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 	return 1.0;
 };
 
-vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return vec3(0);
 }

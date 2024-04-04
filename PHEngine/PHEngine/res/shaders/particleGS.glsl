@@ -1,6 +1,6 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;

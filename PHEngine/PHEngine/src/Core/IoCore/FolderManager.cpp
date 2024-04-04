@@ -50,7 +50,7 @@ namespace IO
 		for (const auto &dirEntry : directory_iterator(absolutePathToDirectory))
 		{
 			const std::string &fileName = std::string(dirEntry.path().filename().string());
-			assert(mFilesPathMap.count(fileName) == 0);
+			ext_assert(mFilesPathMap.count(fileName) == 0, "Such file name already exists: " + fileName);
 			mFilesPathMap[fileName] = relativePathToDirectory;
 		}
 	}
@@ -58,7 +58,7 @@ namespace IO
 	std::string FolderManager::GetDirectoryRelativePathByFileName(const std::string &fileName) const
 	{
 		EngineCore::LogInfo("FolderManager::GetDirectoryRelativePathByFileName => file: ", fileName);
-		assert(mFilesPathMap.count(fileName));
+		ext_assert(mFilesPathMap.count(fileName), "Missing file: " + fileName);
 		return mFilesPathMap.at(fileName) + fileName;
 	}
 

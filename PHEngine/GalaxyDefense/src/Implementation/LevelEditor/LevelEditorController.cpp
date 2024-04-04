@@ -5,9 +5,11 @@
 #include "Core/GameCore/Scene.h"
 #include "Core/GameCore/Components/SceneComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedLineComponent.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GameCore/Components/PrimitiveComponents/RuntimeGeneratedQuadraticBezierCurveComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/RuntimeGeneratedMeshComponentCreator.h"
 #include "Core/GameCore/Components/ComponentCreators/ForwardShadingMeshComponentCreator.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/PrimitiveComponents/ForwardShadingMeshComponent.h"
 #include "Core/GameCore/Components/InputComponent.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
@@ -17,6 +19,7 @@
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/IoCore/FileFacade.h"
 #include "Implementation/Navigation/PathSerializationHelper.h"
+#include "Core/CommonCore/JsonHelper.h"
 
 #include <json/json.hpp>
 
@@ -31,11 +34,13 @@ namespace Game
         : mSceneWp(sceneWp),
           mInputComponent(std::make_shared<InputComponent>(std::make_shared<ComponentData>("LevelEditorController_InputComponent"))),
           mBezierCurvesActor(std::make_shared<Actor>("BezierCurvesActor",
-                                                     std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f))))
+                                                     std::make_shared<SceneComponent>("BezierCurvesActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)))),
+          mTowersActor(std::make_shared<Actor>("TowersActor",
+                                               std::make_shared<SceneComponent>("TowersActor_RootComponent", glm::vec3(), glm::vec3(), glm::vec3(1.0f)))),
+          mRoutesHandler(mSceneWp, mBezierCurvesActor),
+          mTowersHandler(mSceneWp, mTowersActor)
     {
     }
-
-    static std::shared_ptr<IMaterial> splineMaterial = nullptr;
 
     LevelEditorController::~LevelEditorController()
     {
@@ -62,12 +67,12 @@ namespace Game
         mMainSceneCamera = mainCameraSp;
 
         sceneSp->AddActor(mBezierCurvesActor);
+        sceneSp->AddActor(mTowersActor);
 
         MaterialParser materialParser;
-        splineMaterial = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
-        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "opacity", 1.0f);
-        MaterialPropertySetter::SetMaterialPropertyValue(splineMaterial, "color", glm::vec3(0.5f, 0.7f, 0.2f));
-        sceneSp->RegisterMaterialInstance(splineMaterial);
+        mSplineMaterialPrefab = materialParser.ParseMaterialDescriptor("CurveLineMaterial.m");
+        MaterialPropertySetter::SetMaterialPropertyValue(mSplineMaterialPrefab, "opacity", 1.0f);
+        sceneSp->RegisterMaterialInstance(mSplineMaterialPrefab);
     }
 
     void LevelEditorController::PostPlayLevelFinished()
@@ -84,122 +89,99 @@ namespace Game
         Initialize();
     }
 
-    void LevelEditorController::SpawnBezierCurveComponent(const int32_t bezierIndex, const glm::vec3 &pointA, const glm::vec3 &controlPoint, const glm::vec3 &pointB)
+    glm::vec3 LevelEditorController::RaycastLevelPlane(bool &raycastWasSuccessfull, const glm::ivec2 &screenSpacePoint)
     {
-        if (mIdleCurveComponents.empty())
+        if (const auto &sceneCameraSp = mMainSceneCamera.lock())
         {
-            const auto &sceneSp = mSceneWp.lock();
-            const auto &d_mesh = std::make_shared<RuntimeGeneratedMeshComponentData>("c_bezierCurveLineMesh_" + std::to_string(bezierIndex), 150, glm::vec3(0, 5, 0), glm::vec3(), glm::vec3(1), "", splineMaterial);
-            const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
-            auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            c_mesh->SetLineWidth(1.5f);
-            c_mesh->SetSortOrderValue(30);
-            c_mesh->SetCurveSegmentsCount(50);
-            c_mesh->SetLineBeginWorldSpacePosition(pointA);
-            c_mesh->SetBezierControlPointWorldSpacePosition(controlPoint);
-            c_mesh->SetLineEndWorldSpacePosition(pointB);
-            mBezierCurvesActor->AddComponent(c_mesh);
-            mActiveCurveComponents.emplace(c_mesh);
+            const auto &projectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
+            const auto &viewMatrix = sceneCameraSp->GetViewMatrix();
+
+            const ScreenRayCaster screenRayCaster;
+            const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePoint,
+                                                                                                glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
+                                                                                                           DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
+                                                                                                projectionMatrix,
+                                                                                                viewMatrix);
+            const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
+            const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
+            glm::vec3 rayIntersectionPosition;
+            if (tParam >= 0.0f)
+            {
+                rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
+                raycastWasSuccessfull = true;
+            }
+            else
+            {
+                raycastWasSuccessfull = false;
+            }
+
+            return rayIntersectionPosition;
         }
         else
         {
-            const auto &idleCurveComponent = mIdleCurveComponents.top();
-            idleCurveComponent->SetIsEnabled(true);
-            idleCurveComponent->SetLineBeginWorldSpacePosition(pointA);
-            idleCurveComponent->SetBezierControlPointWorldSpacePosition(controlPoint);
-            idleCurveComponent->SetLineEndWorldSpacePosition(pointB);
-            mActiveCurveComponents.emplace(idleCurveComponent);
-            mIdleCurveComponents.pop();
+            raycastWasSuccessfull = false;
+            return {};
         }
     }
 
     void LevelEditorController::Tick(const float deltaTime)
     {
-        if (bezierControlPointsList.size() >= 3)
+        if (eEditModeType::IDLE != mCurrentEditModeType)
         {
-            static int sBezierCurveCounter = 0;
-            SpawnBezierCurveComponent(sBezierCurveCounter++, bezierControlPointsList.at(0), bezierControlPointsList.at(1), bezierControlPointsList.at(2));
-            bezierControlPointsList.clear();
-        }
-
-        if (const auto &sceneCameraSp = mMainSceneCamera.lock())
-        {
-            if (eEditModeType::IDLE != mCurrentEditModeType)
+            const auto &mouseBindings = mInputComponent->GetMouseBindings();
+            if (mouseBindings->IsMouseMoveEventDirty())
             {
-                const auto projectionMatrix = sceneCameraSp->GetViewProjectionInfo()->CreateProjectionMatrix();
-                const auto &mouseBindings = mInputComponent->GetMouseBindings();
-                if (mouseBindings->IsMouseMoveEventDirty())
+                const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
+                const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+                bool rayCastWasSuccessfull;
+                const auto &rayIntersectionPosition = RaycastLevelPlane(rayCastWasSuccessfull, screenSpacePosition);
+                if (rayCastWasSuccessfull)
                 {
-                    const auto &mouseMoveEvent = mouseBindings->FlushMouseMoveEvent();
-                    const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
-                    const ScreenRayCaster screenRayCaster;
-                    const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
-                                                                                                        glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
-                                                                                                                   DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
-                                                                                                        projectionMatrix,
-                                                                                                        sceneCameraSp->GetViewMatrix());
-                    const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
-                    const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
-                    if (tParam >= 0.0f)
+                    if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType)
                     {
-                        const auto &rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                        if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType)
-                        {
-                            const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
-                            const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
-                            mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
-                                glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y) - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
-                        }
-                        else
-                        {
-                            const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
-                            mRouteNodePickerActor->GetRootComponent()->SetTranslation(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
-                        }
-                    }
-                }
-
-                if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType)
-                {
-                    if (KeyState::PRESSED == mouseBindings->GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
-                    {
-                        if (!leftButtonPressed)
-                        {
-                            leftButtonPressed = true;
-                            const auto &mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
-                            const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
-                            const ScreenRayCaster screenRayCaster;
-                            const glm::vec3 &worldSpaceRay = screenRayCaster.CastRayFromScreenSpaceToWorldSpace(screenSpacePosition,
-                                                                                                                glm::ivec2(DisplayDeviceDataProvider::GetInstance()->GetWindowWidth() - 1,
-                                                                                                                           DisplayDeviceDataProvider::GetInstance()->GetWindowHeight() - 1),
-                                                                                                                projectionMatrix,
-                                                                                                                sceneCameraSp->GetViewMatrix());
-                            const glm::vec4 planeAtOrigin = glm::vec4(0, 1, 0, 0);
-                            const float tParam = EngineMath::RaycastPlane(sceneCameraSp->GetEyeVector(), worldSpaceRay, planeAtOrigin);
-                            if (tParam >= 0.0f)
-                            {
-                                const auto &rayIntersectionPosition = sceneCameraSp->GetEyeVector() + (worldSpaceRay * tParam);
-                                const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
-                                const auto &newControlPoint = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
-                                if (bezierControlPointsList.size() || !mActiveCurveComponents.size())
-                                {
-                                    bezierControlPointsList.emplace_back(newControlPoint);
-                                }
-                                else
-                                {
-                                    const auto &previousLineEndPosition = mActiveCurveComponents.top()->GetLineEndWorldSpacePosition();
-                                    if (EngineMath::CheckSimilarityVec3(previousLineEndPosition, newControlPoint))
-                                    {
-                                        bezierControlPointsList.emplace_back(newControlPoint);
-                                    }
-                                }
-                            }
-                        }
+                        const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                        const auto pickerCellHalfSize = mLevelPlacementGrid->GetGridCellSizeForTower() * 0.5f;
+                        mTowerPlacementPickerActor->GetRootComponent()->SetTranslation(
+                            glm::vec3(nearestCellBoundingBox.GetOrigin().x, 0.0f, nearestCellBoundingBox.GetOrigin().y) - glm::vec3(pickerCellHalfSize, 0.0f, -pickerCellHalfSize));
                     }
                     else
                     {
-                        leftButtonPressed = false;
+                        const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                        mRouteNodePickerActor->GetRootComponent()->SetTranslation(glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y));
                     }
                 }
+            }
+
+            if (KeyState::PRESSED == mouseBindings->GetKeyState(EngineCore::eMouseKeys::MouseButtonLeft))
+            {
+                if (!leftButtonPressed)
+                {
+                    leftButtonPressed = true;
+                    const auto &mouseMoveEvent = mouseBindings->GetLastMouseCursorPosition();
+                    const glm::ivec2 &screenSpacePosition = glm::ivec2(mouseMoveEvent.x, mouseMoveEvent.y);
+                    bool rayCastWasSuccessfull;
+                    const auto &rayIntersectionPosition = RaycastLevelPlane(rayCastWasSuccessfull, screenSpacePosition);
+                    if (rayCastWasSuccessfull)
+                    {
+                        if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType)
+                        {
+                            const auto &nearestRouteNodePosition = mLevelPlacementGrid->GetNearestToPositionRouteEdgeNode(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            const auto &newControlPoint = glm::vec3(nearestRouteNodePosition.x, 0.0f, nearestRouteNodePosition.y);
+                            mRoutesHandler.AddPointToActiveRoute(mSplineMaterialPrefab, newControlPoint);
+                        }
+                        else if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType)
+                        {
+                            const auto &nearestCellBoundingBox = mLevelPlacementGrid->GetNearestToPositionTowerCellBoundingBox(glm::vec2(rayIntersectionPosition.x, rayIntersectionPosition.z));
+                            const auto pickerCellSize = mLevelPlacementGrid->GetGridCellSizeForTower();
+                            const auto &tower2DPosition = nearestCellBoundingBox.GetOrigin();
+                            mTowersHandler.CreateNewTower(glm::vec3(tower2DPosition.x, 0.0f, tower2DPosition.y), glm::vec3(pickerCellSize * 0.5f));
+                        }
+                    }
+                }
+            }
+            else
+            {
+                leftButtonPressed = false;
             }
         }
     }
@@ -220,12 +202,40 @@ namespace Game
                 const auto &doneAction = jsonObj["action"].get<std::string>();
                 if ("undo" == doneAction)
                 {
-                    if (!mActiveCurveComponents.empty())
+                    mRoutesHandler.UndoLastBezierCurveComponent();
+                }
+                else if ("new_route" == doneAction)
+                {
+                    if (jsonObj.contains("route_name"))
                     {
-                        const auto &lastActiveCurveComponent = mActiveCurveComponents.top();
-                        lastActiveCurveComponent->SetIsEnabled(false);
-                        mIdleCurveComponents.emplace(lastActiveCurveComponent);
-                        mActiveCurveComponents.pop();
+                        const auto &newRouteName = jsonObj.at("route_name").get<std::string>();
+                        mRoutesHandler.SelectNewRouteAsActive(newRouteName);
+                    }
+                    if (jsonObj.contains("route_color"))
+                    {
+                        glm::vec3 newRouteColor;
+                        const auto r = jsonObj["route_color"].at("r").get<float>();
+                        const auto g = jsonObj["route_color"].at("g").get<float>();
+                        const auto b = jsonObj["route_color"].at("b").get<float>();
+                        newRouteColor = glm::vec3(r, g, b);
+                        mRoutesHandler.SetNewBezierCurveColor(newRouteColor);
+                    }
+                }
+                else if ("new_tower" == doneAction)
+                {
+                    if (jsonObj.contains("tower_name"))
+                    {
+                        const auto &newTowerName = jsonObj.at("tower_name").get<std::string>();
+                        mTowersHandler.SetNewTowerName(newTowerName);
+                    }
+                    if (jsonObj.contains("tower_color"))
+                    {
+                        glm::vec3 newTowerColor;
+                        const auto r = jsonObj["tower_color"].at("r").get<float>();
+                        const auto g = jsonObj["tower_color"].at("g").get<float>();
+                        const auto b = jsonObj["tower_color"].at("b").get<float>();
+                        newTowerColor = glm::vec3(r, g, b);
+                        mTowersHandler.SetNewTowerColor(newTowerColor);
                     }
                 }
                 else if ("save" == doneAction)
@@ -233,26 +243,14 @@ namespace Game
                     std::string lvlName = "unknown";
                     if (jsonObj.contains("name"))
                     {
-                        lvlName = jsonObj["name"].get<std::string>();
+                        lvlName = jsonObj.at("name").get<std::string>();
                     }
 
-                    if (!mActiveCurveComponents.empty())
+                    const auto &routeControlPointsMap = mRoutesHandler.CollectRoutesControlPoints();
+                    if (routeControlPointsMap.size())
                     {
-                        std::vector<std::tuple<glm::vec3 /*start*/, glm::vec3 /*control point*/, glm::vec3 /*end*/>> pathControlPoints;
-                        pathControlPoints.reserve(mActiveCurveComponents.size() * 3);
-                        auto curveComponentsCopy = mActiveCurveComponents;
-                        while (!curveComponentsCopy.empty())
-                        {
-                            const auto &topPathComponent = curveComponentsCopy.top();
-                            curveComponentsCopy.pop();
-                            pathControlPoints.emplace_back(std::make_tuple<glm::vec3, glm::vec3, glm::vec3>(topPathComponent->GetLineBeginWorldSpacePosition(),
-                                                                                                            topPathComponent->GetBezierControlPointWorldSpacePosition(),
-                                                                                                            topPathComponent->GetLineEndWorldSpacePosition()));
-                            std::rotate(pathControlPoints.rbegin(), pathControlPoints.rbegin() + 1, pathControlPoints.rend());
-                        }
-
                         PathSerializationHelper pathSerialization;
-                        const std::string &serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(pathControlPoints);
+                        const std::string &serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(routeControlPointsMap);
                         FileFacade fileFacade;
                         fileFacade.OpenAndReadOrCreateFile(lvlName);
                         fileFacade.RewriteSrc(serializedPathJsonStr);
@@ -295,14 +293,15 @@ namespace Game
         sceneSp->AddActor(mRouteNodePickerActor);
 
         MaterialParser materialParser;
-        const std::shared_ptr<IMaterial> &editorNodePickerMaterial = materialParser.ParseMaterialDescriptor("RouteNodeEditorMaterial.m");
+        const auto &editorNodePickerMaterial = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
         sceneSp->RegisterMaterialInstance(editorNodePickerMaterial);
-        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "opacity", 1.0f);
-        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "color", glm::vec3(1.0f, 0.0f, 0.0f));
+        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "albedo", glm::vec3(1.0f, 0.0f, 0.0f));
+        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "metallicValue", 1.8f);
+        MaterialPropertySetter::SetMaterialPropertyValue(editorNodePickerMaterial, "roughnessValue", 0.5f);
 
-        const auto &meshComponentCreator = std::make_shared<ForwardShadingMeshComponentCreator<ForwardShadingMeshComponent>>();
-        const auto &d_mesh = std::make_shared<ForwardShadingMeshComponentData>("TowerPlacementMeshComponent", "sphere.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerSize, 1.0f, pickerSize), editorNodePickerMaterial);
-        const auto &c_mesh = std::static_pointer_cast<ForwardShadingMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+        const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
+        const auto &d_mesh = std::make_shared<MeshComponentData>("TowerPlacementMeshComponent", "sphere.obj", glm::vec3(), glm::vec3(), glm::vec3(pickerSize, 1.0f, pickerSize), "", editorNodePickerMaterial);
+        const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(1);
         mRouteNodePickerActor->AddComponent(c_mesh);
 

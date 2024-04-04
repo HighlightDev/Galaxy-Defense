@@ -1,6 +1,6 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 out MATERIAL_VS_OUTPUT VsOutput;
 

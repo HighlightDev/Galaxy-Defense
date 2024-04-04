@@ -1,6 +1,6 @@
 #version 400
 
-#include "materialCommon.incl"
+#include "materialCommon.incl.glsl"
 
 uniform samplerCube spaceTexture;
 
@@ -29,7 +29,7 @@ float GetMaterialAlphaMask(in MATERIAL_VS_OUTPUT materialIn)
 	return 1.0;
 };
 
-vec3 GetMaterialNormalMapNormal(in MATERIAL_VS_OUTPUT materialIn)
+vec3 GetMaterialWorldNormal(in MATERIAL_VS_OUTPUT materialIn)
 {
 	return vec3(0.0);
 }

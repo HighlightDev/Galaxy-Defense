@@ -3,6 +3,8 @@
 #include "LevelPlacementGrid.h"
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
+#include "Implementation/LevelEditor/RoutesHandler.h"
+#include "Implementation/LevelEditor/TowersHandler.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ITickable.h"
@@ -10,6 +12,7 @@
 
 #include <memory>
 #include <stack>
+#include <unordered_map>
 
 namespace EngineCore
 {
@@ -18,6 +21,11 @@ namespace EngineCore
     class ThirdPersonCamera;
     class InputComponent;
     class RuntimeGeneratedQuadraticBezierCurveComponent;
+}
+
+namespace Graphics
+{
+    class IMaterial;
 }
 
 using namespace EngineCore::GUI;
@@ -33,6 +41,8 @@ namespace Game
           public BroadcastGameThreadEvent
     {
         std::weak_ptr<::EngineCore::Scene> mSceneWp;
+
+        bool leftButtonPressed{false};
 
         BoundingBox2D<glm::vec2> mLevelAreaBoundingBox;
 
@@ -54,16 +64,13 @@ namespace Game
 
         std::shared_ptr<Actor> mBezierCurvesActor;
 
-        // todo: rework
-        std::stack<std::shared_ptr<RuntimeGeneratedQuadraticBezierCurveComponent>> mActiveCurveComponents;
+        std::shared_ptr<Actor> mTowersActor;
 
-        std::stack<std::shared_ptr<RuntimeGeneratedQuadraticBezierCurveComponent>> mIdleCurveComponents;
+        std::shared_ptr<::Graphics::IMaterial> mSplineMaterialPrefab;
 
-        bool leftButtonPressed = false;
+        RoutesHandler mRoutesHandler;
 
-        std::vector<glm::vec3> bezierControlPointsList;
-
-        void SpawnBezierCurveComponent(const int32_t bezierIndex, const glm::vec3 &pointA, const glm::vec3 &controlPoint, const glm::vec3 &pointB);
+        TowersHandler mTowersHandler;
 
     public:
         explicit LevelEditorController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
@@ -96,5 +103,7 @@ namespace Game
         void InitializeRoutePlacementGrid();
 
         void InitializeTowerPlacementGrid();
+
+        glm::vec3 RaycastLevelPlane(bool &raycastWasSuccessfull, const glm::ivec2 &screenSpacePoint);
     };
 }
