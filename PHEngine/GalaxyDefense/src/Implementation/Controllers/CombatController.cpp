@@ -22,9 +22,15 @@
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/DataProviders/PlayerDataProvider.h"
 #include "Implementation/MissileType.h"
-#include "Implementation/Navigation/PathSerializationHelper.h"
+#include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/Navigation/PathSegment.h"
 #include "Implementation/Navigation/Path.h"
+#include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
+#include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
+#include "Core/GraphicsCore/Material/MaterialParser.h"
+#include "Core/GraphicsCore/Material/IMaterial.h"
+#include "Core/GraphicsCore/Material/MaterialProperties/MaterialPropertySetter.h"
+#include "Core/ResourceManagerCore/Pool/TexturePool.h"
 
 #include <array>
 #include <unordered_map>
@@ -59,19 +65,21 @@ namespace Game
         RayCollisionEvent::GetInstance()->RemoveListener(RayCollisionEvent::GetInstanceId());
     }
 
-    void CombatController::TempInitRoutes()
+    void CombatController::TempInitLevel()
     {
+        const auto &sceneSp = mScene.lock();
+        assert(sceneSp);
         FileFacade fileReader;
         fileReader.OpenAndReadFile("TestLevelName");
-        const auto &routesJsonStr = fileReader.GetFileSrc().front();
+        const auto &lvlJsonStr = fileReader.GetFileSrc().front();
 
-        PathSerializationHelper pathSerializationHelper;
-        const auto routeControlPoints = pathSerializationHelper.RestoreRouteControlPointsFromJsonString(routesJsonStr);
-        assert(routeControlPoints.size());
+        LevelSerializationHelper lvlSerializationHelper;
+        const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
+        assert(lvlData.isDataValid());
 
         std::unordered_map<std::string, Path> pathRoutes;
 
-        for (const auto &[routeName, route] : routeControlPoints)
+        for (const auto &[routeName, route] : lvlData.RoutesData)
         {
             Path path;
             PathSegment segment;
@@ -84,6 +92,42 @@ namespace Game
             pathRoutes.emplace(routeName, path);
         }
         mNavigationController->SetPathRoutes(pathRoutes);
+
+        MaterialParser materialParser;
+        for (const auto &[towerName, towerData] : lvlData.TowersData)
+        {
+            const auto &towerActor = mSpaceTowers.emplace_back(
+                std::make_shared<Actor>(towerName, std::make_shared<SceneComponent>("c_root_" + towerName, std::get<0>(towerData), glm::vec3(), std::get<1>(towerData))));
+            const auto &towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
+            const std::string albedoName = "Space_Station_COLOR.png";
+            const std::string normalName = "Space_Station_NORMAL.png";
+            const std::string roughnessName = "Space_Station_ROUGHNESS.jpg";
+            const std::string metallicName = "Space_Station_METALLIC.jpg";
+
+            const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
+            const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
+            const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
+            const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
+            const float uvScale = 1.0f;
+            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "albedo", albedo_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "normalMap", normal_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "roughnessMap", roughness_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "metallicMap", metallic_tex);
+            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "uvScale", uvScale);
+            sceneSp->RegisterMaterialInstance(towerMaterialPrefab);
+
+            const auto &d_mesh = std::make_shared<MeshComponentData>("c_mesh_" + towerName,
+                                                                     "space_station.obj",
+                                                                     glm::vec3(),
+                                                                     glm::vec3(),
+                                                                     glm::vec3(1),
+                                                                     "",
+                                                                     towerMaterialPrefab);
+            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
+            const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
+            towerActor->AddComponent(c_mesh);
+            sceneSp->AddActor(towerActor);
+        }
     }
 
     void CombatController::OnPreLevelInit()
@@ -93,8 +137,6 @@ namespace Game
         MainPlayerActionEvent::GetInstance()->AddListener(thisSp);
         PhysicsCollisionGameThreadEvent::GetInstance()->AddListener(thisSp);
         RayCollisionEvent::GetInstance()->AddListener(thisSp);
-
-        TempInitRoutes();
         mNavigationController->OnPreLevelInit();
     }
 
@@ -119,6 +161,9 @@ namespace Game
 
             CreateAsteroidsPool(sceneSp);
         }
+
+        TempInitLevel();
+
         mNavigationController->SetEnemies(mEnemies);
         mNavigationController->OnLevelInit();
     }

@@ -1,8 +1,10 @@
 #include "EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
+#include "Core/CommonCore/Random.h"
 
 #include <glm/geometric.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <limits>
 
 namespace EngineMath
 {
@@ -250,6 +252,11 @@ namespace EngineMath
       return color;
    }
 
+   glm::vec3 CreateRandomColor()
+   {
+      return glm::vec3(Random::Float(), Random::Float(), Random::Float());
+   }
+
    float ProjectVector3OnVector(const glm::vec3 &projectedNonUnitVec, const glm::vec3 &unitDirection)
    {
       return glm::dot(projectedNonUnitVec, unitDirection);
@@ -270,7 +277,7 @@ namespace EngineMath
       return t > 0.0f ? t : -1.0f;
    }
 
-   glm::vec3 QuadraticBezier(const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, const float t)
+   glm::vec3 QuadraticBezier(const glm::vec3 &p1, const glm::vec3 &p2, const glm::vec3 &p3, const float t)
    {
       const float restTime = 1.0f - t;
       const float x = (restTime * restTime) * p1.x + 2.0f * restTime * t * p2.x + (t * t) * p3.x;

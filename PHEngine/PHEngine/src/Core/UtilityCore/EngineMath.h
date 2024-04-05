@@ -78,6 +78,7 @@ namespace EngineMath
 
    glm::vec3 FromHexColorToVec3Color(const uint32_t hexValue);
    glm::vec4 FromHexColorToVec4Color(const uint32_t hexValue);
+   glm::vec3 CreateRandomColor();
 
    float ProjectVector3OnVector(const glm::vec3& projectedNonUnitVec, const glm::vec3& unitDirection);
 

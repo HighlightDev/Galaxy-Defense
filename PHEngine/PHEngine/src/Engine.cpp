@@ -413,6 +413,7 @@ namespace EngineCore
 
    void Engine::RecompileAllShaders()
    {
+      LogInfo("Engine::RecompileAllShaders");
       Resources::ShaderPool::GetInstance()->RecompileShaders();
       Resources::CompositeShaderPool::GetInstance()->RecompileShaders();
    }

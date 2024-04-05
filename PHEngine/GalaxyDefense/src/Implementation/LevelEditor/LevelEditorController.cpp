@@ -18,7 +18,7 @@
 #include "Core/UtilityCore/ScreenRayCaster.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/IoCore/FileFacade.h"
-#include "Implementation/Navigation/PathSerializationHelper.h"
+#include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Core/CommonCore/JsonHelper.h"
 
 #include <json/json.hpp>
@@ -202,7 +202,14 @@ namespace Game
                 const auto &doneAction = jsonObj["action"].get<std::string>();
                 if ("undo" == doneAction)
                 {
-                    mRoutesHandler.UndoLastBezierCurveComponent();
+                    if (eEditModeType::EDIT_ROUTES == mCurrentEditModeType)
+                    {
+                        mRoutesHandler.UndoLastBezierCurveComponent();
+                    }
+                    else if (eEditModeType::EDIT_TOWERS == mCurrentEditModeType)
+                    {
+                        mTowersHandler.UndoLastTowerComponent();
+                    }
                 }
                 else if ("new_route" == doneAction)
                 {
@@ -221,23 +228,6 @@ namespace Game
                         mRoutesHandler.SetNewBezierCurveColor(newRouteColor);
                     }
                 }
-                else if ("new_tower" == doneAction)
-                {
-                    if (jsonObj.contains("tower_name"))
-                    {
-                        const auto &newTowerName = jsonObj.at("tower_name").get<std::string>();
-                        mTowersHandler.SetNewTowerName(newTowerName);
-                    }
-                    if (jsonObj.contains("tower_color"))
-                    {
-                        glm::vec3 newTowerColor;
-                        const auto r = jsonObj["tower_color"].at("r").get<float>();
-                        const auto g = jsonObj["tower_color"].at("g").get<float>();
-                        const auto b = jsonObj["tower_color"].at("b").get<float>();
-                        newTowerColor = glm::vec3(r, g, b);
-                        mTowersHandler.SetNewTowerColor(newTowerColor);
-                    }
-                }
                 else if ("save" == doneAction)
                 {
                     std::string lvlName = "unknown";
@@ -246,16 +236,18 @@ namespace Game
                         lvlName = jsonObj.at("name").get<std::string>();
                     }
 
-                    const auto &routeControlPointsMap = mRoutesHandler.CollectRoutesControlPoints();
-                    if (routeControlPointsMap.size())
-                    {
-                        PathSerializationHelper pathSerialization;
-                        const std::string &serializedPathJsonStr = pathSerialization.DumpRouteControlPointsToJsonString(routeControlPointsMap);
-                        FileFacade fileFacade;
-                        fileFacade.OpenAndReadOrCreateFile(lvlName);
-                        fileFacade.RewriteSrc(serializedPathJsonStr);
-                        fileFacade.WriteToFile();
-                    }
+                    LevelData lvlData;
+                    lvlData.LevelName = lvlName;
+                    lvlData.RoutesData = mRoutesHandler.CollectRoutesControlPoints();
+                    lvlData.TowersData = mTowersHandler.CollectTowerPoints();
+
+                    ext_assert(lvlData.isDataValid(), "Some data is missing. Level has to include name, routes and towers");
+                    LevelSerializationHelper lvlSerialization;
+                    const std::string &serializedPathJsonStr = lvlSerialization.DumpLevelToJsonString(lvlData);
+                    FileFacade fileFacade;
+                    fileFacade.OpenAndReadOrCreateFile(lvlName);
+                    fileFacade.RewriteSrc(serializedPathJsonStr);
+                    fileFacade.WriteToFile();
                 }
             }
         }

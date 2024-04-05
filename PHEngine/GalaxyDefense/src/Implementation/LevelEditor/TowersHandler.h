@@ -26,10 +26,6 @@ namespace Game
 
         int32_t mTowerComponentCounter{0};
 
-        std::string mNewTowerName;
-
-        glm::vec3 mNewTowerColor;
-
         std::stack<std::tuple<std::string, std::shared_ptr<::EngineCore::StaticMeshComponent>>> mActiveTowersComponents;
 
         std::stack<std::tuple<std::string, std::shared_ptr<::EngineCore::StaticMeshComponent>>> mIdleTowerComponents;
@@ -43,10 +39,6 @@ namespace Game
 
         void UndoLastTowerComponent();
 
-        std::unordered_map<std::string, glm::vec3> CollectTowerPoints() const;
-
-        void SetNewTowerColor(const glm::vec3 &color);
-
-        void SetNewTowerName(const std::string &newTowerName);
+        std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> CollectTowerPoints() const;
     };
 }

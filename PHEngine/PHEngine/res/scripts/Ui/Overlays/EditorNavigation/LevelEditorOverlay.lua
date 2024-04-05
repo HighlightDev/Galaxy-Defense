@@ -51,20 +51,18 @@ LevelEditorOverlay = {
 }
 
 local function getRandomColor()
-    local r_byte = math.random(0, 255)
-    local g_byte = math.random(0, 255)
-    local b_byte = math.random(0, 255)
+    local r = math.random()
+    local g = math.random()
+    local b = math.random()
 
-    local INV_COLOR_MAX_BYTE_VALUE = 1.0 / 255.0;
     return {
-        r = r_byte * INV_COLOR_MAX_BYTE_VALUE,
-        g = g_byte * INV_COLOR_MAX_BYTE_VALUE,
-        b = b_byte * INV_COLOR_MAX_BYTE_VALUE
+        r = r,
+        g = g,
+        b = b
     }
 end
 
 RouteName = 1
-TowerName = 1
 
 function LevelEditorOverlay:new(host)
     local windowWidth = _GetWindowWidth(host)
@@ -97,9 +95,6 @@ function LevelEditorOverlay:new(host)
     local newRouteButton = ImageButton:new(host, overlay, "NewRouteButton")
     overlay:addCompoundWidget(newRouteButton)
 
-    local newTowerButton = ImageButton:new(host, overlay, "NewTowerButton")
-    overlay:addCompoundWidget(newTowerButton)
-
     changeContainerStateButton:subscriveOnMouseInputClickedCallback(function()
         self.editorContainerState = self.editorContainerState == EditorContainerState.Expanded and
             EditorContainerState.Hided or EditorContainerState.Expanded
@@ -112,7 +107,6 @@ function LevelEditorOverlay:new(host)
         undoLastActionButton:setIsVisible(buttonsVisible)
         saveLevelButton:setIsVisible(buttonsVisible)
         newRouteButton:setIsVisible(buttonsVisible)
-        newTowerButton:setIsVisible(buttonsVisible)
     end)
 
     editStationSocketsButton:subscriveOnMouseInputClickedCallback(function()
@@ -151,16 +145,6 @@ function LevelEditorOverlay:new(host)
         RouteName = RouteName + 1
     end)
 
-    newTowerButton:subscriveOnMouseInputClickedCallback(function()
-        local newTowerColor = getRandomColor()
-        EventsHelper:sendBroadcastGameThreadEvent(host, EventsHelper.enqueueJobPolicy.IF_DUPLICATE_NO_PUSH,
-            "EditorLevelEvents", json.encode({
-                action = "new_tower",
-                tower_name = "tower_" .. tostring(TowerName),
-                tower_color = { r = newTowerColor.r, g = newTowerColor.g, b = newTowerColor.b }
-            }))
-    end)
-
     overlay.onWindowSizeChanged = function(width, height)
         assert(width ~= nil and type(width) == "number" and height ~= nil and type(height) == "number")
 
@@ -186,9 +170,6 @@ function LevelEditorOverlay:new(host)
 
         newRouteButton:setWidth(buttonWidth)
         newRouteButton:setHeight(buttonHeight)
-
-        newTowerButton.setWidth(buttonWidth)
-        newTowerButton.setHeight(buttonHeight)
     end
 
     overlay:subscribeOnAllWidgetLuaProxiesReady(function()
@@ -271,19 +252,6 @@ function LevelEditorOverlay:new(host)
         newRouteButton:setImageTextureSource("route.png")
         newRouteButton:setZOrder(2)
         newRouteButton:setButtonColorHexValue(0xdb9427)
-
-        newTowerButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
-        newTowerButton:setAnchor(UiItemBase.UiAnchorType.TOP,
-            UiItemBase.UiAnchorType.TOP, editorContainer.widgetName, 10)
-        newTowerButton:setAnchor(UiItemBase.UiAnchorType.LEFT, UiItemBase.UiAnchorType.RIGHT,
-            newRouteButton.widgetName, 10)
-        newTowerButton:setWidth(buttonWidth)
-        newTowerButton:setHeight(buttonHeight)
-        newTowerButton:setButtonBorderRadius(8)
-        newTowerButton:setImageTextureSource("tower.png")
-        newTowerButton:setZOrder(2)
-        newTowerButton:setButtonColorHexValue(0xdb9427)
-        newTowerButton:setImageRotationDegrees(180)
 
         saveLevelButton:setParent(host, canvas.widgetName, editorContainer.widgetName)
         saveLevelButton:setAnchor(UiItemBase.UiAnchorType.TOP,

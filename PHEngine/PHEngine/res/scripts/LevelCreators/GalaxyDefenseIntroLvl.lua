@@ -110,8 +110,8 @@ function CreateTestLevel(host)
 	local spaceshipMatProxyId = _CreateMaterial(host, "PhysicalBasedMaterial.m")
 	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_COLOR.png", "albedo")
 	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_NORMAL.png", "normalMap")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_METALLIC.jpg", "roughnessMap")
-	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_ROUGHNESS.jpg", "metallicMap")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_ROUGHNESS.jpg", "roughnessMap")
+	_SetTextureToMaterial(host, spaceshipMatProxyId, "Space_Station_METALLIC.jpg", "metallicMap")
 	_SetFloatToMaterial(host, spaceshipMatProxyId, 1.0, "uvScale")
 
 	_CreateAndAttachComponentToActor(host, spaceship_a, "StaticMeshComponent",

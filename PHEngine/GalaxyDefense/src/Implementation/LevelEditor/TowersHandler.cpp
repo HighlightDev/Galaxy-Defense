@@ -26,18 +26,19 @@ namespace Game
   {
     const auto &sceneSp = mSceneWp.lock();
     assert(sceneSp);
-    assert(mNewTowerName != "");
-    MaterialParser materialParser;
-    const auto &towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
-    MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "albedo", mNewTowerColor);
-    MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "metallicValue", 1.0f);
-    MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "roughnessValue", 0.5f);
-    sceneSp->RegisterMaterialInstance(towerMaterialPrefab);
 
     if (mIdleTowerComponents.empty())
     {
-      const auto &d_mesh = std::make_shared<MeshComponentData>("c_towerMesh_" + std::to_string(mTowerComponentCounter++),
-                                                               "cube.obj",
+      MaterialParser materialParser;
+      const auto &towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PbrSingleValueMaterial.m");
+      MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "albedo", EngineMath::CreateRandomColor());
+      MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "metallicValue", 1.0f);
+      MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "roughnessValue", 0.5f);
+      sceneSp->RegisterMaterialInstance(towerMaterialPrefab);
+
+      const auto &newTowerName = "tower_" + std::to_string(mTowerComponentCounter++);
+      const auto &d_mesh = std::make_shared<MeshComponentData>("c_" + newTowerName,
+                                                               "sphere.obj",
                                                                position,
                                                                glm::vec3(),
                                                                glm::vec3(scale),
@@ -46,14 +47,16 @@ namespace Game
       const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
       const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
       mTowersActor->AddComponent(c_mesh);
-      mActiveTowersComponents.emplace(std::make_tuple(mNewTowerName, c_mesh));
+      mActiveTowersComponents.emplace(std::make_tuple(newTowerName, c_mesh));
     }
     else
     {
       const auto &idleTowerTuple = mIdleTowerComponents.top();
       const auto &idleTowerComponent = std::get<1>(idleTowerTuple);
       idleTowerComponent->SetIsEnabled(true);
-      mActiveTowersComponents.emplace(std::make_tuple(mNewTowerName, idleTowerComponent));
+      idleTowerComponent->SetTranslation(position);
+      idleTowerComponent->SetScale(scale);
+      mActiveTowersComponents.emplace(std::make_tuple(std::get<0>(idleTowerTuple), idleTowerComponent));
       mIdleTowerComponents.pop();
     }
   }
@@ -69,34 +72,17 @@ namespace Game
     }
   }
 
-  std::unordered_map<std::string, glm::vec3> TowersHandler::CollectTowerPoints() const
+  std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> TowersHandler::CollectTowerPoints() const
   {
-    std::unordered_map<std::string, glm::vec3> towerPoints;
+    std::unordered_map<std::string, std::tuple<glm::vec3, glm::vec3>> towerPoints;
     towerPoints.reserve(mActiveTowersComponents.size());
     auto towersCopy = mActiveTowersComponents;
     while (!towersCopy.empty())
     {
       const auto &topItem = towersCopy.top();
-      towerPoints.emplace(std::get<0>(topItem), std::get<1>(topItem)->GetTranslation());
+      towerPoints.emplace(std::get<0>(topItem), std::make_tuple(std::get<1>(topItem)->GetTranslation(), std::get<1>(topItem)->GetScale()));
       towersCopy.pop();
     }
     return towerPoints;
-  }
-
-  void TowersHandler::SetNewTowerName(const std::string &newTowerName)
-  {
-    assert(newTowerName != "");
-    if (newTowerName != mNewTowerName)
-    {
-      mNewTowerName = newTowerName;
-    }
-  }
-
-  void TowersHandler::SetNewTowerColor(const glm::vec3 &color)
-  {
-    if (!EngineMath::CheckSimilarityVec3(color, mNewTowerColor))
-    {
-      mNewTowerColor = color;
-    }
   }
 }

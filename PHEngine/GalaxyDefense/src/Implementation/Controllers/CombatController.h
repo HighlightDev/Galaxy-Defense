@@ -42,6 +42,8 @@ namespace Game
 
         std::shared_ptr<Actor> mPlayerShip;
 
+        std::vector<std::shared_ptr<Actor>> mSpaceTowers;
+
         std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
 
         std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
@@ -112,6 +114,6 @@ namespace Game
         glm::vec3 GenRandomPositionForSpaceObject() const;
 
         // Todo: need to be reworked later
-        void TempInitRoutes();
+        void TempInitLevel();
     };
 }

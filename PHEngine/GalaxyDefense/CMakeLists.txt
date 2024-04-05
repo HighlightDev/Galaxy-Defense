@@ -3,6 +3,8 @@ set(
 	src/Implementation/Components/MovementComponents/OnRouteMovementComponent.h
 	src/Implementation/Levels/GameLevelFactory.h
 	src/Implementation/Levels/LevelBase.h
+	src/Implementation/Levels/LevelSerializationHelper.h
+	src/Implementation/Levels/LevelData.h
 	src/Implementation/Levels/Prologue/PrologueLevel.h
 	src/Implementation/Levels/Prologue/Controllers/UiController.h
 	src/Implementation/Levels/MainMenu/MainMenuLevel.h
@@ -78,7 +80,6 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.h
 	src/Implementation/Navigation/PathSegment.h
 	src/Implementation/Navigation/Path.h
-	src/Implementation/Navigation/PathSerializationHelper.h
 	src/Implementation/LevelEditor/LevelEditorController.h
 	src/Implementation/LevelEditor/LevelPlacementGrid.h
 	src/Implementation/LevelEditor/RoutesHandler.h
@@ -90,6 +91,8 @@ set(
 	src/Implementation/Components/MovementComponents/OnRouteMovementComponent.cpp
 	src/Implementation/Levels/GameLevelFactory.cpp
 	src/Implementation/Levels/LevelBase.cpp
+	src/Implementation/Levels/LevelSerializationHelper.cpp
+	src/Implementation/Levels/LevelData.cpp
 	src/Implementation/Levels/Prologue/PrologueLevel.cpp
 	src/Implementation/Levels/Prologue/Controllers/UiController.cpp
 	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
@@ -150,7 +153,6 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.cpp
 	src/Implementation/Navigation/PathSegment.cpp
 	src/Implementation/Navigation/Path.cpp
-	src/Implementation/Navigation/PathSerializationHelper.cpp
 	src/Implementation/LevelEditor/LevelEditorController.cpp
 	src/Implementation/LevelEditor/LevelPlacementGrid.cpp
 	src/Implementation/LevelEditor/RoutesHandler.cpp

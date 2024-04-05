@@ -43,8 +43,7 @@ function CreateTestLevel(host)
         route.png,
         tower.png,
         plane.obj,
-        sphere.obj,
-        cube.obj
+        sphere.obj
 		]])
 
     _CreateActor(host, "Actor",
