@@ -36,7 +36,6 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     ElectroRayFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                     const std::shared_ptr<::EngineCore::Actor> &spawnerActor,
                                      const glm::vec3 &translation,
                                      const glm::vec3 &rotation,
                                      const glm::vec3 &scale)
@@ -62,7 +61,6 @@ namespace Game
         const auto &c_mesh = std::static_pointer_cast<RuntimeGeneratedLineComponent>(scene->CreateComponent_GameThread(meshComponentCreator, d_mesh));
         c_mesh->SetSortOrderValue(100);
         a_electroRay->SetLineComponent(c_mesh);
-        a_electroRay->SetSpawnerSpaceship(spawnerActor);
         a_electroRay->AddComponent(c_mesh);
 
         a_electroRay->SetElectroLineOriginSpeed(65.0f);
@@ -70,13 +68,13 @@ namespace Game
 
         c_mesh->SetLineWidth(8.0f);
 
-        // todo: 
-        //ComponentData d_audio("c_bombMissileSound_" + rayChainIndexStr);
-        //const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
-        //const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
-        //c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
-        //c_sound->GetSoundSource()->SetGain(0.2f);
-        //a_electroRayChain->AddComponent(c_sound);
+        // todo:
+        // ComponentData d_audio("c_bombMissileSound_" + rayChainIndexStr);
+        // const auto &soundComponentCreator = std::make_shared<AudioComponentCreator<SoundComponent>>();
+        // const auto &c_sound = std::static_pointer_cast<SoundComponent>(scene->CreateComponent_GameThread(soundComponentCreator, d_audio));
+        // c_sound->CreateSoundBuffer("explosion1.ogg", "explosion");
+        // c_sound->GetSoundSource()->SetGain(0.2f);
+        // a_electroRayChain->AddComponent(c_sound);
 
         return a_electroRay;
     }

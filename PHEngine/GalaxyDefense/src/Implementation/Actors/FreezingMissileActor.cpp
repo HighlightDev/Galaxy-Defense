@@ -12,7 +12,7 @@ namespace Game
         mMissileType = eMissileType::FREEZING;
     }
 
-    void FreezingMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
+    void FreezingMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;

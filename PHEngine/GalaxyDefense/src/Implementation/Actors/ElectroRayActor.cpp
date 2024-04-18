@@ -119,9 +119,10 @@ namespace Game
         mLineComponent->SetLineEndWorldSpacePosition(mElectroLineEnd);
     }
 
-    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
+    void ElectroRayActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
+        mSpaceshipWhoSpawnedMeWp = spawnerActor;
         DropState();
         SetIsEnabled(true);
         mActivityState = eMissileActivityState::ACTIVE;
@@ -160,11 +161,6 @@ namespace Game
     void ElectroRayActor::SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> &lineComponent)
     {
         mLineComponent = lineComponent;
-    }
-
-    void ElectroRayActor::SetSpawnerSpaceship(const std::weak_ptr<::EngineCore::Actor> &spawnerSpaceship)
-    {
-        mSpaceshipWhoSpawnedMeWp = spawnerSpaceship;
     }
 
     void ElectroRayActor::SetElectroLineOriginSpeed(const float speed)

@@ -107,7 +107,7 @@ namespace Game
         c_movement->SetCurrentSpeedToReferenceValue();
         a_enemySpaceship->AddComponent(c_movement);
 
-        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(5.0f), 0.0f);
+        const auto &ghostController = std::make_shared<GhostController>(scene->GetPhysicsWorld(), std::make_shared<CollisionSphereShape>(glm::length(scale) * 0.5f), 0.0f);
         const auto physData = std::make_shared<PhysicsComponentData>("c_spaceShipPhysicsComponent_" + enemyShipIndexStr, ghostController);
         const auto &physicsComponentCreator = std::make_shared<PhysicsComponentCreator<GhostPhysicsComponent>>();
         const auto &c_ghostPhysics = scene->CreateComponent_GameThread(physicsComponentCreator, physData);

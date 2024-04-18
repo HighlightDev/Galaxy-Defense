@@ -43,11 +43,6 @@ namespace EngineCore
 
    void Actor::PostPhysicsInitialize()
    {
-      if (m_physicsComponent)
-      {
-         m_physicsComponent->PostPhysicsInit();
-      }
-
       for (const auto &childSp : m_children)
       {
          childSp->PostPhysicsInitialize();
@@ -397,6 +392,7 @@ namespace EngineCore
    void Actor::AddComponent(std::shared_ptr<EngineCore::Component> component)
    {
       component->SetOwner(shared_from_this());
+      component->OnPostOwnerInitialized();
 
       const uint64_t componentType = component->GetComponentType();
 

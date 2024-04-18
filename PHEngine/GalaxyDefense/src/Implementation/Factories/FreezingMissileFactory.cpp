@@ -35,7 +35,6 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     FreezingMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                          const std::shared_ptr<::EngineCore::Actor> &spawnerActor,
                                           const glm::vec3 &translation,
                                           const glm::vec3 &rotation,
                                           const glm::vec3 &scale)

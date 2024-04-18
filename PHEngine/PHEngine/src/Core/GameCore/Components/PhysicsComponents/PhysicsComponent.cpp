@@ -79,7 +79,7 @@ namespace EnginePhysics
       return PHYSICS_COMPONENT;
    }
 
-   void PhysicsComponent::PostPhysicsInit()
+   void PhysicsComponent::OnPostOwnerInitialized()
    {
       const auto &spOwner = GetOwner().lock();
       assert(spOwner);

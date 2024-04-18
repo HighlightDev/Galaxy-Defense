@@ -1,10 +1,10 @@
 #pragma once
 
-#include "LevelPlacementGrid.h"
 #include "Implementation/Controllers/ILevelController.h"
 #include "Implementation/Events/ChangeEditModeEvent.h"
-#include "Implementation/LevelEditor/RoutesHandler.h"
-#include "Implementation/LevelEditor/TowersHandler.h"
+#include "Implementation/Levels/Editor/LevelPlacementGrid.h"
+#include "Implementation/Levels/Editor/RoutesHandler.h"
+#include "Implementation/Levels/Editor/TowersHandler.h"
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 #include "Core/GameCore/Actor.h"
 #include "Core/GameCore/ITickable.h"

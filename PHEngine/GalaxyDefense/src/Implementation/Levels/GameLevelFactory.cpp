@@ -1,6 +1,6 @@
 #include "GameLevelFactory.h"
 
-#include "Implementation/Levels/Prologue/PrologueLevel.h"
+#include "Implementation/Levels/CombatLevel/CombatLevel.h"
 #include "Implementation/Levels/MainMenu/MainMenuLevel.h"
 #include "Implementation/Levels/Editor/EditorLevel.h"
 
@@ -14,7 +14,7 @@ namespace Game
       }
       else if ("FirstLevel" == levelName)
       {
-         return std::make_shared<PrologueLevel>();
+         return std::make_shared<CombatLevel>();
       }
       else if ("EditorLevel" == levelName)
       {

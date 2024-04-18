@@ -16,7 +16,7 @@ namespace Game
         mMissileType = eMissileType::BOMB;
     }
 
-    void BombMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
+    void BombMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;
@@ -29,7 +29,7 @@ namespace Game
         mActivityState = eMissileActivityState::EXPLOSION;
         const auto c_soundList = GetComponentsByType<SoundComponent>();
         assert(c_soundList.size());
-        const auto& soundSp = c_soundList.back();
+        const auto &soundSp = c_soundList.back();
         soundSp->GetSoundSource()->SetPitch(0.75f + (Random::Float() * 0.25f));
         soundSp->PlayBuffer("explosion");
         TriggerExplosionFinished();

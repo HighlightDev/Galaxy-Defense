@@ -3,7 +3,6 @@
 #include "Implementation/Actors/ElectroRayChainActor.h"
 #include "Implementation/Actors/SpaceshipActor.h"
 #include "Implementation/Actors/SpaceObjectActor.h"
-#include "Implementation/Pools/ElectroRayChainActorPool.h"
 #include "Core/CommonCore/Assertion.h"
 #include "Core/CommonCore/Random.h"
 #include "Core/GameCore/LoggerExtension.h"
@@ -20,13 +19,13 @@ namespace Game
     {
     }
 
-    void ElectroRayChainModifier::Initialize(const std::shared_ptr<::Game::ElectroRayChainActorPool> &mElectroRayChainActorPool)
+    void ElectroRayChainModifier::Initialize(const std::shared_ptr<::Game::ElectroRayChainActor> &electroRayChainActor)
     {
-        mElectroRayChainActor = mElectroRayChainActorPool->GetFreeActor();
+        mElectroRayChainActor = electroRayChainActor;
         assert(mElectroRayChainActor);
         mElectroRayChainActor->SetStartLineSpaceship(mChainSrc.second);
         mElectroRayChainActor->SetEndLineSpaceship(mChainDst.second);
-        mElectroRayChainActor->TriggerSpawn({}, eDamageDealerType::MAIN_PLAYER);
+        mElectroRayChainActor->TriggerSpawn({}, eDamageDealerType::MAIN_PLAYER, mChainSrc.second.lock());
     }
 
     eModifierType ElectroRayChainModifier::GetModifierType() const

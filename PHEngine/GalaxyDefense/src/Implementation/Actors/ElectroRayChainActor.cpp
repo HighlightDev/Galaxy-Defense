@@ -72,7 +72,7 @@ namespace Game
         return true;
     }
 
-    void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
+    void ElectroRayChainActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         DropState();

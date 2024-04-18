@@ -88,6 +88,10 @@ namespace EngineCore
    {
    }
 
+   void Component::OnPostOwnerInitialized()
+   {
+   }
+
    void Component::PostLevelInit()
    {
       mIsPostLevelInitialized = true;

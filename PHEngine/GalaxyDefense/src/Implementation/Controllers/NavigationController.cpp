@@ -67,7 +67,7 @@ namespace Game
                                                                                   splineMaterial);
                 const auto &meshComponentCreator = std::make_shared<RuntimeGeneratedMeshComponentCreator<RuntimeGeneratedQuadraticBezierCurveComponent>>();
                 auto c_mesh = std::static_pointer_cast<RuntimeGeneratedQuadraticBezierCurveComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-                c_mesh->SetLineWidth(2.5f);
+                c_mesh->SetLineWidth(0.75f);
                 c_mesh->SetSortOrderValue(100);
                 c_mesh->SetCurveSegmentsCount(50);
                 c_mesh->SetLineBeginWorldSpacePosition(bezierControlPoints.at(0));
@@ -103,21 +103,6 @@ namespace Game
 
     void NavigationController::PostPlayLevelFinished()
     {
-        auto &spacePaths = mNavPathBuilder.GetPaths();
-        for (auto &[pathName, path] : spacePaths)
-        {
-            auto freeSpaceshipIt = std::find_if(mEnemies.begin(), mEnemies.end(), [](const std::shared_ptr<SpaceshipActor> &enemySpaceship)
-                                                { return eSpaceshipActivityState::IDLE == enemySpaceship->GetSpaceshipActivityState(); });
-            if (freeSpaceshipIt != mEnemies.end())
-            {
-                const auto &enemySpaceshipSp = (*freeSpaceshipIt);
-                const auto enemyMovementComponent = enemySpaceshipSp->GetOnRouteMovementComponent();
-                assert(enemyMovementComponent);
-                enemyMovementComponent->SetRoutePoints(path.GetRoutePoints());
-                enemyMovementComponent->SetIsMovementAllowed(true);
-                enemySpaceshipSp->TriggerSpawn(path.GetRouteFirstPoint());
-            }
-        }
     }
 
     void NavigationController::CleanUp()
@@ -132,8 +117,26 @@ namespace Game
     {
     }
 
-    void NavigationController::SetEnemies(const std::vector<std::shared_ptr<SpaceshipActor>> &enemies)
+    std::vector<std::string> NavigationController::GetPathNames() const
     {
-        mEnemies = enemies;
+        const auto &spacePaths = mNavPathBuilder.GetPaths();
+        std::vector<std::string> pathNames;
+        pathNames.reserve(spacePaths.size());
+        std::transform(spacePaths.cbegin(), spacePaths.cend(), std::back_inserter(pathNames), [](const auto &spacePathPair) -> std::string
+                       { return spacePathPair.first; });
+        return pathNames;
+    }
+
+    void NavigationController::PutSpaceshipOnRoute(const std::string &routeName, const std::shared_ptr<SpaceshipActor> &spaceship)
+    {
+        auto &spacePaths = mNavPathBuilder.GetPaths();
+        assert(spacePaths.count(routeName));
+        auto &spacePath = spacePaths[routeName];
+
+        const auto enemyMovementComponent = spaceship->GetOnRouteMovementComponent();
+        assert(enemyMovementComponent);
+        enemyMovementComponent->SetRoutePoints(spacePath.GetRoutePoints());
+        enemyMovementComponent->SetIsMovementAllowed(true);
+        spaceship->TriggerSpawn(spacePath.GetRouteFirstPoint());
     }
 }

@@ -31,7 +31,7 @@ namespace EnginePhysics
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;
 
-      virtual void PostPhysicsInit();
+      void OnPostOwnerInitialized() override;
 
       void SetIsEnabled(const bool isEnabled) override;
 

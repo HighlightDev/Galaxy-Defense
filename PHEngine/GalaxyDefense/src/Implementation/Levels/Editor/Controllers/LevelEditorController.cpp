@@ -238,6 +238,8 @@ namespace Game
 
                     LevelData lvlData;
                     lvlData.LevelName = lvlName;
+                    lvlData.LevelBoundaryOrigin = mLevelAreaBoundingBox.GetMin();
+                    lvlData.LevelBoundaryExtent = mLevelAreaBoundingBox.GetMax();
                     lvlData.RoutesData = mRoutesHandler.CollectRoutesControlPoints();
                     lvlData.TowersData = mTowersHandler.CollectTowerPoints();
 

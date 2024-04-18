@@ -32,7 +32,7 @@ namespace Game
     public:
         explicit NavigationController(const std::weak_ptr<::EngineCore::Scene> &sceneWp);
 
-        void SetPathRoutes(const std::unordered_map<std::string, Path>& paths);
+        void SetPathRoutes(const std::unordered_map<std::string, Path> &paths);
 
         void OnPreLevelInit() override;
 
@@ -48,7 +48,9 @@ namespace Game
 
         void UnpausableTick(const float deltaTime) override;
 
-        void SetEnemies(const std::vector<std::shared_ptr<SpaceshipActor>> &enemies);
+        std::vector<std::string> GetPathNames() const;
+
+        void PutSpaceshipOnRoute(const std::string &routeName, const std::shared_ptr<SpaceshipActor> &spaceship);
 
     private:
         void Initialize();

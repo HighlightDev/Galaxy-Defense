@@ -7,15 +7,9 @@
 #include "Core/GameCore/Components/UiComponents/UiComponent.h"
 #include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
 #include "Core/GameCore/LoggerExtension.h"
-#include "Core/IoCore/FileFacade.h"
-#include "Core/CommonCore/JsonHelper.h"
 
 #include "Implementation/Factories/WeakSpaceShipFactory.h"
-#include "Implementation/Factories/BombMissileFactory.h"
-#include "Implementation/Factories/FreezingMissileFactory.h"
-#include "Implementation/Factories/BlackHoleMissileFactory.h"
 #include "Implementation/Factories/AsteroidFactory.h"
-#include "Implementation/Factories/ElectroRayFactory.h"
 #include "Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h"
 #include "Implementation/Modifiers/ElectroRayChainModifier.h"
 #include "Implementation/GalaxySceneCamera.h"
@@ -25,6 +19,7 @@
 #include "Implementation/Levels/LevelSerializationHelper.h"
 #include "Implementation/Navigation/PathSegment.h"
 #include "Implementation/Navigation/Path.h"
+#include "Implementation/Factories/SpaceStationFactory.h"
 #include "Core/GameCore/Components/ComponentCreators/StaticMeshComponentCreator.h"
 #include "Core/GameCore/Components/PrimitiveComponents/StaticMeshComponent.h"
 #include "Core/GraphicsCore/Material/MaterialParser.h"
@@ -50,10 +45,9 @@ namespace Game
 
     CombatController::CombatController(const std::weak_ptr<Scene> &scene)
         : mScene(scene),
-          mEnemies(),
           mLevelBounds(BoundingBox3D(glm::vec3(0), glm::vec3(100, 50, 100))),
-          mElectroRayChainActorPool(std::make_shared<ElectroRayChainActorPool>(scene)),
-          mNavigationController(std::make_shared<NavigationController>(scene))
+          mNavigationController(std::make_shared<NavigationController>(scene)),
+          mCombatActorsPoolHandler(std::make_shared<CombatActorsPoolHandler>(scene))
     {
     }
 
@@ -65,21 +59,18 @@ namespace Game
         RayCollisionEvent::GetInstance()->RemoveListener(RayCollisionEvent::GetInstanceId());
     }
 
-    void CombatController::TempInitLevel()
+    void CombatController::InitFromLevelData(const LevelData &levelData)
     {
+        assert(levelData.isDataValid());
         const auto &sceneSp = mScene.lock();
         assert(sceneSp);
-        FileFacade fileReader;
-        fileReader.OpenAndReadFile("TestLevelName");
-        const auto &lvlJsonStr = fileReader.GetFileSrc().front();
 
-        LevelSerializationHelper lvlSerializationHelper;
-        const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
-        assert(lvlData.isDataValid());
+        mLevelBounds = BoundingBox3D(glm::vec3(levelData.LevelBoundaryOrigin.x, 0.0f, levelData.LevelBoundaryOrigin.y),
+                                     glm::vec3(levelData.LevelBoundaryExtent.x, 50.0f, levelData.LevelBoundaryExtent.y));
 
         std::unordered_map<std::string, Path> pathRoutes;
 
-        for (const auto &[routeName, route] : lvlData.RoutesData)
+        for (const auto &[routeName, route] : levelData.RoutesData)
         {
             Path path;
             PathSegment segment;
@@ -93,40 +84,12 @@ namespace Game
         }
         mNavigationController->SetPathRoutes(pathRoutes);
 
-        MaterialParser materialParser;
-        for (const auto &[towerName, towerData] : lvlData.TowersData)
+        SpaceStationFactory spaceStationFactory;
+        for (const auto &[towerName, towerData] : levelData.TowersData)
         {
-            const auto &towerActor = mSpaceTowers.emplace_back(
-                std::make_shared<Actor>(towerName, std::make_shared<SceneComponent>("c_root_" + towerName, std::get<0>(towerData), glm::vec3(), std::get<1>(towerData))));
-            const auto &towerMaterialPrefab = materialParser.ParseMaterialDescriptor("PhysicalBasedMaterial.m");
-            const std::string albedoName = "Space_Station_COLOR.png";
-            const std::string normalName = "Space_Station_NORMAL.png";
-            const std::string roughnessName = "Space_Station_ROUGHNESS.jpg";
-            const std::string metallicName = "Space_Station_METALLIC.jpg";
-
-            const auto &albedo_tex = TexturePool::GetInstance()->GetOrAllocateResource(albedoName);
-            const auto &normal_tex = TexturePool::GetInstance()->GetOrAllocateResource(normalName);
-            const auto &roughness_tex = TexturePool::GetInstance()->GetOrAllocateResource(roughnessName);
-            const auto &metallic_tex = TexturePool::GetInstance()->GetOrAllocateResource(metallicName);
-            const float uvScale = 1.0f;
-            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "albedo", albedo_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "normalMap", normal_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "roughnessMap", roughness_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "metallicMap", metallic_tex);
-            MaterialPropertySetter::SetMaterialPropertyValue(towerMaterialPrefab, "uvScale", uvScale);
-            sceneSp->RegisterMaterialInstance(towerMaterialPrefab);
-
-            const auto &d_mesh = std::make_shared<MeshComponentData>("c_mesh_" + towerName,
-                                                                     "space_station.obj",
-                                                                     glm::vec3(),
-                                                                     glm::vec3(),
-                                                                     glm::vec3(1),
-                                                                     "",
-                                                                     towerMaterialPrefab);
-            const auto &meshComponentCreator = std::make_shared<StaticMeshComponentCreator<StaticMeshComponent>>(true);
-            const auto &c_mesh = std::static_pointer_cast<StaticMeshComponent>(sceneSp->CreateComponent_GameThread(meshComponentCreator, d_mesh));
-            towerActor->AddComponent(c_mesh);
-            sceneSp->AddActor(towerActor);
+            const glm::vec3 &position = std::get<0>(towerData);
+            const glm::vec3 &scale = std::get<1>(towerData);
+            mCombatActorsPoolHandler->CreateSpaceStationActor(towerName, position, glm::vec3(), scale);
         }
     }
 
@@ -142,29 +105,20 @@ namespace Game
 
     void CombatController::OnLevelInit()
     {
-        if (const auto &sceneSp = mScene.lock())
-        {
-            CreateWeaponBulletPool(sceneSp);
+        mCombatActorsPoolHandler->SpawnEnemySpaceships(10);
+        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BOMB, 10);
+        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::FREEZING, 3);
+        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::ELECTRO_RAY, 1);
+        mCombatActorsPoolHandler->SpawnMissiles(eMissileType::BLACK_HOLE, 2);
 
-            WeakSpaceShipFactory spaceShipFactory;
+        const std::unordered_map<eMissileType, size_t> availabeMissileTypes = {
+            {eMissileType::BOMB, 10},
+            {eMissileType::FREEZING, 3},
+            {eMissileType::ELECTRO_RAY, 1},
+            {eMissileType::BLACK_HOLE, 2}};
+        PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
 
-            static constexpr int s_enemySpaceshipsCount = 5;
-            for (size_t i = 0; i < s_enemySpaceshipsCount; ++i)
-            {
-                const auto &a_enemyShip = spaceShipFactory.CreateSpaceShip(sceneSp,
-                                                                           glm::vec3(),
-                                                                           glm::vec3(),
-                                                                           glm::vec3(9));
-
-                mEnemies.emplace_back(a_enemyShip);
-            }
-
-            CreateAsteroidsPool(sceneSp);
-        }
-
-        TempInitLevel();
-
-        mNavigationController->SetEnemies(mEnemies);
+        mCombatActorsPoolHandler->SpawnAsteroids(20);
         mNavigationController->OnLevelInit();
     }
 
@@ -174,26 +128,22 @@ namespace Game
 
     void CombatController::PostPlayLevelFinished()
     {
-        for (const auto &missile : mMissilesPool)
-        {
-            missile->SetIsEnabled(false); // disable all missiles at level beginning
-        }
-
-        for (const auto &asteroid : mSpaceObjectsPool)
-        {
-            asteroid->TriggerSpawn(GenRandomPositionForSpaceObject());
-        }
-
         mNavigationController->PostPlayLevelFinished();
+
+        const auto &pathNames = mNavigationController->GetPathNames();
+        for (const auto &pathName : pathNames)
+        {
+            const auto &freeShip = mCombatActorsPoolHandler->GetFreeSpaceshipActor();
+            mNavigationController->PutSpaceshipOnRoute(pathName, freeShip);
+        }
     }
 
     void CombatController::ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data)
     {
         const auto &playerAction = std::get<0>(data);
 
-        if (eMainPlayerActionEnum::SHOOT == playerAction && !bIsCoolDownInProgress)
+        if (eMainPlayerActionEnum::SHOOT == playerAction)
         {
-            bIsCoolDownInProgress = true;
             if (const auto &sceneSp = mScene.lock())
             {
                 ShootBullet(mPlayerShip->GetRootComponent()->GetTranslation());
@@ -226,83 +176,95 @@ namespace Game
         const auto this_actor_id = std::get<3>(data);
         const auto that_actor_id = std::get<5>(data);
 
-        if (ePhysicsBodyType::GHOST == physBodyType)
+        const auto &sceneSp = mScene.lock();
+        if (!sceneSp || ePhysicsBodyType::GHOST != physBodyType)
+            return;
+
+        const std::string collisionType = ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType
+                                              ? "collision registered"
+                                              : "collision unregister";
+
+        const auto thisActorGameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(this_actor_id);
+        const auto thatActorGameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(that_actor_id);
+        const auto objectsCollisionType = mCombatActorsPoolHandler->GetGameObjectsCollisionType(thisActorGameObjectType, thatActorGameObjectType);
+
+        if (objectsCollisionType == eGameObjectsCollisionType::UNDEFINED)
+            return;
+        if (eGameObjectsCollisionType::SPACESHIP_WITH_MISSILE == objectsCollisionType)
         {
-            if (const auto &sceneSp = mScene.lock())
+            const auto &ownerEnemyShipActor = eGameObjectsType::SPACESHIP == thisActorGameObjectType
+                                                  ? mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(this_actor_id)
+                                                  : mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(that_actor_id);
+
+            const auto &ownerMissileActor = eGameObjectsType::MISSILE == thisActorGameObjectType
+                                                ? mCombatActorsPoolHandler->GetMissileOwnerActorById(this_actor_id)
+                                                : mCombatActorsPoolHandler->GetMissileOwnerActorById(that_actor_id);
+
+            const auto spaceshipActor_id = eGameObjectsType::SPACESHIP == thisActorGameObjectType ? this_actor_id : that_actor_id;
+            const auto missileActor_id = eGameObjectsType::MISSILE == thisActorGameObjectType ? this_actor_id : that_actor_id;
+
+            const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
+                                                   ? ownerMissileActor
+                                                   : ownerMissileActor->GetChildByObjectId(missileActor_id);
+
+            const auto &concreteSpaceshipActor = ownerEnemyShipActor->GetObjectId() == spaceshipActor_id
+                                                     ? ownerEnemyShipActor
+                                                     : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
+
+            LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "missile with spaceship, this_actor = ", concreteMissileActor->GetName(), " that_actor = ",
+                    concreteSpaceshipActor->GetName());
+
+            const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
+            if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
             {
-                const std::string collisionType = ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType
-                                                      ? "collision registered"
-                                                      : "collision unregister";
+                explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
+            }
+            else
+            {
+                explosionVisitor->EndExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
+            }
+        }
+        else if (eGameObjectsCollisionType::SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
+        {
+            const auto &ownerEnemyShipActor = eGameObjectsType::SPACESHIP == thisActorGameObjectType
+                                                  ? mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(this_actor_id)
+                                                  : mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(that_actor_id);
+            const auto &ownerSpaceObjectActor = eGameObjectsType::NEUTRAL_SPACE_OBJECT == thisActorGameObjectType
+                                                    ? mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(this_actor_id)
+                                                    : mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(that_actor_id);
 
-                const auto &thisActorGameObjectType = GetGameObjectTypeByActorId(this_actor_id);
-                const auto &thatActorGameObjectType = GetGameObjectTypeByActorId(that_actor_id);
-                const auto &objectsCollisionType = GetGameObjectsCollisionType(thisActorGameObjectType, thatActorGameObjectType);
+            LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
+                    " that_actor = ", ownerSpaceObjectActor->GetName());
 
-                if (objectsCollisionType != eGameObjectsCollisionType::UNDEFINED)
-                {
-                    if (eGameObjectsCollisionType::SPACESHIP_WITH_MISSILE == objectsCollisionType)
-                    {
-                        const auto &ownerEnemyShipActor = eGameObjectsType::SPACESHIP == thisActorGameObjectType ? GetEnemyShipOwnerActorById(this_actor_id) : GetEnemyShipOwnerActorById(that_actor_id);
-                        const auto &ownerMissileActor = eGameObjectsType::MISSILE == thisActorGameObjectType ? GetMissileOwnerActorById(this_actor_id) : GetMissileOwnerActorById(that_actor_id);
-                        const auto &spaceshipActor_id = eGameObjectsType::SPACESHIP == thisActorGameObjectType ? this_actor_id : that_actor_id;
-                        const auto &missileActor_id = eGameObjectsType::MISSILE == thisActorGameObjectType ? this_actor_id : that_actor_id;
+            ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
+            ownerSpaceObjectActor->TriggerDisabled();
+        }
+        else if (eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
+        {
+            const auto &ownerMissileActor = eGameObjectsType::MISSILE == thisActorGameObjectType
+                                                ? mCombatActorsPoolHandler->GetMissileOwnerActorById(this_actor_id)
+                                                : mCombatActorsPoolHandler->GetMissileOwnerActorById(that_actor_id);
 
-                        const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
-                                                               ? ownerMissileActor
-                                                               : ownerMissileActor->GetChildByObjectId(missileActor_id);
+            const auto &ownerSpaceObjectActor = eGameObjectsType::NEUTRAL_SPACE_OBJECT == thisActorGameObjectType
+                                                    ? mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(this_actor_id)
+                                                    : mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(that_actor_id);
+            const auto &missileActor_id = eGameObjectsType::MISSILE == thisActorGameObjectType ? this_actor_id : that_actor_id;
 
-                        const auto &concreteSpaceshipActor = ownerEnemyShipActor->GetObjectId() == spaceshipActor_id
-                                                                 ? ownerEnemyShipActor
-                                                                 : ownerEnemyShipActor->GetChildByObjectId(spaceshipActor_id);
+            const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
+                                                   ? ownerMissileActor
+                                                   : ownerMissileActor->GetChildByObjectId(missileActor_id);
 
-                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "missile with spaceship, this_actor = ", concreteMissileActor->GetName(), " that_actor = ",
-                                concreteSpaceshipActor->GetName());
+            LogInfo("CombatController::PhysicsCollisionGameThreadEvent => ", collisionType, "missile with space object, this_actor = ", concreteMissileActor->GetName(),
+                    " that_actor = ", ownerSpaceObjectActor->GetName());
 
-                        const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
-                        if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
-                        {
-                            explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
-                        }
-                        else
-                        {
-                            explosionVisitor->EndExplosionForSpaceship(ownerEnemyShipActor, concreteMissileActor);
-                        }
-                    }
-                    else if (eGameObjectsCollisionType::SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
-                    {
-                        const auto &ownerEnemyShipActor = eGameObjectsType::SPACESHIP == thisActorGameObjectType ? GetEnemyShipOwnerActorById(this_actor_id) : GetEnemyShipOwnerActorById(that_actor_id);
-                        const auto &ownerSpaceObjectActor = eGameObjectsType::NEUTRAL_SPACE_OBJECT == thisActorGameObjectType ? GetSpaceObjectOwnerActorById(this_actor_id) : GetSpaceObjectOwnerActorById(that_actor_id);
-
-                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent =>", collisionType, "spaceship with space object, this_actor = ", ownerEnemyShipActor->GetName(),
-                                " that_actor = ", ownerSpaceObjectActor->GetName());
-
-                        ownerEnemyShipActor->TriggerDamageReceived(1UL, eDamageDealerType::NEUTRAL_OBJECT);
-                        ownerSpaceObjectActor->TriggerDisabled();
-                    }
-                    else if (eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT == objectsCollisionType)
-                    {
-                        const auto &ownerMissileActor = eGameObjectsType::MISSILE == thisActorGameObjectType ? GetMissileOwnerActorById(this_actor_id) : GetMissileOwnerActorById(that_actor_id);
-                        const auto &ownerSpaceObjectActor = eGameObjectsType::NEUTRAL_SPACE_OBJECT == thisActorGameObjectType ? GetSpaceObjectOwnerActorById(this_actor_id) : GetSpaceObjectOwnerActorById(that_actor_id);
-                        const auto &missileActor_id = eGameObjectsType::MISSILE == thisActorGameObjectType ? this_actor_id : that_actor_id;
-
-                        const auto &concreteMissileActor = ownerMissileActor->GetObjectId() == missileActor_id
-                                                               ? ownerMissileActor
-                                                               : ownerMissileActor->GetChildByObjectId(missileActor_id);
-
-                        LogInfo("CombatController::PhysicsCollisionGameThreadEvent => ", collisionType, "missile with space object, this_actor = ", concreteMissileActor->GetName(),
-                                " that_actor = ", ownerSpaceObjectActor->GetName());
-
-                        const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
-                        if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
-                        {
-                            explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
-                        }
-                        else
-                        {
-                            explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
-                        }
-                    }
-                }
+            const auto explosionVisitor = ownerMissileActor->CreateMissileExplosionVisitor();
+            if (ePhysicsCollisionStateType::COLLISION_REGISTERED == collisionEventType)
+            {
+                explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
+            }
+            else
+            {
+                explosionVisitor->EndExplosionForSpaceObject(ownerSpaceObjectActor, concreteMissileActor);
             }
         }
     }
@@ -316,18 +278,18 @@ namespace Game
         {
             if (const auto &collidedActorSp = collidedActorWp.lock())
             {
-                const auto &gameObjectType = GetGameObjectTypeByActorId(collidedActorSp->GetObjectId());
+                const auto &gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorSp->GetObjectId());
                 if (eGameObjectsType::UNDEFINED != gameObjectType)
                 {
                     const auto explosionVisitor = rayMissileActorSp->CreateMissileExplosionVisitor();
                     if (eGameObjectsType::SPACESHIP == gameObjectType)
                     {
-                        const auto &ownerEnemyShipActor = GetEnemyShipOwnerActorById(collidedActorSp->GetObjectId());
+                        const auto &ownerEnemyShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(collidedActorSp->GetObjectId());
                         explosionVisitor->StartExplosionForSpaceship(ownerEnemyShipActor, rayMissileActorSp);
                     }
                     else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == gameObjectType)
                     {
-                        const auto &ownerSpaceObjectActor = GetSpaceObjectOwnerActorById(collidedActorSp->GetObjectId());
+                        const auto &ownerSpaceObjectActor = mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(collidedActorSp->GetObjectId());
                         explosionVisitor->StartExplosionForSpaceObject(ownerSpaceObjectActor, rayMissileActorSp);
                     }
                 }
@@ -340,35 +302,35 @@ namespace Game
         const auto &srcActorId = std::get<0>(data);
         const auto &collidedActorIds = std::move(std::get<1>(data));
 
-        const auto &srcActorGameObjectType = GetGameObjectTypeByActorId(srcActorId);
+        const auto &srcActorGameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(srcActorId);
         if (eGameObjectsType::UNDEFINED != srcActorGameObjectType && eGameObjectsType::MISSILE != srcActorGameObjectType)
         {
             const std::shared_ptr<Actor> &srcCollisionActor = eGameObjectsType::SPACESHIP == srcActorGameObjectType
-                                                                  ? std::static_pointer_cast<Actor>(GetEnemyShipOwnerActorById(srcActorId))
+                                                                  ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(srcActorId))
                                                               : eGameObjectsType::NEUTRAL_SPACE_OBJECT == srcActorGameObjectType
-                                                                  ? std::static_pointer_cast<Actor>(GetSpaceObjectOwnerActorById(srcActorId))
+                                                                  ? std::static_pointer_cast<Actor>(mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(srcActorId))
                                                                   : nullptr;
             assert(srcCollisionActor);
             for (const auto &collidedActorId : collidedActorIds)
             {
-                const auto &gameObjectType = GetGameObjectTypeByActorId(collidedActorId);
+                const auto &gameObjectType = mCombatActorsPoolHandler->GetGameObjectTypeByActorId(collidedActorId);
                 if (eGameObjectsType::UNDEFINED != gameObjectType)
                 {
                     if (eGameObjectsType::SPACESHIP == gameObjectType)
                     {
-                        const auto &ownerEnemyShipActor = GetEnemyShipOwnerActorById(collidedActorId);
+                        const auto &ownerEnemyShipActor = mCombatActorsPoolHandler->GetEnemyShipOwnerActorById(collidedActorId);
                         const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(std::make_pair(gameObjectType, ownerEnemyShipActor),
                                                                                                        std::make_pair(srcActorGameObjectType, srcCollisionActor));
-                        electroRayChainModifier->Initialize(mElectroRayChainActorPool);
+                        electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
                         ownerEnemyShipActor->AddModifier(electroRayChainModifier);
                     }
                     else if (eGameObjectsType::NEUTRAL_SPACE_OBJECT == gameObjectType)
                     {
-                        const auto &ownerSpaceObjectActor = GetSpaceObjectOwnerActorById(collidedActorId);
+                        const auto &ownerSpaceObjectActor = mCombatActorsPoolHandler->GetSpaceObjectOwnerActorById(collidedActorId);
                         const auto electroRayChainModifier = std::make_shared<ElectroRayChainModifier>(std::make_pair(gameObjectType, ownerSpaceObjectActor),
                                                                                                        std::make_pair(srcActorGameObjectType, srcCollisionActor));
 
-                        electroRayChainModifier->Initialize(mElectroRayChainActorPool);
+                        electroRayChainModifier->Initialize(mCombatActorsPoolHandler->GetFreeElectroChainActor());
                         ownerSpaceObjectActor->AddModifier(electroRayChainModifier);
                     }
                 }
@@ -381,278 +343,46 @@ namespace Game
         FlushToPoolUsedBullets();
         UpdateMissilesData();
 
-        if (bIsCoolDownInProgress)
-        {
-            mDeltaTime += deltaTime;
-
-            if (mDeltaTime > mCoolDownTime)
-            {
-                mDeltaTime = 0.0f;
-                bIsCoolDownInProgress = false;
-            }
-        }
-
-        for (const auto &spaceObject : mSpaceObjectsPool)
-        {
-            if (eSpaceObjectActivityState::ACTIVE == spaceObject->GetActivityState())
-            {
-                const auto &asteroidTranslation = spaceObject->GetRootComponent()->GetTranslation();
-                if (asteroidTranslation.x > 50.0f)
-                {
-                    spaceObject->TriggerDisabled();
-                }
-            }
-            else
-            {
-                spaceObject->TriggerSpawn(GenRandomPositionForSpaceObject());
-            }
-        }
-
         mNavigationController->Tick(deltaTime);
-    }
-
-    glm::vec3 CombatController::GenRandomPositionForSpaceObject() const
-    {
-        static constexpr float x_axisHalfWidth = 20.0f;
-        static constexpr float y_axisHalfHeight = 20.0f;
-        static constexpr float min_squared_radius = 150.0f;
-
-        glm::vec3 potentialPosition(0.0f);
-        do
-        {
-            const float x = Random::Float() * 50.0f + 100.0f;
-            const float z = (Random::Float() * 2.0f) - 1.0f;
-            potentialPosition = glm::vec3(-x, 0.0f, (30.0f + x_axisHalfWidth * z));
-        } while (std::any_of(mSpaceObjectsPool.begin(), mSpaceObjectsPool.end(), [=](const auto &existingSpaceObject)
-                             { return ((eSpaceObjectActivityState::ACTIVE == existingSpaceObject->GetActivityState()) && ((glm::length2(existingSpaceObject->GetWorldPosition() - potentialPosition) < min_squared_radius))); }));
-
-        return potentialPosition;
-    }
-
-    glm::vec3 CombatController::GenRandomPositionForSpaceship() const
-    {
-        static constexpr float x_axisHalfWidth = 20.0f;
-        static constexpr float z_axisHalfHeight = 20.0f;
-        static constexpr float min_squared_radius = 250.0f;
-
-        glm::vec3 potentialPosition(0.0f);
-        do
-        {
-            const float x = ((Random::Float() * 2.0f) - 1.0f) * x_axisHalfWidth;
-            const float z = Random::Float() * 25.0f + 75.0f;
-            potentialPosition = glm::vec3(x, 0.0f, z);
-        } while (std::any_of(mEnemies.begin(), mEnemies.end(), [=](const auto &existingEnemy)
-                             { return ((eSpaceshipActivityState::ACTIVE == existingEnemy->GetSpaceshipActivityState()) && ((glm::length2(existingEnemy->GetWorldPosition() - potentialPosition) < min_squared_radius))); }));
-
-        return potentialPosition;
-    }
-
-    void CombatController::CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp)
-    {
-        static constexpr auto freezingMissileCount = 1, bombMissileCount = 1, blackHoleMissileCount = 1, electroRayCount = 1;
-
-        ElectroRayFactory electroRayFactory;
-        for (size_t i = 0; i < electroRayCount; ++i)
-        {
-            const auto &a_electroRay = electroRayFactory.CreateMissile(sceneSp,
-                                                                       mPlayerShip,
-                                                                       glm::vec3(0),
-                                                                       glm::vec3(),
-                                                                       glm::vec3(1.0));
-
-            mMissilesPool.emplace_back(a_electroRay);
-        }
-
-        FreezingMissileFactory freezingMissileFactory;
-        for (size_t i = 0; i < freezingMissileCount; ++i)
-        {
-            const auto &a_missile = freezingMissileFactory.CreateMissile(sceneSp,
-                                                                         mPlayerShip,
-                                                                         glm::vec3(0),
-                                                                         glm::vec3(),
-                                                                         glm::vec3(1.0));
-
-            mMissilesPool.emplace_back(a_missile);
-        }
-
-        BombMissileFactory bombMissileFactory;
-        for (size_t i = 0; i < bombMissileCount; ++i)
-        {
-            const auto &a_missile = bombMissileFactory.CreateMissile(sceneSp,
-                                                                     mPlayerShip,
-                                                                     glm::vec3(0),
-                                                                     glm::vec3(),
-                                                                     glm::vec3(1.0));
-
-            mMissilesPool.emplace_back(a_missile);
-        }
-
-        BlackHoleMissileFactory blackHoleMissileFactory;
-        for (size_t i = 0; i < blackHoleMissileCount; ++i)
-        {
-            const auto &a_missile = blackHoleMissileFactory.CreateMissile(sceneSp,
-                                                                          mPlayerShip,
-                                                                          glm::vec3(0),
-                                                                          glm::vec3(),
-                                                                          glm::vec3(1.0));
-
-            mMissilesPool.emplace_back(a_missile);
-        }
-
-        std::unordered_map<eMissileType, size_t> availabeMissileTypes;
-        if (bombMissileCount)
-        {
-            availabeMissileTypes.emplace(eMissileType::BOMB, bombMissileCount);
-        }
-        if (freezingMissileCount)
-        {
-            availabeMissileTypes.emplace(eMissileType::FREEZING, freezingMissileCount);
-        }
-        if (electroRayCount)
-        {
-            availabeMissileTypes.emplace(eMissileType::ELECTRO_RAY, electroRayCount);
-        }
-        if (blackHoleMissileCount)
-        {
-            availabeMissileTypes.emplace(eMissileType::BLACK_HOLE, blackHoleMissileCount);
-        }
-        PlayerDataProvider::GetInstance()->SetAvailableMissileTypes(availabeMissileTypes);
-    }
-
-    void CombatController::CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp)
-    {
-        AsteroidFactory asteroidFactory;
-        static constexpr int s_asteroidsCount = 0;
-        for (size_t i = 0; i < s_asteroidsCount; ++i)
-        {
-            const auto &a_asteroid = asteroidFactory.CreateSpaceObject(sceneSp, glm::vec3(0),
-                                                                       glm::vec3(),
-                                                                       glm::vec3(40.0));
-            mSpaceObjectsPool.emplace_back(a_asteroid);
-        }
     }
 
     void CombatController::ShootBullet(const glm::vec3 &bulletStartPosition)
     {
         const auto selectedMissileType = PlayerDataProvider::GetInstance()->GetSelectedMissileType();
-        auto idleBulletIt = std::find_if(mMissilesPool.begin(), mMissilesPool.end(), [selectedMissileType](const auto &missile)
-                                         { return (eMissileActivityState::IDLE == missile->GetMissileActivityState() && selectedMissileType == missile->GetMissileType()); });
-
-        if (idleBulletIt == mMissilesPool.end())
-        {
-            LogInfo("CombatController::ShootBullet => Error - no idle bullets in the pool");
-            return;
-        }
-
-        (*idleBulletIt)->TriggerSpawn(bulletStartPosition, eDamageDealerType::MAIN_PLAYER);
+        const auto &missile = mCombatActorsPoolHandler->GetFreeMissile(eMissileType::BOMB);
+        missile->TriggerSpawn(bulletStartPosition, eDamageDealerType::MAIN_PLAYER, mPlayerShip);
     }
 
     void CombatController::FlushToPoolUsedBullets()
     {
-        for (auto &missile : mMissilesPool)
-        {
-            if (eMissileActivityState::ACTIVE == missile->GetMissileActivityState())
-            {
-                if (!missile->IsInsideLevel(mLevelBounds))
-                {
-                    missile->TriggerDisabled();
-                }
-            }
-        }
+        // for (auto &missile : mMissilesPool)
+        // {
+        //     if (eMissileActivityState::ACTIVE == missile->GetMissileActivityState())
+        //     {
+        //         if (!missile->IsInsideLevel(mLevelBounds))
+        //         {
+        //             missile->TriggerDisabled();
+        //         }
+        //     }
+        // }
     }
 
     void CombatController::UpdateMissilesData()
     {
-        std::unordered_map<eMissileType, size_t> missiles;
-        const auto &availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
-        for (const auto &avlMissileType : availableMissileTypes)
-        {
-            missiles[avlMissileType] = 0;
-        }
-        for (auto &missile : mMissilesPool)
-        {
-            if (eMissileActivityState::IDLE == missile->GetMissileActivityState())
-            {
-                missiles[missile->GetMissileType()] = missiles.at(missile->GetMissileType()) + 1;
-            }
-        }
-        PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
-    }
-
-    std::shared_ptr<MissileActor> CombatController::GetMissileOwnerActorById(const int32_t actorId) const
-    {
-        const auto foundIt = std::find_if(mMissilesPool.cbegin(),
-                                          mMissilesPool.cend(),
-                                          [=](const auto &missile)
-                                          {
-                                              return missile->HasEngineObjectIdInHierarchy(actorId);
-                                          });
-        return (*foundIt);
-    }
-
-    std::shared_ptr<SpaceshipActor> CombatController::GetEnemyShipOwnerActorById(const int32_t actorId) const
-    {
-        const auto foundIt = std::find_if(mEnemies.cbegin(), mEnemies.cend(), [actorId](const auto &enemyActor)
-                                          { return enemyActor->HasEngineObjectIdInHierarchy(actorId); });
-        return (*foundIt);
-    }
-
-    std::shared_ptr<SpaceObjectActor> CombatController::GetSpaceObjectOwnerActorById(const int32_t actorId) const
-    {
-        const auto foundIt = std::find_if(mSpaceObjectsPool.cbegin(),
-                                          mSpaceObjectsPool.cend(),
-                                          [=](const auto &spaceObject)
-                                          {
-                                              return spaceObject->HasEngineObjectIdInHierarchy(actorId);
-                                          });
-        return (*foundIt);
-    }
-
-    eGameObjectsType CombatController::GetGameObjectTypeByActorId(const int32_t actorId) const
-    {
-        eGameObjectsType result{eGameObjectsType::UNDEFINED};
-
-        result = std::any_of(mEnemies.begin(), mEnemies.end(), [actorId](const auto &spaceshipActor)
-                             { return spaceshipActor->HasEngineObjectIdInHierarchy(actorId); })
-                     ? eGameObjectsType::SPACESHIP
-                     : eGameObjectsType::UNDEFINED;
-
-        if (eGameObjectsType::UNDEFINED == result)
-        {
-            result = std::any_of(mMissilesPool.begin(), mMissilesPool.end(), [actorId](const auto &missileActor)
-                                 { return missileActor->HasEngineObjectIdInHierarchy(actorId); })
-                         ? eGameObjectsType::MISSILE
-                         : eGameObjectsType::UNDEFINED;
-        }
-
-        if (eGameObjectsType::UNDEFINED == result)
-        {
-            result = std::any_of(mSpaceObjectsPool.begin(), mSpaceObjectsPool.end(), [actorId](const auto &spaceObjectActor)
-                                 { return spaceObjectActor->HasEngineObjectIdInHierarchy(actorId); })
-                         ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
-                         : eGameObjectsType::UNDEFINED;
-        }
-
-        assert(eGameObjectsType::UNDEFINED != result);
-
-        return result;
-    }
-
-    eGameObjectsCollisionType CombatController::GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const
-    {
-        if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::MISSILE == secondObject) ||
-            (eGameObjectsType::MISSILE == firstObject && eGameObjectsType::SPACESHIP == secondObject))
-            return eGameObjectsCollisionType::SPACESHIP_WITH_MISSILE;
-
-        if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject) ||
-            (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::SPACESHIP == secondObject))
-            return eGameObjectsCollisionType::SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT;
-
-        if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject) ||
-            (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::MISSILE == secondObject))
-            return eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT;
-
-        return eGameObjectsCollisionType::UNDEFINED;
+        // std::unordered_map<eMissileType, size_t> missiles;
+        // const auto &availableMissileTypes = PlayerDataProvider::GetInstance()->GetAvailableMissileTypes();
+        // for (const auto &avlMissileType : availableMissileTypes)
+        // {
+        //     missiles[avlMissileType] = 0;
+        // }
+        // for (auto &missile : mMissilesPool)
+        // {
+        //     if (eMissileActivityState::IDLE == missile->GetMissileActivityState())
+        //     {
+        //         missiles[missile->GetMissileType()] = missiles.at(missile->GetMissileType()) + 1;
+        //     }
+        // }
+        // PlayerDataProvider::GetInstance()->SetMissilesCount(missiles);
     }
 
     void CombatController::CleanUp()

@@ -60,6 +60,8 @@ namespace EngineCore
 
       virtual void OnPostInitialized();
 
+      virtual void OnPostOwnerInitialized();
+
       virtual void PostLevelInit();
 
       virtual void CollectDataForSerialization(SerializeDataContainer &dataContainer) = 0;

@@ -1,0 +1,211 @@
+#include "CombatActorsPoolHandler.h"
+#include "Core/GameCore/Scene.h"
+#include "Core/GameCore/Actor.h"
+#include "Core/CommonCore/Assertion.h"
+#include "Implementation/Actors/ElectroRayChainActor.h"
+#include "Implementation/Actors/MissileActor.h"
+#include "Implementation/Actors/SpaceObjectActor.h"
+#include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/Actors/SpaceshipActor.h"
+#include "Implementation/Factories/SpaceStationFactory.h"
+#include "Implementation/Factories/AsteroidFactory.h"
+#include "Implementation/Factories/ElectroRayChainFactory.h"
+#include "Implementation/Factories/WeakSpaceShipFactory.h"
+#include "Implementation/Factories/BombMissileFactory.h"
+#include "Implementation/Factories/FreezingMissileFactory.h"
+#include "Implementation/Factories/BlackHoleMissileFactory.h"
+#include "Implementation/Factories/ElectroRayFactory.h"
+
+namespace Game
+{
+    CombatActorsPoolHandler::CombatActorsPoolHandler(const std::weak_ptr<Scene> &sceneWp)
+        : mSceneWp(sceneWp)
+    {
+    }
+
+    std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::GetFreeElectroChainActor()
+    {
+        const auto freeChainActorIt = std::find_if(mElectroRayChainActorPool.cbegin(), mElectroRayChainActorPool.cend(), [](const auto &actorInPool)
+                                                   { return eMissileActivityState::IDLE == actorInPool->GetMissileActivityState(); });
+        if (freeChainActorIt != mElectroRayChainActorPool.cend())
+        {
+            return (*freeChainActorIt);
+        }
+
+        return SpawnElectroRayChainActor();
+    }
+
+    std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::CreateSpaceStationActor(const std::string &towerName,
+                                                                                        const glm::vec3 &translation,
+                                                                                        const glm::vec3 &rotation,
+                                                                                        const glm::vec3 &scale)
+    {
+        const auto sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const SpaceStationFactory spaceStationFactory;
+        return mSpaceStations.emplace_back(spaceStationFactory.CreateSpaceStation(sceneSp, towerName, translation, rotation, scale));
+    }
+
+    std::shared_ptr<ElectroRayChainActor> CombatActorsPoolHandler::SpawnElectroRayChainActor()
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+
+        ElectroRayChainFactory factory;
+        const auto &spawnedActor = mElectroRayChainActorPool.emplace_back(std::static_pointer_cast<ElectroRayChainActor>(factory.CreateMissile(
+            sceneSp,
+            glm::vec3(),
+            glm::vec3(),
+            glm::vec3(1))));
+        spawnedActor->TriggerDisabled();
+        return spawnedActor;
+    }
+
+    void CombatActorsPoolHandler::SpawnEnemySpaceships(const int32_t count)
+    {
+        for (size_t i = 0; i < count; ++i)
+        {
+            SpawnSpaceshipActor()->SetIsEnabled(false);
+        }
+    }
+
+    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::SpawnSpaceshipActor()
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        constexpr float c_spaceshipSize = 5.0f;
+        WeakSpaceShipFactory spaceShipFactory;
+
+        return mEnemySpaceships.emplace_back(spaceShipFactory.CreateSpaceShip(sceneSp,
+                                                                              glm::vec3(),
+                                                                              glm::vec3(),
+                                                                              glm::vec3(c_spaceshipSize)));
+    }
+
+    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetFreeSpaceshipActor()
+    {
+        const auto freeShipIt = std::find_if(mEnemySpaceships.cbegin(),
+                                             mEnemySpaceships.cend(),
+                                             [](const auto &spaceship)
+                                             { return spaceship->GetSpaceshipActivityState() == eSpaceshipActivityState::IDLE; });
+        return freeShipIt == mEnemySpaceships.cend() ? SpawnSpaceshipActor() : *freeShipIt;
+    }
+
+    void CombatActorsPoolHandler::SpawnMissiles(const eMissileType missileType, const int32_t count)
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const auto &missileFactory = GetMissileFactoryByType(missileType);
+        assert(missileFactory);
+
+        for (size_t i = 0; i < count; ++i)
+        {
+            const auto &missile = mMissilesPool.emplace_back(missileFactory->CreateMissile(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+            missile->SetIsEnabled(false);
+        }
+    }
+
+    void CombatActorsPoolHandler::SpawnAsteroids(const int32_t count)
+    {
+        const auto &sceneSp = mSceneWp.lock();
+        assert(sceneSp);
+        const auto &asteroidsFactory = std::make_unique<AsteroidFactory>();
+        const auto &asteroid = mSpaceObjectsPool.emplace_back(asteroidsFactory->CreateSpaceObject(sceneSp, glm::vec3(), glm::vec3(), glm::vec3(1.0f)));
+        asteroid->SetIsEnabled(false);
+    }
+
+    std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetFreeMissile(const eMissileType missileType) const
+    {
+        const auto idleBulletIt = std::find_if(mMissilesPool.cbegin(), mMissilesPool.cend(), [missileType](const auto &missile)
+                                               { return (eMissileActivityState::IDLE == missile->GetMissileActivityState() && missileType == missile->GetMissileType()); });
+
+        return idleBulletIt == mMissilesPool.cend() ? nullptr : *idleBulletIt;
+    }
+
+    std::unique_ptr<IMissileFactory> CombatActorsPoolHandler::GetMissileFactoryByType(const eMissileType missileType) const
+    {
+        switch (missileType)
+        {
+        case eMissileType::BOMB:
+            return std::make_unique<BombMissileFactory>();
+        case eMissileType::FREEZING:
+            return std::make_unique<FreezingMissileFactory>();
+        case eMissileType::ELECTRO_RAY:
+            return std::make_unique<ElectroRayFactory>();
+        case eMissileType::BLACK_HOLE:
+            return std::make_unique<BlackHoleMissileFactory>();
+        default:
+            return nullptr;
+        }
+    }
+
+    std::shared_ptr<MissileActor> CombatActorsPoolHandler::GetMissileOwnerActorById(const int32_t actorId) const
+    {
+        const auto foundIt = std::find_if(mMissilesPool.cbegin(),
+                                          mMissilesPool.cend(),
+                                          [=](const auto &missile)
+                                          {
+                                              return missile->HasEngineObjectIdInHierarchy(actorId);
+                                          });
+        return foundIt != mMissilesPool.cend() ? (*foundIt) : nullptr;
+    }
+
+    std::shared_ptr<SpaceshipActor> CombatActorsPoolHandler::GetEnemyShipOwnerActorById(const int32_t actorId) const
+    {
+        const auto foundIt = std::find_if(mEnemySpaceships.cbegin(), mEnemySpaceships.cend(), [actorId](const auto &enemyActor)
+                                          { return enemyActor->HasEngineObjectIdInHierarchy(actorId); });
+        return foundIt != mEnemySpaceships.cend() ? (*foundIt) : nullptr;
+    }
+
+    std::shared_ptr<SpaceObjectActor> CombatActorsPoolHandler::GetSpaceObjectOwnerActorById(const int32_t actorId) const
+    {
+        const auto foundIt = std::find_if(mSpaceObjectsPool.cbegin(),
+                                          mSpaceObjectsPool.cend(),
+                                          [=](const auto &spaceObject)
+                                          {
+                                              return spaceObject->HasEngineObjectIdInHierarchy(actorId);
+                                          });
+        return foundIt != mSpaceObjectsPool.cend() ? (*foundIt) : nullptr;
+    }
+
+    std::shared_ptr<SpaceStationActor> CombatActorsPoolHandler::GetSpaceStationOwnerActorById(const int32_t actorId) const
+    {
+        const auto foundIt = std::find_if(mSpaceStations.cbegin(),
+                                          mSpaceStations.cend(),
+                                          [=](const auto &spaceStation)
+                                          {
+                                              return spaceStation->HasEngineObjectIdInHierarchy(actorId);
+                                          });
+        return foundIt != mSpaceStations.cend() ? (*foundIt) : nullptr;
+    }
+
+    eGameObjectsType CombatActorsPoolHandler::GetGameObjectTypeByActorId(const int32_t actorId) const
+    {
+        const auto result = GetEnemyShipOwnerActorById(actorId)      ? eGameObjectsType::SPACESHIP
+                            : GetMissileOwnerActorById(actorId)      ? eGameObjectsType::MISSILE
+                            : GetSpaceObjectOwnerActorById(actorId)  ? eGameObjectsType::NEUTRAL_SPACE_OBJECT
+                            : GetSpaceStationOwnerActorById(actorId) ? eGameObjectsType::SPACE_STATION
+                                                                     : eGameObjectsType::UNDEFINED;
+
+        assert(eGameObjectsType::UNDEFINED != result);
+
+        return result;
+    }
+
+    eGameObjectsCollisionType CombatActorsPoolHandler::GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const
+    {
+        if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::MISSILE == secondObject) ||
+            (eGameObjectsType::MISSILE == firstObject && eGameObjectsType::SPACESHIP == secondObject))
+            return eGameObjectsCollisionType::SPACESHIP_WITH_MISSILE;
+
+        if ((eGameObjectsType::SPACESHIP == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject) ||
+            (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::SPACESHIP == secondObject))
+            return eGameObjectsCollisionType::SPACESHIP_WITH_NEUTRAL_SPACE_OBJECT;
+
+        if ((eGameObjectsType::MISSILE == firstObject && eGameObjectsType::NEUTRAL_SPACE_OBJECT == secondObject) ||
+            (eGameObjectsType::NEUTRAL_SPACE_OBJECT == firstObject && eGameObjectsType::MISSILE == secondObject))
+            return eGameObjectsCollisionType::MISSILE_WITH_NEUTRAL_SPACE_OBJECT;
+
+        return eGameObjectsCollisionType::UNDEFINED;
+    }
+}

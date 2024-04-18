@@ -13,8 +13,10 @@
 #include "Core/GameCore/Event/PhysicsCollisionEvent.h"
 #include "Implementation/GameObjectsType.h"
 #include "Implementation/GameObjectsCollisionType.h"
-#include "Implementation/Pools/ElectroRayChainActorPool.h"
 #include "Implementation/Controllers/NavigationController.h"
+#include "Implementation/Levels/LevelData.h"
+#include "Implementation/Actors/SpaceStationActor.h"
+#include "Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h"
 
 #include <memory>
 #include <utility>
@@ -42,23 +44,12 @@ namespace Game
 
         std::shared_ptr<Actor> mPlayerShip;
 
-        std::vector<std::shared_ptr<Actor>> mSpaceTowers;
-
-        std::vector<std::shared_ptr<SpaceshipActor>> mEnemies;
-
-        std::vector<std::shared_ptr<MissileActor>> mMissilesPool;
-
-        std::vector<std::shared_ptr<SpaceObjectActor>> mSpaceObjectsPool;
-
-        std::shared_ptr<ElectroRayChainActorPool> mElectroRayChainActorPool; // todo: rework with pointer to generic interface
-
         std::shared_ptr<NavigationController> mNavigationController;
 
-        float mCoolDownTime = 0.2f;
-
-        bool bIsCoolDownInProgress = false;
+        std::shared_ptr<CombatActorsPoolHandler> mCombatActorsPoolHandler;
 
         BoundingBox3D mLevelBounds;
+
 
     public:
         CombatController(const std::weak_ptr<Scene> &scene);
@@ -79,6 +70,8 @@ namespace Game
 
         void CleanUp() override;
 
+        void InitFromLevelData(const LevelData& levelData);
+
     protected:
         void ProcessEvent(const typename MainPlayerActionEvent::EventData_t &data) override;
 
@@ -89,31 +82,10 @@ namespace Game
         void ProcessEvent(const typename SphereContactCollisionEvent::EventData_t &data) override;
 
     private:
-        void CreateWeaponBulletPool(const std::shared_ptr<Scene> &sceneSp);
-
-        void CreateAsteroidsPool(const std::shared_ptr<Scene> &sceneSp);
-
         void ShootBullet(const glm::vec3 &bulletStartPosition);
 
         void FlushToPoolUsedBullets();
 
         void UpdateMissilesData();
-
-        std::shared_ptr<MissileActor> GetMissileOwnerActorById(const int32_t actorId) const;
-
-        std::shared_ptr<SpaceshipActor> GetEnemyShipOwnerActorById(const int32_t actorId) const;
-
-        std::shared_ptr<SpaceObjectActor> GetSpaceObjectOwnerActorById(const int32_t actorId) const;
-
-        eGameObjectsType GetGameObjectTypeByActorId(const int32_t actorId) const;
-
-        eGameObjectsCollisionType GetGameObjectsCollisionType(const eGameObjectsType firstObject, const eGameObjectsType secondObject) const;
-
-        glm::vec3 GenRandomPositionForSpaceship() const;
-
-        glm::vec3 GenRandomPositionForSpaceObject() const;
-
-        // Todo: need to be reworked later
-        void TempInitLevel();
     };
 }

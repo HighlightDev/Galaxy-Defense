@@ -14,7 +14,7 @@ using namespace EngineCore;
 namespace Game
 {
     class MissileExplosionVisitorBase;
-    
+
     enum class eMissileActivityState
     {
         IDLE,
@@ -38,7 +38,9 @@ namespace Game
 
         virtual bool IsInsideLevel(const BoundingBox3D &boundingBox) const;
 
-        virtual void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType);
+        virtual void TriggerSpawn(const glm::vec3 &position,
+                                  const eDamageDealerType ownerType,
+                                  const std::shared_ptr<Actor> &spawnerActor);
 
         virtual void TriggerExplosion();
 

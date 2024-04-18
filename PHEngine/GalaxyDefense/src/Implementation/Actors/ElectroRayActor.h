@@ -39,9 +39,9 @@ namespace Game
 
         std::weak_ptr<::EngineCore::Actor> mCollidedSpaceship;
         bool bElectroLineCollided;
-        
+
         std::shared_ptr<EngineObjectProperty<float>> mOpacity;
-        
+
     public:
         ElectroRayActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
@@ -49,7 +49,7 @@ namespace Game
 
         void Tick(const float deltaTime) override;
 
-        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
+        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor) override;
 
         void TriggerExplosion() override;
 
@@ -59,8 +59,6 @@ namespace Game
 
         void SetLineComponent(const std::shared_ptr<::EngineCore::RuntimeGeneratedLineComponent> &lineComponent);
 
-        void SetSpawnerSpaceship(const std::weak_ptr<::EngineCore::Actor> &spawnerSpaceship);
-
         void SetElectroLineOriginSpeed(const float speed);
 
         void SetElectroLineDestinationSpeed(const float speed);
@@ -68,7 +66,6 @@ namespace Game
         std::shared_ptr<MissileExplosionVisitorBase> CreateMissileExplosionVisitor() override;
 
     private:
-
         void Initialize();
 
         void OnElectroLineOriginStartMovementDelayTimerTimeout();

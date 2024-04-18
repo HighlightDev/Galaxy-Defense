@@ -42,7 +42,6 @@ namespace Game
 
     std::shared_ptr<MissileActor>
     BlackHoleMissileFactory::CreateMissile(const std::shared_ptr<::EngineCore::Scene> &scene,
-                                           const std::shared_ptr<::EngineCore::Actor> &spawnerActor,
                                            const glm::vec3 &translation,
                                            const glm::vec3 &rotation,
                                            const glm::vec3 &scale)
@@ -111,8 +110,8 @@ namespace Game
 
         {
             a_missileExplosionSecondPhase = std::make_shared<MissileActor>("a_missileExplosionSecondPhase" + missileIndexStr,
-                                                                    std::make_shared<EngineCore::SceneComponent>("c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr,
-                                                                                                                 glm::vec3(), glm::vec3(), glm::vec3(1)));
+                                                                           std::make_shared<EngineCore::SceneComponent>("c_missileExplosionSecondPhase_rootComponent_" + missileIndexStr,
+                                                                                                                        glm::vec3(), glm::vec3(), glm::vec3(1)));
 
             MaterialParser materialParser;
 

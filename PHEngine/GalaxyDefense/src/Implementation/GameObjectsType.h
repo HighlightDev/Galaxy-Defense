@@ -7,6 +7,7 @@ namespace Game
         UNDEFINED,
         SPACESHIP,
         MISSILE,
-        NEUTRAL_SPACE_OBJECT
+        NEUTRAL_SPACE_OBJECT,
+        SPACE_STATION
     };
 }

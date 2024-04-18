@@ -1,4 +1,4 @@
-#include "PrologueLevel.h"
+#include "CombatLevel.h"
 #include "Core/GameCore/ScriptingCore/LuaScriptExecutors/LuaEngineScriptExecutor.h"
 #include "Core/GameCore/ThirdPersonCamera.h"
 #include "Core/GameCore/Components/InputComponent.h"
@@ -32,11 +32,14 @@
 #include "Implementation/Events/SphereContactCollisionEvent.h"
 #include "Implementation/Events/MainPlayerStatusChangedEvent.h"
 #include "Implementation/Events/ChangeGameModeEvent.h"
+#include "Implementation/Levels/LevelSerializationHelper.h"
 
 #include "Core/GameCore/Components/ComponentData/BillboardComponentData.h"
 #include "Core/GameCore/Components/PrimitiveComponents/FullscreenBillboardComponent.h"
 #include "Core/GameCore/Components/ComponentCreators/BillboardComponentCreator.h"
 #include "Core/GameCore/BoundingBox3D.h"
+#include "Core/IoCore/FileFacade.h"
+#include "Core/CommonCore/JsonHelper.h"
 
 #include "Core/GameCore/GUI/UiElements/Transform2D/BoundingBox2D.h"
 
@@ -54,18 +57,18 @@ using namespace EngineCore::GUI;
 namespace Game
 {
 
-   PrologueLevel::PrologueLevel()
+   CombatLevel::CombatLevel()
        : LevelBase("FirstLevel")
    {
       Event::GameThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::MainPlayerActionEvent, Event::RayCollisionEvent, Event::SphereContactCollisionEvent, Event::MainPlayerStatusChangedEvent, Event::ChangeGameModeEvent>();
       Event::LuaThreadEventDispatcher::GetInstance()->RegisterEventsByType<Event::LuaMainPlayerStatusChangedEvent>();
    }
 
-   PrologueLevel::~PrologueLevel()
+   CombatLevel::~CombatLevel()
    {
    }
 
-   void PrologueLevel::RunLuaBuildLevelScript()
+   void CombatLevel::RunLuaBuildLevelScript()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
@@ -77,7 +80,7 @@ namespace Game
       mLuaLevelBuilder.StopScript();
    }
 
-   void PrologueLevel::PreLevelInit()
+   void CombatLevel::PreLevelInit()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
@@ -90,10 +93,26 @@ namespace Game
       mGameFlowController->OnPreLevelInit();
    }
 
-   void PrologueLevel::CreateScene()
+   LevelData CombatLevel::LoadLevelDataFromFile(const std::string &levelName) const
+   {
+      const auto &sceneSp = mSceneWp.lock();
+      assert(sceneSp);
+      FileFacade fileReader;
+      fileReader.OpenAndReadFile(levelName);
+      const auto &lvlJsonStr = fileReader.GetFileSrc().front();
+
+      LevelSerializationHelper lvlSerializationHelper;
+      const auto lvlData = lvlSerializationHelper.RestoreLevelFromJsonString(lvlJsonStr);
+      assert(lvlData.isDataValid());
+      return lvlData;
+   }
+
+   void CombatLevel::CreateScene()
    {
       const auto sceneSp = mSceneWp.lock();
       assert(sceneSp);
+
+      const auto levelData = LoadLevelDataFromFile("TestLevelName");
 
       const auto &a_sceneCenterActorDummy = sceneSp->GetActorByName("SceneCenterActorDummy");
       assert(a_sceneCenterActorDummy);
@@ -109,7 +128,8 @@ namespace Game
                                                                     0.0f,
                                                                     150.0f);
 
-      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(), glm::vec3(100.0f, 5.0f, 100.0f)));
+      spaceCamera->SetLevelBoundaries(BoundingBox3D(glm::vec3(levelData.LevelBoundaryOrigin.x, 0, levelData.LevelBoundaryOrigin.y),
+                                                    glm::vec3(levelData.LevelBoundaryExtent.x, 5.0f, levelData.LevelBoundaryExtent.y)));
       spaceCamera->SetMaxDistanceFromTargetToCamera(150.0f);
       spaceCamera->SetMinDistanceFromTargetToCamera(20.0f);
       spaceCamera->SetDistanceFromTargetToCamera(150.0f);
@@ -136,11 +156,12 @@ namespace Game
 
       mGameFlowController->SetTempRootComponent(a_station->GetRootComponent());
       mGameFlowController->OnLevelInit();
+      mCombatController->InitFromLevelData(levelData);
       mCombatController->OnLevelInit();
       mUiController->OnLevelInit();
    }
 
-   void PrologueLevel::PostLevelInit()
+   void CombatLevel::PostLevelInit()
    {
       mCombatController->OnPostLevelInit();
       mGameFlowController->OnPostLevelInit();
@@ -148,7 +169,7 @@ namespace Game
       Base::PostLevelInit();
    }
 
-   void PrologueLevel::PostPlayLevelFinished()
+   void CombatLevel::PostPlayLevelFinished()
    {
       Base::PostPlayLevelFinished();
       mCombatController->PostPlayLevelFinished();
@@ -156,7 +177,7 @@ namespace Game
       mUiController->PostPlayLevelFinished();
    }
 
-   void PrologueLevel::InitLevel()
+   void CombatLevel::InitLevel()
    {
       Base::InitLevel();
 #if 0
@@ -167,7 +188,7 @@ namespace Game
       CreateScene();
    }
 
-   void PrologueLevel::UnloadLevel()
+   void CombatLevel::UnloadLevel()
    {
       if (mUiController)
       {
@@ -188,7 +209,7 @@ namespace Game
       }
    }
 
-   void PrologueLevel::Tick(const float deltaTime)
+   void CombatLevel::Tick(const float deltaTime)
    {
       if (mUiController)
       {
@@ -206,7 +227,7 @@ namespace Game
       }
    }
 
-   void PrologueLevel::UnpausableTick(const float deltaTime)
+   void CombatLevel::UnpausableTick(const float deltaTime)
    {
       if (mUiController)
       {

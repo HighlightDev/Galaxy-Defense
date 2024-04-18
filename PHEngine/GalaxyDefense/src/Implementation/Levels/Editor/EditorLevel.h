@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Implementation/Levels/LevelBase.h"
-#include "Implementation/LevelEditor/LevelEditorController.h"
+#include "Implementation/Levels/Editor/Controllers/LevelEditorController.h"
 #include "Implementation/Levels/Editor/Controllers/LevelEditorUiController.h"
 
 using namespace EngineCore;

@@ -20,7 +20,7 @@ namespace Game
     public:
         BombMissileActor(const std::string &gameObjectName, const std::shared_ptr<EngineCore::SceneComponent> &rootComponent);
 
-        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType) override;
+        void TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor) override;
 
         void TriggerExplosion() override;
 

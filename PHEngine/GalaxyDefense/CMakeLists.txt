@@ -5,12 +5,17 @@ set(
 	src/Implementation/Levels/LevelBase.h
 	src/Implementation/Levels/LevelSerializationHelper.h
 	src/Implementation/Levels/LevelData.h
-	src/Implementation/Levels/Prologue/PrologueLevel.h
-	src/Implementation/Levels/Prologue/Controllers/UiController.h
+	src/Implementation/Levels/CombatLevel/CombatLevel.h
+	src/Implementation/Levels/CombatLevel/Controllers/UiController.h
+	src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.h
 	src/Implementation/Levels/MainMenu/MainMenuLevel.h
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.h
 	src/Implementation/Levels/Editor/EditorLevel.h
 	src/Implementation/Levels/Editor/Controllers/LevelEditorUiController.h
+	src/Implementation/Levels/Editor/Controllers/LevelEditorController.h
+	src/Implementation/Levels/Editor/LevelPlacementGrid.h
+	src/Implementation/Levels/Editor/RoutesHandler.h
+	src/Implementation/Levels/Editor/TowersHandler.h
 	src/Implementation/GalaxySceneCamera.h
 	src/Implementation/AiBrain.h
 	src/Implementation/GameObjectsType.h
@@ -46,6 +51,8 @@ set(
 	src/Implementation/Factories/BackgroundPlanetsFactory.h
 	src/Implementation/Factories/ElectroRayFactory.h
 	src/Implementation/Factories/ElectroRayChainFactory.h
+	src/Implementation/Factories/ISpaceStationFactory.h
+	src/Implementation/Factories/SpaceStationFactory.h
 	src/Implementation/Modifiers/IModifiable.h
 	src/Implementation/Modifiers/GravityModifier.h
 	src/Implementation/Modifiers/FreezingModifier.h
@@ -61,13 +68,13 @@ set(
 	src/Implementation/Actors/SpaceObjectActor.h
 	src/Implementation/Actors/AsteroidActor.h
 	src/Implementation/Actors/ElectroRayActor.h
+	src/Implementation/Actors/SpaceStationActor.h
 	src/Implementation/Actors/BackgroundSpaceObjectActor.h
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.h
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.h
 	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.h
-	src/Implementation/Pools/ElectroRayChainActorPool.h
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.h
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.h
 	src/Implementation/DataProviders/PlayerDataProvider.h
@@ -80,10 +87,6 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.h
 	src/Implementation/Navigation/PathSegment.h
 	src/Implementation/Navigation/Path.h
-	src/Implementation/LevelEditor/LevelEditorController.h
-	src/Implementation/LevelEditor/LevelPlacementGrid.h
-	src/Implementation/LevelEditor/RoutesHandler.h
-	src/Implementation/LevelEditor/TowersHandler.h
 )
 
 set(
@@ -93,12 +96,17 @@ set(
 	src/Implementation/Levels/LevelBase.cpp
 	src/Implementation/Levels/LevelSerializationHelper.cpp
 	src/Implementation/Levels/LevelData.cpp
-	src/Implementation/Levels/Prologue/PrologueLevel.cpp
-	src/Implementation/Levels/Prologue/Controllers/UiController.cpp
+	src/Implementation/Levels/CombatLevel/CombatLevel.cpp
+	src/Implementation/Levels/CombatLevel/Controllers/UiController.cpp
+	src/Implementation/Levels/CombatLevel/CombatActorsPoolHandler.cpp
 	src/Implementation/Levels/MainMenu/MainMenuLevel.cpp
 	src/Implementation/Levels/MainMenu/Controllers/MainMenuLevelUiController.cpp
 	src/Implementation/Levels/Editor/EditorLevel.cpp
 	src/Implementation/Levels/Editor/Controllers/LevelEditorUiController.cpp
+	src/Implementation/Levels/Editor/Controllers/LevelEditorController.cpp
+	src/Implementation/Levels/Editor/LevelPlacementGrid.cpp
+	src/Implementation/Levels/Editor/RoutesHandler.cpp
+	src/Implementation/Levels/Editor/TowersHandler.cpp
 	src/Implementation/GalaxySceneCamera.cpp
 	src/Implementation/Controllers/SpaceShipPlayerController.cpp
 	src/Implementation/Controllers/CombatController.cpp
@@ -121,6 +129,7 @@ set(
 	src/Implementation/Factories/BackgroundPlanetsFactory.cpp
 	src/Implementation/Factories/ElectroRayFactory.cpp
 	src/Implementation/Factories/ElectroRayChainFactory.cpp
+	src/Implementation/Factories/SpaceStationFactory.cpp
 	src/Implementation/Modifiers/GravityModifier.cpp
 	src/Implementation/Modifiers/FreezingModifier.cpp
 	src/Implementation/Modifiers/ElectroRayChainModifier.cpp
@@ -135,13 +144,13 @@ set(
 	src/Implementation/Actors/SpaceObjectActor.cpp
 	src/Implementation/Actors/AsteroidActor.cpp
 	src/Implementation/Actors/ElectroRayActor.cpp
+	src/Implementation/Actors/SpaceStationActor.cpp
 	src/Implementation/Actors/BackgroundSpaceObjectActor.cpp
 	src/Implementation/MissileExplosionVisitors/MissileExplosionVisitorBase.cpp
 	src/Implementation/MissileExplosionVisitors/BlackHoleExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/BombExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/FreezingExplosionVisitor.cpp
 	src/Implementation/MissileExplosionVisitors/ElectroRayExplosionVisitor.cpp
-	src/Implementation/Pools/ElectroRayChainActorPool.cpp
 	src/Implementation/LuaExecutors/LuaUiControllerExecutor.cpp
 	src/Implementation/LuaFunctions/LuaGameEventsFunctions.cpp
 	src/Implementation/DataProviders/PlayerDataProvider.cpp
@@ -153,10 +162,6 @@ set(
 	src/Implementation/Navigation/NavigationPathBuilder.cpp
 	src/Implementation/Navigation/PathSegment.cpp
 	src/Implementation/Navigation/Path.cpp
-	src/Implementation/LevelEditor/LevelEditorController.cpp
-	src/Implementation/LevelEditor/LevelPlacementGrid.cpp
-	src/Implementation/LevelEditor/RoutesHandler.cpp
-	src/Implementation/LevelEditor/TowersHandler.cpp
     main.cpp
 )
 

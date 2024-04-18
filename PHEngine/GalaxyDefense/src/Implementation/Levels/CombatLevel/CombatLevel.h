@@ -2,7 +2,8 @@
 
 #include "Implementation/Levels/LevelBase.h"
 #include "Implementation/Controllers/GameFlowController.h"
-#include "Implementation/Levels/Prologue/Controllers/UiController.h"
+#include "Implementation/Levels/CombatLevel/Controllers/UiController.h"
+#include "Implementation/Levels/LevelData.h"
 
 using namespace EngineCore;
 
@@ -10,7 +11,7 @@ namespace Game
 {
    class CombatController;
 
-   class PrologueLevel : public LevelBase
+   class CombatLevel : public LevelBase
    {
       using Base = LevelBase;
 
@@ -21,9 +22,9 @@ namespace Game
       std::unique_ptr<UiController> mUiController;
 
    public:
-      PrologueLevel();
+      CombatLevel();
 
-      ~PrologueLevel() override;
+      ~CombatLevel() override;
 
       void InitLevel() override;
 
@@ -43,6 +44,8 @@ namespace Game
 
    private:
       void CreateScene();
+
+      LevelData LoadLevelDataFromFile(const std::string& levelName) const;
    };
 
 }

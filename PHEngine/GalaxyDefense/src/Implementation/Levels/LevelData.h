@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <tuple>
+#include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 
 namespace Game
@@ -12,10 +13,17 @@ namespace Game
     {
         std::string LevelName;
 
-        std::unordered_map<std::string, std::tuple<glm::vec3/*position*/, glm::vec3/*scale*/>> TowersData;
+        glm::vec2 LevelBoundaryExtent;
 
-        std::unordered_map<std::string, std::vector<std::tuple<glm::vec3/*start*/, glm::vec3/*control point*/, glm::vec3/*end*/>>> RoutesData;
+        glm::vec2 LevelBoundaryOrigin;
+
+        std::unordered_map<std::string, std::tuple<glm::vec3 /*position*/, glm::vec3 /*scale*/>> TowersData;
+
+        std::unordered_map<std::string, std::vector<std::tuple<glm::vec3 /*start*/, glm::vec3 /*control point*/, glm::vec3 /*end*/>>> RoutesData;
 
         bool isDataValid() const;
+
+    private:
+        bool IsLevelBoundariesValid() const;
     };
 }

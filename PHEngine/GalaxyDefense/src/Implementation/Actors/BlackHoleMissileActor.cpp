@@ -65,7 +65,9 @@ namespace Game
         }
         else if ("s_FirstPhaseExplosion" == stateName)
         {
-            mExplosionSecondPhaseActor->TriggerSpawn(mCombatActivePhaseActor->GetRootComponent()->GetTranslation(), mDamageDealerType);
+            mExplosionSecondPhaseActor->TriggerSpawn(mCombatActivePhaseActor->GetRootComponent()->GetTranslation(),
+                                                     mDamageDealerType,
+                                                     shared_from_this());
             const auto c_particle = mExplosionSecondPhaseActor->GetComponentsByType<ParticleSystemComponent>().back();
             c_particle->EmitParticles(100);
             TriggerLifecycle_SecondPhaseExplosion();
@@ -114,7 +116,7 @@ namespace Game
         mBlackMissileTweener->ChangeState("s_BlackHoleSuckIn");
     }
 
-    void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType)
+    void BlackHoleMissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType ownerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         mDamageDealerType = ownerType;
         mActivityState = eMissileActivityState::ACTIVE;

@@ -137,6 +137,11 @@ void window_size_changed_callback(GLFWwindow *window, int width, int height)
   DisplayDeviceDataProvider::GetInstance()->SetWindowSize(width, height);
 }
 
+void window_position_changed_callback(GLFWwindow *window, int xpos, int ypos)
+{
+  DisplayDeviceDataProvider::GetInstance()->SetWindowPos(xpos, ypos);
+}
+
 int32_t main(int32_t argc, char **argv)
 {
   ThreadHelper::GetInstance()->RegisterThread("Render");
@@ -153,12 +158,13 @@ int32_t main(int32_t argc, char **argv)
 
   // Create a windowed mode window and its OpenGL context
   get_screen_rezolution();
-  // auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
-  // auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
+  const auto width = DisplayDeviceDataProvider::GetInstance()->GetScreenWidth();
+  const auto height = DisplayDeviceDataProvider::GetInstance()->GetScreenHeight();
 
-  auto width = 1200;
-  auto height = 900;
-  window = glfwCreateWindow(width, height, "PHEngine", NULL, NULL);
+  // auto width = 1200;
+  // auto height = 900;
+  auto primaryMonitor = glfwGetPrimaryMonitor();
+  window = glfwCreateWindow(width, height, "PHEngine", primaryMonitor, NULL);
   LogInfo("main => glfwWindow create with size: width = ", width, " height = ", height);
 
   if (!window)
@@ -176,6 +182,7 @@ int32_t main(int32_t argc, char **argv)
   glfwSetKeyCallback(window, key_pressed_callback);
   glfwSetMouseButtonCallback(window, mouse_button_callback);
   glfwSetWindowSizeCallback(window, window_size_changed_callback);
+  glfwSetWindowPosCallback(window, window_position_changed_callback);
 
   GLenum initResult = glewInit();
 

@@ -1,8 +1,6 @@
 #include "MissileActor.h"
 #include "Core/UtilityCore/EngineMath.h"
 #include "Core/CommonCore/Assertion.h"
-#include "Core/GameCore/Components/AudioComponents/SoundComponent.h"
-#include "Implementation/MissileExplosionVisitors/BombExplosionVisitor.h"
 
 namespace Game
 {
@@ -17,7 +15,7 @@ namespace Game
         return mActivityState;
     }
 
-    void MissileActor::TriggerSpawn(const glm::vec3& position, const eDamageDealerType damageDealerType)
+    void MissileActor::TriggerSpawn(const glm::vec3 &position, const eDamageDealerType damageDealerType, const std::shared_ptr<Actor> &spawnerActor)
     {
         assert(GetMovementComponent());
         mDamageDealerType = damageDealerType;
